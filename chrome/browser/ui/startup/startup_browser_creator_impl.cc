@@ -88,6 +88,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/search_integrity/search_integrity_factory.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -518,8 +519,9 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Check for DSE integrity if flag is enabled.
   if (base::FeatureList::IsEnabled(features::kDseIntegrity)) {
-    // TODO(466065123): The controller will instantiate the model, check the
-    // pref, and show the notification if needed.
+    search_integrity::SearchIntegrityFactory::GetForProfile(profile_);
+    // TODO(481450191): Add search integrity call for checking against search
+    // allowlist.
   }
 #endif
 }

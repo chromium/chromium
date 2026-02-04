@@ -59,6 +59,7 @@ source_set("startup") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sessions",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/search_integrity",
       "//components/infobars/content",
       "//components/signin/public/base:signin_buildflags",
     ]
