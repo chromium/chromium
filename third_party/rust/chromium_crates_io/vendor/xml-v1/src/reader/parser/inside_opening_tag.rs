@@ -36,10 +36,10 @@ impl PullParser {
                 Token::EmptyTagEnd => self.emit_start_element(true),
                 Token::Character(c) if is_whitespace_char(c) => None, // skip whitespace
                 Token::Character(c) if is_name_start_char(c) => {
-                    if self.buf.len() > self.config.max_name_length {
+                    if self.qualified_name_buf.len() > self.config.max_name_length {
                         return Some(self.error(SyntaxError::ExceededConfiguredLimit));
                     }
-                    self.buf.push(c);
+                    self.qualified_name_buf.push(c);
                     self.into_state_continue(State::InsideOpeningTag(OpeningTagSubstate::InsideAttributeName))
                 },
                 _ => Some(self.error(SyntaxError::UnexpectedTokenInOpeningTag(t))),

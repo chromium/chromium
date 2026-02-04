@@ -70,6 +70,9 @@ pub(crate) struct PullParser {
     st: State,
     state_after_reference: State,
     buf: String,
+    // Separate scratch space as an optimization avoiding reallocations
+    // for parsing qualified names.
+    qualified_name_buf: String,
 
     /// From DTD internal subset
     entities: HashMap<String, String>,
@@ -122,6 +125,7 @@ impl PullParser {
             st: State::DocumentStart,
             state_after_reference: State::OutsideTag,
             buf: String::with_capacity(STRING_RESERVE_CAPACITY),
+            qualified_name_buf: String::with_capacity(STRING_RESERVE_CAPACITY),
             entities: HashMap::new(),
             nst: NamespaceStack::default(),
 
@@ -543,28 +547,30 @@ impl PullParser {
       where F: Fn(&mut Self, Token, OwnedName) -> Option<Result> {
 
         let try_consume_name = move |this: &mut Self, t| {
-            let name = this.take_buf();
+
             this.seen_prefix_separator = false;
-            match name.parse() {
+            let result = match this.qualified_name_buf.parse() {
                 Ok(name) => on_name(this, t, name),
-                Err(()) => Some(this.error(SyntaxError::InvalidQualifiedName(name.into()))),
-            }
+                Err(()) => Some(this.error(SyntaxError::InvalidQualifiedName(this.qualified_name_buf.clone().into()))),
+            };
+            this.qualified_name_buf.clear();
+            result
         };
 
         match t {
             // There can be only one colon, and not as the first character
-            Token::Character(':') if self.buf_has_data() && !self.seen_prefix_separator => {
-                self.buf.push(':');
+            Token::Character(':') if !self.qualified_name_buf.is_empty() && !self.seen_prefix_separator => {
+                self.qualified_name_buf.push(':');
                 self.seen_prefix_separator = true;
                 None
             },
 
-            Token::Character(c) if c != ':' && (self.buf.is_empty() && is_name_start_char(c) ||
-                                          self.buf_has_data() && is_name_char(c)) => {
-                if self.buf.len() > self.config.max_name_length {
+            Token::Character(c) if c != ':' && (self.qualified_name_buf.is_empty() && is_name_start_char(c) ||
+                                          !self.qualified_name_buf.is_empty() && is_name_char(c)) => {
+                if self.qualified_name_buf.len() > self.config.max_name_length {
                     return Some(self.error(SyntaxError::ExceededConfiguredLimit));
                 }
-                self.buf.push(c);
+                self.qualified_name_buf.push(c);
                 None
             },
 

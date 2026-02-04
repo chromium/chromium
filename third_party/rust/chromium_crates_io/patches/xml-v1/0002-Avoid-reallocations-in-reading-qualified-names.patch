@@ -1,0 +1,94 @@
+From 33b15d0752329192349b28c9c968bf79f6fe9dcf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Dominik=20R=C3=B6ttsches?= <drott@chromium.org>
+Date: Wed, 4 Feb 2026 12:13:51 +0200
+Subject: [PATCH] Avoid reallocations in reading qualified names
+
+https://github.com/kornelski/xml-rs/commit/f2054c5601aebff74a3fe8dcc880774f2c3d0221
+---
+ .../vendor/xml-v1/src/reader/parser.rs        | 26 ++++++++++++-------
+ .../src/reader/parser/inside_opening_tag.rs   |  4 +--
+ 2 files changed, 18 insertions(+), 12 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+index e8a9967fdbf8c..5bfeda1862052 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+@@ -69,6 +69,9 @@ pub(crate) struct PullParser {
+     st: State,
+     state_after_reference: State,
+     buf: String,
++    // Separate scratch space as an optimization avoiding reallocations
++    // for parsing qualified names.
++    qualified_name_buf: String,
+ 
+     /// From DTD internal subset
+     entities: HashMap<String, String>,
+@@ -121,6 +124,7 @@ impl PullParser {
+             st: State::DocumentStart,
+             state_after_reference: State::OutsideTag,
+             buf: String::with_capacity(STRING_RESERVE_CAPACITY),
++            qualified_name_buf: String::with_capacity(STRING_RESERVE_CAPACITY),
+             entities: HashMap::new(),
+             nst: NamespaceStack::default(),
+ 
+@@ -541,28 +545,30 @@ impl PullParser {
+       where F: Fn(&mut Self, Token, OwnedName) -> Option<Result> {
+ 
+         let try_consume_name = move |this: &mut Self, t| {
+-            let name = this.take_buf();
++
+             this.seen_prefix_separator = false;
+-            match name.parse() {
++            let result = match this.qualified_name_buf.parse() {
+                 Ok(name) => on_name(this, t, name),
+-                Err(()) => Some(this.error(SyntaxError::InvalidQualifiedName(name.into()))),
+-            }
++                Err(()) => Some(this.error(SyntaxError::InvalidQualifiedName(this.qualified_name_buf.clone().into()))),
++            };
++            this.qualified_name_buf.clear();
++            result
+         };
+ 
+         match t {
+             // There can be only one colon, and not as the first character
+-            Token::Character(':') if self.buf_has_data() && !self.seen_prefix_separator => {
+-                self.buf.push(':');
++            Token::Character(':') if !self.qualified_name_buf.is_empty() && !self.seen_prefix_separator => {
++                self.qualified_name_buf.push(':');
+                 self.seen_prefix_separator = true;
+                 None
+             },
+ 
+-            Token::Character(c) if c != ':' && (self.buf.is_empty() && is_name_start_char(c) ||
+-                                          self.buf_has_data() && is_name_char(c)) => {
+-                if self.buf.len() > self.config.max_name_length {
++            Token::Character(c) if c != ':' && (self.qualified_name_buf.is_empty() && is_name_start_char(c) ||
++                                          !self.qualified_name_buf.is_empty() && is_name_char(c)) => {
++                if self.qualified_name_buf.len() > self.config.max_name_length {
+                     return Some(self.error(SyntaxError::ExceededConfiguredLimit));
+                 }
+-                self.buf.push(c);
++                self.qualified_name_buf.push(c);
+                 None
+             },
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_opening_tag.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_opening_tag.rs
+index ebba4afc92916..c232594be1cce 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_opening_tag.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_opening_tag.rs
+@@ -36,10 +36,10 @@ impl PullParser {
+                 Token::EmptyTagEnd => self.emit_start_element(true),
+                 Token::Character(c) if is_whitespace_char(c) => None, // skip whitespace
+                 Token::Character(c) if is_name_start_char(c) => {
+-                    if self.buf.len() > self.config.max_name_length {
++                    if self.qualified_name_buf.len() > self.config.max_name_length {
+                         return Some(self.error(SyntaxError::ExceededConfiguredLimit));
+                     }
+-                    self.buf.push(c);
++                    self.qualified_name_buf.push(c);
+                     self.into_state_continue(State::InsideOpeningTag(OpeningTagSubstate::InsideAttributeName))
+                 },
+                 _ => Some(self.error(SyntaxError::UnexpectedTokenInOpeningTag(t))),
+-- 
+2.53.0.rc2.204.g2597b5adb4-goog
+
