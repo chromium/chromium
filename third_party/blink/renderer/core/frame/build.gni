@@ -257,6 +257,7 @@ blink_core_sources_frame = [
 
 blink_core_tests_frame = [
   "ad_tracker_test.cc",
+  "animation_frame_timing_monitor_test.cc",
   "attribution_src_loader_test.cc",
   "browser_controls_test.cc",
   "cached_permission_status_test.cc",

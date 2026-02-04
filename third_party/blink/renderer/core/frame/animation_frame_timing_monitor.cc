@@ -524,8 +524,15 @@ void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_handling_input_);
 }
 
+BASE_FEATURE(kAlwaysLogLOAFURL, base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
 bool ShouldAllowScriptURL(const String& url) {
+  if (base::FeatureList::IsEnabled(kAlwaysLogLOAFURL)) {
+    return true;
+  }
+
   KURL kurl(url);
   return kurl.ProtocolIsData() || kurl.ProtocolIsInHTTPFamily() ||
          kurl.ProtocolIs("blob") || kurl.IsEmpty();
