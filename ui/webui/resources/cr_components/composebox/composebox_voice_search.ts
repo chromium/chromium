@@ -299,6 +299,7 @@ export class ComposeboxVoiceSearchElement extends
   private resetState_() {
     this.state_ = State.UNINITIALIZED;
     this.finalResult_ = '';
+    this.transcript_ = '';
     this.interimResult_ = '';
     this.error_ = null;
     this.errorMessage_ = '';
