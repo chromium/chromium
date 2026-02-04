@@ -1325,6 +1325,7 @@ void DatabaseConnection::EndTransaction(
   // there were no statements executed anyway.
   CHECK(active_rw_transaction_);
   active_rw_transaction_.reset();
+  CHECK(blobs_staged_for_commit_.empty());
 
   // If the transaction is rolled back, recent changes to the blob_references
   // table may be lost. Make sure that table is up to date with memory state.
@@ -1836,16 +1837,26 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
   // Insert external objects into relevant tables.
   for (auto& external_object : value.external_objects) {
     int64_t blob_row_id = -1;
-    bool is_empty_blob = false;
+    bool can_insert_inline = false;
     if (external_object.object_type() ==
         IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
       // Write metadata. Blob bytes will be written later in one go, after
-      // serializing the handle.
+      // serializing the handle (except in the migration case, where we can just
+      // write now).
       sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE,
                                                        "INSERT INTO blobs "
-                                                       "(object_type) "
-                                                       "VALUES (?)"));
+                                                       "(object_type, bytes) "
+                                                       "VALUES (?, ?)"));
       statement.BindInt(0, static_cast<int>(external_object.object_type()));
+      can_insert_inline =
+          !external_object.serialized_file_system_access_handle().empty();
+      if (can_insert_inline) {
+        // Migration case.
+        statement.BindBlob(
+            1, external_object.serialized_file_system_access_handle());
+      } else {
+        statement.BindNull(1);
+      }
       RUN_STATEMENT_RETURN_ON_ERROR(statement);
       blob_row_id = db_->GetLastInsertRowId();
     } else {
@@ -1854,9 +1865,11 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       const int main_chunk_size = base::checked_cast<int>(
           std::min(external_object.size(),
                    base::checked_cast<int64_t>(GetMaxBlobSize().InBytes())));
-      is_empty_blob = external_object.size() == 0;
       const bool being_migrated_from_leveldb =
           !external_object.indexed_db_file_path().empty();
+      // Empty blob.
+      bool is_empty_blob = external_object.size() == 0;
+      can_insert_inline = is_empty_blob || being_migrated_from_leveldb;
       {
         sql::Statement statement(
             db_->GetCachedStatement(SQL_FROM_HERE,
@@ -1934,7 +1947,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       RUN_STATEMENT_RETURN_ON_ERROR(statement);
     }
 
-    if (!is_empty_blob) {
+    if (!can_insert_inline) {
       auto rv =
           blobs_staged_for_commit_.emplace(blob_row_id,
                                            // TODO(crbug.com/419208485): this

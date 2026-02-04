@@ -163,7 +163,14 @@ base::DictValue RecordToDictValue(BackingStore::Cursor& cursor,
   for (const IndexedDBExternalObject& object : value.external_objects) {
     base::DictValue object_dict;
     object_dict.Set("type", static_cast<int>(object.object_type()));
-    object_dict.Set("size", ToIntValue(object.size()));
+    if (object.object_type() ==
+        IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
+      object_dict.Set(
+          "fsa_handle",
+          base::BlobStorage(object.serialized_file_system_access_handle()));
+    } else {
+      object_dict.Set("size", ToIntValue(object.size()));
+    }
     external_objects.Append(std::move(object_dict));
   }
   record.Set("external_objects", std::move(external_objects));
