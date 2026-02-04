@@ -16,7 +16,7 @@ use system::message::RawMojoMessage;
 use system::message_pipe::MessageEndpoint;
 use system::mojo_types::MojoResult;
 use system::raw_trap::{HandleSignals, TriggerCondition};
-use system::trap::{ArmingPolicyForBlockingEvents, Trap, TrapError, TrapEvent};
+use system::trap::{InitialArmingPolicy, RearmingPolicy, Trap, TrapError, TrapEvent};
 
 // TODO(crbug.com/477584253): Replace std::sync with std::nonpoison if there are
 // any non-sequenced versions remaining.
@@ -103,10 +103,13 @@ impl<T> MessagePipeWatcherHandler for T where
 impl MessagePipeWatcher {
     /// Create a new MessagePipeWatcher which schedules `message_handler` on
     /// the default sequence whenever the endpoint receives a new message.
+    ///
+    /// May fail if the system has run out of resources to allocate new Mojo
+    /// handles.
     pub fn new(
         endpoint: MessageEndpoint,
         message_handler: impl MessagePipeWatcherHandler,
-    ) -> MojoResult<Self> {
+    ) -> Option<Self> {
         Self::new_with_runner(
             endpoint,
             message_handler,
@@ -125,12 +128,13 @@ impl MessagePipeWatcher {
     /// `MessageEndpoint::read`. See that method's documentation for
     /// information about `method_handler`'s input type.
     ///
-    /// FOR_RELEASE: Document what MojoResults might occur if this fails
+    /// May fail if the system has run out of resources to allocate new Mojo
+    /// handles.
     pub fn new_with_runner(
         endpoint: MessageEndpoint,
         message_handler: impl MessagePipeWatcherHandler,
         runner: SequencedTaskRunnerHandle,
-    ) -> MojoResult<Self> {
+    ) -> Option<Self> {
         // The main goal of this function is to construct a closure which reads
         // from the `endpoint` and schedules `message_handler` on `runner`.
 
@@ -163,7 +167,7 @@ impl MessagePipeWatcher {
         let trigger_signals: HandleSignals = HandleSignals::NEW_DATA_READABLE;
         let trigger_condition: TriggerCondition = TriggerCondition::TriggerWhenSatisfied;
 
-        let trap = Trap::new()?;
+        let trap = Trap::new(RearmingPolicy::Automatic).ok()?;
 
         // This trap only ever has one trigger active, so no need to track its id
         let _trigger_id = trap.add_trigger(
@@ -171,11 +175,12 @@ impl MessagePipeWatcher {
             trigger_signals,
             trigger_condition,
             trigger_handler,
-        )?;
+        );
 
-        trap.arm(ArmingPolicyForBlockingEvents::RearmUntilNoBlockingEvents)?;
+        // The only way this can fail is if there aren't any triggers.
+        let _ = trap.arm(InitialArmingPolicy::RunTriggersOnBlockingEvents);
 
-        Ok(Self { trap, shared_state: watcher_state })
+        Some(Self { trap, shared_state: watcher_state })
     }
 
     /// Consume the MessagePipeWatcher, returning the endpoint. The watching
@@ -188,8 +193,7 @@ impl MessagePipeWatcher {
     pub fn into_endpoint(mut self) -> MessageEndpoint {
         // Clear any existing triggers, which ends the lifetime of any references
         // they contain.
-        // FOR_RELEASE: don't unwrap here, handle errors once we know what might happen
-        self.trap.clear_triggers().unwrap();
+        self.trap.clear_triggers();
         // We only hand out weak references (into the triggers), and the
         // triggers were cleared when we dropped the trap, so none of them are
         // running. Thus there should be exactly one strong reference.

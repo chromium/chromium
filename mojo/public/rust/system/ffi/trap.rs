@@ -246,13 +246,11 @@ pub fn MojoCreateTrap(handler: EventHandler) -> MojoResult<UntypedHandle> {
 /// # Requirements
 /// - `trap_handle` is actually a trap handle.
 /// - `monitored_handle` is either a message or data pipe handle.
-/// - The trap must not already have a trigger with either `context` or
-///   `monitored_handle`.
+/// - The trap must not already have a trigger with `context`.
 ///
 /// # Possible Error Codes:
 /// - `InvalidArgument` if one of the handles had an incorrect type
-/// - `AlreadyExists` if the trap already has a trigger with `context` or
-///   `monitored_handle`
+/// - `AlreadyExists` if the trap already has a trigger with `context`.
 pub fn MojoAddTrigger(
     trap_handle: &UntypedHandle,
     monitored_handle: &UntypedHandle,
