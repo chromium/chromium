@@ -638,10 +638,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   self.browserLayoutViewController = viewController;
-  // Set fallback presenter, because currentBVC can be nil if the tab grid is
-  // up but no tabs exist in current page.
-  self.browserLayoutViewController.fallbackPresenterViewController =
-      self.baseViewController;
 
   BOOL animated = !self.animationsDisabledForTesting;
   // Never animate the first time.
