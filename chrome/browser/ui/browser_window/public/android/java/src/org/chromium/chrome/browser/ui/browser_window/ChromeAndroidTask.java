@@ -248,6 +248,28 @@ public interface ChromeAndroidTask {
     long getOrCreateNativeBrowserWindowPtr();
 
     /**
+     * Returns an array of the all native {@code BrowserWindowInterface} addresses.
+     *
+     * <p>If the native object hasn't been created, this method will create it before returning its
+     * address.
+     */
+    List<Long> getAllNativeBrowserWindowPtrs();
+
+    /**
+     * Adds an {@link AndroidBrowserWindowObserver} for future {@code AndroidBrowserWindow} events.
+     *
+     * @param observer The observer to add.
+     */
+    void addAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer);
+
+    /**
+     * Removes an {@link AndroidBrowserWindowObserver}.
+     *
+     * @param observer The observer to remove.
+     */
+    void removeAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer);
+
+    /**
      * Destroys all objects owned by this {@link ChromeAndroidTask}, including all {@link
      * ChromeAndroidTaskFeature}s.
      *

@@ -2816,6 +2816,16 @@ public class ChromeAndroidTaskImplUnitTest {
                 .associateWithBrowserWindow(
                         ChromeAndroidTaskUnitTestSupport
                                 .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        var allPtrs = chromeAndroidTask.getAllNativeBrowserWindowPtrs();
+        assertEquals(2, allPtrs.size());
+        assertTrue(
+                allPtrs.contains(
+                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
+        assertTrue(
+                allPtrs.contains(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
     }
 
     @Test
@@ -2849,6 +2859,7 @@ public class ChromeAndroidTaskImplUnitTest {
         incognitoObserverCaptor.getValue().onIncognitoModelCreated();
 
         assertNotNull(chromeAndroidTask.getSessionIdForTesting(incognitoProfile));
+        assertEquals(2, chromeAndroidTask.getAllNativeBrowserWindowPtrs().size());
 
         // Act
         ProfileManager.onProfileDestroyed(incognitoProfile);
@@ -2857,6 +2868,11 @@ public class ChromeAndroidTaskImplUnitTest {
         assertNull(
                 "Browser window for destroyed profile should be removed.",
                 chromeAndroidTask.getSessionIdForTesting(incognitoProfile));
+        var allPtrs = chromeAndroidTask.getAllNativeBrowserWindowPtrs();
+        assertEquals(1, allPtrs.size());
+        assertEquals(
+                (Long) ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                allPtrs.get(0));
     }
 
     @Test
@@ -2881,6 +2897,92 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         assertEquals(2, testFeature.mTabModelSelectedHistory.size());
         assertEquals(expectedTabModel, testFeature.mTabModelSelectedHistory.get(1));
+    }
+
+    @Test
+    public void addAndroidBrowserWindowObserver_doesNotNotifyForExistingWindows() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var observer = mock(AndroidBrowserWindowObserver.class);
+
+        // Act.
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        // Assert.
+        verify(observer, never()).onBrowserWindowAdded(any(Long.class));
+    }
+
+    @Test
+    public void androidBrowserWindowObserver_notifiedOnDestruction() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        // Act.
+        chromeAndroidTask.destroy();
+
+        // Assert.
+        verify(observer, times(1))
+                .onBrowserWindowRemoved(
+                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
+    @Test
+    public void androidBrowserWindowObserver_notifiedOnAddition() {
+        // Arrange
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1,
+                        /* mockNatives= */ true,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true,
+                        SupportedProfileType.MIXED);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        var tabModelSelector =
+                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mTabModelSelector;
+        var incognitoTabModel = (IncognitoTabModel) tabModelSelector.getModel(true);
+        var incognitoProfile = mock(Profile.class, "IncognitoProfile");
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        ArgumentCaptor<IncognitoTabModelObserver> incognitoObserverCaptor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoTabModel).addIncognitoObserver(incognitoObserverCaptor.capture());
+
+        // Act
+        when(incognitoTabModel.getProfile()).thenReturn(incognitoProfile);
+        incognitoObserverCaptor.getValue().onIncognitoModelCreated();
+
+        // Assert
+        verify(observer, times(1))
+                .onBrowserWindowAdded(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
+    @Test
+    public void removeAndroidBrowserWindowObserver_stopsNotifications() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+        chromeAndroidTask.removeAndroidBrowserWindowObserver(observer);
+
+        // Act.
+        chromeAndroidTask.destroy();
+
+        // Assert.
+        verify(observer, never()).onBrowserWindowRemoved(any(Long.class));
     }
 
     private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {

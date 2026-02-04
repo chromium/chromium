@@ -32,6 +32,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.BuildConfig;
@@ -199,6 +200,9 @@ final class ChromeAndroidTaskImpl
      */
     private final Map<Profile, AndroidBrowserWindow> mAndroidBrowserWindows = new ArrayMap<>();
 
+    private final ObserverList<AndroidBrowserWindowObserver> mAndroidBrowserWindowObservers =
+            new ObserverList<>();
+
     private final WindowStateManager mWindowStateManager = new WindowStateManager();
 
     /**
@@ -249,6 +253,10 @@ final class ChromeAndroidTaskImpl
                     if (!BuildConfig.IS_DESKTOP_ANDROID) {
                         var browserWindow = mAndroidBrowserWindows.remove(profile);
                         if (browserWindow != null) {
+                            var ptr = browserWindow.getOrCreateNativePtr();
+                            for (var observer : mAndroidBrowserWindowObservers) {
+                                observer.onBrowserWindowRemoved(ptr);
+                            }
                             browserWindow.destroy();
                         }
                     }
@@ -396,6 +404,8 @@ final class ChromeAndroidTaskImpl
                 : "ChromeAndroidTask must be initialized with a non-null profile";
         mInitialProfile = initialProfile;
 
+        // The AndroidBrowserWindowObserver list will be empty at this point, so it's safe to not
+        // notify the observers.
         mAndroidBrowserWindows.put(
                 mInitialProfile,
                 new AndroidBrowserWindow(/* chromeAndroidTask= */ this, mInitialProfile));
@@ -412,9 +422,13 @@ final class ChromeAndroidTaskImpl
         mInitialProfile = pendingTaskInfo.mCreateParams.getProfile();
         assert mInitialProfile != null
                 : "PendingTaskInfo must be initialized with a non-null profile";
+
+        // The AndroidBrowserWindowObserver list will be empty at this point, so it's safe to not
+        // notify the observers.
         mAndroidBrowserWindows.put(
                 mInitialProfile,
                 new AndroidBrowserWindow(/* chromeAndroidTask= */ this, mInitialProfile));
+
         ProfileManager.addObserver(mProfileObserver);
 
         mState = State.PENDING_CREATE;
@@ -601,6 +615,10 @@ final class ChromeAndroidTaskImpl
         ProfileManager.removeObserver(mProfileObserver);
 
         for (AndroidBrowserWindow browserWindow : mAndroidBrowserWindows.values()) {
+            long ptr = browserWindow.getOrCreateNativePtr();
+            for (var observer : mAndroidBrowserWindowObservers) {
+                observer.onBrowserWindowRemoved(ptr);
+            }
             browserWindow.destroy();
         }
         mAndroidBrowserWindows.clear();
@@ -997,6 +1015,26 @@ final class ChromeAndroidTaskImpl
         return getSessionIdForTesting(mInitialProfile);
     }
 
+    @Override
+    public List<Long> getAllNativeBrowserWindowPtrs() {
+        ThreadUtils.assertOnUiThread();
+        List<Long> allNativeBrowserWindowPtrs = new ArrayList<>();
+        for (var browserWindow : mAndroidBrowserWindows.values()) {
+            allNativeBrowserWindowPtrs.add(browserWindow.getOrCreateNativePtr());
+        }
+        return allNativeBrowserWindowPtrs;
+    }
+
+    @Override
+    public void addAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer) {
+        mAndroidBrowserWindowObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer) {
+        mAndroidBrowserWindowObservers.removeObserver(observer);
+    }
+
     @VisibleForTesting
     @State
     int getState() {
@@ -1100,6 +1138,10 @@ final class ChromeAndroidTaskImpl
         if (browserWindow == null) {
             browserWindow = new AndroidBrowserWindow(this, profile);
             mAndroidBrowserWindows.put(profile, browserWindow);
+            long ptr = browserWindow.getOrCreateNativePtr();
+            for (var observer : mAndroidBrowserWindowObservers) {
+                observer.onBrowserWindowAdded(ptr);
+            }
         }
         tabModel.associateWithBrowserWindow(browserWindow.getOrCreateNativePtr());
     }
