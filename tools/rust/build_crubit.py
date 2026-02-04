@@ -85,7 +85,7 @@ def BuildCrubit(rust_sysroot, out_dir):
     release_dir = os.path.join(target_dir, 'release')
     home_dir = os.path.join(target_dir, 'cargo_home')
 
-    print(f'Building cc_bindings_from_rs...')
+    print(f'Building cc_bindings_from_rs ...')
     cargo_args = ['build', '--release', '--verbose']
     cargo_args += ['--bin', 'cc_bindings_from_rs']
     cargo_args += ['--target-dir', target_dir]
@@ -93,6 +93,7 @@ def BuildCrubit(rust_sysroot, out_dir):
     extra_rustflags = GetCcBindingsFromRsRustFlags()
     cargo_result = RunCargo(rust_sysroot, home_dir, cargo_args,
                             extra_rustflags)
+    print(f'Building cc_bindings_from_rs ... done.  Result: {cargo_result}')
     if cargo_result:
         return cargo_result
 
@@ -100,6 +101,7 @@ def BuildCrubit(rust_sysroot, out_dir):
     CRUBIT_BINS = ['cc_bindings_from_rs']
     for bin in CRUBIT_BINS:
         bin = bin + EXE
+        print(f'    Copying {bin} ...')
         shutil.copy(os.path.join(release_dir, bin),
                     os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin))
     return 0
