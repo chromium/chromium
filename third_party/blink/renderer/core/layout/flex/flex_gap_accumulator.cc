@@ -12,11 +12,7 @@ namespace blink {
 
 const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
     const BoxFragmentBuilder& container_builder) {
-  const bool has_valid_main_axis_gaps =
-      !main_gaps_.empty() && gap_between_lines_ > LayoutUnit();
-  const bool has_valid_cross_axis_gaps =
-      !cross_gaps_.empty() && gap_between_items_ > LayoutUnit();
-  if (!has_valid_main_axis_gaps && !has_valid_cross_axis_gaps) {
+  if (main_gaps_.empty() && cross_gaps_.empty()) {
     // `GapGeometry` requires at least one axis to be valid.
     return nullptr;
   }
@@ -31,21 +27,12 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
   if (is_column_) {
     // In a column flex container, the main axis gaps become the "columns" and
     // the cross axis gaps become the "rows".
-    if (gap_between_lines_ > LayoutUnit()) {
       gap_geometry->SetInlineGapSize(gap_between_lines_);
-    }
-    if (gap_between_items_ > LayoutUnit()) {
       gap_geometry->SetBlockGapSize(gap_between_items_);
-    }
-
-    gap_geometry->SetMainDirection(kForColumns);
+      gap_geometry->SetMainDirection(kForColumns);
   } else {
-    if (gap_between_lines_ > LayoutUnit()) {
       gap_geometry->SetBlockGapSize(gap_between_lines_);
-    }
-    if (gap_between_items_ > LayoutUnit()) {
       gap_geometry->SetInlineGapSize(gap_between_items_);
-    }
   }
 
   // TODO(crbug.com/440123087): Risky since they could in theory be used after
