@@ -1131,11 +1131,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // For service worker script updates, this is set by `PrepareForUpdate()` once
   // the updated script headers have been fetched.
   // For service workers loaded from disk, this is restored from disk.
-  //
-  // TODO(crbug.com/40056874): Set all of this, not just COEP, on script
-  // updates.
-  // TODO(crbug.com/40056874): Persist all of this to disk, not just the
-  // COEP field.
   network::mojom::ClientSecurityStatePtr client_security_state_;
 
   Status status_ = NEW;
