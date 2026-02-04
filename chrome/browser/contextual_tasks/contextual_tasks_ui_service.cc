@@ -15,6 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/companion/text_finder/text_finder_manager.h"
+#include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
@@ -43,6 +45,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -349,23 +352,31 @@ void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
   }
 }
 
-bool ContextualTasksUiService::MaybeFocusExistingOpenTab(
+tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
     const GURL& url,
     TabStripModel* tab_strip_model,
     const base::Uuid& task_id) {
+  GURL url_no_fragments =
+      shared_highlighting::RemoveFragmentSelectorDirectives(url);
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     content::WebContents* web_contents =
         tab_strip_model->GetTabAtIndex(i)->GetContents();
     std::optional<ContextualTask> task =
         contextual_tasks_service_->GetContextualTaskForTab(
             SessionTabHelper::IdForTab(web_contents));
-    if (web_contents->GetLastCommittedURL() == url && task &&
+    // Remove any text selection directives when trying to match an existing
+    // URL. The directives don't meaningfully change the page content, so it's
+    // ok to match them.
+    GURL tab_url_no_fragments =
+        shared_highlighting::RemoveFragmentSelectorDirectives(
+            web_contents->GetLastCommittedURL());
+    if (tab_url_no_fragments == url_no_fragments && task &&
         task->GetTaskId() == task_id) {
       tab_strip_model->ActivateTabAt(i);
-      return true;
+      return tab_strip_model->GetTabAtIndex(i);
     }
   }
-  return false;
+  return nullptr;
 }
 
 void ContextualTasksUiService::OnThreadLinkClicked(
@@ -405,7 +416,9 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // TODO(crbug.com/458139141): Split this API so we can assume `tab` non-null.
   if (!tab) {
     // Attempt to focus an existing tab prior to creating a new one.
-    if (!MaybeFocusExistingOpenTab(url, tab_strip_model, task_id)) {
+    tabs::TabInterface* existing_tab =
+        MaybeFocusExistingOpenTab(url, tab_strip_model, task_id);
+    if (!existing_tab) {
       // Creates the Tab so session ID is created for the WebContents.
       auto tab_to_insert = std::make_unique<tabs::TabModel>(
           std::move(new_contents), tab_strip_model);
@@ -417,6 +430,20 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
                               ui::PAGE_TRANSITION_LINK,
                               AddTabTypes::ADD_ACTIVE);
+    } else {
+      // If the tab was found, check if there was a text fragment to search for
+      // in the URL. If so, highlight them to be shown to the user.
+      std::vector<std::string> fragments =
+          shared_highlighting::ExtractTextFragments(url.GetRef());
+
+      content::Page& page = existing_tab->GetContents()->GetPrimaryPage();
+      companion::TextFinderManager* text_finder_manager =
+          companion::TextFinderManager::GetOrCreateForPage(page);
+      text_finder_manager->CreateTextFinders(
+          fragments,
+          base::BindOnce(&ContextualTasksUiService::OnTextFinderLookupComplete,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         existing_tab->GetWeakPtr(), url, task_id, browser));
     }
 
     return;
@@ -464,6 +491,65 @@ void ContextualTasksUiService::OnThreadLinkClicked(
           GetWebUiInterface(contextual_task_contents_ptr)) {
     web_ui_interface->OnSidePanelStateChanged();
   }
+}
+
+void ContextualTasksUiService::OnTextFinderLookupComplete(
+    base::WeakPtr<tabs::TabInterface> tab,
+    const GURL& url,
+    base::Uuid task_id,
+    base::WeakPtr<BrowserWindowInterface> browser,
+    const std::vector<std::pair<std::string, bool>>& lookup_results) {
+  if (!browser) {
+    return;
+  }
+
+  bool all_text_found = true;
+  std::vector<std::string> text_directives;
+  for (const auto& pair : lookup_results) {
+    if (!pair.second) {
+      all_text_found = false;
+      break;
+    }
+    text_directives.push_back(pair.first);
+  }
+
+  if (!tab || !all_text_found) {
+    // If the tab went away or the text wasn't found on the page, open a new
+    // tab.
+    TabStripModel* tab_strip_model = browser->GetTabStripModel();
+    std::unique_ptr<content::WebContents> new_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile_));
+    content::WebContents* new_contents_ptr = new_contents.get();
+
+    new_contents->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(url));
+
+    auto tab_to_insert = std::make_unique<tabs::TabModel>(
+        std::move(new_contents), tab_strip_model);
+    AssociateWebContentsToTask(new_contents_ptr, task_id);
+
+    // Insert the WebContents after the current active.
+    int active_tab_index = tab_strip_model->active_index();
+    tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
+                            ui::PAGE_TRANSITION_LINK, AddTabTypes::ADD_ACTIVE);
+    return;
+  }
+
+  // Delete any existing `TextHighlighterManager` on the page. Without this, any
+  // text highlights after the first to be rendered on the page will not render.
+  auto& page = tab->GetContents()->GetPrimaryPage();
+  if (companion::TextHighlighterManager::GetForPage(page)) {
+    companion::TextHighlighterManager::DeleteForPage(page);
+  }
+
+  // If every text fragment was found, then create a text highlighter manager to
+  // render the text highlights. Focus the main tab first.
+  tab->GetContents()->Focus();
+  companion::TextHighlighterManager* text_highlighter_manager =
+      companion::TextHighlighterManager::GetOrCreateForPage(page);
+  text_highlighter_manager->CreateTextHighlightersAndRemoveExisting(
+      text_directives);
 }
 
 void ContextualTasksUiService::OnSearchResultsNavigationInTab(

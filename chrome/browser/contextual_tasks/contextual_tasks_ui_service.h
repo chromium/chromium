@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -255,11 +256,21 @@ class ContextualTasksUiService : public KeyedService {
   // Runs all pending access token callbacks with the provided token.
   void RunPendingAccessTokenCallbacks(const std::string& token);
 
-  // Focus an existing tab based on the provided URL if it exists. The URLs must
-  // be identical in order for the existing tab to be selected.
-  bool MaybeFocusExistingOpenTab(const GURL& url,
-                                 TabStripModel* tab_strip_model,
-                                 const base::Uuid& task_id);
+  // Focus an existing tab based on the provided URL if it exists. The URLs are
+  // compared without text selection directives as they don't change the page
+  // content and only tell the browser what text to highlight on the page. A
+  // pointer to the selected tab is returned if found.
+  tabs::TabInterface* MaybeFocusExistingOpenTab(const GURL& url,
+                                                TabStripModel* tab_strip_model,
+                                                const base::Uuid& task_id);
+
+  // A callback for checking whether text fragments from a URL are on a page.
+  void OnTextFinderLookupComplete(
+      base::WeakPtr<tabs::TabInterface> tab,
+      const GURL& url,
+      base::Uuid task_id,
+      base::WeakPtr<BrowserWindowInterface> browser,
+      const std::vector<std::pair<std::string, bool>>& lookup_results);
 
   // Checks if the provided URL matches any of the allowed hosts.
   bool IsAllowedHost(const GURL& url);

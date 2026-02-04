@@ -189,6 +189,7 @@ source_set("ui_impl") {
       "//base",
       "//chrome/browser:global_features",
       "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/companion/text_finder",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/signin",
@@ -208,6 +209,7 @@ source_set("ui_impl") {
       "//components/keyed_service/core",
       "//components/lens",
       "//components/omnibox/browser:mojo_bindings",
+      "//components/shared_highlighting/core/common",
       "//google_apis",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
@@ -239,6 +241,7 @@ if (!is_android) {
     sources = [
       "contextual_tasks_context_service_browsertest.cc",
       "contextual_tasks_ui_browsertest.cc",
+      "contextual_tasks_ui_service_browsertest.cc",
       "contextual_tasks_url_loader_factory_interceptor_browsertest.cc",
     ]
 
