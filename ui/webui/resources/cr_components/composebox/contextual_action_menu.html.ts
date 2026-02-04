@@ -53,7 +53,8 @@ export function getHtml(this: ContextualActionMenuElement) {
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.i18n('uploadFile')}
     </button>`: ''}
-    ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) ?
+    ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) &&
+        (this.imageUploadAllowed_ || this.fileUploadAllowed_) ?
         html`<hr/>` : ''}
     ${Array.from(this.supportedTools_.entries()).map(([mode, tool]) => this.isToolAllowed_(mode) ? html`
       <button id="${tool.id}" class="dropdown-item"
