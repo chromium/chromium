@@ -557,7 +557,8 @@ const FeatureEntry::Choice kAdpfEfficiencyChoices[] = {
     {"High Efficiency", switches::kEnableFeatures,
      "EnableAdpfEfficiencyMode:mode/always_efficient"},
     {"Adaptive", switches::kEnableFeatures,
-     "EnableAdpfEfficiencyMode:mode/adaptive"},
+     "EnableAdpfEfficiencyMode:mode/adaptive,UsePerformanceHelper:helper_mode/"
+     "compositor"},
     {"High Performance", switches::kEnableFeatures,
      "EnableAdpfEfficiencyMode:mode/never"}};
 
