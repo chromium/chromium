@@ -144,8 +144,8 @@
   <message name="IDS_HISTORY_UNKNOWN_DEVICE" desc="On the dropdown menu for a history entry, the text that is shown instead of a device name, when the device name is not known.">
     Unknown device
   </message>
-  <message name="IDS_ACTOR_TASK" translateable="false">
-    Gemini task
+  <message name="IDS_ACTOR_TASK" desc="This string indicates entries in Chrome history that are the result of Gemini in Chrome browsing while performing an auto browse task for the user. When users view their Chrome history, this string appears as a tooltip on an auto browse history entry. This is a shortened version of the sentence: 'Auto browse worked on this task for you'. The tone should be short and telegraphic.">
+    Auto browse task
   </message>
 
   <message name="IDS_HISTORY_SYNC_PROMO_TITLE" desc="The title of the history sync promo.">
