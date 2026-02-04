@@ -155,5 +155,9 @@ TEST(ProtoEnumConversionsTest, GetActionRequiredString) {
   TestEnumStringsNonEmpty(sync_pb::PaymentInstrument::ActionRequired);
 }
 
+TEST(ProtoEnumConversionsTest, GetSkillSourceString) {
+  TestEnumStringsNonEmpty(sync_pb::SkillSource);
+}
+
 }  // namespace
 }  // namespace syncer

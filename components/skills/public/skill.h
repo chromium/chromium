@@ -8,19 +8,9 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 
 namespace skills {
-
-// LINT.IfChange(SkillSource)
-enum class SkillSource {
-  kUnknown = 0,
-  // Skill created by Google.
-  kFirstParty = 1,
-  // Skill created by an end-user.
-  kUserCreated = 2,
-};
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource,
-// //depot/chromium/chrome/browser/glic/host/glic.mojom:SkillSource)
 
 // LINT.IfChange(Skill)
 // Represents a single skill.
@@ -39,7 +29,7 @@ struct Skill {
   std::string prompt;
 
   // The source of the skill which can be 1P or user created.
-  SkillSource source = SkillSource::kUserCreated;
+  sync_pb::SkillSource source = sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
 
   // The time when the skill was created.
   base::Time creation_time = base::Time::Now();

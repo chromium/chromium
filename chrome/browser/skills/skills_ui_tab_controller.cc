@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
@@ -40,10 +41,10 @@ glic::mojom::SkillPreviewPtr GetPreviewFromSkill(const skills::Skill& skill) {
   skill_preview->icon = skill.icon;
 
   switch (skill.source) {
-    case skills::SkillSource::kFirstParty:
+    case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
       skill_preview->source = SkillSource::kFirstParty;
       break;
-    case skills::SkillSource::kUserCreated:
+    case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
       skill_preview->source = SkillSource::kUserCreated;
       break;
     default:

@@ -606,7 +606,8 @@ enum SkillSource {
   // Skill created by an end-user.
   kUserCreated = 2,
 };
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource, //depot/chromium/components/skills/public/skill.h:SkillSource)
+// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource,
+// //depot/chromium/components/sync/protocol/skill_specifics.proto:SkillSource)
 
 // LINT.IfChange(Skill)
 // A single skill preview.

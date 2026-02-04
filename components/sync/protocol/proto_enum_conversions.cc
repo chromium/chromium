@@ -1096,6 +1096,16 @@ const char* ProtoEnumToString(sync_pb::SharedUrlContext::Source source) {
   }
 }
 
+const char* ProtoEnumToString(sync_pb::SkillSource skill_source) {
+  ASSERT_ENUM_BOUNDS(sync_pb, SkillSource, SKILL_SOURCE_UNKNOWN,
+                     SKILL_SOURCE_USER_CREATED);
+  switch (skill_source) {
+    ENUM_CASE(sync_pb, SKILL_SOURCE_UNKNOWN);
+    ENUM_CASE(sync_pb, SKILL_SOURCE_FIRST_PARTY);
+    ENUM_CASE(sync_pb, SKILL_SOURCE_USER_CREATED);
+  }
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 

@@ -17,6 +17,7 @@
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 
 namespace skills {
 
@@ -105,6 +106,12 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
     // Skill does not exist, nothing to update.
     return nullptr;
   }
+
+  // First party skills are not owned by the user. They cannot be updated.
+  // Instead, the user should copy the skill content, so that the new, copied
+  // skill is user created, then update the copied skill.
+  CHECK_EQ(skill->source, sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED)
+      << "Skill does not belong to the user. Cannot update skill.";
 
   UpdateSkillImpl(skill, name, icon, prompt,
                   /*update_time=*/base::Time::Now(), UpdateSource::kLocal);
@@ -241,12 +248,6 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
                                         base::Time update_time,
                                         UpdateSource update_source) {
   CHECK(skill);
-
-  // First party skills are not owned by the user. They cannot be updated.
-  // Instead, the user should copy the skill content, so that the new, copied
-  // skill is user created, then update the copied skill.
-  CHECK(skill->source == SkillSource::kUserCreated)
-      << "Skill does not belong to the user. Cannot update skill.";
 
   // Update the existing skill.
   bool is_changed = false;

@@ -99,6 +99,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
@@ -189,13 +190,13 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
-mojom::SkillSource ToMojomSkillSource(skills::SkillSource source) {
+mojom::SkillSource ToMojomSkillSource(sync_pb::SkillSource source) {
   switch (source) {
-    case skills::SkillSource::kUnknown:
+    case sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN:
       return mojom::SkillSource::kUnknown;
-    case skills::SkillSource::kFirstParty:
+    case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
       return mojom::SkillSource::kFirstParty;
-    case skills::SkillSource::kUserCreated:
+    case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
       return mojom::SkillSource::kUserCreated;
   }
 }

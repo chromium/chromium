@@ -24,6 +24,7 @@
 #include "components/sync/protocol/shared_comment_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/theme_types.pb.h"
@@ -252,6 +253,8 @@ const char* ProtoEnumToString(
     sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme);
 
 const char* ProtoEnumToString(sync_pb::SharedUrlContext::Source source);
+
+const char* ProtoEnumToString(sync_pb::SkillSource skill_source);
 
 }  // namespace syncer
 

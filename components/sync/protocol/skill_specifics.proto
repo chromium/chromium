@@ -14,6 +14,15 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(SkillSource)
+enum SkillSource {
+  SKILL_SOURCE_UNKNOWN = 0;
+  SKILL_SOURCE_FIRST_PARTY = 1;
+  SKILL_SOURCE_USER_CREATED = 2;
+}
+// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource,
+// //depot/chromium/chrome/browser/glic/host/glic.mojom:SkillSource)
+
 // LINT.IfChange(SkillSpecifics)
 // Skills stored by the user.
 message SkillSpecifics {
@@ -42,5 +51,7 @@ message SkillSpecifics {
 message SimpleSkill {
   // The core prompt text that instructs the model.
   optional string prompt = 1;
+
+  // TODO(crbug.com/479386016): add skill source.
 }
 // LINT.ThenChange(//components/skills/internal/skills_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

@@ -8,35 +8,36 @@
 #include "base/notreached.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom-shared.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<skills::mojom::SkillSource, skills::SkillSource> {
-  static skills::mojom::SkillSource ToMojom(skills::SkillSource input) {
+struct EnumTraits<skills::mojom::SkillSource, sync_pb::SkillSource> {
+  static skills::mojom::SkillSource ToMojom(sync_pb::SkillSource input) {
     switch (input) {
-      case skills::SkillSource::kUnknown:
+      case sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN:
         return skills::mojom::SkillSource::kUnknown;
-      case skills::SkillSource::kFirstParty:
+      case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
         return skills::mojom::SkillSource::kFirstParty;
-      case skills::SkillSource::kUserCreated:
+      case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
         return skills::mojom::SkillSource::kUserCreated;
     }
     NOTREACHED();
   }
 
   static bool FromMojom(skills::mojom::SkillSource input,
-                        skills::SkillSource* out) {
+                        sync_pb::SkillSource* out) {
     switch (input) {
       case skills::mojom::SkillSource::kUnknown:
-        *out = skills::SkillSource::kUnknown;
+        *out = sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN;
         return true;
       case skills::mojom::SkillSource::kFirstParty:
-        *out = skills::SkillSource::kFirstParty;
+        *out = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
         return true;
       case skills::mojom::SkillSource::kUserCreated:
-        *out = skills::SkillSource::kUserCreated;
+        *out = sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
         return true;
     }
     NOTREACHED();
@@ -55,7 +56,7 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
   static const std::string& prompt(const skills::Skill& skill) {
     return skill.prompt;
   }
-  static skills::SkillSource source(const skills::Skill& skill) {
+  static sync_pb::SkillSource source(const skills::Skill& skill) {
     return skill.source;
   }
   static base::Time creation_time(const skills::Skill& skill) {

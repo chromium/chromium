@@ -35,6 +35,7 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/skills/internal:downloader",
     "//components/skills/proto",
+    "//components/sync/protocol",
   ]
 }
 

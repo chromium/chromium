@@ -26,6 +26,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_worker.h"
 #include "net/http/http_status_code.h"
@@ -263,7 +264,8 @@ TEST_F(SkillsServiceImplTest, AddSkill) {
   EXPECT_EQ("name", added_skill->name);
   EXPECT_EQ("icon", added_skill->icon);
   EXPECT_EQ("prompt", added_skill->prompt);
-  EXPECT_EQ(SkillSource::kUserCreated, added_skill->source);
+  EXPECT_EQ(sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED,
+            added_skill->source);
   EXPECT_EQ(1u, service().GetSkills().size());
   EXPECT_FALSE(added_skill->id.empty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(added_skill->id).is_valid());
