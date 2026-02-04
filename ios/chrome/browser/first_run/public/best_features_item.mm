@@ -94,7 +94,7 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
     case BestFeaturesItemType::kEnhancedSafeBrowsing:
       return [UIColor colorNamed:kBlue500Color];
     case BestFeaturesItemType::kLockedIncognitoTabs:
-      return [UIColor colorNamed:kGrey700Color];
+      return [UIColor colorNamed:kGrey400Color];
     case BestFeaturesItemType::kTabGroups:
       return [UIColor colorNamed:kGreen500Color];
     case BestFeaturesItemType::kPriceTrackingAndInsights:
