@@ -80,6 +80,9 @@ class CORE_EXPORT FormMCPSchema {
   std::unique_ptr<JSONObject> ComputeColorParameterSchema(
       const ControlVector& controls_for_name,
       bool& required);
+  std::unique_ptr<JSONObject> ComputeFileParameterSchema(
+      const ControlVector& controls_for_name,
+      bool& required);
 
   // Compute an array representing the values (as HTMLInputElement::Value()
   // of the specified controls, suitable for assignment to a 'oneOf' field.
@@ -110,6 +113,8 @@ class CORE_EXPORT FormMCPSchema {
                          const JSONValue&);
   bool ValidateSelectData(const ControlVector& controls_for_name,
                           const JSONValue&);
+  bool ValidateFileData(const ControlVector& controls_for_name,
+                        const JSONValue&);
 
   void FillParameterData(const String& name, const JSONValue&);
   void FillTextData(const ControlVector& controls_for_name, const JSONValue&);
@@ -118,6 +123,7 @@ class CORE_EXPORT FormMCPSchema {
                         const JSONValue&);
   void FillRadioData(const ControlVector& controls_for_name, const JSONValue&);
   void FillSelectData(const ControlVector& controls_for_name, const JSONValue&);
+  void FillFileData(const ControlVector& controls_for_name, const JSONValue&);
 
   void AddTitle(HTMLFormControlElement&, JSONObject&);
   void AddDescription(HTMLFormControlElement&, JSONObject&);
@@ -152,6 +158,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsCheckbox(HTMLFormControlElement&) const;
   bool IsRadio(HTMLFormControlElement&) const;
   bool IsColor(HTMLFormControlElement&) const;
+  bool IsFile(HTMLFormControlElement&) const;
 
   bool IsText(const ControlVector& controls_for_name) const;
   bool IsDate(const ControlVector& controls_for_name) const;
@@ -162,6 +169,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsCheckbox(const ControlVector& controls_for_name) const;
   bool IsRadio(const ControlVector& controls_for_name) const;
   bool IsColor(const ControlVector& controls_for_name) const;
+  bool IsFile(const ControlVector& controls_for_name) const;
 
   // Maps a WebMCP parameter name (HTMLFormControlElement::
   // GetWebMCPParameterName()) to a list of form controls.

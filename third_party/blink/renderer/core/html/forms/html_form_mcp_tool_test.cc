@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -1760,6 +1761,100 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_UrlInput) {
   HTMLInputElement* url1 = GetInputElement("url1");
   ASSERT_TRUE(url1);
   EXPECT_EQ("https://www.google.com", url1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_FileInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="file1" type="file">
+      <input name="file2" type="file" multiple>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "file1": {
+           "type": "string"
+         },
+         "file2": {
+           "type": "array",
+           "items": {
+             "type": "string"
+           }
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=file1 name=file1 type=file>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "file1": "/home/johndoe/avatar.png"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* file1 = GetInputElement("file1");
+  ASSERT_TRUE(file1);
+  FileList* file_list = file1->files();
+  ASSERT_TRUE(file_list);
+  ASSERT_EQ(file_list->length(), 1);
+  EXPECT_EQ(file_list->item(0)->GetPath(), "/home/johndoe/avatar.png");
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Multiple) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=file1 name=file1 type=file multiple>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "file1": [ "/home/johndoe/avatar.png",
+                     "/home/johndoe/avatar_old.png" ]
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* file1 = GetInputElement("file1");
+  ASSERT_TRUE(file1);
+  FileList* file_list = file1->files();
+  ASSERT_TRUE(file_list);
+  ASSERT_EQ(file_list->length(), 2);
+  EXPECT_EQ(file_list->item(0)->GetPath(), "/home/johndoe/avatar.png");
+  EXPECT_EQ(file_list->item(1)->GetPath(), "/home/johndoe/avatar_old.png");
 }
 
 TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
