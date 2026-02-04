@@ -50,6 +50,10 @@ class ChromeClientSideDetectionHostDelegate
   VerdictCacheManager* GetCacheManager() override;
   ChromeUserPopulation GetUserPopulation() override;
   void GetInnerText(HostInnerTextCallback callback) override;
+  void MaybeStartGeminiAntiscamProtection(
+      GURL url,
+      ClientSideDetectionType request_type,
+      std::optional<bool> did_match_high_confidence_allowlist) override;
 #if BUILDFLAG(IS_ANDROID)
   internal::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;

@@ -34,15 +34,18 @@ class GeminiAntiscamProtectionService : public KeyedService {
       history::HistoryService* history_service);
   ~GeminiAntiscamProtectionService() override;
 
-  // Use the |request_type|, |did_match_high_confidence_allowlist|,
-  // |should_show_scam_warning|, and |is_phishing| parameter values to determine
-  // whether to trigger a history service check with the
-  // |DidGetVisibleVisitCount| method as a callback.
+  base::WeakPtr<GeminiAntiscamProtectionService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  // Use the |url|, |request_type|, |did_match_high_confidence_allowlist|, and
+  // |last_committed_url| parameter values to determine whether to trigger a
+  // history service check with the |DidGetVisibleVisitCount| method as a
+  // callback.
   void MaybeStartAntiscamProtection(GURL url,
                                     ClientSideDetectionType request_type,
                                     bool did_match_high_confidence_allowlist,
-                                    bool should_show_scam_warning,
-                                    bool is_phishing,
+                                    GURL last_committed_url,
                                     std::string page_inner_text);
 
  private:

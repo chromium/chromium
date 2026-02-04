@@ -1532,4 +1532,98 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 1);
 }
 
+class ClientSideDetectionHostGeminiAntiscamProtectionTest
+    : public InProcessBrowserTest {
+ public:
+  ClientSideDetectionHostGeminiAntiscamProtectionTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kGeminiAntiscamProtectionForMetricsCollection);
+    prerender_helper_ = std::make_unique<
+        content::test::PrerenderTestHelper>(base::BindRepeating(
+        &ClientSideDetectionHostGeminiAntiscamProtectionTest::GetWebContents,
+        base::Unretained(this)));
+  }
+  ~ClientSideDetectionHostGeminiAntiscamProtectionTest() override = default;
+  ClientSideDetectionHostGeminiAntiscamProtectionTest(
+      const ClientSideDetectionHostGeminiAntiscamProtectionTest&) = delete;
+  ClientSideDetectionHostGeminiAntiscamProtectionTest& operator=(
+      const ClientSideDetectionHostGeminiAntiscamProtectionTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_->RegisterServerRequestMonitor(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    flatbuffer_model_str_ = set_up_client_side_model();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return *prerender_helper_.get();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  std::string client_side_model() { return flatbuffer_model_str_; }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+  std::string flatbuffer_model_str_;
+};
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostGeminiAntiscamProtectionTest,
+                       GeminiAntiscamProtectionServiceCalledWithInnerText) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::HistogramTester histogram_tester;
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+
+  fake_csd_service.SendModelToRenderers();
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  prerender_helper().AddPrerender(initial_url);
+  prerender_helper().NavigatePrimaryPage(initial_url);
+
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::FORCE_REQUEST, /*should_classify=*/true,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  run_loop.Run();
+
+  std::move(fake_csd_service.saved_callback())
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
+
+  content::RunAllTasksUntilIdle();
+  EXPECT_GT(
+      histogram_tester
+          .GetTotalCountsForPrefix("SafeBrowsing.GeminiAntiscamProtection")
+          .size(),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace safe_browsing

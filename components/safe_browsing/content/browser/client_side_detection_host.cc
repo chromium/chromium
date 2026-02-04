@@ -2138,6 +2138,9 @@ void ClientSideDetectionHost::SendRequest(
   // it.
   AddMiscellaneousMetadataToClientPhishingRequest(verdict.get());
 
+  delegate_->MaybeStartGeminiAntiscamProtection(
+      GURL(verdict->url()), verdict->client_side_detection_type(),
+      did_match_high_confidence_allowlist);
   ClientSideDetectionService::ClientReportPhishingRequestCallback callback =
       base::BindOnce(&ClientSideDetectionHost::MaybeShowPhishingWarning,
                      weak_factory_.GetWeakPtr(),

@@ -155,8 +155,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   service->MaybeStartAntiscamProtection(
       GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      GURL("https://example.com"), "page text");
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(
       3u, histogram_tester
@@ -186,8 +185,7 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   service->MaybeStartAntiscamProtection(
       GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      GURL("https://example.com"), "page text");
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(
       3u, histogram_tester
@@ -227,8 +225,7 @@ IN_PROC_BROWSER_TEST_F(
   service->MaybeStartAntiscamProtection(
       url, ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, page_text);
+      GURL("https://example.com"), page_text);
   ASSERT_TRUE(log_uploaded_signal.Wait());
 
   EXPECT_EQ(
@@ -274,8 +271,7 @@ IN_PROC_BROWSER_TEST_F(
   service->MaybeStartAntiscamProtection(
       url, ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, page_text);
+      GURL("https://example.com"), page_text);
   ASSERT_TRUE(log_uploaded_signal.Wait());
 
   EXPECT_EQ(

@@ -131,8 +131,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       GURL("https://example.com"),
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED,
       /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      GURL("https://example.com"), "page text");
   task_environment_.RunUntilIdle();
 }
 
@@ -146,14 +145,13 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       .Times(0);
   service_->MaybeStartAntiscamProtection(
       GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/true,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      /*did_match_high_confidence_allowlist=*/true, GURL("https://example.com"),
+      "page text");
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(GeminiAntiscamProtectionServiceTest,
-       TestMaybeStartAntiscamProtection_ShouldShowScamWarning) {
+       TestMaybeStartAntiscamProtection_UrlDoesNotMatchLastCommittedUrl) {
   EXPECT_CALL(*mock_history_service_,
               GetVisibleVisitCountToHost(testing::_, testing::_, testing::_))
       .Times(0);
@@ -161,26 +159,9 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
               ExecuteModel(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   service_->MaybeStartAntiscamProtection(
-      GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
+      GURL("https://example1.com"), ClientSideDetectionType::FORCE_REQUEST,
       /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/true,
-      /*is_phishing=*/false, "page text");
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(GeminiAntiscamProtectionServiceTest,
-       TestMaybeStartAntiscamProtection_IsPhishing) {
-  EXPECT_CALL(*mock_history_service_,
-              GetVisibleVisitCountToHost(testing::_, testing::_, testing::_))
-      .Times(0);
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              ExecuteModel(testing::_, testing::_, testing::_, testing::_))
-      .Times(0);
-  service_->MaybeStartAntiscamProtection(
-      GURL("https://example.com"), ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/true, "page text");
+      GURL("https://example2.com"), "page text");
   task_environment_.RunUntilIdle();
 }
 
@@ -194,9 +175,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       .Times(0);
   service_->MaybeStartAntiscamProtection(
       url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      /*did_match_high_confidence_allowlist=*/false, url, "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -217,9 +196,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
       .Times(0);
   service_->MaybeStartAntiscamProtection(
       url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      /*did_match_high_confidence_allowlist=*/false, url, "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -247,9 +224,7 @@ TEST_F(
   ExpectExecuteModel(std::move(result));
   service_->MaybeStartAntiscamProtection(
       url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      /*did_match_high_confidence_allowlist=*/false, url, "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -280,9 +255,7 @@ TEST_F(
   ExpectExecuteModel(std::move(result));
   service_->MaybeStartAntiscamProtection(
       url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      /*did_match_high_confidence_allowlist=*/false, url, "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
@@ -312,9 +285,7 @@ TEST_F(GeminiAntiscamProtectionServiceTest,
   ExpectExecuteModel(std::move(result));
   service_->MaybeStartAntiscamProtection(
       url, ClientSideDetectionType::FORCE_REQUEST,
-      /*did_match_high_confidence_allowlist=*/false,
-      /*should_show_scam_warning=*/false,
-      /*is_phishing=*/false, "page text");
+      /*did_match_high_confidence_allowlist=*/false, url, "page text");
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",

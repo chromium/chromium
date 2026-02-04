@@ -133,17 +133,21 @@ void GeminiAntiscamProtectionService::MaybeStartAntiscamProtection(
     GURL url,
     ClientSideDetectionType request_type,
     bool did_match_high_confidence_allowlist,
-    bool should_show_scam_warning,
-    bool is_phishing,
+    GURL last_committed_url,
     std::string page_inner_text) {
-  // If the page already matches the allowlist or is already determined to be
-  // scam or phishing, we don't need to run Gemini to determine scamminess.
-  if (did_match_high_confidence_allowlist || should_show_scam_warning ||
-      is_phishing) {
+  // If the page already matches the allowlist, we don't need to run Gemini to
+  // determine scamminess.
+  if (did_match_high_confidence_allowlist) {
     return;
   }
   // Only run Gemini for CSD checks triggered via force request.
   if (request_type != ClientSideDetectionType::FORCE_REQUEST) {
+    return;
+  }
+  // If the `url` does not match the last committed URL, then the user navigated
+  // away and the `page_inner_text` is no longer valid. We should not run
+  // Gemini.
+  if (url != last_committed_url) {
     return;
   }
 
