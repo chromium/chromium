@@ -636,24 +636,30 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecoderStatus status) {
     return;
   }
 
-  const bool is_flush = pending_request_->type == Request::Type::kFlush;
-  if (is_flush) {
+  if (pending_request_->type == Request::Type::kFlush) {
     DCHECK(!did_elide_eos);
-  } else {
-    SetHardwarePreference(pending_request_->hw_pref.value());
 
-    // Skip reinitialization if the codec supports it and the new config has the
-    // same hardware preference.
-    if (did_elide_eos && active_preference_ == pending_request_->hw_pref) {
-      OnInitializeDone(media::OkStatus());
-      return;
-    }
+    // Decoders expect to be reset or reconfigured after a flush.
+    // Reinitializing may tear down resources unnecessarily, so instead call
+    // Reset() to ensure the decoder is ready for input.
+    decoder()->Reset(BindOnce(&DecoderTemplate::OnResetForFlushDone,
+                              WrapWeakPersistent(this)));
+    return;
+  }
+
+  SetHardwarePreference(pending_request_->hw_pref.value());
+
+  // Skip reinitialization if the codec supports it and the new config has the
+  // same hardware preference.
+  if (did_elide_eos && active_preference_ == pending_request_->hw_pref) {
+    OnInitializeDone(media::OkStatus());
+    return;
   }
 
   // Processing continues in OnInitializeDone().
   Traits::InitializeDecoder(
-      *decoder(), is_flush ? low_delay_ : pending_request_->low_delay.value(),
-      is_flush ? *active_config_ : *pending_request_->media_config,
+      *decoder(), pending_request_->low_delay.value(),
+      *pending_request_->media_config,
       BindOnce(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
       blink::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
                            reset_generation_));
@@ -667,26 +673,18 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::DecoderStatus status) {
     return;
 
   DCHECK(pending_request_);
-  DCHECK(pending_request_->type == Request::Type::kConfigure ||
-         pending_request_->type == Request::Type::kFlush);
+  DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
-  const bool is_flush = pending_request_->type == Request::Type::kFlush;
   if (!status.is_ok()) {
     if (status.code() == media::DecoderStatus::Codes::kTooManyDecoders) {
       Shutdown(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kQuotaExceededError,
-          is_flush
-              ? "Unexpectedly ran out of decoders during initialize after "
-                "flush. Close all pending frames and try again."
-              : "Decoder initialization failed, too many decoders in use."));
+          "Decoder initialization failed, too many decoders in use."));
       return;
     }
 
     std::string error_message;
-    if (is_flush) {
-      error_message = "Error during initialize after flush.";
-    } else if (status.code() ==
-               media::DecoderStatus::Codes::kUnsupportedConfig) {
+    if (status.code() == media::DecoderStatus::Codes::kUnsupportedConfig) {
       error_message =
           "Unsupported configuration. Check isConfigSupported() prior to "
           "calling configure().";
@@ -697,29 +695,47 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::DecoderStatus status) {
     return;
   }
 
-  if (is_flush) {
-    pending_request_->resolver.Release()->Resolve();
+  Traits::UpdateDecoderLog(*decoder(), *pending_request_->media_config,
+                           logger_->log());
+
+  if (decoder()->IsPlatformDecoder()) {
+    ApplyCodecPressure();
   } else {
-    Traits::UpdateDecoderLog(*decoder(), *pending_request_->media_config,
-                             logger_->log());
-
-    if (decoder()->IsPlatformDecoder())
-      ApplyCodecPressure();
-    else
-      ReleaseCodecPressure();
-
-    low_delay_ = pending_request_->low_delay.value();
-    active_config_ = std::move(pending_request_->media_config);
-    active_preference_ = pending_request_->hw_pref.value();
-    OnActiveConfigChanged(*active_config_);
+    ReleaseCodecPressure();
   }
+
+  low_delay_ = pending_request_->low_delay.value();
+  active_config_ = std::move(pending_request_->media_config);
+  active_preference_ = pending_request_->hw_pref.value();
+  OnActiveConfigChanged(*active_config_);
 
   pending_request_.Release()->EndTracing();
 
   if (!initializing_sync_)
     ProcessRequests();
-  else
-    DCHECK(!is_flush);
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::OnResetForFlushDone() {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsClosed()) {
+    return;
+  }
+
+  // If reset() has been called during the reset for flush(), we can skip
+  // resolving the flush promise since it has already been aborted.
+  if (MaybeAbortRequest(pending_request_)) {
+    pending_request_.Release()->EndTracing();
+    ProcessRequests();
+    return;
+  }
+
+  DCHECK(pending_request_);
+  DCHECK_EQ(pending_request_->type, Request::Type::kFlush);
+  pending_request_->resolver.Release()->Resolve();
+  pending_request_.Release()->EndTracing();
+  ProcessRequests();
 }
 
 template <typename Traits>

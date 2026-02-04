@@ -195,6 +195,7 @@ class MODULES_EXPORT DecoderTemplate
   void OnDecodeDone(uint32_t id, media::DecoderStatus);
   void OnFlushDone(media::DecoderStatus);
   void OnResetDone();
+  void OnResetForFlushDone();
   void OnOutput(uint32_t reset_generation, scoped_refptr<MediaOutputType>);
 
   // Helper function making it easier to check |state_|.
