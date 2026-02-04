@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -19,7 +18,7 @@
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
-#include "components/prefs/transparent_unordered_string_map.h"
+#include "third_party/abseil-cpp/absl/container/node_hash_map.h"
 
 class PrefService;
 
@@ -65,7 +64,7 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   // order they are added. These should only be accessed externally for unit
   // testing.
   using PrefObserverList = base::ObserverList<PrefObserver, true>;
-  using PrefObserverMap = TransparentUnorderedStringMap<PrefObserverList>;
+  using PrefObserverMap = absl::node_hash_map<std::string, PrefObserverList>;
   using PrefInitObserverList = std::list<base::OnceCallback<void(bool)>>;
 
   const PrefObserverMap* pref_observers() const { return &pref_observers_; }

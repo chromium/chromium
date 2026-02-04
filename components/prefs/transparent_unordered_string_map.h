@@ -11,11 +11,16 @@
 #include <unordered_map>
 
 namespace internal {
+// TODO(crbug.com/473916362): Remove this once all usages of
+// `TransparentUnorderedStringMap` are migrated to Abseil maps.
 struct StringViewHasher : public std::hash<std::string_view> {
   using is_transparent = void;
 };
 }  // namespace internal
 
+// TODO(crbug.com/473916362): Usages of this should be replaced with an
+// Abseil map such as absl::flat_hash_map, which allows for both string and
+// string_view keys, and provides better performance than std::unordered_map.
 // A `std::unordered_map` from `std::string` to `ValueType` that allows
 // copy-less find for `std::string_view`.
 template <typename ValueType>
