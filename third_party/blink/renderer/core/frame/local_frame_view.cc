@@ -1077,22 +1077,21 @@ LayoutSVGRoot* LocalFrameView::EmbeddedReplacedContent() const {
 LocalFrameView::NaturalSizeLayoutScope::NaturalSizeLayoutScope(
     LocalFrameView* view) {
   const gfx::Size layout_size = view->GetLayoutSize();
-  if (!view->layout_height_for_natural_size_) {
+  if (!view->layout_size_for_natural_size_) {
     // If this is the first time, save the height and return. This will be the
     // "consistent ICB" size.
-    view->layout_height_for_natural_size_ = layout_size.height();
+    view->layout_size_for_natural_size_ = layout_size;
     return;
   }
-  if (*view->layout_height_for_natural_size_ == layout_size.height()) {
+  if (*view->layout_size_for_natural_size_ == layout_size) {
     return;
   }
 
   view_ = view;
   is_fixed_to_frame_size_ = view->LayoutSizeFixedToFrameSize();
-  height_ = layout_size.height();
+  saved_layout_size_ = layout_size;
   view->SetLayoutSizeFixedToFrameSize(false);
-  view->SetLayoutSizeInternal(
-      {layout_size.width(), *view->layout_height_for_natural_size_});
+  view->SetLayoutSizeInternal(*view->layout_size_for_natural_size_);
 }
 
 LocalFrameView::NaturalSizeLayoutScope::~NaturalSizeLayoutScope() {
@@ -1101,7 +1100,7 @@ LocalFrameView::NaturalSizeLayoutScope::~NaturalSizeLayoutScope() {
   }
   view_->SetLayoutSizeFixedToFrameSize(is_fixed_to_frame_size_);
   if (!is_fixed_to_frame_size_) {
-    view_->SetLayoutSizeInternal({view_->GetLayoutSize().width(), height_});
+    view_->SetLayoutSizeInternal(saved_layout_size_);
   }
 }
 

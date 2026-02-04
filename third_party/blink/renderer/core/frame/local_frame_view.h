@@ -299,7 +299,7 @@ class CORE_EXPORT LocalFrameView final
    public:
     LocalFrameView* view_ = nullptr;
     bool is_fixed_to_frame_size_ = false;
-    int height_ = 0;
+    gfx::Size saved_layout_size_;
   };
 
   std::optional<NaturalSizingInfo> GetNaturalDimensions() const override;
@@ -1182,7 +1182,7 @@ class CORE_EXPORT LocalFrameView final
 
   Member<PaginationState> pagination_state_;
   gfx::Size layout_size_;
-  std::optional<int> layout_height_for_natural_size_;
+  std::optional<gfx::Size> layout_size_for_natural_size_;
   bool layout_size_fixed_to_frame_size_;
 
   bool needs_update_geometries_;
