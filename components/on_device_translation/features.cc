@@ -5,6 +5,7 @@
 #include "components/on_device_translation/features.h"
 
 #include <cstddef>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -38,6 +39,13 @@ const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
     &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount", 10};
 
 BASE_FEATURE(kTranslateStreamingBySentence, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAutoDownloadTranslateLanguagePacks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string>
+    kAutoDownloadTranslateLanguagePacksLanguagePairs{
+        &kAutoDownloadTranslateLanguagePacks, "language_pairs", ""};
 
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {

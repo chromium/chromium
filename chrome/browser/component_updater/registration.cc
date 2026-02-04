@@ -214,6 +214,8 @@ void RegisterComponentsForUpdate() {
                                 /*on_ready_callback=*/base::DoNothing());
   RegisterTranslateKitLanguagePackComponentsForUpdate(
       cus, g_browser_process->local_state());
+  RegisterTranslateKitLanguagePackComponentsForAutoDownload(
+      cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

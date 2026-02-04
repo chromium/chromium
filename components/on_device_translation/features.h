@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ON_DEVICE_TRANSLATION_FEATURES_H_
 #define COMPONENTS_ON_DEVICE_TRANSLATION_FEATURES_H_
 
+#include <string>
 #include <string_view>
 
 #include "base/feature_list.h"
@@ -34,6 +35,15 @@ extern const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount;
 
 // Enables the translateStreaming API by splitting the input into sentences.
 BASE_DECLARE_FEATURE(kTranslateStreamingBySentence);
+
+// Enables automatic download of language packs for on-device translation.
+BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
+
+// The list of language pairs for which language packs should be automatically
+// downloaded. The format is a comma-separated list of language pairs, e.g.
+// "en-es,en-fr".
+extern const base::FeatureParam<std::string>
+    kAutoDownloadTranslateLanguagePacksLanguagePairs;
 
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 

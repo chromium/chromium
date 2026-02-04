@@ -16,6 +16,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -158,6 +160,64 @@ TEST_F(TranslateKitLanguagePackComponentTest, VerifyInstallation) {
   ASSERT_TRUE(base::CreateDirectory(install_dir().AppendASCII("es_en_nmt")));
   // Verify that the installation is valid if the sub-directories are present.
   EXPECT_TRUE(policy.VerifyInstallation(manifest(), install_dir()));
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest, AutoDownloadFeatureDisabled) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      on_device_translation::kAutoDownloadTranslateLanguagePacks);
+
+  EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
+  RegisterTranslateKitLanguagePackComponentsForAutoDownload(service.get(),
+                                                            pref_service());
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest, AutoDownloadFeatureEnabled) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      on_device_translation::kAutoDownloadTranslateLanguagePacks,
+      {{"language_pairs", "en-es,en-ja"}});
+
+  // Expect registration for en-es and en-ja.
+  base::RunLoop run_loop;
+  int call_count = 0;
+  EXPECT_CALL(*service, RegisterComponent(_))
+      .Times(2)
+      .WillRepeatedly([&](const ComponentRegistration& component) {
+        ++call_count;
+        if (call_count == 2) {
+          run_loop.Quit();
+        }
+        return true;
+      });
+  EXPECT_CALL(*service, GetComponentIDs()).Times(2);
+
+  RegisterTranslateKitLanguagePackComponentsForAutoDownload(service.get(),
+                                                            pref_service());
+  run_loop.Run();
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest, AutoDownloadInvalidPair) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      on_device_translation::kAutoDownloadTranslateLanguagePacks,
+      {{"language_pairs", "en-es,invalid-pair,en"}});
+
+  // Only en-es is valid.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service, RegisterComponent(_))
+      .WillOnce([&](const ComponentRegistration& component) {
+        run_loop.Quit();
+        return true;
+      });
+  EXPECT_CALL(*service, GetComponentIDs()).Times(1);
+
+  RegisterTranslateKitLanguagePackComponentsForAutoDownload(service.get(),
+                                                            pref_service());
+  run_loop.Run();
 }
 
 }  // namespace component_updater

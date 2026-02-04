@@ -79,6 +79,10 @@ void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,
     PrefService* pref_service);
 
+void RegisterTranslateKitLanguagePackComponentsForAutoDownload(
+    ComponentUpdateService* cus,
+    PrefService* pref_service);
+
 void UninstallTranslateKitLanguagePackComponent(
     ComponentUpdateService* cus,
     PrefService* pref_service,
