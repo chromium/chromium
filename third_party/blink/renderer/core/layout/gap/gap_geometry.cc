@@ -184,6 +184,17 @@ Vector<LayoutUnit> GapGeometry::GenerateMainIntersectionList(
         return Vector<LayoutUnit>();
       }
 
+      const MainGap& main_gap = GetMainGaps()[gap_index];
+
+      if (main_gap.HasCrossGapsBefore()) {
+        wtf_size_t cross_gap_start_index = main_gap.GetCrossGapBeforeStart();
+        for (wtf_size_t i = cross_gap_start_index;
+             i <= main_gap.GetCrossGapBeforeEnd(); ++i) {
+          const CrossGap& cross_gap = GetCrossGaps()[i];
+          intersections.push_back(cross_gap.GetGapOffset().inline_offset);
+        }
+      }
+
       break;
   }
 
@@ -330,6 +341,8 @@ void GapGeometry::GenerateCrossIntersectionListForMulticol(
   // - The offset of any main gaps that intersect this cross gap.
   CHECK_EQ(direction, kForColumns);
 
+  // At most, any cross gap can intersect with all main gaps, plus the start and
+  // end of the container.
   intersections.ReserveInitialCapacity(main_gaps_.size() + 2);
 
   CHECK_LT(gap_index, GetCrossGaps().size());

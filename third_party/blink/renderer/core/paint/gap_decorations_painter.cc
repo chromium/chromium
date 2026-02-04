@@ -284,17 +284,22 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       // for now, we continue to resolve the crossing gap width as `0` for any
       // intersection in multicol containers. Discussion about this can be found
       // in https://github.com/w3c/csswg-drafts/issues/12784.
+      // TODO(javiercon): This is only temporary. The multicol special case here
+      // will be addressed in follow up CL which will make it so that we don't
+      // need any special casing here.
       const LayoutUnit start_width =
-          gap_geometry.GetContainerType() ==
-                      GapGeometry::ContainerType::kMultiColumn ||
+          (gap_geometry.GetContainerType() ==
+               GapGeometry::ContainerType::kMultiColumn &&
+           is_column_gap) ||
                   gap_geometry.IsEdgeIntersection(gap_index, start,
                                                   intersections.size(), is_main,
                                                   intersections)
               ? LayoutUnit()
               : cross_gutter_width;
       const LayoutUnit end_width =
-          gap_geometry.GetContainerType() ==
-                      GapGeometry::ContainerType::kMultiColumn ||
+          (gap_geometry.GetContainerType() ==
+               GapGeometry::ContainerType::kMultiColumn &&
+           is_column_gap) ||
                   gap_geometry.IsEdgeIntersection(gap_index, end,
                                                   intersections.size(), is_main,
                                                   intersections)
@@ -311,6 +316,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       LayoutUnit end_inset =
           gap_geometry.ComputeInsetEnd(style, gap_index, end, intersections,
                                        is_column_gap, is_main, end_width);
+
       // Compute the gap decorations offset as half of the `crossing_gap_width`
       // plus the inset.
       // https://drafts.csswg.org/css-gaps-1/#compute-the-offset

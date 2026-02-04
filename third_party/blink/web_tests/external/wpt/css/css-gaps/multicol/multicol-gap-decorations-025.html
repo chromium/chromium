@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <title>
-    CSS Gap Decorations: Multicol gaps are painted with different outsets in start/end segment endpoints.
+    CSS Gap Decorations: Multicolumn gap decorations painted with column-wrap and row break intersection.
 </title>
-<link rel="help" href="https://www.w3.org/TR/css-gaps-1/#outset">
-<link rel="match" href="multicol-gap-decorations-022-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
+<link rel="match" href="multicol-gap-decorations-025-ref.html">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
     body {
         margin: 0px;
     }
+
     .container {
         border: 2px solid rgb(96 139 168);
         width: 200px;
@@ -21,23 +22,22 @@
         column-rule-width: 10px;
         column-rule-style: solid;
         column-rule-color: blue;
+
         row-rule-width: 10px;
         row-rule-style: solid;
         row-rule-color: gold;
+        row-rule-break: intersection;
+        row-rule-inset: 0px;
         column-wrap: wrap;
-        column-rule-break: intersection;
-        column-rule-interior-inset-start: 0;
-        column-rule-interior-inset-end: 0px;
-        column-rule-edge-inset-end: -5px;
-        row-rule-edge-inset-end: 5px;
-        gap-rule-overlap: column-over-row;
     }
+
     p {
         background: rgb(96 139 168 / 0.2);
         height: 60px;
         margin: 0px;
     }
 </style>
+
 <div class="container">
     <p></p>
     <p></p>

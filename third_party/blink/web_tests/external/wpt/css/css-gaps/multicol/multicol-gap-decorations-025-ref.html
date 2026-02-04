@@ -8,9 +8,9 @@
 
     .container {
         border: 2px solid rgb(96 139 168);
-        width: 210px;
+        width: 200px;
         height: 130px;
-        column-gap: 20px;
+        column-gap: 10px;
         display: flex;
     }
 
@@ -18,29 +18,22 @@
         background: rgb(96 139 168 / 0.2);
         height: 130px;
         margin: 0px;
-        width: 56.666px;
+        width: 60px;
     }
 
     .row-gap {
         position: absolute;
-        display: flex;
         height: 10px;
-        width: 210px;
+        width: 60px;
+        background: gold;
         left: 2px;
         top: 62px;
-        gap: 20px;
-    }
-
-    .row-item {
-      height: 10px;
-      background: gold;
-      width: 60px;
     }
 
     .column-gap {
         position: absolute;
         height: 60px;
-        width: 20px;
+        width: 10px;
         background: blue;
         top: 2px;
     }
@@ -51,12 +44,10 @@
     <div class="items"></div>
     <div class="items"></div>
 </div>
-<div class="column-gap" style="left:58.666px;"></div>
-<div class="column-gap" style="left:135.332px;"></div>
-<div class="column-gap" style="left:58.666px; top: 72px;"></div>
-<div class="column-gap" style="left:135.332px; top: 72px;"></div>
-<div class="row-gap">
-  <div class="row-item"></div>
-  <div class="row-item"></div>
-  <div class="row-item"></div>
-</div>
+<div class="column-gap" style="left:62px;"></div>
+<div class="column-gap" style="left:132px;"></div>
+<div class="column-gap" style="left:62px; top:72px;"></div>
+<div class="column-gap" style="left:132px; top:72px;"></div>
+<div class="row-gap"></div>
+<div class="row-gap" style="left: 72px;"></div>
+<div class="row-gap" style="left: 142px;"></div>
