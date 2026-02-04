@@ -7,9 +7,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
@@ -76,9 +74,6 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
 // machine policy domain is provided.
 TEST_F(CentralAccountViewTest,
        ImageViewAndTextLabelsWithManagementDescription) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSeparateProfilesForManagedAccounts);
-
   UIImage* image = ios::provider::GetSigninDefaultAvatar();
   image = ResizeImage(image,
                       GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large),

@@ -140,29 +140,26 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   PrefService* GetPrefs() { return profile_->GetPrefs(); }
 
   void SignInManagedIdentity() {
-    if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-      authentication_service()->SignIn(managed_identity_,
-                                       signin_metrics::AccessPoint::kUnknown);
-    } else {
-      // With kSeparateProfilesForManagedAccounts, these tests only apply when a
-      // managed account is signed in to the personal profile (which, in prod,
-      // can only happen if the account was already signed in before
-      // kSeparateProfilesForManagedAccounts was enabled). This situation is
-      // tricky to replicate in a unit test; it's done here by first converting
-      // the (single) test profile to a managed profile, then marking it as the
-      // personal profile again.
-      GetApplicationContext()
-          ->GetAccountProfileMapper()
-          ->MakePersonalProfileManagedWithGaiaID(managed_identity_.gaiaId);
+    // These tests only apply when a managed account is signed in to the
+    // personal profile (which, in prod, can only happen if the account was
+    // already signed in before kSeparateProfilesForManagedAccounts was
+    // enabled). This situation is tricky to replicate in a unit test; it's done
+    // here by first converting the (single) test profile to a managed profile,
+    // then marking it as the personal profile again.
+    // TODO(crbug.com/407498240): Remove the affected tests once all users are
+    // migrated to kSeparateProfilesForManagedAccounts.
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MakePersonalProfileManagedWithGaiaID(managed_identity_.gaiaId);
 
-      authentication_service()->SignIn(managed_identity_,
-                                       signin_metrics::AccessPoint::kUnknown);
+    authentication_service()->SignIn(managed_identity_,
+                                     signin_metrics::AccessPoint::kUnknown);
 
-      GetApplicationContext()
-          ->GetProfileManager()
-          ->GetProfileAttributesStorage()
-          ->SetPersonalProfileName(profile_->GetProfileName());
-    }
+    GetApplicationContext()
+        ->GetProfileManager()
+        ->GetProfileAttributesStorage()
+        ->SetPersonalProfileName(profile_->GetProfileName());
+
     ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
         signin::ConsentLevel::kSignin));
   }
