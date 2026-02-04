@@ -94,6 +94,10 @@ If this is the first time you run the script, do the following steps:
 """
 
 
+# A marker inside test ID to separate test suite name from benchmark/story name.
+_TEST_ID_MARKER = '!flat::#'
+
+
 def _run_query(query):
   try:
     subprocess.check_call(['which', 'bq'])
@@ -105,7 +109,14 @@ def _run_query(query):
   p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = p.communicate()
   if p.returncode == 0:
-    return json.loads(stdout)
+    timing_data = json.loads(stdout)
+    # The test ID retrieved from Result DB has test suite name and story name
+    # separated by a marker. We only want to keep the story name part.
+    for story in timing_data:
+      loc = story['name'].find(_TEST_ID_MARKER)
+      if loc != -1:
+        story['name'] = story['name'][loc + len(_TEST_ID_MARKER):]
+    return timing_data
   raise RuntimeError(
       'Error generating authentication token.\nStdout: %s\nStder:%s' %
       (stdout, stderr))
