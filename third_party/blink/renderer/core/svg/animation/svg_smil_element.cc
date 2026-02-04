@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_time.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/svg_set_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -404,24 +406,31 @@ void SVGSMILElement::RemovedFrom(ContainerNode& root_parent) {
 }
 
 SMILTime SVGSMILElement::ParseOffsetValue(const String& data) {
-  bool ok;
+  std::optional<double> parsed;
   double result = 0;
-  const String parse = data.StripWhiteSpace();
-  if (parse.EndsWith('h')) {
-    result = parse.Left(parse.length() - 1).ToDouble(&ok) *
-             base::Time::kSecondsPerHour;
-  } else if (parse.EndsWith("min")) {
-    result = parse.Left(parse.length() - 3).ToDouble(&ok) *
-             base::Time::kSecondsPerMinute;
-  } else if (parse.EndsWith("ms")) {
-    result = parse.Left(parse.length() - 2).ToDouble(&ok) /
-             base::Time::kMillisecondsPerSecond;
-  } else if (parse.EndsWith('s')) {
-    result = parse.Left(parse.length() - 1).ToDouble(&ok);
+  StringView view = StringView(data).StripWhiteSpace();
+  if (view.ends_with('h')) {
+    view.remove_suffix(1);
+    parsed = StringToDouble(view);
+    result = parsed.value_or(0) * base::Time::kSecondsPerHour;
+  } else if (view.ends_with("min")) {
+    view.remove_suffix(3);
+    parsed = StringToDouble(view);
+    result = parsed.value_or(0) * base::Time::kSecondsPerMinute;
+  } else if (view.ends_with("ms")) {
+    view.remove_suffix(2);
+    parsed = StringToDouble(view);
+    result = parsed.value_or(0) / base::Time::kMillisecondsPerSecond;
+  } else if (view.ends_with('s')) {
+    view.remove_suffix(1);
+    parsed = StringToDouble(view);
+    result = parsed.value_or(0);
   } else {
-    result = parse.ToDouble(&ok);
+    parsed = StringToDouble(view);
+    result = parsed.value_or(0);
   }
-  return ok ? SMILTime::FromSecondsD(result) : SMILTime::Unresolved();
+  return parsed.has_value() ? SMILTime::FromSecondsD(result)
+                            : SMILTime::Unresolved();
 }
 
 SMILTime SVGSMILElement::ParseClockValue(const String& data) {
@@ -445,19 +454,25 @@ SMILTime SVGSMILElement::ParseClockValue(const String& data) {
     result += parse.Substring(3, 2).ToUIntStrict(&ok) * 60;
     if (!ok)
       return SMILTime::Unresolved();
-    result += parse.Substring(6).ToDouble(&ok);
+    auto parsed = StringToDouble(StringView(parse, 6));
+    if (!parsed) {
+      return SMILTime::Unresolved();
+    }
+    result += *parsed;
   } else if (double_point_one == 2 && double_point_two == kNotFound &&
              parse.length() >= 5) {
     result += parse.Substring(0, 2).ToUIntStrict(&ok) * 60;
     if (!ok)
       return SMILTime::Unresolved();
-    result += parse.Substring(3).ToDouble(&ok);
+    auto parsed = StringToDouble(StringView(parse, 3));
+    if (!parsed) {
+      return SMILTime::Unresolved();
+    }
+    result += *parsed;
   } else {
     return ParseOffsetValue(parse);
   }
 
-  if (!ok)
-    return SMILTime::Unresolved();
   return SMILTime::FromSecondsD(result);
 }
 
@@ -760,10 +775,10 @@ static SMILRepeatCount ParseRepeatCount(const AtomicString& value) {
     return SMILRepeatCount::Unspecified();
   if (value == "indefinite")
     return SMILRepeatCount::Indefinite();
-  bool ok;
-  double result = value.ToDouble(&ok);
-  if (ok && result > 0 && std::isfinite(result))
-    return SMILRepeatCount::Numeric(result);
+  auto result = StringToDouble(value);
+  if (result && *result > 0 && std::isfinite(*result)) {
+    return SMILRepeatCount::Numeric(*result);
+  }
   return SMILRepeatCount::Unspecified();
 }
 

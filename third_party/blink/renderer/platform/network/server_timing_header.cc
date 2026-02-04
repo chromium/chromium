@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/platform/network/server_timing_header.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
+
 namespace blink {
 
 void ServerTimingHeader::SetParameter(StringView name, String value) {
   if (EqualIgnoringASCIICase(name, "dur")) {
     if (!duration_set_) {
-      duration_ = value.ToDouble();
+      duration_ = StringToDouble(value).value_or(0);
       duration_set_ = true;
     }
   } else if (EqualIgnoringASCIICase(name, "desc")) {

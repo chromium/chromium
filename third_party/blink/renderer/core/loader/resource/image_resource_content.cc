@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 #include "v8/include/v8.h"
@@ -379,8 +380,9 @@ scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
   if (comma != kNotFound && comma < content_dpr_value.length() - 1) {
     content_dpr_value = content_dpr_value.Substring(comma + 1);
   }
-  device_pixel_ratio_header_value_ =
-      content_dpr_value.ToFloat(&has_device_pixel_ratio_header_value_);
+  auto optional_header_value = StringToFloat(content_dpr_value);
+  has_device_pixel_ratio_header_value_ = optional_header_value.has_value();
+  device_pixel_ratio_header_value_ = optional_header_value.value_or(0);
   if (!has_device_pixel_ratio_header_value_ ||
       device_pixel_ratio_header_value_ <= 0.0) {
     device_pixel_ratio_header_value_ = 1.0;

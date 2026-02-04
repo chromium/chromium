@@ -191,6 +191,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
@@ -714,7 +715,7 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
     float step;
     if (!StepValueForRange(&step)) {
       if (IsNativeSlider() || IsNativeSpinButton()) {
-        step = StepRange().Step().ToString().ToFloat();
+        step = StringToFloat(StepRange().Step().ToString()).value_or(0);
       } else {
         return;
       }
@@ -4581,7 +4582,7 @@ bool AXNodeObject::MaxValueForRange(float* out_value) const {
   // Fall back to implicit value from ARIA spec.
   const String& implicit_value = GetImplicitAriaValuemax(RoleValue());
   if (!implicit_value.empty()) {
-    *out_value = implicit_value.ToFloat();
+    *out_value = StringToFloat(implicit_value).value_or(0);
     return true;
   }
 
@@ -4610,7 +4611,7 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
   // Fall back to implicit value from ARIA spec.
   const String& implicit_value = GetImplicitAriaValuemin(RoleValue());
   if (!implicit_value.empty()) {
-    *out_value = implicit_value.ToFloat();
+    *out_value = StringToFloat(implicit_value).value_or(0);
     return true;
   }
 
@@ -4621,7 +4622,7 @@ bool AXNodeObject::StepValueForRange(float* out_value) const {
   if (IsNativeSlider() || IsNativeSpinButton()) {
     auto step_range =
         To<HTMLInputElement>(*GetNode()).CreateStepRange(kRejectAny);
-    auto step = step_range.Step().ToString().ToFloat();
+    auto step = StringToFloat(step_range.Step().ToString()).value_or(0);
 
     // Provide a step if ATs incrementing slider should move by step, otherwise
     // AT will move by 5%.
@@ -4631,8 +4632,8 @@ bool AXNodeObject::StepValueForRange(float* out_value) const {
     // behavior where sometimes the slider would alternate by 1 or 2 steps.
     // Therefore the final decision is to use the step if there are
     // less than stops in the slider, otherwise, move by 5%.
-    float max = step_range.Maximum().ToString().ToFloat();
-    float min = step_range.Minimum().ToString().ToFloat();
+    float max = StringToFloat(step_range.Maximum().ToString()).value_or(0);
+    float min = StringToFloat(step_range.Minimum().ToString()).value_or(0);
     int num_stops = base::saturated_cast<int>((max - min) / step);
     constexpr int kNumStopsForFivePercentRule = 40;
     if (num_stops >= kNumStopsForFivePercentRule) {

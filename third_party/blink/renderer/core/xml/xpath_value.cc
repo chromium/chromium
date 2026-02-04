@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 namespace xpath {
@@ -103,11 +104,8 @@ double Value::ToNumber() const {
           return std::numeric_limits<double>::quiet_NaN();
       }
 
-      bool can_convert;
-      double value = str.ToDouble(&can_convert);
-      if (can_convert)
-        return value;
-      return std::numeric_limits<double>::quiet_NaN();
+      return StringToDouble(str).value_or(
+          std::numeric_limits<double>::quiet_NaN());
     }
     case kBooleanValue:
       return bool_;

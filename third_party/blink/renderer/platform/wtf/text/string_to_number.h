@@ -142,6 +142,30 @@ WTF_EXPORT float CharactersToFloat(base::span<const LChar>,
 WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
                                    size_t& parsed_length);
 
+// StringToDouble() and StringToFloat() functions accept:
+//  - leading '+'
+//  - numbers without leading zeros such as ".5"
+//  - numbers ending with "." such as "3."
+//  - scientific notation
+//  - leading whitespace (IsASCIISpace, not IsHTMLSpace)
+//  - no trailing whitespace
+//  - no trailing garbage
+//  - no numbers such as "NaN" "Infinity"
+//
+// A huge absolute number which a double/float can't represent is accepted,
+// and +Infinity or -Infinity is returned.
+//
+// A small absolute numbers which a double/float can't represent is accepted,
+// and 0 is returned
+//
+// If the input string is not acceptable, std::nullopt is returned.
+//
+// We can use these functions to implement a Web Platform feature only if the
+// input string is already valid according to the specification of the
+// feature.
+WTF_EXPORT std::optional<double> StringToDouble(const StringView& input);
+WTF_EXPORT std::optional<float> StringToFloat(const StringView& input);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_TO_NUMBER_H_

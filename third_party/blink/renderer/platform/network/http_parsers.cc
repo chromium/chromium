@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -462,12 +463,11 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
       return false;
     }
   }
-  bool ok;
-  double time = source.Left(number_end).ToDouble(&ok);
-  time = floor(time);
-  if (!ok)
+  auto time = StringToDouble(source.Left(number_end));
+  if (!time) {
     return false;
-  delay = base::Seconds(time);
+  }
+  delay = base::Seconds(floor(*time));
   return true;
 }
 
@@ -891,10 +891,10 @@ CacheControlHeader ParseCacheControlDirectives(
           // First max-age directive wins if there are multiple ones.
           continue;
         }
-        bool ok;
-        double max_age = directives[i].second.ToDouble(&ok);
-        if (ok)
-          cache_control_header.max_age = base::Seconds(max_age);
+        auto max_age = StringToDouble(directives[i].second);
+        if (max_age) {
+          cache_control_header.max_age = base::Seconds(*max_age);
+        }
       } else if (EqualIgnoringASCIICase(directives[i].first,
                                         kStaleWhileRevalidateDirective)) {
         if (cache_control_header.stale_while_revalidate) {
@@ -902,11 +902,10 @@ CacheControlHeader ParseCacheControlDirectives(
           // ones.
           continue;
         }
-        bool ok;
-        double stale_while_revalidate = directives[i].second.ToDouble(&ok);
-        if (ok) {
+        auto stale_while_revalidate = StringToDouble(directives[i].second);
+        if (stale_while_revalidate) {
           cache_control_header.stale_while_revalidate =
-              base::Seconds(stale_while_revalidate);
+              base::Seconds(*stale_while_revalidate);
         }
       }
     }

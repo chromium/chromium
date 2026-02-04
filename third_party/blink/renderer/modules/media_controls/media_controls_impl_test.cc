@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/display/mojom/screen_orientation.mojom-blink.h"
 #include "ui/display/screen_info.h"
 
@@ -128,8 +129,8 @@ bool IsElementVisible(Element& element) {
     return false;
 
   if (inline_style->HasProperty(CSSPropertyID::kOpacity) &&
-      inline_style->GetPropertyValue(CSSPropertyID::kOpacity).ToDouble() ==
-          0.0) {
+      StringToDouble(inline_style->GetPropertyValue(CSSPropertyID::kOpacity))
+              .value_or(0) == 0.0) {
     return false;
   }
 

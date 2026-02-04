@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -98,19 +99,20 @@ static bool ParseKeyTimes(const String& string,
       }
       goto fail;
     }
-    bool ok;
-    float time = time_string.ToFloat(&ok);
-    if (!ok || !IsInZeroToOneRange(time))
+    auto time = StringToFloat(time_string);
+    if (!time || !IsInZeroToOneRange(*time)) {
       goto fail;
+    }
     if (verify_order) {
       if (!n) {
-        if (time)
+        if (*time) {
           goto fail;
-      } else if (time < result.back()) {
+        }
+      } else if (*time < result.back()) {
         goto fail;
       }
     }
-    result.push_back(time);
+    result.push_back(*time);
   }
   return true;
 fail:

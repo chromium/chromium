@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -1260,11 +1261,10 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
   EXPECT_TRUE(conversion_ok);
   EXPECT_LE(0, rtt_header_value);
 
-  float downlink_header_value =
-      GetHeaderValue("https://www.example.com/1.gif", "downlink")
-          .ToFloat(&conversion_ok);
-  EXPECT_TRUE(conversion_ok);
-  EXPECT_LE(0, downlink_header_value);
+  auto downlink_header_value = StringToFloat(
+      GetHeaderValue("https://www.example.com/1.gif", "downlink"));
+  EXPECT_TRUE(downlink_header_value.has_value());
+  EXPECT_LE(0, *downlink_header_value);
 
   EXPECT_LT(
       0u,
@@ -1353,11 +1353,10 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   EXPECT_TRUE(conversion_ok);
   EXPECT_LE(0, rtt_header_value);
 
-  float downlink_header_value =
-      GetHeaderValue("https://www.example.com/1.gif", "downlink")
-          .ToFloat(&conversion_ok);
-  EXPECT_TRUE(conversion_ok);
-  EXPECT_LE(0, downlink_header_value);
+  auto downlink_header_value = StringToFloat(
+      GetHeaderValue("https://www.example.com/1.gif", "downlink"));
+  EXPECT_TRUE(downlink_header_value.has_value());
+  EXPECT_LE(0, *downlink_header_value);
 
   EXPECT_LT(
       0u,

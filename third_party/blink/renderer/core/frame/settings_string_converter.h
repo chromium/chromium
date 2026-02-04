@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_STRING_CONVERTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_STRING_CONVERTER_H_
 
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // Converter from String to Type for the generated Settings::SetFromStrings().
@@ -28,12 +29,12 @@ struct FromString<bool> {
 
 template <>
 struct FromString<float> {
-  float operator()(const String& s) { return s.ToFloat(); }
+  float operator()(const String& s) { return StringToFloat(s).value_or(0); }
 };
 
 template <>
 struct FromString<double> {
-  double operator()(const String& s) { return s.ToDouble(); }
+  double operator()(const String& s) { return StringToDouble(s).value_or(0); }
 };
 
 template <>

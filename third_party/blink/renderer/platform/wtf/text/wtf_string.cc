@@ -349,24 +349,6 @@ unsigned String::ToUInt(bool* ok) const {
   return impl_->ToUInt(NumberParsingOptions::Loose(), ok);
 }
 
-double String::ToDouble(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0.0;
-  }
-  return impl_->ToDouble(ok);
-}
-
-float String::ToFloat(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0.0f;
-  }
-  return impl_->ToFloat(ok);
-}
-
 void String::Split(const StringView& separator,
                    bool allow_empty_entries,
                    Vector<String>& result) const {

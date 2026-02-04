@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -879,9 +880,8 @@ Decimal Decimal::Round() const {
 
 double Decimal::ToDouble() const {
   if (IsFinite()) {
-    bool valid;
-    const double double_value = ToString().ToDouble(&valid);
-    return valid ? double_value : std::numeric_limits<double>::quiet_NaN();
+    return StringToDouble(ToString())
+        .value_or(std::numeric_limits<double>::quiet_NaN());
   }
 
   if (IsInfinity())

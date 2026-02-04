@@ -171,9 +171,8 @@ double ParseToDoubleForNumberType(const String& string, double fallback_value) {
   if (string.EndsWith('.'))
     return fallback_value;
 
-  bool valid = false;
-  double value = string.ToDouble(&valid);
-  return CheckDoubleValue(value, valid, fallback_value);
+  auto value = StringToDouble(string);
+  return CheckDoubleValue(value.value_or(0), value.has_value(), fallback_value);
 }
 
 template <typename CharacterType>

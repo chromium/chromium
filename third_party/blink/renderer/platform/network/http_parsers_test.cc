@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -533,7 +534,8 @@ void testServerTimingHeader(const char* headerValue,
   for (const auto& header : *results) {
     Vector<String> expectedResult = expectedResults[i++];
     EXPECT_EQ(header->Name(), expectedResult[0]);
-    EXPECT_EQ(header->Duration(), expectedResult[1].ToDouble());
+    EXPECT_EQ(header->Duration(),
+              StringToDouble(expectedResult[1]).value_or(0));
     EXPECT_EQ(header->Description(), expectedResult[2]);
   }
 }

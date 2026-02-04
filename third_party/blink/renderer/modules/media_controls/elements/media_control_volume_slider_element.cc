@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_volume_control_container_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -95,8 +96,9 @@ MediaControlVolumeSliderElement::MediaControlVolumeSliderElement(
 }
 
 void MediaControlVolumeSliderElement::SetVolume(double volume) {
-  if (Value().ToDouble() == volume)
+  if (StringToDouble(Value()).value_or(0) == volume) {
     return;
+  }
 
   SetValue(String::Number(volume));
   SetVolumeInternal(volume);
@@ -157,7 +159,7 @@ void MediaControlVolumeSliderElement::DefaultEventHandler(Event& event) {
   }
 
   if (event.type() == event_type_names::kInput)
-    UnmuteAndSetVolume(Value().ToDouble());
+    UnmuteAndSetVolume(StringToDouble(Value()).value_or(0));
 
   if (event.type() == event_type_names::kFocus)
     GetMediaControls().OpenVolumeSliderIfNecessary();
@@ -181,7 +183,7 @@ bool MediaControlVolumeSliderElement::KeepEventInNode(
 }
 
 void MediaControlVolumeSliderElement::OnWheelEvent(WheelEvent* wheel_event) {
-  double current_volume = Value().ToDouble();
+  double current_volume = StringToDouble(Value()).value_or(0);
   double new_volume = (wheel_event->wheelDelta() > 0)
                           ? current_volume + kScrollVolumeDelta
                           : current_volume - kScrollVolumeDelta;

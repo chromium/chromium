@@ -190,6 +190,7 @@
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -361,11 +362,11 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
   WebString network_quiet_timeout = WebString::FromUTF8(
       command_line.GetSwitchValueASCII(switches::kNetworkQuietTimeout));
   if (!network_quiet_timeout.IsEmpty()) {
-    bool ok;
-    double network_quiet_timeout_seconds =
-        String(network_quiet_timeout).ToDouble(&ok);
-    if (ok)
-      settings->SetNetworkQuietTimeout(network_quiet_timeout_seconds);
+    auto network_quiet_timeout_seconds =
+        StringToDouble(String(network_quiet_timeout));
+    if (network_quiet_timeout_seconds) {
+      settings->SetNetworkQuietTimeout(*network_quiet_timeout_seconds);
+    }
   }
 
   if (command_line.HasSwitch(switches::kBlinkSettings)) {

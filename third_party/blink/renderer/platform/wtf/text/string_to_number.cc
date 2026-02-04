@@ -319,4 +319,18 @@ float CharactersToFloat(base::span<const UChar> data, size_t& parsed_length) {
       ToDoubleType<UChar, kAllowTrailingJunk>(data, nullptr, parsed_length));
 }
 
+std::optional<double> StringToDouble(const StringView& input) {
+  bool ok = false;
+  double value = input.Is8Bit() ? CharactersToDouble(input.Span8(), &ok)
+                                : CharactersToDouble(input.Span16(), &ok);
+  return ok ? std::optional<double>(value) : std::nullopt;
+}
+
+std::optional<float> StringToFloat(const StringView& input) {
+  bool ok = false;
+  float value = input.Is8Bit() ? CharactersToFloat(input.Span8(), &ok)
+                               : CharactersToFloat(input.Span16(), &ok);
+  return ok ? std::optional<float>(value) : std::nullopt;
+}
+
 }  // namespace blink

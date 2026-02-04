@@ -28,6 +28,7 @@
 #include <string_view>
 
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -311,7 +312,7 @@ bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
       return true;
     }
     String digits = CollectFraction(time_string, offset);
-    fraction = digits.ToDouble();
+    fraction = StringToDouble(digits).value_or(0);
     time = value1 + fraction;
     return true;
   }
@@ -368,7 +369,7 @@ bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
   }
 
   if (offset < time_string.size() && time_string[offset] == '.') {
-    fraction = CollectFraction(time_string, offset).ToDouble();
+    fraction = StringToDouble(CollectFraction(time_string, offset)).value_or(0);
   }
 
   const int kSecondsPerHour = 3600;

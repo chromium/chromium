@@ -494,35 +494,7 @@ class WTF_EXPORT String {
   int ToInt(bool* ok = nullptr) const;
   unsigned ToUInt(bool* ok = nullptr) const;
 
-  // These functions accepts:
-  //  - leading '+'
-  //  - numbers without leading zeros such as ".5"
-  //  - numbers ending with "." such as "3."
-  //  - scientific notation
-  //  - leading whitespace (IsASCIISpace, not IsHTMLSpace)
-  //  - no trailing whitespace
-  //  - no trailing garbage
-  //  - no numbers such as "NaN" "Infinity"
-  //
-  // A huge absolute number which a double/float can't represent is accepted,
-  // and +Infinity or -Infinity is returned.
-  //
-  // A small absolute numbers which a double/float can't represent is accepted,
-  // and 0 is returned
-  //
-  // If the input string is not acceptable, 0.0 is returned and |*ok| becomes
-  // |false|.
-  //
-  // We can use these functions to implement a Web Platform feature only if the
-  // input string is already valid according to the specification of the
-  // feature.
-  //
-  // FIXME: Like the strict functions above, these give false for "ok" when
-  // there is trailing garbage.  Like the non-strict functions above, these
-  // return the value when there is trailing garbage.  It would be better if
-  // these were more consistent with the above functions instead.
-  double ToDouble(bool* ok = nullptr) const;
-  float ToFloat(bool* ok = nullptr) const;
+  // See string_to_number.h for float/double parsing.
 
 #ifdef __OBJC__
   String(NSString*);

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -399,12 +400,11 @@ std::optional<base::TimeDelta> ResourceResponse::Age() const {
   if (!have_parsed_age_header_) {
     const AtomicString& header_value =
         http_header_fields_.Get(http_names::kLowerAge);
-    bool ok;
-    double seconds = header_value.ToDouble(&ok);
-    if (!ok) {
+    auto seconds = StringToDouble(header_value);
+    if (!seconds) {
       age_ = std::nullopt;
     } else {
-      age_ = base::Seconds(seconds);
+      age_ = base::Seconds(*seconds);
     }
     have_parsed_age_header_ = true;
   }

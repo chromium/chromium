@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/gfx/color_utils.h"
 
 namespace blink {
@@ -191,8 +192,9 @@ static bool IsLargeFont(const TextInfo& text_info) {
   String font_size_css = text_info.font_size;
   String font_weight = text_info.font_weight;
   // font_size_css always has 'px' appended at the end;
-  String font_size_str = font_size_css.Substring(0, font_size_css.length() - 2);
-  double font_size_px = font_size_str.ToDouble();
+  StringView font_size_str =
+      StringView(font_size_css, 0, font_size_css.length() - 2);
+  double font_size_px = StringToDouble(font_size_str).value_or(0);
   double font_size_pt = font_size_px * 72 / 96;
   bool is_bold = font_weight == "bold" || font_weight == "bolder" ||
                  font_weight == "600" || font_weight == "700" ||

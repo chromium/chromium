@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"
 #include "third_party/blink/renderer/core/xml/xpath_step.h"
 #include "third_party/blink/renderer/core/xml/xpath_variable_reference.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 #define YYENABLE_NLS 0
 #define YY_EXCEPTIONS 0
@@ -343,7 +344,7 @@ PrimaryExpr:
     |
     kNumber
     {
-      $$ = blink::MakeGarbageCollected<blink::xpath::Number>($1.ToDouble());
+      $$ = blink::MakeGarbageCollected<blink::xpath::Number>(StringToDouble($1).value_or(0));
     }
     |
     FunctionCall

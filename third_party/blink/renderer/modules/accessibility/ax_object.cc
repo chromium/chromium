@@ -123,6 +123,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #if AX_FAIL_FAST_BUILD()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
@@ -1040,7 +1041,7 @@ bool AXObject::AriaFloatAttribute(const QualifiedName& attribute,
   }
 
   if (out_value) {
-    *out_value = value.ToFloat();
+    *out_value = StringToFloat(value).value_or(0);
   }
   return true;
 }
