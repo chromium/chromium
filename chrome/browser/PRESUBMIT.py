@@ -352,7 +352,8 @@ def _CheckForUnwantedFlagDescriptionContent(input_api, output_api):
     return result
 
 def _CheckNewDirectoryHasBuildGn(input_api, output_api):
-    """Checks that any new directory under chrome/browser has a BUILD.gn.
+    """Checks that any new direct subdirectory under chrome/browser or
+    chrome/browser/ui has a BUILD.gn.
     See docs/chrome_browser_design_principles.md for details.
     """
     affected_files = list(input_api.AffectedFiles(include_deletes=False))
@@ -368,12 +369,10 @@ def _CheckNewDirectoryHasBuildGn(input_api, output_api):
         input_api.os_path.dirname(f) for f in added_files)
 
     for d in dirs_of_added_files:
-        # Normalize path separators.
-        d_norm = d.replace('\\', '/')
-
-        # Only verify directories under chrome/browser (excluding root).
-        if not d_norm.startswith(
-                'chrome/browser') or d_norm == 'chrome/browser':
+        # Only verify direct subdirectories of chrome/browser or
+        # chrome/browser/ui.
+        if input_api.os_path.dirname(d).replace('\\', '/') not in (
+                'chrome/browser', 'chrome/browser/ui'):
             continue
 
         # If BUILD.gn is in the CL or already on disk, we're good.
@@ -400,7 +399,8 @@ def _CheckNewDirectoryHasBuildGn(input_api, output_api):
     if missing_build_gn_dirs:
         return [
             output_api.PresubmitPromptWarning(
-                'New directories under chrome/browser must have a BUILD.gn file.',
+                'New direct subdirectories of chrome/browser or '
+                'chrome/browser/ui must have a BUILD.gn file.',
                 items=sorted(missing_build_gn_dirs))
         ]
 

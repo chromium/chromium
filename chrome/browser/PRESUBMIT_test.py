@@ -349,10 +349,41 @@ class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
             mock_input_api, mock_output_api)
         self.assertEqual(1, len(warnings))
         self.assertEqual(
-            'New directories under chrome/browser must have a BUILD.gn file.',
+            'New direct subdirectories of chrome/browser or '
+            'chrome/browser/ui must have a BUILD.gn file.',
             warnings[0].message)
         warning_items_norm = [s.replace('\\', '/') for s in warnings[0].items]
         self.assertEqual(['chrome/browser/new_dir'], warning_items_norm)
+
+    def testNewUiDirectoryMissingBuildGn(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/ui/new_ui/foo.cc', [''],
+                             action='A'),
+        ]
+        mock_input_api.InitFiles(mock_input_api.files)
+        mock_output_api = MockOutputApi()
+        warnings = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+            mock_input_api, mock_output_api)
+        self.assertEqual(1, len(warnings))
+        self.assertEqual(
+            'New direct subdirectories of chrome/browser or '
+            'chrome/browser/ui must have a BUILD.gn file.',
+            warnings[0].message)
+        warning_items_norm = [s.replace('\\', '/') for s in warnings[0].items]
+        self.assertEqual(['chrome/browser/ui/new_ui'], warning_items_norm)
+
+    def testNewNestedDirectoryMissingBuildGn(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/new_dir/nested_dir/foo.cc', [''],
+                             action='A'),
+        ]
+        mock_input_api.InitFiles(mock_input_api.files)
+        mock_output_api = MockOutputApi()
+        warnings = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+            mock_input_api, mock_output_api)
+        self.assertEqual([], warnings)
 
     def testExistingDirectoryWithMissingBuildGn(self):
         mock_input_api = MockInputApi()
