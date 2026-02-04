@@ -18,15 +18,18 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/move_passwords_promo.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
-#endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/password_manager/promo_cards/move_passwords_promo.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_process.h"
@@ -66,12 +69,14 @@ PromoCardsHandler::PromoCardsHandler(Profile* profile) : profile_(profile) {
       std::make_unique<PasswordManagerShortcutPromo>(profile));
   promo_cards_.push_back(
       std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   promo_cards_.push_back(std::make_unique<MovePasswordsPromo>(
       profile,
       extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
                                                                         false)
           .get()));
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   auto relaunch_promo =

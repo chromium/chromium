@@ -23,6 +23,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -159,10 +160,13 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
   std::vector<std::string> promo_cards = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       "password_checkup_promo", "passwords_on_web_promo",
-      "password_shortcut_promo", "access_on_any_device_promo",
-      "move_passwords_promo"
+      "password_shortcut_promo", "access_on_any_device_promo"
 #endif
   };
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  promo_cards.emplace_back("move_passwords_promo");
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   promo_cards.emplace_back("relaunch_chrome_promo");

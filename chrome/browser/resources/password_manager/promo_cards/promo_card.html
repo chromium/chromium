@@ -23,8 +23,15 @@
     margin-inline-start: 24px;
   }
 
+  #title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+
   #actionButton {
-    margin-top: 6px;
+    margin-top: 10px;
     width: fit-content
   }
 
@@ -49,8 +56,8 @@
   </if>
 </picture>
 <div id="promoContent">
-  <span id="title" class="label">[[promoCard.title]]</span>
-  <div id="description" class="cr-secondary-text label"
+  <span id="title">[[promoCard.title]]</span>
+  <div id="description" class="cr-primary-text label"
       inner-h-t-m-l="[[getDescription_(promoCard)]]"></div>
   <cr-button id="actionButton" hidden="[[!promoCard.actionButtonText]]"
       class="action-button" on-click="onActionButtonClick_">

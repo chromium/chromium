@@ -1392,14 +1392,19 @@ static_library("ui") {
         "webui/media_router/cast_feedback_ui.h",
         "webui/password_manager/promo_cards/access_on_any_device_promo.cc",
         "webui/password_manager/promo_cards/access_on_any_device_promo.h",
-        "webui/password_manager/promo_cards/move_passwords_promo.cc",
-        "webui/password_manager/promo_cards/move_passwords_promo.h",
         "webui/password_manager/promo_cards/password_checkup_promo.cc",
         "webui/password_manager/promo_cards/password_checkup_promo.h",
         "webui/password_manager/promo_cards/password_manager_shortcut_promo.cc",
         "webui/password_manager/promo_cards/password_manager_shortcut_promo.h",
         "webui/password_manager/promo_cards/web_password_manager_promo.cc",
         "webui/password_manager/promo_cards/web_password_manager_promo.h",
+      ]
+    }
+
+    if (enable_dice_support && is_chrome_branded) {
+      sources += [
+        "webui/password_manager/promo_cards/move_passwords_promo.cc",
+        "webui/password_manager/promo_cards/move_passwords_promo.h",
       ]
     }
 
