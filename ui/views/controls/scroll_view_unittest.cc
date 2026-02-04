@@ -2535,9 +2535,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientVerticalBottom) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2583,9 +2583,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientVerticalTopAndBottom) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2632,9 +2632,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientVerticalTop) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 255);
@@ -2671,9 +2671,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientHorizontalEnd) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2720,9 +2720,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientHorizontalStartAndEnd) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2770,9 +2770,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientHorizontalStart) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 255);
