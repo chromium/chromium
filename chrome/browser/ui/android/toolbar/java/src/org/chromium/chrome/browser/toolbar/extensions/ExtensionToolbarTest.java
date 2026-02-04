@@ -183,6 +183,51 @@ public class ExtensionToolbarTest {
                 "Alpha popup should have closed");
     }
 
+    /**
+     * Tests that uninstalling an extension while its popup is open works correctly and closes the
+     * popup.
+     *
+     * <p>This test corresponds to UninstallExtensionWithActivelyShownWidget test in
+     * chrome/browser/ui/views/extensions/extensions_toolbar_desktop_interactive_uitest.cc.
+     */
+    @Test
+    @LargeTest
+    public void testUninstallExtensionWithActivelyShownWidget() throws IOException {
+        String id =
+                loadPopupExtension("extension", "Test Extension", "Test Action", "popup opened");
+
+        // Pin the extension.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, id, true);
+        ViewUtils.onViewWaiting(withContentDescription("Test Extension"))
+                .check(matches(isDisplayed()));
+
+        // Click on the extension and wait for it to open the popup.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("popup opened")) {
+            clickViewWithContentDescription("Test Extension");
+            assertTrue(listener.waitUntilSatisfied());
+        }
+
+        // Verify that the extension has an active frame (i.e., popup).
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, id) == 1,
+                "Popup did not open");
+
+        // Uninstall the extension.
+        ExtensionTestUtils.uninstallExtension(mProfile, id);
+
+        // The extension should disappear from the toolbar.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withContentDescription("Test Extension"), VIEW_GONE | VIEW_NULL));
+
+        // The popup should be gone.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, id) == 0,
+                "Popup should have closed");
+    }
+
     private String loadBasicExtension(String dirName, String name, String actionTitle)
             throws IOException {
         File dir = mTempDir.newFolder(dirName);

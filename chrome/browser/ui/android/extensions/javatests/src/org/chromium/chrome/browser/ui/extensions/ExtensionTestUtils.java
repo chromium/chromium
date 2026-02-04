@@ -67,6 +67,19 @@ public class ExtensionTestUtils {
     }
 
     /**
+     * Uninstalls the extension with the given ID.
+     *
+     * @param profile The profile the extension belongs to.
+     * @param extensionId The ID of the extension to uninstall.
+     */
+    public static void uninstallExtension(Profile profile, String extensionId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ExtensionTestUtilsJni.get().uninstallExtension(profile, extensionId);
+                });
+    }
+
+    /**
      * Sets whether the extension action is visible in the toolbar.
      *
      * @param profile The profile the extension belongs to.
@@ -105,6 +118,9 @@ public class ExtensionTestUtils {
                 Callback<String> callback);
 
         void disableExtension(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
+
+        void uninstallExtension(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
 
         void setExtensionActionVisible(

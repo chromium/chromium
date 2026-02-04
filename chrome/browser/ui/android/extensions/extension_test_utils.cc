@@ -47,6 +47,14 @@ static void JNI_ExtensionTestUtils_DisableExtension(JNIEnv* env,
       extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
 }
 
+static void JNI_ExtensionTestUtils_UninstallExtension(
+    JNIEnv* env,
+    Profile* profile,
+    std::string& extension_id) {
+  extensions::ExtensionRegistrar::Get(profile)->UninstallExtension(
+      extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+}
+
 static void JNI_ExtensionTestUtils_SetExtensionActionVisible(
     JNIEnv* env,
     Profile* profile,
