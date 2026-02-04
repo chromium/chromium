@@ -111,6 +111,22 @@ base::Time GetArbitraryFutureTime() {
   return AutofillClock::Now() + base::Days(10);
 }
 
+// Converts a struct with entity-type-specific options to a generic
+// EntityOptions.
+template <typename Options>
+EntityOptions ToEntityOptions(Options options) {
+  return EntityOptions{
+      .guid = options.guid,
+      .nickname = options.nickname,
+      .date_modified = options.date_modified,
+      .use_date = options.use_date,
+      .app_locale = options.app_locale,
+      .record_type = options.record_type,
+      .are_attributes_read_only = options.are_attributes_read_only,
+      .use_count = options.use_count,
+  };
+}
+
 }  // namespace
 
 void SetFormGroupValues(FormGroup& form_group,
@@ -995,13 +1011,7 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
         AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
         VerificationStatus::kNoStatus);
   }
-  return EntityInstance(
-      EntityType(EntityTypeName::kPassport), std::move(attributes),
-      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname),
-      base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
-      base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
-      options.are_attributes_read_only, /*frecency_override=*/"");
+  return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
 EntityInstance GetPassportEntityInstanceWithRandomGuid(
@@ -1049,13 +1059,7 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
         AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
         VerificationStatus::kNoStatus);
   }
-  return EntityInstance(
-      EntityType(EntityTypeName::kDriversLicense), std::move(attributes),
-      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname),
-      base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
-      base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
-      options.are_attributes_read_only, /*frecency_override=*/"");
+  return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
 EntityInstance GetDriversLicenseEntityInstanceWithRandomGuid(
@@ -1083,13 +1087,7 @@ EntityInstance GetKnownTravelerNumberInstance(
         AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
         VerificationStatus::kNoStatus);
   }
-  return EntityInstance(
-      EntityType(EntityTypeName::kKnownTravelerNumber), std::move(attributes),
-      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
-      options.use_count, base::Time::FromTimeT(options.use_date.ToTimeT()),
-      options.record_type, options.are_attributes_read_only,
-      /*frecency_override=*/"");
+  return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
 EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
@@ -1101,14 +1099,7 @@ EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
         REDRESS_NUMBER, options.number, std::string(options.app_locale),
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
   }
-
-  return EntityInstance(
-      EntityType(EntityTypeName::kRedressNumber), std::move(attributes),
-      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
-      options.use_count, base::Time::FromTimeT(options.use_date.ToTimeT()),
-      options.record_type, options.are_attributes_read_only,
-      /*frecency_override=*/"");
+  return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
 EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
@@ -1157,13 +1148,7 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
         VEHICLE_PLATE_STATE, options.state, std::string(options.app_locale),
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
   }
-  return EntityInstance(
-      EntityType(EntityTypeName::kVehicle), std::move(attributes),
-      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname),
-      base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
-      base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
-      options.are_attributes_read_only, /*frecency_override=*/"");
+  return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
 EntityInstance GetVehicleEntityInstanceWithRandomGuid(VehicleOptions options) {
@@ -1203,13 +1188,7 @@ EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
         std::string(options.app_locale),
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
   }
-  return EntityInstance(
-      EntityType(EntityTypeName::kNationalIdCard), std::move(attributes),
-      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
-      options.use_count, base::Time::FromTimeT(options.use_date.ToTimeT()),
-      options.record_type, options.are_attributes_read_only,
-      /*frecency_override=*/"");
+  return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
 EntityInstance GetFlightReservationEntityInstance(
@@ -1276,14 +1255,9 @@ EntityInstance GetFlightReservationEntityInstance(
         AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
         VerificationStatus::kNoStatus);
   }
-
-  return EntityInstance(
-      EntityType(EntityTypeName::kFlightReservation), std::move(attributes),
-      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
-      std::string(options.nickname),
-      base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
-      base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
-      options.are_attributes_read_only, frecency_override);
+  EntityOptions entity_options = ToEntityOptions(options);
+  entity_options.frecency_override = frecency_override;
+  return GetEntityInstance(std::move(attributes), std::move(entity_options));
 }
 
 EntityInstance GetFlightReservationEntityInstanceWithRandomGuid(
@@ -1308,7 +1282,7 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
       std::string(options.nickname),
       base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
       base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
-      options.are_attributes_read_only, /*frecency_override=*/"");
+      options.are_attributes_read_only, std::string(options.frecency_override));
 }
 
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
