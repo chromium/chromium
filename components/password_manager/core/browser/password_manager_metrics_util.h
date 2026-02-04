@@ -454,7 +454,7 @@ enum class MoveToAccountStoreTrigger {
   // The user explicitly asked to move multiple passwords at once in Settings.
   kExplicitlyTriggeredForMultiplePasswordsInSettings = 2,
   // Deprecated: kUserOptedInAfterSavingLocally = 3,
-  // Deprecated: kExplicitlyTriggeredForSinglePasswordInDetailsInSettings = 4,
+  kExplicitlyTriggeredForSinglePasswordInDetailsInSettings = 4,
   // The user clicked a link in a footer of the manage passwords bubble.
   kExplicitlyTriggeredInPasswordsManagementBubble = 5,
   kMaxValue = kExplicitlyTriggeredInPasswordsManagementBubble,

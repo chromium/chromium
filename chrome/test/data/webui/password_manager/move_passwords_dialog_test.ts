@@ -1,0 +1,190 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://password-manager/password_manager.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PasswordManagerImpl, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import type {MovePasswordsDialogElement} from 'chrome://password-manager/password_manager.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+import {createPasswordEntry} from './test_util.js';
+
+suite('MovePasswordsDialogTest', function() {
+  let passwordManager: TestPasswordManagerProxy;
+  let syncProxy: TestSyncBrowserProxy;
+  let dialog: MovePasswordsDialogElement;
+
+  setup(function() {
+    loadTimeData.overrideValues({'passwordUploadUiUpdate': true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    passwordManager = new TestPasswordManagerProxy();
+    passwordManager.setAccountStorageEnabled(true);
+    PasswordManagerImpl.setInstance(passwordManager);
+    syncProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncProxy);
+    syncProxy.accountInfo = {
+      email: 'test@gmail.com',
+    };
+    return flushTasks();
+  });
+
+  async function createDialog(
+      passwords: chrome.passwordsPrivate.PasswordUiEntry[],
+      hasOnlyDevice = false) {
+    dialog = document.createElement('move-passwords-dialog');
+    dialog.passwords = passwords;
+    dialog.hasOnlyDeviceCredentials = hasOnlyDevice;
+    dialog.isAccountStoreUser = true;
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    dialog.$.dialog.showModal();
+
+    await waitAfterNextRender(dialog);
+    await flushTasks();
+  }
+
+  function checkPasswordsSectionForNumberOfPasswords(
+      numberOfPasswords: number) {
+    assertTrue(isChildVisible(dialog, '#passwordsSection'));
+    assertTrue(isChildVisible(dialog, '#passwordsTitle'));
+
+    if (numberOfPasswords > 1) {
+      assertTrue(dialog.passwordsTitle.includes(numberOfPasswords.toString()));
+    }
+
+    const passwordItems =
+        dialog.shadowRoot!.querySelectorAll('password-preview-item');
+    assertEquals(numberOfPasswords, passwordItems.length);
+  }
+
+  test('Content displayed properly for only password', async function() {
+    const password = createPasswordEntry({id: 0, username: 'user1'});
+    await createDialog([password], /*hasOnlyDevice=*/ true);
+
+    assertTrue(dialog.descriptionString.includes('Your password for'));
+    assertEquals(
+        syncProxy.accountInfo.email, dialog.$.accountEmail.textContent.trim());
+
+    assertFalse(isChildVisible(dialog, '#passwordsSection'));
+    assertFalse(isChildVisible(dialog, '#passwordsTitle'));
+  });
+
+  test(
+      'Content displayed properly for single uploadable password',
+      async function() {
+        const password = createPasswordEntry({id: 0, username: 'user1'});
+        await createDialog([password], /*hasOnlyDevice=*/ false);
+
+        assertTrue(dialog.descriptionString.includes('1 password for'));
+        assertEquals(
+            syncProxy.accountInfo.email,
+            dialog.$.accountEmail.textContent.trim());
+
+        checkPasswordsSectionForNumberOfPasswords(1);
+      });
+
+  test(
+      'Content displayed properly for multiple uploadable passwords',
+      async function() {
+        const passwords = [
+          createPasswordEntry({id: 0, username: 'user1'}),
+          createPasswordEntry({id: 1, username: 'user2'}),
+          createPasswordEntry({id: 2, username: 'user3'}),
+        ];
+        await createDialog(passwords);
+
+        assertTrue(dialog.descriptionString.includes(
+            passwords.length.toString() + ' passwords for'));
+        assertEquals(
+            syncProxy.accountInfo.email,
+            dialog.$.accountEmail.textContent.trim());
+
+        checkPasswordsSectionForNumberOfPasswords(passwords.length);
+      });
+
+  test('Accepting moves only selected passwords', async function() {
+    const passwords = [
+      createPasswordEntry({id: 10, username: 'u1'}),
+      createPasswordEntry({id: 20, username: 'u2'}),
+    ];
+    await createDialog(passwords);
+
+    // Deselect the second one.
+    const items = dialog.shadowRoot!.querySelectorAll('password-preview-item');
+    assertTrue(!!items);
+    assertEquals(2, items.length);
+    items[1]!.checked = false;
+    items[1]!.dispatchEvent(new CustomEvent('change'));
+    await flushTasks();
+
+    dialog.shadowRoot!.querySelector<HTMLButtonElement>(
+                          '#acceptButton')!.click();
+
+    const movedIds = await passwordManager.whenCalled('movePasswordsToAccount');
+    assertEquals(1, movedIds.length);
+    assertEquals(10, movedIds[0]);
+  });
+
+  test('Button is disabled when no passwords are selected', async function() {
+    const passwords =
+        [createPasswordEntry({id: 0}), createPasswordEntry({id: 1})];
+    await createDialog(passwords);
+
+    const acceptButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('#acceptButton')!;
+    assertFalse(acceptButton.disabled);
+
+    // Simulate unchecking all items.
+    const items = dialog.shadowRoot!.querySelectorAll('password-preview-item');
+    items.forEach(item => {
+      item.checked = false;
+      item.dispatchEvent(new CustomEvent('change'));
+    });
+    await flushTasks();
+
+    assertTrue(
+        acceptButton.disabled,
+        'Button should be disabled when nothing is selected');
+  });
+
+  test('Toggle password visibility', async function() {
+    const passwordEntry = createPasswordEntry(
+        {id: 0, username: 'user1', password: 'password123!'});
+    await createDialog([passwordEntry]);
+
+    const item =
+        dialog.shadowRoot!.querySelector<HTMLElement>('password-preview-item');
+    assertTrue(!!item);
+
+    const passwordElement =
+        item.shadowRoot!.querySelector<HTMLInputElement>('#password');
+    assertTrue(!!passwordElement);
+    assertNotEquals(passwordEntry.password, passwordElement.value);
+
+    const showPasswordButton =
+        item.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#showPasswordButton');
+    assertTrue(!!showPasswordButton);
+    showPasswordButton.click();
+    await flushTasks();
+
+    assertEquals(passwordEntry.password, passwordElement.value);
+  });
+
+  test('Dialog closes if passwords array becomes empty', async function() {
+    await createDialog([createPasswordEntry()]);
+    assertTrue(dialog.$.dialog.open);
+
+    dialog.passwords = [];
+    await flushTasks();
+
+    assertFalse(dialog.$.dialog.open);
+  });
+});
