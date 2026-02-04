@@ -132,11 +132,10 @@ class MockPageContentExtractionService
       : PageContentExtractionService(nullptr, base::FilePath()) {}
   ~MockPageContentExtractionService() override = default;
 
-  MOCK_METHOD(
-      std::optional<page_content_annotations::ExtractedPageContentResult>,
-      GetExtractedPageContentAndEligibilityForPage,
-      (content::Page & page),
-      (override));
+  MOCK_METHOD(std::optional<bool>,
+              GetServerUploadEligibilityForPage,
+              (content::Page & page),
+              (override));
 };
 
 class ContextualTasksContextServiceTest : public InProcessBrowserTest {
@@ -433,11 +432,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   NotifyEmbedderMetadata();
 
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_)).Times(0);
-  page_content_annotations::ExtractedPageContentResult result;
-  result.is_eligible_for_server_upload = false;
   EXPECT_CALL(*page_content_extraction_service(),
-              GetExtractedPageContentAndEligibilityForPage)
-      .WillOnce(Return(result));
+              GetServerUploadEligibilityForPage)
+      .WillOnce(Return(false));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(

@@ -32,6 +32,7 @@
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -306,9 +307,16 @@ ContextualTasksContextService::GetAllEligibleTabs() {
           if (!web_contents) {
             continue;
           }
-          if (!web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+
+          const GURL url = web_contents->GetLastCommittedURL();
+          const bool is_invalid_url = !url.is_valid() || url.IsAboutBlank();
+          const bool is_internal_page =
+              url.SchemeIs(content::kChromeUIScheme) ||
+              url.SchemeIs(content::kChromeUIUntrustedScheme);
+          if (is_invalid_url || is_internal_page) {
             continue;
           }
+
           if (!ShouldAddTabToSelection(web_contents)) {
             AUTO_CONTEXT_LOG(
                 base::StringPrintf("Removing %s from relevant set as it is not "
@@ -464,14 +472,10 @@ bool ContextualTasksContextService::ShouldAddTabToSelection(
   // Get whether it's eligible for server upload.
   bool is_eligible_for_server_upload = true;
   if (page_content_extraction_service_) {
-    std::optional<page_content_annotations::ExtractedPageContentResult>
-        extracted_page_content_result =
-            page_content_extraction_service_
-                ->GetExtractedPageContentAndEligibilityForPage(
-                    web_contents->GetPrimaryPage());
     is_eligible_for_server_upload =
-        !extracted_page_content_result ||
-        extracted_page_content_result->is_eligible_for_server_upload;
+        page_content_extraction_service_
+            ->GetServerUploadEligibilityForPage(web_contents->GetPrimaryPage())
+            .value_or(true);
   }
 
   return is_eligible_for_server_upload && !is_sensitive;
