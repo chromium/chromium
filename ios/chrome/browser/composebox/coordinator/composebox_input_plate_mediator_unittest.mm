@@ -67,6 +67,8 @@
 }
 - (void)setCanvasEnabled:(BOOL)enabled {
 }
+- (void)setDeepSearchEnabled:(BOOL)enabled {
+}
 - (void)allowModelPicker:(BOOL)allowed {
 }
 - (void)setCompact:(BOOL)compact {
@@ -101,6 +103,8 @@
     (std::unordered_set<ComposeboxModelOption>)allowedModels {
 }
 - (void)hideCanvasActions:(BOOL)hidden {
+}
+- (void)hideDeepSearchActions:(BOOL)hidden {
 }
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
 }

@@ -413,6 +413,15 @@ const CGFloat kSnackbarBottomMargin = 10;
   }
 }
 
+- (void)composeboxViewControllerDidTapDeepSearchButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  if (_modeHolder.mode == ComposeboxMode::kDeepSearch) {
+    _modeHolder.mode = ComposeboxMode::kRegularSearch;
+  } else {
+    _modeHolder.mode = ComposeboxMode::kDeepSearch;
+  }
+}
+
 - (void)didFailToAttachDueToIneligibleAttachments:
     (ComposeboxInputPlateViewController*)composeboxViewController {
   CHECK_EQ(_viewController, composeboxViewController);
@@ -420,6 +429,7 @@ const CGFloat kSnackbarBottomMargin = 10;
     case ComposeboxMode::kRegularSearch:
     case ComposeboxMode::kAIM:
     case ComposeboxMode::kCanvas:
+    case ComposeboxMode::kDeepSearch:
       [self showMaxAttachmentSnackbarError];
       return;
     case ComposeboxMode::kImageGeneration:

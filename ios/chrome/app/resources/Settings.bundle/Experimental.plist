@@ -694,6 +694,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Disable Composebox Deep Search eligibility</string>
+			<key>Key</key>
+			<string>ForceDisableDeepSearchEligibility</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Disable Composebox Pdf Upload eligibility</string>
 			<key>Key</key>
 			<string>ForceDisablePdfUploadEligibility</string>

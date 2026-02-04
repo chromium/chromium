@@ -1467,6 +1467,12 @@
       <message name="IDS_IOS_COMPOSEBOX_CREATE_IMAGE_PRO_ACTION" desc="The contextual menu option instructing the input plate to use the image generation tool when the advanced model is being used. [iOS only].">
         Create image Pro
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION" desc="The contextual menu option for opening the tool that helps users perform complex research tasks. [iOS only].">
+        Deep Search
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ENABLED_PLACEHOLDER" desc="The placeholder to show when Deep Search is enabled and no user text was added.">
+        Research anything
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_DELETE_ATTACHMENT_ACCESSIBILITY_CUSTOM_ACTION" desc="The name of the custom accessibility action for that deletes a previously added attachment from the list of attachments in the AIM Composebox. [iOS only].">
         Delete attachment
       </message>

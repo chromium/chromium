@@ -36,6 +36,9 @@ enum class ComposeboxModelOption;
 // Sets whether Canvas mode is enabled.
 - (void)setCanvasEnabled:(BOOL)enabled;
 
+// Sets whether Deep Search mode is enabled.
+- (void)setDeepSearchEnabled:(BOOL)enabled;
+
 // Sets whether the model picker is enabled.
 - (void)allowModelPicker:(BOOL)allowed;
 
@@ -68,6 +71,9 @@ enum class ComposeboxModelOption;
 
 // Sets whether the canvas actions are hidden.
 - (void)hideCanvasActions:(BOOL)hidden;
+
+// Sets whether the deep search actions are hidden.
+- (void)hideDeepSearchActions:(BOOL)hidden;
 
 // Sets whether the create image actions are disabled.
 - (void)disableCreateImageActions:(BOOL)disabled;

@@ -227,6 +227,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   /// Canvas action state.
   BOOL _canvasActionsDisabled;
   BOOL _canvasActionsHidden;
+  /// Deep search action state.
+  BOOL _deepSearchActionsDisabled;
+  BOOL _deepSearchActionsHidden;
   /// Camera action state.
   BOOL _cameraActionsDisabled;
   BOOL _cameraActionsHidden;
@@ -253,6 +256,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   /// Whether the canvas mode is enabled.
   BOOL _canvasEnabled;
+
+  /// Whether the deep search is enabled.
+  BOOL _deepSearchEnabled;
 
   /// Whether the model picker is allowed.
   BOOL _modelPickerAllowed;
@@ -597,6 +603,16 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self triggerGlowEffect];
 }
 
+- (void)setDeepSearchEnabled:(BOOL)enabled {
+  if (_deepSearchEnabled == enabled) {
+    return;
+  }
+  _deepSearchEnabled = enabled;
+  [self updatePlaceholderText];
+  [self updatePlusButtonItems];
+  [self triggerGlowEffect];
+}
+
 - (void)allowModelPicker:(BOOL)allowed {
   if (_modelPickerAllowed == allowed) {
     return;
@@ -673,6 +689,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     return;
   }
   _canvasActionsHidden = hidden;
+  [self updatePlusButtonItems];
+}
+
+// Hides the deep search actions in the plus menu.
+- (void)hideDeepSearchActions:(BOOL)hidden {
+  if (_deepSearchActionsHidden == hidden) {
+    return;
+  }
+  _deepSearchActionsHidden = hidden;
   [self updatePlusButtonItems];
 }
 
@@ -930,9 +955,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.delegate composeboxViewControllerDidTapImageGenerationButton:self];
 }
 
-/// Notifies the delegate to handle image generation tapped from the tool menu.
+/// Notifies the delegate to handle canvas tapped from the tool menu.
 - (void)handleCanvasTappedFromToolMenu {
   [self.delegate composeboxViewControllerDidTapCanvasButton:self];
+}
+
+/// Notifies the delegate to handle deep search tapped from the tool menu.
+- (void)handleDeepSearchTappedFromToolMenu {
+  [self.delegate composeboxViewControllerDidTapDeepSearchButton:self];
 }
 
 /// Notifies the mutator to handle the selection of a new model option.
@@ -1083,6 +1113,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [_editView setCustomPlaceholderText:
                    l10n_util::GetNSString(
                        IDS_IOS_COMPOSEBOX_CANVAS_ENABLED_PLACEHOLDER)];
+  } else if (_deepSearchEnabled) {
+    [_editView setCustomPlaceholderText:
+                   l10n_util::GetNSString(
+                       IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ENABLED_PLACEHOLDER)];
   } else {
     [_editView setCustomPlaceholderText:nil];
   }
@@ -1517,12 +1551,37 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [canvasAction setState:UIMenuElementStateOn];
   }
 
-  UIMenu* modeMenu =
-      [UIMenu menuWithTitle:@""
-                      image:nil
-                 identifier:nil
-                    options:UIMenuOptionsDisplayInline
-                   children:@[ aimAction, createImageAction, canvasAction ]];
+  // TODO(crbug.com/481280186): Replace icon once defined.
+  UIAction* deepSearchAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
+                image:DefaultSymbolWithPointSize(kFindInPageActionSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf handleDeepSearchTappedFromToolMenu];
+              }];
+  UIMenuElementAttributes deepSearchAttributes = 0;
+  if (_deepSearchActionsHidden) {
+    deepSearchAttributes |= UIMenuElementAttributesHidden;
+  }
+  if (_deepSearchActionsDisabled) {
+    deepSearchAttributes |= UIMenuElementAttributesDisabled;
+  }
+  deepSearchAction.attributes = deepSearchAttributes;
+
+  if (_deepSearchEnabled) {
+    [deepSearchAction setState:UIMenuElementStateOn];
+  }
+
+  UIMenu* modeMenu = [UIMenu
+      menuWithTitle:@""
+              image:nil
+         identifier:nil
+            options:UIMenuOptionsDisplayInline
+           children:@[
+             aimAction, createImageAction, deepSearchAction, canvasAction
+           ]];
 
   NSMutableArray<UIMenuElement*>* sections =
       [[NSMutableArray alloc] initWithArray:@[ attachmentMenu, modeMenu ]];

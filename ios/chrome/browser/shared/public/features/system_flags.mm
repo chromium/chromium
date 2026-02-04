@@ -72,6 +72,8 @@ NSString* const kForceDisableCreateImagesEligibility =
     @"ForceDisableCreateImagesEligibility";
 NSString* const kForceDisableCanvasEligibility =
     @"ForceDisableCanvasEligibility";
+NSString* const kForceDisableDeepSearchEligibility =
+    @"ForceDisableDeepSearchEligibility";
 NSString* const kForceDisablePdfUploadEligibility =
     @"ForceDisablePdfUploadEligibility";
 NSString* const kShowCatalogItems = @"ShowCatalogItems";
@@ -375,6 +377,11 @@ bool ShouldForceDisableComposeboxCreateImages() {
 bool ShouldForceDisableComposeboxCanvas() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kForceDisableCanvasEligibility];
+}
+
+bool ShouldForceDisableComposeboxDeepSearch() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kForceDisableDeepSearchEligibility];
 }
 
 bool ShouldForceDisableComposeboxPdfUpload() {

@@ -17,6 +17,8 @@ enum class ComposeboxMode {
   kImageGeneration,
   // Generates a new canvas based on the input query.
   kCanvas,
+  // Helps user with complex research tasks.
+  kDeepSearch,
 };
 
 // The maximum number of attachments that can be added to a prompt.
