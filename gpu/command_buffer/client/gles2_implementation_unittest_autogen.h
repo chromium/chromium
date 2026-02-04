@@ -676,24 +676,6 @@ TEST_F(GLES2ImplementationTest, GetBooleanv) {
   EXPECT_EQ(static_cast<ResultType>(1), result);
 }
 
-TEST_F(GLES2ImplementationTest, GetBooleani_v) {
-  struct Cmds {
-    cmds::GetBooleani_v cmd;
-  };
-  typedef cmds::GetBooleani_v::Result::Type ResultType;
-  ResultType result = 0;
-  Cmds expected;
-  ExpectedMemoryInfo result1 =
-      GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, 2, result1.id, result1.offset);
-  EXPECT_CALL(*command_buffer(), OnFlush())
-      .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
-      .RetiresOnSaturation();
-  gl_->GetBooleani_v(123, 2, &result);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-  EXPECT_EQ(static_cast<ResultType>(1), result);
-}
-
 TEST_F(GLES2ImplementationTest, GetBufferParameteri64v) {
   struct Cmds {
     cmds::GetBufferParameteri64v cmd;
@@ -2631,79 +2613,6 @@ TEST_F(GLES2ImplementationTest, FramebufferParameteri) {
   expected.cmd.Init(GL_FRAMEBUFFER, 2, 3);
 
   gl_->FramebufferParameteri(GL_FRAMEBUFFER, 2, 3);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, BindImageTexture) {
-  struct Cmds {
-    cmds::BindImageTexture cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1, 2, 3, true, 5, 6, 7);
-
-  gl_->BindImageTexture(1, 2, 3, true, 5, 6, 7);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, DispatchCompute) {
-  struct Cmds {
-    cmds::DispatchCompute cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1, 2, 3);
-
-  gl_->DispatchCompute(1, 2, 3);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, DispatchComputeIndirect) {
-  struct Cmds {
-    cmds::DispatchComputeIndirect cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1);
-
-  gl_->DispatchComputeIndirect(1);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, GetProgramInterfaceiv) {
-  struct Cmds {
-    cmds::GetProgramInterfaceiv cmd;
-  };
-  typedef cmds::GetProgramInterfaceiv::Result::Type ResultType;
-  ResultType result = 0;
-  Cmds expected;
-  ExpectedMemoryInfo result1 =
-      GetExpectedResultMemory(sizeof(uint32_t) + sizeof(ResultType));
-  expected.cmd.Init(123, 2, 3, result1.id, result1.offset);
-  EXPECT_CALL(*command_buffer(), OnFlush())
-      .WillOnce(SetMemory(result1.ptr, SizedResultHelper<ResultType>(1)))
-      .RetiresOnSaturation();
-  gl_->GetProgramInterfaceiv(123, 2, 3, &result);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-  EXPECT_EQ(static_cast<ResultType>(1), result);
-}
-
-TEST_F(GLES2ImplementationTest, MemoryBarrierEXT) {
-  struct Cmds {
-    cmds::MemoryBarrierEXT cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1);
-
-  gl_->MemoryBarrierEXT(1);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, MemoryBarrierByRegion) {
-  struct Cmds {
-    cmds::MemoryBarrierByRegion cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1);
-
-  gl_->MemoryBarrierByRegion(1);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

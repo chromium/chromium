@@ -2970,15 +2970,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
 
   lose_context_when_out_of_memory_ = lose_context_when_out_of_memory;
 
-  // Only create ES 3.1 contexts with the passthrough cmd decoder.
-  if (context_type == CONTEXT_TYPE_OPENGLES31_FOR_TESTING) {
-    // Must not destroy ContextGroup if it is not initialized.
-    group_ = nullptr;
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "ES 3.1 is not supported on validating command decoder.";
-    return gpu::ContextResult::kFatalFailure;
-  }
-
   auto result = group_->Initialize(this, context_type);
   if (result != gpu::ContextResult::kSuccess) {
     // Must not destroy ContextGroup if it is not initialized.

@@ -96,9 +96,6 @@ struct GLCapabilities {
   int32 max_transform_feedback_separate_components;
   int64 max_uniform_block_size;
   int32 max_uniform_buffer_bindings;
-  int32 max_atomic_counter_buffer_bindings;
-  int32 max_shader_storage_buffer_bindings;
-  int32 shader_storage_buffer_offset_alignment;
   int32 max_varying_components;
   int32 max_vertex_output_components;
   int32 max_vertex_uniform_blocks;

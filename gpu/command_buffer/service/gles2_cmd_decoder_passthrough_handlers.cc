@@ -124,21 +124,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleDrawArrays(
   return DoDrawArrays(mode, first, count);
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleDrawArraysIndirect(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsES31ForTestingContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::DrawArraysIndirect& c =
-      *static_cast<const volatile gles2::cmds::DrawArraysIndirect*>(cmd_data);
-  GLenum mode = static_cast<GLenum>(c.mode);
-  const void* offset =
-      reinterpret_cast<const void*>(static_cast<uintptr_t>(c.offset));
-
-  return DoDrawArraysIndirect(mode, offset);
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleDrawElements(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -151,22 +136,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleDrawElements(
       reinterpret_cast<const GLvoid*>(static_cast<uintptr_t>(c.index_offset));
 
   return DoDrawElements(mode, count, type, indices);
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleDrawElementsIndirect(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsES31ForTestingContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::DrawElementsIndirect& c =
-      *static_cast<const volatile gles2::cmds::DrawElementsIndirect*>(cmd_data);
-  GLenum mode = static_cast<GLenum>(c.mode);
-  GLenum type = static_cast<GLenum>(c.type);
-  const void* offset =
-      reinterpret_cast<const void*>(static_cast<uintptr_t>(c.offset));
-
-  return DoDrawElementsIndirect(mode, type, offset);
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleGetActiveAttrib(
@@ -510,162 +479,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetProgramInfoLog(
 
   Bucket* bucket = CreateBucket(bucket_id);
   bucket->SetFromString(infolog.c_str());
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceiv(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsES31ForTestingContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::GetProgramResourceiv& c =
-      *static_cast<const volatile gles2::cmds::GetProgramResourceiv*>(cmd_data);
-  GLuint program = static_cast<GLuint>(c.program);
-  GLenum program_interface = static_cast<GLenum>(c.program_interface);
-  GLuint index = static_cast<GLuint>(c.index);
-  uint32_t props_bucket_id = c.props_bucket_id;
-  uint32_t params_shm_id = c.params_shm_id;
-  uint32_t params_shm_offset = c.params_shm_offset;
-
-  Bucket* bucket = GetBucket(props_bucket_id);
-  if (!bucket) {
-    return error::kInvalidArguments;
-  }
-  GLsizei prop_count = static_cast<GLsizei>(bucket->size() / sizeof(GLenum));
-  const GLenum* props = bucket->GetDataAs<const GLenum*>(0, bucket->size());
-  unsigned int buffer_size = 0;
-  typedef cmds::GetProgramResourceiv::Result Result;
-  Result* result = GetSharedMemoryAndSizeAs<Result*>(
-      params_shm_id, params_shm_offset, sizeof(Result), &buffer_size);
-  GLint* params = result ? result->GetData() : nullptr;
-  if (params == nullptr) {
-    return error::kOutOfBounds;
-  }
-  // Check that the client initialized the result.
-  if (result->size != 0) {
-    return error::kInvalidArguments;
-  }
-  GLsizei bufsize = Result::ComputeMaxResults(buffer_size);
-  GLsizei length = 0;
-  error::Error error = DoGetProgramResourceiv(
-      program, program_interface, index, prop_count, props, bufsize, &length,
-      params);
-  if (error != error::kNoError) {
-    return error;
-  }
-  if (length > bufsize) {
-    return error::kOutOfBounds;
-  }
-  result->SetNumResults(length);
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceIndex(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsES31ForTestingContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::GetProgramResourceIndex& c =
-      *static_cast<const volatile gles2::cmds::GetProgramResourceIndex*>(
-          cmd_data);
-  GLuint program = static_cast<GLuint>(c.program);
-  GLenum program_interface = static_cast<GLenum>(c.program_interface);
-  uint32_t name_bucket_id = c.name_bucket_id;
-  uint32_t index_shm_id = c.index_shm_id;
-  uint32_t index_shm_offset = c.index_shm_offset;
-
-  Bucket* bucket = GetBucket(name_bucket_id);
-  if (!bucket) {
-    return error::kInvalidArguments;
-  }
-  std::string name_str;
-  if (!bucket->GetAsString(&name_str)) {
-    return error::kInvalidArguments;
-  }
-  GLuint* index = GetSharedMemoryAs<GLuint*>(
-      index_shm_id, index_shm_offset, sizeof(GLuint));
-  if (!index) {
-    return error::kOutOfBounds;
-  }
-  if (*index != GL_INVALID_INDEX) {
-    return error::kInvalidArguments;
-  }
-  return DoGetProgramResourceIndex(
-      program, program_interface, name_str.c_str(), index);
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceLocation(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsES31ForTestingContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::GetProgramResourceLocation& c =
-      *static_cast<const volatile gles2::cmds::GetProgramResourceLocation*>(
-          cmd_data);
-  GLuint program = static_cast<GLuint>(c.program);
-  GLenum program_interface = static_cast<GLenum>(c.program_interface);
-  uint32_t name_bucket_id = c.name_bucket_id;
-  uint32_t location_shm_id = c.location_shm_id;
-  uint32_t location_shm_offset = c.location_shm_offset;
-
-  Bucket* bucket = GetBucket(name_bucket_id);
-  if (!bucket) {
-    return error::kInvalidArguments;
-  }
-  std::string name_str;
-  if (!bucket->GetAsString(&name_str)) {
-    return error::kInvalidArguments;
-  }
-  GLint* location = GetSharedMemoryAs<GLint*>(
-      location_shm_id, location_shm_offset, sizeof(GLint));
-  if (!location) {
-    return error::kOutOfBounds;
-  }
-  if (*location != -1) {
-    return error::kInvalidArguments;
-  }
-  return DoGetProgramResourceLocation(
-      program, program_interface, name_str.c_str(), location);
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleGetProgramResourceName(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsES31ForTestingContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::GetProgramResourceName& c =
-      *static_cast<const volatile gles2::cmds::GetProgramResourceName*>(
-          cmd_data);
-  GLuint program = static_cast<GLuint>(c.program);
-  GLenum program_interface = static_cast<GLenum>(c.program_interface);
-  GLuint index = static_cast<GLuint>(c.index);
-  uint32_t name_bucket_id = c.name_bucket_id;
-  uint32_t result_shm_id = c.result_shm_id;
-  uint32_t result_shm_offset = c.result_shm_offset;
-
-  typedef cmds::GetProgramResourceName::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>(
-      result_shm_id, result_shm_offset, sizeof(*result));
-  if (!result) {
-    return error::kOutOfBounds;
-  }
-  // Check that the client initialized the result.
-  if (*result != 0) {
-    return error::kInvalidArguments;
-  }
-  std::string name;
-  error::Error error =
-      DoGetProgramResourceName(program, program_interface, index, &name);
-  if (error != error::kNoError) {
-    return error;
-  }
-  *result = 1;
-  Bucket* bucket = CreateBucket(name_bucket_id);
-  bucket->SetFromString(name.c_str());
   return error::kNoError;
 }
 

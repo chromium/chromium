@@ -948,9 +948,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                    "missing GL_ANGLE_request_extension");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().khr_debug,
                    "missing GL_KHR_debug");
-  FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(context_type) ||
-                       feature_info_->gl_version_info().IsAtLeastGLES(3, 1),
-                   "ES 3.1 context type requires an ES 3.1 ANGLE context");
 
 #undef FAIL_INIT_IF_NOT
 
@@ -988,12 +985,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     bound_buffers_[GL_COPY_WRITE_BUFFER] = 0;
     bound_buffers_[GL_TRANSFORM_FEEDBACK_BUFFER] = 0;
     bound_buffers_[GL_UNIFORM_BUFFER] = 0;
-  }
-  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 1)) {
-    bound_buffers_[GL_ATOMIC_COUNTER_BUFFER] = 0;
-    bound_buffers_[GL_SHADER_STORAGE_BUFFER] = 0;
-    bound_buffers_[GL_DRAW_INDIRECT_BUFFER] = 0;
-    bound_buffers_[GL_DISPATCH_INDIRECT_BUFFER] = 0;
   }
   bound_element_array_buffer_dirty_ = false;
 
@@ -1737,8 +1728,6 @@ error::Error GLES2DecoderPassthroughImpl::PatchGetNumericResults(GLenum pname,
     case GL_COPY_READ_BUFFER_BINDING:
     case GL_COPY_WRITE_BUFFER_BINDING:
     case GL_UNIFORM_BUFFER_BINDING:
-    case GL_DISPATCH_INDIRECT_BUFFER_BINDING:
-    case GL_DRAW_INDIRECT_BUFFER_BINDING:
       if (*params != 0 &&
           !GetClientID(&resources_->buffer_id_map, *params, params)) {
         return error::kInvalidArguments;

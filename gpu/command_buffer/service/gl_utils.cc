@@ -221,14 +221,6 @@ void PopulateGLCapabilities(GLCapabilities* caps,
                   &caps->num_program_binary_formats);
     glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
                   &caps->uniform_buffer_offset_alignment);
-    if (feature_info->IsES31ForTestingContext()) {
-      glGetIntegerv(GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS,
-                    &caps->max_atomic_counter_buffer_bindings);
-      glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS,
-                    &caps->max_shader_storage_buffer_bindings);
-      glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT,
-                    &caps->shader_storage_buffer_offset_alignment);
-    }
   }
   if (feature_info->feature_flags().multisampled_render_to_texture ||
       feature_info->feature_flags().chromium_framebuffer_multisample ||
@@ -238,11 +230,7 @@ void PopulateGLCapabilities(GLCapabilities* caps,
 
   if (feature_info->IsWebGL2OrES3OrHigherContext()) {
     caps->major_version = 3;
-    if (feature_info->IsES31ForTestingContext()) {
-      caps->minor_version = 1;
-    } else {
-      caps->minor_version = 0;
-    }
+    caps->minor_version = 0;
   }
 }
 
@@ -346,22 +334,20 @@ bool CheckUniqueAndNonNullIds(GLsizei n, const GLuint* client_ids) {
 }
 
 const char* GetServiceVersionString(const FeatureInfo* feature_info) {
-  if (feature_info->IsWebGL2OrES3Context())
+  if (feature_info->IsWebGL2OrES3Context()) {
     return "OpenGL ES 3.0 Chromium";
-  else if (feature_info->IsES31ForTestingContext()) {
-    return "OpenGL ES 3.1 Chromium";
-  } else
+  } else {
     return "OpenGL ES 2.0 Chromium";
+  }
 }
 
 const char* GetServiceShadingLanguageVersionString(
     const FeatureInfo* feature_info) {
-  if (feature_info->IsWebGL2OrES3Context())
+  if (feature_info->IsWebGL2OrES3Context()) {
     return "OpenGL ES GLSL ES 3.0 Chromium";
-  else if (feature_info->IsES31ForTestingContext()) {
-    return "OpenGL ES GLSL ES 3.1 Chromium";
-  } else
+  } else {
     return "OpenGL ES GLSL ES 1.0 Chromium";
+  }
 }
 
 void LogGLDebugMessage(GLenum source,

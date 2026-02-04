@@ -23,10 +23,9 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
         return gpu::mojom::ContextType::kWebGL2;
       case gpu::CONTEXT_TYPE_OPENGLES2:
         return gpu::mojom::ContextType::kOpenGLES2;
-      // OPENGLES3 and OPENGLES31_FOR_TESTING should not be serialized as there
-      // are no production usages and it is planned to be removed.
+      // OPENGLES3  should not be serialized as there are no production usages
+      // and it is planned to be removed.
       case gpu::CONTEXT_TYPE_OPENGLES3:
-      case gpu::CONTEXT_TYPE_OPENGLES31_FOR_TESTING:
         NOTREACHED();
     }
   }
@@ -42,10 +41,9 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
       case gpu::mojom::ContextType::kOpenGLES2:
         *out = gpu::CONTEXT_TYPE_OPENGLES2;
         return true;
-      // OPENGLES3 and OPENGLES31_FOR_TESTING should not be serialized as there
-      // are no production usages and it is planned to be removed.
+      // OPENGLES3 should not be serialized as there are no production usages
+      // and it is planned to be removed.
       case gpu::mojom::ContextType::kOpenGLES3:
-      case gpu::mojom::ContextType::kOpenGLES31ForTesting:
         return false;
     }
     return false;

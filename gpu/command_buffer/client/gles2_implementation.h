@@ -190,19 +190,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
       GLint* values);
   bool GetQueryObjectValueHelper(
       const char* function_name, GLuint id, GLenum pname, GLuint64* params);
-  bool GetProgramInterfaceivHelper(
-      GLuint program, GLenum program_interface, GLenum pname, GLint* params);
-  GLuint GetProgramResourceIndexHelper(
-      GLuint program, GLenum program_interface, const char* name);
-  bool GetProgramResourceNameHelper(
-      GLuint program, GLenum program_interface, GLuint index, GLsizei bufsize,
-      GLsizei* length, char* name);
-  bool GetProgramResourceivHelper(
-      GLuint program, GLenum program_interface, GLuint index,
-      GLsizei prop_count, const GLenum* props, GLsizei bufsize, GLsizei* length,
-      GLint* params);
-  GLint GetProgramResourceLocationHelper(
-      GLuint program, GLenum program_interface, const char* name);
 
   const GLCapabilities& gl_capabilities() const { return gl_capabilities_; }
 
@@ -728,14 +715,10 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   GLuint current_program_;
 
   GLuint bound_array_buffer_;
-  GLuint bound_atomic_counter_buffer_;
   GLuint bound_copy_read_buffer_;
   GLuint bound_copy_write_buffer_;
-  GLuint bound_dispatch_indirect_buffer_;
-  GLuint bound_draw_indirect_buffer_;
   GLuint bound_pixel_pack_buffer_;
   GLuint bound_pixel_unpack_buffer_;
-  GLuint bound_shader_storage_buffer_;
   GLuint bound_transform_feedback_buffer_;
   GLuint bound_uniform_buffer_;
   // We don't cache the currently bound transform feedback buffer, because

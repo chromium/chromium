@@ -1611,8 +1611,6 @@ _NAMED_TYPE_INFO = {
 #               'extension': True.
 # not_shared:   For GENn types, True if objects can't be shared between contexts
 # es3:          ES3 API. True if the function requires an ES3 or WebGL2 context.
-# es31:         ES31 API. True if the function requires an WebGL2Compute
-#               context.
 
 _FUNCTION_INFO = {
   'ActiveTexture': {
@@ -1660,13 +1658,6 @@ _FUNCTION_INFO = {
     'gen_func': 'GenFramebuffersEXT',
     'client_test': False,
     'trace_level': 1,
-  },
-  'BindImageTexture':{
-    'cmd_args': 'GLuint unit, GLuint texture, GLint level, GLboolean layered, '
-                'GLint layer, GLenum access, GLenum format',
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True,
   },
   'BindRenderbuffer': {
     'type': 'Bind',
@@ -2071,32 +2062,11 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'unit_test': False,
   },
-  'DispatchCompute': {
-    'cmd_args': 'GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z',
-    'trace_level': 2,
-    'es31': True,
-    'unit_test': False,
-  },
-  'DispatchComputeIndirect': {
-    'cmd_args': 'GLintptrNotNegative offset',
-    'trace_level': 2,
-    'es31': True,
-    'unit_test': False,
-  },
   'DrawArrays': {
     'type': 'Custom',
     'impl_func': False,
     'cmd_args': 'GLenumDrawMode mode, GLint first, GLsizei count',
     'trace_level': 2,
-  },
-  'DrawArraysIndirect': {
-    'type': 'Custom',
-    'impl_func': False,
-    'cmd_args': 'GLenumDrawMode mode, GLuint offset',
-    'trace_level': 2,
-    'es31': True,
-    'unit_test': False,
-    'client_test': False,
   },
   'DrawElements': {
     'type': 'Custom',
@@ -2105,15 +2075,6 @@ _FUNCTION_INFO = {
                 'GLenumIndexType type, GLuint index_offset',
     'client_test': False,
     'trace_level': 2,
-  },
-  'DrawElementsIndirect': {
-    'type': 'Custom',
-    'impl_func': False,
-    'cmd_args': 'GLenumDrawMode mode, GLenumIndexType type, GLuint offset',
-    'trace_level': 2,
-    'es31': True,
-    'unit_test': False,
-    'client_test': False,
   },
   'DrawRangeElements': {
     'type': 'NoCommand',
@@ -2316,15 +2277,6 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoGetBooleanv',
     'gl_test_func': 'glGetIntegerv',
   },
-  'GetBooleani_v': {
-    'type': 'GETn',
-    'result': ['SizedResult<GLboolean>'],
-    'decoder_func': 'DoGetBooleani_v',
-    'shadowed': True,
-    'client_test': False,
-    'unit_test': False,
-    'es31': True,
-  },
   'GetBufferParameteri64v': {
     'type': 'GETn',
     'result': ['SizedResult<GLint64>'],
@@ -2435,60 +2387,6 @@ _FUNCTION_INFO = {
   'GetProgramInfoLog': {
     'type': 'STRn',
     'expectation': False,
-  },
-  'GetProgramInterfaceiv': {
-    'type': 'GETn',
-    'decoder_func': 'DoGetProgramInterfaceiv',
-    'result': ['SizedResult<GLint>'],
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True,
-  },
-  'GetProgramResourceiv': {
-    'type': 'Custom',
-    'data_transfer_methods': ['shm'],
-    'cmd_args':
-        'GLidProgram program, GLenum program_interface, GLuint index, '
-        'uint32_t props_bucket_id, GLint* params',
-    'result': ['SizedResult<GLint>'],
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True,
-  },
-  'GetProgramResourceIndex': {
-    'type': 'Custom',
-    'data_transfer_methods': ['shm'],
-    'cmd_args':
-        'GLidProgram program, GLenum program_interface, '
-        'uint32_t name_bucket_id, GLuint* index',
-    'result': ['GLuint'],
-    'error_return': 'GL_INVALID_INDEX',
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True,
-  },
-  'GetProgramResourceLocation': {
-    'type': 'Custom',
-    'data_transfer_methods': ['shm'],
-    'cmd_args':
-        'GLidProgram program, GLenum program_interface, '
-        'uint32_t name_bucket_id, GLint* location',
-    'result': ['GLint'],
-    'error_return': -1,
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True,
-  },
-  'GetProgramResourceName': {
-    'type': 'Custom',
-    'data_transfer_methods': ['shm'],
-    'cmd_args':
-        'GLidProgram program, GLenum program_interface, GLuint index, '
-        'uint32_t name_bucket_id, void* result',
-    'result': ['int32_t'],
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True,
   },
   'GetRenderbufferParameteriv': {
     'type': 'GETn',
@@ -2815,20 +2713,6 @@ _FUNCTION_INFO = {
     'es3': True,
     'result': ['uint32_t'],
     'trace_level': 1,
-  },
-  # MemoryBarrierEXT is in order to avoid the conflicting MemoryBarrier macro
-  # in windows.
-  'MemoryBarrierEXT': {
-    'cmd_args': 'GLbitfield barriers',
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True
-  },
-  'MemoryBarrierByRegion': {
-    'cmd_args': 'GLbitfield barriers',
-    'unit_test': False,
-    'trace_level': 2,
-    'es31': True
   },
   'MultiDrawBeginCHROMIUM': {
     'decoder_func': 'DoMultiDrawBeginCHROMIUM',

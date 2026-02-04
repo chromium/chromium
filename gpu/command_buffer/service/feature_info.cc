@@ -931,7 +931,6 @@ void FeatureInfo::InitializeFeatures() {
         enable_texture_storage = false;
         break;
       case CONTEXT_TYPE_OPENGLES3:
-      case CONTEXT_TYPE_OPENGLES31_FOR_TESTING:
         enable_texture_format_bgra8888 = false;
         break;
       case CONTEXT_TYPE_WEBGL1:
@@ -2087,10 +2086,6 @@ bool FeatureInfo::IsWebGL2OrES3Context() const {
 
 bool FeatureInfo::IsWebGL2OrES3OrHigherContext() const {
   return IsWebGL2OrES3OrHigherContextType(context_type_);
-}
-
-bool FeatureInfo::IsES31ForTestingContext() const {
-  return IsES31ForTestingContextType(context_type_);
 }
 
 void FeatureInfo::AddExtensionString(std::string_view extension) {

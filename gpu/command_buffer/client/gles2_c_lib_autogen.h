@@ -423,11 +423,6 @@ GLint GL_APIENTRY GLES2GetAttribLocation(GLuint program, const char* name) {
 void GL_APIENTRY GLES2GetBooleanv(GLenum pname, GLboolean* params) {
   gles2::GetGLContext()->GetBooleanv(pname, params);
 }
-void GL_APIENTRY GLES2GetBooleani_v(GLenum pname,
-                                    GLuint index,
-                                    GLboolean* data) {
-  gles2::GetGLContext()->GetBooleani_v(pname, index, data);
-}
 void GL_APIENTRY GLES2GetBufferParameteri64v(GLenum target,
                                              GLenum pname,
                                              GLint64* params) {
@@ -1281,79 +1276,6 @@ void GL_APIENTRY GLES2FramebufferParameteri(GLenum target,
                                             GLint param) {
   gles2::GetGLContext()->FramebufferParameteri(target, pname, param);
 }
-void GL_APIENTRY GLES2BindImageTexture(GLuint unit,
-                                       GLuint texture,
-                                       GLint level,
-                                       GLboolean layered,
-                                       GLint layer,
-                                       GLenum access,
-                                       GLenum format) {
-  gles2::GetGLContext()->BindImageTexture(unit, texture, level, layered, layer,
-                                          access, format);
-}
-void GL_APIENTRY GLES2DispatchCompute(GLuint num_groups_x,
-                                      GLuint num_groups_y,
-                                      GLuint num_groups_z) {
-  gles2::GetGLContext()->DispatchCompute(num_groups_x, num_groups_y,
-                                         num_groups_z);
-}
-void GL_APIENTRY GLES2DispatchComputeIndirect(GLintptr offset) {
-  gles2::GetGLContext()->DispatchComputeIndirect(offset);
-}
-void GL_APIENTRY GLES2DrawArraysIndirect(GLenum mode, const void* offset) {
-  gles2::GetGLContext()->DrawArraysIndirect(mode, offset);
-}
-void GL_APIENTRY GLES2DrawElementsIndirect(GLenum mode,
-                                           GLenum type,
-                                           const void* offset) {
-  gles2::GetGLContext()->DrawElementsIndirect(mode, type, offset);
-}
-void GL_APIENTRY GLES2GetProgramInterfaceiv(GLuint program,
-                                            GLenum program_interface,
-                                            GLenum pname,
-                                            GLint* params) {
-  gles2::GetGLContext()->GetProgramInterfaceiv(program, program_interface,
-                                               pname, params);
-}
-GLuint GL_APIENTRY GLES2GetProgramResourceIndex(GLuint program,
-                                                GLenum program_interface,
-                                                const char* name) {
-  return gles2::GetGLContext()->GetProgramResourceIndex(
-      program, program_interface, name);
-}
-void GL_APIENTRY GLES2GetProgramResourceName(GLuint program,
-                                             GLenum program_interface,
-                                             GLuint index,
-                                             GLsizei bufsize,
-                                             GLsizei* length,
-                                             char* name) {
-  gles2::GetGLContext()->GetProgramResourceName(program, program_interface,
-                                                index, bufsize, length, name);
-}
-void GL_APIENTRY GLES2GetProgramResourceiv(GLuint program,
-                                           GLenum program_interface,
-                                           GLuint index,
-                                           GLsizei prop_count,
-                                           const GLenum* props,
-                                           GLsizei bufsize,
-                                           GLsizei* length,
-                                           GLint* params) {
-  gles2::GetGLContext()->GetProgramResourceiv(program, program_interface, index,
-                                              prop_count, props, bufsize,
-                                              length, params);
-}
-GLint GL_APIENTRY GLES2GetProgramResourceLocation(GLuint program,
-                                                  GLenum program_interface,
-                                                  const char* name) {
-  return gles2::GetGLContext()->GetProgramResourceLocation(
-      program, program_interface, name);
-}
-void GL_APIENTRY GLES2MemoryBarrierEXT(GLbitfield barriers) {
-  gles2::GetGLContext()->MemoryBarrierEXT(barriers);
-}
-void GL_APIENTRY GLES2MemoryBarrierByRegion(GLbitfield barriers) {
-  gles2::GetGLContext()->MemoryBarrierByRegion(barriers);
-}
 GLuint GL_APIENTRY GLES2GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                                     GLsizei count,
                                                     GLenum type,
@@ -2136,10 +2058,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         reinterpret_cast<GLES2FunctionPointer>(glGetBooleanv),
     },
     {
-        "glGetBooleani_v",
-        reinterpret_cast<GLES2FunctionPointer>(glGetBooleani_v),
-    },
-    {
         "glGetBufferParameteri64v",
         reinterpret_cast<GLES2FunctionPointer>(glGetBufferParameteri64v),
     },
@@ -2834,54 +2752,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glFramebufferParameteri",
         reinterpret_cast<GLES2FunctionPointer>(glFramebufferParameteri),
-    },
-    {
-        "glBindImageTexture",
-        reinterpret_cast<GLES2FunctionPointer>(glBindImageTexture),
-    },
-    {
-        "glDispatchCompute",
-        reinterpret_cast<GLES2FunctionPointer>(glDispatchCompute),
-    },
-    {
-        "glDispatchComputeIndirect",
-        reinterpret_cast<GLES2FunctionPointer>(glDispatchComputeIndirect),
-    },
-    {
-        "glDrawArraysIndirect",
-        reinterpret_cast<GLES2FunctionPointer>(glDrawArraysIndirect),
-    },
-    {
-        "glDrawElementsIndirect",
-        reinterpret_cast<GLES2FunctionPointer>(glDrawElementsIndirect),
-    },
-    {
-        "glGetProgramInterfaceiv",
-        reinterpret_cast<GLES2FunctionPointer>(glGetProgramInterfaceiv),
-    },
-    {
-        "glGetProgramResourceIndex",
-        reinterpret_cast<GLES2FunctionPointer>(glGetProgramResourceIndex),
-    },
-    {
-        "glGetProgramResourceName",
-        reinterpret_cast<GLES2FunctionPointer>(glGetProgramResourceName),
-    },
-    {
-        "glGetProgramResourceiv",
-        reinterpret_cast<GLES2FunctionPointer>(glGetProgramResourceiv),
-    },
-    {
-        "glGetProgramResourceLocation",
-        reinterpret_cast<GLES2FunctionPointer>(glGetProgramResourceLocation),
-    },
-    {
-        "glMemoryBarrierEXT",
-        reinterpret_cast<GLES2FunctionPointer>(glMemoryBarrierEXT),
-    },
-    {
-        "glMemoryBarrierByRegion",
-        reinterpret_cast<GLES2FunctionPointer>(glMemoryBarrierByRegion),
     },
     {
         "glGetMaxValueInBufferCHROMIUM",

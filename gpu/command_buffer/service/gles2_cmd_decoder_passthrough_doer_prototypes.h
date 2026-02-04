@@ -18,13 +18,6 @@ error::Error DoBindBufferRange(GLenum target,
                                GLintptr offset,
                                GLsizeiptr size);
 error::Error DoBindFramebuffer(GLenum target, GLuint framebuffer);
-error::Error DoBindImageTexture(GLuint unit,
-                                GLuint texture,
-                                GLint level,
-                                GLboolean layered,
-                                GLint layer,
-                                GLenum access,
-                                GLenum format);
 error::Error DoBindRenderbuffer(GLenum target, GLuint renderbuffer);
 error::Error DoBindSampler(GLuint unit, GLuint sampler);
 error::Error DoBindTexture(GLenum target, GLuint texture);
@@ -170,19 +163,11 @@ error::Error DoDepthRangef(GLclampf zNear, GLclampf zFar);
 error::Error DoDetachShader(GLuint program, GLuint shader);
 error::Error DoDisable(GLenum cap);
 error::Error DoDisableVertexAttribArray(GLuint index);
-error::Error DoDispatchCompute(GLuint num_groups_x,
-                               GLuint num_groups_y,
-                               GLuint num_groups_z);
-error::Error DoDispatchComputeIndirect(GLintptr offset);
 error::Error DoDrawArrays(GLenum mode, GLint first, GLsizei count);
-error::Error DoDrawArraysIndirect(GLenum mode, const void* offset);
 error::Error DoDrawElements(GLenum mode,
                             GLsizei count,
                             GLenum type,
                             const void* indices);
-error::Error DoDrawElementsIndirect(GLenum mode,
-                                    GLenum type,
-                                    const void* offset);
 error::Error DoEnable(GLenum cap);
 error::Error DoEnableVertexAttribArray(GLuint index);
 error::Error DoFenceSync(GLenum condition, GLbitfield flags, GLuint client_id);
@@ -257,11 +242,6 @@ error::Error DoGetBooleanv(GLenum pname,
                            GLsizei bufsize,
                            GLsizei* length,
                            GLboolean* params);
-error::Error DoGetBooleani_v(GLenum pname,
-                             GLuint index,
-                             GLsizei bufsize,
-                             GLsizei* length,
-                             GLboolean* data);
 error::Error DoGetBufferParameteri64v(GLenum target,
                                       GLenum pname,
                                       GLsizei bufsize,
@@ -316,32 +296,6 @@ error::Error DoGetProgramiv(GLuint program,
                             GLsizei* length,
                             GLint* params);
 error::Error DoGetProgramInfoLog(GLuint program, std::string* infolog);
-error::Error DoGetProgramInterfaceiv(GLuint program,
-                                     GLenum program_interface,
-                                     GLenum pname,
-                                     GLsizei bufsize,
-                                     GLsizei* length,
-                                     GLint* params);
-error::Error DoGetProgramResourceiv(GLuint program,
-                                    GLenum program_interface,
-                                    GLuint index,
-                                    GLsizei prop_count,
-                                    const GLenum* props,
-                                    GLsizei bufsize,
-                                    GLsizei* length,
-                                    GLint* params);
-error::Error DoGetProgramResourceIndex(GLuint program,
-                                       GLenum program_interface,
-                                       const char* name,
-                                       GLuint* index);
-error::Error DoGetProgramResourceLocation(GLuint program,
-                                          GLenum program_interface,
-                                          const char* name,
-                                          GLint* location);
-error::Error DoGetProgramResourceName(GLuint program,
-                                      GLenum program_interface,
-                                      GLuint index,
-                                      std::string* name);
 error::Error DoGetRenderbufferParameteriv(GLenum target,
                                           GLenum pname,
                                           GLsizei bufsize,
@@ -465,8 +419,6 @@ error::Error DoIsTexture(GLuint texture, uint32_t* result);
 error::Error DoIsTransformFeedback(GLuint transformfeedback, uint32_t* result);
 error::Error DoLineWidth(GLfloat width);
 error::Error DoLinkProgram(GLuint program);
-error::Error DoMemoryBarrierEXT(GLbitfield barriers);
-error::Error DoMemoryBarrierByRegion(GLbitfield barriers);
 error::Error DoMultiDrawBeginCHROMIUM(GLsizei drawcount);
 error::Error DoMultiDrawEndCHROMIUM();
 error::Error DoPauseTransformFeedback();

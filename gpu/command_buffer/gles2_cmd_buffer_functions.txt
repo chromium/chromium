@@ -87,7 +87,6 @@ GL_APICALL void         GL_APIENTRY glGetActiveUniformsiv (GLidProgram program, 
 GL_APICALL void         GL_APIENTRY glGetAttachedShaders (GLidProgram program, GLsizeiNotNegative maxcount, GLsizeiOptional* count, GLuint* shaders);
 GL_APICALL GLint        GL_APIENTRY glGetAttribLocation (GLidProgram program, const char* name);
 GL_APICALL void         GL_APIENTRY glGetBooleanv (GLenumGLState pname, GLboolean* params);
-GL_APICALL void         GL_APIENTRY glGetBooleani_v (GLenumIndexedGLState pname, GLuint index, GLboolean* data);
 GL_APICALL void         GL_APIENTRY glGetBufferParameteri64v (GLenumBufferTarget target, GLenumBufferParameter64 pname, GLint64* params);
 GL_APICALL void         GL_APIENTRY glGetBufferParameteriv (GLenumBufferTarget target, GLenumBufferParameter pname, GLint* params);
 GL_APICALL GLenum       GL_APIENTRY glGetError (void);
@@ -273,22 +272,6 @@ GL_APICALL void         GL_APIENTRY glDeleteVertexArraysOES (GLsizeiNotNegative 
 GL_APICALL GLboolean    GL_APIENTRY glIsVertexArrayOES (GLidVertexArray array);
 GL_APICALL void         GL_APIENTRY glBindVertexArrayOES (GLidBindVertexArray array);
 GL_APICALL void         GL_APIENTRY glFramebufferParameteri (GLenumFramebufferTarget target, GLenumFramebufferParameter pname, GLint param);
-
-GL_APICALL void         GL_APIENTRY glBindImageTexture (GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format);
-GL_APICALL void         GL_APIENTRY glDispatchCompute (GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
-GL_APICALL void         GL_APIENTRY glDispatchComputeIndirect (GLintptrNotNegative offset);
-
-GL_APICALL void         GL_APIENTRY glDrawArraysIndirect (GLenumDrawMode mode, const void* offset);
-GL_APICALL void         GL_APIENTRY glDrawElementsIndirect (GLenumDrawMode mode, GLenumIndexType type, const void* offset);
-
-GL_APICALL void         GL_APIENTRY glGetProgramInterfaceiv (GLidProgram program, GLenum program_interface, GLenum pname, GLint* params);
-GL_APICALL GLuint       GL_APIENTRY glGetProgramResourceIndex (GLidProgram program, GLenum program_interface, const char* name);
-GL_APICALL void         GL_APIENTRY glGetProgramResourceName (GLidProgram program, GLenum program_interface, GLuint index, GLsizeiNotNegative bufsize, GLsizeiOptional* length, char* name);
-GL_APICALL void         GL_APIENTRY glGetProgramResourceiv (GLidProgram program, GLenum program_interface, GLuint index, GLsizeiNotNegative prop_count, const GLenum* props, GLsizeiNotNegative bufsize, GLsizeiOptional* length, GLint* params);
-GL_APICALL GLint        GL_APIENTRY glGetProgramResourceLocation (GLidProgram program, GLenum program_interface, const char* name);
-
-GL_APICALL void         GL_APIENTRY glMemoryBarrierEXT (GLbitfield barriers);
-GL_APICALL void         GL_APIENTRY glMemoryBarrierByRegion (GLbitfield barriers);
 
 // Non-GL commands.
 GL_APICALL GLuint       GL_APIENTRY glGetMaxValueInBufferCHROMIUM (GLidBuffer buffer_id, GLsizei count, GLenumGetMaxIndexType type, GLuint offset);

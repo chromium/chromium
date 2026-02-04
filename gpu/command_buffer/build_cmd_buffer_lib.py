@@ -1053,12 +1053,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
       f.write("""if (!feature_info_->IsWebGL2OrES3OrHigherContext())
           return error::kUnknownCommand;
         """)
-    if func.IsES31():
-      f.write("""return error::kUnknownCommand;
-        }
-
-        """)
-      return
     if func.GetCmdArgs():
       f.write("""const volatile %(prefix)s::cmds::%(name)s& c =
             *static_cast<const volatile %(prefix)s::cmds::%(name)s*>(cmd_data);
@@ -1096,8 +1090,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
   def WriteServiceImplementation(self, func, f):
     """Writes the service implementation for a command."""
     self.WriteServiceHandlerFunctionHeader(func, f)
-    if func.IsES31():
-      return
     self.WriteHandlerExtensionCheck(func, f)
     self.WriteServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
@@ -1110,8 +1102,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
   def WriteImmediateServiceImplementation(self, func, f):
     """Writes the service implementation for an immediate version of command."""
     self.WriteServiceHandlerFunctionHeader(func, f)
-    if func.IsES31():
-      return
     self.WriteHandlerExtensionCheck(func, f)
     self.WriteImmediateServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
@@ -1124,8 +1114,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
   def WriteBucketServiceImplementation(self, func, f):
     """Writes the service implementation for a bucket version of command."""
     self.WriteServiceHandlerFunctionHeader(func, f)
-    if func.IsES31():
-      return
     self.WriteHandlerExtensionCheck(func, f)
     self.WriteBucketServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
@@ -1144,10 +1132,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
       f.write("""if (!feature_info_->IsWebGL2OrES3OrHigherContext())
           return error::kUnknownCommand;
         """)
-    if func.IsES31():
-      f.write("""if (!feature_info_->IsES31ForTestingContext()) {
-          return error::kUnknownCommand;
-        }""")
     if func.GetCmdArgs():
       f.write("""const volatile gles2::cmds::%(name)s& c =
             *static_cast<const volatile gles2::cmds::%(name)s*>(cmd_data);
@@ -1829,18 +1813,12 @@ class CustomHandler(TypeHandler):
 
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    if func.IsES31():
-      TypeHandler.WriteServiceImplementation(self, func, f)
 
   def WriteImmediateServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    if func.IsES31():
-      TypeHandler.WriteImmediateServiceImplementation(self, func, f)
 
   def WriteBucketServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    if func.IsES31():
-      TypeHandler.WriteBucketServiceImplementation(self, func, f)
 
   def WritePassthroughServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
@@ -2504,7 +2482,7 @@ class DeleteHandler(TypeHandler):
 
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    if func.IsES3() or func.IsES31():
+    if func.IsES3():
       TypeHandler.WriteServiceImplementation(self, func, f)
     # HandleDeleteShader and HandleDeleteProgram are manually written.
 
@@ -2808,8 +2786,6 @@ class GETnHandler(TypeHandler):
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
     self.WriteServiceHandlerFunctionHeader(func, f)
-    if func.IsES31():
-      return
     last_arg = func.GetLastOriginalArg()
     # All except shm_id and shm_offset.
     all_but_last_args = func.GetCmdArgs()[:-2]
@@ -4298,8 +4274,6 @@ class GLcharNHandler(CustomHandler):
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
     self.WriteServiceHandlerFunctionHeader(func, f)
-    if func.IsES31():
-      return
     f.write("""
   GLuint bucket_id = static_cast<GLuint>(c.%(bucket_id)s);
   Bucket* bucket = GetBucket(bucket_id);
@@ -4381,8 +4355,6 @@ TEST_P(%(test_name)s, %(name)sInvalidArgsBadSharedMemoryId) {
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
     self.WriteServiceHandlerFunctionHeader(func, f)
-    if func.IsES31():
-      return
     self.WriteHandlerExtensionCheck(func, f)
     args = func.GetOriginalArgs()
     for arg in args:
@@ -4620,8 +4592,6 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
 
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    if func.IsES31():
-      TypeHandler.WriteServiceImplementation(self, func, f)
 
   def WritePassthroughServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
@@ -5582,10 +5552,6 @@ class Function():
     """Returns whether the function requires an ES3 context or not."""
     return self.GetInfo('es3', False)
 
-  def IsES31(self):
-    """Returns whether the function requires an ES31 context or not."""
-    return self.GetInfo('es31', False)
-
   def GetInfo(self, name, default = None):
     """Returns a value from the function info for this function."""
     if name in self.info:
@@ -5615,8 +5581,7 @@ class Function():
   def IsCoreGLFunction(self):
     return (not self.IsExtension() and
             not self.GetInfo('pepper_interface') and
-            not self.IsES3() and
-            not self.IsES31())
+            not self.IsES3())
 
   def InPepperInterface(self, interface):
     ext = self.GetInfo('pepper_interface')

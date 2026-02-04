@@ -235,7 +235,6 @@ virtual void GetAttachedShaders(GLuint program,
                                 GLuint* shaders) = 0;
 virtual GLint GetAttribLocation(GLuint program, const char* name) = 0;
 virtual void GetBooleanv(GLenum pname, GLboolean* params) = 0;
-virtual void GetBooleani_v(GLenum pname, GLuint index, GLboolean* data) = 0;
 virtual void GetBufferParameteri64v(GLenum target,
                                     GLenum pname,
                                     GLint64* params) = 0;
@@ -662,47 +661,6 @@ virtual void BindVertexArrayOES(GLuint array) = 0;
 virtual void FramebufferParameteri(GLenum target,
                                    GLenum pname,
                                    GLint param) = 0;
-virtual void BindImageTexture(GLuint unit,
-                              GLuint texture,
-                              GLint level,
-                              GLboolean layered,
-                              GLint layer,
-                              GLenum access,
-                              GLenum format) = 0;
-virtual void DispatchCompute(GLuint num_groups_x,
-                             GLuint num_groups_y,
-                             GLuint num_groups_z) = 0;
-virtual void DispatchComputeIndirect(GLintptr offset) = 0;
-virtual void DrawArraysIndirect(GLenum mode, const void* offset) = 0;
-virtual void DrawElementsIndirect(GLenum mode,
-                                  GLenum type,
-                                  const void* offset) = 0;
-virtual void GetProgramInterfaceiv(GLuint program,
-                                   GLenum program_interface,
-                                   GLenum pname,
-                                   GLint* params) = 0;
-virtual GLuint GetProgramResourceIndex(GLuint program,
-                                       GLenum program_interface,
-                                       const char* name) = 0;
-virtual void GetProgramResourceName(GLuint program,
-                                    GLenum program_interface,
-                                    GLuint index,
-                                    GLsizei bufsize,
-                                    GLsizei* length,
-                                    char* name) = 0;
-virtual void GetProgramResourceiv(GLuint program,
-                                  GLenum program_interface,
-                                  GLuint index,
-                                  GLsizei prop_count,
-                                  const GLenum* props,
-                                  GLsizei bufsize,
-                                  GLsizei* length,
-                                  GLint* params) = 0;
-virtual GLint GetProgramResourceLocation(GLuint program,
-                                         GLenum program_interface,
-                                         const char* name) = 0;
-virtual void MemoryBarrierEXT(GLbitfield barriers) = 0;
-virtual void MemoryBarrierByRegion(GLbitfield barriers) = 0;
 virtual GLuint GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                            GLsizei count,
                                            GLenum type,

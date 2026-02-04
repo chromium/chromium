@@ -1014,50 +1014,6 @@ bool ProgramInfoManager::GetUniformIndices(GLES2Implementation* gl,
   return gl->GetUniformIndicesHelper(program, count, names, indices);
 }
 
-bool ProgramInfoManager::GetProgramInterfaceiv(
-    GLES2Implementation* gl, GLuint program, GLenum program_interface,
-    GLenum pname, GLint* params) {
-  // TODO(jiajie.hu@intel.com): The info is not cached for now, so always
-  // fallback to the IPC path.
-  return false;
-}
-
-GLuint ProgramInfoManager::GetProgramResourceIndex(
-    GLES2Implementation* gl, GLuint program, GLenum program_interface,
-    const char* name) {
-  // TODO(jiajie.hu@intel.com): The info is not cached for now, so always
-  // fallback to the IPC path.
-  return gl->GetProgramResourceIndexHelper(program, program_interface, name);
-}
-
-bool ProgramInfoManager::GetProgramResourceName(
-    GLES2Implementation* gl, GLuint program, GLenum program_interface,
-    GLuint index, GLsizei bufsize, GLsizei* length, char* name) {
-  // TODO(jiajie.hu@intel.com): The info is not cached for now, so always
-  // fallback to the IPC path.
-  return gl->GetProgramResourceNameHelper(
-      program, program_interface, index, bufsize, length, name);
-}
-
-bool ProgramInfoManager::GetProgramResourceiv(
-    GLES2Implementation* gl, GLuint program, GLenum program_interface,
-    GLuint index, GLsizei prop_count, const GLenum* props, GLsizei bufsize,
-    GLsizei* length, GLint* params) {
-  // TODO(jiajie.hu@intel.com): The info is not cached for now, so always
-  // fallback to the IPC path.
-  return gl->GetProgramResourceivHelper(
-      program, program_interface, index, prop_count, props, bufsize, length,
-      params);
-}
-
-GLint ProgramInfoManager::GetProgramResourceLocation(
-    GLES2Implementation* gl, GLuint program, GLenum program_interface,
-    const char* name) {
-  // TODO(jiajie.hu@intel.com): The info is not cached for now, so always
-  // fallback to the IPC path.
-  return gl->GetProgramResourceLocationHelper(program, program_interface, name);
-}
-
 void ProgramInfoManager::UpdateProgramInfo(GLuint program,
                                            base::span<const int8_t> data,
                                            ProgramInfoType type) {

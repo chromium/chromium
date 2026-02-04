@@ -233,10 +233,8 @@ struct Config {
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
     context_type = CONTEXT_TYPE_OPENGLES2;
 #else
-    bool es31 = it.GetBit();
     if (es3) {
-      context_type =
-          es31 ? CONTEXT_TYPE_OPENGLES31_FOR_TESTING : CONTEXT_TYPE_OPENGLES3;
+      context_type = CONTEXT_TYPE_OPENGLES3;
     } else {
       context_type = CONTEXT_TYPE_OPENGLES2;
     }
@@ -276,8 +274,7 @@ struct Config {
     gl_context_attribs.allow_client_arrays = false;
     gl_context_attribs.client_major_es_version =
         IsWebGL2OrES3OrHigherContextType(context_type) ? 3 : 2;
-    gl_context_attribs.client_minor_es_version =
-        IsES31ForTestingContextType(context_type) ? 1 : 0;
+    gl_context_attribs.client_minor_es_version = 0;
 #endif
 
     return it.consumed_bytes();

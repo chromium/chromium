@@ -1299,12 +1299,6 @@ error::Error GLES2DecoderImpl::HandleGetBooleanv(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleGetBooleani_v(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
 error::Error GLES2DecoderImpl::HandleGetBufferParameteri64v(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -4684,78 +4678,6 @@ error::Error GLES2DecoderImpl::HandleFramebufferParameteri(
   }
   DoFramebufferParameteri(target, pname, param);
   return error::kNoError;
-}
-
-error::Error GLES2DecoderImpl::HandleBindImageTexture(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleDispatchCompute(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleDispatchComputeIndirect(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleDrawArraysIndirect(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleDrawElementsIndirect(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleGetProgramInterfaceiv(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleGetProgramResourceIndex(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleGetProgramResourceName(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleGetProgramResourceiv(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleGetProgramResourceLocation(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleMemoryBarrierEXT(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
-}
-
-error::Error GLES2DecoderImpl::HandleMemoryBarrierByRegion(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return error::kUnknownCommand;
 }
 
 error::Error GLES2DecoderImpl::HandleGetMaxValueInBufferCHROMIUM(

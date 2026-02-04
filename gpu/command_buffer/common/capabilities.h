@@ -158,9 +158,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT GLCapabilities {
   int max_transform_feedback_separate_components = 0;
   int64_t max_uniform_block_size = 0;
   int max_uniform_buffer_bindings = 0;
-  int max_atomic_counter_buffer_bindings = 0;
-  int max_shader_storage_buffer_bindings = 0;
-  int shader_storage_buffer_offset_alignment = 1;
   int max_varying_components = 0;
   int max_vertex_output_components = 0;
   int max_vertex_uniform_blocks = 0;

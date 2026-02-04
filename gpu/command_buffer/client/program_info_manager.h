@@ -87,23 +87,6 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
       GLES2Implementation* gl, GLuint program, GLenum program_interface,
       GLenum pname, GLint* params);
 
-  GLuint GetProgramResourceIndex(
-      GLES2Implementation* gl, GLuint program, GLenum program_interface,
-      const char* name);
-
-  bool GetProgramResourceName(
-      GLES2Implementation* gl, GLuint program, GLenum program_interface,
-      GLuint index, GLsizei bufsize, GLsizei* length, char* name);
-
-  bool GetProgramResourceiv(
-      GLES2Implementation* gl, GLuint program, GLenum program_interface,
-      GLuint index, GLsizei prop_count, const GLenum* props, GLsizei bufsize,
-      GLsizei* length, GLint* params);
-
-  GLint GetProgramResourceLocation(
-      GLES2Implementation* gl, GLuint program, GLenum program_interface,
-      const char* name);
-
   enum ProgramInfoType {
     kES2,
     kES3UniformBlocks,
