@@ -286,11 +286,38 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
     SchedulingPriority current_priority_ GUARDED_BY(lock());
   };
 
+  // Each thread will have its own priority queue to schedule sequences
+  // created on that thread.
+  struct PerThreadState {
+    PerThreadState();
+    PerThreadState(PerThreadState&&);
+    ~PerThreadState();
+    PerThreadState& operator=(PerThreadState&&);
+
+    // Keep track of the number of sequences that post tasks to this thread, to
+    // determine when map entries can be pruned.
+    int num_sequences = 0;
+
+    // Sorted list of SchedulingState that contains sequences that Runnable. Is
+    // only used so that GetSortedRunnableSequences does not have to re-allocate
+    // a vector. It is rebuilt at each call to GetSortedRunnableSequences.
+    std::vector<SchedulingState> sorted_sequences;
+
+    // Indicates if the scheduler is actively running tasks on this thread.
+    bool running = false;
+
+    // Indicates when the next task run was scheduled
+    base::TimeTicks run_next_task_scheduled;
+  };
+
   base::Lock& lock() const LOCK_RETURNED(task_graph_.lock()) {
     return task_graph_.lock();
   }
 
   Sequence* GetSequence(SequenceId sequence_id)
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
+
+  PerThreadState& GetThreadState(base::SingleThreadTaskRunner* task_runner)
       EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   void ScheduleTaskHelper(Scheduler::Task task)
@@ -300,8 +327,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
 
   // Returns a sorted list of runnable sequences.
   const std::vector<SchedulingState>& GetSortedRunnableSequences(
-      base::SingleThreadTaskRunner* task_runner)
-      EXCLUSIVE_LOCKS_REQUIRED(lock());
+      PerThreadState& thread_state) EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   // Returns true if there are *any* unblocked tasks in sequences assigned to
   // |task_runner|. This is used to decide if RunNextTask needs to be
@@ -343,25 +369,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
 
   base::MetricsSubSampler metrics_subsampler_ GUARDED_BY(lock());
 
-  // Each thread will have its own priority queue to schedule sequences
-  // created on that thread.
-  struct PerThreadState {
-    PerThreadState();
-    PerThreadState(PerThreadState&&);
-    ~PerThreadState();
-    PerThreadState& operator=(PerThreadState&&);
-
-    // Sorted list of SchedulingState that contains sequences that Runnable. Is
-    // only used so that GetSortedRunnableSequences does not have to re-allocate
-    // a vector. It is rebuilt at each call to GetSortedRunnableSequences.
-    std::vector<SchedulingState> sorted_sequences;
-
-    // Indicates if the scheduler is actively running tasks on this thread.
-    bool running = false;
-
-    // Indicates when the next task run was scheduled
-    base::TimeTicks run_next_task_scheduled;
-  };
   base::flat_map<base::SingleThreadTaskRunner*, PerThreadState>
       per_thread_state_map_ GUARDED_BY(lock());
 
