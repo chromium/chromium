@@ -269,7 +269,7 @@ crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_vp09.00.10.08_prefer-
 # Flaky failures that started when upgrading to Mac 15.4
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_*hvc*prefer-hardware* [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
-crbug.com/416294710 [ angle-metal intel-0x3e9b sequoia ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
+crbug.com/416294710 [ angle-metal graphite-disabled intel-0x3e9b sequoia ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
 
 # Mac Intel SharedImage Synchronization Flakes
