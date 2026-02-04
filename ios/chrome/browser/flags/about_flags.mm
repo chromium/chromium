@@ -123,6 +123,7 @@
 #import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/components/enterprise/analysis/features.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
@@ -2782,6 +2783,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiUpdatedEligibilityName,
      flag_descriptions::kGeminiUpdatedEligibilityDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiUpdatedEligibility)},
+    {"enable-file-download-connector-ios",
+     flag_descriptions::kEnableFileDownloadConnectorIOSName,
+     flag_descriptions::kEnableFileDownloadConnectorIOSDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         enterprise_connectors::kEnableFileDownloadConnectorIOS)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

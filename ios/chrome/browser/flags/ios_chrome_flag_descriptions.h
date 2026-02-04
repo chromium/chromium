@@ -333,6 +333,9 @@ extern const char kEnableFeedCardMenuSignInPromoDescription[];
 extern const char kEnableFeedHeaderSettingsName[];
 extern const char kEnableFeedHeaderSettingsDescription[];
 
+extern const char kEnableFileDownloadConnectorIOSName[];
+extern const char kEnableFileDownloadConnectorIOSDescription[];
+
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 

@@ -110,6 +110,7 @@ source_set("flags") {
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/browser/whats_new/coordinator:util",
+    "//ios/components/enterprise/analysis:features",
     "//ios/components/enterprise/data_controls:features",
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",

@@ -551,6 +551,12 @@ const char kEnableFeedHeaderSettingsName[] =
 const char kEnableFeedHeaderSettingsDescription[] =
     "When enabled, some UI elements of the feed header can be modified.";
 
+const char kEnableFileDownloadConnectorIOSName[] =
+    "Enable file download connectors on iOS.";
+const char kEnableFileDownloadConnectorIOSDescription[] =
+    "When enabled, the enterprise DLP file download featured is available on "
+    "iOS. ";
+
 const char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 const char kEnableLensInOmniboxCopiedImageDescription[] =

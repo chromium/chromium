@@ -3324,6 +3324,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-file-download-connector-ios",
+    "owners": [ "mxlg@google.com", "bling-enterprise@google.com" ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "enable-force-dark",
     "owners": [ "beverloo@chromium.org", "pdr@chromium.org" ],
     // This flag enables an automatic dark mode for sites that do not support
