@@ -146,19 +146,25 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * Shows a snackbar asking the user if they want to import NTP settings from another device.
      *
      * @param preferencesToApply The preferences that will be applied.
+     * @param onlyOmniboxPosition Whether only the omnibox position should be considered. If true,
+     *     we only check the omnibox position to determine whether to show the snackbar, and when we
+     *     apply the new settings, only the omnibox position is applied. If false, all NTP settings
+     *     AND the omnibox position are considered (both for determining whether to show the
+     *     snackbar and applying the changes).
      */
     @VisibleForTesting
-    void askToApplyNtpSettingImportIfNeeded(Map<String, Object> preferencesToApply) {
-        if (importedSettingsHavePreferenceChange(preferencesToApply)) {
+    void askToApplyNtpSettingImportIfNeeded(
+            Map<String, Object> preferencesToApply, boolean onlyOmniboxPosition) {
+        if (shouldShowSnackbar(preferencesToApply, onlyOmniboxPosition)) {
             Snackbar offerApplySnackbar =
                     Snackbar.make(
                             mContext.getString(R.string.synced_set_up_snackbar_ask_to_apply),
                             new SnackbarManager.SnackbarController() {
                                 @Override
                                 public void onAction(@Nullable Object actionData) {
-                                    applyAndNotifyNtpSettingImport(preferencesToApply);
-                                    RecordUserAction.record(
-                                            "Android.CrossDeviceSettingImport.Apply");
+                                    recordUma(onlyOmniboxPosition, "Apply");
+                                    applyAndNotifySettingImport(
+                                            preferencesToApply, onlyOmniboxPosition);
                                 }
                             },
                             TYPE_ACTION,
@@ -175,9 +181,12 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * their settings were applied and offering an undo button.
      *
      * @param preferencesToApply The preferences that will be applied.
+     * @param onlyOmniboxPosition Whether only the omnibox position should be considered (see
+     *     askToApplyNtpSettingImportIfNeeded documentation above).
      */
-    private void applyAndNotifyNtpSettingImport(Map<String, Object> preferencesToApply) {
-        if (importedSettingsHavePreferenceChange(preferencesToApply)) {
+    private void applyAndNotifySettingImport(
+            Map<String, Object> preferencesToApply, boolean onlyOmniboxPosition) {
+        if (shouldShowSnackbar(preferencesToApply, onlyOmniboxPosition)) {
             Map<String, Object> currentPreferences = getCurrentSettings();
             Snackbar offerUndoSnackbar =
                     Snackbar.make(
@@ -186,10 +195,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                             new SnackbarManager.SnackbarController() {
                                 @Override
                                 public void onAction(@Nullable Object actionData) {
-                                    applySettings(currentPreferences);
-                                    askToRedoNtpSettingImport(preferencesToApply);
-                                    RecordUserAction.record(
-                                            "Android.CrossDeviceSettingImport.Undo");
+                                    if (onlyOmniboxPosition) {
+                                        applyLocalStateSettings(currentPreferences);
+                                    } else {
+                                        applySettings(currentPreferences);
+                                    }
+
+                                    recordUma(onlyOmniboxPosition, "Undo");
+                                    askToRedoSettingImport(preferencesToApply, onlyOmniboxPosition);
                                 }
                             },
                             Snackbar.TYPE_ACTION,
@@ -207,16 +220,20 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * offered after the user hits undo).
      *
      * @param preferencesToApply The preferences that will be applied during the redo.
+     * @param onlyOmniboxPosition Whether only the omnibox position should be considered (see
+     *     askToApplyNtpSettingImportIfNeeded documentation above).
      */
-    private void askToRedoNtpSettingImport(Map<String, Object> preferencesToApply) {
+    private void askToRedoSettingImport(
+            Map<String, Object> preferencesToApply, boolean onlyOmniboxPosition) {
         Snackbar offerRedoSnackbar =
                 Snackbar.make(
                         mContext.getString(R.string.synced_set_up_snackbar_removed_confirmation),
                         new SnackbarManager.SnackbarController() {
                             @Override
                             public void onAction(@Nullable Object actionData) {
-                                applyAndNotifyNtpSettingImport(preferencesToApply);
-                                RecordUserAction.record("Android.CrossDeviceSettingImport.Redo");
+                                recordUma(onlyOmniboxPosition, "Redo");
+                                applyAndNotifySettingImport(
+                                        preferencesToApply, onlyOmniboxPosition);
                             }
                         },
                         TYPE_ACTION,
@@ -267,6 +284,38 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             if (importedSettingHasPreferenceChange(preferences, userPrefs, key)) return true;
         }
 
+        return importedSettingsHaveOmniboxChange(preferences);
+    }
+
+    /**
+     * @param preferences The preferences to compare with local.
+     * @param onlyOmniboxPosition Whether only the omnibox position should be considered (see
+     *     askToApplyNtpSettingImportIfNeeded documentation above).
+     * @return Whether the undo/redo snackbar should be shown.
+     */
+    private boolean shouldShowSnackbar(
+            Map<String, Object> preferences, boolean onlyOmniboxPosition) {
+        return onlyOmniboxPosition
+                ? importedSettingsHaveOmniboxChange(preferences)
+                : importedSettingsHavePreferenceChange(preferences);
+    }
+
+    /**
+     * @param preferences The preferences to check.
+     * @return whether the user's current omnibox position is different from {@param preferences}.
+     */
+    private boolean importedSettingsHaveOmniboxChange(Map<String, Object> preferences) {
+        PrefService localPrefs = LocalStatePrefs.get();
+        if (localPrefs == null) {
+            return false;
+        }
+
+        @Nullable Object bottomOmniboxValue = preferences.get(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
+        if (bottomOmniboxValue != null
+                && bottomOmniboxValue instanceof Boolean bottomOmniboxBoolean) {
+            return bottomOmniboxBoolean
+                    != localPrefs.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
+        }
         return false;
     }
 
@@ -337,6 +386,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     /**
      * Applies the local state settings from {@param preferencesToApply}.
      *
+     * <p>NOTE: currently, the ONLY local state setting is the omnibox position setting. Refactoring
+     * will be required if more local state settings are added in the future.
+     *
      * @param preferencesToApply The preferences to apply.
      */
     private void applyLocalStateSettings(Map<String, Object> preferencesToApply) {
@@ -349,6 +401,17 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (preferencesToApply.get(omniboxKey) instanceof Boolean booleanValue) {
             localStatePrefs.setBoolean(omniboxKey, booleanValue);
         }
+    }
+
+    /** Logs UMA with suffix {@param suffix} (omnibox-psecific if {@param onlyOmniboxPosition}) */
+    private void recordUma(boolean onlyOmniboxPosition, String suffix) {
+        StringBuilder action = new StringBuilder("Android.CrossDeviceSettingImport");
+        if (onlyOmniboxPosition) {
+            action.append(".OmniboxPosition");
+        }
+        action.append('.');
+        action.append(suffix);
+        RecordUserAction.record(action.toString());
     }
 
     /** Destroys the {@link CrossDeviceSettingImporter}. */

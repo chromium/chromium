@@ -1113,7 +1113,10 @@ if (is_android) {
       "chrome_junit_tests_org.chromium.chrome.browser.sync.synced_set_up") {
     sources = [ "src/org/chromium/chrome/browser/sync/synced_set_up/CrossDeviceSettingImporterUnitTest.java" ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/prefs/android:java",
+    ]
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.tab") {

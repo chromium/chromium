@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.sync.synced_set_up;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +18,7 @@ import android.app.Activity;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,11 +33,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -72,6 +78,8 @@ public class CrossDeviceSettingImporterUnitTest {
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
+    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNatives;
+    @Mock private PrefService mLocalPrefService;
 
     @Captor private ArgumentCaptor<ModalDialogManagerObserver> mModalDialogManagerObserverCaptor;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
@@ -79,6 +87,7 @@ public class CrossDeviceSettingImporterUnitTest {
 
     private Activity mActivity;
     private CrossDeviceSettingImporter mCrossDeviceSettingImporter;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -91,6 +100,12 @@ public class CrossDeviceSettingImporterUnitTest {
         UserPrefs.setPrefServiceForTesting(mPrefService);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
 
+        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
+        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
+        when(mLocalStatePrefsNatives.getPrefService()).thenReturn(mLocalPrefService);
+
+        mUserActionTester = new UserActionTester();
+
         mCrossDeviceSettingImporter =
                 new CrossDeviceSettingImporter(
                         mActivityLifecycleDispatcher,
@@ -100,6 +115,11 @@ public class CrossDeviceSettingImporterUnitTest {
                         mSnackbarManagerSupplier);
 
         verify(mActivityTabSupplier).addObserver(mTabChangeCallbackCaptor.capture());
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -128,7 +148,8 @@ public class CrossDeviceSettingImporterUnitTest {
                 .thenReturn(false);
         when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
 
-        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(preferencesToApply);
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ false);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -167,7 +188,8 @@ public class CrossDeviceSettingImporterUnitTest {
             when(mPrefService.getBoolean(key)).thenReturn(true);
         }
 
-        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(preferencesToApply);
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ false);
 
         verify(mSnackbarManager, times(0)).showSnackbar(mSnackbarCaptor.capture());
     }
@@ -180,7 +202,8 @@ public class CrossDeviceSettingImporterUnitTest {
                 .thenReturn(false);
         when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
 
-        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(preferencesToApply);
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ false);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -216,7 +239,8 @@ public class CrossDeviceSettingImporterUnitTest {
                 .thenReturn(false);
         when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
 
-        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(preferencesToApply);
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ false);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -240,6 +264,91 @@ public class CrossDeviceSettingImporterUnitTest {
                 mActivity.getString(R.string.synced_set_up_snackbar_applied_confirmation),
                 secondUndoSnackbar.getTextForTesting());
         assertEquals(mActivity.getString(R.string.undo), secondUndoSnackbar.getActionText());
+    }
+
+    @Test
+    public void testAskToApplyNtpSettingImportIfNeeded_OmniboxOnly_differs() {
+        Map<String, Object> preferencesToApply = new HashMap<>();
+        preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ true);
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+
+        // Simulate clicking the action button.
+        snackbar.getController().onAction(null);
+
+        // Verify that only the local state preference is changed.
+        verify(mLocalPrefService).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        verify(mHomeModulesConfigManager, never()).setPrefAllCardsEnabled(any(Boolean.class));
+        assertTrue(
+                mUserActionTester
+                        .getActions()
+                        .contains("Android.CrossDeviceSettingImport.OmniboxPosition.Apply"));
+    }
+
+    @Test
+    public void testAskToApplyNtpSettingImportIfNeeded_OmniboxOnly_noDiffs() {
+        Map<String, Object> preferencesToApply = new HashMap<>();
+        preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ true);
+
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testImportedSettingsHavePreferenceChange_includesOmnibox() {
+        // Test that when onlyOmniboxPosition=false, omnibox changes still trigger the snackbar.
+        Map<String, Object> preferencesToApply = new HashMap<>();
+        preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+
+        // Other preferences match current.
+        when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
+        when(mPrefService.getBoolean(any(String.class))).thenReturn(true);
+
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ false);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testRecordUma_UndoRedo() {
+        Map<String, Object> preferencesToApply = new HashMap<>();
+        preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+
+        mCrossDeviceSettingImporter.askToApplyNtpSettingImportIfNeeded(
+                preferencesToApply, /* onlyOmniboxPosition= */ true);
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+        snackbar.getController().onAction(null); // Apply
+
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar undoSnackbar = mSnackbarCaptor.getValue();
+        undoSnackbar.getController().onAction(null); // Undo
+
+        assertTrue(
+                mUserActionTester
+                        .getActions()
+                        .contains("Android.CrossDeviceSettingImport.OmniboxPosition.Undo"));
+
+        verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar redoSnackbar = mSnackbarCaptor.getValue();
+        redoSnackbar.getController().onAction(null); // Redo
+
+        assertTrue(
+                mUserActionTester
+                        .getActions()
+                        .contains("Android.CrossDeviceSettingImport.OmniboxPosition.Redo"));
     }
 
     @Test
