@@ -232,35 +232,52 @@ public class RecentlyClosedEntriesManager {
     }
 
     /**
-     * Notifies relevant listeners (for e.g. Recent Tabs page) when a window is closed.
+     * Notifies relevant listeners (for e.g. Recent Tabs page) when windows are closed.
      *
-     * @param window The window that was just closed.
-     * @param isPermanentDeletion Whether the window is permanently deleted. If {@code false}, the
-     *     window will be added as the most recently closed entry.
+     * @param windows The windows that were just closed.
+     * @param isPermanentDeletion Whether the windows are permanently deleted. If {@code false}, the
+     *     windows will be added as the most recently closed entries.
      */
     @VisibleForTesting
-    public void onWindowClosed(RecentlyClosedWindow window, boolean isPermanentDeletion) {
-        // First, remove the entry from the current position in the list if it exists.
-        removeWindowEntry(window.getInstanceId());
+    public void onWindowsClosed(List<RecentlyClosedWindow> windows, boolean isPermanentDeletion) {
+        // First, remove the entries from the current position in the list if they exist.
+        List<Integer> instanceIds = new ArrayList<>(windows.size());
+        for (RecentlyClosedWindow window : windows) {
+            instanceIds.add(window.getInstanceId());
+        }
+        removeWindowEntries(instanceIds);
 
-        // If an inactive window was explicitly closed by the user, add it to the top of the list.
+        // If inactive windows were explicitly closed by the user, add them to the top of the list.
         if (!isPermanentDeletion) {
-            mRecentlyClosedEntries.add(0, window);
+            mRecentlyClosedEntries.addAll(0, windows);
         }
 
-        // Remove the excess entry from the list, and clean up the storage.
-        int size = mRecentlyClosedEntries.size();
-        if (size > RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW) {
-            RecentlyClosedEntry excessEntry = mRecentlyClosedEntries.remove(size - 1);
-            if (excessEntry instanceof SessionRecentlyClosedEntry) {
-                mRecentlyClosedTabManager.clearLeastRecentlyUsedClosedEntries(/* numToRemove= */ 1);
-            } else if (excessEntry instanceof RecentlyClosedWindow excessWindow) {
-                mMultiInstanceManager.closeWindows(
-                        Collections.singletonList(excessWindow.getInstanceId()),
-                        CloseWindowAppSource.RECENT_TABS);
+        // Remove the excess entries from the list, and clean up the storage.
+        if (mRecentlyClosedEntries.size() > RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW) {
+            List<Integer> excessInstanceIds = new ArrayList<>();
+            int excessSessionEntriesCount = 0;
+
+            while (mRecentlyClosedEntries.size() > RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW) {
+                RecentlyClosedEntry excessEntry =
+                        mRecentlyClosedEntries.remove(mRecentlyClosedEntries.size() - 1);
+                if (excessEntry instanceof SessionRecentlyClosedEntry) {
+                    excessSessionEntriesCount++;
+                } else if (excessEntry instanceof RecentlyClosedWindow excessWindow) {
+                    excessInstanceIds.add(excessWindow.getInstanceId());
+                }
             }
+
+            if (excessSessionEntriesCount > 0) {
+                mRecentlyClosedTabManager.clearLeastRecentlyUsedClosedEntries(
+                        /* numToRemove= */ excessSessionEntriesCount);
+            }
+            if (excessInstanceIds.size() > 0) {
+                mMultiInstanceManager.closeWindows(
+                        excessInstanceIds, CloseWindowAppSource.RECENT_TABS);
+            }
+
+            assert mRecentlyClosedEntries.size() <= RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW;
         }
-        assert mRecentlyClosedEntries.size() <= RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW;
 
         if (mEntriesUpdatedCallback != null) {
             mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
@@ -274,20 +291,17 @@ public class RecentlyClosedEntriesManager {
      */
     @VisibleForTesting
     public void onWindowRestored(int instanceId) {
-        removeWindowEntry(instanceId);
+        removeWindowEntries(Collections.singletonList(instanceId));
         if (mEntriesUpdatedCallback != null) {
             mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
         }
     }
 
-    private void removeWindowEntry(int instanceId) {
-        for (RecentlyClosedEntry entry : mRecentlyClosedEntries) {
-            if (entry instanceof RecentlyClosedWindow window
-                    && window.getInstanceId() == instanceId) {
-                mRecentlyClosedEntries.remove(entry);
-                return;
-            }
-        }
+    private void removeWindowEntries(List<Integer> instanceIds) {
+        mRecentlyClosedEntries.removeIf(
+                entry ->
+                        entry instanceof RecentlyClosedWindow window
+                                && instanceIds.contains(window.getInstanceId()));
     }
 
     /**
