@@ -32,13 +32,14 @@ class WalletHttpClient {
   using GetUnmaskedPassCallback = base::OnceCallback<void(
       const base::expected<WalletPass, WalletRequestError>&)>;
 
+  using HttpResponse = base::expected<std::string, WalletRequestError>;
+
   virtual ~WalletHttpClient() = default;
 
   // Upserts a pass to the Wallet backend. If the `pass.id` is missing, it
   // will save a new pass. If the `pass.id` is present, it will attempt to
   // update the existing pass.
-  virtual void UpsertPass(const WalletPass& pass,
-                          UpsertPassCallback callback) = 0;
+  virtual void UpsertPass(WalletPass pass, UpsertPassCallback callback) = 0;
 
   // Retrieves the unmasked version of the pass for the given `pass_id`.
   virtual void GetUnmaskedPass(std::string_view pass_id,

@@ -54,8 +54,7 @@ class MockWalletHttpClient : public WalletHttpClient {
   MockWalletHttpClient() = default;
   MOCK_METHOD(void,
               UpsertPass,
-              (const WalletPass& pass,
-               WalletHttpClient::UpsertPassCallback callback),
+              (WalletPass pass, WalletHttpClient::UpsertPassCallback callback),
               (override));
   MOCK_METHOD(void,
               GetUnmaskedPass,
