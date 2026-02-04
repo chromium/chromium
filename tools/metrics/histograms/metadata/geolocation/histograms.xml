@@ -134,6 +134,15 @@ chromium-metrics-reviews@google.com.
   <summary>iOS location permission state, recorded at startup.</summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderAndroid.TimeToFirstPosition"
+    units="ms" expires_after="2026-07-12">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the time duration for getting the first valid Geoposition.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.LocationProviderManager.Mode"
     enum="LocationProviderManagerMode" expires_after="2026-09-10">
   <owner>mattreynolds@chromium.org</owner>
