@@ -11,20 +11,17 @@ This document provides essential instructions and best practices for developing 
 - WPTs (Web Platform Tests)
     - This is the most common test type for web platform features.
     - These tests are located in `third_party/blink/web_tests/external/wpt`.
-    - To build the tests, you should use: `autoninja -C out/Default blink_tests`.
-    - To run them, you should use: `third_party/blink/tools/run_wpt_tests.py -t Default {testname}` where {testname} is something like `external/wpt/shadow-dom/some-test-name.html`. Do not include the leading `third_party/blink/web_tests/` part of the test path when running tests like this.
-    - When trying to reproduce flakiness, it is sometimes helpful to add `--iterations 10` to the `run_wpt_tests.py` command line, to repeat the test 10 times.
-    - You can examine WPT test stderr output with `cat out/Default/layout-test-results/[test directory]/{testname}-stderr.txt`. For example, `cat out/Default/layout-test-results/external/wpt/shadow-dom/some-test-name-stderr.txt`.
+    - To run them, you should use: `third_party/blink/tools/run_wpt_tests.py -t Default {testname}` where {testname} is something like `external/wpt/shadow-dom/some-test-name.html`. Do not include the leading `third_party/blink/web_tests/` part of the test path when running tests like this, but *do* include the `external/wpt/`.
 - Web tests, a.k.a Layout tests
     - These are very similar to WPTs, in usage and structure, but they are separate internal Chromium-only tests.
     - When writing new tests, do not use these. Use WPTs instead, which are strongly preferred.
-    - To build the tests, you should use: `autoninja -C out/Default blink_tests`.
     - To run a web test, you should use: `third_party/blink/tools/run_web_tests.py -t Default {testname}` where {testname} is something like `fast/frames/some-test-name.html`. Do not include the leading `third_party/blink/web_tests/` part of the test path when running tests like this.
-    - When trying to reproduce flakiness, it is sometimes helpful to add `--iterations 10` to the `run_wpt_tests.py` command line, to repeat the test 10 times.
-    - You can examine Web test stderr output with `cat out/Default/layout-test-results/[test directory]/{testname}-stderr.txt`. For example, `cat out/Default/layout-test-results/fast/frames/some-test-name-stderr.txt`.
-- TestExpectations
-    - For both WPTs and Web tests, a file called `third_party/blink/web_tests/TestExpectations` is used to modify the behavior of the test suites. Each line in this file has a prefix (bug number and operating systems impacted), a test path, and a suffix containing allowed test results. The results can be one or more of: Timeout, Crash, Pass, Failure, or Skip. If a test matches a line in this file, the actual test result is compared to the allowed test results list, and if *any* of them match, the test is reported as working "as expected".
-    - When debugging test failures, it is important to check this file first, to avoid false positives. E.g. If the test is listed with `[ Failure Pass ]`, then the test will appear to succeed if it passes *or* fails. Often the best course of action is to delete the line with the test in question before attempting to reproduce a failure.
+- Common things for WPTs and Web Tests
+    - To build the tests, you should use: `autoninja -C out/Default blink_tests`.
+    - When trying to reproduce flakiness, it is sometimes helpful to add `--iterations 10` to the `run_wpt_tests.py` or `run_web_tests.py` command line, to repeat the test 10 times.
+    - You can examine test output with `cat out/Default/layout-test-results/[test path]/{testname}-stderr.txt`. For example, `cat out/Default/layout-test-results/external/wpt/shadow-dom/some-test-name-stderr.txt` or `cat out/Default/layout-test-results/fast/frames/some-test-name-stderr.txt`.
+    - A file called `third_party/blink/web_tests/TestExpectations` is used to modify the behavior of these test suites. Each line in this file has a prefix (bug number and operating systems impacted), a test path, and a suffix containing allowed test results. The results can be one or more of: Timeout, Crash, Pass, Failure, or Skip. If a test matches a line in this file, the actual test result is compared to the allowed test results list, and if *any* of them match, the test is reported as working "as expected". When debugging test failures, it is important to check this file first, to avoid false positives. E.g. If the test is listed with `[ Failure Pass ]`, then the test will appear to succeed if it passes *or* fails. Often the best course of action is to delete the line with the test in question before attempting to reproduce a failure or fix a bug.
+    - These test suites can *also* include an "expectations file", which is a file located either directly next to the test, or within a platform-specific directory within `third_party/blink/web_tests/platform/`. The file will be named `{testname without extension}-expected.txt`. When trying to reproduce flakiness or failures, or fix bugs, it might be important to first delete or at least examine the expectation file. If the test outputs exactly what is contained in the expectation file, the test runner will report that the test ran "as expected".
 - Unit tests
     - These are less common for web platform features. They execute C++ code to test internals for a specific unit of code.
     - To build the tests, use `autoninja -C out/Default blink_unittests`.
@@ -44,3 +41,4 @@ This document provides essential instructions and best practices for developing 
 - Unless specifically instructed otherwise, when fixing bugs, always try to run a test that confirms the failing behavior *before* proceeding to try to fix the bug. If no such test exists, start by writing one.
 - When fixing bugs, be careful **NOT** to make changes to tests that simply mask actual underlying failures in the Chromium behavior. I.e. if the test is actually catching a Chromium bug, do not simply modify the test to disable it, or to avoid provoking the bug.
 - One useful tool when debugging Chromium code is to add log statements to output helpful state. This can be done using `LOG(ERROR) << "Some interesting state " << some_variable;`. When it isn't clear what the code is doing, try adding debugging statements such as this before running tests, to confirm your understanding.
+- When adding files, you'll need to create the standard copyright header including the year. To find the current year, execute `echo $(date +%Y)`.
