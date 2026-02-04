@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -23,13 +25,16 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarSwipeHandler.Delegate;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -60,10 +65,14 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     protected Snackbar mSnackbar;
     private final View mRootContentView;
     private @ColorInt int mBackgroundColor;
+    private boolean mIsBeingDragged;
+    private boolean mIsAnimating;
 
     // Variables used to adjust view position and size when visible frame is changed.
     private final Rect mCurrentVisibleRect = new Rect();
     private final Rect mPreviousVisibleRect = new Rect();
+
+    private final SnackbarSwipeHandler mSnackbarSwipeHandler;
 
     private final OnLayoutChangeListener mLayoutListener =
             new OnLayoutChangeListener() {
@@ -112,11 +121,39 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                         LayoutInflater.from(activity)
                                 .inflate(R.layout.floating_snackbar, mParent, false);
 
+        mSnackbarSwipeHandler =
+                new SnackbarSwipeHandler(
+                        activity,
+                        new Delegate() {
+                            @Override
+                            public void dismiss() {
+                                mIsBeingDragged = false;
+                                manager.dismissCurrentSnackbar();
+                            }
+
+                            @Override
+                            public void resetPosition() {
+                                mIsBeingDragged = false;
+                                animateToOriginalPosition();
+                            }
+
+                            @Override
+                            public void updatePosition(float dx, float dy) {
+                                mIsBeingDragged = true;
+                                adjustViewPosition();
+                            }
+                        });
+        SwipeGestureListener swipeGestureListener =
+                new SwipeGestureListener(activity, mSnackbarSwipeHandler);
+
         // Make sure clicks are not consumed by content beneath the container view.
         mContainerView.setClickable(true);
         mContainerView.setOnClickListener((event) -> manager.resetSnackbarTimeout());
         mContainerView.setOnTouchListener(
                 (view, event) -> {
+                    if (swipeGestureListener.onTouchEvent(event)) return true;
+                    // Disable touch inputs during animation.
+                    if (mIsAnimating) return true;
                     mContainerView.performClick();
                     return true;
                 });
@@ -173,9 +210,24 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         // Prevent clicks during dismissal animations. Intentionally not using setEnabled(false) to
         // avoid unnecessary text color changes in this transitory state.
         mActionButtonView.setOnClickListener(null);
-        Animator moveAnimator =
-                ObjectAnimator.ofFloat(
-                        mContainerView, View.TRANSLATION_Y, getYPositionForMoveAnimation());
+        Pair<Float, Float> translateData = mSnackbarSwipeHandler.getTranslateData();
+        AnimatorSet moveAnimator = new AnimatorSet();
+        if (translateData.first != 0) {
+            Animator translate =
+                    ObjectAnimator.ofFloat(
+                            mContainerView,
+                            View.TRANSLATION_X,
+                            (translateData.first > 0 ? 1 : -1) * getMaximumTranslateX());
+            moveAnimator = new AnimatorSet();
+            moveAnimator.playTogether(
+                    translate, ObjectAnimator.ofFloat(mContainerView, View.ALPHA, 0));
+        } else {
+            moveAnimator.play(
+                    ObjectAnimator.ofFloat(
+                            mContainerView, View.TRANSLATION_Y, getYPositionForMoveAnimation()));
+        }
+
+        mIsAnimating = true;
         moveAnimator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
         moveAnimator.setDuration(mAnimationDuration);
         moveAnimator.addListener(
@@ -184,6 +236,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                     public void onAnimationEnd(Animator animation) {
                         mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
                         mParent.removeView(mContainerView);
+                        mIsAnimating = false;
                     }
                 });
         startAnimatorOnSurfaceView(moveAnimator);
@@ -208,6 +261,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             if (prevWidth != lp.width || prevGravity != lp.gravity) {
                 mContainerView.setLayoutParams(lp);
             }
+        }
+        if (mIsBeingDragged) {
+            Pair<Float, Float> translate = mSnackbarSwipeHandler.getTranslateData();
+            mContainerView.setTranslationX(translate.first);
         }
     }
 
@@ -267,6 +324,21 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      */
     boolean update(Snackbar snackbar) {
         return updateInternal(snackbar, true);
+    }
+
+    private void animateToOriginalPosition() {
+        Animator moveAnimator = ObjectAnimator.ofFloat(mContainerView, View.TRANSLATION_X, 0);
+        moveAnimator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
+        moveAnimator.setDuration(mAnimationDuration);
+        mIsAnimating = true;
+        moveAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mIsAnimating = false;
+                    }
+                });
+        startAnimatorOnSurfaceView(moveAnimator);
     }
 
     private void addToParent() {
@@ -397,6 +469,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         } else {
             view.setText(text);
         }
+    }
+
+    private @Px int getMaximumTranslateX() {
+        return mContainerView.getResources().getDisplayMetrics().widthPixels;
     }
 
     public ViewGroup getViewForTesting() {

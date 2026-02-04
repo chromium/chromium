@@ -20,4 +20,5 @@ found in the LICENSE file.
     <dimen name="snackbar_profile_image_margin_end">-12dp</dimen>
     <dimen name="snackbar_message_margin">14dp</dimen>
     <dimen name="snackbar_button_padding">24dp</dimen>
+    <dimen name="snackbar_horizontal_hide_threshold">16dp</dimen>
 </resources>

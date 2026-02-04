@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -232,6 +234,14 @@ public class SnackbarManager
         updateView();
         assumeNonNull(mView);
         mView.updateAccessibilityPaneTitle();
+    }
+
+    /** Dismisses the currently showing snackbar. */
+    void dismissCurrentSnackbar() {
+        if (mSnackbars.isEmpty()) return;
+        SnackbarController currentSnackbarController = mSnackbars.getCurrent().getController();
+        assertNonNull(currentSnackbarController);
+        dismissSnackbars(currentSnackbarController);
     }
 
     /** Dismisses all snackbars. */
@@ -462,6 +472,7 @@ public class SnackbarManager
         sSnackbarDurationMs = durationMs;
         sAccessibilitySnackbarDurationMs = durationMs;
         sTypeActionSnackbarDurationsMs = durationMs;
+        ResettersForTesting.register(SnackbarManager::resetDurationForTesting);
     }
 
     /** Clears any overrides set for testing. */
