@@ -9093,9 +9093,6 @@ crbug.com/376675482 virtual/shared-storage-fenced-frame-mparch/external/wpt/shar
 # Flaky Test Disable
 crbug.com/402252192 [ Mac ] external/wpt/css/css-overflow/scroll-marker-focus-visible.html [ Failure Pass ]
 
-# Fails on linux-win-cross-rel
-crbug.com/377507247 [ Win10.20h2 ] external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
-
 # These tests can complete but take too long and timeout.
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
