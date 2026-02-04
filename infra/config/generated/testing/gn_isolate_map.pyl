@@ -654,7 +654,6 @@
   "chromedriver_py_tests": {
     "label": "//chrome/test/chromedriver:chromedriver_py_tests",
     "type": "script",
-    "module_scheme": "pyunit",
     "script": "//testing/xvfb.py",
     "skip_usage_check": True,
     "args": [
@@ -668,7 +667,6 @@
   "chromedriver_py_tests_headless_shell": {
     "label": "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
     "type": "script",
-    "module_scheme": "pyunit",
     "script": "//testing/scripts/run_chromedriver_tests.py",
     "skip_usage_check": True,
     "args": [

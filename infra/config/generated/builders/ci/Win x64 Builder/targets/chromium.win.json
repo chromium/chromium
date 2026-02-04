@@ -2190,7 +2190,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_py_tests",
-        "module_scheme": "pyunit",
         "name": "chromedriver_py_tests",
         "resultdb": {
           "enable": true
@@ -2215,7 +2214,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
-        "module_scheme": "pyunit",
         "name": "chromedriver_py_tests_headless_shell",
         "resultdb": {
           "enable": true
@@ -4513,7 +4511,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_py_tests",
-        "module_scheme": "pyunit",
         "name": "chromedriver_py_tests",
         "resultdb": {
           "enable": true
@@ -4538,7 +4535,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
-        "module_scheme": "pyunit",
         "name": "chromedriver_py_tests_headless_shell",
         "resultdb": {
           "enable": true
