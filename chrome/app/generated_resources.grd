@@ -10409,10 +10409,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
             Move Tabs To The Top
           </message>
           <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that collapses the vertical tab strip.">
-            Collapse Vertical Tabs
+            Collapse Tabs
           </message>
           <message name="IDS_EXPAND_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that expands the vertical tab strip.">
-            Expand Vertical Tabs
+            Expand Tabs
           </message>
           <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true" desc="In Title Case: The accessibility label for the button in the tab group header that opens the editor bubble.">
             More Options
@@ -10429,10 +10429,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
             Move tabs to the top
           </message>
           <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
-            Collapse vertical tabs
+            Collapse tabs
           </message>
           <message name="IDS_EXPAND_VERTICAL_TABS" desc="The tooltip for the button in the top container that expands the vertical tab strip.">
-            Expand vertical tabs
+            Expand tabs
           </message>
           <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true"  desc="The accessibility label for the button in the tab group header that opens the editor bubble.">
             More options
