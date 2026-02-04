@@ -1145,9 +1145,9 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
           return error::kUnknownCommand;
         """)
     if func.IsES31():
-      f.write("""if (!feature_info_->IsES31ForTestingContext())
+      f.write("""if (!feature_info_->IsES31ForTestingContext()) {
           return error::kUnknownCommand;
-        """)
+        }""")
     if func.GetCmdArgs():
       f.write("""const volatile gles2::cmds::%(name)s& c =
             *static_cast<const volatile gles2::cmds::%(name)s*>(cmd_data);

@@ -2323,7 +2323,7 @@ _FUNCTION_INFO = {
     'shadowed': True,
     'client_test': False,
     'unit_test': False,
-    'es3': True
+    'es31': True,
   },
   'GetBufferParameteri64v': {
     'type': 'GETn',
