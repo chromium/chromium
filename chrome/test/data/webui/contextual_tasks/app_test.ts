@@ -25,6 +25,7 @@ suite('ContextualTasksAppTest', function() {
     if (initialUrl) {
       window.history.replaceState({}, '', initialUrl);
     }
+    loadTimeData.overrideValues({enableBasicModeZOrder: true});
   });
 
   test('gets thread url', () => {
@@ -266,29 +267,81 @@ suite('ContextualTasksAppTest', function() {
     assertEquals(fixtureUrl, webview.getAttribute('src'));
   });
 
-  test('composebox visibility toggles', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
 
-    const appElement = document.createElement('contextual-tasks-app');
-    document.body.appendChild(appElement);
-    await microtasksFinished();
+  test(
+      'composebox z-index changes when visibility toggles with enableBasicModeZOrder',
+      async () => {
+        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+        BrowserProxyImpl.setInstance(proxy);
 
-    const composebox =
-        appElement.shadowRoot.querySelector('contextual-tasks-composebox');
-    assertTrue(!!composebox);
-    assertFalse(composebox.hasAttribute('hidden'));
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
 
-    // Hide the compose box.
-    proxy.callbackRouterRemote.hideInput();
-    await proxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(composebox.hasAttribute('hidden'));
+        const composebox =
+            appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
+        const flexCenterContainer =
+            appElement.shadowRoot.querySelector('#flexCenterContainer');
 
-    // Restore the compose box.
-    proxy.callbackRouterRemote.restoreInput();
-    await proxy.callbackRouterRemote.$.flushForTesting();
-    assertFalse(composebox.hasAttribute('hidden'));
-  });
+        assertTrue(!!composebox);
+        assertFalse(composebox.hasAttribute('hidden'));
+
+        // Hide the compose box (enter basic mode).
+        proxy.callbackRouterRemote.hideInput();
+        await proxy.callbackRouterRemote.$.flushForTesting();
+
+        // With flag enabled, hidden attribute should NOT be present.
+        assertFalse(composebox.hasAttribute('hidden'));
+
+        const threadFrameStyle = getComputedStyle(threadFrame!);
+        const flexCenterStyle = getComputedStyle(flexCenterContainer!);
+
+        assertEquals(
+            '1', threadFrameStyle.zIndex, 'Thread frame z-index should be 1');
+        assertEquals(
+            '0', flexCenterStyle.zIndex,
+            'Flex center container z-index should be 0');
+
+        // Restore the compose box.
+        proxy.callbackRouterRemote.restoreInput();
+        await proxy.callbackRouterRemote.$.flushForTesting();
+        assertFalse(composebox.hasAttribute('hidden'));
+
+        const threadFrameStyleRestored = getComputedStyle(threadFrame!);
+        const flexCenterStyleRestored = getComputedStyle(flexCenterContainer!);
+
+        // Verify z-index is not stuck
+        assertFalse(threadFrameStyleRestored.zIndex === '1');
+        assertFalse(flexCenterStyleRestored.zIndex === '0');
+      });
+
+  test(
+      'composebox visibility toggles with enableBasicModeZOrder set to false',
+      async () => {
+        loadTimeData.overrideValues({enableBasicModeZOrder: false});
+        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+        BrowserProxyImpl.setInstance(proxy);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        const composebox =
+            appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+        assertTrue(!!composebox);
+        assertFalse(composebox.hasAttribute('hidden'));
+
+        // Hide the compose box.
+        proxy.callbackRouterRemote.hideInput();
+        await proxy.callbackRouterRemote.$.flushForTesting();
+        assertTrue(composebox.hasAttribute('hidden'));
+
+        // Restore the compose box.
+        proxy.callbackRouterRemote.restoreInput();
+        await proxy.callbackRouterRemote.$.flushForTesting();
+        assertFalse(composebox.hasAttribute('hidden'));
+      });
 
   test('task details updated in url', async () => {
     // Set the q query parameter for the AI page.
@@ -388,8 +441,19 @@ suite('ContextualTasksAppTest', function() {
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
+        const flexCenterContainer =
+            appElement.shadowRoot.querySelector('#flexCenterContainer');
+
         assertTrue(!!composebox);
         assertFalse(composebox.hasAttribute('hidden'));
+
+        const threadFrameStyle = getComputedStyle(threadFrame!);
+        const flexCenterStyle = getComputedStyle(flexCenterContainer!);
+
+        // Verify z-index is not set to basic mode values
+        assertFalse(threadFrameStyle.zIndex === '1');
+        assertFalse(flexCenterStyle.zIndex === '0');
       });
 
   test(
@@ -409,7 +473,21 @@ suite('ContextualTasksAppTest', function() {
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
+        const flexCenterContainer =
+            appElement.shadowRoot.querySelector('#flexCenterContainer');
+
         assertTrue(!!composebox);
-        assertTrue(composebox.hasAttribute('hidden'));
+        // With z-order enabled, it should NOT be hidden
+        assertFalse(composebox.hasAttribute('hidden'));
+
+        const threadFrameStyle = getComputedStyle(threadFrame!);
+        const flexCenterStyle = getComputedStyle(flexCenterContainer!);
+
+        assertEquals(
+            '1', threadFrameStyle.zIndex, 'Thread frame z-index should be 1');
+        assertEquals(
+            '0', flexCenterStyle.zIndex,
+            'Flex center container z-index should be 0');
       });
 });

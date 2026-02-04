@@ -58,6 +58,11 @@ BASE_FEATURE(kEnableNotifyZeroStateRenderedCapability,
 BASE_FEATURE(kContextualTasksTabListInterfaceObserver,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kContextualTasksBasicModeZOrder(
+    &kContextualTasks,
+    "ContextualTasksBasicModeZOrder",
+    true);
+
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
     "ContextualTasksContextOnlyUseTitles",
@@ -336,6 +341,10 @@ bool GetEnableNativeZeroStateSuggestions() {
 
 bool ShouldUseSearchResultsScope() {
   return base::FeatureList::IsEnabled(kContextualTasksScopeChange);
+}
+
+bool ShouldEnableBasicModeZOrder() {
+  return kContextualTasksBasicModeZOrder.Get();
 }
 
 namespace flag_descriptions {

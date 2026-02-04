@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"7398710"));
+                      /*baseline_cl=*/"7531588"));
 }
 
 struct AppPixelTestParams {
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, Screenshots) {
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshots not captured on this platform."),
       ScreenshotWebUi(kActiveTab, kApp, "ContextualTasksApp",
-                      /*baseline_cl=*/"7499458"));
+                      /*baseline_cl=*/"7531588"));
 }
 
 enum class TitleType { kNone, kShort, kLong };
@@ -431,11 +431,11 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, menu, "ContextualTasksToolbarMenu",
-                              /*baseline_cl=*/"7398710")),
+                              /*baseline_cl=*/"7531588")),
          Else(WaitForWebContentsPainted(kActiveTab),
               SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, toolbar, "ContextualTasksToolbar",
-                              /*baseline_cl=*/"7398710"))));
+                              /*baseline_cl=*/"7531588"))));
 }

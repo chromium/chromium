@@ -194,6 +194,9 @@ extern bool GetEnableNativeZeroStateSuggestions();
 // kChromeSyncOAuth2Scope.
 extern bool ShouldUseSearchResultsScope();
 
+// Returns whether the z-order of the composebox should be changed in basic mode.
+extern bool ShouldEnableBasicModeZOrder();
+
 namespace flag_descriptions {
 
 extern const char kContextualTasksName[];

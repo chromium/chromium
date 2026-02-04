@@ -147,12 +147,18 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      enableBasicModeZOrder_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor enableNativeZeroStateSuggestions: boolean =
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  protected accessor enableBasicModeZOrder_: boolean =
+      loadTimeData.getBoolean('enableBasicModeZOrder');
   protected accessor isAiPage_: boolean = true;
   protected accessor isLensOverlayShowing_: boolean = false;
   // Indicates if in tab mode. Most start in a tab.
