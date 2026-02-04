@@ -59,3 +59,6 @@ per-file mock_browsing_data_remover_delegate.*=file://content/browser/browsing_d
 per-file *captured_surface_controller*=eladalon@chromium.org
 per-file *captured_surface_controller*=guidou@chromium.org
 per-file *captured_surface_controller*=tovep@chromium.org
+
+# For Memory Coordinator
+per-file *memory_coordinator_browsertest_util.cc=file://base/memory_coordinator/OWNERS

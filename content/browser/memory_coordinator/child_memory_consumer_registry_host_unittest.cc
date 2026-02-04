@@ -23,6 +23,10 @@ namespace content {
 
 namespace {
 
+using ::testing::_;
+using ::testing::SaveArg;
+using ::testing::Test;
+
 class MockDelegate : public ChildMemoryConsumerRegistryHost::Delegate {
  public:
   MOCK_METHOD(void,
@@ -67,7 +71,7 @@ class TestMemoryConsumerRegistry : public base::MemoryConsumerRegistry {
 
 }  // namespace
 
-class ChildMemoryConsumerRegistryHostTest : public testing::Test {
+class ChildMemoryConsumerRegistryHostTest : public Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockDelegate delegate_;
@@ -84,10 +88,10 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, RegisterAndUnregister) {
   mojo::Receiver<mojom::ChildMemoryConsumer> consumer_receiver(&mock_consumer);
 
   base::MemoryConsumer* host_side_consumer = nullptr;
-  EXPECT_CALL(delegate_, AddMemoryConsumerFromChildProcess(
-                             "consumer", testing::_, PROCESS_TYPE_RENDERER,
-                             ChildProcessId(1), testing::_))
-      .WillOnce(testing::SaveArg<4>(&host_side_consumer));
+  EXPECT_CALL(delegate_,
+              AddMemoryConsumerFromChildProcess(
+                  "consumer", _, PROCESS_TYPE_RENDERER, ChildProcessId(1), _))
+      .WillOnce(SaveArg<4>(&host_side_consumer));
 
   remote_host->Register("consumer", {},
                         consumer_receiver.BindNewPipeAndPassRemote());
@@ -113,10 +117,8 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, NotifyReleaseMemory) {
   mojo::Receiver<mojom::ChildMemoryConsumer> consumer_receiver(&mock_consumer);
 
   base::MemoryConsumer* host_side_consumer = nullptr;
-  EXPECT_CALL(delegate_,
-              AddMemoryConsumerFromChildProcess(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(testing::SaveArg<4>(&host_side_consumer));
+  EXPECT_CALL(delegate_, AddMemoryConsumerFromChildProcess(_, _, _, _, _))
+      .WillOnce(SaveArg<4>(&host_side_consumer));
 
   remote_host->Register("consumer", {},
                         consumer_receiver.BindNewPipeAndPassRemote());
@@ -129,8 +131,8 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, NotifyReleaseMemory) {
       .ReleaseMemory();
   consumer_receiver.FlushForTesting();
 
-  EXPECT_CALL(delegate_, RemoveMemoryConsumerFromChildProcess(
-                             testing::_, testing::_, host_side_consumer));
+  EXPECT_CALL(delegate_,
+              RemoveMemoryConsumerFromChildProcess(_, _, host_side_consumer));
 }
 
 }  // namespace content

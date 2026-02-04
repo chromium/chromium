@@ -8,6 +8,7 @@
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
+#include "content/browser/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
@@ -39,7 +40,9 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver);
 
  private:
-  base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry_;
+  MemoryCoordinatorPolicyManager policy_manager_;
+  base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry_{
+      policy_manager_};
   ChildMemoryConsumerRegistryHost host_{registry_.Get()};
 };
 

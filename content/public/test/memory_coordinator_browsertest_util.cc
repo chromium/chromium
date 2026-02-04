@@ -9,11 +9,11 @@
 namespace content::test {
 
 void NotifyReleaseMemory() {
-  NotifyReleaseMemoryForTesting();
+  BrowserMemoryConsumerRegistry::NotifyReleaseMemoryForTesting();
 }
 
 void NotifyUpdateMemoryLimit(int percentage) {
-  NotifyUpdateMemoryLimitForTesting(percentage);
+  BrowserMemoryConsumerRegistry::NotifyUpdateMemoryLimitForTesting(percentage);
 }
 
 }  // namespace content::test

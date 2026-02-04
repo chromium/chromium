@@ -26,7 +26,26 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
       public ChildMemoryConsumerRegistryHost::Delegate {
  public:
-  BrowserMemoryConsumerRegistry();
+  // An interface that allows an external component to control or act upon
+  // consumer groups.
+  class ConsumerGroupController {
+   public:
+    virtual ~ConsumerGroupController() = default;
+
+    // Called when a new consumer group is added to the registry.
+    virtual void OnConsumerGroupAdded(
+        std::string_view consumer_id,
+        base::MemoryConsumerTraits traits,
+        ProcessType process_type,
+        ChildProcessId child_process_id,
+        base::RegisteredMemoryConsumer consumer) = 0;
+
+    // Called when a consumer group is removed from the registry.
+    virtual void OnConsumerGroupRemoved(std::string_view consumer_id,
+                                        ChildProcessId child_process_id) = 0;
+  };
+
+  explicit BrowserMemoryConsumerRegistry(ConsumerGroupController& controller);
   ~BrowserMemoryConsumerRegistry() override;
 
   // ChildMemoryConsumerRegistryHost::Delegate:
@@ -41,39 +60,8 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
       ChildProcessId child_process_id,
       base::MemoryConsumer* consumer) override;
 
-  // Details about a group of consumers of the same type.
-  struct ConsumerInfo {
-    ConsumerInfo(std::string consumer_id,
-                 base::MemoryConsumerTraits traits,
-                 ProcessType process_type,
-                 ChildProcessId child_process_id,
-                 base::RegisteredMemoryConsumer consumer);
-
-    ConsumerInfo(ConsumerInfo&&);
-    ConsumerInfo& operator=(ConsumerInfo&&);
-
-    // An ID that uniquely identify the group.
-    std::string consumer_id;
-    // The traits of the consumer group. See "base/memory_coordinator/traits.h"
-    // for a description of all possible traits.
-    base::MemoryConsumerTraits traits;
-    // The type of the process hosting the consumers of the group.
-    ProcessType process_type;
-    // The ID of the process hosting the consumers of the group.
-    ChildProcessId child_process_id;
-    // The interface to notify this consumer group.
-    base::RegisteredMemoryConsumer consumer;
-  };
-  using value_type = ConsumerInfo;
-
-  using iterator = std::vector<ConsumerInfo>::iterator;
-  using const_iterator = std::vector<ConsumerInfo>::const_iterator;
-
-  iterator begin() { return consumer_infos_.begin(); }
-  iterator end() { return consumer_infos_.end(); }
-  const_iterator begin() const { return consumer_infos_.begin(); }
-  const_iterator end() const { return consumer_infos_.end(); }
-  size_t size() const { return consumer_infos_.size(); }
+  static void NotifyReleaseMemoryForTesting();
+  static void NotifyUpdateMemoryLimitForTesting(int percentage);
 
  private:
   // An implementation of MemoryConsumer that groups all consumers with the same
@@ -130,17 +118,8 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
   absl::flat_hash_map<ConsumerGroupKey, std::unique_ptr<ConsumerGroup>>
       consumer_groups_;
 
-  // For each ConsumerGroup, this holds a corresponding ConsumerInfo entry. This
-  // exists to facilitate iteration over existing MemoryConsumers.
-  std::vector<ConsumerInfo> consumer_infos_;
+  const raw_ref<ConsumerGroupController> controller_;
 };
-
-namespace test {
-
-void CONTENT_EXPORT NotifyReleaseMemoryForTesting();
-void CONTENT_EXPORT NotifyUpdateMemoryLimitForTesting(int percentage);
-
-}  // namespace test
 
 }  // namespace content
 
