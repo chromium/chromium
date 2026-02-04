@@ -317,15 +317,8 @@ void NativeTheme::Paint(cc::PaintCanvas* canvas,
        preferred_color_scheme() == PreferredColorScheme::kDark);
 
   // Form control accents shouldn't be drawn with any transparency.
-  // TODO(C++23): Replace the below with:
-  // ```
-  //  const std::optional<SkColor> accent_color_opaque = accent_color.transform(
-  //      [](SkColor c) { return SkColorSetA(c, SK_AlphaOPAQUE); });
-  // ```
-  const std::optional<SkColor> accent_color_opaque =
-      accent_color.has_value() ? std::make_optional(SkColorSetA(
-                                     accent_color.value(), SK_AlphaOPAQUE))
-                               : std::nullopt;
+  const std::optional<SkColor> accent_color_opaque = accent_color.transform(
+      [](SkColor c) { return SkColorSetA(c, SK_AlphaOPAQUE); });
 
   gfx::Canvas gfx_canvas(canvas, 1.0f);
   gfx::ScopedCanvas scoped_canvas(&gfx_canvas);

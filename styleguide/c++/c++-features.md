@@ -1905,6 +1905,22 @@ auto x = std::to_underlying(enum_val);
 Migration from `base::to_underlying` is tracked in https://crbug.com/470039537.
 ***
 
+### Monadic operations for std::optional <sup>[allowed]</sup>
+
+```c++
+opt.and_then(f).transform(g).or_else(h);
+```
+
+**Description:** `and_then`, `transform`, `or_else` member functions.
+
+**Documentation:**
+[std::optional](https://en.cppreference.com/w/cpp/utility/optional)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/7V8Oe67I6WE).
+***
+
 ## C++23 TBD Language Features {#core-review-23}
 
 The following C++23 language features are not allowed in the Chromium codebase.
@@ -2036,22 +2052,6 @@ None
 The following C++23 library features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
-
-### Monadic operations for std::optional <sup>[tbd]</sup>
-
-```c++
-opt.and_then(f).transform(g).or_else(h);
-```
-
-**Description:** `and_then`, `transform`, `or_else` member functions.
-
-**Documentation:**
-[std::optional](https://en.cppreference.com/w/cpp/utility/optional)
-
-**Notes:**
-*** promo
-None
-***
 
 ### std::expected <sup>[tbd]</sup>
 

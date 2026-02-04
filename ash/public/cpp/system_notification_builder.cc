@@ -145,15 +145,13 @@ SystemNotificationBuilder::BuildPtr(bool keep_timestamp) {
 }
 
 message_center::NotifierId SystemNotificationBuilder::GetNotifierId() const {
-  // value_or doesn't work here as it eagerly constructs the potential
-  // replacement value and the default `catalog_name_` is set to invalid
-  // resulting in a failed DCHECK. This could be solved with the monadic
-  // operations for optional but they won't be added until C++23.
-  if (notifier_id_.has_value())
-    return notifier_id_.value();
-
-  return message_center::NotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, id_, catalog_name_);
+  return notifier_id_
+      .or_else([&] {
+        return std::make_optional(message_center::NotifierId(
+            message_center::NotifierType::SYSTEM_COMPONENT, id_,
+            catalog_name_));
+      })
+      .value();
 }
 
 }  // namespace ash
