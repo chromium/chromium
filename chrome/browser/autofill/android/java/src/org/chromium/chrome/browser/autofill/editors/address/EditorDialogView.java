@@ -87,9 +87,6 @@ public class EditorDialogView extends EditorViewBase {
         mDropdownFieldMCPs = new ArrayList<>();
         mEditableTextFields = new ArrayList<>();
         mDropdownFields = new ArrayList<>();
-
-        setOnShowListener(this);
-        setOnDismissListener(this);
     }
 
     /**

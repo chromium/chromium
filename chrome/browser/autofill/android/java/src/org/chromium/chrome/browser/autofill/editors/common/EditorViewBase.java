@@ -128,6 +128,9 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         mButtonBar.findViewById(R.id.button_secondary).setId(R.id.payments_edit_cancel_button);
 
         prepareButtons();
+
+        setOnShowListener(this);
+        setOnDismissListener(this);
     }
 
     public void setVisible(boolean visible) {
