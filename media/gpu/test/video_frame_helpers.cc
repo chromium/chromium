@@ -376,9 +376,9 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
   if (dst_storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // Here, the content in |src_frame| is already copied to |dst_frame|, which
     // is a DMABUF based VideoFrame.
-    // Create GpuMemoryBuffer based VideoFrame from |dst_frame|.
-    dst_frame = CreateGpuMemoryBufferVideoFrame(dst_frame.get(),
-                                                *dst_buffer_usage, test_sii);
+    // Create a MappableSharedImage-based VideoFrame from |dst_frame|.
+    dst_frame = CreateMappableSharedImageVideoFrame(
+        dst_frame.get(), *dst_buffer_usage, test_sii);
   }
 
   return dst_frame;
@@ -412,7 +412,7 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)}
 }
 
-scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
+scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
     const VideoFrame* const frame,
     gfx::BufferUsage buffer_usage,
     gpu::TestSharedImageInterface* test_sii) {

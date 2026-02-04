@@ -202,7 +202,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
       gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
 
   if (output_storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
-    output_frame = CreateGpuMemoryBufferVideoFrame(
+    output_frame = CreateMappableSharedImageVideoFrame(
         output_frame.get(), gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
         test_sii_.get());
   }

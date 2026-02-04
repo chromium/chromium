@@ -79,13 +79,13 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
 scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
     const VideoFrame* const src_frame);
 
-// Create GpuMemoryBuffer-based VideoFrame from |frame|. The created VideoFrame
-// doesn't depend on |frame|'s lifetime.
-// |frame| should be a DMABUF-backed VideoFrame. |buffer_usage| is a
-// GpuMemoryBuffer's buffer usage. |frame| must be created following the
-// |buffer_usage|.
+// Create MappableSI-based VideoFrame from |frame|. The created VideoFrame
+// doesn't depend on |frame|'s lifetime. |frame| should be a DMABUF-backed
+// VideoFrame. |buffer_usage| should be the buffer usage of the
+// MappableSharedImage that will be created. |frame| must have been created
+// following the |buffer_usage|.
 // This function works on ChromeOS only.
-scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
+scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
     const VideoFrame* const frame,
     gfx::BufferUsage buffer_usage,
     gpu::TestSharedImageInterface* test_sii);
