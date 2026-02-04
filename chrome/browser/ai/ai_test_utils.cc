@@ -112,20 +112,6 @@ void AITestUtils::FakeMonitor::ExpectNoUpdate() {
       .Times(0);
 }
 
-AITestUtils::FakeComponent::FakeComponent(std::string id, uint64_t total_bytes)
-    : id_(std::move(id)), total_bytes_(total_bytes) {}
-
-component_updater::CrxUpdateItem AITestUtils::FakeComponent::CreateUpdateItem(
-    update_client::ComponentState state,
-    uint64_t downloaded_bytes) const {
-  component_updater::CrxUpdateItem update_item;
-  update_item.state = state;
-  update_item.id = id_;
-  update_item.downloaded_bytes = downloaded_bytes;
-  update_item.total_bytes = total_bytes_;
-  return update_item;
-}
-
 AITestUtils::MockComponentUpdateService::MockComponentUpdateService() = default;
 AITestUtils::MockComponentUpdateService::~MockComponentUpdateService() =
     default;

@@ -40,3 +40,17 @@ source_set("ai_crx_component") {
     "//components/update_client",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_support/fake_component.cc",
+    "test_support/fake_component.h",
+  ]
+  deps = [
+    "//components/component_updater:test_support",
+    "//components/update_client",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

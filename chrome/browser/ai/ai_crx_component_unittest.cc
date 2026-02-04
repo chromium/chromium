@@ -15,6 +15,7 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "components/on_device_ai/ai_model_download_progress_manager.h"
 #include "components/on_device_ai/ai_utils.h"
+#include "components/on_device_ai/test_support/fake_component.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +32,7 @@ class AICrxComponentTest : public testing::Test {
 
  protected:
   // Send a download update.
-  void SendUpdate(const AITestUtils::FakeComponent& component,
+  void SendUpdate(const FakeComponent& component,
                   ComponentState state,
                   uint64_t downloaded_bytes) {
     component_update_service_.SendUpdate(
@@ -42,8 +43,7 @@ class AICrxComponentTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  AITestUtils::FakeComponent& CreateComponent(std::string id,
-                                              uint64_t total_bytes) {
+  FakeComponent& CreateComponent(std::string id, uint64_t total_bytes) {
     auto [iter, emplaced] = fake_components_.try_emplace(id, id, total_bytes);
     CHECK(emplaced);
     return iter->second;
@@ -67,7 +67,7 @@ class AICrxComponentTest : public testing::Test {
         });
   }
 
-  std::map<std::string, AITestUtils::FakeComponent> fake_components_;
+  std::map<std::string, FakeComponent> fake_components_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -76,7 +76,7 @@ class AICrxComponentTest : public testing::Test {
 TEST_F(AICrxComponentTest, DoesntReceiveUpdatesForNonDownloadEvents) {
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
-  AITestUtils::FakeComponent& component = CreateComponent("component_id", 100);
+  FakeComponent& component = CreateComponent("component_id", 100);
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       AICrxComponent::FromComponentIds(
@@ -101,7 +101,7 @@ TEST_F(AICrxComponentTest,
        DoesntReceiveUpdatesForEventsWithNegativeDownloadedBytes) {
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
-  AITestUtils::FakeComponent& component = CreateComponent("component_id", 100);
+  FakeComponent& component = CreateComponent("component_id", 100);
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       AICrxComponent::FromComponentIds(
@@ -117,7 +117,7 @@ TEST_F(AICrxComponentTest,
        DoesntReceiveUpdatesForEventsWithNegativeTotalBytes) {
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
-  AITestUtils::FakeComponent& component = CreateComponent("component_id", -1);
+  FakeComponent& component = CreateComponent("component_id", -1);
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       AICrxComponent::FromComponentIds(
@@ -132,10 +132,8 @@ TEST_F(AICrxComponentTest,
 TEST_F(AICrxComponentTest, DoesntReceiveUpdatesForComponentsNotObserving) {
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
-  AITestUtils::FakeComponent& component_observed =
-      CreateComponent("component_id1", 100);
-  AITestUtils::FakeComponent& component_not_observed =
-      CreateComponent("component_id2", 100);
+  FakeComponent& component_observed = CreateComponent("component_id1", 100);
+  FakeComponent& component_not_observed = CreateComponent("component_id2", 100);
 
   manager.AddObserver(
       monitor.BindNewPipeAndPassRemote(),
@@ -152,7 +150,7 @@ TEST_F(AICrxComponentTest, ObservesComponentsMidDownload) {
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor1;
   AITestUtils::FakeMonitor monitor2;
-  AITestUtils::FakeComponent& component = CreateComponent("component_id", 100);
+  FakeComponent& component = CreateComponent("component_id", 100);
 
   // First, `monitor1` observes `component`.
   {
@@ -226,7 +224,7 @@ TEST_F(AICrxComponentTest, ObservesComponentsMidDownload) {
 TEST_F(AICrxComponentTest, DownloadedBytesWontExceedTotalBytes) {
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
-  AITestUtils::FakeComponent& component = CreateComponent("component_id", 100);
+  FakeComponent& component = CreateComponent("component_id", 100);
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       AICrxComponent::FromComponentIds(

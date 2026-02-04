@@ -152,6 +152,7 @@ source_set("unit_tests") {
     "//chrome/browser/optimization_guide:test_support",
     "//components/on_device_ai",
     "//components/on_device_ai:ai_crx_component",
+    "//components/on_device_ai:test_support",
     "//components/optimization_guide/core:test_support",
   ]
 }

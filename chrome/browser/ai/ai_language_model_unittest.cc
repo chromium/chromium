@@ -28,6 +28,7 @@
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "components/on_device_ai/ai_utils.h"
+#include "components/on_device_ai/test_support/fake_component.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
@@ -1022,8 +1023,8 @@ TEST_F(AILanguageModelTest, ModelDownload) {
   std::string model_component_id =
       component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
           GetOnDeviceModelExtensionId();
-  AITestUtils::FakeComponent model_component(model_component_id,
-                                             kTestModelDownloadSize);
+  on_device_ai::FakeComponent model_component(model_component_id,
+                                              kTestModelDownloadSize);
 
   EXPECT_EQ(GetAIManagerDownloadProgressObserversSize(), 0u);
   AITestUtils::FakeMonitor mock_monitor;

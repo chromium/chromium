@@ -39,6 +39,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/on_device_ai/test_support/fake_component.h"
 #include "components/on_device_translation/component_manager.h"
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
@@ -1040,13 +1041,14 @@ class OnDeviceTranslationProgressMonitorBrowserTest
     run_loop_language_pack.Run();
   }
 
-  AITestUtils::FakeComponent GetComponentForTranslateKit(uint64_t total_bytes) {
+  on_device_ai::FakeComponent GetComponentForTranslateKit(
+      uint64_t total_bytes) {
     return {component_updater::TranslateKitComponentInstallerPolicy::
                 GetExtensionId(),
             total_bytes};
   }
 
-  AITestUtils::FakeComponent GetComponentForLanguagePack(
+  on_device_ai::FakeComponent GetComponentForLanguagePack(
       LanguagePackKey language_pack_key,
       uint64_t total_bytes) {
     const LanguagePackComponentConfig& config =
@@ -1056,7 +1058,7 @@ class OnDeviceTranslationProgressMonitorBrowserTest
     return {id, total_bytes};
   }
 
-  void SendUpdate(AITestUtils::FakeComponent component,
+  void SendUpdate(on_device_ai::FakeComponent component,
                   uint64_t downloaded_bytes) {
     component_update_service_.SendUpdate(component.CreateUpdateItem(
         update_client::ComponentState::kDownloading, downloaded_bytes));
@@ -1125,9 +1127,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationProgressMonitorBrowserTest,
   TranslateAndMonitorProgress(source_language, target_language);
 
   // Components we expect to receive updates for.
-  AITestUtils::FakeComponent translation_kit =
+  on_device_ai::FakeComponent translation_kit =
       GetComponentForTranslateKit(4321);
-  AITestUtils::FakeComponent en_ja_language_pack =
+  on_device_ai::FakeComponent en_ja_language_pack =
       GetComponentForLanguagePack(LanguagePackKey::kEn_Ja, 1234);
 
   // The downloaded bytes and total bytes for all components.

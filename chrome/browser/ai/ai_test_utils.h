@@ -134,22 +134,6 @@ class AITestUtils {
     AITestUtils::MockModelDownloadProgressMonitor mock_monitor_;
   };
 
-  class FakeComponent {
-   public:
-    FakeComponent(std::string id, uint64_t total_bytes);
-
-    component_updater::CrxUpdateItem CreateUpdateItem(
-        update_client::ComponentState state,
-        uint64_t downloaded_bytes) const;
-
-    const std::string& id() { return id_; }
-    uint64_t total_bytes() { return total_bytes_; }
-
-   private:
-    std::string id_;
-    uint64_t total_bytes_;
-  };
-
   class MockComponentUpdateService
       : public component_updater::MockComponentUpdateService {
    public:
