@@ -750,7 +750,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
              { "const": "Option 1", "title": "This is option 1" },
              { "const": "Option 2", "title": "This is option 2" },
              { "const": "Option 3", "title": "This is option 3" }
-           ]
+           ],
+           "enum": ["Option 1", "Option 2", "Option 3"]
          }
       },
       "required": ["select"]
@@ -783,6 +784,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Title) {
            "oneOf": [
              { "const": "Option 1", "title": "This is option 1" }
            ],
+           "enum": ["Option 1"],
            "title": "Possible Options"
          }
       },
@@ -981,7 +983,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_Multiple) {
                  "const": "grape",
                  "title": "Grape"
                }
-             ]
+             ],
+             "enum": ["apple", "melon", "grape"]
            },
            "uniqueItems": true
          }
@@ -1039,7 +1042,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
                {
                  "const": "grape"
                }
-             ]
+             ],
+             "enum": ["apple", "melon", "grape"]
            },
            "uniqueItems": true,
            "title": "TITLE",
@@ -1814,7 +1818,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio) {
                "const": "l",
                "title": "Large"
              }
-           ]
+           ],
+           "enum": ["s", "m", "l"]
          }
       },
       "required": []
@@ -1857,7 +1862,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
              {
                "const": "l"
              }
-           ]
+           ],
+           "enum": ["s", "m", "l"]
          },
          "item": {
            "type": "string",
@@ -1871,7 +1877,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
              {
                "const": "hat"
              }
-           ]
+           ],
+           "enum": ["hoodie", "shirt", "hat"]
          }
       },
       "required": []
@@ -1946,7 +1953,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Required) {
              {
                "const": "l"
              }
-           ]
+           ],
+           "enum": ["s", "m", "l"]
          }
       },
       "required": ["size"]
@@ -1989,6 +1997,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamDescription) {
                "const": "l"
              }
            ],
+           "enum": ["s", "m", "l"],
            "description": "DESC"
          }
       },
@@ -2032,6 +2041,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamTitle) {
                "const": "l"
              }
            ],
+           "enum": ["s", "m", "l"],
            "title": "TITLE"
          }
       },

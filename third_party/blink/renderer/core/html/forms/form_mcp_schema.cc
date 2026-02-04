@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/form_mcp_schema.h"
 
+#include <memory>
 #include <optional>
 
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink-forward.h"
@@ -390,13 +391,16 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
   schema->SetString("type", "string");
 
   auto one_of = std::make_unique<JSONArray>();
+  auto enum_array = std::make_unique<JSONArray>();
   for (HTMLOptionElement& option : element->GetOptionList()) {
     auto option_object = std::make_unique<JSONObject>();
     option_object->SetString("const", option.value());
     option_object->SetString("title", option.textContent());
     one_of->PushObject(std::move(option_object));
+    enum_array->PushString(option.value());
   }
   schema->SetArray("oneOf", std::move(one_of));
+  schema->SetArray("enum", std::move(enum_array));
 
   AddTitle(*element, *schema);
   AddDescription(*element, *schema);
@@ -457,8 +461,10 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
   // Restrict each item in the list to one of the checkbox values.
   auto items_schema = std::make_unique<JSONObject>();
   items_schema->SetString("type", "string");
-  items_schema->SetArray("oneOf",
-                         ComputeOneOfArray(controls_for_name, required));
+  std::unique_ptr<JSONArray> enum_array;
+  items_schema->SetArray(
+      "oneOf", ComputeOneOfArray(controls_for_name, enum_array, required));
+  items_schema->SetArray("enum", std::move(enum_array));
   // Each checkbox value must at most appear *once* in the input.
 
   schema->SetObject("items", std::move(items_schema));
@@ -476,7 +482,11 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
     bool& required) {
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
-  schema->SetArray("oneOf", ComputeOneOfArray(controls_for_name, required));
+
+  std::unique_ptr<JSONArray> enum_array;
+  schema->SetArray("oneOf",
+                   ComputeOneOfArray(controls_for_name, enum_array, required));
+  schema->SetArray("enum", std::move(enum_array));
   // Add title/description from the first control for now.
   AddTitleAndDescriptionFromToolAttributesOnly(*controls_for_name.front(),
                                                *schema);
@@ -485,8 +495,10 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
 
 std::unique_ptr<JSONArray> FormMCPSchema::ComputeOneOfArray(
     const ControlVector& controls_for_name,
+    std::unique_ptr<JSONArray>& enum_array,
     bool& required) {
   auto one_of = std::make_unique<JSONArray>();
+  enum_array = std::make_unique<JSONArray>();
   for (HTMLFormControlElement* control : controls_for_name) {
     HTMLInputElement& input = To<HTMLInputElement>(*control);
     auto checkbox_object = std::make_unique<JSONObject>();
@@ -495,6 +507,7 @@ std::unique_ptr<JSONArray> FormMCPSchema::ComputeOneOfArray(
       checkbox_object->SetString("title", title);
     }
     one_of->PushObject(std::move(checkbox_object));
+    enum_array->PushString(input.Value());
     required |= input.IsRequired();
   }
   return one_of;
