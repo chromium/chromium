@@ -63,14 +63,6 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
                                        bool stop_context_menu_propagation);
   bool IsCollapsed() const;
 
-  // This method should be called when the mouse has entered the tab strip. This
-  // is used as a baseline for some metrics.
-  void OnTabStripMouseEntered();
-
-  // This method should be called when a tab has been pressed. This could be to
-  // activate a tab, drag a tab, open a context menu or close a tab.
-  void OnTabMousePressed();
-
   tab_groups::TabGroupSyncService* GetTabGroupSyncService();
 
   TabContextMenuController* GetTabContextMenuController() {
@@ -101,9 +93,6 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
                                  int event_flags) override;
   bool GetContextMenuAccelerator(int command_id,
                                  ui::Accelerator* accelerator) override;
-
-  // Used for seek time metrics from the time the mouse enters the tabstrip.
-  std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
 
   std::unique_ptr<TabContextMenuController> context_menu_controller_;
   std::unique_ptr<TabMenuModelFactory> menu_model_factory_;

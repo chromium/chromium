@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -196,7 +197,8 @@ gfx::Size VerticalTabStripView::GetMinimumSize() const {
 }
 
 void VerticalTabStripView::OnMouseEntered(const ui::MouseEvent& event) {
-  collection_node_->GetController()->OnTabStripMouseEntered();
+  mouse_entered_tabstrip_time_ = base::TimeTicks::Now();
+  has_reported_time_mouse_entered_to_switch_ = false;
 }
 
 void VerticalTabStripView::OnTabStripModelChanged(
@@ -223,6 +225,16 @@ void VerticalTabStripView::OnTabStripModelChanged(
               base::Unretained(this), unpinned_tabs_scroll_view_,
               std::make_unique<views::ViewTracker>(activated_node->view())));
     }
+  }
+}
+
+void VerticalTabStripView::RecordMousePressedInTab() {
+  if (mouse_entered_tabstrip_time_.has_value() &&
+      !has_reported_time_mouse_entered_to_switch_) {
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "TabStrip.Vertical.TimeToSwitch",
+        base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
+    has_reported_time_mouse_entered_to_switch_ = true;
   }
 }
 

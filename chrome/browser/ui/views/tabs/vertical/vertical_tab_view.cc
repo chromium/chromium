@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
@@ -283,8 +284,7 @@ bool VerticalTabView::OnKeyReleased(const ui::KeyEvent& event) {
 bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
   auto* controller = collection_node_->GetController();
   shift_pressed_on_mouse_down_ = event.IsShiftDown();
-
-  controller->OnTabMousePressed();
+  RecordMousePressedInTab();
 
   if (event.IsOnlyLeftMouseButton() ||
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
@@ -756,6 +756,18 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
   close_button_->SetVisible(false);
 }
 
+void VerticalTabView::RecordMousePressedInTab() {
+  views::View* parent_view = parent();
+  while (parent_view &&
+         !views::IsViewClass<VerticalTabStripView>(parent_view)) {
+    parent_view = parent_view->parent();
+  }
+
+  auto* tab_strip_view = views::AsViewClass<VerticalTabStripView>(parent_view);
+  CHECK(tab_strip_view);
+  tab_strip_view->RecordMousePressedInTab();
+}
+
 bool VerticalTabView::IsHoverAnimationActive() const {
   if (split_) {
     auto* split_view = views::AsViewClass<VerticalSplitTabView>(parent());
@@ -767,6 +779,7 @@ bool VerticalTabView::IsHoverAnimationActive() const {
 
   return hovered_ || (hover_controller_ && hover_controller_->ShouldDraw());
 }
+
 double VerticalTabView::GetHoverAnimationValue() const {
   if (split_) {
     if (auto* split_view = views::AsViewClass<VerticalSplitTabView>(parent())) {

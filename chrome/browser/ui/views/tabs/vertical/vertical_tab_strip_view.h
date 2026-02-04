@@ -61,6 +61,8 @@ class VerticalTabStripView final : public views::View,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  void RecordMousePressedInTab();
+
  private:
   views::View* AddScrollViewContents(std::unique_ptr<views::View> view);
   void RemoveScrollViewContents(views::View* view);
@@ -81,6 +83,11 @@ class VerticalTabStripView final : public views::View,
       nullptr;
   bool is_collapsed_ = false;
   base::CallbackListSubscription node_destroyed_subscription_;
+
+  // Used for seek time metrics from the time the mouse enters the tabstrip.
+  std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
+  // Used to track if the time from mouse entered to tab switch been reported.
+  bool has_reported_time_mouse_entered_to_switch_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_VIEW_H_

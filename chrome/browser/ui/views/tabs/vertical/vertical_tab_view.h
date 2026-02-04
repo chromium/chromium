@@ -139,6 +139,7 @@ class VerticalTabView : public views::View,
   void UpdateContrastRatioValues();
 
   void CloseButtonPressed(const ui::Event& event);
+  void RecordMousePressedInTab();
 
   bool IsHoverAnimationActive() const;
   double GetHoverAnimationValue() const;
