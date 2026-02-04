@@ -39,6 +39,7 @@ export const defaultConfig = [
       // https://google.github.io/styleguide/tsguide.html#export-type
       '@typescript-eslint/consistent-type-exports': 'error',
 
+      '@webui-eslint/lit-element-structure': 'error',
       '@webui-eslint/lit-property-accessor': 'error',
       '@webui-eslint/polymer-property-declare': 'error',
       '@webui-eslint/polymer-property-class-member': 'error',

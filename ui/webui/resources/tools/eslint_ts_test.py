@@ -209,6 +209,89 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_LitElementStructure(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(["with_webui_plugin_lit_element_structure_violations.ts"])
+
+    # Expected ESLint rule violation that should be part of the error output.
+    _EXPECTED_STRING = "@webui-eslint/lit-element-structure"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_MISSING_STATIC_GET_IS_ERROR = "Missing 'static get is() {...}' for web component class %(className)s"
+    _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR = "Tag/class name pair registration to HTMLElementTagNameMap interface missing for %(domName)s ↔ %(className)s"
+    _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR = "Missing customElements.define(%(className)s.is, %(className)s) call"
+
+    # The following strings *should* appear in the error output.
+    errors = [
+        # Case1
+        _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
+            'className': 'SomeElement1'
+        },
+        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
+            'className': 'SomeElement1'
+        },
+        # Case2
+        _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
+            'className': 'SomeElement2',
+            'domName': 'some-element2'
+        },
+        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
+            'className': 'SomeElement2'
+        },
+        # Case3
+        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
+            'className': 'SomeElement3'
+        },
+        # Case4
+        _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
+            'className': 'SomeElement4',
+            'domName': 'some-element4'
+        },
+    ]
+    for e in errors:
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
+
+    # The following strings *should not* appear in the error output.
+    non_errors = [
+        # Case5
+        _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
+            'className': 'SomeElement5'
+        },
+        _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
+            'className': 'SomeElement5',
+            'domName': 'some-element5'
+        },
+        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
+            'className': 'SomeElement5'
+        },
+        # Case6
+        _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
+            'className': 'SomeElement6'
+        },
+        _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
+            'className': 'SomeElement6',
+            'domName': 'some-element6'
+        },
+        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
+            'className': 'SomeElement6'
+        },
+        # Case7
+        _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
+            'className': 'SomeElement7'
+        },
+        _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
+            'className': 'SomeElement7',
+            'domName': 'some-element7'
+        },
+        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
+            'className': 'SomeElement7'
+        },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
+
 
 if __name__ == "__main__":
   unittest.main()

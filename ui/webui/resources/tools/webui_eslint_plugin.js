@@ -23,6 +23,233 @@ const POLYMER_IMPORT_REGEX = [
 const LIT_IMPORT_REGEX =
     ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
 
+const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
+  name: 'lit-element-structure',
+  meta: {
+    type: 'problem',
+    fixable: 'code',
+    docs: {
+      description: 'Checks that the structure of a LitElement is correct',
+      recommended: 'error',
+    },
+    messages: {
+      missingStaticIsGetter:
+          'Missing \'static get is() {...}\' for web component class {{className}}',
+      missingTagNameRegistration:
+          'Tag/class name pair registration to HTMLElementTagNameMap interface missing for {{tagName}} ↔ {{className}}.',
+      missingCustomElementRegistration:
+          'Missing customElements.define({{className}}.is, {{className}}) call.',
+    },
+  },
+  defaultOptions: [],
+  create(context) {
+    // Whether lit.rollup.js is imported.
+    let hasLitImport = false;
+
+    // Whether operating on a test file, assuming all files end with the
+    // '_test.ts' suffix.
+    const isTest = context.filename.endsWith('_test.ts');
+
+    // Regex to detect if a class is subclassing a native HTMLElement.
+    const NATIVE_HTML_SUBCLASS_REGEX = /^HTML\S+Element$/g;
+
+    // Necessary info to track about each class definition encountered in the
+    // current file.
+    class ClassInfo {
+      constructor() {
+        // Whether operating on a CrLitElement subclass.
+        this.isLitElement = false;
+
+        // Whether 'interface HTMLElementTagNameMap {...}' is specified. Only
+        // applies when isTest=false.
+        this.hasTagNameRegistration = false;
+
+        // Whether customElements.define(...) is called.
+        this.hasCustomElementRegistration = false;
+
+        // The AST Node for the class definition.
+        this.node = null;
+
+        // The DOM name of the corresponding custom element.
+        this.domName = '';
+      }
+
+      visitClassDeclaration(node) {
+        if (!node.id.name.includes('Element') || node.superClass === null) {
+          return;
+        }
+
+        if (node.superClass.type === 'Identifier' &&
+            (node.superClass.name.match(NATIVE_HTML_SUBCLASS_REGEX) ||
+             node.superClass.name === 'TestBrowserProxy')) {
+          return;
+        }
+
+        this.isLitElement = true;
+        this.node = node;
+      }
+
+      visitStaticGetIs(node) {
+        if (!this.isLitElement) {
+          return;
+        }
+
+        this.domName = node.argument.value;
+
+        // Handle case where 'return 'foo-bar' as const;' is encountered.
+        if (node.argument.type === 'TSAsExpression') {
+          this.domName = node.argument.expression.value;
+        }
+      }
+
+      visitHtmlElementTagNameMapProperty(node) {
+        if (!this.isLitElement || this.hasTagNameRegistration) {
+          return;
+        }
+
+        const typeName = node.typeAnnotation.typeAnnotation.typeName.name;
+        this.hasTagNameRegistration =
+            node.key.value === this.domName && typeName === this.node.id.name;
+      }
+
+      visitCustomElementsDefineCall(node) {
+        if (!this.isLitElement) {
+          return;
+        }
+
+        const arg0Correct = node.arguments[0].type === 'MemberExpression' &&
+            node.arguments[0].object.name === this.node.id.name &&
+            node.arguments[0].property.name === 'is';
+        const arg1Correct = node.arguments[1].name === this.node.id.name;
+        this.hasCustomElementRegistration = arg0Correct && arg1Correct;
+      }
+
+      runMissingTagNameRegistrationCheck() {
+        if (isTest || !this.isLitElement || !this.node || !this.domName ||
+            this.hasTagNameRegistration) {
+          return;
+        }
+
+        context.report({
+          node: this.node,
+          messageId: 'missingTagNameRegistration',
+          data: {
+            className: this.node.id.name,
+            tagName: this.domName,
+          },
+          fix: fixer => {
+            const toAdd = `
+
+declare global {
+interface HTMLElementTagNameMap {
+  '${this.domName}': ${this.node.id.name};
+}
+}`;
+            return fixer.insertTextAfter(this.node, toAdd);
+          },
+        });
+      }
+
+      runMissingCustomElementRegistrationCheck() {
+        if (!this.isLitElement || !this.node || this.node.abstract ||
+            this.hasCustomElementRegistration) {
+          return;
+        }
+
+        context.report({
+          node: this.node,
+          messageId: 'missingCustomElementRegistration',
+          data: {
+            className: this.node.id.name,
+          },
+        });
+      }
+
+      runMissingStaticIsGetterCheck() {
+        if (!this.isLitElement || !this.node || this.node.abstract ||
+            this.domName) {
+          return;
+        }
+
+        context.report({
+          node: this.node,
+          messageId: 'missingStaticIsGetter',
+          data: {
+            className: this.node.id.name,
+          },
+        });
+      }
+    }
+
+    // Info about all the class definitions encountered in this file.
+    const classInfos = new Map();  // Map<string, ClassInfo>
+    let currentClassInfo = null;   // ClassInfo|null
+
+    return {
+      [`ImportDeclaration[source.value=/${
+          LIT_IMPORT_REGEX}/][importKind=value] > ImportSpecifier > Identifier[name="CrLitElement"]`](
+          node) {
+        hasLitImport = true;
+      },
+      'ClassDeclaration'(node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo = new ClassInfo();
+        classInfos.set(node.id.name, currentClassInfo);
+
+        currentClassInfo.visitClassDeclaration(node);
+      },
+      'ClassDeclaration > ClassBody > MethodDefinition[key.name="is"] > FunctionExpression > BlockStatement > ReturnStatement'(
+          node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.visitStaticGetIs(node);
+      },
+      'ClassDeclaration:exit'(node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.runMissingStaticIsGetterCheck();
+      },
+      ['Program > TSModuleDeclaration[kind=global] > TSModuleBlock > TSInterfaceDeclaration[id.name="HTMLElementTagNameMap"] > TSInterfaceBody > TSPropertySignature'](
+          node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        const className = node.typeAnnotation.typeAnnotation.typeName.name;
+        const classInfo = classInfos.get(className) || null;
+        if (classInfo) {
+          classInfo.visitHtmlElementTagNameMapProperty(node);
+        }
+      },
+      'ExpressionStatement > CallExpression[callee.object.name="customElements"][callee.property.name="define"]'(
+          node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        const className = node.arguments[1].name;
+        const classInfo = classInfos.get(className) || null;
+        if (classInfo) {
+          classInfo.visitCustomElementsDefineCall(node);
+        }
+      },
+      'Program:exit'(node) {
+        for (const [className, classInfo] of classInfos) {
+          classInfo.runMissingTagNameRegistrationCheck();
+          classInfo.runMissingCustomElementRegistrationCheck();
+        }
+      },
+    };
+  },
+});
+
 const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
   name: 'lit-property-accessor',
   meta: {
@@ -485,6 +712,7 @@ const inlineEventHandler = ESLintUtils.RuleCreator.withoutDocs({
 });
 
 const rules = {
+  'lit-element-structure': litElementStructureRule,
   'lit-property-accessor': litPropertyAccessorRule,
   'polymer-property-declare': polymerPropertyDeclareRule,
   'polymer-property-class-member': polymerPropertyClassMemberRule,
