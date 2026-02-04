@@ -11,11 +11,13 @@ Skill::Skill() = default;
 Skill::Skill(const std::string& id,
              const std::string& name,
              const std::string& icon,
-             const std::string& prompt)
+             const std::string& prompt,
+             const std::string& description)
     : id(id),
       name(name),
       icon(icon),
-      prompt(prompt) {}
+      prompt(prompt),
+      description(description) {}
 
 Skill::Skill(const Skill&) = default;
 Skill& Skill::operator=(const Skill&) = default;
