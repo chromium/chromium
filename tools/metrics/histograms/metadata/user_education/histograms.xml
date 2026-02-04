@@ -96,6 +96,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="WhatsNewModule">
+  <variant name="archive"
+      summary="the permanent module for What's New archive"/>
   <variant name="FamilyLink" summary="the module for Family Link"/>
   <variant name="GANslate" summary="the module for GANslate"/>
   <variant name="GeminiShortcut" summary="the module for Gemini Shortcut"/>
