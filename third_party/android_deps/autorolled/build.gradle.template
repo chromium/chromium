@@ -26,6 +26,7 @@ dependencies {
     testCompileLatest 'org.robolectric:robolectric:+'
 
     supportsAndroidCompileLatest 'com.google.guava:guava:+'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:+'
 
     // Libraries from Google:
     compileLatest 'com.google.protobuf:protobuf-javalite:+'

@@ -585,7 +585,7 @@ No modifications.
             String gnTarget;
             if (aliasedLib) {
                 gnTarget = aliasedLib
-            } else if (depTargetName.startsWith('google_play_services_') || depTargetName.startsWith('google_firebase_')) {
+            } else if (isPlayServicesTarget(depTargetName)) {
                 gnTarget = '$google_play_services_package:' + depTargetName
             } else if (dep.buildGnPath != pathToBuildGradle) {
                 if (dep.isAndroidx) {
