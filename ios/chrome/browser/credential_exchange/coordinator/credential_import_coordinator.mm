@@ -314,17 +314,18 @@
 // screens that were presented for the fetching (if any). Informs mediator to
 // start importing credentials.
 - (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys {
-  [_navigationController popToViewController:_viewController animated:YES];
   if (trustedVaultKeys.count == 0) {
+    // TODO(crbug.com/445889307): Do not display alert if the welcome screen
+    // was cancelled by the user.
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
     [self showAlertWithTitle:title
                      message:nil
-          baseViewController:_viewController];
-    NOTREACHED(base::NotFatalUntil::M150);
+          baseViewController:_viewController.presentedViewController];
     return;
   }
 
+  [_navigationController popToViewController:_viewController animated:YES];
   [_mediator startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
 }
 
