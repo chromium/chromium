@@ -28,6 +28,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -240,7 +241,12 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithoutSearchStatsBrowserTest,
 class RealboxHandlerTest : public InProcessBrowserTest,
                            public testing::WithParamInterface<bool> {
  public:
-  RealboxHandlerTest() = default;
+  RealboxHandlerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features*/ {omnibox::kWebUIOmniboxPopup,
+                              omnibox::internal::kWebUIOmniboxAimPopup},
+        /*disabled_features*/ {});
+  }
 
   RealboxHandlerTest(const RealboxHandlerTest&) = delete;
   RealboxHandlerTest& operator=(const RealboxHandlerTest&) = delete;
@@ -264,6 +270,8 @@ class RealboxHandlerTest : public InProcessBrowserTest,
   }
 
   void TearDownOnMainThread() override { handler_.reset(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
@@ -399,7 +407,8 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, MatchVectorIcons) {
         // An empty resource name is effectively a blank icon.
         EXPECT_TRUE(svg_name.empty());
       } else if (is_bookmark) {
-        EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
+        EXPECT_EQ("//resources/cr_components/searchbox/icons/bookmark_cr23.svg",
+                  svg_name);
       } else {
         EXPECT_FALSE(svg_name.empty());
       }
@@ -419,7 +428,8 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, AnswerVectorIcons) {
     const std::string& svg_name =
         handler_->AutocompleteIconToResourceName(vector_icon);
     if (is_bookmark) {
-      EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
+      EXPECT_EQ("//resources/cr_components/searchbox/icons/bookmark_cr23.svg",
+                svg_name);
     } else {
       EXPECT_FALSE(svg_name.empty());
       EXPECT_NE("search.svg", svg_name);
