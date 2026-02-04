@@ -232,7 +232,8 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
   }
 };
 
-TEST_F(ClipboardRecentContentIOSTest, SchemeFiltering) {
+// TODO(crbug.com/40275048): Deflake the test.
+TEST_F(ClipboardRecentContentIOSTest, DISABLED_SchemeFiltering) {
   // Test unrecognized URL.
   SetPasteboardContent(kUnrecognizedURL);
   VerifiyClipboardURLIsInvalid();
@@ -278,8 +279,9 @@ TEST_F(ClipboardRecentContentIOSTest, PasteboardURLObsolescence) {
   VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 }
 
+// TODO(crbug.com/40275048): Deflake the test.
 TEST_F(ClipboardRecentContentIOSTest,
-       CacheClipboardContentTypesUpdatesForCopiedURL) {
+       DISABLED_CacheClipboardContentTypesUpdatesForCopiedURL) {
   SetPasteboardContent(kRecognizedURL);
   ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
 
@@ -290,8 +292,9 @@ TEST_F(ClipboardRecentContentIOSTest,
       VerifyCacheClipboardContentTypeExists(ClipboardContentType::Text));
 }
 
+// TODO(crbug.com/40275048): Deflake the test.
 TEST_F(ClipboardRecentContentIOSTest,
-       CacheClipboardContentTypesUpdatesForCopiedImage) {
+       DISABLED_CacheClipboardContentTypesUpdatesForCopiedImage) {
   SetPasteboardImage(TestUIImage());
   ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
 
@@ -303,8 +306,9 @@ TEST_F(ClipboardRecentContentIOSTest,
       VerifyCacheClipboardContentTypeExists(ClipboardContentType::Text));
 }
 
+// TODO(crbug.com/40275048): Deflake the test.
 TEST_F(ClipboardRecentContentIOSTest,
-       CacheClipboardContentTypesUpdatesForCopiedText) {
+       DISABLED_CacheClipboardContentTypesUpdatesForCopiedText) {
   SetPasteboardContent("foobar");
   ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
 
