@@ -441,9 +441,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
 
-  bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
   bool is_partitioned_valid = cookie_util::IsCookiePartitionedValid(
-      url, parsed_cookie, partition_has_nonce);
+      url, parsed_cookie.IsSecure(),
+      parsed_cookie.IsPartitioned() ? cookie_partition_key : std::nullopt);
   if (!is_partitioned_valid) {
     status->AddExclusionReason(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PARTITIONED);
@@ -451,6 +451,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   // Collect metrics on whether usage of the Partitioned attribute is correct.
   // Do not include implicit nonce-based partitioned cookies in these metrics.
+  bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
   if (parsed_cookie.IsPartitioned()) {
     if (!partition_has_nonce && collect_metrics) {
       base::UmaHistogramBoolean("Cookie.IsPartitionedValid",
@@ -723,11 +724,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
 
-  if (!cookie_util::IsCookiePartitionedValid(
-          url, secure,
-          /*is_partitioned=*/partition_key.has_value(),
-          /*partition_has_nonce=*/
-          CookiePartitionKey::HasNonce(partition_key))) {
+  if (!cookie_util::IsCookiePartitionedValid(url, secure, partition_key)) {
     status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                    EXCLUDE_INVALID_PARTITIONED);
   }

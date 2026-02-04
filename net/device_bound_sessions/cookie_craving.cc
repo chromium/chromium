@@ -220,41 +220,15 @@ bool CookieCraving::IsValid() const {
     return false;
   }
 
-  CookiePrefix prefix = cookie_util::GetCookiePrefix(Name());
-  switch (prefix) {
-    case COOKIE_PREFIX_HOST:
-      if (!SecureAttribute() || Path() != "/" || !IsHostCookie()) {
-        return false;
-      }
-      break;
-    case COOKIE_PREFIX_SECURE:
-      if (!SecureAttribute()) {
-        return false;
-      }
-      break;
-    case COOKIE_PREFIX_HTTP:
-      if (!SecureAttribute() || !IsHttpOnly()) {
-        return false;
-      }
-      break;
-    case COOKIE_PREFIX_HOSTHTTP:
-      if (!SecureAttribute() || Path() != "/" || !IsHostCookie() ||
-          !IsHttpOnly()) {
-        return false;
-      }
-      break;
-    case COOKIE_PREFIX_NONE:
-    case COOKIE_PREFIX_LAST:
-      break;
+  if (!cookie_util::IsCookiePrefixValid(cookie_util::GetCookiePrefix(Name()),
+                                        /*url=*/std::nullopt, SecureAttribute(),
+                                        IsHttpOnly(), Domain(), Path())) {
+    return false;
   }
 
-  if (IsPartitioned()) {
-    if (CookiePartitionKey::HasNonce(PartitionKey())) {
-      return true;
-    }
-    if (!SecureAttribute()) {
-      return false;
-    }
+  if (!cookie_util::IsCookiePartitionedValid(
+          /*url=*/std::nullopt, SecureAttribute(), PartitionKey())) {
+    return false;
   }
 
   return true;

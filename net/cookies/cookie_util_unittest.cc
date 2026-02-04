@@ -18,11 +18,13 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -809,6 +811,60 @@ TEST(CookieUtilTest, PrefixedCookiesWithoutUrl) {
                   test.prefix, /*url=*/std::nullopt, test.secure,
                   test.http_only, test.domain, test.path),
               test.expect_success);
+  }
+}
+
+TEST(CookieUtilTest, IsCookiePartitionedValid) {
+  const GURL kHttp("http://example.com");
+  const GURL kLocalhost("http://localhost");
+  const GURL kHttps("https://example.com");
+
+  const CookiePartitionKey kUnnonced =
+      CookiePartitionKey::FromURLForTesting(GURL("https://site.com"));
+  const CookiePartitionKey kNonced = CookiePartitionKey::FromURLForTesting(
+      GURL("https://site.com"),
+      CookiePartitionKey::AncestorChainBit::kCrossSite,
+      base::UnguessableToken());
+
+  const struct {
+    std::string_view description;
+    std::optional<GURL> url;
+    bool secure;
+    std::optional<CookiePartitionKey> partition_key;
+    bool expected;
+  } kTestCases[] = {
+      {"no URL insecure unpartitioned", std::nullopt, false, std::nullopt,
+       true},
+      {"no URL insecure unnonced", std::nullopt, false, kUnnonced, false},
+      {"no URL insecure nonced", std::nullopt, false, kNonced, true},
+      {"no URL secure unpartitioned ", std::nullopt, true, std::nullopt, true},
+      {"no URL secure unnonced", std::nullopt, true, kUnnonced, true},
+      {"no URL secure nonced", std::nullopt, true, kNonced, true},
+      {"HTTP insecure unpartitioned", kHttp, false, std::nullopt, true},
+      {"HTTP insecure unnonced", kHttp, false, kUnnonced, false},
+      {"HTTP insecure nonced", kHttp, false, kNonced, true},
+      {"HTTP secure unpartitioned", kHttp, true, std::nullopt, true},
+      {"HTTP secure unnonced", kHttp, true, kUnnonced, false},
+      {"HTTP secure nonced", kHttp, true, kNonced, true},
+      {"localhost insecure unpartitioned", kLocalhost, false, std::nullopt,
+       true},
+      {"localhost insecure unnonced", kLocalhost, false, kUnnonced, false},
+      {"localhost insecure nonced", kLocalhost, false, kNonced, true},
+      {"localhost secure unpartitioned", kLocalhost, true, std::nullopt, true},
+      {"localhost secure unnonced", kLocalhost, true, kUnnonced, true},
+      {"localhost secure nonced", kLocalhost, true, kNonced, true},
+      {"HTTPS insecure unpartitioned", kHttps, false, std::nullopt, true},
+      {"HTTPS insecure unnonced", kHttps, false, kUnnonced, false},
+      {"HTTPS insecure nonced", kHttps, false, kNonced, true},
+      {"HTTPS secure unpartitioned", kHttps, true, std::nullopt, true},
+      {"HTTPS secure unnonced", kHttps, true, kUnnonced, true},
+      {"HTTPS secure nonced", kHttps, true, kNonced, true},
+  };
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.description);
+    EXPECT_EQ(cookie_util::IsCookiePartitionedValid(test.url, test.secure,
+                                                    test.partition_key),
+              test.expected);
   }
 }
 

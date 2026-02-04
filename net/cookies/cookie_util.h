@@ -30,6 +30,7 @@ namespace net {
 class CanonicalCookie;
 class CookieAccessDelegate;
 class CookieInclusionStatus;
+class CookiePartitionKey;
 class IsolationInfo;
 class ParsedCookie;
 class SchemefulSite;
@@ -289,16 +290,11 @@ NET_EXPORT_PRIVATE bool IsCookiePrefixValid(CookiePrefix prefix,
                                             std::string_view domain,
                                             std::string_view path);
 
-// Returns true iff the cookie is a partitioned cookie with a nonce or that
-// does not violate the semantics of the Partitioned attribute:
-// - Must have the Secure attribute OR the cookie partition contains a nonce.
-bool IsCookiePartitionedValid(const GURL& url,
-                              const ParsedCookie& parsed_cookie,
-                              bool partition_has_nonce);
-bool IsCookiePartitionedValid(const GURL& url,
-                              bool secure,
-                              bool is_partitioned,
-                              bool partition_has_nonce);
+// Returns true iff the cookie's Partitioned attribute is valid (or unused).
+NET_EXPORT_PRIVATE bool IsCookiePartitionedValid(
+    base::optional_ref<const GURL> url,
+    bool secure,
+    base::optional_ref<const CookiePartitionKey> partition_key);
 
 // A ParsedRequestCookie consists of the key and value of the cookie.
 using ParsedRequestCookie = std::pair<std::string, std::string>;

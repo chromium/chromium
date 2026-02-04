@@ -39,6 +39,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -825,26 +826,16 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
   NOTREACHED();
 }
 
-bool IsCookiePartitionedValid(const GURL& url,
-                              const ParsedCookie& parsed_cookie,
-                              bool partition_has_nonce) {
-  return IsCookiePartitionedValid(
-      url, /*secure=*/parsed_cookie.IsSecure(),
-      /*is_partitioned=*/parsed_cookie.IsPartitioned(), partition_has_nonce);
-}
-
-bool IsCookiePartitionedValid(const GURL& url,
-                              bool secure,
-                              bool is_partitioned,
-                              bool partition_has_nonce) {
-  if (!is_partitioned) {
+bool IsCookiePartitionedValid(
+    base::optional_ref<const GURL> url,
+    bool secure,
+    base::optional_ref<const CookiePartitionKey> partition_key) {
+  if (!partition_key || CookiePartitionKey::HasNonce(partition_key)) {
     return true;
   }
-  if (partition_has_nonce) {
-    return true;
-  }
-  CookieAccessScheme scheme = cookie_util::ProvisionalAccessScheme(url);
-  bool result = (scheme != CookieAccessScheme::kNonCryptographic) && secure;
+  bool result = (!url || ProvisionalAccessScheme(*url) !=
+                             CookieAccessScheme::kNonCryptographic) &&
+                secure;
   DLOG_IF(WARNING, !result) << "Cookie has invalid Partitioned attribute";
   return result;
 }
