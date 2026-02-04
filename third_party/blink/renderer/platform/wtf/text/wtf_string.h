@@ -52,6 +52,11 @@ class CodePointIterator;
                                             : op##IgnoringASCIICase args)
 
 // You can find documentation about this class in README.md in this directory.
+//
+// When a method of this class is compatible with an equivalent method in
+// `std::string`, we use the same method name as `std::string` (i.e.,
+// `snake_case()`) rather than following the Google/Blink C++ style guide's
+// naming rules. This improves consistency in string manipulation.
 class WTF_EXPORT String {
   USING_FAST_MALLOC(String);
 
