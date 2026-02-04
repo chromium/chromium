@@ -26,6 +26,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
@@ -431,6 +432,63 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         // Verify the tab web contents is still associated with task3.
         EXPECT_TRUE(contextual_tasks_service->GetContextualTaskForTab(
             sessions::SessionTabHelper::IdForTab(tab_web_contents)));
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       DialogDelegateAddedOnTransferToSidePanel) {
+  SetUpTasks();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // The test should be set up with 4 tabs.
+  EXPECT_EQ(4, tab_strip_model->count());
+
+  // Tab 0 with task 1 should be focused.
+  int detach_index = tab_strip_model->GetIndexOfWebContents(
+      tab_strip_model->GetActiveWebContents());
+  EXPECT_EQ(0, detach_index);
+
+  // Navigate to contextual tasks.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+
+  content::WebContents* tab_web_contents;
+
+  RunTestSequence(
+      Do([&]() {
+        // Select tab2 (also associated with task 1 in setup).
+        tab_strip_model->ActivateTabAt(2);
+
+        // Transfer the WebContents from tab 0 to the side panel.
+        std::unique_ptr<content::WebContents> contextual_task_contents =
+            tab_strip_model->DetachWebContentsAtForInsertion(
+                detach_index, TabRemovedReason::kInsertedIntoSidePanel);
+        tab_web_contents = contextual_task_contents.get();
+
+        EXPECT_EQ(nullptr,
+                  web_modal::WebContentsModalDialogManager::FromWebContents(
+                      tab_web_contents)
+                      ->delegate());
+
+        coordinator->TransferWebContentsFromTab(
+            task_id1_, std::move(contextual_task_contents));
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Verify there are now 3 tabs in the tab strip.
+        EXPECT_EQ(3, tab_strip_model->count());
+
+        // Verify the tab web contents is transferred into the side panel.
+        EXPECT_EQ(tab_web_contents, coordinator->GetActiveWebContents());
+
+        EXPECT_NE(nullptr,
+                  web_modal::WebContentsModalDialogManager::FromWebContents(
+                      tab_web_contents)
+                      ->delegate());
       }));
 }
 

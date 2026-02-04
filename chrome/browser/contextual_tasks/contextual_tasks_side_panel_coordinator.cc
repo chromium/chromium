@@ -58,6 +58,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -132,14 +134,16 @@ ContextualTasksSidePanelCoordinator::WebContentsCacheItem::
 
 DEFINE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
-class ContextualTasksWebView : public views::WebView {
+class ContextualTasksWebView
+    : public views::WebView,
+      public web_modal::WebContentsModalDialogManagerDelegate {
  public:
   explicit ContextualTasksWebView(content::BrowserContext* browser_context)
       : views::WebView(browser_context) {
     SetProperty(views::kElementIdentifierKey,
                 kContextualTasksSidePanelWebViewElementId);
   }
-  ~ContextualTasksWebView() override = default;
+  ~ContextualTasksWebView() override { SetWebContents(nullptr); }
 
   base::WeakPtr<ContextualTasksWebView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -153,7 +157,9 @@ class ContextualTasksWebView : public views::WebView {
     if (web_contents() && !web_contents()->IsBeingDestroyed()) {
       web_contents()->WasHidden();
     }
+    DetachWebContentsModalDialogManager(web_contents());
 
+    AttachWebContentsModalDialogManager(wc);
     views::WebView::SetWebContents(wc);
 
     if (wc) {
@@ -200,7 +206,41 @@ class ContextualTasksWebView : public views::WebView {
     }
   }
 
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override {
+    if (!GetBrowser()) {
+      return nullptr;
+    }
+    return GetBrowser()->GetWebContentsModalDialogHostForWindow();
+  }
+
  private:
+  // Attach a modal dialog manager to a WebContents so that dialogs can be
+  // displayed correctly while in the side panel.
+  void AttachWebContentsModalDialogManager(content::WebContents* web_contents) {
+    if (!web_contents) {
+      return;
+    }
+    web_modal::WebContentsModalDialogManager::CreateForWebContents(
+        web_contents);
+    web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+        ->SetDelegate(this);
+  }
+
+  // Detach the modal dialog manager from the provided WebContents. This should
+  // happen when the contents is detached from the side panel.
+  void DetachWebContentsModalDialogManager(content::WebContents* web_contents) {
+    if (!web_contents) {
+      return;
+    }
+    auto* dialog_manager =
+        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+    if (dialog_manager) {
+      dialog_manager->SetDelegate(nullptr);
+    }
+  }
+
   BrowserWindowInterface* GetBrowser() {
     if (!web_contents()) {
       return nullptr;
