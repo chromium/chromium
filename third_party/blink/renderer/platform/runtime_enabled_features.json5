@@ -4634,7 +4634,7 @@
       // https://github.com/whatwg/html/pull/10869
       // https://github.com/whatwg/dom/pull/1341
       name: "ScopedCustomElementRegistry",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://github.com/WICG/view-transitions/blob/main/scoped-transitions.md
