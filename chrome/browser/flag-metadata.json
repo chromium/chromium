@@ -5716,6 +5716,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ios-docking-promo-v2",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ios-enhanced-autofill",
     "owners": [ "tmartino@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 155

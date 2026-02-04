@@ -447,6 +447,9 @@ extern const char kIOSCustomFileUploadMenuDescription[];
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 
+extern const char kIOSDockingPromoV2Name[];
+extern const char kIOSDockingPromoV2Description[];
+
 extern const char kIOSEnableCloudProfileReportingName[];
 extern const char kIOSEnableCloudProfileReportingDescription[];
 

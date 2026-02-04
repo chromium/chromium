@@ -723,6 +723,11 @@ const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "
     "promo showing how to move Chrome to their native iOS dock.";
 
+const char kIOSDockingPromoV2Name[] = "Docking Promo V2";
+const char kIOSDockingPromoV2Description[] =
+    "When enabled, the user will be presented an animated, instructional "
+    "promo V2 showing how to move Chrome to their native iOS dock.";
+
 const char kIOSEnableCloudProfileReportingName[] =
     "Enable profile reporting on iOS";
 const char kIOSEnableCloudProfileReportingDescription[] =

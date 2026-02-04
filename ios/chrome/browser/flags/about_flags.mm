@@ -434,6 +434,23 @@ const FeatureEntry::FeatureVariation
          std::size(kDefaultBrowserPictureInPictureArm3), nullptr},
 };
 
+const FeatureEntry::FeatureParam kIOSDockingPromoV2Header1[] = {
+    {kIOSDockingPromoV2VariationParam, kIOSDockingPromoV2VariationHeader1}};
+
+const FeatureEntry::FeatureParam kIOSDockingPromoV2Header2[] = {
+    {kIOSDockingPromoV2VariationParam, kIOSDockingPromoV2VariationHeader2}};
+
+const FeatureEntry::FeatureParam kIOSDockingPromoV2Header3[] = {
+    {kIOSDockingPromoV2VariationParam, kIOSDockingPromoV2VariationHeader3}};
+
+const FeatureEntry::FeatureVariation kIOSDockingPromoV2Variations[] = {
+    {"Display Header #1", kIOSDockingPromoV2Header1,
+     std::size(kIOSDockingPromoV2Header1), nullptr},
+    {"Display Header #2", kIOSDockingPromoV2Header2,
+     std::size(kIOSDockingPromoV2Header2), nullptr},
+    {"Display Header #3 without Subheader", kIOSDockingPromoV2Header3,
+     std::size(kIOSDockingPromoV2Header3), nullptr}};
+
 const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAfterFRE[] = {
     {kIOSDockingPromoExperimentType, "0"}};
 const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAtAppLaunch[] = {
@@ -1777,6 +1794,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSDockingPromo,
                                     kIOSDockingPromoVariations,
                                     "IOSDockingPromo")},
+    {"ios-docking-promo-v2", flag_descriptions::kIOSDockingPromoV2Name,
+     flag_descriptions::kIOSDockingPromoV2Description, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSDockingPromoV2,
+                                    kIOSDockingPromoV2Variations,
+                                    "IOSDockingPromoV2")},
     {"omnibox-grouping-framework-non-zps",
      flag_descriptions::kOmniboxGroupingFrameworkForTypedSuggestionsName,
      flag_descriptions::kOmniboxGroupingFrameworkForTypedSuggestionsDescription,
