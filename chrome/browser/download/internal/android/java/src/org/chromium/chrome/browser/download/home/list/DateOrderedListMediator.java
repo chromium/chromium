@@ -244,7 +244,7 @@ class DateOrderedListMediator implements BackPressHandler {
                         discardableReferencePool,
                         config.inMemoryThumbnailCacheSizeBytes,
                         ThumbnailProviderImpl.ClientType.DOWNLOAD_HOME,
-                        true /* useMultipleRequests */);
+                        /* useMultipleRequests */ true);
         new MediatorSelectionObserver(selectionDelegate);
 
         mModel.getProperties().set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
@@ -294,9 +294,13 @@ class DateOrderedListMediator implements BackPressHandler {
 
     /**
      * To be called when this mediator should filter its content based on {@code filter}.
+     *
      * @see SearchOfflineItemFilter#onQueryChanged(String)
      */
     public void onFilterStringChanged(@Nullable String filter) {
+        if (filter != null && mSelectionDelegate.isSelectionEnabled()) {
+            mSelectionDelegate.clearSelection();
+        }
         try (AnimationDisableClosable closeable = new AnimationDisableClosable()) {
             mSearchFilter.onQueryChanged(filter);
         }
