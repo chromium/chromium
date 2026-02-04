@@ -15446,28 +15446,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ImmersiveReadAnything"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "ImmersiveReadAnything"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood_WithReadability",
+                    "name": "Enabled_WithReadability_Dogfood",
                     "enable_features": [
                         "ImmersiveReadAnything",
+                        "ReadAnythingImagesViaAlgorithm",
                         "ReadAnythingWithReadability"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ImmersiveReadAnything"
                     ]
                 }
             ]
