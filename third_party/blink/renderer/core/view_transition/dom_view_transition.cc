@@ -181,6 +181,22 @@ void DOMViewTransition::NotifyDOMCallbackFinished() {
 
 void DOMViewTransition::NotifyDOMCallbackRejected(ScriptValue value) {
   CHECK_EQ(dom_callback_result_, DOMCallbackResult::kRunning);
+
+  // TODO(crbug.com/481374782): Consider generalizing solution to ensure
+  // no rejection paths can lead to being unable to detect an unhandled
+  // rejection.
+
+  // If the promises have not been accessed yet, create them here so that they
+  // report an unhandled rejection if they are not subsequently handled.
+  if (ScriptState* script_state =
+          ToScriptStateForMainWorld(execution_context_)) {
+    dom_updated_promise_property_->Promise(script_state->World());
+    if (!view_transition_->IsDone()) {
+      ready_promise_property_->Promise(script_state->World());
+    }
+    finished_promise_property_->Promise(script_state->World());
+  }
+
   // Handle all promises which depend on this callback.
   dom_updated_promise_property_->Reject(value);
 
@@ -351,6 +367,12 @@ void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
 
   if (!main_world_script_state) {
     return;
+  }
+
+  // TODO(crbug.com/481374782): Consider generalizing solution to future proof
+  // handling of all rejection paths.
+  if (response != ViewTransition::PromiseResponse::kResolve) {
+    property->Promise(main_world_script_state->World());
   }
 
   switch (response) {
