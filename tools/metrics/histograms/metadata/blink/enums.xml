@@ -99,6 +99,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Ended with teardown"/>
   <int value="12" label="Aborted because there was no surface"/>
   <int value="13" label="Ended on canvas reset"/>
+  <int value="14"
+      label="Aborted because of epoch mismatch (e.g. fg/bg transitions)"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h:CanvasHibernationEvent) -->

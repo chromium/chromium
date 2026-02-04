@@ -361,13 +361,17 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kCanvas2DHibernation,
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
-// When hibernating, make sure that the just-used transfer memory (to transfer
-// the snapshot) is freed.
-BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
+// Defer canvas hibernation when visibility changed.
+BASE_FEATURE(kCanvas2DHibernationDefer,
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
 // Don't hibernate small canvas elements.
 BASE_FEATURE(kCanvas2DHibernationNoSmallCanvas,
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
+// When hibernating, make sure that the just-used transfer memory (to transfer
+// the snapshot) is freed.
+BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to capture the source location of JavaScript execution, which is one

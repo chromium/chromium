@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -267,11 +268,6 @@ void RunIdleTasks() {
   blink::test::RunPendingTasks();
 }
 
-void WaitForHibernation() {
-  // Hibernation is posted as an idle task.
-  RunIdleTasks();
-}
-
 }  // namespace
 
 // Helper class to registers an event listener and wait for it to fire.
@@ -379,6 +375,15 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
         FROM_HERE, std::move(callback));
     test::RunPendingTasks();
+  }
+
+  void WaitForHibernation() {
+    if (base::FeatureList::IsEnabled(features::kCanvas2DHibernationDefer)) {
+      task_environment_.FastForwardBy(
+          CanvasHibernationHandler::kMaxHibernationDelay);
+    } else {
+      RunIdleTasks();
+    }
   }
 
   test::TaskEnvironment task_environment_{
@@ -2323,20 +2328,28 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // gets a chance to run.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
-  // Move the page to the background again and verify that hibernation is not
-  // newly scheduled, as the hibernation scheduled on the first backgrounding is
-  // still pending.
+  // Go back to background. A new hibernation task is scheduled.
   {
     base::HistogramTester histogram_tester;
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         kCanvasHibernationEventHistogramName,
-        CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 0);
+        CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  WaitForHibernation();
+  {
+    base::HistogramTester histogram_tester;
+
+    WaitForHibernation();
+    // The first hibernation task returned due to epoch mismatch.
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedDueToEpochMismatch,
+        1);
+  }
 
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
   EXPECT_TRUE(handler.IsHibernating());
@@ -2871,7 +2884,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResetEndsHibernation) {
 
   // Hide the page and run hibernation task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
-  RunIdleTasks();
+  WaitForHibernation();
   EXPECT_TRUE(handler.IsHibernating());
 
   // Reset the canvas, ending hibernation.
@@ -2936,10 +2949,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResetDoesntAbortHibernation) {
   {
     base::HistogramTester histogram_tester;
     RunInTask(base::BindLambdaForTesting([this] { Context2D()->reset(); }));
-
-    // Run hibernation task. Hibernation aborts since there's no more resources.
-    RunIdleTasks();
-
+    WaitForHibernation();
     EXPECT_TRUE(handler.IsHibernating());
   }
 }
@@ -3245,9 +3255,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
                            exception_state);
                      },
                      Unretained(this)));
-  blink::test::RunPendingTasks();
+  // Make sure the task above runs.
+  RunIdleTasks();
 
-  // Hibernate the canvas. Hibernation is handled in a idle task.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   WaitForHibernation();
 
