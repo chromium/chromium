@@ -1784,3 +1784,46 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(overlay_view);
   ASSERT_FALSE(overlay_view->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       FocusInactiveIrmInSplitView_ActivatesTab) {
+  // Setup Tab A and open IRM
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  tabs::TabInterface* tab_a = tab_strip_model->GetActiveTab();
+  ReadAnythingController* controller_a = ReadAnythingController::From(tab_a);
+  ASSERT_TRUE(controller_a);
+
+  controller_a->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EmitWebUIShowEvent();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return controller_a->has_shown_ui(); }));
+
+  // Add Tab B (becomes active)
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(1, tab_strip_model->active_index());
+
+  // Add Tab A to split view with current window (Tab B).
+  ASSERT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToSplit));
+  tab_strip_model->ExecuteContextMenuCommand(0,
+                                             TabStripModel::CommandAddToSplit);
+
+  // Verify Tab A is not active.
+  ASSERT_NE(0, tab_strip_model->active_index());
+
+  // Verify IRM on Tab A is visible (even though it's inactive)
+  views::View* overlay_view_a = GetImmersiveOverlayForTab(0);
+  ASSERT_TRUE(overlay_view_a);
+  ASSERT_TRUE(overlay_view_a->GetVisible());
+
+  // Simulate focus on the IRM WebView of Tab A.
+  auto* web_view = static_cast<views::WebView*>(overlay_view_a->children()[0]);
+  // Trigger the focus callback via RequestFocus.
+  web_view->RequestFocus();
+
+  // Verify Tab A becomes active.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_strip_model->active_index() == 0; }));
+}

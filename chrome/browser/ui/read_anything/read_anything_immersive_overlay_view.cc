@@ -116,6 +116,10 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
                      base::Unretained(this)),
       std::move(contents_wrapper), trigger);
   immersive_web_view_ = AddChildView(std::move(immersive_web_view));
+  immersive_view_focus_subscription_ =
+      immersive_web_view_->AddWebContentsFocusedCallback(base::BindRepeating(
+          &ReadAnythingImmersiveOverlayView::OnImmersiveWebViewFocused,
+          base::Unretained(this)));
 }
 
 void ReadAnythingImmersiveOverlayView::OnShowUI() {
@@ -132,6 +136,7 @@ void ReadAnythingImmersiveOverlayView::OnShowUI() {
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingImmersiveOverlayView::CloseUI() {
+  immersive_view_focus_subscription_ = {};
   SetVisible(false);
 
   // We want the main web contents to be accessible again if IRM is closed and
@@ -144,6 +149,17 @@ ReadAnythingImmersiveOverlayView::CloseUI() {
       RemoveChildViewT(immersive_web_view_);
   immersive_web_view_ = nullptr;
   return web_view->CloseAndTakeContentsWrapper();
+}
+
+base::CallbackListSubscription
+ReadAnythingImmersiveOverlayView::AddWebViewFocusedCallback(
+    base::RepeatingCallback<void(views::WebView*)> callback) {
+  return focus_callback_list_.Add(std::move(callback));
+}
+
+void ReadAnythingImmersiveOverlayView::OnImmersiveWebViewFocused(
+    views::WebView* web_view) {
+  focus_callback_list_.Notify(web_view);
 }
 
 BEGIN_METADATA(ReadAnythingImmersiveOverlayView)

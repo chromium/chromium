@@ -220,6 +220,12 @@ class MultiContentsView : public views::View,
   void OnNtpFooterFocused(views::WebView*);
   void OnActorOverlayFocused(views::WebView*);
 
+  // Callback for when Read Anything Immersive Mode Overlay is focused. If the
+  // focus comes from an inactive pane in a split view, this method activates
+  // the corresponding tab.
+  void OnReadAnythingOverlayFocused(ContentsContainerView* container,
+                                    views::WebView* web_view);
+
   ViewWidths GetViewWidths(gfx::Rect available_space) const;
 
   // Clamps to the minimum of kMinWebContentsWidth or
@@ -260,6 +266,11 @@ class MultiContentsView : public views::View,
   // ActorOverlayWebView is focused.
   std::vector<base::CallbackListSubscription>
       actor_overlay_focused_subscriptions_;
+
+  // Holds subscriptions for when the attached web contents to
+  // ReadAnythingImmersiveOverlayView is focused.
+  std::vector<base::CallbackListSubscription>
+      read_anything_overlay_focused_subscriptions_;
 
   // The handle responsible for resizing the two contents views as relative to
   // each other.

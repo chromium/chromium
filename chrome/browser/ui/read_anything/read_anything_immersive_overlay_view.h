@@ -56,6 +56,12 @@ class ReadAnythingImmersiveOverlayView
   // ReadAnythingLifecycleObserver:
   void OnDestroyed() override;
 
+  // Adds a callback to be notified when the ReadAnythingImmersiveWebView
+  // receives focus. This is used by the MultiContentsView to switch focus in
+  // split views when a user clicks on IRM in the inactive pane.
+  base::CallbackListSubscription AddWebViewFocusedCallback(
+      base::RepeatingCallback<void(views::WebView*)> callback);
+
  private:
   // Called when a new WebContents is attached to the ContentsWebView.
   void OnWebContentsAttached(views::WebView* web_view);
@@ -72,6 +78,9 @@ class ReadAnythingImmersiveOverlayView
   // Callback for when the immersive web view is ready to be shown.
   void OnShowUI();
 
+  // Forward the focus event to the focus_callback_list_ observers.
+  void OnImmersiveWebViewFocused(views::WebView* web_view);
+
   raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
   // Subscriptions to the ContentsWebView callbacks, which notify us if a new
   // WebContents was added or removed from the main WebContentsView.
@@ -83,6 +92,9 @@ class ReadAnythingImmersiveOverlayView
   raw_ptr<ReadAnythingController> controller_ = nullptr;
 
   raw_ptr<ReadAnythingImmersiveWebView> immersive_web_view_ = nullptr;
+
+  base::RepeatingCallbackList<void(views::WebView*)> focus_callback_list_;
+  base::CallbackListSubscription immersive_view_focus_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_IMMERSIVE_OVERLAY_VIEW_H_
