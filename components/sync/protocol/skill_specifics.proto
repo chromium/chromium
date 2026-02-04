@@ -45,13 +45,14 @@ message SkillSpecifics {
 
   // The schema version of the skill, useful for migrations.
   optional int32 schema_version = 7;
+
+  // The source of the skill.
+  optional SkillSource skill_source = 8;
 }
 
 // Represents a simple skill, primarily defined by a natural language prompt.
 message SimpleSkill {
   // The core prompt text that instructs the model.
   optional string prompt = 1;
-
-  // TODO(crbug.com/479386016): add skill source.
 }
 // LINT.ThenChange(//components/skills/internal/skills_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

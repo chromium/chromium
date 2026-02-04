@@ -62,6 +62,8 @@ sync_pb::SkillSpecifics CreateSkillSpecifics(std::string guid,
   specifics.set_name(std::move(name));
   specifics.set_icon(std::move(icon));
   specifics.mutable_simple_skill()->set_prompt(std::move(prompt));
+  specifics.set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
+  specifics.set_schema_version(1);
   return specifics;
 }
 

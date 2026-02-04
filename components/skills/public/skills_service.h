@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/proto/skill.pb.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
@@ -122,7 +123,8 @@ class SkillsService : public KeyedService {
       std::string_view icon,
       std::string_view prompt,
       base::Time creation_time,
-      base::Time last_update_time) = 0;
+      base::Time last_update_time,
+      sync_pb::SkillSource source) = 0;
 
   // Updates an existing skill locally. Returns a skill if exists, nullptr
   // otherwise. Must only be called when the service is in kReady state.

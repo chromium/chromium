@@ -76,7 +76,8 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
     std::string_view icon,
     std::string_view prompt,
     base::Time creation_time,
-    base::Time last_update_time) {
+    base::Time last_update_time,
+    sync_pb::SkillSource source) {
   CHECK(is_initialized_);
 
   if (Skill* skill = GetMutableSkillById(skill_id)) {
@@ -92,6 +93,7 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
   // other clients.
   skill->creation_time = creation_time;
   skill->last_update_time = last_update_time;
+  skill->source = source;
   return AddSkillImpl(std::move(skill), UpdateSource::kSync);
 }
 

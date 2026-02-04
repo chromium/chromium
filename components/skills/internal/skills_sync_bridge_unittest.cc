@@ -59,6 +59,7 @@ sync_pb::SkillSpecifics CreateSkillSpecifics(std::string prompt) {
   sync_pb::SkillSpecifics specifics;
   specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   specifics.mutable_simple_skill()->set_prompt(std::move(prompt));
+  specifics.set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
   specifics.set_schema_version(kDefaultSchemaVersion);
   return specifics;
 }
@@ -99,7 +100,8 @@ class MockSkillsService : public SkillsService {
                std::string_view,
                std::string_view,
                base::Time,
-               base::Time));
+               base::Time,
+               sync_pb::SkillSource));
   MOCK_METHOD(
       const Skill*,
       UpdateSkill,
@@ -214,6 +216,7 @@ TEST_F(SkillsSyncBridgeTest, ShouldTrimAllKnownFields) {
   specifics.set_name("name");
   specifics.set_icon("icon");
   specifics.mutable_simple_skill()->set_prompt("prompt");
+  specifics.set_skill_source(sync_pb::SKILL_SOURCE_FIRST_PARTY);
   specifics.set_creation_time_windows_epoch_micros(1234567890);
   specifics.set_last_update_time_windows_epoch_micros(1234567891);
   specifics.set_schema_version(1);
@@ -289,6 +292,7 @@ TEST_F(SkillsSyncBridgeTest, GetDataForCommit) {
   expected_specifics_1.set_last_update_time_windows_epoch_micros(
       skill1.last_update_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_specifics_1.mutable_simple_skill()->set_prompt("prompt1");
+  expected_specifics_1.set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
   expected_specifics_1.set_schema_version(kDefaultSchemaVersion);
 
   sync_pb::SkillSpecifics expected_specifics_2;
@@ -300,6 +304,7 @@ TEST_F(SkillsSyncBridgeTest, GetDataForCommit) {
   expected_specifics_2.set_last_update_time_windows_epoch_micros(
       skill2.last_update_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_specifics_2.mutable_simple_skill()->set_prompt("prompt2");
+  expected_specifics_2.set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
   expected_specifics_2.set_schema_version(kDefaultSchemaVersion);
 
   EXPECT_THAT(
@@ -334,6 +339,7 @@ TEST_F(SkillsSyncBridgeTest, GetAllDataForDebugging) {
   expected_specifics_1.set_last_update_time_windows_epoch_micros(
       skills[0]->last_update_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_specifics_1.mutable_simple_skill()->set_prompt("prompt1");
+  expected_specifics_1.set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
   expected_specifics_1.set_schema_version(kDefaultSchemaVersion);
 
   sync_pb::SkillSpecifics expected_specifics_2;
@@ -345,6 +351,7 @@ TEST_F(SkillsSyncBridgeTest, GetAllDataForDebugging) {
   expected_specifics_2.set_last_update_time_windows_epoch_micros(
       skills[1]->last_update_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_specifics_2.mutable_simple_skill()->set_prompt("prompt2");
+  expected_specifics_2.set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
   expected_specifics_2.set_schema_version(kDefaultSchemaVersion);
 
   EXPECT_THAT(
@@ -392,7 +399,8 @@ TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Update) {
 
   EXPECT_CALL(mock_skills_service(),
               AddOrUpdateSkillFromSync(guid, kName, kIcon, kPrompt,
-                                       kCreationTime, kLastUpdateTime))
+                                       kCreationTime, kLastUpdateTime,
+                                       sync_pb::SKILL_SOURCE_USER_CREATED))
       .WillOnce(Return(stored_skill.get()));
   ASSERT_EQ(ApplySingleUpdate(syncer::EntityChange::CreateUpdate(
                 /*storage_key=*/guid, std::move(entity_data))),
@@ -433,7 +441,8 @@ TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Add) {
 
   EXPECT_CALL(mock_skills_service(),
               AddOrUpdateSkillFromSync(guid, kName, kIcon, kPrompt,
-                                       kCreationTime, kLastUpdateTime))
+                                       kCreationTime, kLastUpdateTime,
+                                       sync_pb::SKILL_SOURCE_USER_CREATED))
       .WillOnce(Return(stored_skill.get()));
   ASSERT_EQ(ApplySingleUpdate(syncer::EntityChange::CreateAdd(
                 /*storage_key=*/guid, std::move(entity_data))),
@@ -485,6 +494,7 @@ TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSync) {
   expected_specifics.set_name("name");
   expected_specifics.set_icon("icon");
   expected_specifics.mutable_simple_skill()->set_prompt("prompt");
+  expected_specifics.set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
   expected_specifics.set_creation_time_windows_epoch_micros(
       kCreationTime.ToDeltaSinceWindowsEpoch().InMicroseconds());
   expected_specifics.set_last_update_time_windows_epoch_micros(

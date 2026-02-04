@@ -61,7 +61,8 @@ class SkillsServiceImpl : public SkillsService {
                                         std::string_view icon,
                                         std::string_view prompt,
                                         base::Time creation_time,
-                                        base::Time last_update_time) override;
+                                        base::Time last_update_time,
+                                        sync_pb::SkillSource source) override;
 
   // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
   // order of arguments.

@@ -245,7 +245,8 @@ TEST_F(SkillsServiceImplTest, GetSkillById) {
 
   service().AddOrUpdateSkillFromSync("id", "name", "icon", "prompt",
                                      /*creation_time=*/base::Time::Now(),
-                                     /*last_update_time=*/base::Time::Now());
+                                     /*last_update_time=*/base::Time::Now(),
+                                     sync_pb::SKILL_SOURCE_USER_CREATED);
 
   const Skill* skill = service().GetSkillById("id");
   ASSERT_NE(nullptr, skill);
@@ -373,7 +374,7 @@ TEST_F(SkillsServiceImplTest, UpdateExistingSkillFromSync) {
               OnSkillUpdated(skill->id, SkillsService::UpdateSource::kSync));
   const Skill* updated_skill = service().AddOrUpdateSkillFromSync(
       skill->id, "sync name", "sync icon", "sync prompt", initial_creation_time,
-      /*last_update_time=*/new_update_time);
+      /*last_update_time=*/new_update_time, sync_pb::SKILL_SOURCE_USER_CREATED);
 
   // Only the last update time should be updated.
   ASSERT_EQ(skill, updated_skill);
@@ -394,7 +395,8 @@ TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
               OnSkillUpdated(_, SkillsService::UpdateSource::kSync));
 
   const Skill* skill = service().AddOrUpdateSkillFromSync(
-      "id", "name", "icon", "prompt", creation_time, update_time);
+      "id", "name", "icon", "prompt", creation_time, update_time,
+      sync_pb::SKILL_SOURCE_FIRST_PARTY);
   ASSERT_NE(nullptr, skill);
 
   EXPECT_THAT(service().GetSkills(),

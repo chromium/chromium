@@ -56,6 +56,7 @@ sync_pb::SkillSpecifics SkillToSpecifics(
   specifics.set_last_update_time_windows_epoch_micros(
       ToWindowsEpochMicros(skill.last_update_time));
   specifics.set_schema_version(kSchemaVersion);
+  specifics.set_skill_source(skill.source);
   return specifics;
 }
 
@@ -73,6 +74,7 @@ std::unique_ptr<Skill> SpecificsToSkill(
       FromWindowsEpochMicros(specifics.creation_time_windows_epoch_micros());
   skill->last_update_time =
       FromWindowsEpochMicros(specifics.last_update_time_windows_epoch_micros());
+  skill->source = specifics.skill_source();
   return skill;
 }
 
@@ -154,7 +156,8 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
             FromWindowsEpochMicros(
                 skill_specifics.creation_time_windows_epoch_micros()),
             FromWindowsEpochMicros(
-                skill_specifics.last_update_time_windows_epoch_micros()));
+                skill_specifics.last_update_time_windows_epoch_micros()),
+            skill_specifics.skill_source());
         CHECK(skill);
 
         StoreSkill(*skill, *write_batch);
@@ -263,6 +266,7 @@ SkillsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   trimmed_specifics.clear_creation_time_windows_epoch_micros();
   trimmed_specifics.clear_last_update_time_windows_epoch_micros();
   trimmed_specifics.clear_schema_version();
+  trimmed_specifics.clear_skill_source();
 
   if (trimmed_specifics.has_simple_skill()) {
     trimmed_specifics.mutable_simple_skill()->clear_prompt();

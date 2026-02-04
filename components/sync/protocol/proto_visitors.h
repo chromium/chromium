@@ -2192,6 +2192,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SkillSpecifics& proto) {
   VISIT(creation_time_windows_epoch_micros);
   VISIT(last_update_time_windows_epoch_micros);
   VISIT(schema_version);
+  VISIT_ENUM(skill_source);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SimpleSkill& proto) {
