@@ -1239,6 +1239,8 @@ TEST_F(AddressDataManagerTest, RemoveAccountNameEmailProfileIfFeatureDisabled) {
                   AutofillProfile::RecordType::kAccountNameEmail)));
 
   feature_list.Reset();
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableSupportForNameAndEmail);
   RecreateAddressDataManager();
   EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
                   AutofillProfile::RecordType::kAccountNameEmail),
