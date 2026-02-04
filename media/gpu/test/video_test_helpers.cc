@@ -783,7 +783,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
         CloneVideoFrame(memory_frame.get(), dst_layout, test_sii,
                         VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
                         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-    LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
+    LOG_ASSERT(!!frame) << "Failed creating MappableSharedImage VideoFrame";
 
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
     LOG_ASSERT(!gmb_handle.is_null())
