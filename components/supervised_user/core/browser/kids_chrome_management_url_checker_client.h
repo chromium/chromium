@@ -30,12 +30,21 @@ class KidsChromeManagementURLCheckerClient
     : public safe_search_api::URLCheckerClient {
  public:
   // `country` should be a two-letter country code (ISO 3166-1 alpha-2), e.g.,
-  // "us". `is_subject_to_parental_controls` indicates if the caller is subject
-  // to Family Link parental controls.
+  // "us". `pref_service` is used to check if the caller is subject to Family
+  // Link parental controls and should add end-user credentials to the request.
   KidsChromeManagementURLCheckerClient(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const PrefService& pref_service,
+      std::string_view country,
+      version_info::Channel channel);
+
+  // Same as above, but never adds end-user credentials to the request. The
+  // client will act as if `pref_service` had kSupervisedUserID unset for the
+  // constructor above.
+  KidsChromeManagementURLCheckerClient(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view country,
       version_info::Channel channel);
 

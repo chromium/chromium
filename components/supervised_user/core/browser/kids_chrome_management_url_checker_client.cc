@@ -105,6 +105,17 @@ std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
       *identity_manager, url_loader_factory, request, std::move(callback),
       GetFetcherConfig(IsSubjectToParentalControls(pref_service_)), channel);
 }
+
+std::unique_ptr<ClassifyUrlFetcher> ClassifyURLWithoutCredentials(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    version_info::Channel channel,
+    const kidsmanagement::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback) {
+  return CreateClassifyURLFetcher(
+      *identity_manager, url_loader_factory, request, std::move(callback),
+      kClassifyUrlConfigWithoutCredentials, channel);
+}
 }  // namespace
 
 KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
@@ -118,6 +129,17 @@ KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
                                          identity_manager,
                                          url_loader_factory,
                                          std::ref(pref_service_),
+                                         channel)) {}
+
+KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string_view country,
+    version_info::Channel channel)
+    : country_(country),
+      fetch_manager_(base::BindRepeating(&ClassifyURLWithoutCredentials,
+                                         identity_manager,
+                                         url_loader_factory,
                                          channel)) {}
 
 KidsChromeManagementURLCheckerClient::~KidsChromeManagementURLCheckerClient() =

@@ -5,7 +5,6 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 
 #include <memory>
-#include <string>
 #include <string_view>
 
 #include "base/functional/bind.h"
@@ -17,6 +16,7 @@
 #include "base/values.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
@@ -42,18 +42,55 @@ static constexpr std::string_view kKidsApiEndpoint{
     "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/people/"
     "me:classifyUrl?alt=proto"};
 
+enum class CredentialsMode {
+  // Checker client that never adds credentials to the request.
+  kNoCredentials,
+  // Checker client that can add credentials to the request, but only if the
+  // user is subject to Family Link parental controls.
+  // TODO(crbug.com/480995677): Remove this once the feature is launched.
+  kTryReadingCredentialsFromFamilyLink,
+  // Checker client that adds credentials to the request because family link is
+  // enabled.
+  kRequireCredentialsFromFamilyLink,
+};
+
+bool CredentialsRequired(CredentialsMode credentials_mode) {
+  return credentials_mode == CredentialsMode::kRequireCredentialsFromFamilyLink;
+}
+
 // By default, bootstraps client in "FamilyLink" mode, which implies at least
 // "best effort" credentials mode.
-class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
+class KidsChromeManagementURLCheckerClientTestBase
+    : public ::testing::TestWithParam<CredentialsMode> {
  protected:
-  KidsChromeManagementURLCheckerClientTest() {
+  explicit KidsChromeManagementURLCheckerClientTestBase(
+      CredentialsMode credentials_mode) {
     RegisterProfilePrefs(pref_service_.registry());
-    url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
-        identity_test_env_.identity_manager(),
-        test_url_loader_factory_.GetSafeWeakWrapper(), pref_service_, "us",
-        version_info::Channel::UNKNOWN);
+
+    switch (credentials_mode) {
+      case CredentialsMode::kNoCredentials:
+        url_classifier_ =
+            std::make_unique<KidsChromeManagementURLCheckerClient>(
+                identity_test_env_.identity_manager(),
+                test_url_loader_factory_.GetSafeWeakWrapper(), "us",
+                version_info::Channel::UNKNOWN);
+        break;
+      case CredentialsMode::kTryReadingCredentialsFromFamilyLink:
+      case CredentialsMode::kRequireCredentialsFromFamilyLink:
+        url_classifier_ =
+            std::make_unique<KidsChromeManagementURLCheckerClient>(
+                identity_test_env_.identity_manager(),
+                test_url_loader_factory_.GetSafeWeakWrapper(), pref_service_,
+                "us", version_info::Channel::UNKNOWN);
+
+        break;
+    }
+
+    if (credentials_mode ==
+        CredentialsMode::kRequireCredentialsFromFamilyLink) {
+      EnableParentalControls(pref_service_);
+    }
   }
-  void SetUp() override { EnableParentalControls(pref_service_); }
 
   void MakePrimaryAccountAvailable() {
     identity_test_env_.MakePrimaryAccountAvailable(
@@ -78,13 +115,13 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
     response.set_display_classification(display_classification);
 
     test_url_loader_factory_.SimulateResponseForPendingRequest(
-        std::string(kKidsApiEndpoint), response.SerializeAsString());
+        kKidsApiEndpoint, response.SerializeAsString());
   }
 
   void SimulateMalformedResponse() {
     test_url_loader_factory_.SimulateResponseForPendingRequest(
-        std::string(kKidsApiEndpoint),
-        /*content=*/"garbage");
+        kKidsApiEndpoint,
+        /*content=*/"not-parseable-to-proto-response");
   }
 
   void SimulateNetworkError(int net_error) {
@@ -94,9 +131,9 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
   }
 
   void SimulateHttpError(net::HttpStatusCode http_status) {
-    test_url_loader_factory_.SimulateResponseForPendingRequest(
-        std::string(kKidsApiEndpoint),
-        /*content=*/"", http_status);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(kKidsApiEndpoint,
+                                                               /*content=*/"",
+                                                               http_status);
   }
 
   // Asynchronously checks the URL and waits until finished.
@@ -114,13 +151,13 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
 
   void DestroyUrlClassifier() { url_classifier_.reset(); }
 
-
  private:
   void StartCheckUrl(std::string_view url) {
     url_classifier_->CheckURL(
         GURL(url),
-        base::BindOnce(&KidsChromeManagementURLCheckerClientTest::OnCheckDone,
-                       base::Unretained(this)));
+        base::BindOnce(
+            &KidsChromeManagementURLCheckerClientTestBase::OnCheckDone,
+            base::Unretained(this)));
   }
 
  protected:
@@ -131,7 +168,73 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
+class KidsChromeManagementURLCheckerClientNoCredentialsTest
+    : public KidsChromeManagementURLCheckerClientTestBase {
+ protected:
+  KidsChromeManagementURLCheckerClientNoCredentialsTest()
+      : KidsChromeManagementURLCheckerClientTestBase(
+            CredentialsMode::kNoCredentials) {}
+};
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+TEST_F(KidsChromeManagementURLCheckerClientNoCredentialsTest,
+       NoPrimaryAccount) {
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // Other access modes should succeed because they don't require credentials
+  // and api call is made.
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kAllowed));
+  CheckUrl("http://example.com");
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
+}
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
+
+class KidsChromeManagementURLCheckerClientFamilyLinkEnabledTest
+    : public KidsChromeManagementURLCheckerClientTestBase {
+ protected:
+  KidsChromeManagementURLCheckerClientFamilyLinkEnabledTest()
+      : KidsChromeManagementURLCheckerClientTestBase(
+            CredentialsMode::kRequireCredentialsFromFamilyLink) {}
+};
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(KidsChromeManagementURLCheckerClientFamilyLinkEnabledTest,
+       NoPrimaryAccount) {
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  // On Android, uncredentialed access will hang on access token wait.
+  EXPECT_CALL(*this, OnCheckDone(GURL("http://example.com"), _)).Times(0);
+  CheckUrl("http://example.com");
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(KidsChromeManagementURLCheckerClientFamilyLinkEnabledTest,
+       NoPrimaryAccount) {
+  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // On iOS and ChromeOS, the client falls back gracefully to
+  // "unknown" classification without making the API calls when the
+  // credentials were required but are not available.
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kUnknown));
+  CheckUrl("http://example.com");
+}
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
+
+class KidsChromeManagementURLCheckerClientTest
+    : public KidsChromeManagementURLCheckerClientTestBase {
+ protected:
+  KidsChromeManagementURLCheckerClientTest()
+      : KidsChromeManagementURLCheckerClientTestBase(GetParam()) {}
+};
+
+TEST_P(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -142,7 +245,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
   SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
   base::HistogramTester histogram_tester;
   MakePrimaryAccountAvailable();
 
@@ -153,12 +256,19 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
 
   SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
 
-  // Non-proto test is mocking the whole client thus bypassing the http stack.
-  histogram_tester.ExpectTotalCount("FamilyLinkUser.ClassifyUrlRequest.Latency",
-                                    /*expected_count(grew by)*/ 1);
+  if (GetParam() == CredentialsMode::kRequireCredentialsFromFamilyLink) {
+    // Non-proto test is mocking the whole client thus bypassing the http stack.
+    histogram_tester.ExpectTotalCount(
+        "FamilyLinkUser.ClassifyUrlRequest.Latency",
+        /*expected_count(grew by)*/ 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "NonFamilyLinkUser.ClassifyUrlRequest.Latency",
+        /*expected_count(grew by)*/ 1);
+  }
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -169,35 +279,14 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
   SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::RESTRICTED);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
-  // On desktop platforms, uncredentialed access is allowed.
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kAllowed));
-  CheckUrl("http://example.com");
-  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
-}
-#elif BUILDFLAG(IS_ANDROID)
-TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
-  // On Android, uncredentialed access will hang on access token wait.
-  EXPECT_CALL(*this, OnCheckDone(GURL("http://example.com"), _)).Times(0);
-  CheckUrl("http://example.com");
-}
-#else
-TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
-  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  // On other platforms platforms, uncredentialed classification is not
-  // available.
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kUnknown));
-  CheckUrl("http://example.com");
-}
-#endif
+TEST_P(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
+  if (GetParam() != CredentialsMode::kRequireCredentialsFromFamilyLink) {
+    GTEST_SKIP()
+        << "Access token errors are only relevant for family link users.";
+  }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
+  CHECK(CredentialsRequired(GetParam()));
+
   MakePrimaryAccountAvailable();
   StopAutomaticIssueOfAccessTokens();
 
@@ -223,7 +312,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
 #endif
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, NetworkError) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, NetworkError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -234,7 +323,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, NetworkError) {
   SimulateNetworkError(net::ERR_UNEXPECTED);
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, HttpError) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, HttpError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -245,7 +334,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, HttpError) {
   SimulateHttpError(net::HTTP_BAD_GATEWAY);
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, ServiceError) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, ServiceError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -256,7 +345,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, ServiceError) {
   SimulateMalformedResponse();
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest,
+TEST_P(KidsChromeManagementURLCheckerClientTest,
        PendingRequestsAreCanceledWhenClientIsDestroyed) {
   EXPECT_CALL(*this, OnCheckDone(_, _)).Times(0);
 
@@ -267,24 +356,28 @@ TEST_F(KidsChromeManagementURLCheckerClientTest,
   task_environment_.RunUntilIdle();
 }
 
+constexpr CredentialsMode kCredentialsModes[] = {
+    CredentialsMode::kNoCredentials,
 #if BUILDFLAG(IS_ANDROID)
-class KidsChromeManagementURLCheckerClientForRegularUserTest
-    : public KidsChromeManagementURLCheckerClientTest {
- protected:
-  void SetUp() override { DisableParentalControls(pref_service_); }
-};
-
-TEST_F(KidsChromeManagementURLCheckerClientForRegularUserTest,
-       MakesRequestWithoutPrimaryAccount) {
-  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kAllowed));
-  CheckUrl("http://example.com");
-  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
-}
+    // Only Android supports dynamic non-family link mode.
+    CredentialsMode::kTryReadingCredentialsFromFamilyLink,
 #endif
+    CredentialsMode::kRequireCredentialsFromFamilyLink};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    KidsChromeManagementURLCheckerClientTest,
+    testing::ValuesIn(kCredentialsModes),
+    [](const testing::TestParamInfo<CredentialsMode>& info) {
+      switch (info.param) {
+        case CredentialsMode::kNoCredentials:
+          return "NoCredentials";
+        case CredentialsMode::kTryReadingCredentialsFromFamilyLink:
+          return "TryReadingCredentialsFromFamilyLink";
+        case CredentialsMode::kRequireCredentialsFromFamilyLink:
+          return "RequireCredentialsFromFamilyLink";
+      }
+    });
 
 }  // namespace
 }  // namespace supervised_user
