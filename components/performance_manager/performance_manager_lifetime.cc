@@ -84,7 +84,8 @@ void AddVoters(GraphImpl* graph) {
     }
 
     // Casts a USER_BLOCKING vote for all frames and workers.
-    if (base::FeatureList::IsEnabled(features::kForceForegroundPriority)) {
+    if (base::FeatureList::IsEnabled(
+            features::kForceForegroundPriorityForAllTabs)) {
       priority_voting_system->AddPriorityVoter<
           execution_context_priority::ForceForegroundVoter>();
     }

@@ -264,7 +264,8 @@ BASE_FEATURE(kKeepDefaultSearchEngineRendererAlive,
 
 BASE_FEATURE(kBoostClosingTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceForegroundPriority, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceForegroundPriorityForAllTabs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Defines the feature to enable this policy.
 BASE_FEATURE(kTransientKeepAlivePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
