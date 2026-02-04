@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -727,7 +728,8 @@ AllTabsObserver::~AllTabsObserver() = default;
 
 void AllTabsObserver::AddAllBrowsers() {
   added_all_browsers_ = true;
-  browser_list_observation_.Observe(BrowserList::GetInstance());
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
         AddBrowser(browser);
@@ -770,7 +772,7 @@ void AllTabsObserver::OnTabStripModelChanged(
   AddWebContents(change.GetInsert()->contents[0].contents.get());
 }
 
-void AllTabsObserver::OnBrowserAdded(Browser* browser) {
+void AllTabsObserver::OnBrowserCreated(BrowserWindowInterface* browser) {
   AddBrowser(browser);
 }
 
@@ -942,7 +944,8 @@ void TabAddedWaiter::OnTabStripModelChanged(
 }
 
 AllBrowserTabAddedWaiter::AllBrowserTabAddedWaiter() {
-  browser_list_observation_.Observe(BrowserList::GetInstance());
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
         browser->GetTabStripModel()->AddObserver(this);
@@ -971,15 +974,17 @@ void AllBrowserTabAddedWaiter::OnTabStripModelChanged(
   run_loop_.Quit();
 }
 
-void AllBrowserTabAddedWaiter::OnBrowserAdded(Browser* browser) {
-  browser->tab_strip_model()->AddObserver(this);
+void AllBrowserTabAddedWaiter::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->AddObserver(this);
 }
 
 BrowserDestroyedObserver::BrowserDestroyedObserver(
     BrowserWindowInterface* browser)
     : session_id_(browser ? std::make_optional(browser->GetSessionID())
                           : std::nullopt) {
-  browser_list_observation_.Observe(BrowserList::GetInstance());
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
 BrowserDestroyedObserver::~BrowserDestroyedObserver() = default;
@@ -990,7 +995,8 @@ void BrowserDestroyedObserver::Wait() {
   }
 }
 
-void BrowserDestroyedObserver::OnBrowserRemoved(Browser* browser) {
+void BrowserDestroyedObserver::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
   if (!session_id_.has_value() ||
       browser->GetSessionID() == session_id_.value()) {
     was_removed_ = true;
@@ -999,7 +1005,8 @@ void BrowserDestroyedObserver::OnBrowserRemoved(Browser* browser) {
 }
 
 BrowserCreatedObserver::BrowserCreatedObserver() {
-  browser_list_observation_.Observe(BrowserList::GetInstance());
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
 BrowserCreatedObserver::~BrowserCreatedObserver() = default;
@@ -1009,15 +1016,15 @@ Browser* BrowserCreatedObserver::Wait() {
     run_loop_.Run();
   }
   CHECK(browser_);
-  return browser_;
+  return browser_->GetBrowserForMigrationOnly();
 }
 
-void BrowserCreatedObserver::OnBrowserAdded(Browser* browser) {
+void BrowserCreatedObserver::OnBrowserCreated(BrowserWindowInterface* browser) {
   browser_ = browser;
   run_loop_.Quit();
 }
 
-void BrowserCreatedObserver::OnBrowserRemoved(Browser* browser) {
+void BrowserCreatedObserver::OnBrowserClosed(BrowserWindowInterface* browser) {
   // Clear `browser_` in the event of a removal to mitigate the risk of dangling
   // refs.
   browser_ = nullptr;

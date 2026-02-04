@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -36,6 +37,7 @@ class Browser;
 class BrowserList;
 class BrowserWindowInterface;
 class FullscreenController;
+class GlobalBrowserCollection;
 class Profile;
 
 namespace javascript_dialogs {
@@ -389,7 +391,7 @@ void GetCookies(const GURL& url,
 //
 // Users of this class just call `Wait()` at most once.
 class AllTabsObserver : public TabStripModelObserver,
-                        public BrowserListObserver {
+                        public BrowserCollectionObserver {
  public:
   AllTabsObserver(const AllTabsObserver&) = delete;
   AllTabsObserver& operator=(const AllTabsObserver&) = delete;
@@ -450,8 +452,8 @@ class AllTabsObserver : public TabStripModelObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // Called for every WebContents.  Notifies the subclass, and sets up observers
   // if needed.
@@ -472,8 +474,8 @@ class AllTabsObserver : public TabStripModelObserver,
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // Observer which waits for navigation events and blocks until a specific URL is
@@ -542,7 +544,7 @@ class TabAddedWaiter : public TabStripModelObserver {
 // Similar to TabAddedWaiter, but will observe tabs added to all Browser
 // objects, and can return the last tab that was added.
 class AllBrowserTabAddedWaiter : public TabStripModelObserver,
-                                 public BrowserListObserver {
+                                 public BrowserCollectionObserver {
  public:
   AllBrowserTabAddedWaiter();
   AllBrowserTabAddedWaiter(const AllBrowserTabAddedWaiter&) = delete;
@@ -557,8 +559,8 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
  private:
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
@@ -566,8 +568,8 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   // The last tab that was added.
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // Enumerates all history contents on the backend thread. Returns them in
@@ -587,7 +589,7 @@ class HistoryEnumerator {
 
 // Waits for the destruction of `browser`. If `browser` is null will wait on the
 // destruction of any Browser.
-class BrowserDestroyedObserver : public BrowserListObserver {
+class BrowserDestroyedObserver : public BrowserCollectionObserver {
  public:
   explicit BrowserDestroyedObserver(BrowserWindowInterface* browser = nullptr);
   BrowserDestroyedObserver(const BrowserDestroyedObserver&) = delete;
@@ -596,20 +598,20 @@ class BrowserDestroyedObserver : public BrowserListObserver {
 
   void Wait();
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
   bool was_removed_ = false;
   const std::optional<SessionID> session_id_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // Waits for the creation of `browser`. If `browser` is null will wait on the
 // creation of any Browser.
-class BrowserCreatedObserver : public BrowserListObserver {
+class BrowserCreatedObserver : public BrowserCollectionObserver {
  public:
   BrowserCreatedObserver();
   BrowserCreatedObserver(const BrowserCreatedObserver&) = delete;
@@ -618,15 +620,15 @@ class BrowserCreatedObserver : public BrowserListObserver {
 
   Browser* Wait();
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // Encapsulates waiting for the browser window to change state. This is

@@ -944,11 +944,6 @@ class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
     // confirm the update works as expected.
     set_open_about_blank_on_browser_launch(false);
 
-    // Create the observer now because the browser will be started after we call
-    // `ServiceWorkerRegistrationApiTest::SetUp()`.
-    browser_start_new_tab_observer_ =
-        std::make_unique<ui_test_utils::UrlLoadObserver>(new_tab_url());
-
     ServiceWorkerRegistrationApiTest::SetUp();
   }
 
@@ -958,7 +953,7 @@ class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
     {
       SCOPED_TRACE(
           "waiting for the initial new tab to open after browser start");
-      browser_start_new_tab_observer_->Wait();
+      EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
     }
   }
 
@@ -970,13 +965,6 @@ class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
         std::make_unique<ExtensionTestMessageListener>("v2 installed");
     v2_update_histogram_tester_ = std::make_unique<base::HistogramTester>();
     ServiceWorkerRegistrationApiTest::CreatedBrowserMainParts(main_parts);
-  }
-
-  void TearDownOnMainThread() override {
-    ServiceWorkerRegistrationApiTest::TearDownOnMainThread();
-
-    // Prevent dangling pointer on test teardown.
-    browser_start_new_tab_observer_.reset();
   }
 
   // Ensure any new tab that is opened defaults goes to chrome://newtab.
@@ -997,10 +985,6 @@ class ServiceWorkerExtensionUpdateOnBrowserRestartRegistrationApiTest
     return content::EvalJs(GetActiveWebContents(),
                            "getCurrentVersionOfBackgroundContext();");
   }
-
-  // Observes that chrome://newtab loads on test start.
-  std::unique_ptr<ui_test_utils::UrlLoadObserver>
-      browser_start_new_tab_observer_;
 
   std::unique_ptr<ExtensionTestMessageListener> v2_install_listener_;
   std::unique_ptr<base::HistogramTester> v2_update_histogram_tester_;
