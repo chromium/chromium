@@ -67,6 +67,8 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
   template <typename T>
   void AddArg(const T& arg) {}
 
+  // Since V2 uses raw_ptr<T> hooks, V2 needs no bound args.
+#if !PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
   // No specialization for raw_ptr<T> directly, since bound raw_ptr<T>
   // arguments are stored in UnretainedWrapper.
 
@@ -97,6 +99,7 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
       Add(reinterpret_cast<uintptr_t>(&arg.get()));
     }
   }
+#endif  // !PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 
   template <typename... Args>
   void AddArgs(Args&&... args) {

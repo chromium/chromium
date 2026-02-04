@@ -178,6 +178,7 @@ pa_buildflag_header("buildflags") {
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
+    "USE_ASAN_BACKUP_REF_PTR_V2=$use_asan_backup_ref_ptr_v2",
     "USE_FULL_MTE=$use_full_mte",
     "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
     "USE_PARTITION_ALLOC=$use_partition_alloc",

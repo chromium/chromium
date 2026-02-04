@@ -21,6 +21,175 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+
+namespace base::internal {
+
+#define ASAN_BRP_PROTECTED(x) "MiraclePtr Status: PROTECTED\\n.*" x
+#define ASAN_BRP_NOT_PROTECTED(x) "MiraclePtr Status: NOT PROTECTED\\n.*" x
+
+const char kAsanBrpNotProtected_DataRace[] =
+    ASAN_BRP_NOT_PROTECTED("quarantined allocation was accessed from a thread");
+
+struct AsanStruct {
+  int x;
+
+  char big[0xfff8];
+};
+
+class AsanBackupRefPtrTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    base::debug::AsanService::GetInstance()->Initialize();
+
+    RawPtrAsanService::GetInstance().Configure(
+        true,
+        {.enable_data_race_check = base::RawPtrAsanServiceOptions::kEnabled,
+         .enable_free_after_quarantined_check =
+             base::RawPtrAsanServiceOptions::kEnabled});
+  }
+
+  void ClearLog() { RawPtrAsanService::GetInstance().ClearLogForTesting(); }
+
+  static void SetUpTestSuite() {
+    dangling_early_allocation_ptr_ = new AsanStruct;
+    delete dangling_early_allocation_ptr_.get();
+    early_allocation_ptr_ = new AsanStruct;
+  }
+  static void TearDownTestSuite() { delete early_allocation_ptr_; }
+  static raw_ptr<AsanStruct> dangling_early_allocation_ptr_;
+  static raw_ptr<AsanStruct> early_allocation_ptr_;
+};
+
+raw_ptr<AsanStruct> AsanBackupRefPtrTest::dangling_early_allocation_ptr_ =
+    nullptr;
+raw_ptr<AsanStruct> AsanBackupRefPtrTest::early_allocation_ptr_ = nullptr;
+
+#define EXPECT_DEATH_AT_EXIT_IF_SUPPORTED(statement, pattern)       \
+  EXPECT_DEATH_IF_SUPPORTED(                                        \
+      {                                                             \
+        statement;                                                  \
+        RawPtrAsanService::GetInstance().CheckLogAndAbortOnError(); \
+      },                                                            \
+      (pattern))
+
+TEST_F(AsanBackupRefPtrTest, SingleByteOverflowStillDetected) {
+  volatile char no_optimize = 0;
+  for (size_t i = 1; i < 9; ++i) {
+    char* ptr = static_cast<char*>(malloc(i));
+    // SAFETY: Intent to cause heap-buffer-overflow to see if
+    // ASAN really works.
+    EXPECT_DEATH_IF_SUPPORTED(UNSAFE_BUFFERS(no_optimize += ptr[i]),
+                              "heap-buffer-overflow");
+    free(ptr);
+  }
+}
+
+TEST_F(AsanBackupRefPtrTest, QuarantineWorks) {
+  volatile char no_optimize = 0;
+  RawPtrAsanService& service = RawPtrAsanService::GetInstance();
+
+  char* ptr = static_cast<char*>(malloc(1));
+  service.AcquireInternal(reinterpret_cast<uintptr_t>(ptr));
+  free(ptr);
+
+  EXPECT_TRUE(service.IsQuarantined(reinterpret_cast<uintptr_t>(ptr)));
+  EXPECT_FALSE(service.IsFreed(reinterpret_cast<uintptr_t>(ptr)));
+
+  // TODO: This will not currently cause a crash, since this is an access to
+  // quarantined memory. Add check for this again once the log is being
+  // processed at exit.
+  // EXPECT_DEATH_IF_SUPPORTED(no_optimize += *ptr, "use-after-poison");
+
+  // TODO: This will not currently cause a crash, since this is an assignment of
+  // quarantined memory. Add check for this again once the log is being
+  // processed at exit.
+  // EXPECT_DEATH_IF_SUPPORTED(service.Acquire(ptr), "assigning dangling
+  // pointer");
+
+  service.ReleaseInternal(reinterpret_cast<uintptr_t>(ptr));
+  EXPECT_FALSE(service.IsQuarantined(reinterpret_cast<uintptr_t>(ptr)));
+  EXPECT_TRUE(service.IsFreed(reinterpret_cast<uintptr_t>(ptr)));
+  EXPECT_DEATH_IF_SUPPORTED(no_optimize += *ptr, "use-after-free");
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      service.AcquireInternal(reinterpret_cast<uintptr_t>(ptr)),
+      "pointer laundering");
+}
+
+TEST_F(AsanBackupRefPtrTest, QuarantineWildAddress) {
+  RawPtrAsanService& service = RawPtrAsanService::GetInstance();
+
+  // TODO: 32-bit support.
+  char* ptr = reinterpret_cast<char*>(0xefefefefefefefef);
+
+  // None of these operations should crash when given a wild pointer.
+  EXPECT_FALSE(service.IsQuarantined(reinterpret_cast<uintptr_t>(ptr)));
+  EXPECT_FALSE(service.IsFreed(reinterpret_cast<uintptr_t>(ptr)));
+  service.AcquireInternal(reinterpret_cast<uintptr_t>(ptr));
+  service.ReleaseInternal(reinterpret_cast<uintptr_t>(ptr));
+}
+
+TEST_F(AsanBackupRefPtrTest, RawPtrQuarantineWorks) {
+  volatile char no_optimize = 0;
+  RawPtrAsanService& service = RawPtrAsanService::GetInstance();
+
+  char* ptr = static_cast<char*>(malloc(1));
+  raw_ptr<char> protected_ptr(ptr);
+  free(ptr);
+
+  EXPECT_TRUE(
+      service.IsQuarantined(reinterpret_cast<uintptr_t>(protected_ptr.get())));
+  EXPECT_FALSE(
+      service.IsFreed(reinterpret_cast<uintptr_t>(protected_ptr.get())));
+  // TODO: This will not currently cause a crash, since this is an access to
+  // quarantined memory. Add check for this again once the log is being
+  // processed at exit.
+  // EXPECT_DEATH_IF_SUPPORTED(no_optimize += *protected_ptr,
+  // "use-after-poison");
+
+  // It is allowed to copy a dangling raw_ptr<T>
+  raw_ptr<char> dangling_ptr = protected_ptr;
+  dangling_ptr = nullptr;
+
+  // But it is not allowed to assign from a dangling T*
+  // TODO: This will not currently cause a crash, since this is an assignment of
+  // quarantined memory. Add check for this again once the log is being
+  // processed at exit.
+  // EXPECT_DEATH_IF_SUPPORTED(
+  //  dangling_ptr = ptr, "assigning dangling pointer");
+
+  // Drop the last reference to ptr, at this point the allocation should be
+  // returned to ASan (properly free'd).
+  protected_ptr = nullptr;
+  EXPECT_FALSE(service.IsQuarantined(reinterpret_cast<uintptr_t>(ptr)));
+  EXPECT_TRUE(service.IsFreed(reinterpret_cast<uintptr_t>(ptr)));
+  EXPECT_DEATH_IF_SUPPORTED(no_optimize += *ptr, "use-after-free");
+
+  EXPECT_DEATH_IF_SUPPORTED(raw_ptr<char> freed_ptr = ptr,
+                            "pointer laundering");
+}
+
+TEST_F(AsanBackupRefPtrTest, DataRaceQuarantineFreeThreadToThread) {
+  char* ptr = static_cast<char*>(malloc(1));
+  raw_ptr<char> protected_ptr(ptr);
+  free(ptr);
+
+  // We should detect if the release of the last reference happens from a
+  // different native thread than the free which put the allocation into
+  // quarantine.
+
+  std::thread thread([&protected_ptr] {
+    EXPECT_DEATH_AT_EXIT_IF_SUPPORTED(protected_ptr = nullptr,
+                                      kAsanBrpNotProtected_DataRace);
+  });
+  thread.join();
+}
+
+}  // namespace base::internal
+
+#else  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
+
 namespace base::internal {
 
 struct AsanStruct {
@@ -451,4 +620,5 @@ TEST_F(AsanBackupRefPtrTest, DanglingUnretained) {
 
 }  // namespace base::internal
 
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

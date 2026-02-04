@@ -394,12 +394,6 @@ component("base") {
     "memory/protected_memory.h",
     "memory/ptr_util.h",
     "memory/raw_ptr.h",
-    "memory/raw_ptr_asan_bound_arg_tracker.cc",
-    "memory/raw_ptr_asan_bound_arg_tracker.h",
-    "memory/raw_ptr_asan_hooks.cc",
-    "memory/raw_ptr_asan_hooks.h",
-    "memory/raw_ptr_asan_service.cc",
-    "memory/raw_ptr_asan_service.h",
     "memory/raw_ptr_cast.h",
     "memory/raw_ptr_exclusion.h",
     "memory/raw_ref.h",
@@ -1094,6 +1088,25 @@ component("base") {
     "//third_party/rust/serde_json_lenient/v0_2/wrapper",
   ]
 
+  if (use_asan_backup_ref_ptr) {
+    # Used by raw_ptr_service.cc to override {malloc,free,ignore_free} hooks.
+    sources += [
+      "memory/raw_ptr_asan_allocator.cc",
+      "memory/raw_ptr_asan_allocator.h",
+      "memory/raw_ptr_asan_bound_arg_tracker.cc",
+      "memory/raw_ptr_asan_bound_arg_tracker.h",
+      "memory/raw_ptr_asan_event.cc",
+      "memory/raw_ptr_asan_event.h",
+      "memory/raw_ptr_asan_hooks.cc",
+      "memory/raw_ptr_asan_hooks.h",
+      "memory/raw_ptr_asan_service.cc",
+      "memory/raw_ptr_asan_service.h",
+    ]
+    if (use_asan_backup_ref_ptr_v2) {
+      deps += [ "//build/config/sanitizers:sanitizer_shared_hooks" ]
+    }
+  }
+
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
   # Its gateway to being a component is through `//base`, so we have
   # to provide the appropriate `#define` here.
@@ -1125,6 +1138,14 @@ component("base") {
     "//build:chromecast_buildflags",
     "//third_party/abseil-cpp:absl",
   ]
+
+  if (use_asan_backup_ref_ptr) {
+    # raw_ptr_asan_service.cc depends on:
+    deps += [ "//base/allocator/partition_allocator/src/partition_alloc" ]
+    if (use_asan_backup_ref_ptr_v2) {
+      deps += [ "//build/config/sanitizers:sanitizer_shared_hooks" ]
+    }
+  }
 
   sources += [
     "containers/span_rust.h",
@@ -3542,7 +3563,6 @@ test("base_unittests") {
     "memory/platform_shared_memory_region_unittest.cc",
     "memory/protected_memory_unittest.cc",
     "memory/ptr_util_unittest.cc",
-    "memory/raw_ptr_asan_unittest.cc",
     "memory/raw_ptr_chromium_unittest.cc",
     "memory/raw_span_unittest.cc",
     "memory/ref_counted_memory_unittest.cc",
@@ -3892,6 +3912,11 @@ test("base_unittests") {
     "//base/test:test_shared_library",
     "//testing/buildbot/filters:base_unittests_filters",
   ]
+
+  if (is_asan) {
+    sources += [ "memory/raw_ptr_asan_unittest.cc" ]
+  }
+
   if (is_ios) {
     deps += [ "//base/test:test_shared_library_ios+bundle" ]
   }
