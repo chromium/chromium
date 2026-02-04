@@ -990,6 +990,7 @@ void CrostiniManager::CrostiniRestarter::WaitUntilBaguetteReady(
     base::UmaHistogramMediumTimes(
         "Crostini.BaguetteReadyWait",
         kBaguetteVmReadyWaitTimeout - remaining_wait_time);
+    crostini_manager_->SetCreateOptionsUsed(DefaultBaguetteContainerId());
     FinishRestart(result);
     return;
   }
@@ -2506,6 +2507,11 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
       create_options.share_paths.emplace_back(path);
     }
     obsolete_create_options = FetchCreateOptions(container_id, &create_options);
+    // Baguette installs explicitly need to 'remember' the creation username.
+    if (container_id.vm_type == vm_tools::apps::BAGUETTE &&
+        create_options.container_username.has_value()) {
+      options.container_username = create_options.container_username;
+    }
   }
 
   RestartId restart_id = next_restart_id_++;
@@ -3772,11 +3778,21 @@ void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
   // https://crbug.com/968060.  Sshfs is unmounted before suspend,
   // call RestartCrostini to force remount if container is running.
   guest_os::GuestId container_id = DefaultContainerId();
-  bool running = guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
-                     ->IsRunning(container_id);
+  guest_os::GuestOsSessionTracker* tracker =
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_);
+  bool running = tracker->IsRunning(container_id);
   if (running) {
-    // TODO(crbug/1142321): Double-check if anything breaks if we change this
-    // to just remount the sshfs mounts, in particular check 9p mounts.
+    std::optional<vm_tools::concierge::VmInfo> info =
+        tracker->GetVmInfo(kCrostiniDefaultVmName);
+    // GuestId equality does not consider vm type, and this assumption is baked
+    // in so we have to figure it out manually here.
+    if (info.has_value() &&
+        info->vm_type() ==
+            vm_tools::concierge::VmInfo_VmType::VmInfo_VmType_BAGUETTE) {
+      container_id = DefaultBaguetteContainerId();
+    }
+    // TODO(crbug.com/215260524): Double-check if anything breaks if we change
+    // this to just remount the sshfs mounts, in particular check 9p mounts.
     RestartCrostini(container_id, base::DoNothing());
   }
 }
