@@ -341,13 +341,28 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTimeParameterSchema(
   CHECK(element);
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
+  StepRange range =
+      To<HTMLInputElement>(element)->CreateStepRange(kAnyIsDefaultStep);
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times
   // We cannot use the "time" type from json schema because that accepts
   // timezone which is not valid for <input type=time>.
-  schema->SetString(
-      "format",
-      "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9](\\.[0-9]{1,3})?)?$");
+  //
+  // The regexp is modify to increase the likelihood of correctly adhere to the
+  // step range, but full validation would be a lot more complicated to express.
+  if (range.Step() < 1000) {
+    // Allow fractional seconds
+    schema->SetString(
+        "format",
+        "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9](\\.[0-9]{1,3})?)?$");
+  } else if (range.Step() < 60000) {
+    // Allow seconds
+    schema->SetString("format",
+                      "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$");
+  } else {
+    // Allow HH:MM only
+    schema->SetString("format", "^([01][0-9]|2[0-3]):[0-5][0-9]$");
+  }
   AddTitle(*element, *schema);
   AddDescription(*element, *schema);
   required = element->IsRequired();

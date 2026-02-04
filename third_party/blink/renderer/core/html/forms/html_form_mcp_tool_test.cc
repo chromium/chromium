@@ -1453,6 +1453,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_TimeInput) {
       R"HTML(
     <form id="form" toolname="mytool" tooldescription="perform task">
       <input name="time1" type="time">
+      <input name="time2" type="time" step="1">
+      <input name="time3" type="time" step="0.001">
     </form>
   )HTML");
 
@@ -1465,6 +1467,14 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_TimeInput) {
       "type": "object",
       "properties": {
          "time1": {
+           "type": "string",
+           "format": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+         },
+         "time2": {
+           "type": "string",
+           "format": "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$"
+         },
+         "time3": {
            "type": "string",
            "format": "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9](\\.[0-9]{1,3})?)?$"
          }
