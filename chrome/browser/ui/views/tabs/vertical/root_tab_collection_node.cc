@@ -221,6 +221,17 @@ void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
   }
 }
 
+void RootTabCollectionNode::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_focused_group_id,
+    std::optional<tab_groups::TabGroupId> old_focused_group_id) {
+  if (tab_strip_model_->closing_all()) {
+    return;
+  }
+
+  tab_strip_controller_->TabGroupFocusChanged(new_focused_group_id,
+                                              old_focused_group_id);
+}
+
 void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
                                            int model_index,
                                            TabChangeType change_type) {

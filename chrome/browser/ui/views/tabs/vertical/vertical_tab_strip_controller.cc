@@ -41,7 +41,6 @@ VerticalTabStripController::VerticalTabStripController(
     VerticalTabDragHandler& drag_handler,
     std::unique_ptr<TabMenuModelFactory> menu_model_factory_override)
     : model_(model), browser_view_(browser_view), drag_handler_(drag_handler) {
-  model_->AddObserver(this);
   if (menu_model_factory_override) {
     menu_model_factory_ = std::move(menu_model_factory_override);
   } else {
@@ -50,7 +49,6 @@ VerticalTabStripController::VerticalTabStripController(
 }
 
 VerticalTabStripController::~VerticalTabStripController() {
-  model_->RemoveObserver(this);
   if (context_menu_controller_.get()) {
     context_menu_controller_.reset();
   }
@@ -292,7 +290,7 @@ bool VerticalTabStripController::GetContextMenuAccelerator(
          browser_view_->GetWidget()->GetAccelerator(browser_cmd, accelerator);
 }
 
-void VerticalTabStripController::OnTabGroupFocusChanged(
+void VerticalTabStripController::TabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {
   browser_view_->tab_strip_view()->OnTabGroupFocusChanged(new_focused_group_id,

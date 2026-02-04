@@ -51,6 +51,9 @@ class RootTabCollectionNode : public TabCollectionNode,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
   void OnTabChangedAt(tabs::TabInterface* tab,
                       int model_index,
                       TabChangeType change_type) override;
