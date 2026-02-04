@@ -1273,7 +1273,13 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, BookmarkShortcutWithFindBarFocus) {
       WaitForShow(kBookmarkNameFieldId));
 }
 
-IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, CopyBlockedByPolicy) {
+// TODO(crbug.com/481356529): Re-enable on Windows once the bug is fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CopyBlockedByPolicy DISABLED_CopyBlockedByPolicy
+#else
+#define MAYBE_CopyBlockedByPolicy CopyBlockedByPolicy
+#endif
+IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, MAYBE_CopyBlockedByPolicy) {
   const bool clipboard_restricted_by_policy = GetParam();
   if (clipboard_restricted_by_policy) {
     data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
