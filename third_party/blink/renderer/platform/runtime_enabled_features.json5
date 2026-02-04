@@ -4887,6 +4887,14 @@
       status: "stable",
     },
     {
+      // Removes the forced overflow:hidden rules on the select element's
+      // InnerElement unless the author specifies text-overflow:ellipsis. May
+      // cause text to overlap with the dropdown indicator.
+      // https://issues.chromium.org/issues/40805967
+      name: "SelectRemoveOverflowHidden",
+      status: "stable",
+    },
+    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",
