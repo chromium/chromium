@@ -1404,10 +1404,14 @@ public class WindowAndroid
     private boolean setHasKeyboardCapture(boolean hasCapture) {
         Window window = getWindow();
         if (window == null) return false;
-        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
-                AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) return false;
-        return aconfigFlaggedApiDelegate.setKeyboardCaptureEnabled(window, hasCapture);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.setKeyboardCaptureEnabled(hasCapture);
+            window.setAttributes(params);
+            return true;
+        }
+        return false;
     }
 
     /**
