@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- Copyright 2026 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<html>
+<head>
+  <title>Cast Starter</title>
+</head>
+<body>
+  <button id="launch" onclick="launchApp()" disabled>Launch app</button>
+  <div id="debugmessage"></div>
+  <script>
+    function initializeCastApi() {
+      var sessionRequest = new chrome.cast.SessionRequest('BE6E4473');
+      var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
+        function(s) {},
+        function(receiverAvailable) {
+          if (receiverAvailable === 'available') {
+            document.getElementById('debugmessage').innerText = 'receiver found';
+          }
+        },
+        chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED);
+
+      chrome.cast.initialize(apiConfig, function() {
+        document.getElementById('launch').disabled = false;
+      }, function(e) {});
+    }
+
+    function launchApp() {
+      chrome.cast.requestSession(function(s) {}, function(e) {});
+    }
+
+    // Define callback before SDK script tag.
+    window.__onGCastApiAvailable = function(loaded, errorInfo) {
+      if (loaded) {
+        initializeCastApi();
+      }
+    };
+
+    // Flavor cookie logic.
+    var search = window.location.search;
+    var extensionId = 'lhkfccafpkdlaodkicmokbmfapjadkij';
+    if (search && search.match('flavor=dev')) {
+      extensionId = 'enhhojjnijigcajfphajepfemndkmdlo';
+    }
+    document.cookie = '__GCastExtensionFlavor=' + extensionId;
+  </script>
+  <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+</body>
+</html>

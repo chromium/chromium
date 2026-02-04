@@ -31,7 +31,8 @@ from repeating_log import RepeatingLog
 # pylint: enable=import-error, wrong-import-position
 
 CAST_BTN_XPATH = "//button[text()='Launch app']"
-CAST_URL = "https://storage.googleapis.com/castapi/CastHelloVideo/index.html"
+CAST_URL = (f"http://{common.LOCAL_HOST_IP}:{common.SERVER_PORT}/"
+            "cast_starter.html?flavor=stable")
 
 CHROME_OPTIONS = [
     # Redirects logging output to stderr to better catch automation issues.
