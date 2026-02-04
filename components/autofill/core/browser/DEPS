@@ -33,6 +33,7 @@ include_rules = [
   "+components/translate/core/common",
   "+components/variations",
   "+components/version_info",
+  "+components/wallet/core/browser",
   "+components/webdata/common",
   "+components/webdata_services",
   "+crypto/hash.h",
