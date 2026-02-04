@@ -153,6 +153,8 @@ public class NtpCustomizationUtils {
     static final String NTP_BACKGROUND_IMAGE_FILE_FOR_DAILY_REFRESH =
             "ntp_background_image_for_daily_refresh";
 
+    private static final int MAX_IMAGE_SIZE = 2556;
+    private static final int IMAGE_SIZE_FOR_EXTRACTING_COLOR = 100;
     private static final String TAG = "NtpCustomization";
     private static final String DELIMITER = "|";
     private static final int CUSTOM_BACKGROUND_INFO_NUM_FIELDS = 4;
@@ -355,8 +357,23 @@ public class NtpCustomizationUtils {
 
     // Gets the content based primary color for a bitmap.
     public @Nullable static @ColorInt Integer getContentBasedSeedColor(Bitmap bitmap) {
+        // Resize the bitmap to a smaller size to avoid OOM errors and improve performance
+        // when extracting the color. A 100x100 image is sufficient for color extraction.
+        // This matches the behavior in
+        // NtpCustomBackgroundService::UpdateCustomLocalBackgroundColorAsync.
+        Bitmap scaledBitmap = bitmap;
+        if (bitmap.getWidth() > IMAGE_SIZE_FOR_EXTRACTING_COLOR
+                || bitmap.getHeight() > IMAGE_SIZE_FOR_EXTRACTING_COLOR) {
+            scaledBitmap =
+                    Bitmap.createScaledBitmap(
+                            bitmap,
+                            IMAGE_SIZE_FOR_EXTRACTING_COLOR,
+                            IMAGE_SIZE_FOR_EXTRACTING_COLOR,
+                            /* filter= */ true);
+        }
+
         DynamicColorsOptions.Builder builder = new DynamicColorsOptions.Builder();
-        builder.setContentBasedSource(bitmap);
+        builder.setContentBasedSource(scaledBitmap);
         DynamicColorsOptions dynamicColorsOptions = builder.build();
         return dynamicColorsOptions.getContentBasedSeedColor();
     }
@@ -1527,5 +1544,69 @@ public class NtpCustomizationUtils {
     public static void setImageFetcherForTesting(ImageFetcher imageFetcher) {
         sImageFetcherForTesting = imageFetcher;
         ResettersForTesting.register(() -> sImageFetcherForTesting = null);
+    }
+
+    /**
+     * Reads a bitmap from a URI, downsampling with the same height and width ratio if it is too
+     * large.
+     *
+     * @param context The context to use.
+     * @param uri The URI of the image.
+     * @param callback The callback to invoke with the bitmap.
+     */
+    public static void getBitmapFromUriAsync(
+            Context context, Uri uri, Callback<@Nullable Bitmap> callback) {
+        new AsyncTask<@Nullable Bitmap>() {
+            @Override
+            protected @Nullable Bitmap doInBackground() {
+                try {
+                    // 1. Decode with inJustDecodeBounds=true to check dimensions
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    try (var inputStream = context.getContentResolver().openInputStream(uri)) {
+                        BitmapFactory.decodeStream(inputStream, null, options);
+                    }
+
+                    // 2. Calculate inSampleSize
+                    options.inSampleSize =
+                            calculateInSampleSize(options, MAX_IMAGE_SIZE, MAX_IMAGE_SIZE);
+
+                    // 3. Decode bitmap with inSampleSize set
+                    options.inJustDecodeBounds = false;
+                    try (var inputStream = context.getContentResolver().openInputStream(uri)) {
+                        return BitmapFactory.decodeStream(inputStream, null, options);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error reading bitmap from URI", e);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(@Nullable Bitmap bitmap) {
+                callback.onResult(bitmap);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @VisibleForTesting
+    static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps height or
+            // width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    || (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
 }

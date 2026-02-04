@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -182,7 +181,7 @@ public class NtpThemeMediator {
         if (uri != null) {
             // When a new image is selected, store it and reset any existing crop settings from a
             // previous image.
-            ShareImageFileUtils.getBitmapFromUriAsync(mContext, uri, mOnImageSelectedCallback);
+            NtpCustomizationUtils.getBitmapFromUriAsync(mContext, uri, mOnImageSelectedCallback);
             mNtpThemeCollectionManager.selectLocalBackgroundImage();
         }
 

@@ -266,6 +266,7 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.onUploadImageResult(null);
         histogramWatcher.assertExpected();
+        verify(mNtpThemeCollectionManager, never()).selectLocalBackgroundImage();
     }
 
     @Test
@@ -278,6 +279,7 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.onUploadImageResult(mUri);
         histogramWatcher.assertExpected();
+        verify(mNtpThemeCollectionManager).selectLocalBackgroundImage();
     }
 
     private void createMediator(boolean shouldShowAlone) {

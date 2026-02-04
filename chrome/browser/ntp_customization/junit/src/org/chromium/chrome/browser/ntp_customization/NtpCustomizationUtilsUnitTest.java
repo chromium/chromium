@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,14 +37,17 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -93,7 +97,10 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 /** Unit tests for {@link NtpCustomizationUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1418,5 +1425,83 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(
                 ColorStateList.valueOf(getDefaultIconColor(mContext)), button.getImageTintList());
         assertNull(ViewCompat.getBackgroundTintList(button));
+    }
+
+    @Test
+    public void testGetContentBasedSeedColor() {
+        // Test with a small bitmap.
+        Bitmap smallBitmap =
+                Bitmap.createBitmap(/* width= */ 50, /* height= */ 50, Bitmap.Config.ARGB_8888);
+        // Robolectric's shadow Bitmap defaults to transparency, so the extracted color will be null
+        // because there's no vibrant color.
+        smallBitmap.eraseColor(Color.RED);
+        assertEquals(
+                Integer.valueOf(Color.RED),
+                NtpCustomizationUtils.getContentBasedSeedColor(smallBitmap));
+
+        // Test with a large bitmap.
+        Bitmap largeBitmap =
+                Bitmap.createBitmap(/* width= */ 200, /* height= */ 200, Bitmap.Config.ARGB_8888);
+        largeBitmap.eraseColor(Color.BLUE);
+        assertEquals(
+                Integer.valueOf(Color.BLUE),
+                NtpCustomizationUtils.getContentBasedSeedColor(largeBitmap));
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync() throws IOException {
+        int width = 100;
+        int height = 100;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] bitmapBytes = outputStream.toByteArray();
+
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        // We need to spy or mock Context because mContext is a ContextThemeWrapper which wraps
+        // ApplicationContext.
+        Context context = spy(mContext);
+        when(context.getContentResolver()).thenReturn(contentResolver);
+        when(contentResolver.openInputStream(uri))
+                .thenAnswer(invocation -> new ByteArrayInputStream(bitmapBytes));
+
+        Callback<Bitmap> callback = mock(Callback.class);
+        NtpCustomizationUtils.getBitmapFromUriAsync(context, uri, callback);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        ArgumentCaptor<Bitmap> captor = ArgumentCaptor.forClass(Bitmap.class);
+        verify(callback).onResult(captor.capture());
+        Bitmap result = captor.getValue();
+        assertNotNull("The file reading flow should successfully load the bitmap.", result);
+        assertEquals(
+                "The file reading flow should preserve width for small images.",
+                width,
+                result.getWidth());
+        assertEquals(
+                "The file reading flow should preserve height for small images.",
+                height,
+                result.getHeight());
+    }
+
+    @Test
+    public void testCalculateInSampleSize() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.outWidth = 500;
+        options.outHeight = 500;
+
+        // Test no downsampling needed.
+        assertEquals(
+                1,
+                NtpCustomizationUtils.calculateInSampleSize(
+                        options, /* reqWidth= */ 500, /* reqHeight= */ 500));
+
+        // Test downsampling.
+        options.outWidth = 2000;
+        options.outHeight = 2000;
+        assertEquals(
+                4,
+                NtpCustomizationUtils.calculateInSampleSize(
+                        options, /* reqWidth= */ 500, /* reqHeight= */ 500));
     }
 }
