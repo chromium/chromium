@@ -137,10 +137,14 @@ public class FuseboxMediator {
                 () -> activateAiMode(AiModeActivationSource.TOOL_MENU));
         mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED, this::activateImageGeneration);
         mModel.set(FuseboxProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
-
         mModel.set(
                 FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE,
                 mComposeboxQueryControllerBridge.isPdfUploadEligible());
+        mModel.set(
+                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
+                mComposeboxQueryControllerBridge.isCreateImagesEligible()
+                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
+                                || !profile.isIncognitoBranded()));
 
         mModelList.addObserver(mListObserver);
         onAttachmentsChanged();

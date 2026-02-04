@@ -186,12 +186,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         // Set the bridge for the model list to enable tight coupling.
         mModelList.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
-
-        mModel.set(
-                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
-                mComposeboxQueryControllerBridge.isCreateImagesEligible()
-                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
-                                || !profile.isIncognitoBranded()));
         mMediator =
                 new FuseboxMediator(
                         mContext,

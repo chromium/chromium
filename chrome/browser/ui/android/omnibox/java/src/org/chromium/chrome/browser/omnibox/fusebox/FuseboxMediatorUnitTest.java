@@ -940,9 +940,34 @@ public class FuseboxMediatorUnitTest {
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED));
-
         assertFalse(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
+    }
+
+    @Test
+    public void testPopupCreateImageButtonVisible() {
+        OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
+        doReturn(true).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
+        doReturn(false).when(mProfile).isIncognitoBranded();
+        recreateMediator();
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+
+        doReturn(false).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
+        recreateMediator();
+        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testPopupCreateImageButtonVisible_incognitoBranded() {
+        OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(false);
+        doReturn(true).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
+        doReturn(true).when(mProfile).isIncognitoBranded();
+        recreateMediator();
+        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+
+        OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
+        recreateMediator();
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
     }
 }
