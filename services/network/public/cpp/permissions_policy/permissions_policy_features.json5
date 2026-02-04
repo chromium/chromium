@@ -590,7 +590,7 @@
     {
       name: "SubApps",
       permissions_policy_name: "sub-apps",
-      depends_on: ["SubApps"],
+      depends_on: ["DesktopPWAsSubApps"],
       visibility: "IsolatedContext",
     },
     {

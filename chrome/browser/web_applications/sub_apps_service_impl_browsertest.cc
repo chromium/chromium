@@ -310,7 +310,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   base::SimpleTestClock* clock() { return &clock_; }
 
  protected:
-  base::test::ScopedFeatureList features_{blink::features::kSubApps};
+  base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
   webapps::AppId parent_app_id_;
   webapps::ManifestId parent_app_manifest_id_;
   mojo::Remote<SubAppsService> remote_;

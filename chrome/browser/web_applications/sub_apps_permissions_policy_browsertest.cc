@@ -35,7 +35,7 @@ class SubAppsPermissionsPolicyBrowserTest
   base::ScopedTempDir scoped_temp_dir_;
 
  protected:
-  base::test::ScopedFeatureList features_{blink::features::kSubApps};
+  base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
 
  public:
   webapps::AppId parent_app_id_;

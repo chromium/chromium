@@ -1596,8 +1596,8 @@ inline constexpr char kDesktopPWAsTabStripCustomizationsDescription[] =
     "Enable PWAs to customize their tab strip when in tabbed mode by adding "
     "the `tab_strip` manifest field.";
 
-inline constexpr char kSubAppsName[] = "Desktop PWA Sub Apps";
-inline constexpr char kSubAppsDescription[] =
+inline constexpr char kDesktopPWAsSubAppsName[] = "Desktop PWA Sub Apps";
+inline constexpr char kDesktopPWAsSubAppsDescription[] =
     "Enable installed PWAs to create shortcuts by installing their sub apps. "
     "Prototype implementation of: "
     "https://github.com/ivansandrk/multi-apps/blob/main/explainer.md";
