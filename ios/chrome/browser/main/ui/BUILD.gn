@@ -12,6 +12,8 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions:transitions_context",
     "//ios/chrome/common/ui/colors",
   ]
   frameworks = [ "UIKit.framework" ]

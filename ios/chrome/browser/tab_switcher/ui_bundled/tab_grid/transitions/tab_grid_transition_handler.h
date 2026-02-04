@@ -9,6 +9,8 @@
 
 #import "base/ios/block_types.h"
 
+@protocol TabGridTransitionContextProvider;
+
 // TabGrid transitions directions available.
 enum class TabGridTransitionDirection {
   kFromTabGridToBrowser,
@@ -39,7 +41,8 @@ enum class TabGridTransitionType {
            (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
                  tabGridViewController:(UIViewController*)tabGridViewController
            browserLayoutViewController:
-               (UIViewController*)browserLayoutViewController
+               (UIViewController<TabGridTransitionContextProvider>*)
+                   browserLayoutViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                              incognito:(BOOL)incognito

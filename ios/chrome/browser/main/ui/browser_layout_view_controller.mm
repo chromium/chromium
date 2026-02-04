@@ -8,6 +8,8 @@
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface BrowserLayoutViewController ()
@@ -71,6 +73,12 @@
 - (BOOL)shouldAutorotate {
   return self.currentBVC ? [self.currentBVC shouldAutorotate]
                          : [super shouldAutorotate];
+}
+
+#pragma mark - TabGridTransitionContextProvider
+
+- (NamedGuide*)contentAreaGuide {
+  return [NamedGuide guideWithName:kContentAreaGuide view:self.currentBVC.view];
 }
 
 @end

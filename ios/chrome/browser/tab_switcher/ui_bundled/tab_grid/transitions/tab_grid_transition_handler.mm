@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_reduced_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_transition_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_to_grid_animation.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_context_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout_providing.h"
@@ -25,7 +26,8 @@
   TabGridTransitionDirection _direction;
 
   UIViewController* _tabGridViewController;
-  UIViewController* _browserLayoutViewController;
+  UIViewController<TabGridTransitionContextProvider>*
+      _browserLayoutViewController;
 
   // Transition layout provider for the tab grid.
   id<TabGridTransitionLayoutProviding> _tabGridTransitionLayoutProvider;
@@ -63,7 +65,8 @@
            (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
                  tabGridViewController:(UIViewController*)tabGridViewController
            browserLayoutViewController:
-               (UIViewController*)browserLayoutViewController
+               (UIViewController<TabGridTransitionContextProvider>*)
+                   browserLayoutViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                              incognito:(BOOL)incognito {
@@ -252,10 +255,13 @@
       !_isRegularBrowserNTP && IsSplitToolbarMode(_activeGrid);
 
   // Get the content area frame.
-  UIView* tabContentView = [self tabContentView];
-  CGRect contentAreaFrame = [NamedGuide guideWithName:kContentAreaGuide
-                                                 view:tabContentView]
-                                .layoutFrame;
+  UIView* tabContentView = _browserLayoutViewController.view;
+  NamedGuide* contentAreaGuide =
+      [_browserLayoutViewController contentAreaGuide];
+  UIView* browserViewControllerView = contentAreaGuide.owningView;
+  CGRect contentAreaFrame = contentAreaGuide.layoutFrame;
+  contentAreaFrame = [browserViewControllerView convertRect:contentAreaFrame
+                                                     toView:tabContentView];
 
   // No top toolbar snapshot for regular browser NTPs for grid to tab
   // animations. `topToolbarHidden` is not directly used here as the screenshot
@@ -298,19 +304,6 @@
           shouldScaleTopToolbar:scaleTopToolbar
                       incognito:_incognito
                topToolbarHidden:topToolbarHidden];
-}
-
-// Returns the frame for the snapshotted content of the active tab.
-// Conceptually the transition is dismissing/presenting a tab (a BVC).
-// However, currently the BVC instances are themselves contained within a
-// BrowserLayoutViewController view controller. This means that the
-// `viewControllerForTab.view` is not the BVC's view; rather it's the view of
-// the view controller that contains the BVC. Unfortunately, the layout guide
-// needed here is attached to the BVC's view, which is the first (and only)
-// subview of the BrowserLayoutViewController's view.
-// TODO(crbug.com/40583629) Clean up this arrangement.
-- (UIView*)tabContentView {
-  return _browserLayoutViewController.view.subviews[0];
 }
 
 // Returns a snapshot of the portion of the view that is above the given rect.

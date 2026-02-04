@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
+@class BrowserLayoutViewController;
 @protocol LegacyGridTransitionAnimationLayoutProviding;
 
 // Handler for the transitions between the TabGrid and the Browser.
@@ -23,23 +24,25 @@
 // Whether the animations should be disabled.
 @property(nonatomic, assign) BOOL animationDisabled;
 
-// Starts the transition from the `browser` to the `tabGrid`. Assumes that the
-// `browser` is currently a child ViewController of the `tabGrid`. The active
-// page of the `tabGrid` for the transition is `activePage`. `toTabGroup`
-// represents if the TabGrid should open a TabGroup. Calls `completion` when the
-// transition finishes.
-- (void)transitionFromBrowser:(UIViewController*)browser
-                    toTabGrid:(UIViewController*)tabGrid
-                   toTabGroup:(BOOL)toTabGroup
-                   activePage:(TabGridPage)activePage
-               withCompletion:(void (^)(void))completion;
+// Starts the transition from the `browserLayoutViewController` to the
+// `tabGrid`. Assumes that the `browserLayoutViewController` is currently a
+// child ViewController of the `tabGrid`. The active page of the `tabGrid` for
+// the transition is `activePage`. `toTabGroup` represents if the TabGrid should
+// open a TabGroup. Calls `completion` when the transition finishes.
+- (void)transitionFromBrowserLayout:
+            (BrowserLayoutViewController*)browserLayoutViewController
+                          toTabGrid:(UIViewController*)tabGrid
+                         toTabGroup:(BOOL)toTabGroup
+                         activePage:(TabGridPage)activePage
+                     withCompletion:(void (^)(void))completion;
 
-// Starts the transition from `tabGrid` to `browser`. Adds `browser` as a child
-// ViewController of `tabGrid`, covering it. The active page of the `tabGrid`
-// for the transition is `activePage`. Calls `completion` when the transition
-// finishes.
+// Starts the transition from `tabGrid` to `browserLayoutViewController`. Adds
+// `browserLayoutViewController` as a child ViewController of `tabGrid`,
+// covering it. The active page of the `tabGrid` for the transition is
+// `activePage`. Calls `completion` when the transition finishes.
 - (void)transitionFromTabGrid:(UIViewController*)tabGrid
-                    toBrowser:(UIViewController*)browser
+              toBrowserLayout:
+                  (BrowserLayoutViewController*)browserLayoutViewController
                    activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion;
 

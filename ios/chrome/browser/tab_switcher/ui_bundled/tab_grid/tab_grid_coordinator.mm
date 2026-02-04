@@ -813,11 +813,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
   [self.legacyTransitionHandler
-      transitionFromBrowser:self.browserLayoutViewController
-                  toTabGrid:self.viewController
-                 toTabGroup:toTabGroup
-                 activePage:activePage
-             withCompletion:completion];
+      transitionFromBrowserLayout:self.browserLayoutViewController
+                        toTabGrid:self.viewController
+                       toTabGroup:toTabGroup
+                       activePage:activePage
+                   withCompletion:completion];
 }
 
 // Performs the legacy Tab Grid to Browser transition.
@@ -831,7 +831,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
   [self.legacyTransitionHandler
       transitionFromTabGrid:self.viewController
-                  toBrowser:self.browserLayoutViewController
+            toBrowserLayout:self.browserLayoutViewController
                  activePage:activePage
              withCompletion:completion];
 }
