@@ -83,7 +83,6 @@ bool WebSandboxSupportLinux::MatchFontByPostscriptNameOrFullFontName(
       "WebSandboxSupportLinux::MatchFontByPostscriptNameOrFullFontName");
 
   font_service::mojom::FontIdentityPtr font_identity;
-  std::string family_name;
   if (!font_loader_->MatchFontByPostscriptNameOrFullFontName(font_unique_name,
                                                              &font_identity)) {
     base::UmaHistogramBoolean(
@@ -125,7 +124,7 @@ void WebSandboxSupportLinux::GetWebFontRenderStyleForStrike(
   if (!font_loader_->FontRenderStyleForStrike(family, size, is_bold, is_italic,
                                               device_scale_factor,
                                               &font_render_style) ||
-      font_render_style.is_null()) {
+      !font_render_style) {
     LOG(ERROR) << "GetRenderStyleForStrike did not receive a response for "
                   "family and size: "
                << (family ? family : "<empty>") << ", " << size;
