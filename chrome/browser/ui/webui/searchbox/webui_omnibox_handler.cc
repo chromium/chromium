@@ -49,6 +49,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -384,6 +385,30 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
   }
 
   return mojom_match;
+}
+
+std::string WebuiOmniboxHandler::AutocompleteIconToResourceName(
+    const gfx::VectorIcon& icon) const {
+  // The default icon for contextual suggestions is the subdirectory arrow right
+  // icon. If there is no header enabled (which is when the lens chip is not
+  // showing), use the search loupe instead.
+  const auto& input = autocomplete_controller()->input();
+  bool has_toolbelt_lens_action =
+      autocomplete_controller()->contextual_search_provider() &&
+      autocomplete_controller()
+          ->contextual_search_provider()
+          ->HasToolbeltLensAction();
+  const auto* client =
+      autocomplete_controller()->autocomplete_provider_client();
+  bool has_lens_search_chip =
+      client->IsOmniboxNextLensSearchChipEnabled() &&
+      ContextualSearchProvider::LensEntrypointEligible(input, client);
+  if (!(has_toolbelt_lens_action || has_lens_search_chip) &&
+      icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
+    return searchbox_internal::kSearchIconResourceName;
+  }
+
+  return SearchboxHandler::AutocompleteIconToResourceName(icon);
 }
 
 void WebuiOmniboxHandler::OnAimEligibilityChanged() {
