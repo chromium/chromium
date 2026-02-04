@@ -6329,6 +6329,7 @@ template("performance_test_suite_template_base") {
       } else {
         args = [ "bin/cros_update_wrapper ../../tools/perf/run_benchmark" ]
       }
+      data = [ "//third_party/crossbench-web-tests" ]
     } else {
       args = [ "../../tools/perf/run_benchmark" ]
     }

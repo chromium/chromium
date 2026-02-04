@@ -3,12 +3,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
+import pathlib
+import subprocess
 import sys
 
 
+CHROMIUM_SRC_DIR = pathlib.Path(__file__).absolute().parents[2]
+THIRD_PARTY_DIR = CHROMIUM_SRC_DIR / 'third_party'
+CROSSBENCH_DIR = THIRD_PARTY_DIR / 'crossbench'
+CUJ_RUNNER = (THIRD_PARTY_DIR /
+              'crossbench-web-tests/cuj/crossbench/runner/run.py')
+
+
 def main():
-  # TODO(b/435031130): Add real implementation.
-  print('Placeholder for web-tests CUJ runner')
+  # Set PYTHONPATH so that the CUJ runner can find crossbench.
+  env = os.environ.copy()
+  env['PYTHONPATH'] = CROSSBENCH_DIR
+
+  command_line = [CUJ_RUNNER, '--platform=cros']
+  proc = subprocess.run(command_line, check=False, env=env)
+  status = proc.returncode
+
+  # TODO(b/435031130): While this feature is still in development, we just log
+  # the status code and then always return success. We will return the real
+  # status code only after the code has been verified to be reliable.
+  print('Web-tests CUJ runner returned status', status)
   return 0
 
 
