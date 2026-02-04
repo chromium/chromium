@@ -68,6 +68,10 @@
   self = [super initWithBaseViewController:baseNavigationController
                                    browser:browser];
   if (self) {
+    CHECK(browser);
+    // We need the regular browser in order to get the services related to the
+    // identities.
+    CHECK_EQ(browser->type(), Browser::Type::kRegular);
     CHECK(webState);
     CHECK(collection);
     _baseNavigationController = baseNavigationController;

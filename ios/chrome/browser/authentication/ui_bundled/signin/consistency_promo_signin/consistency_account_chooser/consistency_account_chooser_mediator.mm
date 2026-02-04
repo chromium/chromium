@@ -40,6 +40,7 @@
                        (ChromeAccountManagerService*)accountManagerService {
   if ((self = [super init])) {
     CHECK(identityManager);
+    CHECK(accountManagerService, base::NotFatalUntil::M153);
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(

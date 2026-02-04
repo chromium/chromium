@@ -52,13 +52,15 @@ IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
 std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   signin::IdentityManagerBuildParams params;
+  ChromeAccountManagerService* chrome_account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   params.account_consistency = signin::AccountConsistencyMethod::kMirror;
   params.device_accounts_provider =
       std::make_unique<DeviceAccountsProviderImpl>(
-          ChromeAccountManagerServiceFactory::GetForProfile(profile));
+          chrome_account_manager_service);
   params.account_fetcher_factory =
       std::make_unique<ios::AccountFetcherFactoryIOS>(
-          ChromeAccountManagerServiceFactory::GetForProfile(profile));
+          chrome_account_manager_service);
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();
   params.local_state = GetApplicationContext()->GetLocalState();
   params.pref_service = profile->GetPrefs();
@@ -73,7 +75,7 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
       std::make_unique<ProfileOAuth2TokenServiceIOSDelegate>(
           params.signin_client,
           std::make_unique<DeviceAccountsProviderImpl>(
-              ChromeAccountManagerServiceFactory::GetForProfile(profile)),
+              chrome_account_manager_service),
           params.account_tracker_service.get());
   params.token_service = tests_hook::GetOverriddenTokenService(
       params.pref_service, std::move(delegate));

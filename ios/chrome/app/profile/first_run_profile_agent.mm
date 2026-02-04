@@ -331,6 +331,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   DCHECK(_presentingSceneState);
 
   ProfileIOS* profile = [self originalProfile];
+  CHECK(profile);
 
   DCHECK(!_firstRunUIBlocker);
   _firstRunUIBlocker = std::make_unique<ScopedUIBlocker>(_presentingSceneState);

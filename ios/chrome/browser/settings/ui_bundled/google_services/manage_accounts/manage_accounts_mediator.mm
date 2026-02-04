@@ -60,6 +60,9 @@
   CHECK(authService->SigninEnabled(), base::NotFatalUntil::M152);
   self = [super init];
   if (self) {
+    CHECK(accountManagerService);
+    CHECK(authService);
+    CHECK(identityManager);
     _accountManagerService = accountManagerService;
     _authService = authService;
     _identityManager = identityManager;

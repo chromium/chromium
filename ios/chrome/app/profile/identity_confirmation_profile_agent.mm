@@ -139,6 +139,8 @@ enum class IdentityConfirmationSnackbarDecision {
 // not to be displayed.
 - (IdentityConfirmationSnackbarDecision)
     shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
+  // The browser must be regular in order to get the authentication service.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular);
   ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);

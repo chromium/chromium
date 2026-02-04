@@ -80,6 +80,10 @@
                                   webState:(web::WebState*)webState {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    CHECK(browser);
+    // We need the regular browser in order to get the services related to the
+    // identities.s
+    CHECK_EQ(browser->type(), Browser::Type::kRegular);
     CHECK(webState);
     _webState = webState->GetWeakPtr();
     _presentationControllerShouldDismiss = YES;
