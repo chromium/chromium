@@ -100,6 +100,8 @@ _NEGATIVE_FILTER = [
     'BidiTest.testFocusInFirstTab',
     # crbug.com/372153090. The feature is not yet supported.
     'ChromeDriverTest.testCreateWindowFromScript',
+    # Flaky crbug.com/481485821
+    'ChromeDriverTest.testWebviewDetactedDuringClick',
 ]
 
 
@@ -173,8 +175,6 @@ _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     'ChromeDriverTest.testSetRPHResgistrationMode',
     # The test is only intended for the headless mode of Chrome.
     'ChromeDriverTest.testBrowserNameHeadlessMode',
-    # chrome-headless-shell does not support Browser.executeBrowserCommand
-    'ChromeDriverTest.testWebviewDetactedDuringClick',
 ]
 
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER = {
