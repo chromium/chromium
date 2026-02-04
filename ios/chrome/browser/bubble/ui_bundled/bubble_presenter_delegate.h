@@ -16,9 +16,6 @@
 // Whether the NTP exists.
 - (BOOL)isNTPActiveForBubblePresenter:(BubblePresenter*)bubblePresenter;
 
-// Whether the NTP is scrolled to top.
-- (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter;
-
 // Scrolls the New Tab Page (NTP) to the top for the given bubble presenter.
 - (void)scrollNTPToTopForBubblePresenter:(BubblePresenter*)bubblePresenter;
 

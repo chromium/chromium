@@ -594,24 +594,6 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
   [coordinator_ stop];
 }
 
-// Tests that the coordinator returns the correct value for isScrolledToTop.
-TEST_F(NewTabPageCoordinatorTest, TestIsScrolledToTop) {
-  CreateCoordinator(/*off_the_record=*/false);
-  SetupCommandHandlerMocks();
-  [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
-
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(web_state_);
-  NTPHelper->SetIsScrolledToTop(true);
-  EXPECT_TRUE([coordinator_ isScrolledToTop]);
-
-  NTPHelper->SetIsScrolledToTop(false);
-  EXPECT_FALSE([coordinator_ isScrolledToTop]);
-
-  [coordinator_ stop];
-}
-
 // Tests the state of the NTP coordinator after starting and stopping it. This
 // mainly ensures that all strongly references properties are created and
 // released, but also checks that the NTP state is correct for each scnenario.

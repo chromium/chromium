@@ -56,9 +56,6 @@ class WebState;
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 
-// Whether the NTP is scrolled to the top.
-- (BOOL)isScrolledToTop;
-
 // Scroll the NTP to the top.
 - (void)scrollToTop;
 

@@ -4662,10 +4662,6 @@ const char kChromeAppStoreUrl[] =
   return self.NTPCoordinator.isNTPActiveForCurrentWebState;
 }
 
-- (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  return [self.NTPCoordinator isScrolledToTop];
-}
-
 - (void)scrollNTPToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
   [self.NTPCoordinator scrollToTop];
 }

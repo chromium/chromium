@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -1158,11 +1159,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 - (BOOL)isTabScrolledToTop {
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (!currentWebState) {
+    return NO;
+  }
+
   // If NTP exists, check if it is scrolled to top.
   if ([self.delegate isNTPActiveForBubblePresenter:self]) {
-    return [self.delegate isNTPScrolledToTopForBubblePresenter:self];
+    return NewTabPageTabHelper::FromWebState(currentWebState)
+        ->IsScrolledToTop();
   }
-  web::WebState* currentWebState = _webStateList->GetActiveWebState();
   CRWWebViewScrollViewProxy* scrollProxy =
       currentWebState->GetWebViewProxy().scrollViewProxy;
   CGPoint scrollOffset = scrollProxy.contentOffset;
