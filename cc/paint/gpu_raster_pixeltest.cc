@@ -130,15 +130,15 @@ class GpuRasterPixelTest : public testing::Test,
  public:
   GpuRasterPixelTest() : gr_shader_cache_(kCacheLimitBytes, this) {}
 
-  void SetUp() override { InitializeOOPContext(); }
+  void SetUp() override { InitializeContext(); }
 
   // gpu::raster::GrShaderCache::Client implementation.
   void StoreShader(const std::string& key, const std::string& shader) override {
   }
 
-  void InitializeOOPContext() {
-    if (oop_image_cache_) {
-      oop_image_cache_.reset();
+  void InitializeContext() {
+    if (image_cache_) {
+      image_cache_.reset();
     }
 
     raster_context_provider_ =
@@ -150,7 +150,7 @@ class GpuRasterPixelTest : public testing::Test,
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int raster_max_texture_size =
         raster_context_provider_->ContextCapabilities().max_texture_size;
-    oop_image_cache_ = std::make_unique<GpuImageDecodeCache>(
+    image_cache_ = std::make_unique<GpuImageDecodeCache>(
         raster_context_provider_.get(), kRGBA_8888_SkColorType, kWorkingSetSize,
         raster_max_texture_size, nullptr);
   }
@@ -198,9 +198,8 @@ class GpuRasterPixelTest : public testing::Test,
     std::optional<PlaybackImageProvider::Settings> settings;
     settings.emplace(PlaybackImageProvider::Settings());
     settings->raster_mode = options.image_provider_raster_mode;
-    PlaybackImageProvider image_provider(oop_image_cache_.get(),
-                                         options.target_color_params,
-                                         std::move(settings));
+    PlaybackImageProvider image_provider(
+        image_cache_.get(), options.target_color_params, std::move(settings));
 
     int width = options.resource_size.width();
     int height = options.resource_size.height();
@@ -366,7 +365,7 @@ class GpuRasterPixelTest : public testing::Test,
  protected:
   static constexpr size_t kWorkingSetSize = 64 * 1024 * 1024;
   scoped_refptr<viz::TestInProcessContextProvider> raster_context_provider_;
-  std::unique_ptr<GpuImageDecodeCache> oop_image_cache_;
+  std::unique_ptr<GpuImageDecodeCache> image_cache_;
   gl::DisableNullDrawGLBindings enable_pixel_output_;
   std::unique_ptr<ImageProvider> image_provider_;
   int color_space_id_ = 0;
@@ -685,9 +684,10 @@ TEST_F(GpuRasterPixelTest, DrawRecordShaderTranslatedTileRect) {
       shader_buffer.ReleaseAsRecord(), tile_rect, SkTileMode::kRepeat,
       SkTileMode::kRepeat, nullptr,
       PaintShader::ScalingBehavior::kRasterAtScale);
-  // Force paint_flags to convert this to kFixedScale, so we can safely compare
-  // pixels between direct and oop-r modes (since oop will convert to
-  // kFixedScale no matter what.
+  // Force paint_flags to convert this to kFixedScale, so we can safely
+  // compare pixels between direct paint via Skia and going through
+  // RasterInterface (since the latter will convert to kFixedScale no matter
+  // what).
   paint_record_shader->set_has_animated_images(true);
 
   gfx::Size output_size(10, 10);
@@ -1487,7 +1487,7 @@ TEST_F(GpuRasterPixelTest, ClearingOpaqueCornerExactEdge) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1503,7 +1503,7 @@ TEST_F(GpuRasterPixelTest, ClearingOpaqueCornerExactEdge) {
   canvas.drawRect(SkRect::MakeXYWH(9, 0, 1, 10), green);
   canvas.drawRect(SkRect::MakeXYWH(0, 9, 10, 1), green);
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_F(GpuRasterPixelTest, ClearingOpaqueCornerPartialRaster) {
@@ -1530,7 +1530,7 @@ TEST_F(GpuRasterPixelTest, ClearingOpaqueCornerPartialRaster) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1542,7 +1542,7 @@ TEST_F(GpuRasterPixelTest, ClearingOpaqueCornerPartialRaster) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(options.preclear_color);
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_P(GpuRasterClearPixelTest, ClearingOpaqueLeftEdge) {
@@ -1786,7 +1786,7 @@ TEST_F(GpuRasterPixelTest, ClearingOpaqueInternal) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1799,7 +1799,7 @@ TEST_F(GpuRasterPixelTest, ClearingOpaqueInternal) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(options.preclear_color);
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_F(GpuRasterPixelTest, ClearingTransparentCorner) {
@@ -1820,7 +1820,7 @@ TEST_F(GpuRasterPixelTest, ClearingTransparentCorner) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   // Because this is rastering the entire tile, clear the entire thing
   // even if the full raster rect doesn't cover the whole resource.
@@ -1833,7 +1833,7 @@ TEST_F(GpuRasterPixelTest, ClearingTransparentCorner) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(SkColors::kTransparent);
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_F(GpuRasterPixelTest, ClearingTransparentInternalTile) {
@@ -1858,7 +1858,7 @@ TEST_F(GpuRasterPixelTest, ClearingTransparentInternalTile) {
   // happen. See crbug.com/901897.
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   // Because this is rastering the entire tile, clear the entire thing
   // even if the full raster rect doesn't cover the whole resource.
@@ -1871,7 +1871,7 @@ TEST_F(GpuRasterPixelTest, ClearingTransparentInternalTile) {
   SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawColor(SkColors::kTransparent);
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 TEST_F(GpuRasterPixelTest, ClearingTransparentCornerPartialRaster) {
@@ -1893,7 +1893,7 @@ TEST_F(GpuRasterPixelTest, ClearingTransparentCornerPartialRaster) {
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
 
-  auto oop_result = Raster(display_item_list, options);
+  auto result = Raster(display_item_list, options);
 
   SkBitmap bitmap;
   bitmap.allocPixelsFlags(
@@ -1909,7 +1909,7 @@ TEST_F(GpuRasterPixelTest, ClearingTransparentCornerPartialRaster) {
   canvas.clipRect(gfx::RectToSkRect(options.playback_rect));
   canvas.drawColor(SkColors::kTransparent, SkBlendMode::kSrc);
 
-  ExpectEquals(oop_result, bitmap);
+  ExpectEquals(result, bitmap);
 }
 
 // Test bitmap and playback rects in the raster options.
@@ -2174,7 +2174,8 @@ class GpuRasterTextBlobPixelTest
     // Many platforms need very small tolerances under complex transforms,
     // and higher tolerances for perspective, since it triggers path rendering
     // for each glyph. Additionally, record filters require higher tolerance
-    // because oop-r converts raster-at-scale to fixed-scale.
+    // because raster via RasterInterface converts raster-at-scale to
+    // fixed-scale.
     float avg_error = max_abs_error;
 
     if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kComplex) {
@@ -2193,9 +2194,10 @@ class GpuRasterTextBlobPixelTest
           break;
         case TextBlobStrategy::kRecordShader:
           // For kRecordShader+kPerspective the scale factor used to draw the
-          // shader ends up being different for OOP-R vs using SkCanvas
-          // directly. This causes some larger pixel differences as text spacing
-          // subtly varies between `expected` and `actual`.
+          // shader ends up being different when going through RasterInterface
+          // vs using SkCanvas directly. This causes some larger pixel
+          // differences as text spacing subtly varies between `expected` and
+          // `actual`.
           error_pixels_percentage = std::max(19.0f, error_pixels_percentage);
 #if BUILDFLAG(IS_ANDROID)
           // For some reason the text spacing is less consistent on Android
@@ -2454,8 +2456,9 @@ class GpuRasterTextBlobPixelTest
           SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr,
           PaintShader::ScalingBehavior::kRasterAtScale);
       // Force paint_flags to convert this to kFixedScale, so we can safely
-      // compare pixels between direct and oop-r modes (since oop will convert
-      // to kFixedScale no matter what.
+      // compare pixels between direct paint via Skia and going through
+      // RasterInterface (since the latter will convert to kFixedScale no matter
+      // what).
       paint_record_shader->set_has_animated_images(true);
 
       record_flags.setShader(paint_record_shader);
@@ -2669,7 +2672,7 @@ TEST_F(GpuRasterPixelTest, DrawTextBlobPersistentShaderCache) {
 
   // Re-create the context so we start with an uninitialized skia memory cache
   // and use shaders from the persistent cache.
-  InitializeOOPContext();
+  InitializeContext();
   actual = Raster(display_item_list, options);
   ExpectEquals(actual, expected, comparator);
 }
