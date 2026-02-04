@@ -17,6 +17,7 @@
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-forward.h"
 
 namespace gin {
@@ -33,6 +34,8 @@ class Message;
 // out this responsibility. This class only handles the JS interface (both calls
 // from JS and forward events to JS).
 class GinPort final : public gin::Wrappable<GinPort> {
+  CPPGC_USING_PRE_FINALIZER(GinPort, Dispose);
+
  public:
   class Delegate {
    public:
@@ -91,6 +94,8 @@ class GinPort final : public gin::Wrappable<GinPort> {
   bool is_closed_for_testing() const { return state_ == State::kDisconnected; }
 
  private:
+  void Dispose() { context_invalidation_listener_.Dispose(); }
+
   const gin::WrapperInfo* wrapper_info() const override;
 
   enum class State {
@@ -162,13 +167,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // port JS object.
   bool accessed_sender_;
 
-  // A listener for context invalidation. Note: this isn't actually optional;
-  // it just needs to be created after `weak_factory_`, which needs to be the
-  // final member.
-  std::optional<binding::ContextInvalidationListener>
-      context_invalidation_listener_;
-
-  base::WeakPtrFactory<GinPort> weak_factory_{this};
+  binding::ContextInvalidationListener context_invalidation_listener_;
 };
 
 }  // namespace extensions

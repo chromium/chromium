@@ -20,6 +20,7 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
+#include "v8/include/cppgc/persistent.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-object.h"
@@ -47,11 +48,11 @@ GinPort::GinPort(v8::Local<v8::Context> context,
       channel_type_(channel_type),
       event_handler_(event_handler),
       delegate_(delegate),
-      accessed_sender_(false) {
-  context_invalidation_listener_.emplace(
-      context, base::BindOnce(&GinPort::OnContextInvalidated,
-                              weak_factory_.GetWeakPtr()));
-}
+      accessed_sender_(false),
+      context_invalidation_listener_(
+          context,
+          base::BindOnce(&GinPort::OnContextInvalidated,
+                         cppgc::WeakPersistent(this))) {}
 
 GinPort::~GinPort() = default;
 

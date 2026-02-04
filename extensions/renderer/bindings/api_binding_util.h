@@ -53,6 +53,8 @@ class ContextInvalidationListener : public base::CheckedObserver {
 
   void OnInvalidated();
 
+  void Dispose();
+
  private:
   base::OnceClosure on_invalidated_;
 

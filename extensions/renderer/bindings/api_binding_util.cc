@@ -169,10 +169,15 @@ ContextInvalidationListener::ContextInvalidationListener(
 }
 
 ContextInvalidationListener::~ContextInvalidationListener() {
+  Dispose();
+}
+
+void ContextInvalidationListener::Dispose() {
   // We may have already removed ourselves as a listener (in OnInvalidated())
   // if the context was invalidated previously. Check the context first.
   if (context_invalidation_data_) {
     context_invalidation_data_->RemoveListener(this);
+    context_invalidation_data_ = nullptr;
   }
 }
 
