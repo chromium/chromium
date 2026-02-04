@@ -177,8 +177,7 @@ bool UserScriptSet::UpdateUserScripts(
   if (!memory.size())
     return false;
 
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(memory);
-  base::PickleIterator iter(pickle);
+  base::PickleIterator iter = base::PickleIterator::WithData(memory);
   base::debug::Alias(&pickle_size);
   CHECK(iter.ReadUInt32(&num_scripts));
 
@@ -192,7 +191,7 @@ bool UserScriptSet::UpdateUserScripts(
   scripts_.reserve(num_scripts);
   for (uint32_t i = 0; i < num_scripts; ++i) {
     std::unique_ptr<UserScript> script(new UserScript());
-    script->Unpickle(pickle, &iter);
+    script->Unpickle(&iter);
 
     // Note that this is a pointer into shared memory. We don't own it. It
     // gets cleared up when the last renderer or browser process drops their

@@ -263,7 +263,7 @@ TEST(ExtensionUserScriptTest, Pickle) {
 
   base::PickleIterator iter(pickle);
   UserScript script2;
-  script2.Unpickle(pickle, &iter);
+  script2.Unpickle(&iter);
 
   EXPECT_EQ(1U, script2.js_scripts().size());
   EXPECT_EQ(script1.js_scripts()[0]->url(), script2.js_scripts()[0]->url());

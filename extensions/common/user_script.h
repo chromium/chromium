@@ -126,7 +126,7 @@ class UserScript {
     // Serialization support. The content and FilePath members will not be
     // serialized!
     void Pickle(base::Pickle* pickle) const;
-    void Unpickle(const base::Pickle& pickle, base::PickleIterator* iter);
+    void Unpickle(base::PickleIterator* iter);
 
    private:
     Content(Source source,
@@ -297,7 +297,7 @@ class UserScript {
   // Deserializes the script from a pickle. Note that this always succeeds
   // because presumably we were the one that pickled it, and we did it
   // correctly.
-  void Unpickle(const base::Pickle& pickle, base::PickleIterator* iter);
+  void Unpickle(base::PickleIterator* iter);
 
  private:
   // base::Pickle helper functions used to pickle the individual types of
@@ -310,18 +310,12 @@ class UserScript {
   void PickleScripts(base::Pickle* pickle, const ContentList& scripts) const;
 
   // Unpickle helper functions used to unpickle individual types of components.
-  void UnpickleGlobs(const base::Pickle& pickle,
-                     base::PickleIterator* iter,
+  void UnpickleGlobs(base::PickleIterator* iter,
                      std::vector<std::string>* globs);
-  void UnpickleHostID(const base::Pickle& pickle,
-                      base::PickleIterator* iter,
-                      mojom::HostID* host_id);
-  void UnpickleURLPatternSet(const base::Pickle& pickle,
-                             base::PickleIterator* iter,
+  void UnpickleHostID(base::PickleIterator* iter, mojom::HostID* host_id);
+  void UnpickleURLPatternSet(base::PickleIterator* iter,
                              URLPatternSet* pattern_list);
-  void UnpickleScripts(const base::Pickle& pickle,
-                       base::PickleIterator* iter,
-                       ContentList* scripts);
+  void UnpickleScripts(base::PickleIterator* iter, ContentList* scripts);
 
   // The location to run the script inside the document.
   mojom::RunLocation run_location_ = mojom::RunLocation::kDocumentIdle;
