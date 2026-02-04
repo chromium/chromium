@@ -11,6 +11,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -33,6 +34,11 @@ constexpr char kZeroListCountHistogramName[] =
     "Memory.SystemMemoryLists.ZeroPageCount";
 constexpr char kModifiedListCountHistogramName[] =
     "Memory.SystemMemoryLists.ModifiedPageCount";
+constexpr char kStandbyListCountHistogramName[] =
+    "Memory.SystemMemoryLists.StandbyPageCount";
+
+constexpr char kStandbyListByPriorityCatString[] =
+    "Memory.SystemMemoryLists.StandbyPageCountByPriority.";
 
 class MemoryListInfoGetter {
  public:
@@ -116,17 +122,26 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListEmpty) {
 
   histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
   histogram_tester_.ExpectUniqueSample(kZeroListCountHistogramName, 0, 2);
+  histogram_tester_.ExpectUniqueSample(kStandbyListCountHistogramName, 0, 2);
+  for (int priority_number = 1; priority_number <= 8; ++priority_number) {
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({kStandbyListByPriorityCatString,
+                      base::NumberToString(priority_number)}),
+        0, 2);
+  }
   histogram_tester_.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 2);
 }
 
 // Verifies that we correctly set a non-empty memory list as non-exhausted.
 TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListFull) {
   EXPECT_CALL(getter_, Get(testing::_))
-      .WillOnce(
-          [](SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) -> NTSTATUS {
-            memory_list_info = SYSTEM_MEMORY_LIST_INFORMATION{1, 1, 1, 1};
-            return STATUS_SUCCESS;
-          })
+      .WillOnce([](SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info)
+                    -> NTSTATUS {
+        memory_list_info = SYSTEM_MEMORY_LIST_INFORMATION{
+            1, 1, 1, 1, 1, {1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1},
+            1};
+        return STATUS_SUCCESS;
+      })
       .WillOnce(
           [quit_closure = run_loop_.QuitClosure()](
               SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) -> NTSTATUS {
@@ -158,6 +173,13 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListFull) {
 
   histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 1, 1);
   histogram_tester_.ExpectUniqueSample(kZeroListCountHistogramName, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kStandbyListCountHistogramName, 7, 1);
+  for (int priority_number = 1; priority_number <= 8; ++priority_number) {
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({kStandbyListByPriorityCatString,
+                      base::NumberToString(priority_number)}),
+        1, 1);
+  }
   histogram_tester_.ExpectUniqueSample(kModifiedListCountHistogramName, 1, 1);
 }
 
@@ -195,6 +217,14 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListCounterReset) {
                                        2);
   histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
   histogram_tester_.ExpectUniqueSample(kZeroListCountHistogramName, 0, 2);
+  histogram_tester_.ExpectUniqueSample(kStandbyListCountHistogramName, 0, 2);
+  for (int priority_number = 1; priority_number <= 8; ++priority_number) {
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({kStandbyListByPriorityCatString,
+                      base::NumberToString(priority_number)}),
+        0, 2);
+  }
+
   histogram_tester_.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 2);
 }
 

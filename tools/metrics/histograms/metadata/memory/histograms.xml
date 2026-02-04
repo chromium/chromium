@@ -3234,6 +3234,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Memory.SystemMemoryLists.StandbyPageCountByPriority.{Priority}"
+    units="pages" expires_after="2026-07-13">
+  <owner>spvm@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    The size of the system memory list of the standby list at priority
+    {Priority}. Recorded on Windows only. Recorded every 30s, after browser main
+    message loop start.
+  </summary>
+  <token key="Priority">
+    <variant name="1" summary="Pri-1"/>
+    <variant name="2" summary="Pri-2"/>
+    <variant name="3" summary="Pri-3"/>
+    <variant name="4" summary="Pri-4"/>
+    <variant name="5" summary="Pri-5"/>
+    <variant name="6" summary="Pri-6"/>
+    <variant name="7" summary="Pri-7"/>
+    <variant name="8" summary="Pri-8"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.SystemMemoryLists.TotalIntervalsRecorded"
     units="intervals" expires_after="2026-07-13">
   <owner>spvm@google.com</owner>
@@ -3258,6 +3280,7 @@ chromium-metrics-reviews@google.com.
   <token key="PageCount">
     <variant name="FreePage" summary="free pages"/>
     <variant name="ModifiedPage" summary="modified pages"/>
+    <variant name="StandbyPage" summary="total pages in the standby cache"/>
     <variant name="ZeroPage" summary="zero pages"/>
   </token>
 </histogram>

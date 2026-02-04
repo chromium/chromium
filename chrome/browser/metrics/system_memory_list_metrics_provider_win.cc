@@ -7,12 +7,15 @@
 #include <windows.h>
 #include <winternl.h>
 
+#include <stdint.h>
+
 #include <optional>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 
 SystemMemoryListMetricsProvider::SystemMemoryListMetricsProvider(
@@ -165,6 +168,21 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
             base::saturated_cast<int>(
                 memory_list_information.ModifiedPageCount),
             1, 500000000, 75);
+
+        int priority_number = 1;
+        uintptr_t total_standby_pages = 0;
+        for (uintptr_t standby_page_count :
+             memory_list_information.PageCountByPriority) {
+          total_standby_pages += standby_page_count;
+          base::UmaHistogramCustomCounts(
+              base::StrCat(
+                  {"Memory.SystemMemoryLists.StandbyPageCountByPriority.",
+                   base::NumberToString(priority_number++)}),
+              standby_page_count, 1, 500000000, 75);
+        }
+        base::UmaHistogramCustomCounts(
+            "Memory.SystemMemoryLists.StandbyPageCount", total_standby_pages, 1,
+            500000000, 75);
 
         free_list_exhausted_interval_count = 0;
         zero_list_exhausted_interval_count = 0;
