@@ -28243,11 +28243,6 @@ should be able to be added at any place in this file.
   <description>User pressed 'Share' in the app menu.</description>
 </action>
 
-<action name="MobileMenuShareThisPage">
-  <owner>stkhapugin@chromium.org</owner>
-  <description>User pressed 'Share This Page' in the app menu.</description>
-</action>
-
 <action name="MobileMenuShow">
   <owner>aurimas@chromium.org</owner>
   <description>User opened the app menu.</description>
