@@ -409,6 +409,10 @@ void HorizontalTabStripRegionView::Layout(PassKey) {
 
   LayoutSuperclass<views::AccessiblePaneView>(this);
 
+  if (tab_search_container_before_tab_strip) {
+    AdjustViewBoundsRect(tab_search_container_, 0);
+  }
+
   views::View* button_to_paint_to_layer = new_tab_button_;
 
   if (button_to_paint_to_layer) {
@@ -693,6 +697,7 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
     // should have 6 px of padding between it and the tab_search button (not
     // including the corner radius).
     tab_strip_left_margin =
+        tab_search_container_->GetPreferredSize().width() +
         GetLayoutConstant(LayoutConstant::kTabStripPadding) +
         GetLayoutConstant(LayoutConstant::kTabStripPadding) -
         TabStyle::Get()->GetBottomCornerRadius();
