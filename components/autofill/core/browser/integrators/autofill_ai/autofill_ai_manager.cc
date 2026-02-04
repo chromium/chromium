@@ -53,6 +53,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -157,6 +158,16 @@ bool IsSaveSynchronous(const EntityInstance& entity) {
       return false;
   }
   NOTREACHED();
+}
+
+// A placeholder for sending a Wallet upsert request.
+// TODO(crbug.com/478783796): Implement this properly.
+void SendWalletUpsertRequest(
+    const EntityInstance& entity_to_upload,
+    base::OnceCallback<void(std::optional<EntityInstance>)> callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt),
+      base::Seconds(3));
 }
 
 }  // namespace
@@ -368,9 +379,6 @@ void AutofillAiManager::HandlePromptResult(
     ukm::SourceId ukm_source_id,
     AutofillClient::AutofillAiImportPromptType prompt_type,
     AutofillClient::AutofillAiBubbleResult result) {
-  // TODO(crbug.com/477845712): Handle asynchronous saving and remove this
-  // check.
-  CHECK(IsSaveSynchronous(entity));
   logger_.OnImportPromptResult(form, prompt_type, entity.type(),
                                entity.record_type(), result, ukm_source_id);
   EntityDataManager& entity_manager =
@@ -396,9 +404,21 @@ void AutofillAiManager::HandlePromptResult(
   // Only add logic that is common across all prompt types below this line.
   // Otherwise use the switch above.
 
-  if (prompt_accepted) {
-    entity_manager.AddOrUpdateEntityInstance(std::move(entity));
+  if (!prompt_accepted) {
+    return;
   }
+
+  if (IsSaveSynchronous(entity)) {
+    entity_manager.AddOrUpdateEntityInstance(std::move(entity));
+    return;
+  }
+
+  // TODO(crbug.com/481566741): Pass the entity manager as a weak pointer.
+  base::OnceCallback<void(std::optional<EntityInstance>)> callback =
+      base::BindOnce(&HandleWalletUpsertResponse, /*entity_manager=*/nullptr,
+                     client_->GetWeakPtr(), prompt_type);
+  // For now, asynchronous saves imply saving to Wallet.
+  SendWalletUpsertRequest(entity, std::move(callback));
 }
 
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
