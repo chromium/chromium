@@ -13,9 +13,9 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -743,8 +743,7 @@ void MaybeRegisterChromeFeaturePromos(
           kGlicButtonElementId, IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE,
           IDS_GLIC_SHORTCUT_IPH_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo(
-              glic::LocalHotkeyManager::GetConfigurableAccelerator(
-                  glic::LocalHotkeyManager::Hotkey::kFocusToggle)))
+              glic::GlicLauncherConfiguration::GetGlobalHotkey()))
           .SetAdditionalConditions(std::move(
               AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
                   feature_engagement::events::kGlicOnboardingCompleted,
