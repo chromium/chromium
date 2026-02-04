@@ -46,6 +46,45 @@ constexpr uint8_t zigzag_8x8[] = {
     35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
     58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
 
+struct RefPicListModification {
+  uint8_t modification_of_pic_nums_idc;
+  uint32_t abs_diff_pic_num_minus1;
+  uint32_t long_term_pic_num;
+  uint32_t abs_diff_view_idx_minus1;
+};
+
+struct DecRefPicMarking {
+  uint8_t memory_management_control_operation;
+  uint32_t difference_of_pic_nums_minus1;
+  uint32_t long_term_pic_num;
+  uint32_t long_term_frame_idx;
+  uint32_t max_long_term_frame_idx_plus1;
+};
+
+#if BUILDFLAG(IS_CHROMEOS)
+void fillRefPicListModification(
+    bool& modification_flag,
+    std::array<H264ModificationOfPicNum, H264SliceHeader::kRefListModSize>& dst,
+    size_t src_size,
+    const RefPicListModification src[32]) {
+  modification_flag = src_size > 0;
+  for (size_t i = 0; i < src_size; i++) {
+    dst[i].modification_of_pic_nums_idc = src[i].modification_of_pic_nums_idc;
+    switch (src[i].modification_of_pic_nums_idc) {
+      case 0:
+      case 1:
+        dst[i].abs_diff_pic_num_minus1 = src[i].abs_diff_pic_num_minus1;
+        break;
+      case 2:
+        dst[i].long_term_pic_num = src[i].long_term_pic_num;
+        break;
+      case 3:
+        return;
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 // This struct contains the kernel-specific parts of the H264 acceleration,
@@ -75,35 +114,41 @@ class V4L2H264Picture : public H264Picture {
 // Structure used when we parse encrypted slice headers in secure buffers. The
 // same structure exists in the secure world code. This is all the fields we
 // need to satisfy the V4L2 interface and the needs of the H264Decoder.
-typedef struct CencV1SliceParameterBufferH264 {
+struct CencV1SliceParameterBufferH264 {
+  uint8_t version;
+  // NAL headers
   uint8_t nal_ref_idc;
   uint8_t idr_pic_flag;
+  // Slice Data
+  uint32_t first_mb_in_slice;
   uint8_t slice_type;
+  uint8_t pic_parameter_set_id;
   uint8_t field_pic_flag;
+  uint8_t bottom_field_flag;
   uint32_t frame_num;
   uint32_t idr_pic_id;
   uint32_t pic_order_cnt_lsb;
   int32_t delta_pic_order_cnt_bottom;
   int32_t delta_pic_order_cnt0;
   int32_t delta_pic_order_cnt1;
-  union {
-    struct {
-      uint32_t no_output_of_prior_pics_flag : 1;
-      uint32_t long_term_reference_flag : 1;
-      uint32_t adaptive_ref_pic_marking_mode_flag : 1;
-      uint32_t dec_ref_pic_marking_count : 8;
-      uint32_t reserved : 21;
-    } bits;
-    uint32_t value;
-  } ref_pic_fields;
-  uint8_t memory_management_control_operation[32];
-  int32_t difference_of_pic_nums_minus1[32];
-  int32_t long_term_pic_num[32];
-  int32_t max_long_term_frame_idx_plus1[32];
-  int32_t long_term_frame_idx[32];
+  uint8_t num_ref_idx_l0_active_minus1;
+  uint8_t num_ref_idx_l1_active_minus1;
+  // Ref pic list modifications.
+  uint8_t ref_pic_list_modification_l0_size;
+  struct RefPicListModification ref_pic_list_modification_l0[32];
+  uint8_t ref_pic_list_modification_l1_size;
+  struct RefPicListModification ref_pic_list_modification_l1[32];
+  // Dec Ref Pic Marking.
+  uint8_t no_output_of_prior_pics_flag;
+  uint8_t long_term_reference_flag;
+  uint8_t adaptive_ref_pic_marking_mode_flag;
+  uint8_t dec_ref_pic_marking_size;
+  struct DecRefPicMarking dec_ref_pic_marking[32];
   uint32_t dec_ref_pic_marking_bit_size;
   uint32_t pic_order_cnt_bit_size;
-} CencV1SliceParameterBufferH264;
+};
+
+static_assert(sizeof(CencV1SliceParameterBufferH264) == 1720);
 
 V4L2VideoDecoderDelegateH264::V4L2VideoDecoderDelegateH264(
     V4L2DecodeSurfaceHandler* surface_handler,
@@ -158,6 +203,7 @@ void V4L2VideoDecoderDelegateH264::ProcessPPS(
     const H264PPS* pps,
     base::span<const uint8_t> pps_nalu_data) {
   if (cdm_context_) {
+    cencv1_stream_data_.pic_parameter_set_id = pps->pic_parameter_set_id;
     cencv1_stream_data_.num_ref_idx_l0_default_active_minus1 =
         pps->num_ref_idx_l0_default_active_minus1;
     cencv1_stream_data_.num_ref_idx_l1_default_active_minus1 =
@@ -462,14 +508,17 @@ V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
          sizeof(slice_param_buf));
   last_parsed_encrypted_slice_header_.clear();
 
-  // Read the parsed slice header data back and populate the structure with it.
-  slice_header_out->idr_pic_flag = !!slice_param_buf.idr_pic_flag;
-  slice_header_out->nal_ref_idc = slice_param_buf.nal_ref_idc;
-  slice_header_out->field_pic_flag = slice_param_buf.field_pic_flag;
   // The last span in |data| will be the slice header NALU.
   slice_header_out->nalu_data = data.back().data();
   slice_header_out->nalu_size = data.back().size();
+
+  // Read the parsed slice header data back and populate the structure with it.
+  slice_header_out->nal_ref_idc = slice_param_buf.nal_ref_idc;
+  slice_header_out->idr_pic_flag = !!slice_param_buf.idr_pic_flag;
+  slice_header_out->first_mb_in_slice = slice_param_buf.first_mb_in_slice;
   slice_header_out->slice_type = slice_param_buf.slice_type;
+  slice_header_out->field_pic_flag = slice_param_buf.field_pic_flag;
+  slice_header_out->bottom_field_flag = slice_param_buf.bottom_field_flag;
   slice_header_out->frame_num = slice_param_buf.frame_num;
   slice_header_out->idr_pic_id = slice_param_buf.idr_pic_id;
   slice_header_out->pic_order_cnt_lsb = slice_param_buf.pic_order_cnt_lsb;
@@ -477,29 +526,47 @@ V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
       slice_param_buf.delta_pic_order_cnt_bottom;
   slice_header_out->delta_pic_order_cnt0 = slice_param_buf.delta_pic_order_cnt0;
   slice_header_out->delta_pic_order_cnt1 = slice_param_buf.delta_pic_order_cnt1;
+  slice_header_out->num_ref_idx_l0_active_minus1 =
+      slice_param_buf.num_ref_idx_l0_active_minus1;
+  slice_header_out->num_ref_idx_l1_active_minus1 =
+      slice_param_buf.num_ref_idx_l1_active_minus1;
+
+  // Ref pic list modifications.
+  fillRefPicListModification(
+      slice_header_out->ref_pic_list_modification_flag_l0,
+      slice_header_out->ref_list_l0_modifications,
+      slice_param_buf.ref_pic_list_modification_l0_size,
+      slice_param_buf.ref_pic_list_modification_l0);
+  fillRefPicListModification(
+      slice_header_out->ref_pic_list_modification_flag_l1,
+      slice_header_out->ref_list_l1_modifications,
+      slice_param_buf.ref_pic_list_modification_l1_size,
+      slice_param_buf.ref_pic_list_modification_l1);
+
+  // Dec Ref Pic Marking.
   slice_header_out->no_output_of_prior_pics_flag =
-      slice_param_buf.ref_pic_fields.bits.no_output_of_prior_pics_flag;
+      slice_param_buf.no_output_of_prior_pics_flag;
   slice_header_out->long_term_reference_flag =
-      slice_param_buf.ref_pic_fields.bits.long_term_reference_flag;
+      slice_param_buf.long_term_reference_flag;
   slice_header_out->adaptive_ref_pic_marking_mode_flag =
-      slice_param_buf.ref_pic_fields.bits.adaptive_ref_pic_marking_mode_flag;
-  const size_t num_dec_ref_pics =
-      slice_param_buf.ref_pic_fields.bits.dec_ref_pic_marking_count;
+      slice_param_buf.adaptive_ref_pic_marking_mode_flag;
+  const size_t num_dec_ref_pics = slice_param_buf.dec_ref_pic_marking_size;
   if (num_dec_ref_pics > H264SliceHeader::kRefListSize) {
     DVLOG(1) << "Invalid number of dec_ref_pics: " << num_dec_ref_pics;
     return Status::kFail;
   }
   for (size_t i = 0; i < num_dec_ref_pics; ++i) {
     slice_header_out->ref_pic_marking[i].memory_mgmnt_control_operation =
-        slice_param_buf.memory_management_control_operation[i];
+        slice_param_buf.dec_ref_pic_marking[i]
+            .memory_management_control_operation;
     slice_header_out->ref_pic_marking[i].difference_of_pic_nums_minus1 =
-        slice_param_buf.difference_of_pic_nums_minus1[i];
+        slice_param_buf.dec_ref_pic_marking[i].difference_of_pic_nums_minus1;
     slice_header_out->ref_pic_marking[i].long_term_pic_num =
-        slice_param_buf.long_term_pic_num[i];
+        slice_param_buf.dec_ref_pic_marking[i].long_term_pic_num;
     slice_header_out->ref_pic_marking[i].long_term_frame_idx =
-        slice_param_buf.long_term_frame_idx[i];
+        slice_param_buf.dec_ref_pic_marking[i].long_term_frame_idx;
     slice_header_out->ref_pic_marking[i].max_long_term_frame_idx_plus1 =
-        slice_param_buf.max_long_term_frame_idx_plus1[i];
+        slice_param_buf.dec_ref_pic_marking[i].max_long_term_frame_idx_plus1;
   }
   slice_header_out->dec_ref_pic_marking_bit_size =
       slice_param_buf.dec_ref_pic_marking_bit_size;

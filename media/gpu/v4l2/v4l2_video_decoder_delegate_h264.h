@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_H264_H_
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_H264_H_
 
+#include <cassert>
 #include <memory>
 #include <vector>
 
@@ -28,9 +29,11 @@ struct V4L2VideoDecoderDelegateH264Private;
 // the required SPS/PPS fields used in slice header parsing so that we don't
 // need to re-parse the SPS/PPS in the secure world.
 struct CencV1StreamDataForSliceHeader {
+  uint8_t version;
   int32_t log2_max_frame_num_minus4;
   int32_t log2_max_pic_order_cnt_lsb_minus4;
   int32_t pic_order_cnt_type;
+  uint32_t pic_parameter_set_id;
   int32_t num_ref_idx_l0_default_active_minus1;
   int32_t num_ref_idx_l1_default_active_minus1;
   int32_t weighted_bipred_idc;
@@ -40,8 +43,9 @@ struct CencV1StreamDataForSliceHeader {
   uint8_t delta_pic_order_always_zero_flag;
   uint8_t redundant_pic_cnt_present_flag;
   uint8_t weighted_pred_flag;
-  uint8_t padding[3];
 };
+
+static_assert(sizeof(CencV1StreamDataForSliceHeader) == 44);
 
 class V4L2VideoDecoderDelegateH264 : public H264Decoder::H264Accelerator {
  public:
