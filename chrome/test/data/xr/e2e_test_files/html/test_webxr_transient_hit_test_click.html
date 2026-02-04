@@ -1,0 +1,82 @@
+<!--
+Tests that AR transient hit test results are available in click event handlers.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      const TestState = Object.freeze({
+        "Initial":  0,
+        "RequestHitTestSource": 1,
+        "HitTestSourceRequested": 2,
+        "HitTestSourceAvailable": 3,  // hitTestSource variable is guaranteed to be non-null in this state
+        "Done": 4,
+      });
+
+      let testState = null;
+
+      let hitTestSource = null;
+
+      function stepStartHitTesting() {
+        const sessionInfo = sessionInfos[sessionTypes.AR];
+        const referenceSpace = sessionInfo.currentRefSpace;
+
+        testState = TestState.Initial;
+
+        onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame, test state: ' + testState);
+          switch(testState) {
+
+            case TestState.Initial: {
+              const pose = frame.getViewerPose(referenceSpace);
+              if(!pose || pose.emulatedPosition) {
+                // Wait for session to stabilize.
+                return;
+              }
+
+              testState = TestState.RequestHitTestSource;
+              return;
+            }
+            case TestState.RequestHitTestSource: {
+              // Try to create a hit test source from within a frame.
+              console.log('Requesting hit test source');
+              sessionInfo.currentSession.requestHitTestSourceForTransientInput({
+                profile: "generic-touchscreen"
+              }).then((hitTestSource) => {
+                console.log('Got hit test source');
+                session.addEventListener('selectstart', (event) => {
+                  if (hitTestSource && testState != TestState.Done) {
+                      // This returns an array of results—one for each active touch point
+                      const results = event.frame.getHitTestResultsForTransientInput(hitTestSource);
+
+                      if (results.length > 0) {
+                        testState = TestState.Done;
+                        done();
+                      }
+                  }
+                });
+                testState = TestState.HitTestSourceAvailable;
+              }).catch((err) => {
+                assert_unreached("XRSession.requestHitTestSource() promise rejected.");
+                testState = TestState.Done;
+              });
+
+              testState = TestState.HitTestSourceRequested;
+
+              return;
+            }
+            default:
+              return;
+          }
+        };
+      }
+    </script>
+  </body>
+</html>
