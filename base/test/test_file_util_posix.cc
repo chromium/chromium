@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -37,37 +38,15 @@ bool DenyFilePermission(const FilePath& path, mode_t permission) {
   return rv == 0;
 }
 
-// Gets a heap array containing the permission information for `path`.
-// Returns the heap array, or an empty heap array on failure.
-std::vector<uint8_t> GetPermissionInfo(const FilePath& path) {
+// Gets a mode_t indicating the permission information for `path`.
+// Returns an empty value on failure.
+std::optional<mode_t> GetPermissionInfo(const FilePath& path) {
   stat_wrapper_t stat_buf;
   if (File::Stat(path, &stat_buf) != 0) {
-    return {};
+    return std::nullopt;
   }
 
-  auto buffer = std::vector<uint8_t>(sizeof(mode_t));
-  // Filter out file/path kind.
-  // SAFETY: buffer has room for one mode_t.
-  UNSAFE_BUFFERS(*(reinterpret_cast<mode_t*>(buffer.data())) =
-                     stat_buf.st_mode & ~S_IFMT);
-
-  return buffer;
-}
-
-// Restores the permission information for `path`, given the heap_array
-// retrieved using `GetPermissionInfo()`.
-// `info` is the pointer to the heap_array.
-// If `info` is empty, nothing happens.
-bool RestorePermissionInfo(const FilePath& path, std::vector<uint8_t>& info) {
-  if (info.empty()) {
-    return false;
-  }
-
-  DCHECK_EQ(sizeof(mode_t), info.size());
-  // SAFETY: info has room for one mode_t.
-  UNSAFE_BUFFERS(mode_t* mode = reinterpret_cast<mode_t*>(info.data()));
-
-  return HANDLE_EINTR(chmod(path.value().c_str(), *mode)) == 0;
+  return stat_buf.st_mode & ~S_IFMT;  // Filter out file/path kind.
 }
 
 }  // namespace
@@ -103,16 +82,21 @@ bool MakeFileUnwritable(const FilePath& path) {
   return DenyFilePermission(path, S_IWUSR | S_IWGRP | S_IWOTH);
 }
 
+struct FilePermissionRestorer::SavedFilePermissions {
+  explicit SavedFilePermissions(mode_t mode) : mode_(mode) {}
+  mode_t mode_;
+};
+
 FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
     : path_(path) {
-  info_ = GetPermissionInfo(path_);
-  DCHECK(info_.data() != nullptr);
-  DCHECK_NE(0u, info_.size());
+  auto mode = GetPermissionInfo(path);
+  CHECK(mode);
+  permissions_ = std::make_unique<SavedFilePermissions>(*mode);
 }
 
 FilePermissionRestorer::~FilePermissionRestorer() {
-  const bool success = RestorePermissionInfo(path_, info_);
-  CHECK(success);
+  CHECK(permissions_);
+  CHECK_EQ(HANDLE_EINTR(chmod(path_.value().c_str(), permissions_->mode_)), 0);
 }
 
 }  // namespace base

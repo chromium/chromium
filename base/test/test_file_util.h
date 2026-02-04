@@ -9,7 +9,7 @@
 
 #include <stddef.h>
 
-#include <vector>
+#include <memory>
 
 #include "base/files/file_path.h"
 #include "base/strings/cstring_view.h"
@@ -103,8 +103,12 @@ class FilePermissionRestorer {
   ~FilePermissionRestorer();
 
  private:
+  // Forward definition for a structure to hold the file permissions. Will
+  // be defined separately in the Windows and POSIX source code.
+  struct SavedFilePermissions;
+
   const FilePath path_;
-  std::vector<uint8_t> info_;  // The opaque stored permission information.
+  std::unique_ptr<SavedFilePermissions> permissions_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
