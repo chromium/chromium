@@ -152,4 +152,59 @@ suite('UserSkillsPage', function() {
     assertFalse(addButton.disabled);
     mockTimer.uninstall();
   });
+
+  test('SkillsFilteredBySearchTerm', async function() {
+    const skillA = {
+      id: '1',
+      name: 'Apple',
+      icon: '',
+      prompt: 'A tasty fruit',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    const skillB = {
+      id: '2',
+      name: 'Banana',
+      icon: '',
+      prompt: 'Yellow fruit',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    const skillC = {
+      id: '3',
+      name: 'Carrot',
+      icon: '',
+      prompt: 'Orange vegetable',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    browserProxy.callbackRouterRemote.updateSkill(skillA);
+    browserProxy.callbackRouterRemote.updateSkill(skillB);
+    browserProxy.callbackRouterRemote.updateSkill(skillC);
+    await microtasksFinished();
+
+    let skillItems = page.shadowRoot.querySelectorAll('li');
+    assertEquals(3, skillItems.length);
+
+    // Search for apple
+    page.onSearchChanged('Apple');
+    await page.updateComplete;
+    skillItems = page.shadowRoot.querySelectorAll('li');
+    assertEquals(1, skillItems.length);
+    assertEquals('Apple', skillItems[0]!.textContent.trim());
+
+    // Search for fruit
+    page.onSearchChanged('fruit');
+    await page.updateComplete;
+    assertEquals(2, page.shadowRoot.querySelectorAll('li').length);
+
+    // Clear search
+    page.onSearchChanged('');
+    await page.updateComplete;
+    assertEquals(3, page.shadowRoot.querySelectorAll('li').length);
+  });
 });

@@ -22,7 +22,7 @@ export function getHtml(this: UserSkillsPageElement) {
     $i18n{add}
   </cr-button>
 </div>
-${this.skills_.size === 0 ? html`
+${this.filteredSkills_.length === 0 ? html`
   <div id="emptyState">
     <picture>
       <source srcset="images/skills_empty_dark.svg"
@@ -38,7 +38,7 @@ ${this.skills_.size === 0 ? html`
     </cr-button>
   </div>` : html`
   <ul>
-    ${Array.from(this.skills_.values()).map((skill) => html`
+    ${this.filteredSkills_.map((skill) => html`
     <!-- TODO(b/475605779): Replace this with cards -->
     <li>${skill.name}</li>`)}
   </ul>`}

@@ -32,6 +32,7 @@ export class UserSkillsPageElement extends CrLitElement {
   static override get properties() {
     return {
       skills_: {type: Object},
+      searchTerm_: {type: String},
       addSkillButtonDisabled_: {type: Boolean},
     };
   }
@@ -39,9 +40,23 @@ export class UserSkillsPageElement extends CrLitElement {
   // Map tracking skills by id.
   protected accessor skills_: Map<string, Skill> = new Map();
   protected accessor addSkillButtonDisabled_: boolean = false;
+  protected accessor searchTerm_: string = '';
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
   private listenerIds_: number[] = [];
   private addSkillButtonDisabledTimer_: number|undefined = undefined;
+
+  get filteredSkills_(): Skill[] {
+    const term = this.searchTerm_.toLowerCase();
+    const allSkillsArray = Array.from(this.skills_.values());
+
+    if (!term) {
+      return allSkillsArray;
+    }
+
+    return allSkillsArray.filter(
+        skill => skill.name.toLowerCase().includes(term) ||
+            skill.prompt.toLowerCase().includes(term));
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -84,6 +99,10 @@ export class UserSkillsPageElement extends CrLitElement {
     this.skills_.delete(skillId);
     // Manually update as Lit does not detect changes in a map.
     this.requestUpdate();
+  }
+
+  onSearchChanged(searchTerm: string) {
+    this.searchTerm_ = searchTerm;
   }
 
   protected onExploreButtonClick_() {
