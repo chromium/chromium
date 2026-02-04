@@ -281,6 +281,7 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(BestFeaturesItem*)itemIdentifier {
   BestFeaturesCell* cell = DequeueTableViewCell<BestFeaturesCell>(tableView);
+  cell.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   [cell setBestFeaturesItem:itemIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
