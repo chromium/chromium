@@ -113,6 +113,20 @@ source_set("set_up_list_prefs") {
   ]
 }
 
+source_set("home_background_customization_promo") {
+  sources = [
+    "home_background_customization_promo_profile_agent.h",
+    "home_background_customization_promo_profile_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/promos_manager/model:types",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

@@ -29,13 +29,6 @@ namespace feature_engagement {
 class Tracker;
 }
 
-@protocol NewTabPageViewControllerDelegate
-
-- (void)showCustomizationMenuForUserEducationFromNewTabPageViewController:
-    (NewTabPageViewController*)newTabPageViewController;
-
-@end
-
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
 @interface NewTabPageViewController
@@ -81,9 +74,6 @@ class Tracker;
 
 // In-product help handle for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
-
-// Delegate to control behavior
-@property(nonatomic, weak) id<NewTabPageViewControllerDelegate> delegate;
 
 // Whether or not this NTP has fully appeared for the first time yet. This value
 // remains YES if viewDidAppear has been called.

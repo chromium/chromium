@@ -160,6 +160,7 @@ const char kHomeBackgroundCustomizationMenuUsed[] =
     "home_customization_background_menu_used";
 const char kHomeCustomizationPromoTriggered[] =
     "home_customization_menu_iph_triggered";
+const char kNTPCustomBackgroundLoaded[] = "ntp_custom_background_loaded";
 const char kLensOverlayEntrypointUsed[] = "lens_overlay_entrypoint_used";
 const char kIOSLensButtonUsed[] = "ios_lens_button_used";
 const char kIOSTabReminderScheduled[] = "tab_reminder_scheduled";

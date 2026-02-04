@@ -81,6 +81,11 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
                     Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
 
+    // Having a custom background can also count as interacting with the
+    // feature, so no need to display the promo in that case.
+    config.event_configs.insert(EventConfig(events::kNTPCustomBackgroundLoaded,
+                                            Comparator(EQUAL, 0), 90, 90));
+
     // Also make sure that the user didn't see the older customization promos
     // recently.
     config.event_configs.insert(

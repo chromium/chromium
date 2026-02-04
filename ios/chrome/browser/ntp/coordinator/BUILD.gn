@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("home_background_customization_promo") {
+  sources = [
+    "home_background_customization_promo_display_handler.h",
+    "home_background_customization_promo_display_handler.mm",
+  ]
+  deps = [
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
+    "//ios/chrome/browser/promos_manager/model:types",
+  ]
+}

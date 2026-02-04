@@ -306,6 +306,9 @@ extern const char kHomeBackgroundCustomizationMenuUsed[];
 // The user has seen the `kIPHHomeCustomizationMenuFeature` iph.
 extern const char kHomeCustomizationPromoTriggered[];
 
+// The user loaded an NTP with a custom background
+extern const char kNTPCustomBackgroundLoaded[];
+
 // The user has tapped on the lens overlay entrypoint.
 extern const char kLensOverlayEntrypointUsed[];
 

@@ -36,6 +36,9 @@
 // Shows the Welcome Back promo.
 - (void)showWelcomeBackPromo;
 
+// Shows the Home Background Customization Promo.
+- (void)showHomeBackgroundCustomizationPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

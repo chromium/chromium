@@ -3501,6 +3501,12 @@ const char kChromeAppStoreUrl[] =
   [_welcomeBackCoordinator start];
 }
 
+- (void)showHomeBackgroundCustomizationPromo {
+  CHECK(_NTPCoordinator.isNTPActiveForCurrentWebState);
+  [_NTPCoordinator showHomeBackgroundCustomizationPromoWithUIHandler:
+                       _promosManagerCoordinator];
+}
+
 #pragma mark - PageActionMenuCommands
 
 - (void)showPageActionMenu {

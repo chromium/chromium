@@ -52,6 +52,9 @@
 - (void)showWelcomeBackPromo {
 }
 
+- (void)showHomeBackgroundCustomizationPromo {
+}
+
 @end
 
 class DefaultBrowserOffCyclePromoDisplayHandlerTest : public PlatformTest {

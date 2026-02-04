@@ -167,7 +167,6 @@
                                      NewTabPageDelegate,
                                      NewTabPageHeaderCommands,
                                      NewTabPageActionsDelegate,
-                                     NewTabPageViewControllerDelegate,
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
@@ -685,7 +684,6 @@
   self.NTPViewController = [componentFactory NTPViewController];
   self.NTPViewController.engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
-  self.NTPViewController.delegate = self;
   self.NTPViewController.incognitoDisabled =
       IsIncognitoModeDisabled(self.prefService);
   self.headerViewController =
@@ -1760,8 +1758,15 @@
   _customizationCoordinator.delegate = self;
   [_customizationCoordinator start];
   [_customizationCoordinator presentCustomizationMenuPage:page];
-  feature_engagement::TrackerFactory::GetForProfile(self.profile)
-      ->NotifyEvent(feature_engagement::events::kHomeCustomizationMenuUsed);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+
+  tracker->NotifyEvent(feature_engagement::events::kHomeCustomizationMenuUsed);
+  if (page == CustomizationMenuPage::kMain &&
+      IsNTPBackgroundCustomizationEnabled()) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kHomeBackgroundCustomizationMenuUsed);
+  }
 }
 
 // Returns the current customization state represnting the visibility of NTP
@@ -1935,14 +1940,20 @@
   _safariDataImportExportCoordinator = nil;
 }
 
-#pragma mark - NewTabPageViewControllerDelegate
+- (void)showHomeBackgroundCustomizationPromoWithUIHandler:
+    (id<PromosManagerUIHandler>)uiHandler {
+  // The promo includes an in-product help bubble for the menu button itself.
+  if (self.browser) {
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands)
+        presentInProductHelpWithType:InProductHelpType::
+                                         kHomeBackgroundCustomization];
+  }
 
-- (void)showCustomizationMenuForUserEducationFromNewTabPageViewController:
-    (NewTabPageViewController*)newTabPageViewController {
   if (_customizationCoordinator) {
     // Make sure to alert the coordinator that user education is active, so it
     // can alert the Feature Engagement Tracker on dismissal.
     _customizationCoordinator.openedForUserEducation = YES;
+    _customizationCoordinator.promosManagerUIHandler = uiHandler;
     return;
   }
 
@@ -1956,6 +1967,7 @@
   // Make sure to alert the coordinator that user education is active, so it can
   // alert the Feature Engagement Tracker on dismissal.
   _customizationCoordinator.openedForUserEducation = YES;
+  _customizationCoordinator.promosManagerUIHandler = uiHandler;
 }
 
 @end

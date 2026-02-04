@@ -620,8 +620,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return YES;
 }
 
-// Records a histogram to indicate which type of custom background loaded.
+// Records any necessary logging for after a custom background loaded..
 - (void)customBackgroundDidLoad:(HomeCustomBackground)customBackground {
+  _tracker->NotifyEvent(feature_engagement::events::kNTPCustomBackgroundLoaded);
   HomeCustomizationBackgroundStyle style =
       HomeCustomizationBackgroundStyle::kPreset;
   if (std::holds_alternative<HomeUserUploadedBackground>(customBackground)) {

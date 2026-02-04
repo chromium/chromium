@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_display_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/features.h"
+#import "ios/chrome/browser/ntp/coordinator/home_background_customization_promo_display_handler.h"
 #import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_provider.h"
 #import "ios/chrome/browser/promos_manager/coordinator/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator+Testing.h"
@@ -626,6 +627,9 @@
             initWithSceneCommandsHandler:_sceneHandler
                   promosManagerUIHandler:self];
   }
+
+  _displayHandlerPromos[promos_manager::Promo::HomeBackgroundCustomization] =
+      [[HomeBackgroundCustomizationPromoDisplayHandler alloc] init];
 }
 
 - (void)registerStandardPromoViewProviderPromos {

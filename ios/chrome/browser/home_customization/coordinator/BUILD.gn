@@ -57,6 +57,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/ntp/search_engine_logo/mediator",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/shared/metrics",
   "+ios/chrome/browser/ntp/ui_bundled",
+  "+ios/chrome/browser/promos_manager/coordinator",
   "+ios/chrome/browser/url_loading/model",
   "+third_party/material_color_utilities/src/cpp",
   # keep-sorted end

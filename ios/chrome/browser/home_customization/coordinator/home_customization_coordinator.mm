@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -162,6 +163,8 @@ CGFloat const kSheetCornerRadius = 30;
       tracker->Dismissed(
           feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
     }
+
+    [self.promosManagerUIHandler promoWasDismissed];
   }
 
   if ([self.browser->GetCommandDispatcher()

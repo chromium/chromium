@@ -246,6 +246,23 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
+  std::map<std::string, std::string> HomeBackgroundCustomizationPromoParams() {
+    std::map<std::string, std::string> params;
+    params["availability"] = "any";
+    params["session_rate"] = "any";
+    params["used"] = "name:ios_home_background_customization_menu_used;"
+                     "comparator:==0;window:3650;storage:3650";
+    params["trigger"] = "name:background_customization_promo_trigger;"
+                        "comparator:==0;window:3650;storage:3650";
+    params["event_1"] = "name:home_customization_menu_iph_triggered;"
+                        "comparator:==0;window:30;storage:30";
+    params["event_2"] = "name:home_customization_menu_iph_triggered_2;"
+                        "comparator:==0;window:30;storage:30";
+    params["event_3"] = "name:ios_first_run_complete;"
+                        "comparator:==0;window:3;storage:3";
+    return params;
+  }
+
   base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }
@@ -1466,4 +1483,133 @@ TEST_F(FeatureEngagementTest, TestReaderModeNewBadge_TriggeredBeforeUseOnly) {
   // The badge should no longer trigger.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHBadgedReaderModeFeature));
+}
+
+// Verifies that the Home Background Customization promo triggers when
+// conditions are met.
+TEST_F(FeatureEngagementTest,
+       TestHomeBackgroundCustomizationPromo_ShouldTrigger) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{
+          {feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature,
+           HomeBackgroundCustomizationPromoParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // The promo should be shown initially if enough time (3 days) has passed
+  // since first run.
+  scoped_clock.Advance(base::Days(4));
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
+}
+
+// Verifies that the Home Background Customization promo doesn't trigger if
+// the customization menu was used.
+TEST_F(FeatureEngagementTest,
+       TestHomeBackgroundCustomizationPromo_ShouldNotTriggerWhenUsed) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{
+          {feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature,
+           HomeBackgroundCustomizationPromoParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  scoped_clock.Advance(base::Days(4));
+
+  // Notify that the menu was used.
+  tracker->NotifyEvent(
+      feature_engagement::events::kHomeBackgroundCustomizationMenuUsed);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature));
+}
+
+// Verifies that the Home Background Customization promo doesn't trigger if
+// the old customization promo was triggered recently.
+TEST_F(FeatureEngagementTest,
+       TestHomeBackgroundCustomizationPromo_ShouldNotTriggerIfOldPromoRecent) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{
+          {feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature,
+           HomeBackgroundCustomizationPromoParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  scoped_clock.Advance(base::Days(4));
+
+  // Notify that the old promo was triggered.
+  tracker->NotifyEvent(
+      feature_engagement::events::kHomeCustomizationPromoTriggered);
+
+  // Should not trigger yet.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature));
+
+  // Advance 31 days.
+  scoped_clock.Advance(base::Days(31));
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
+}
+
+// Verifies that the Home Background Customization promo doesn't trigger if
+// FRE was too recent.
+TEST_F(FeatureEngagementTest,
+       TestHomeBackgroundCustomizationPromo_ShouldNotTriggerIfFRERecent) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{
+          {feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature,
+           HomeBackgroundCustomizationPromoParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Notify that FRE is complete.
+  tracker->NotifyEvent(feature_engagement::events::kIOSFirstRunComplete);
+
+  // Advance only 2 days.
+  scoped_clock.Advance(base::Days(2));
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature));
+
+  // Advance another 2 days (4 total).
+  scoped_clock.Advance(base::Days(2));
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
 }

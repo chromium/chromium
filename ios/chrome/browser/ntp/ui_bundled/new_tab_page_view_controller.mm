@@ -346,17 +346,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       presentInProductHelpWithType:InProductHelpType::kDiscoverFeedMenu];
 
   if (!IsFirstRunRecent(base::Days(3))) {
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      if (self.engagementTracker &&
-          self.engagementTracker->ShouldTriggerHelpUI(
-              feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature)) {
-        [self.helpHandler presentInProductHelpWithType:
-                              InProductHelpType::kHomeBackgroundCustomization];
-        [self.delegate
-            showCustomizationMenuForUserEducationFromNewTabPageViewController:
-                self];
-      }
-    } else {
+    if (!IsNTPBackgroundCustomizationEnabled()) {
       [self.helpHandler presentInProductHelpWithType:
                             InProductHelpType::kHomeCustomizationMenu];
     }

@@ -69,6 +69,7 @@ source_set("profile_controller") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
+    "//ios/chrome/browser/ntp/model:home_background_customization_promo",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model",

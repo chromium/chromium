@@ -40,6 +40,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/default_browser/promo/post_restore/coordinator",
     "//ios/chrome/browser/docking_promo/coordinator:display_handler",
     "//ios/chrome/browser/first_run/public:features",
+    "//ios/chrome/browser/ntp/coordinator:home_background_customization_promo",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/post_restore_signin/ui_bundled",
