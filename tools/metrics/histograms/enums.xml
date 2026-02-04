@@ -5453,6 +5453,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024713" label="ERROR_ALREADY_EXISTS"/>
   <int value="-2147024703" label="ERROR_BAD_EXE_FORMAT"/>
   <int value="-2147024671" label="ERROR_VIRUS_INFECTED"/>
+  <int value="-2147024638" label="WAIT_TIMEOUT"/>
   <int value="-2147024637" label="DRM_E_NOMORE_DATA"/>
   <int value="-2147024362" label="DRM_E_ARITHMETIC_OVERFLOW (0x80070216)"/>
   <int value="-2147024319" label="ERROR_INVALID_IMAGE_HASH (0x80070241)"/>
@@ -5483,12 +5484,18 @@ shown properly on the user-facing crash UI.
   <int value="-2147012867" label="WININET_E_CANNOT_CONNECT"/>
   <int value="-2147012866" label="WININET_E_CONNECTION_ABORTED"/>
   <int value="-2147012851" label="WININET_E_INVALID_CA"/>
+  <int value="-2147012721" label="WININET_E_DECODING_FAILED"/>
   <int value="-2147009295" label="ERROR_INSTALL_PACKAGE_NOT_FOUND"/>
   <int value="-2146959355" label="CO_E_SERVER_EXEC_FAILURE"/>
+  <int value="-2146959352" label="CO_E_SERVER_STOPPING"/>
   <int value="-2146893002" label="SEC_E_WRONG_CREDENTIAL_HANDLE"/>
   <int value="-2146893001" label="SEC_E_CRYPTO_SYSTEM_INVALID"/>
   <int value="-2146762496" label="TRUST_E_NOSIGNATURE"/>
   <int value="-2146435043" label="SCARD_E_NO_SERVICE"/>
+  <int value="-2145844845" label="HTTP_E_STATUS_FORBIDDEN"/>
+  <int value="-2145844844" label="HTTP_E_STATUS_NOT_FOUND"/>
+  <int value="-2145844744" label="HTTP_E_STATUS_GATEWAY_TIMEOUT"/>
+  <int value="-2143309801" label="Unknown error (0x803FB017)"/>
   <int value="-2140733418" label="APPMODEL_ERROR_PACKAGE_NOT_FOUND"/>
   <int value="-2140143615" label="MF_INDEX_SIZE_ERR"/>
   <int value="-2140143608" label="MF_NOT_FOUND_ERR"/>
@@ -5499,6 +5506,7 @@ shown properly on the user-facing crash UI.
   <int value="-2140143594" label="MF_QUOTA_EXCEEDED_ERR"/>
   <int value="-2140143535" label="MF_PARSE_ERR"/>
   <int value="-2140127227" label="MF_TYPE_ERR"/>
+  <int value="-2089484281" label="WEB_E_INVALID_JSON_STRING"/>
   <int value="-2089418750" label="E_INVALID_PROTOCOL_FORMAT"/>
   <int value="-2005532292" label="D3DERR_OUTOFVIDEOMEMORY"/>
   <int value="-2005270527" label="DXGI_ERROR_INVALID_CALL"/>
