@@ -16,9 +16,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "chrome/common/extensions/api/printing.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
 #include "ui/gfx/native_ui_types.h"
+
+namespace ash {
+class LocalPrinter;
+}
+
+namespace chromeos {
+class Printer;
+}
 
 namespace content {
 class BrowserContext;
@@ -33,6 +41,7 @@ class PdfBlobDataFlattener;
 class PrintedDocument;
 class PrintJobController;
 class PrintSettings;
+struct PrinterSemanticCapsAndDefaults;
 struct FlattenPdfResult;
 struct PrintJobCreatedInfo;
 }  // namespace printing
@@ -63,7 +72,7 @@ class PrintJobSubmitter {
                     printing::PdfBlobDataFlattener* pdf_blob_data_flattener,
                     scoped_refptr<const extensions::Extension> extension,
                     api::printing::SubmitJobRequest request,
-                    crosapi::mojom::LocalPrinter* local_printer,
+                    ash::LocalPrinter* local_printer,
                     SubmitJobCallback callback);
 
   ~PrintJobSubmitter();
@@ -86,7 +95,8 @@ class PrintJobSubmitter {
   void CheckPrinter();
 
   void CheckCapabilitiesCompatibility(
-      crosapi::mojom::CapabilitiesResponsePtr capabilities);
+      base::optional_ref<const chromeos::Printer> printer,
+      const std::optional<printing::PrinterSemanticCapsAndDefaults>& caps);
 
   void ReadDocumentData();
 
@@ -128,7 +138,7 @@ class PrintJobSubmitter {
 
   std::unique_ptr<printing::FlattenPdfResult> flatten_pdf_result_;
 
-  const raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
+  const raw_ptr<ash::LocalPrinter> local_printer_;
   SubmitJobCallback callback_;
   base::WeakPtrFactory<PrintJobSubmitter> weak_ptr_factory_{this};
 };

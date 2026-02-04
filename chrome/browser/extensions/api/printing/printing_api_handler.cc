@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/types/to_address.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/printing/local_printer_impl.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
@@ -158,7 +159,7 @@ void PrintingAPIHandler::SubmitJob(
   PrintJobSubmitter::Run(std::make_unique<PrintJobSubmitter>(
       native_window, browser_context_, print_job_controller_.get(),
       pdf_blob_data_flattener_.get(), std::move(extension),
-      std::move(params->request), cros_local_printer_,
+      std::move(params->request), base::to_address(local_printer_),
       base::BindOnce(&PrintingAPIHandler::OnPrintJobSubmitted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(extension_id))));
