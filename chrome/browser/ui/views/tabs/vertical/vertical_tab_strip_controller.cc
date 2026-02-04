@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
@@ -89,6 +90,11 @@ void VerticalTabStripController::SelectTab(
   std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
   if (!tab_index.has_value()) {
     return;
+  }
+
+  std::optional<split_tabs::SplitTabId> split_id = tab_interface->GetSplit();
+  if (split_id.has_value()) {
+    tab_index = split_tabs::GetIndexOfLastActiveTab(model_, split_id.value());
   }
 
   model_->ActivateTabAt(tab_index.value(), gesture_detail);
