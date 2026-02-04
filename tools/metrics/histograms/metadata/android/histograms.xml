@@ -3751,6 +3751,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.InputToNavigationControllerStart.Intent"
+    units="ms" expires_after="2026-05-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Records time between the intent that triggered an Omnibox navigation on
+    Android to the time the Omnibox code calls into the shared C++ navigation
+    code (NavigationController). The UMA is recorded each time a URL is loaded
+    in the NavigationController with a valid intent received timestamp.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.InputToNavigationControllerStart.UserInput"
+    units="ms" expires_after="2026-05-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Records time between the user input that triggered an Omnibox navigation on
+    Android to the time the Omnibox code calls into the shared C++ navigation
+    code (NavigationController). The UMA is recorded each time a URL is loaded
+    in the NavigationController with a valid input start timestamp.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.InputToNavigationControllerStart2" units="ms"
     expires_after="2026-05-31">
   <owner>spelchat@chromium.org</owner>
