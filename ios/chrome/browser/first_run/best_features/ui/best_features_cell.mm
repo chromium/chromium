@@ -15,10 +15,8 @@ namespace {
 
 // The size of the space between text labels in the text stack view.
 const CGFloat kTextStackViewHorizontalSpacings = 4.0;
-// Shadow radius for the icon background.
-const CGFloat kIconBackgroundShadowRadius = 2.0;
-// Shadow opacity for the icon background.
-const CGFloat kIconBackgroundShadowOpacity = 0.3;
+// Border width for the icon background.
+const CGFloat kIconBackgroundBorderWidth = 1.0;
 // Corner radius for the icon background.
 const CGFloat kIconBackgroundCornerRadius = 10.0;
 // Width for the icon background.
@@ -54,10 +52,6 @@ const CGFloat kContentViewTrailingMargin = 13.0;
     // View to appear behind/contain the icon.
     _iconBackgroundView = [[UIView alloc] init];
     _iconBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconBackgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
-    _iconBackgroundView.layer.shadowRadius = kIconBackgroundShadowRadius;
-    _iconBackgroundView.layer.shadowOpacity = kIconBackgroundShadowOpacity;
-    _iconBackgroundView.layer.shadowOffset = CGSizeMake(0, 2);
     _iconBackgroundView.layer.cornerRadius = kIconBackgroundCornerRadius;
     _iconBackgroundView.layer.masksToBounds = NO;
     [contentView addSubview:_iconBackgroundView];
@@ -146,6 +140,11 @@ const CGFloat kContentViewTrailingMargin = 13.0;
   _detailTextLabel.text = item.caption;
   _iconImageView.image = item.iconImage;
   _iconBackgroundView.backgroundColor = item.iconBackgroundColor;
+  if ([item.iconBackgroundColor isEqual:[UIColor whiteColor]]) {
+    _iconBackgroundView.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
+    _iconBackgroundView.layer.borderWidth = kIconBackgroundBorderWidth;
+  }
 }
 
 #pragma mark - UITableViewCell
