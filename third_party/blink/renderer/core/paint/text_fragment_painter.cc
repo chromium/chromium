@@ -465,21 +465,6 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       svg_state.EnsureShaderTransform().PostConcat(
           fragment_transform.Inverse());
     }
-  } else if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() &&
-             scaling_factor != 1.0f) {
-    state_saver.SaveIfNeeded();
-    AffineTransform t;
-    if (is_scaled_inline_only) {
-      t.SetMatrix(
-          scaling_factor, 0, 0, 1,
-          text_origin.line_left - scaling_factor * text_origin.line_left, 0);
-    } else {
-      t.SetMatrix(
-          scaling_factor, 0, 0, scaling_factor,
-          text_origin.line_left - scaling_factor * text_origin.line_left,
-          text_origin.line_over - scaling_factor * text_origin.line_over);
-    }
-    context.ConcatCTM(t);
   }
 
   const bool paint_marker_backgrounds =
@@ -500,6 +485,23 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       DCHECK(rotation->IsInvertible());
       state->EnsureShaderTransform().PostConcat(rotation->Inverse());
     }
+  }
+
+  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() && !svg_inline_text &&
+      scaling_factor != 1.0f) {
+    state_saver.SaveIfNeeded();
+    AffineTransform t;
+    if (is_scaled_inline_only) {
+      t.SetMatrix(
+          scaling_factor, 0, 0, 1,
+          text_origin.line_left - scaling_factor * text_origin.line_left, 0);
+    } else {
+      t.SetMatrix(
+          scaling_factor, 0, 0, scaling_factor,
+          text_origin.line_left - scaling_factor * text_origin.line_left,
+          text_origin.line_over - scaling_factor * text_origin.line_over);
+    }
+    context.ConcatCTM(t);
   }
 
   if (highlight_painter.Selection()) [[unlikely]] {
