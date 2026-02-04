@@ -400,8 +400,7 @@ bool GetValidScheme(const std::string& text,
   canon_scheme->clear();
 
   // Locate everything up to (but not including) the first ':'
-  if (!url::ExtractScheme(text.data(), static_cast<int>(text.length()),
-                          scheme_component)) {
+  if (!url::ExtractScheme(text, scheme_component)) {
     return false;
   }
 

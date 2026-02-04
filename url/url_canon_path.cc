@@ -388,9 +388,8 @@ bool CanonicalizePath(const char* spec,
                       const Component& path,
                       CanonOutput* output,
                       Component* out_path) {
-  return DoPath<char, unsigned char>(
-      UNSAFE_TODO(path.maybe_as_string_view_on(spec)), CanonMode::kSpecialURL,
-      output, out_path);
+  return DoPath<char, unsigned char>(path.maybe_as_string_view_on(spec),
+                                     CanonMode::kSpecialURL, output, out_path);
 }
 
 bool CanonicalizePath(std::optional<std::string_view> path,

@@ -28,9 +28,7 @@ NewTabPageLocationPolicyHandler::~NewTabPageLocationPolicyHandler() {}
 std::string NewTabPageLocationPolicyHandler::FormatNewTabPageLocationURL(
     const std::string& ntp_location) {
   url::Component scheme;
-  if (!ntp_location.empty() &&
-      !url::ExtractScheme(ntp_location.data(),
-                          static_cast<int>(ntp_location.length()), &scheme)) {
+  if (!ntp_location.empty() && !url::ExtractScheme(ntp_location, &scheme)) {
     return base::StrCat(
         {url::kHttpsScheme, url::kStandardSchemeSeparator, ntp_location});
   }

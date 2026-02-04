@@ -828,8 +828,7 @@ bool HandleNewTabPageLocationOverride(
     return false;
   }
   url::Component scheme;
-  if (!url::ExtractScheme(ntp_location.data(),
-                          static_cast<int>(ntp_location.length()), &scheme)) {
+  if (!url::ExtractScheme(ntp_location, &scheme)) {
     ntp_location = base::StrCat(
         {url::kHttpsScheme, url::kStandardSchemeSeparator, ntp_location});
   }

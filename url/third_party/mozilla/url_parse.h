@@ -96,8 +96,7 @@ struct Component {
     if (!is_valid()) {
       return std::nullopt;
     }
-    // SAFETY: It's unsafe. Do not use this function.
-    return std::basic_string_view(&UNSAFE_BUFFERS(source[begin]), len);
+    return std::basic_string_view(&source[begin], len);
   }
 
   // Returns a std::optional<string_view> using `source` as a backend.
@@ -346,8 +345,9 @@ COMPONENT_EXPORT(URL) Parsed ParseStandardUrl(std::string_view url);
 COMPONENT_EXPORT(URL) Parsed ParseStandardUrl(std::u16string_view url);
 // TODO(crbug.com/325408566): Remove once all third-party libraries use the
 // overloads above.
-COMPONENT_EXPORT(URL)
-void ParseStandardURL(const char* url, int url_len, Parsed* parsed);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) void ParseStandardURL(const char* url,
+                                                                int url_len,
+                                                                Parsed* parsed);
 
 // Non-special URL is for when the scheme is not special, such as "about:",
 // "javascript:". See https://url.spec.whatwg.org/#is-not-special
@@ -375,11 +375,10 @@ Parsed ParsePathUrl(std::u16string_view url, bool trim_path_end);
 // ParseNonSpecialUrl() instead of ParsePathURL().
 // 3. Removing all traces of ParsePathURL() from
 // url/third_party/mozilla/url_parse here in chromium.
-COMPONENT_EXPORT(URL)
-void ParsePathURL(const char* url,
-                  int url_len,
-                  bool trim_path_end,
-                  Parsed* parsed);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) void ParsePathURL(const char* url,
+                                                            int url_len,
+                                                            bool trim_path_end,
+                                                            Parsed* parsed);
 
 // ParseFileUrl is for file URLs. There are some special rules for interpreting
 // these.
@@ -421,8 +420,9 @@ bool ExtractScheme(std::string_view url, Component* scheme);
 COMPONENT_EXPORT(URL)
 bool ExtractScheme(std::u16string_view url, Component* scheme);
 // Deprecated (crbug.com/325408566): Prefer using the overloads above.
-COMPONENT_EXPORT(URL)
-bool ExtractScheme(const char* url, int url_len, Component* scheme);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) bool ExtractScheme(const char* url,
+                                                             int url_len,
+                                                             Component* scheme);
 
 // Returns true if ch is a character that terminates the authority segment
 // of a URL.
@@ -433,13 +433,13 @@ bool IsAuthorityTerminator(char16_t ch, ParserMode parser_mode);
 //
 // These functions are also used in net/third_party code. So removing these
 // functions requires several steps.
-COMPONENT_EXPORT(URL)
-void ParseAuthority(const char* spec,
-                    const Component& auth,
-                    Component* username,
-                    Component* password,
-                    Component* hostname,
-                    Component* port_num);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) void ParseAuthority(
+    const char* spec,
+    const Component& auth,
+    Component* username,
+    Component* password,
+    Component* hostname,
+    Component* port_num);
 
 // Does a best effort parse of input `spec`, in range `auth`. If a particular
 // component is not found, it will be set to invalid. `ParserMode` is used to
