@@ -1,0 +1,15 @@
+[
+  {
+    "action": {
+      "redirect": {
+        "extensionPath": "/ok.html?foo=bar#baz"
+      },
+      "type": "redirect"
+    },
+    "condition": {
+      "urlFilter": "||example.com^",
+      "resourceTypes": ["main_frame"]
+    },
+    "id": 1
+  }
+]

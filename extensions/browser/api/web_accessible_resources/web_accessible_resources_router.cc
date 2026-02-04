@@ -37,9 +37,10 @@ std::optional<GURL> TransformToDynamicURLIfNecessary(
     return std::nullopt;
   }
 
-  // Return the dynamic url.
-  return Extension::ResolveExtensionURL(extension->dynamic_url(),
-                                        url.GetPath());
+  // Return the dynamic URL host while preserving existing components.
+  GURL::Replacements replace_host;
+  replace_host.SetHostStr(extension->dynamic_url().host());
+  return url.ReplaceComponents(replace_host);
 }
 
 }  // namespace extensions
