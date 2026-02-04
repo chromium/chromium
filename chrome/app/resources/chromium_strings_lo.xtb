@@ -32,11 +32,13 @@
 <translation id="1324107359134968521">Chromium ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສຳຫຼວດ 
  ອຸປະກອນ Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ກວດຫາພາສາ</translation>
+<translation id="1330742950061766891">ໃຊ້ການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບທີ່ Chromium ແນະນຳ</translation>
 <translation id="1342274909142618978">ລຶບຂໍ້ມູນອອກຈາກ Chromium (<ph name="URL" />) ນຳ</translation>
 <translation id="1345251407431278948">ປັກໝຸດແລ້ວ! ທ່ານສາມາດເຂົ້າເຖິງການຊອກຫາຮູບໄດ້ອີກຄັ້ງຈາກປຸ່ມໃໝ່ໃນແຖບເຄື່ອງມື</translation>
 <translation id="1356661055722410047">ໃໝ່! ທ່ານສາມາດແປໄດ້ທັງຂໍ້ຄວາມ ແລະ ຮູບພາບຢູ່ໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1397530502368084401">&amp;ຈັດການໂປຣໄຟລ໌ Chromium</translation>
+<translation id="1404026649028693342">ສະແດງໂໝດ AI ສະເໝີ</translation>
 <translation id="141901961143729572">ແບ່ງປັນຄວາມຄິດຂອງທ່ານ</translation>
 <translation id="1465192221147974788">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chromium ໃນການຕັ້ງຄ່າລະບົບ.</translation>
 <translation id="1478370723027452770">ຮັບຄວາມຊ່ວຍເຫຼືອກ່ຽວກັບ Chrome ສຳລັບການທົດສອບ</translation>
@@ -93,6 +95,7 @@
 <translation id="2039417478970545937">ການຕັ້ງຄ່າ.</translation>
 <translation id="2049376729098081731">ເລືອກວ່າຈະໃຫ້ຮວມປະຫວັດ Chromium ສຳລັບປະສົບການທີ່ປັບແຕ່ງສ່ວນຕົວໃນບໍລິການ Google ຫຼືບໍ່</translation>
 <translation id="2064856577282482477">ຄລິກປຸ່ມປັບແຕ່ງ Chromium ຢູ່ໜ້າແຖບໃໝ່ເພື່ອໃຫ້ Chromium ມີຮູບລັກໃໝ່</translation>
+<translation id="2066690553719545730">ສະແດງໂໝດ AI ສະເໝີ</translation>
 <translation id="2086476982681781442">Chromium ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ມີການຫຼອກລວງ ແລະ ອາດເຮັດການປ່ຽນແປງທີ່ບໍ່ຄາດຄິດກັບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="208726765006323911">ທ່ານຈະເຫັນຂໍ້ຄວາມແຈ້ງໃຫ້ລອງໃຊ້ <ph name="FEATURE_NAME" /> ໃນເທື່ອຕໍ່ໄປທີ່ທ່ານເປີດ Chromium ຢູ່ iOS.</translation>
 <translation id="2099452623287920103">ລະບົບຈະລຶບລະຫັດຜ່ານຂອງທ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງ Chromium ທີ່ທ່ານບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານອອກຈາກອຸປະກອນນີ້. ເພື່ອໃຊ້ຂໍ້ມູນເຫຼົ່ານີ້ໃນ Chromium, ໃຫ້ເຂົ້າສູ່ລະບົບອີກຄັ້ງ.</translation>
@@ -195,6 +198,7 @@
 <translation id="3095811995836568724">ປະຫວັດ Chromium</translation>
 <translation id="3103660991484857065">ຕົວຕິດຕັ້ງບໍ່ສາມາດ​ຄາຍ​ການບີບອັດຄັງເກັບມ້ຽນ. ກະລຸນາດາວໂຫຼດ Chromium ອີກ.</translation>
 <translation id="310459126943037700">ເຮັດໃຫ້ໜ້າວຽກສິ້ນສຸດບໍ່ສຳເລັດ.</translation>
+<translation id="3126784891977756556">ຊິ້ງລະຫັດຜ່ານ, ບຸກມາກ ແລະ ປະຫວັດຂອງທ່ານໃນອຸປະກອນຕ່າງໆໄດ້ຢ່າງສົມບູນແບບ. ເຂົ້າເຖິງຄຸນສົມບັດທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກໄດ້ຢ່າງງ່າຍດາຍໂດຍອັບເດດໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເປັນ Chromium.</translation>
 <translation id="3130323860337406239">Chromium ກໍາລັງໃຊ້​ໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
 <translation id="3130333203120345554">ຊອກຫາໃໝ່</translation>
 <translation id="3137969841538672700">ລາກເພື່ອຊອກຫາ</translation>
@@ -307,6 +311,7 @@
 <translation id="4304713468139749426">ຕົວຈັດການລະຫັດຜ່ານ</translation>
 <translation id="4334241893986177674">ຊອກຫາຮູບໜ້າຈໍນີ້</translation>
 <translation id="4334294535648607276">ດາວ​ໂຫຼດ​ສຳ​ເລັດ.</translation>
+<translation id="4384993550046411228">ເຂົ້າເຖິງຄຸນສົມບັດທີ່ທ່ານຮູ້ຈັກ, ມັກ ແລະ ໄວ້ວາງໃຈໄດ້ຢ່າງງ່າຍດາຍໂດຍການຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ. ລະບົບຈະປັກໝຸດ Chromium ໄວ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ຢ່າງວ່ອງໄວ.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກຳນົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກຳນົດບໍລິການເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ປ່ຽນແປງ ຫຼື ຈຳກັດຂໍ້ກຳນົດຂອງ ChromiumOS.</translation>
 <translation id="4407044323746248786">ຢືນຢັນການອອກຈາກ Chromium ບໍ?</translation>
 <translation id="4413205837991854510">ສະແດງທາງລັດການຊອກຫາຮູບສະເໝີ</translation>

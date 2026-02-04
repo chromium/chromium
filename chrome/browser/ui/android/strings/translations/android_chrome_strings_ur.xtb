@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">ڈراپ ڈاؤن فہرست سے منتخب کریں</translation>
 <translation id="4687718960473379118">سائٹ کے تجویز کردہ اشتہارات</translation>
 <translation id="468924408576231679">ویب صفحہ <ph name="PAGE_TITLE" /> کا لنک کاپی کریں۔ ماخذ: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">سرچ انجنز</translation>
 <translation id="469286762610133730">بہتر مواد حاصل کریں</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}}</translation>
 <translation id="4698757800236023795">فعال (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">صفحے کے مزید متن کو شامل کر کے، آپ تلاش کرنے کے لیے ٹچ کریں کا استعمال کرتے وقت بہتر نتائج دیکھ سکتے ہیں۔ آپ اسے تبدیل کرنے کے لیے ہمیشہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="7379900596734708416">سائٹس کے لیے گہری تھیم دستیاب ہے</translation>
 <translation id="7384486627147155832">تجاویز کی اطلاعات کا پرومو نصف اونچائی پر کھولا گیا</translation>
+<translation id="7387951778417998929">ڈیفالٹ کے علاوہ سرچ انجن کا استعمال کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں اس کے بعد اپنا پسندیدہ کی بورڈ شارٹ کٹ۔ آپ اپنے ڈیفالٹ سرچ انجن کو یہاں تبدیل بھی کر سکتے ہیں۔</translation>
 <translation id="7388615499319468910">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آف ہے۔</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{فہرست میں دیگر 1 فائل}other{فہرست میں دیگر # فائلز}}</translation>
 <translation id="7400418766976504921">URL</translation>

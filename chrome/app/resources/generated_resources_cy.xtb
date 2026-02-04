@@ -997,6 +997,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1652326691684645429">Galluogi Rhannu Gerllaw</translation>
 <translation id="1652862280638399816">I ddefnyddio'r Rheolwr Cyfrineiriau gyda macOS Keychain, ail-lansiwch Chromium a chaniatewch fynediad Keychain. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
 <translation id="1653958716132599769">Grwpio tabiau cysylltiedig</translation>
+<translation id="165448107578581061">Mae Gemini yn gweithio ar eich tasg...</translation>
 <translation id="1654580009054503925">Ni chaniateir dangos ceisiadau</translation>
 <translation id="1654713139320245449">Ni chanfuwyd unrhyw gyrchfannau castio. Angen help?</translation>
 <translation id="1656528038316521561">Anhryloywder y cefndir</translation>
@@ -1618,7 +1619,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2079053412993822885">Os byddwch yn dileu un o'ch tystysgrifau eich hun, ni allwch ei defnyddio mwyach i adnabod eich hun.</translation>
 <translation id="2079495302726689071">Agor y ddolen mewn tab <ph name="APP" /> newydd</translation>
 <translation id="2079545284768500474">Dadwneud</translation>
-<translation id="2079553700504470326">Defnyddiwch eich union leoliad ar gyfer y canlyniadau Gemini mwyaf cywir, yn lle amcangyfrif o leoliad yn seiliedig ar eich cyfeiriad IP.</translation>
 <translation id="2080070583977670716">Rhagor o osodiadau</translation>
 <translation id="2081816110395725788">Pŵer segur ar fatri</translation>
 <translation id="2082187087049518845">Grwpio'r Tab</translation>
@@ -3891,6 +3891,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3619294456800709762">Gall gwefannau gyrchu llun mewn llun yn awtomatig</translation>
 <translation id="3620136223548713675">Geoleoliad</translation>
 <translation id="3621202678540785336">Mewnbwn</translation>
+<translation id="3621841019087952625">Gosod yn nes ymlaen</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
 <translation id="3622820753353315928">Lliw sgrîn fflach</translation>
 <translation id="3623318122257816196">Gall gwefannau rydych yn ymweld â nhw fewnblannu cynnwys o wefannau eraill, er enghraifft lluniau, hysbysebion a thestun. Gall y gwefannau eraill hyn ofyn am ganiatâd i ddefnyddio gwybodaeth y maent wedi'i chadw amdanoch wrth i chi bori'r wefan.</translation>
@@ -4291,6 +4292,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3856096718352044181">Cadarnhewch fod hwn yn ddarparwr dilys neu rhowch gynnig arall arni yn nes ymlaen</translation>
 <translation id="3856470183388031602">Defnyddio eich Cyfrif Google ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Dewis cylchfa amser</translation>
+<translation id="3856902135796972992">Mae angen gweithred ychwanegol ar y wefan hon. Cwblhewch ef ar y dudalen fel y gall y newid cyfrinair ddod i ben.</translation>
 <translation id="3857807444929313943">Codwch, yna cyffyrddwch eto</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="385939467708172187">Defnyddiwch Gyfrinair Cryf</translation>
@@ -5936,7 +5938,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5001526427543320409">Cwcis trydydd parti</translation>
 <translation id="5003070249435823986">Defnyddiwch yr ystum i fynd i mewn i'r modd sgrolio, yna symudwch eich pen i'r cyfeiriad yr hoffech sgrolio. Defnyddiwch yr ystum eto i adael y modd sgrolio.</translation>
 <translation id="5003993274120026347">Brawddeg nesaf</translation>
-<translation id="5005113238422129109">Defnyddiwch eich meicroffon i sgwrsio â Gemini. Pan fyddwch yn siarad â Gemini, mae sain yn cael ei storio yn Gemini Apps Activity (os yw ymlaen)</translation>
 <translation id="5005498671520578047">Copïo'r cyfrinair</translation>
 <translation id="5006218871145547804">ADB Ap Android Crostini</translation>
 <translation id="5006778209728626987">Mellt</translation>
@@ -6263,6 +6264,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Dadgrwpio'r grŵp tabiau?}zero{Dadgrwpio'r grwpiau tabiau?}two{Dadgrwpio'r grwpiau tabiau?}few{Dadgrwpio'r grwpiau tabiau?}many{Dadgrwpio'r grwpiau tabiau?}other{Dadgrwpio'r grwpiau tabiau?}}</translation>
 <translation id="5230190638672215545">Teipiwch "uow" i gael "ươ"</translation>
 <translation id="5230516054153933099">Ffenestr</translation>
+<translation id="5231255476752743708">Mae angen help ar Chrome i newid eich cyfrinair</translation>
 <translation id="5232714764496316200">Cael help gwaith cartref gyda Google Lens</translation>
 <translation id="5233231016133573565">Rhif adnabod y broses</translation>
 <translation id="5233638681132016545">Tab newydd</translation>
@@ -7791,10 +7793,8 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6291953229176937411">&amp;Dangos yn Finder</translation>
 <translation id="6293862149782163840">Mae <ph name="DEVICE_NAME" /> wedi'i ddiffodd</translation>
 <translation id="6294759976468837022">Cyflymder awtosganio</translation>
-<translation id="6295140892595702619">Defnyddiwch eich meicroffon i sgwrsio â Gemini. Pan fyddwch yn siarad â Gemini, mae sain yn cael ei storio yng ngweithgarwch Apiau Gemini (os yw ymlaen). Nid yw eich data yn cael eu defnyddio i wella modelau AI cynhyrchiol</translation>
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
-<translation id="6296481987471548530">Defnyddiwch eich union leoliad ar gyfer y canlyniadau Gemini mwyaf cywir, yn lle lleoliad a amcangyfrifir yn seiliedig ar eich cyfeiriad IP. Nid yw eich data yn cael eu defnyddio i wella modelau AI cynhyrchiol</translation>
 <translation id="6297986260307280218">Anfon data defnydd a diagnostig. Helpwch i wella'ch profiad Android drwy anfon data diagnostig, dyfais a defnydd apiau yn awtomatig at Google. Bydd hyn yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Gorfodir y <ph name="BEGIN_LINK1" />gosodiad<ph name="END_LINK1" /> hwn gan y perchennog. Mae'n bosib y bydd y perchennog yn dewis anfon data diagnostig a defnydd ar gyfer y ddyfais hon at Google. Os caiff eich gosodiad Gweithgarwch ar y We ac Apiau ychwanegol ei droi ymlaen, gellir cadw'r data hyn i'ch cyfrif Google. <ph name="BEGIN_LINK2" />Dysgu rhagor am fetrigau<ph name="BEGIN_LINK2_END" />Dysgu rhagor<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Yn effeithio ar y gwefannau a restrir yma. Mae mewnosod “[*.]” cyn enw parth yn creu eithriad ar gyfer y parth cyfan. Er enghraifft, bydd ychwanegu "[*.]google.com" yn golygu y bydd cwcis trydydd parti yn gallu bod yn weithredol ar gyfer mail.google.com, oherwydd ei fod yn rhan o google.com.</translation>
 <translation id="6298962879096096191">Defnyddio Google Play i osod apiau Android</translation>
@@ -8334,6 +8334,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6677527809400770913">Wedi aseinio ystum <ph name="GESTURE" /> i <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Tonnau mawr yn tasgu yn y môr, gyda thir yn y cefndir pell. Mae awgrymiadau o olau oren ychydig y tu hwnt i'r gorwel, mewn awyr sydd fel arall yn dywyll ac yn oriog.</translation>
 <translation id="6678717876183468697">URL ymholiad</translation>
+<translation id="6678974601734442817">Mae angen help ar Chromium i newid eich cyfrinair</translation>
 <translation id="6679947539429331601">Cuddio am 12 awr</translation>
 <translation id="6680442031740878064">Ar gael: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Cyfradd</translation>
@@ -11038,7 +11039,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8508532351844333131">Mae <ph name="WEBSITE_ORIGIN" /> eisiau cadw gwybodaeth ar eich dyfais Android</translation>
 <translation id="8509177919508253835">Ailosod allweddi diogelwch a chreu PIN</translation>
 <translation id="8509646642152301857">Methwyd â lawrlwytho geiriadur gwirio sillafu.</translation>
-<translation id="8509967119010808787">I chwilio eich tabiau, cliciwch yma</translation>
 <translation id="8512476990829870887">Dod â'r Broses i Ben</translation>
 <translation id="851263357009351303">Caniatáu i <ph name="HOST" /> ddangos lluniau bob amser</translation>
 <translation id="8513108775083588393">Awtogylchdroi</translation>

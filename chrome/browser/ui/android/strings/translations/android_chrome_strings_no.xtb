@@ -851,6 +851,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4685741273709472646">Velg fra rullegardinlisten</translation>
 <translation id="4687718960473379118">Annonser foreslått av nettstedet</translation>
 <translation id="468924408576231679">Kopier linken til nettsiden <ph name="PAGE_TITLE" />. Kilde: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Søkemotorer</translation>
 <translation id="469286762610133730">Få bedre innhold</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}other{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}}</translation>
 <translation id="4698757800236023795">Aktiv (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7376560087009844242">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater når du bruker Trykk for å søke. Du kan når som helst gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å endre dette.</translation>
 <translation id="7379900596734708416">Mørkt tema for nettsteder er tilgjengelig</translation>
 <translation id="7384486627147155832">Promoteringen av tipsvarsler er åpnet i halv høyde</translation>
+<translation id="7387951778417998929">For å bruke en annen søkemotor enn standard, skriv inn snarveien for søkemotoren i adressefeltet, etterfulgt av hurtigtasten du foretrekker. Du kan også endre standard søkemotor her.</translation>
 <translation id="7388615499319468910">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er av.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annet, 1 fil på listen}other{Annet, # filer på listen}}</translation>
 <translation id="7400418766976504921">Nettadresse</translation>

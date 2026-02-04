@@ -31,11 +31,13 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
 <translation id="1324107359134968521">Chromium ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Zbulo gjuhën</translation>
+<translation id="1330742950061766891">Përdor cilësimet e rekomanduara të shfletuesit Chromium</translation>
 <translation id="1342274909142618978">Fshi po ashtu të dhënat nga Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">U gozhdua! Mund të qasesh përsëri te "Kërkimi nëpërmjet imazheve" nga butoni i ri në shiritin e veglave</translation>
 <translation id="1356661055722410047">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1397530502368084401">&amp;Menaxho profilet e Chromium</translation>
+<translation id="1404026649028693342">Shfaq gjithmonë "Modalitetin e IA-së"</translation>
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
 <translation id="1465192221147974788">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>
@@ -92,6 +94,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2039417478970545937">Cilësimet.</translation>
 <translation id="2049376729098081731">Zgjidh nëse do ta përfshish historikun e Chromium për përvoja më të personalizuara në shërbimet e Google</translation>
 <translation id="2064856577282482477">Kliko te butoni "Personalizo Chromium" në faqen e skedës së re për t'i dhënë Chromium një pamje të re</translation>
+<translation id="2066690553719545730">Shfaq gjithmonë "Modalitetin e IA-së"</translation>
 <translation id="2086476982681781442">Chromium e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
 <translation id="208726765006323911">Do të shikosh një kërkesë për të provuar <ph name="FEATURE_NAME" /> herën tjetër kur të hapësh Chromium për iOS.</translation>
 <translation id="2099452623287920103">Fjalëkalimet e tua dhe të dhënat e tjera të Chromium që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chromium, identifikohu përsëri.</translation>
@@ -194,6 +197,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3095811995836568724">Historiku i Chromium</translation>
 <translation id="3103660991484857065">Instaluesi nuk arriti ta nxjerrë arkivin. Shkarko përsëri Chromium.</translation>
 <translation id="310459126943037700">Përfundimi i detyrave dështoi.</translation>
+<translation id="3126784891977756556">Mbaji fjalëkalimet, faqeshënuesit dhe historikun të sinkronizuar në mënyrë të përsosur në pajisje. Qasu me lehtësi te veçoritë që njeh dhe që të pëlqejnë duke e përditësuar shfletuesin tënd të parazgjedhur në Chromium.</translation>
 <translation id="3130323860337406239">Chromium po përdor mikrofonin tënd.</translation>
 <translation id="3130333203120345554">Kërkim i ri</translation>
 <translation id="3137969841538672700">Zvarrit për të kërkuar</translation>
@@ -306,6 +310,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4334241893986177674">Kërko në këtë pamje ekrani</translation>
 <translation id="4334294535648607276">Shkarkimi përfundoi</translation>
+<translation id="4384993550046411228">Përfito qasje të lehtë te veçoritë që njeh, që të pëlqejnë dhe që u beson duke caktuar Chromium si shfletuesin tënd të parazgjedhur. Chromium do të gozhdohet te shiriti i detyrave për qasje të shpejtë.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë ose kufizojnë "Kushtet e ChromiumOS".</translation>
 <translation id="4407044323746248786">Dëshiron të dalësh nga Chromium gjithsesi?</translation>
 <translation id="4413205837991854510">Shfaq gjithmonë shkurtoren e "Kërkimit nëpërmjet imazheve"</translation>

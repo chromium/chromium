@@ -1617,7 +1617,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2079053412993822885">Kung tatanggalin mo ang isa sa iyong mga certificate, hindi mo na magagamit ito upang tukuyin ang iyong sarili.</translation>
 <translation id="2079495302726689071">Buksan ang link sa bagong tab ng <ph name="APP" /></translation>
 <translation id="2079545284768500474">I-undo</translation>
-<translation id="2079553700504470326">Gamitin ang iyong eksaktong lokasyon para sa mga pinakatumpak na resulta sa Gemini, sa halip na ang tinatayang lokasyon batay sa IP address mo.</translation>
 <translation id="2080070583977670716">Higit pang mga setting</translation>
 <translation id="2081816110395725788">Idle na power habang ginagamit ang baterya</translation>
 <translation id="2082187087049518845">Pagpangkatin ang Tab</translation>
@@ -5937,7 +5936,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5001526427543320409">Mga third-party na cookie</translation>
 <translation id="5003070249435823986">Gamitin ang galaw para pumasok sa scroll mode, pagkatapos ay igalaw ang iyong ulo papunta sa direksyon kung saan mo gustong mag-scroll. Gamitin ulit ang galaw para lumabas sa scroll mode.</translation>
 <translation id="5003993274120026347">Susunod na pangungusap</translation>
-<translation id="5005113238422129109">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, naso-store ang audio sa Aktibidad sa Mga Gemini App (kung naka-on ito)</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5006218871145547804">ADB ng Android app sa Crostini</translation>
 <translation id="5006778209728626987">Kidlat</translation>
@@ -7793,10 +7791,8 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6291953229176937411">&amp;Show in Finder</translation>
 <translation id="6293862149782163840">Na-off ang <ph name="DEVICE_NAME" /></translation>
 <translation id="6294759976468837022">Bilis ng awtomatikong pag-scan</translation>
-<translation id="6295140892595702619">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, naso-store ang audio sa Aktibidad sa Mga Gemini App (kung naka-on ito). Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model</translation>
 <translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="6295855836753816081">Sine-save...</translation>
-<translation id="6296481987471548530">Gamitin ang iyong eksaktong lokasyon para sa mga pinakatumpak na resulta sa Gemini, sa halip na ang tinatayang lokasyon batay sa IP address mo. Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model</translation>
 <translation id="6297986260307280218">Magpadala ng data ng paggamit at diagnostic. Tumulong na pagandahin ang iyong experience sa Android sa pamamagitan ng awtomatikong pagpapadala ng data ng diagnostic, device, at paggamit ng app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Puwedeng piliin ng may-ari na magpadala ng data ng diagnostic at paggamit para sa device na ito sa Google. Kung naka-on ang iyong setting na karagdagang Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK2" />Matuto pa tungkol sa mga sukatan<ph name="BEGIN_LINK2_END" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Naaapektuhan ang mga site na nakalista rito. Ang paglalagay ng “[*.]” bago ang isang domain name ay gumagawa ng pagbubukod para sa buong domain. Halimbawa, kapag idinagdag ang “[*.]google.com,” magiging aktibo rin ang third-party na cookies na iyon para sa mail.google.com, dahil bahagi ito ng google.com.</translation>
 <translation id="6298962879096096191">Gamitin ang Google Play upang mag-install ng mga Android app</translation>
@@ -11038,7 +11034,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8508532351844333131">Gusto ng <ph name="WEBSITE_ORIGIN" /> na mag-save ng impormasyon sa iyong Android device</translation>
 <translation id="8509177919508253835">I-reset ang mga security key at gumawa ng mga PIN</translation>
 <translation id="8509646642152301857">Nabigo ang pag-download ng diksyunaryo ng pang-check ng pagbabaybay.</translation>
-<translation id="8509967119010808787">Para maghanap sa iyong mga tab, mag-click dito</translation>
 <translation id="8512476990829870887">Tapusin ang Proseso</translation>
 <translation id="851263357009351303">Palaging hayaan ang <ph name="HOST" /> na magpakita ng mga larawan</translation>
 <translation id="8513108775083588393">I-auto rotate</translation>

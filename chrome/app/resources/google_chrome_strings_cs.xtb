@@ -42,6 +42,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1399397803214730675">V tomto počítači je již nainstalována novější verze prohlížeče Google Chrome. Jestliže software nefunguje, odinstalujte prosím prohlížeč Google Chrome a zkuste to znovu.</translation>
+<translation id="1404026649028693342">Vždy zobrazovat režim AI</translation>
 <translation id="141901961143729572">Podělte se o svůj názor</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou.}=1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Anonymní okno se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymní okna se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymního okna se znovu neotevře.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymních oken se znovu neotevře.}}</translation>
 <translation id="1434626383986940139">Aplikace Chrome Canary</translation>
@@ -66,6 +67,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1640672724030957280">Stahování...</translation>
 <translation id="1651617469580841801">Když použijete Google Lens, název stránky, adresa URL a obsah, včetně souborů PDF, se odešlou do Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O systému ChromeOS Flex</translation>
+<translation id="1665867022636014702">Používejte nastavení prohlížeče doporučená Googlem</translation>
 <translation id="1674870198290878346">Otevřít odkaz v &amp;anonymním okně Chrome</translation>
 <translation id="1682634494516646069">Aplikace Google Chrome nemůže číst ani zapisovat do svého datového adresáře:
 
@@ -101,6 +103,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2026377840141807639">Pomocí profilů v Chromu si můžete oddělit pracovní prohlížení od osobního. Přidejte nový profil.</translation>
 <translation id="2034233344106846793">Pokud je to možné, Chrome nezabezpečená připojení automaticky upgraduje na HTTPS</translation>
 <translation id="2039417478970545937">Nastavení.</translation>
+<translation id="2066690553719545730">Vždy zobrazovat režim AI</translation>
 <translation id="2091012649849228750">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.</translation>
 <translation id="2094648590148273905">Smluvní podmínky systému ChromeOS Flex</translation>
 <translation id="2094919256425865063">Přesto Chrome ukončit?</translation>
@@ -357,6 +360,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4885446229353981848">Vždy zobrazovat zástupce Google Lens</translation>
 <translation id="4891791193823137474">Nechat aplikaci Google Chrome spuštěnou na pozadí</translation>
 <translation id="4895437082222824641">Otevřít odkaz na nové kar&amp;tě Chrome</translation>
+<translation id="4896867431081882115">Nastavte si Chrome jako výchozí prohlížeč. Budete tak mít snadno přístup k funkcím, které znáte, máte rádi a kterým důvěřujete. Chrome bude připnutý na hlavní panel, kde bude kdykoli snadno rychle k dispozici.</translation>
 <translation id="4918086044614829423">Přijmout</translation>
 <translation id="4918844574251943176">Obrázek byl zkopírován</translation>
 <translation id="4926882258455737990">Pokud chcete používat Gemini v Chromu s jiným účtem Google, <ph name="BEGIN_LINK" />vytvořte nový profil<ph name="END_LINK" /> a přihlaste se pomocí požadovaného účtu</translation>
@@ -561,6 +565,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6885412569789873916">Chrome Beta – aplikace</translation>
 <translation id="6893363893008038481">Odstranit účet z Chromu</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
+<translation id="6908182077349113099">Mějte hesla, záložky a historii dokonale synchronizované mezi zařízeními. Aktualizujte svůj výchozí prohlížeč na Chrome. Budete tak mít snadno přístup k funkcím, které znáte a máte rádi.</translation>
 <translation id="6930294499209825">Udržuje software Google aktualizovaný. V případě zakázání nebo zastavení té služby se software Google nebude aktualizovat, což znamená, že nebude možné opravit případné chyby zabezpečení a funkce nemusí fungovat. Pokud tuto službu žádný software Google nepoužívá, sama se odinstaluje.</translation>
 <translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6938166777909186039">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.1.</translation>

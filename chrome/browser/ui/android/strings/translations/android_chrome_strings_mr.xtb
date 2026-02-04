@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">ड्रॉपडाउन सूचीमधून निवडा</translation>
 <translation id="4687718960473379118">साइटने सुचवलेल्या जाहिराती</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> या वेबपेजची लिंक कॉपी करा. स्रोत: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">शोध इंजिने</translation>
 <translation id="469286762610133730">आणखी चांगला आशय मिळवा</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अधिक}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अधिक}}</translation>
 <translation id="4698757800236023795">अ‍ॅक्टिव्ह (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">एखाद्या पेजवरील जास्त मजकुराचा समावेश केल्याने, शोधण्यासाठी स्पर्श करा हे वापरताना तुम्हाला आणखी चांगले परिणाम दिसू शकतात. हे बदलण्यासाठी तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> ना कधीही भेट देऊ शकता.</translation>
 <translation id="7379900596734708416">साइटसाठी गडद थीम उपलब्ध आहेत</translation>
 <translation id="7384486627147155832">टिपा असलेला नोटिफिकेशन प्रोमो अर्ध्या उंचीवर उघडला आहे</translation>
+<translation id="7387951778417998929">डीफॉल्टपेक्षा वेगळे शोध इंजीन वापरण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा. तुम्ही येथे तुमचे डीफॉल्ट शोध इंजीनदेखील बदलू शकता.</translation>
 <translation id="7388615499319468910">जाहिराती कशा काम करतात हे साइट आणि जाहिरातदार समजू शकतात. हे सेटिंग बंद आहे.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{सूचीमध्ये १ वेगळी फाइल आहे}other{सूचीमध्ये # वेगळ्या फाइल आहेत}}</translation>
 <translation id="7400418766976504921">URL</translation>

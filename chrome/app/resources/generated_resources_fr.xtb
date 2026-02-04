@@ -835,7 +835,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1561331397460162942">L'accès à la position sera accordé aux applis et sites Web ayant l'autorisation correspondante, ainsi qu'aux services système</translation>
 <translation id="1562119309884184621">L'ajout de ce contact sera mémorisé pour leur prochain partage</translation>
 <translation id="1562585387501039294">Votre organisation (<ph name="ACCOUNT_MANAGER" />) exige un profil géré et pourra voir certaines informations, y compris</translation>
-<translation id="156345786953026804">Le contenu des pages et les URL que Gemini utilise pendant une tâche seront partagés avec Google.</translation>
+<translation id="156345786953026804">Le contenu de la page et les URL que Gemini utilise pendant une tâche seront partagés avec Google.</translation>
 <translation id="1566049601598938765">Site Web</translation>
 <translation id="15662109988763471">L'imprimante sélectionnée n'est pas disponible ou n'est pas installée correctement. Vérifiez votre imprimante ou sélectionnez-en une autre.</translation>
 <translation id="1566329594234563241">Lorsque l'appareil est inactif et branché</translation>
@@ -994,6 +994,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1652326691684645429">Activer le Partage à proximité</translation>
 <translation id="1652862280638399816">Pour utiliser le Gestionnaire de mots de passe avec le trousseau macOS, relancez Chromium et autorisez l'accès au trousseau. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="1653958716132599769">Regroupez des onglets associés</translation>
+<translation id="165448107578581061">Gemini travaille sur votre tâche...</translation>
 <translation id="1654580009054503925">Non autorisée à afficher les demandes</translation>
 <translation id="1654713139320245449">Aucune destination de diffusion trouvée. Besoin d'aide ?</translation>
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
@@ -1606,7 +1607,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2079053412993822885">Si vous supprimez l'un de vos propres certificats, vous ne pouvez plus l'utiliser pour vous identifier.</translation>
 <translation id="2079495302726689071">Ouvrir un lien dans un nouvel onglet de l'<ph name="APP" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
-<translation id="2079553700504470326">Utilisez votre position exacte pour obtenir les résultats Gemini les plus précis, au lieu d'une position estimée en fonction de votre adresse IP.</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2081816110395725788">Mode veille lorsque l'appareil fonctionne sur batterie</translation>
 <translation id="2082187087049518845">Regrouper les onglets</translation>
@@ -3874,6 +3874,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3619294456800709762">Les sites peuvent passer en Picture-in-picture automatiquement</translation>
 <translation id="3620136223548713675">Géolocalisation</translation>
 <translation id="3621202678540785336">Entrée</translation>
+<translation id="3621841019087952625">Définir plus tard</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une appli}one{# appli}other{# applis}}</translation>
 <translation id="3622820753353315928">Couleur de clignotement de l'écran</translation>
 <translation id="3623318122257816196">Les sites que vous consultez peuvent intégrer des contenus d'autres sites, tels que des images, des annonces et du texte. Ces autres sites peuvent demander l'autorisation d'utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous les parcourez.</translation>
@@ -4274,6 +4275,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3856470183388031602">Utiliser votre compte Google sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Sélectionner un fuseau horaire</translation>
+<translation id="3856902135796972992">Ce site nécessite une action supplémentaire. Effectuez-la sur la page pour que la modification du mot de passe puisse se terminer.</translation>
 <translation id="3857807444929313943">Levez le doigt, puis reposez-le</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="385939467708172187">Utiliser un mot de passe sécurisé</translation>
@@ -5918,7 +5920,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5001526427543320409">Cookies tiers</translation>
 <translation id="5003070249435823986">Effectuez le geste pour activer le mode défilement, puis bougez la tête dans la direction dans laquelle vous voulez faire défiler. Pour quitter ce mode, refaites le même geste.</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
-<translation id="5005113238422129109">Utilisez votre micro pour discuter avec Gemini. Lorsque vous parlez à Gemini, l'audio est stocké dans l'Activité dans les applications Gemini (si elle est activée).</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5006218871145547804">ADB pour les applications Android sur Crostini</translation>
 <translation id="5006778209728626987">Foudre</translation>
@@ -6245,6 +6246,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Dégrouper le groupe d'onglets ?}one{Dégrouper le groupe d'onglets ?}other{Dégrouper les groupes d'onglets ?}}</translation>
 <translation id="5230190638672215545">Saisissez "uow" pour obtenir "ươ"</translation>
 <translation id="5230516054153933099">Fenêtre</translation>
+<translation id="5231255476752743708">Chrome a besoin d'aide pour modifier votre mot de passe</translation>
 <translation id="5232714764496316200">Obtenez de l'aide pour vos devoirs avec Google Lens</translation>
 <translation id="5233231016133573565">ID du processus</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
@@ -7773,10 +7775,8 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6291953229176937411">&amp;Afficher dans le Finder</translation>
 <translation id="6293862149782163840">La <ph name="DEVICE_NAME" /> est désactivée</translation>
 <translation id="6294759976468837022">Vitesse de la recherche automatique</translation>
-<translation id="6295140892595702619">Utilisez votre micro pour discuter avec Gemini. Lorsque vous parlez à Gemini, l'audio est stocké dans l'Activité dans les applications Gemini (si elle est activée). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6295855836753816081">Enregistrement…</translation>
-<translation id="6296481987471548530">Utilisez votre position exacte pour obtenir les résultats Gemini les plus précis, au lieu d'une position estimée en fonction de votre adresse IP. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6297986260307280218">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de votre expérience sur Android en envoyant automatiquement à Google des données liées aux diagnostics, à l'appareil et à l'utilisation des applis. Ces données nous aideront à améliorer, entre autres, la stabilité du système et des applis. Certaines données globales seront aussi utiles aux développeurs d'applis Google et à nos partenaires tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Le propriétaire peut choisir d'envoyer à Google des données de diagnostic et d'utilisation concernant cet appareil. Si le paramètre "Activité additionnelle sur le Web et les applications" est activé, ces données pourront être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les métriques<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Concerne les sites indiqués ici. Insérer "[*.]" avant un nom de domaine crée une exception pour l'ensemble du domaine. Par exemple, si vous ajoutez "[*.]google.com", les cookies tiers peuvent aussi être actifs pour "mail.google.com", qui fait partie de "google.com".</translation>
 <translation id="6298962879096096191">Utilise Google Play pour installer des applications Android</translation>
@@ -8310,6 +8310,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6677527809400770913">Geste <ph name="GESTURE" /> attribué à <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Grandes vagues produisant de l'écume, avec la terre en arrière-plan. Des lueurs orangées apparaissent à l'horizon, dans un ciel sombre et menaçant.</translation>
 <translation id="6678717876183468697">URL de requête</translation>
+<translation id="6678974601734442817">Chromium a besoin d'aide pour modifier votre mot de passe</translation>
 <translation id="6679947539429331601">Masquer pendant 12 heures</translation>
 <translation id="6680442031740878064">Espace disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Cadence</translation>
@@ -11016,7 +11017,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> souhaite enregistrer des informations sur votre appareil Android</translation>
 <translation id="8509177919508253835">Réinitialiser les clés de sécurité et créer des codes</translation>
 <translation id="8509646642152301857">Échec du téléchargement du dictionnaire du correcteur orthographique.</translation>
-<translation id="8509967119010808787">Cliquez ici pour rechercher dans vos onglets</translation>
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
@@ -12150,7 +12150,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="958571289841636277">Passez à la page suivante ou précédente avec un geste de balayage</translation>
 <translation id="960987915827980018">Environ 1 heure restante</translation>
 <translation id="961010578115289982">Remplacer par la vue de gauche</translation>
-<translation id="961856697154696964">Suppr. données navigation</translation>
+<translation id="961856697154696964">Supprimer les données de navigation</translation>
 <translation id="962802172452141067">Arborescence de dossiers des favoris</translation>
 <translation id="963000966785016697">Rechercher l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Votre administrateur informatique a désactivé les bonus Chrome pour votre appareil.</translation>

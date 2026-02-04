@@ -31,11 +31,13 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
 <translation id="1324107359134968521">Chromium potrebuje na preskúmanie zariadení s rozhraním Bluetooth prístup k rozhraniu Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Rozpoznať jazyk</translation>
+<translation id="1330742950061766891">Používajte odporúčané nastavenia prehliadača Chromium</translation>
 <translation id="1342274909142618978">Odstrániť aj údaje z prehliadača Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Pripnuté! K vyhľadávaniu podľa obrázkov máte opäť prístup pomocou nového tlačidla na paneli s nástrojmi.</translation>
 <translation id="1356661055722410047">Novinka! Môžete prekladať text aj obrázky na obrazovke.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1397530502368084401">&amp;Spravovať profily prehliadača Chromium</translation>
+<translation id="1404026649028693342">Vždy zobrazovať režim AI</translation>
 <translation id="141901961143729572">Zdieľajte svoje názory</translation>
 <translation id="1465192221147974788">Ak chcete zdieľať okno, povoľte prehliadaču Chromium nahrávať obrazovku v nastaveniach systému.</translation>
 <translation id="1478370723027452770">Získať pomoc s verziou Chrome for Testing</translation>
@@ -92,6 +94,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2039417478970545937">Nastavenia</translation>
 <translation id="2049376729098081731">Vyberte, či sa má zahrnúť história prehliadača Chromium na zaistenie prispôsobenejšieho prostredia v službách Googlu</translation>
 <translation id="2064856577282482477">Kliknite na tlačidlo Prispôsobiť Chromium na stránke na novej karte a dajte prehliadaču Chromium nový vzhľad</translation>
+<translation id="2066690553719545730">Vždy zobrazovať režim AI</translation>
 <translation id="2086476982681781442">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný súbor je klamlivý a môže vo vašom zariadení vykonať neočakávané zmeny</translation>
 <translation id="208726765006323911">Pri ďalšom otvorení prehliadača Chromium pre iOS sa zobrazí výzva na vyskúšanie funkcie <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Heslá a ďalšie údaje prehliadača Chromium, ktoré ste si uložili do účtu Google, budú z tohto zariadenia odstránené. Ak ich chcete opäť používať v prehliadači Chromium, znova sa prihláste.</translation>
@@ -194,6 +197,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3095811995836568724">História prehliadača Chromium</translation>
 <translation id="3103660991484857065">Inštalačný program pri dekomprimácii archívu zlyhal. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="310459126943037700">Úlohy sa nepodarilo dokončiť.</translation>
+<translation id="3126784891977756556">Majte svoje heslá, záložky a históriu stále dokonale synchronizované v rôznych zariadeniach. Aktualizujte si predvolený prehliadač na Chromium, aby ste mali jednoduchý prístup k funkciám, ktoré poznáte a obľubujete.</translation>
 <translation id="3130323860337406239">Chromium používa váš mikrofón.</translation>
 <translation id="3130333203120345554">Nové vyhľadávanie</translation>
 <translation id="3137969841538672700">Vyhľadávanie spustíte presunutím</translation>
@@ -306,6 +310,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4304713468139749426">Správca hesiel</translation>
 <translation id="4334241893986177674">Nájsť túto snímku obrazovky</translation>
 <translation id="4334294535648607276">Sťahovanie bolo dokončené.</translation>
+<translation id="4384993550046411228">Nastavte si Chromium ako predvolený prehliadač, aby ste mali jednoduchý prístup k funkciám, ktoré poznáte, obľubujete a ktorým dôverujete. Chromium bude pripnutý na paneli aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> vyžaduje, aby ste si pred používaním tohto zariadenia prečítali nasledujúce zmluvné podmienky a vyjadrili s nimi súhlas. Tieto zmluvné podmienky nerozširujú, neupravujú ani neobmedzujú zmluvné podmienky systému Chromium OS.</translation>
 <translation id="4407044323746248786">Chcete Chromium napriek tomu ukončiť?</translation>
 <translation id="4413205837991854510">Vždy zobrazovať odkaz na vyhľadávanie podľa obrázkov</translation>

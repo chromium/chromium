@@ -992,6 +992,7 @@
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
 <translation id="1652862280638399816">macOS キーチェーンでパスワード マネージャーを使用するには、Chromium を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="1653958716132599769">関連するタブをグループ化</translation>
+<translation id="165448107578581061">Gemini がタスクを処理しています...</translation>
 <translation id="1654580009054503925">リクエストの表示を許可しないウェブサイト</translation>
 <translation id="1654713139320245449">キャスト先が見つかりません。サポートが必要ですか？</translation>
 <translation id="1656528038316521561">背景の透明度</translation>
@@ -1387,6 +1388,7 @@
 <translation id="192564025059434655">古いバージョンの Chrome アプリを Windows デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
 <translation id="1926339101652878330">これらの設定は会社のポリシーによって制御されています。詳しくは管理者にお尋ねください。</translation>
 <translation id="1926887872692564784">カーソル</translation>
+<translation id="1927075772688962338">リーディング モードを固定</translation>
 <translation id="1927632033341042996">指紋 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">画面ロックの PIN</translation>
 <translation id="192858925209436740">OneDrive をファイル アプリに接続して、保存したドキュメントを Chromebook から管理できるようにします。Microsoft アカウントでログインする必要があります。</translation>
@@ -1602,7 +1604,6 @@
 <translation id="2079053412993822885">ユーザーの証明書のいずれかを削除すると、それを使って身元を証明することはできなくなります。</translation>
 <translation id="2079495302726689071"><ph name="APP" /> の新しいタブでリンクを開く</translation>
 <translation id="2079545284768500474">元に戻す</translation>
-<translation id="2079553700504470326">Gemini で最も正確な結果を得るには、IP アドレスに基づくおおよその位置情報ではなく、正確な位置情報を使用してください。</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2081816110395725788">バッテリー駆動時のアイドル設定</translation>
 <translation id="2082187087049518845">タブをグループ化する</translation>
@@ -3768,6 +3769,7 @@
 <translation id="3555812735919707620">拡張機能を削除</translation>
 <translation id="3557101512409028104">ファミリー リンクでウェブサイトの制限と利用時間の上限を設定します</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini がタスクを処理しています...</translation>
 <translation id="3559079791149580653"><ph name="DEVICE_NAME" /> への画面のキャストを停止する</translation>
 <translation id="3559262020195162408">ポリシーをデバイスにインストールできませんでした。</translation>
 <translation id="3559533181353831840">残り時間: 約 <ph name="TIME_LEFT" /></translation>
@@ -3867,6 +3869,7 @@
 <translation id="3619294456800709762">サイトはピクチャー イン ピクチャーを自動的に開始できる</translation>
 <translation id="3620136223548713675">位置情報</translation>
 <translation id="3621202678540785336">入力</translation>
+<translation id="3621841019087952625">後で設定</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="3622820753353315928">画面の点滅の色</translation>
 <translation id="3623318122257816196">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。サイトを閲覧する際、それらのサイトがあなたに関する保存済みの情報の使用許可を要求することがあります。</translation>
@@ -4267,6 +4270,7 @@
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" /> で Google アカウントを使用する</translation>
 <translation id="3856800405688283469">タイムゾーンを選択</translation>
+<translation id="3856902135796972992">このサイトでは追加の操作が必要です。パスワードを変更するには、ページで操作を完了してください。</translation>
 <translation id="3857807444929313943">指を離して、もう一度タッチ</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="385939467708172187">安全なパスワードを使用</translation>
@@ -5909,7 +5913,6 @@
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
 <translation id="5003070249435823986">ジェスチャーでスクロール モードに切り替えてから、スクロールしたい方向に頭を動かします。スクロール モードを終了するには、もう一度ジェスチャーを使用します。</translation>
 <translation id="5003993274120026347">次の文</translation>
-<translation id="5005113238422129109">マイクを使用して Gemini と会話できます。Gemini に話しかけると、音声は Gemini アプリ アクティビティに保存されます（オンになっている場合）。</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5006218871145547804">Crostini Android アプリ ADB</translation>
 <translation id="5006778209728626987">稲妻</translation>
@@ -6234,6 +6237,7 @@
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{タブグループを解除しますか？}other{タブグループを解除しますか？}}</translation>
 <translation id="5230190638672215545">「ươ」を入力するには「uow」と入力します。</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
+<translation id="5231255476752743708">パスワード変更の操作が必要です</translation>
 <translation id="5232714764496316200">Google レンズで宿題サポート</translation>
 <translation id="5233231016133573565">プロセス ID</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
@@ -7760,10 +7764,8 @@
 <translation id="6291953229176937411">Finder で表示(&amp;S)</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> はオフになっています</translation>
 <translation id="6294759976468837022">自動スキャンの速度</translation>
-<translation id="6295140892595702619">マイクを使用して Gemini と会話できます。Gemini に話しかけると、音声は Gemini アプリ アクティビティに保存されます（オンになっている場合）。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6295855836753816081">保存しています...</translation>
-<translation id="6296481987471548530">Gemini で最も正確な結果を得るには、IP アドレスに基づくおおよその現在地ではなく、正確な位置情報を使用してください。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="6297986260307280218">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">ここに表示されているサイトに影響します。ドメイン名の前に「[*.]」を挿入すると、ドメイン全体が例外となります。たとえば、「[*.]google.com」を追加すると、google.com の一部である mail.google.com でもサードパーティ Cookie が有効になります。</translation>
 <translation id="6298962879096096191">Google Play を使用して Android アプリをインストールします</translation>
@@ -8294,6 +8296,7 @@
 <translation id="6677527809400770913">ジェスチャー <ph name="GESTURE" /> を <ph name="ACTION" /> に割り当てました</translation>
 <translation id="6678604587151240716">しぶきを上げる海の大波と遠景の陸地。暗鬱な空の下、地平線にほのかに見えるオレンジ色の光。</translation>
 <translation id="6678717876183468697">クエリ URL</translation>
+<translation id="6678974601734442817">パスワード変更の操作が必要です</translation>
 <translation id="6679947539429331601">12 時間表示しない</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">速度</translation>
@@ -10998,7 +11001,6 @@
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> が Android デバイスに情報を保存しようとしています</translation>
 <translation id="8509177919508253835">セキュリティ キーをリセットして PIN を作成します</translation>
 <translation id="8509646642152301857">スペルチェック辞書をダウンロードできませんでした。</translation>
-<translation id="8509967119010808787">タブを検索するにはここをクリック</translation>
 <translation id="8512476990829870887">プロセスを終了</translation>
 <translation id="851263357009351303"><ph name="HOST" /> の画像を常に表示する</translation>
 <translation id="8513108775083588393">自動回転</translation>
@@ -12173,6 +12175,7 @@
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> がモバイル デバイスから情報を取得しようとしています</translation>
 <translation id="988320949174893488">たまに引っかかる</translation>
 <translation id="988978206646512040">パスフレーズは必ず指定してください</translation>
+<translation id="989685714699739712">タブをグループ化して整理し、カスタムの名前と色でラベルを付けることができます</translation>
 <translation id="992032470292211616">拡張機能、アプリ、テーマはお使いのデバイスに悪影響を与える可能性があります。続行してもよろしいですか？</translation>
 <translation id="992256792861109788">ピンク</translation>
 <translation id="992592832486024913">ChromeVox（音声フィードバック）を無効にする</translation>

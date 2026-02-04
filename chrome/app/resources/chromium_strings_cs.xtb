@@ -31,11 +31,13 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1315551408014407711">Nastavení nového profilu Chromium</translation>
 <translation id="1324107359134968521">K prozkoumání zařízení Bluetooth potřebuje Chromium přístup k rozhraní Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Rozpoznat jazyk</translation>
+<translation id="1330742950061766891">Používat doporučená nastavení prohlížeče Chromium</translation>
 <translation id="1342274909142618978">Smazat také data z prohlížeče Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Připnuto! Vyhledávání obrázků můžete znovu otevřít pomocí nového tlačítka na panelu nástrojů</translation>
 <translation id="1356661055722410047">Novinka! Můžete překládat text i obrázky na obrazovce</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1397530502368084401">&amp;Spravovat profily prohlížeče Chromium</translation>
+<translation id="1404026649028693342">Vždy zobrazovat režim AI</translation>
 <translation id="141901961143729572">Podělte se o svůj názor</translation>
 <translation id="1465192221147974788">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chromium nahrávání obrazovky.</translation>
 <translation id="1478370723027452770">Nápověda k Chrome for Testing</translation>
@@ -92,6 +94,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2039417478970545937">Nastavení.</translation>
 <translation id="2049376729098081731">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii prohlížeče Chromium</translation>
 <translation id="2064856577282482477">Kliknutím na tlačítko Přizpůsobit Chromium na stránce Nová karta můžete dát prohlížeči Chromium nový vzhled</translation>
+<translation id="2066690553719545730">Vždy zobrazovat režim AI</translation>
 <translation id="2086476982681781442">Prohlížeč Chromium toto stahování zablokoval, protože soubor je klamavý a může ve vašem zařízení provést neočekávané změny</translation>
 <translation id="208726765006323911">Až příště otevřete Chromium pro iOS, zobrazí se výzva k vyzkoušení funkce <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Vaše hesla a další data prohlížeče Chromium, která jste si uložili do účtu Google, budou z tohoto zařízení odstraněna. Pokud je budete chtít v prohlížeči Chromium zase použít, znovu se přihlaste.</translation>
@@ -194,6 +197,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3095811995836568724">Historie prohlížeče Chromium</translation>
 <translation id="3103660991484857065">Instalačnímu programu se nepodařilo rozbalit archiv. Stáhněte prosím Chromium znovu.</translation>
 <translation id="310459126943037700">Úlohy se nepodařilo ukončit.</translation>
+<translation id="3126784891977756556">Mějte hesla, záložky a historii dokonale synchronizované mezi zařízeními. Aktualizujte svůj výchozí prohlížeč na Chromium. Budete tak mít snadno přístup k funkcím, které znáte a máte rádi.</translation>
 <translation id="3130323860337406239">Chromium používá váš mikrofon.</translation>
 <translation id="3130333203120345554">Nové vyhledávání</translation>
 <translation id="3137969841538672700">Přetažením vyhledáte</translation>
@@ -306,6 +310,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4304713468139749426">Správce hesel</translation>
 <translation id="4334241893986177674">Vyhledat na tomto snímku obrazovky</translation>
 <translation id="4334294535648607276">Stahování bylo dokončeno.</translation>
+<translation id="4384993550046411228">Nastavte si Chromium jako výchozí prohlížeč. Budete tak mít snadno přístup k funkcím, které znáte, máte rádi a kterým důvěřujete. Prohlížeč Chromium bude připnutý na hlavní panel, kde bude kdykoli snadno rychle k dispozici.</translation>
 <translation id="439358628917130594">Doména <ph name="MANAGER" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému ChromiumOS.</translation>
 <translation id="4407044323746248786">Přesto Chromium ukončit?</translation>
 <translation id="4413205837991854510">Vždy zobrazovat zástupce vyhledávání obrázků</translation>

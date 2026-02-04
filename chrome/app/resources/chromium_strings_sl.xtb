@@ -32,11 +32,13 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1324107359134968521">Chromium potrebuje dostop do Bluetootha za raziskovanje 
  naprav Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Zaznaj jezik</translation>
+<translation id="1330742950061766891">Uporaba priporočenih nastavitev brskalnika Chromium</translation>
 <translation id="1342274909142618978">Iz Chromiuma izbriši tudi podatke (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Pripeto. Do slikovnega iskanja lahko znova dostopate z novim gumbom v orodni vrstici.</translation>
 <translation id="1356661055722410047">Novo! Prevedete lahko besedilo in slike na zaslonu.</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1397530502368084401">&amp;Upravljanje profilov v Chromiumu</translation>
+<translation id="1404026649028693342">Vedno pokaži način umetne inteligence</translation>
 <translation id="141901961143729572">Povejte svoje mnenje</translation>
 <translation id="1465192221147974788">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chromium.</translation>
 <translation id="1478370723027452770">Pomoč za Chrome for Testing</translation>
@@ -93,6 +95,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2039417478970545937">Nastavitve.</translation>
 <translation id="2049376729098081731">Izberite, ali želite, da je zaradi osebno bolj prilagojenih izkušenj v Googlovih storitvah vključena zgodovina v Chromiumu.</translation>
 <translation id="2064856577282482477">Kliknite gumb za prilagajanje Chromiuma na novem zavihku s povezavami, da bo Chromium videti drugače</translation>
+<translation id="2066690553719545730">Vedno pokaži način umetne inteligence</translation>
 <translation id="2086476982681781442">Chromium je blokiral ta prenos, ker je datoteka zavajajoča in v napravi morda izvaja nepričakovane spremembe</translation>
 <translation id="208726765006323911">Ko boste naslednjič odprli Chromium za iOS, bo prikazan poziv, da preizkusite funkcijo <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Gesla in drugi podatki v Chromiumu, ki ste jih shranili v računu Google, bodo odstranjeni iz te naprave. Če jih želite znova uporabljati v Chromiumu, se znova prijavite.</translation>
@@ -195,6 +198,8 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3095811995836568724">Zgodovina v Chromiumu</translation>
 <translation id="3103660991484857065">Namestitvenemu programu ni uspelo razširiti arhiva. Znova prenesite Chromium.</translation>
 <translation id="310459126943037700">Opravil ni bilo mogoče končati.</translation>
+<translation id="3104828284009500087">Iščite kar koli na strani</translation>
+<translation id="3126784891977756556">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah. Posodobite privzeti brskalnik na Chromium in preprosto dostopajte do funkcij, ki jih poznate in so vam všeč.</translation>
 <translation id="3130323860337406239">Chromium uporablja vaš mikrofon.</translation>
 <translation id="3130333203120345554">Novo iskanje</translation>
 <translation id="3137969841538672700">Povlecite, če želite iskati</translation>
@@ -307,6 +312,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4304713468139749426">Upravitelj gesel</translation>
 <translation id="4334241893986177674">Iskanje po tem posnetku zaslona</translation>
 <translation id="4334294535648607276">Prenos končan.</translation>
+<translation id="4384993550046411228">Nastavite Chromium kot privzeti brskalnik in si zagotovite preprost dostop do funkcij, ki jih poznate, so vam všeč in jim zaupate. Chromium bo pripet v opravilno vrstico za hitri dostop.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za Chromium OS.</translation>
 <translation id="4407044323746248786">Želite vseeno zapreti Chromium?</translation>
 <translation id="4413205837991854510">Vedno pokaži bližnjico za slikovno iskanje</translation>

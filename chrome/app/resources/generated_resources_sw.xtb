@@ -991,6 +991,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1652326691684645429">Washa kipengele cha Uhamishaji wa Karibu</translation>
 <translation id="1652862280638399816">Ili utumie Kidhibiti cha Manenosiri na MacOS Keychain, fungua tena Chromium na uruhusu ufikiaji wa Keychain. Vichupo vyako vitafunguka upya ukishafungua tena.</translation>
 <translation id="1653958716132599769">Panga vichupo vinavyohusiana</translation>
+<translation id="165448107578581061">Gemini inashughulikia jukumu lako...</translation>
 <translation id="1654580009054503925">Hakiruhusiwi kuonyesha maombi</translation>
 <translation id="1654713139320245449">Hakuna vifaa vya kutuma maudhui vilivyopatikana. Unahitaji usaidizi?</translation>
 <translation id="1656528038316521561">Nuru ya mandharinyuma</translation>
@@ -1611,7 +1612,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2079053412993822885">Ukifuta moja wapo ya vyeti vyako, huwezi kukitumia tena kujitambulisha.</translation>
 <translation id="2079495302726689071">Fungua kiungo kwenye kichupo kipya cha <ph name="APP" /></translation>
 <translation id="2079545284768500474">Tendua</translation>
-<translation id="2079553700504470326">Tumia eneo lako mahususi ili upate matokeo sahihi zaidi ya Gemini, badala ya mahali palipokadiriwa kulingana na anwani yako ya IP.</translation>
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
 <translation id="2081816110395725788">Kisifanye kitu wakati kinatumia betri</translation>
 <translation id="2082187087049518845">Kichupo cha Kikundi</translation>
@@ -3885,6 +3885,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3619294456800709762">Tovuti zinaweza kutumia kipengele cha kupachika picha ndani ya picha nyingine kiotomatiki</translation>
 <translation id="3620136223548713675">Kutambulisha mahali</translation>
 <translation id="3621202678540785336">Ingizo</translation>
+<translation id="3621841019087952625">Weka baadaye</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{programu}other{Programu #}}</translation>
 <translation id="3622820753353315928">Rangi ya mweko wa skrini</translation>
 <translation id="3623318122257816196">Tovuti unazotembelea zinaweza kupachika maudhui kutoka kwenye tovuti nyingine, kwa mfano, picha, matangazo na maandishi. Tovuti hizi nyingine zinaweza kuomba ruhusa zitumie taarifa ambazo zimehifadhi kukuhusu unapovinjari tovuti.</translation>
@@ -4285,6 +4286,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3856096718352044181">Tafadhali thibitisha kuwa huyu ni mtoa huduma sahihi au ujaribu tena baadaye</translation>
 <translation id="3856470183388031602">Tumia Akaunti yako ya Google kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="3856800405688283469">Chagua saa za eneo</translation>
+<translation id="3856902135796972992">Tovuti hii inahitaji kitendo cha ziada. Kamilisha kitendo hiki kwenye ukurasa ili mchakato wa kubadilisha nenosiri ukamilike.</translation>
 <translation id="3857807444929313943">Inua, kisha uguse tena</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="385939467708172187">Tumia nenosiri thabiti</translation>
@@ -5928,7 +5930,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5001526427543320409">Vidakuzi vya washirika wengine</translation>
 <translation id="5003070249435823986">Tumia ishara ili uwashe hali ya kusogeza, kisha usogeze kichwa chako kuelekea upande ambao ungependa kusogeza. Tumia ishara hiyo tena uzime hali ya kusogeza.</translation>
 <translation id="5003993274120026347">Sentensi inayofuata</translation>
-<translation id="5005113238422129109">Tumia maikrofoni yako kupiga gumzo na Gemini. Unapozungumza na Gemini, sauti huhifadhiwa katika Shughuli kwenye Programu za Gemini (ikiwa umewasha)</translation>
 <translation id="5005498671520578047">Nakili nenosiri</translation>
 <translation id="5006218871145547804">ADB ya programu ya Android kwenye Crostini</translation>
 <translation id="5006778209728626987">Mwale wa radi</translation>
@@ -6255,6 +6256,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Ungependa kuondoa vichupo katika kikundi?}other{Ungependa kuondoa vichupo katika vikundi?}}</translation>
 <translation id="5230190638672215545">Andika "uow" kupata "ươ"</translation>
 <translation id="5230516054153933099">Dirisha</translation>
+<translation id="5231255476752743708">Chrome inahitaji usaidizi kubadilisha nenosiri lako</translation>
 <translation id="5232714764496316200">Pata usaidizi kuhusu kazi ya shuleni ya kufanyia nyumbani ukitumia Lenzi ya Google</translation>
 <translation id="5233231016133573565">Kitambulisho cha Mchakato</translation>
 <translation id="5233638681132016545">Kichupo kipya</translation>
@@ -7783,10 +7785,8 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6291953229176937411">Onye&amp;sha katika Kipataji</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> imezimwa</translation>
 <translation id="6294759976468837022">Kasi ya kipengele cha kuchanganua kiotomatiki</translation>
-<translation id="6295140892595702619">Tumia maikrofoni yako kupiga gumzo na Gemini. Unapozungumza na Gemini, sauti huhifadhiwa katika Shughuli kwenye Programu za Gemini (ikiwa umewasha). Data yako haitumiwi kuboresha mifumo ya AI zalishi</translation>
 <translation id="6295158916970320988">Tovuti zote</translation>
 <translation id="6295855836753816081">Inahifadhi...</translation>
-<translation id="6296481987471548530">Tumia eneo lako mahususi ili upate matokeo sahihi zaidi ya Gemini, badala ya mahali palipokadiriwa kulingana na anwani yako ya IP. Data yako haitumiwi kuboresha mifumo ya AI zalishi</translation>
 <translation id="6297986260307280218">Tuma data ya matumizi na uchunguzi. Saidia kuboresha hali ya utumiaji wa Android yako kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Maelezo haya yatasaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya data inayojumlishwa pia itasaidia programu na washirika wa Google kama vile wasanidi programu wa Android. <ph name="BEGIN_LINK1" />Mipangilio<ph name="END_LINK1" /> hii inatekelezwa na mmiliki. Mmiliki anaweza kuamua kutuma data ya uchunguzi na matumizi ya kifaa hiki kwa Google. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu, huenda data hii itahifadhiwa kwenye akaunti yako ya Google. <ph name="BEGIN_LINK2" />Pata maelezo zaidi kuhusu vipimo<ph name="BEGIN_LINK2_END" />Pata Maelezo Zaidi<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Huathiri tovuti zilizoorodheshwa hapa. Kuweka “[*.]” kabla ya jina la kikoa husababisha hali ya kutofuata kanuni kwa kikoa kizima. Kwa mfano, kuweka "[*.]google.com" kunamaanisha kuwa vidakuzi vya washirika wengine vinaweza pia kutumika kwenye mail.google.com, kwa sababu ni sehemu ya google.com.</translation>
 <translation id="6298962879096096191">Tumia Google Play kusakinisha programu za Android</translation>
@@ -8318,6 +8318,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6677527809400770913">Umekabidhi <ph name="ACTION" /> ishara ya <ph name="GESTURE" /></translation>
 <translation id="6678604587151240716">Mawimbi makubwa yakiruka baharini, pamoja na nchi kavu ikionekana kwa mbali kwenye mandharinyuma. Mwangaza wa rangi ya chungwa ulio nje ya upeo wa macho, kwenye anga yenye hali ya giza.</translation>
 <translation id="6678717876183468697">URL ya Hoja</translation>
+<translation id="6678974601734442817">Chromium inahitaji usaidizi wa kubadilisha nenosiri lako</translation>
 <translation id="6679947539429331601">Ficha kwa saa 12</translation>
 <translation id="6680442031740878064">Nafasi inayopatikana: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Kadiria</translation>
@@ -11024,7 +11025,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> inataka kuhifadhi maelezo kwenye kifaa chako cha Android</translation>
 <translation id="8509177919508253835">Badilisha funguo za usalama na uunde PIN</translation>
 <translation id="8509646642152301857">Upakuaji wa kamusi ya kukagua hijai umeshindwa.</translation>
-<translation id="8509967119010808787">Bofya hapa ili utafute kwenye vichupo vyako</translation>
 <translation id="8512476990829870887">Komesha Shughuli</translation>
 <translation id="851263357009351303">Ruhusu <ph name="HOST" /> ionyeshe picha kila wakati</translation>
 <translation id="8513108775083588393">Zungusha kiotomatiki</translation>

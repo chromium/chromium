@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">開啟下拉式選單</translation>
 <translation id="4687718960473379118">網站建議廣告</translation>
 <translation id="468924408576231679">複製「<ph name="PAGE_TITLE" />」的網頁連結，來源：<ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">搜尋引擎</translation>
 <translation id="469286762610133730">取得優質內容</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4698757800236023795">啟用 (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">使用輕觸搜尋功能時，納入較多網頁文字也許能找到更相關的結果。你隨時可以前往<ph name="BEGIN_LINK" />設定頁面<ph name="END_LINK" />調整設定。</translation>
 <translation id="7379900596734708416">現已推出網站的深色主題</translation>
 <translation id="7384486627147155832">提示通知的宣傳內容顯示在畫面下半部</translation>
+<translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
 <translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{其他，清單中有 1 個檔案}other{其他，清單中有 # 個檔案}}</translation>
 <translation id="7400418766976504921">網址</translation>

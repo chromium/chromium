@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4183350924949589798">Vil du ha mer sikkerhet?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} svakt passord}other{{count} svake passord}}</translation>
+<translation id="4196758674971560031">Fanegruppene du har opprettet, lagres i fanegruppedelen og oppdateres på alle enhetene dine.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
 <translation id="4207873326995387292">Nettleserinformasjon</translation>
 <translation id="421070604241073551">Når dette er på, lagres data i Google-kontoen din. Når dette er av, lagres data bare på denne enheten.</translation>
@@ -1507,6 +1508,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6503077044568424649">Mest besøkt</translation>
 <translation id="6503763061813913607">Varsler fra sikkerhetssjekk</translation>
+<translation id="6504541289630702018">Få enkel tilgang til fanegruppene dine på datamaskinen</translation>
 <translation id="6505334220040167806">Skjul fanegruppen.</translation>
 <translation id="6506996418997555004">Del fanegruppen «<ph name="GROUP_NAME" />»</translation>
 <translation id="6507973708545996744">Logg på for å få leselisten din på alle enhetene dine.</translation>
@@ -2137,6 +2139,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8731268612289859741">Sikkerhetskode</translation>
 <translation id="87371078663613140">Utforsk alternativene på menylinjen</translation>
+<translation id="8739546376441802490">Det finnes allerede et nettsted som er festet</translation>
 <translation id="8741627442233023406">{count,plural, =1{Gå gjennom fanen…}other{Gå gjennom alle fanene…}}</translation>
 <translation id="8741995161408053644">Google-kontoen din kan ha andre typer nettleserlogger på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Lag link</translation>

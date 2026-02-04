@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">Для пошуку пристроїв із Bluetooth вебпереглядачу
 Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Визначити мову</translation>
+<translation id="1330742950061766891">Використовувати рекомендовані налаштування вебпереглядача Chromium</translation>
 <translation id="1342274909142618978">Також видалити дані з Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Пошук за зображенням закріплено. Щоб скористатися ним, натисніть нову кнопку на панелі інструментів.</translation>
 <translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1397530502368084401">&amp;Керувати профілями Chromium</translation>
+<translation id="1404026649028693342">Завжди показувати режим ШІ</translation>
 <translation id="141901961143729572">Поділіться своєю думкою</translation>
 <translation id="1465192221147974788">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
 <translation id="1478370723027452770">Отримати довідку щодо Chrome for Testing</translation>
@@ -91,6 +93,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2039417478970545937">Налаштування.</translation>
 <translation id="2049376729098081731">Укажіть, чи включати історію Chromium, щоб ми краще персоналізували роботу сервісів Google</translation>
 <translation id="2064856577282482477">Натисніть кнопку "Налаштувати Chromium" на сторінці нової вкладки, щоб змінити вигляд вебпереглядача</translation>
+<translation id="2066690553719545730">Завжди показувати режим ШІ</translation>
 <translation id="2086476982681781442">Веб-переглядач Chromium заблокував завантаження, оскільки цей файл оманливий і може внести неочікувані зміни на вашому пристрої</translation>
 <translation id="208726765006323911">Коли ви наступного разу відкриєте Chromium для iOS, з’явиться запит спробувати <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Ваші паролі й інші дані Chromium, які зберігаються у вашому обліковому записі Google, буде вилучено із цього пристрою. Щоб знову використовувати їх у Chromium, увійдіть в обліковий запис.</translation>
@@ -193,6 +196,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3095811995836568724">Історія Chromium</translation>
 <translation id="3103660991484857065">Програмі встановлення не вдалося видобути архів. Завантажте Chromium ще раз.</translation>
 <translation id="310459126943037700">Не вдалося завершити завдання.</translation>
+<translation id="3126784891977756556">Паролі, закладки й історія завжди синхронізуються на всіх пристроях. Оновіть вебпереглядач за умовчанням до Chromium, щоб легко користуватись улюбленими функціями.</translation>
 <translation id="3130323860337406239">Chromium використовує ваш мікрофон.</translation>
 <translation id="3130333203120345554">Новий пошук</translation>
 <translation id="3137969841538672700">Перетягніть, щоб вибрати область для пошуку</translation>
@@ -305,6 +309,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4334241893986177674">Шукати за цим знімком екрана</translation>
 <translation id="4334294535648607276">Завантажено.</translation>
+<translation id="4384993550046411228">Зробіть Chromium вебпереглядачем за умовчанням, щоб легко користуватись улюбленими функціями. Chromium буде закріплено на панелі завдань для швидкого доступу.</translation>
 <translation id="439358628917130594">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання Chromium OS.</translation>
 <translation id="4407044323746248786">Усе одно вийти з Chromium?</translation>
 <translation id="4413205837991854510">Завжди показувати ярлик пошуку за зображенням</translation>

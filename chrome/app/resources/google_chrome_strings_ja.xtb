@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome ベータ版</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1399397803214730675">新しいバージョンの Google Chrome が既にインストールされています。ソフトウェアが動作しない場合は、Google Chrome をアンインストールしてからもう一度お試しください。</translation>
+<translation id="1404026649028693342">AI モードを常に表示する</translation>
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。}=1{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1434626383986940139">Chrome Canary アプリ</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">ダウンロードしています...</translation>
 <translation id="1651617469580841801">Google レンズを使用すると、ページのタイトル、URL、コンテンツ（PDF を含む）が Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex について</translation>
+<translation id="1665867022636014702">Google の推奨ブラウザ設定を使用する</translation>
 <translation id="1674870198290878346">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome はこのデータ ディレクトリへの読み書きを実行できません: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容が組織の検索ツール、AI ツール、エージェント ツールに送信され、検索候補が表示されます。</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">Chrome プロフィールを使用すると、プライベートと仕事でブラウジング環境を分けることができます。新しいプロフィールを今すぐ追加しましょう。</translation>
 <translation id="2034233344106846793">可能な場合に安全でない接続を HTTPS に自動的にアップグレードします</translation>
 <translation id="2039417478970545937">設定に移動。</translation>
+<translation id="2066690553719545730">AI モードを常に表示する</translation>
 <translation id="2091012649849228750">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8 が実行されています。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 利用規約</translation>
 <translation id="2094919256425865063">今すぐ Chrome を終了しますか？</translation>
@@ -200,6 +203,7 @@
 <translation id="308397506772922478">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />してください。</translation>
 <translation id="3100998948628680988">Chrome プロファイルの名前を設定</translation>
 <translation id="310459126943037700">タスクを終了できませんでした。</translation>
+<translation id="3104828284009500087">ページ上のコンテンツを検索</translation>
 <translation id="3112458742631356345">このダウンロードは Chrome でブロックされました。ファイルが一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="3114643501466072395">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="3119573284443908657">このダウンロードは Chrome でブロックされました。アーカイブ ファイルに他のファイルが含まれており、マルウェアが隠されている可能性があります</translation>
@@ -353,6 +357,7 @@
 <translation id="4885446229353981848">Google レンズのショートカットを常に表示する</translation>
 <translation id="4891791193823137474">Google Chrome のバックグラウンドでの実行を許可する</translation>
 <translation id="4895437082222824641">新しい Chrome タブでリンクを開く(&amp;T)</translation>
+<translation id="4896867431081882115">Chrome を既定のブラウザに設定すると、お馴染みの信頼できる機能を簡単に利用できるようになります。Chrome はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4918844574251943176">画像をコピーしました</translation>
 <translation id="4926882258455737990">Gemini in Chrome で別の Google アカウントを使用するには、<ph name="BEGIN_LINK" />新しいプロファイルを作成<ph name="END_LINK" />し、使用するアカウントでログインしてください</translation>
@@ -553,6 +558,7 @@
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
 <translation id="6893363893008038481">Chrome からアカウントを削除</translation>
 <translation id="6896758677409633944">コピー</translation>
+<translation id="6908182077349113099">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chrome に変更すると、お馴染みの機能を簡単に利用できるようになります。</translation>
 <translation id="6930294499209825">Google ソフトウェアを最新の状態に保ちます。このサービスを無効にしたり停止したりすると、Google ソフトウェアが最新の状態に保たれなくなります。その結果、セキュリティ上の脆弱性が見つかっても修正できず、機能が動作しなくなる可能性があります。このサービスを使用する Google ソフトウェアがなくなると、このサービスは自動的にアンインストールされます。</translation>
 <translation id="6933858244219479645">ChromeOS システム</translation>
 <translation id="6938166777909186039">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8.1 が実行されています。</translation>

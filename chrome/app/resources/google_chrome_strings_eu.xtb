@@ -42,6 +42,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1399397803214730675">Ordenagailuak Google Chrome arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Google Chrome eta saiatu berriro.</translation>
+<translation id="1404026649028693342">Erakutsi beti AA modua</translation>
 <translation id="141901961143729572">Partekatu burutazioak</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira.}=1{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko leihoa ez da irekiko berriro.}other{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko # leihoak ez dira irekiko berriro.}}</translation>
 <translation id="1434626383986940139">Chrome Canary aplikazioak</translation>
@@ -66,6 +67,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1640672724030957280">Deskargatzen…</translation>
 <translation id="1651617469580841801">Google Lens erabiltzen duzunean, orriaren izena, URLa eta edukia, PDFak barne, Google-ri bidaltzen zaizkio. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-i buruz</translation>
+<translation id="1665867022636014702">Erabili Google-ren arakatzailearen ezarpen gomendatuak</translation>
 <translation id="1674870198290878346">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="1682634494516646069">Google Chrome-k ezin du irakurri bere datu-direktorioa eta ezin du idatzi bertan:
 
@@ -101,6 +103,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2026377840141807639">Chrome-ko profilekin, arakatze-jarduera pertsonalak eta lanekoak bereizita eduki ditzakezu. Gehitu beste profil bat.</translation>
 <translation id="2034233344106846793">Chrome-k konexio ez-seguruen maila HTTPSra igotzen du automatikoki posible denean</translation>
 <translation id="2039417478970545937">Ezarpenak.</translation>
+<translation id="2066690553719545730">Erakutsi beti AA modua</translation>
 <translation id="2091012649849228750">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, Windows 10 edo bertsio berriago bat beharko duzu. Ordenagailua Windows 8 erabiltzen ari da.</translation>
 <translation id="2094648590148273905">ChromeOS Flex-en baldintzak</translation>
 <translation id="2094919256425865063">Chrome-tik irten nahi duzu hala ere?</translation>
@@ -204,6 +207,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="308397506772922478">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Eman izen bat Chrome-ko profilari</translation>
 <translation id="310459126943037700">Ezin izan dira amaitu zereginak.</translation>
+<translation id="3104828284009500087">Bilatu orriko edozein gauza</translation>
 <translation id="3112458742631356345">Chrome-k deskarga hau blokeatu du, fitxategia normalean deskargatzen ez delako eta agian arriskutsua delako</translation>
 <translation id="3114643501466072395">Gainerako pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome-k deskarga hau blokeatu du, artxibo-fitxategi honek beste fitxategi batzuk dituelako, eta agian haietan malwarea dagoelako</translation>
@@ -357,6 +361,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4885446229353981848">Erakutsi beti Google Lens-en lasterbidea</translation>
 <translation id="4891791193823137474">Utzi Google Chrome-ri atzeko planoan abiarazten</translation>
 <translation id="4895437082222824641">Ireki esteka Chrome-ko beste &amp;fitxa batean</translation>
+<translation id="4896867431081882115">Atzitu erraz eginbide ezagun, gogoko eta fidagarriak Chrome arakatzaile lehenetsi bihurtuta. Chrome zereginen barran ainguratuko da, hura bizkor atzitzeko.</translation>
 <translation id="4918086044614829423">Onartu</translation>
 <translation id="4918844574251943176">Kopiatu da irudia</translation>
 <translation id="4926882258455737990">Chrome-ko Gemini-n Google-ko beste kontu bat erabiltzeko, <ph name="BEGIN_LINK" />sortu beste profil bat<ph name="END_LINK" /> eta hasi saioa erabili nahi duzun kontuarekin</translation>
@@ -561,6 +566,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6885412569789873916">Chrome Beta aplikazioak</translation>
 <translation id="6893363893008038481">Kendu kontua Chrome-tik</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
+<translation id="6908182077349113099">Mantendu pasahitzak, laster-markak eta historia gailuen artean ezin hobeto sinkronizatuta. Atzitu erraz eginbide ezagun eta gogokoak Chrome arakatzaile lehenetsi bihurtuta.</translation>
 <translation id="6930294499209825">Google-ren softwarea eguneratuta mantentzen du. Zerbitzu hau desgaitzen edo gelditzen bada, Google-ren softwarea ez da eguneratuta mantenduko; beraz, agertzen diren segurtasun-ahultasunak ezin izango dira konpondu eta eginbideek agian ez dute funtzionatuko. Zerbitzu hau erabiltzen duen Google-ren softwarerik ez badago, automatikoki desinstalatuko da.</translation>
 <translation id="6933858244219479645">ChromeOS sistema</translation>
 <translation id="6938166777909186039">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, Windows 10 edo berriago bat beharko duzu. Ordenagailu hau Windows 8.1 erabiltzen ari da.</translation>

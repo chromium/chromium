@@ -850,6 +850,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4685741273709472646">ड्रपडाउन सूचीबाट चयन गर्नुहोस्</translation>
 <translation id="4687718960473379118">साइटले सिफारिस गरेका विज्ञापनहरू</translation>
 <translation id="468924408576231679">बेवपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">खोज इन्धनहरू</translation>
 <translation id="469286762610133730">अझ उत्कृष्ट सामग्री प्राप्त गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4698757800236023795"><ph name="ITEM_COUNT" /> वटा ट्याब सक्रिय अवस्थामा छन्</translation>
@@ -1530,6 +1531,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7376560087009844242">तपाईंले पेजमा भएका थप पाठहरू समावेश गर्नुभयो भने तपाईंले ट्याप गरेर थप जानकारी हेर्ने सुविधा चलाउँदा तपाईं अझ सान्दर्भिक परिणामहरू देख्न सक्नुहुन्छ। तपाईं <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई जुनसुकै बेला यो सेटिङ बदल्न सक्नुहुन्छ।</translation>
 <translation id="7379900596734708416">साइटहरूका लागि अँध्यारो थिम उपलब्ध छ</translation>
 <translation id="7384486627147155832">सुझावहरूका बारेमा दिइने नोटिफिकेसनहरूको प्रोमो आधा स्क्रिनमा खोलिएको छ</translation>
+<translation id="7387951778417998929">तपाईं डिफल्ट सर्च इन्जिन नभई कुनै अर्को सर्च इन्जिन प्रयोग गर्न चाहनुहुन्छ भने एड्रेस बारमा उक्त सर्च इन्जिनको सर्टकट टाइप गर्नुहोस् अनि आफ्नो रोजाइको किबोर्ड सर्टकट थिच्नुहोस्। तपाईं यहाँबाट आफ्नो डिफल्ट सर्च इन्जिन परिवर्तन गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="7388615499319468910">साइट तथा विज्ञापनदाताहरू विज्ञापनको पर्फर्मेन्स कस्तो छ भन्ने कुरा बुझ्न सक्छन्। यो सेटिङ अफ छ।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{अन्य, सूचीमा एउटा फाइल छ}other{अन्य, सूचीमा # वटा फाइल छन्}}</translation>
 <translation id="7400418766976504921">URL</translation>

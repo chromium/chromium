@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Povzemi</translation>
 <translation id="1227113644794103810">Neaktivni zavihki</translation>
 <translation id="1231733316453485619">Želite vklopiti sinhronizacijo?</translation>
+<translation id="1238794841176717085">Deli to stran</translation>
 <translation id="1253032109800629289">Skrij »Prejemanje obvestil o spremljanju cen«</translation>
 <translation id="1254424942107648268">Poišči prejšnje</translation>
 <translation id="1258491128795710625">Novosti</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Želite odstraniti zavihek in izbrisati skupino?</translation>
 <translation id="1698090540708020240">Uvoz gesel …</translation>
 <translation id="1700629756560807968">Št. izbranih: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1702583479431863204">Spletno mesto je odpeto</translation>
 <translation id="1709916727352927457">Brisanje gesla</translation>
 <translation id="1715515772563243997">Če zaupate spletnemu mestu <ph name="SITE" />, lahko za prijavo uporabite shranjeno geslo.</translation>
 <translation id="1718835860248848330">Zadnja ura</translation>
@@ -847,6 +849,7 @@
 <translation id="4181841719683918333">Jeziki</translation>
 <translation id="4183350924949589798">Več varnosti?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} šibko geslo}one{{count} šibko geslo}two{{count} šibki gesli}few{{count} šibka gesla}other{{count} šibkih gesel}}</translation>
+<translation id="4196758674971560031">Skupine zavihkov, ki ste jih ustvarili, so shranjene v razdelku skupine zavihkov in se posodabljajo v vseh napravah.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element je shranjen samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {email}.}one{{count} element je shranjen samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}two{{count} elementa sta shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}few{{count} elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}other{{count} elementov je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}}</translation>
 <translation id="4207873326995387292">Podatki o brskalniku</translation>
 <translation id="421070604241073551">Če je ta možnost vklopljena, se podatki shranjujejo v računu Google. Če je izklopljena, se podatki shranjujejo samo v tej napravi.</translation>
@@ -1507,6 +1510,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6494931198667773526">Se konča</translation>
 <translation id="6503077044568424649">Najpogostejše</translation>
 <translation id="6503763061813913607">Obvestila varnostnega preverjanja</translation>
+<translation id="6504541289630702018">Preprost dostop do skupin zavihkov na namizju</translation>
 <translation id="6505334220040167806">Strnitev skupine zavihkov.</translation>
 <translation id="6506996418997555004">Deljenje skupine zavihkov »<ph name="GROUP_NAME" />«</translation>
 <translation id="6507973708545996744">Prijavite se, da boste imeli bralni seznam v vseh napravah.</translation>
@@ -2137,6 +2141,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8731268612289859741">Varnostna koda</translation>
 <translation id="87371078663613140">Raziščite možnosti v menijski vrstici</translation>
+<translation id="8739546376441802490">Pripeto spletno mesto že obstaja</translation>
 <translation id="8741627442233023406">{count,plural, =1{Preglejte zavihek …}one{Preglejte vse zavihke …}two{Preglejte vse zavihke …}few{Preglejte vse zavihke …}other{Preglejte vse zavihke …}}</translation>
 <translation id="8741995161408053644">V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Ustvari povezavo</translation>

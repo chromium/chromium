@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">Chromium trenger Bluetooth-tilgang for å utforske 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Gjenkjenn språk</translation>
+<translation id="1330742950061766891">Bruk de anbefalte nettleserinnstillingene for Chromium</translation>
 <translation id="1342274909142618978">Slett også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Festet. Du kan åpne bildesøk igjen via den nye knappen på verktøylinjen</translation>
 <translation id="1356661055722410047">Nyhet! Du kan oversette både tekst og bilder på skjermen</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1397530502368084401">&amp;Administrer Chromium-profiler</translation>
+<translation id="1404026649028693342">Vis alltid AI-modus</translation>
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1465192221147974788">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">Innstillinger.</translation>
 <translation id="2049376729098081731">Velg om Chromium-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
 <translation id="2064856577282482477">Klikk på Tilpass Chromium-knappen på Ny fane-siden for å gi Chromium et nytt utseende</translation>
+<translation id="2066690553719545730">Vis alltid AI-modus</translation>
 <translation id="2086476982681781442">Chromium har blokkert denne nedlastingen fordi filen er villedende og kan gjøre uventede endringer på enheten din</translation>
 <translation id="208726765006323911">Du ser en forespørsel om å prøve <ph name="FEATURE_NAME" /> neste gang du åpner Chromium iOS.</translation>
 <translation id="2099452623287920103">Passordene dine og andre Chromium-data du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chromium igjen, logg på igjen.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Chromium-logg</translation>
 <translation id="3103660991484857065">Installasjonsprogrammet kunne ikke dekomprimere arkivet. Last ned Chromium på nytt.</translation>
 <translation id="310459126943037700">Kunne ikke avslutte oppgaven(e).</translation>
+<translation id="3126784891977756556">Hold passordene, bokmerkene og loggen din synkronisert på alle enheter. Ved å oppdatere standardnettleseren din til Chromium, får du enkel tilgang til funksjonene du kjenner og liker.</translation>
 <translation id="3130323860337406239">Chromium bruker mikrofonen din.</translation>
 <translation id="3130333203120345554">Nytt søk</translation>
 <translation id="3137969841538672700">Dra for å søke</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4334241893986177674">Søk i dette skjermbildet</translation>
 <translation id="4334294535648607276">Nedlastingen er fullført.</translation>
+<translation id="4384993550046411228">Få enkel tilgang til funksjonene du kjenner, liker og stoler på, ved å angi Chromium som standardnettleser. Chromium festes til oppgavelinjen for rask tilgang.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> krever at du leser og godtar følgende vilkår før du bruker denne enheten. Disse vilkårene verken utvider, endrer eller begrenser ChromiumOS-vilkårene.</translation>
 <translation id="4407044323746248786">Vil du avslutte Chromium likevel?</translation>
 <translation id="4413205837991854510">Vis alltid snarveien til bildesøk</translation>

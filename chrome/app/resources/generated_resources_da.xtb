@@ -995,6 +995,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1652326691684645429">Slå Deling tæt på til</translation>
 <translation id="1652862280638399816">Hvis du vil bruge Adgangs­kode­admin­istrator sammen med macOS-nøgleringen, skal du genstarte Chromium og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="1653958716132599769">Gruppér relaterede faner</translation>
+<translation id="165448107578581061">Gemini arbejder på din opgave…</translation>
 <translation id="1654580009054503925">Har ikke tilladelse til at vise anmodninger</translation>
 <translation id="1654713139320245449">Der blev ikke fundet nogen steder til casting. Har du brug for hjælp?</translation>
 <translation id="1656528038316521561">Baggrundens gennemsigtighed</translation>
@@ -1617,7 +1618,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2079053412993822885">Hvis du sletter et af dine egne certifikater, kan du ikke længere bruge det som identifikation.</translation>
 <translation id="2079495302726689071">Åbn link på en ny <ph name="APP" />-fane</translation>
 <translation id="2079545284768500474">Fortryd</translation>
-<translation id="2079553700504470326">Brug din præcise lokation for at få de mest nøjagtige Gemini-resultater i stedet for en estimeret lokation baseret på din IP-adresse.</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2081816110395725788">Inaktiv tilstand ved batteribrug</translation>
 <translation id="2082187087049518845">Opret en gruppe med fanen</translation>
@@ -3890,6 +3890,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3619294456800709762">Websites kan automatisk åbne integreret billede</translation>
 <translation id="3620136223548713675">Geoplacering</translation>
 <translation id="3621202678540785336">Input</translation>
+<translation id="3621841019087952625">Indstil senere</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}one{# app}other{# apps}}</translation>
 <translation id="3622820753353315928">Skærmlysets farve</translation>
 <translation id="3623318122257816196">De websites, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Disse andre websites kan anmode om tilladelse til at bruge de oplysninger, de har gemt om dig, når du besøger websitet.</translation>
@@ -4290,6 +4291,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3856096718352044181">Verificer, at dette er en gyldig udbyder, eller prøv igen senere</translation>
 <translation id="3856470183388031602">Brug din Google-konto på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Vælg tidszone</translation>
+<translation id="3856902135796972992">Dette website kræver en yderligere handling. Udfyld den på siden, så ændringen af adgangskoden kan gennemføres.</translation>
 <translation id="3857807444929313943">Løft, og berør igen</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="385939467708172187">Brug stærk adgangskode</translation>
@@ -5935,7 +5937,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5003070249435823986">Brug bevægelsen til at aktivere rulletilstand, og bevæg derefter dit hoved i den retning, du vil rulle. Brug bevægelsen igen for at afslutte rulletilstand.</translation>
 <translation id="5003993274120026347">Næste sætning</translation>
-<translation id="5005113238422129109">Brug din mikrofon til at chatte med Gemini. Når du taler med Gemini, gemmes lyden i Gemini-appaktivitet (hvis den er aktiveret)</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5006218871145547804">Adb til Android-apps i Crostini</translation>
 <translation id="5006778209728626987">Lyn</translation>
@@ -6262,6 +6263,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Vil du ophæve grupperingen af fanegruppen?}one{Vil du ophæve grupperingen af fanegruppen?}other{Vil du ophæve grupperingen af fanegrupperne?}}</translation>
 <translation id="5230190638672215545">Skriv "uow" for "ươ"</translation>
 <translation id="5230516054153933099">Vindue</translation>
+<translation id="5231255476752743708">Chrome har brug for hjælp til at ændre din adgangskode</translation>
 <translation id="5232714764496316200">Få hjælp til lektierne med Google Lens</translation>
 <translation id="5233231016133573565">Proces-id</translation>
 <translation id="5233638681132016545">Ny fane</translation>
@@ -7790,10 +7792,8 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> er slået fra</translation>
 <translation id="6294759976468837022">Hastighed for automatisk scanning</translation>
-<translation id="6295140892595702619">Brug din mikrofon til at chatte med Gemini. Når du taler med Gemini, gemmes lyden i Gemini-appaktivitet (hvis den er aktiveret). Dine data anvendes ikke til at forbedre generativ AI-modeller</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6295855836753816081">Gemmer...</translation>
-<translation id="6296481987471548530">Brug din præcise lokation for at få de mest nøjagtige Gemini-resultater i stedet for en estimeret lokation baseret på din IP-adresse. Dine data anvendes ikke til at forbedre generativ AI-modeller</translation>
 <translation id="6297986260307280218">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre din Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Noget dataaggregering hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger om metrics<ph name="BEGIN_LINK2_END" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Påvirker de websites, der er angivet her. Hvis du indsætter "[*.]" før et domænenavn, oprettes der en undtagelse for hele domænet. Hvis du f.eks. tilføjer "[*.]google.com", kan tredjepartscookies også være aktive for mail.google.com, da det er en del af google.com.</translation>
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
@@ -8327,6 +8327,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6677527809400770913">Tildelte bevægelsen <ph name="GESTURE" /> til <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Store bølger, der plasker i havet, med fjernt land i baggrunden. Toner af orange lys i horisonten på en ellers mørk og dunkel himmel.</translation>
 <translation id="6678717876183468697">Webadresse for søgeforespørgsler</translation>
+<translation id="6678974601734442817">Chromium har brug for hjælp til at ændre din adgangskode</translation>
 <translation id="6679947539429331601">Skjul i 12 timer</translation>
 <translation id="6680442031740878064">Tilgængelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Talehastighed</translation>
@@ -11033,7 +11034,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> anmoder om at gemme oplysninger på din Android-enhed</translation>
 <translation id="8509177919508253835">Nulstil sikkerhedsnøgler, og opret pinkoder</translation>
 <translation id="8509646642152301857">Download af ordbog til stavekontrol mislykkedes.</translation>
-<translation id="8509967119010808787">Klik her for at søge i dine faner</translation>
 <translation id="8512476990829870887">Afslut proces</translation>
 <translation id="851263357009351303">Tillad altid, at <ph name="HOST" /> viser billeder</translation>
 <translation id="8513108775083588393">Autoroter</translation>

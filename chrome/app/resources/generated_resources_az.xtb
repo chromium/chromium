@@ -993,6 +993,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1652326691684645429">Yaxındakılarla Paylaşmanı aktivləşdirin</translation>
 <translation id="1652862280638399816">MacOS Keychain ilə Parol Menecerindən istifadə üçün Chromium-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="1653958716132599769">Əlaqədar tabları qruplaşdırın</translation>
+<translation id="165448107578581061">Gemini tapşırığınız üzərində işləyir...</translation>
 <translation id="1654580009054503925">Sorğular göstərməsinə icazə verilməyib</translation>
 <translation id="1654713139320245449">Yayım destinasiyaları tapılmadı. Kömək lazımdır?</translation>
 <translation id="1656528038316521561">Arxa fonun qeyri-şəffaflığı</translation>
@@ -1605,7 +1606,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2079053412993822885">Öz sertifikatlarınızdan birini silsəniz, daha öz identifikasiyanız üçün istifadə edə bilməyəcəksiniz.</translation>
 <translation id="2079495302726689071">Keçidi yeni <ph name="APP" /> tabında açın</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
-<translation id="2079553700504470326">Ən dəqiq Gemini nəticələri üçün IP ünvanınıza əsaslanan təxmini məkan əvəzinə dəqiq məkandan istifadə edin.</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
 <translation id="2081816110395725788">Batareya istifadəsi zamanı fəaliyyətsiz rejim</translation>
 <translation id="2082187087049518845">Tabeli qrupa əlavə edin</translation>
@@ -3878,6 +3878,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3619294456800709762">Saytlar şəkildə şəkil rejiminə avtomatik daxil ola bilər</translation>
 <translation id="3620136223548713675">Coğrafi məkan</translation>
 <translation id="3621202678540785336">Daxiletmə</translation>
+<translation id="3621841019087952625">Sonra ayarlayın</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{tətbiq}other{# tətbiq}}</translation>
 <translation id="3622820753353315928">Ekran fləşi rəngi</translation>
 <translation id="3623318122257816196">Daxil olduğunuz saytlar digər saytlardan şəkil, reklam və mətn kimi kontent daxil edə bilər. Sayta baxdıqda digər saytlar haqqınızda yadda saxlanılan məlumatdan istifadə üçün icazə istəyə bilər.</translation>
@@ -4278,6 +4279,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3856096718352044181">Bunun etibarlı təminatçı olduğunu doğrulayın, ya da daha sonra təkrar cəhd edin</translation>
 <translation id="3856470183388031602">Google Hesabını <ph name="DEVICE_TYPE" /> cihazında istifadə edin</translation>
 <translation id="3856800405688283469">Vaxt zonası seçin</translation>
+<translation id="3856902135796972992">Bu sayt əlavə əməliyyat tələb edir. Parolu dəyişdirmək üçün səhifədəki prosesi tamamlayın.</translation>
 <translation id="3857807444929313943">Qaldırın və təkrar toxunun</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="385939467708172187">Güclü paroldan istifadə edin</translation>
@@ -5921,7 +5923,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5001526427543320409">Üçüncü tərəf kukiləri</translation>
 <translation id="5003070249435823986">Sürüşdürmə rejiminə daxil olmaq üçün jestdən istifadə edin, sonra başınızı sürüşdürmək istədiyiniz istiqamətdə hərəkət etdirin. Sürüşdürmə rejimindən çıxmaq üçün yenidən jestdən istifadə edin.</translation>
 <translation id="5003993274120026347">Növbəti cümlə</translation>
-<translation id="5005113238422129109">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini Tətbiq Fəaliyyətində saxlanılır (əgər aktivdirsə)</translation>
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
 <translation id="5006218871145547804">Crostini Android tətbiqi üzrə ADB</translation>
 <translation id="5006778209728626987">İldırım</translation>
@@ -6248,6 +6249,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Tab qrupu ləğv edilsin?}other{Tab qrupları ləğv edilsin?}}</translation>
 <translation id="5230190638672215545">"ươ" üçün "uow" yazın</translation>
 <translation id="5230516054153933099">Pəncərə</translation>
+<translation id="5231255476752743708">Chrome parolunuzu dəyişmək üçün kömək tələb edir</translation>
 <translation id="5232714764496316200">Google Linza-dan ev tapşırıqları ilə bağlı kömək alın</translation>
 <translation id="5233231016133573565">Proses ID</translation>
 <translation id="5233638681132016545">Yeni panel</translation>
@@ -7774,10 +7776,8 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6291953229176937411">&amp;Axtarıcıda göstərin</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> deaktiv edilib</translation>
 <translation id="6294759976468837022">Avtomatik skanlama sürəti</translation>
-<translation id="6295140892595702619">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini Tətbiq Fəaliyyətində saxlanılır (aktivdirsə). Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6295855836753816081">Yadda saxlanılır...</translation>
-<translation id="6296481987471548530">Ən dəqiq Gemini nəticələri üçün IP ünvanınıza əsaslanan təxmini məkan əvəzinə dəqiq məkandan istifadə edin. Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir</translation>
 <translation id="6297986260307280218">İstifadə və diaqnostika datasını göndərin. Diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik olaraq Google-a göndərməklə Android təcrübənizi təkmilləşdirməyə kömək edin. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Data məcmusunun bir qismi Google tətbiqləri və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" /> sahibi tərəfindən tətbiq edilir. Sahibi bu cihaz üzrə diaqnostika və istifadə datasını Google-a göndərməyi seçə bilər. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktivdirsə, bu data Google hesabında yadda saxlanıla bilər. <ph name="BEGIN_LINK2" />Göstəricilər haqqında ətraflı məlumat əldə edin<ph name="BEGIN_LINK2_END" />Ətraflı məlumat<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Burada qeyd edilən saytlara təsir edir. Domen adından əvvəl "[*.]" yerləşdirmək bütün domen üçün istisna yaradır. Məsələn, "[*.]google.com" əlavə edəndə üçüncü tərəf kukiləri mail.google.com üçün də aktiv ola bilər (google.com domeninin hissəsi olduğu üçün).</translation>
 <translation id="6298962879096096191">Android tətbiqlərini quraşdırmaq üçün Google Play istifadə edin</translation>
@@ -8309,6 +8309,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6677527809400770913"><ph name="GESTURE" /> jesti <ph name="ACTION" /> əməliyyatına təyin olundu</translation>
 <translation id="6678604587151240716">Uzaq fonda quru ərazi görünməklə dənizdə sıçrayan böyük dalğalar. Narıncı işığın parıltıları üfüqdən kənarda, başqa bir qaranlıq əhval-ruhiyyəli səmadadır.</translation>
 <translation id="6678717876183468697">Sorğu linki</translation>
+<translation id="6678974601734442817">Chromium parolunuzu dəyişmək üçün kömək tələb edir</translation>
 <translation id="6679947539429331601">12 saat gizlədin</translation>
 <translation id="6680442031740878064">Əlçatandır: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Qiymət</translation>
@@ -11013,7 +11014,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> Android cihazınızda məlumat yadda saxlamaq istəyir</translation>
 <translation id="8509177919508253835">Təhlükəsizlik açarlarını sıfırlayın və PIN yaradın</translation>
 <translation id="8509646642152301857">Orfoqrafik yoxlama sözlüyünün endirilməsi alınmadı.</translation>
-<translation id="8509967119010808787">Tabları axtarmaq üçün bura toxunun</translation>
 <translation id="8512476990829870887">Prosesi Bitirin</translation>
 <translation id="851263357009351303"><ph name="HOST" /> şəkilləri göstərməyə hər zaman icazə verin</translation>
 <translation id="8513108775083588393">Avtodönüş</translation>

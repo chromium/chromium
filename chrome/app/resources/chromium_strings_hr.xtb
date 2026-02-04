@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">Chromium treba pristup Bluetoothu kako bi pronašao 
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="1330562121671411446">Prepoznaj jezik</translation>
+<translation id="1330742950061766891">Upotrijebite postavke preglednika koje preporučuje Chromium</translation>
 <translation id="1342274909142618978">Izbriši i podatke s Chromiuma (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Prikvačeno! Pretraživanju slika možete ponovo pristupiti pomoću novog gumba na alatnoj traci</translation>
 <translation id="1356661055722410047">Novo! Možete prevesti tekst i slike na zaslonu</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1397530502368084401">&amp;Upravljajte profilima na Chromiumu</translation>
+<translation id="1404026649028693342">Uvijek prikaži AI način</translation>
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chromium.</translation>
 <translation id="1478370723027452770">Zatražite pomoć za Chrome for Testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">Postavke.</translation>
 <translation id="2049376729098081731">Odaberite želite li uključiti povijest na Chromiumu za prilagođenije doživljaje na Googleovim uslugama</translation>
 <translation id="2064856577282482477">Kliknite gumb Prilagodi Chromium na stranici Nova kartica da biste Chromiumu dali novi izgled</translation>
+<translation id="2066690553719545730">Uvijek prikaži AI način</translation>
 <translation id="2086476982681781442">Chromium je blokirao ovo preuzimanje jer je ova datoteka obmanjujuća i može napraviti neočekivane promjene na vašem uređaju</translation>
 <translation id="208726765006323911">Sljedeći put kad otvorite Chromium iOS, prikazat će vam se upit da isprobate značajku <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Vaše zaporke i drugi podaci iz Chromiuma koje ste spremili na Google račun uklonit će se s ovog uređaja. Da biste ih ponovo upotrebljavali u Chromiumu, ponovo se prijavite.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Povijest u Chromiumu</translation>
 <translation id="3103660991484857065">Program za instalaciju nije dekomprimirao arhivu. Ponovo preuzmite Chromium.</translation>
 <translation id="310459126943037700">Završavanje zadataka nije uspjelo.</translation>
+<translation id="3126784891977756556">Sinkronizirajte zaporke, oznake i povijest na svim uređajima. Jednostavno pristupite svojim omiljenim značajkama tako da ažurirate zadani preglednik na Chromium.</translation>
 <translation id="3130323860337406239">Chromium upotrebljava vaš mikrofon.</translation>
 <translation id="3130333203120345554">Novo pretraživanje</translation>
 <translation id="3137969841538672700">Povucite za pretraživanje</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">Upravitelj zaporki</translation>
 <translation id="4334241893986177674">Pretražite ovu snimku zaslona</translation>
 <translation id="4334294535648607276">Preuzimanje je dovršeno.</translation>
+<translation id="4384993550046411228">Postavite Chromium kao zadani preglednik da biste jednostavno pristupali svojim omiljenim pouzdanim značajkama. Chromium će se prikvačiti na traku sa zadacima radi brzog pristupa.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> zahtijeva da pročitate i prihvatite sljedeće uvjete pružanja usluge prije upotrebe ovog uređaja. Ti uvjeti ne predstavljaju proširenje, izmjenu ili ograničenje uvjeta Chromium OS-a.</translation>
 <translation id="4407044323746248786">Želite li ipak zatvoriti Chromium?</translation>
 <translation id="4413205837991854510">Uvijek prikaži prečac za pretraživanje slika</translation>
@@ -706,7 +711,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="897581876605952338">Logotip za Chromium Enterprise</translation>
 <translation id="8981150672034878610">Chromium se ne može pokrenuti jer je došlo do pogreške prilikom otvaranja vašeg profila. Pokušajte ponovno pokrenuti Chromium.</translation>
 <translation id="8988036198400390003">Upravljajte profilima na Chromiumu</translation>
-<translation id="9003988359820989654">Otvori Chromium kad se pokrene moje računalo</translation>
+<translation id="9003988359820989654">Otvori Chromium pri pokretanju računala</translation>
 <translation id="9019929317751753759">Kako bismo Chromium učinili sigurnijim, onemogućili smo sljedeće proširenje koje nije navedeno na stranici <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda je dodano bez vašeg znanja.</translation>
 <translation id="904366664621834601">Chromium je blokirao ovo preuzimanje jer ta arhivska datoteka uključuje druge datoteke koje mogu skrivati zlonamjerni softver</translation>
 <translation id="9062666675513499497">Prijavite se u Chromium prilikom prijave na druge Googleove usluge</translation>

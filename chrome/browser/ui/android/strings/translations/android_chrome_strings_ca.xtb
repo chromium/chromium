@@ -851,6 +851,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4685741273709472646">Selecciona una opció de la llista desplegable</translation>
 <translation id="4687718960473379118">Anuncis suggerits per llocs web</translation>
 <translation id="468924408576231679">Copia l'enllaç a la pàgina web <ph name="PAGE_TITLE" />. Font: <ph name="PAGE_URL" />.</translation>
+<translation id="4692623383562244444">Motors de cerca</translation>
 <translation id="469286762610133730">Obtén contingut millor</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}}</translation>
 <translation id="4698757800236023795">Actives (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7376560087009844242">Si inclous més text d'una pàgina, pots obtenir millors resultats quan utilitzis Toca per cercar. Pots visitar la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per canviar-ho.</translation>
 <translation id="7379900596734708416">El tema fosc per als llocs web està disponible</translation>
 <translation id="7384486627147155832">Promoció de notificacions de consells oberta a mitja alçada</translation>
+<translation id="7387951778417998929">Per utilitzar un motor de cerca diferent del predeterminat, escriu la drecera corresponent a la barra d'adreces, seguida de la tecla de drecera que prefereixis. També pots canviar el motor de cerca predeterminat aquí.</translation>
 <translation id="7388615499319468910">Els llocs web i els anunciants poden entendre el rendiment dels anuncis. Aquesta opció de configuració està desactivada.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Altres, 1 fitxer a la llista}other{Altres, # fitxers a la llista}}</translation>
 <translation id="7400418766976504921">URL</translation>

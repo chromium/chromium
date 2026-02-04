@@ -5563,6 +5563,23 @@ Si se inhabilita esta política, la promoción de la extensión del proveedor de
       Si se habilita, se mostrará la pantalla de introducción de Gemini.
 
       Si no se define la política, la pantalla de introducción de Gemini se saltará para los usuarios gestionados por empresas y se mostrará a los usuarios no gestionados.</translation>
+<translation id="4781685421378746692">Esta política controla el uso compartido de contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /> mediante el panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
+
+Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo pueden los usuarios compartir información con la función cuando usan <ph name="PRODUCT_NAME" />.
+
+0/sin definir: los usuarios pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1: los usuarios no pueden compartir contenido de páginas ni archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Los puntos de entrada para compartir contexto y el panel lateral se inhabilitarán u ocultarán.
+
+Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el buscador predeterminado de los usuarios, ya que la función está inhabilitada.
+
+Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el omnibox o en el cuadro de búsqueda de la página Nueva pestaña, mientras que esta política controla el uso compartido de contexto mediante el panel lateral o de las pestañas.
+
+Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que se puede inhabilitar mediante <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4783415902268741066">Permitir que se muestre la página más reciente de resultados del buscador predeterminado en un panel lateral del navegador</translation>
 <translation id="4786784434769279324">Acciones que se ejecutarán cuando el ordenador esté inactivo</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.
@@ -7166,6 +7183,7 @@ En las plataformas de escritorio, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAM
 <translation id="5766438888216077649">No utilices <ph name="WINDOW_OPENER_PROPERTY" /> en enlaces destinados a <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Inhabilitar páginas de error alternativas</translation>
 <translation id="5770738360657678870">Canal de desarrolladores (puede ser inestable)</translation>
+<translation id="5772841828612966342">Habilitado: XSLT está habilitado de forma explícita.</translation>
 <translation id="5774345930803672932">Si se le asigna el valor True o no se le asigna ningún valor a esta política, se podrán enviar informes sobre eventos, telemetría e información
       al flujo de procesamiento de informes cifrados. Si se le asigna el valor False, se inhabilitará el flujo de procesamiento de informes cifrados.</translation>
 <translation id="5774856474228476867">URL de búsqueda del proveedor de búsquedas predeterminadas</translation>
@@ -9802,6 +9820,11 @@ Si se le asigna el valor False, se habilitará el comportamiento anterior.</tran
 <translation id="7410074797376205571">Permitir que <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ejecute las solicitudes a la API WebAuthn mediante un proxy desde un host remoto.</translation>
 <translation id="7412456346709338637">Habilita el acceso a datos desde periféricos Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Sin preferencias.</translation>
+<translation id="7416222110012824615">Esta política controla la disponibilidad de la función XSLT (la API de JavaScript XSLTProcessor y la instrucción de procesamiento de XSL).
+Si se habilita esta política, XSLT estará disponible, independientemente del estado predeterminado de la función en el navegador.
+Si se inhabilita esta política, XSLT no estará disponible, independientemente del estado predeterminado de la función en el navegador.
+Si no se define esta política, la disponibilidad de XSLT se determinará según la configuración predeterminada del navegador y las pruebas de campo.
+Esta política es una medida temporal y se eliminará en la versión M164.</translation>
 <translation id="7417438464912687020">Permitir conexiones de acceso remoto a este equipo</translation>
 <translation id="7417972229667085380">Porcentaje que permite ajustar el retraso de inactividad en el modo de presentación (política obsoleta)</translation>
 <translation id="7421230730436851224">No poner nunca el proceso de audio en un entorno aislado</translation>
@@ -9842,6 +9865,7 @@ Si se le asigna el valor <ph name="AUTOMATED_NAME" /> a la política, se configu
 Si la política no se establece, será lo mismo que asignarle el valor <ph name="ALLOWED_NAME" /> para los usuarios habituales y el valor <ph name="DISALLOWED_NAME" /> para usuarios de empresas.</translation>
 <translation id="7438982301540282785">Automatizar la configuración de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7443356543619955157">Establecer esta política permite aplicar la configuración de red a todos los usuarios de un dispositivo <ph name="PRODUCT_OS_NAME" />. La configuración de red es una cadena escrita en formato JSON, tal como se define en la especificación Open Network Configuration.</translation>
+<translation id="744349502210151344">Predeterminado: La disponibilidad de XSLT se determinará según los valores predeterminados del navegador y las pruebas de campo.</translation>
 <translation id="7446978687387327623">Permitir comprobaciones mediante proxy en tiempo real de Navegación segura</translation>
 <translation id="7448430478749155471">Habilita la función Enunciar selección en la pantalla de inicio de sesión</translation>
 <translation id="7455912144588577399">Si se asigna el valor true a esta política, los usuarios podrán elegir que se lean en voz alta las páginas web aptas usando la conversión de texto a voz. Esto se consigue mediante la extracción de contenido y la síntesis de audio en el servidor. Si se asigna el valor false a esta política, se inhabilitará esta función. Si se asigna el valor predeterminado a esta política o no se define, se habilitará la lectura en voz alta.</translation>
@@ -11096,6 +11120,7 @@ Varias políticas indican orígenes que afectan a las solicitudes al dispositivo
           La asignación de un valor que no esté dentro del intervalo mínimo/máximo puede evitar que el host se inicie.
 
           Ten en cuenta que el límite superior real del tamaño del portapapeles se basa en el tamaño máximo del mensaje del canal de datos webRTC, y esta política no lo controla.</translation>
+<translation id="8294127013911518331">Controlar la disponibilidad de la función XSLT</translation>
 <translation id="8294750666104911727">Normalmente, las páginas con X-UA-Compatible establecido en chrome=1 se mostrarán en <ph name="PRODUCT_FRAME_NAME" />, independientemente de la política ChromeFrameRendererSettings.
 
           Si habilitas esta opción, las páginas no se escanearán para buscar etiquetas meta.
@@ -11841,6 +11866,7 @@ Esta política está obsoleta a partir de la versión 144 de <ph name="PRODUCT_N
 <translation id="8807313206348471682">Mostrar el cuadro de diálogo de confirmación de cierre de sesión</translation>
 <translation id="8807728576820212213">Habilitar la integración de Lens</translation>
 <translation id="8809082103104823938">Compatibilidad con GIFs en el selector de emojis</translation>
+<translation id="8809276335775270751">Inhabilitado: XSLT está inhabilitado de forma explícita.</translation>
 <translation id="8812091410765157924">Solo permitir que las ventanas emergentes abiertas con <ph name="BLANK_PAGE_NAME" /> como objetivo interactúen con la página que ha abierto la ventana emergente (si esta ha aceptado explícitamente dicha interacción)</translation>
 <translation id="8812631362927615118">Habilitar la autenticación propia al informar de señales de seguridad de los usuarios</translation>
 <translation id="8816370949847593408">En función del estado del lanzamiento de la desactivación, es posible que no se puedan ejecutar aplicaciones de Chrome.</translation>

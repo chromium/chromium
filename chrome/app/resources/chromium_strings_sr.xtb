@@ -32,11 +32,13 @@
 <translation id="1324107359134968521">Chromium захтева приступ Bluetooth-у да би истраживао 
  Bluetooth уређаје. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Откривени језик</translation>
+<translation id="1330742950061766891">Користите препоручена подешавања прегледача Chromium</translation>
 <translation id="1342274909142618978">Избриши и податке из Chromium-а (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Закачено је. Можете поново да приступите претрази слика помоћу новог дугмета на траци с алаткама</translation>
 <translation id="1356661055722410047">Ново. Можете да преводите и текст и слике на екрану</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1397530502368084401">&amp;Управљајте Chromium профилима</translation>
+<translation id="1404026649028693342">Увек приказуј AI режим</translation>
 <translation id="141901961143729572">Делите размишљања</translation>
 <translation id="1465192221147974788">Да бисте делили прозор, дозволите снимање екрана за Chromium у подешавањима система.</translation>
 <translation id="1478370723027452770">Потражите помоћ за верзију Chrome for Testing</translation>
@@ -93,6 +95,7 @@
 <translation id="2039417478970545937">Подешавања.</translation>
 <translation id="2049376729098081731">Одаберите да ли ћете уврстити историју Chromium-а ради персонализованијих доживљаја у Google услугама</translation>
 <translation id="2064856577282482477">Кликните на дугме Прилагоди Chromium на страници нове картице да бисте Chromium-у дали нов изглед</translation>
+<translation id="2066690553719545730">Увек приказуј AI режим</translation>
 <translation id="2086476982681781442">Chromium је блокирао ово преузимање јер је овај фајл обмањујући и може да изврши неочекиване промене на уређај</translation>
 <translation id="208726765006323911">Следећи пут када отворите Chromium iOS, видећете упит да испробате <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Лозинке и други Chromium подаци које сте сачували на Google налогу биће уклоњени са овог уређаја. Да бисте их поново користили у Chromium-у, поново се пријавите.</translation>
@@ -195,6 +198,7 @@
 <translation id="3095811995836568724">Историја Chromium-а</translation>
 <translation id="3103660991484857065">Програм за инсталацију није успео да декомпримује архиву. Преузмите Chromium поново.</translation>
 <translation id="310459126943037700">Завршавање задатака није успело.</translation>
+<translation id="3126784891977756556">Синхронизујте лозинке, обележиваче и историју на свим уређајима. Ажурирајте подразумевани прегледач на Chromium да бисте лако приступали функцијама које знате и волите.</translation>
 <translation id="3130323860337406239">Chromium користи микрофон.</translation>
 <translation id="3130333203120345554">Нова претрага</translation>
 <translation id="3137969841538672700">Превуците да бисте претражили</translation>
@@ -307,6 +311,7 @@
 <translation id="4304713468139749426">Менаџер лозинки</translation>
 <translation id="4334241893986177674">Претражите овај снимак екрана</translation>
 <translation id="4334294535648607276">Преузимање је довршено.</translation>
+<translation id="4384993550046411228">Подесите Chromium као подразумевани прегледач да бисте лако приступали функцијама које знате, волите и којима верујете. Chromium ће бити закачен на траку задатака ради брзог приступа.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> захтева да прочитате и прихватите следеће Услове коришћења услуге пре коришћења овог уређаја. Ови услови не проширују, мењају нити ограничавају Услове за Chromium ОС.</translation>
 <translation id="4407044323746248786">Желите ли ипак да затворите Chromium?</translation>
 <translation id="4413205837991854510">Увек приказуј пречицу за претрагу слика</translation>

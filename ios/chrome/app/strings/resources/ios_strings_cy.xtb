@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Ieithoedd</translation>
 <translation id="4183350924949589798">Rhagor o ddiogelwch?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} cyfrinair gwan}zero{{count} cyfrinair gwan}two{{count} gyfrinair gwan}few{{count} cyfrinair gwan}many{{count} cyfrinair gwan}other{{count} cyfrinair gwan}}</translation>
+<translation id="4196758674971560031">Mae'r grwpiau tabiau rydych wedi'u creu yn cael eu cadw yn yr adran grŵp tab a'u diweddaru ar draws eich dyfeisiau.</translation>
 <translation id="4197456013861852807">{count,plural, =1{Mae {count} eitem wedi'i chadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google, {email}.}zero{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}two{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}few{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}many{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}other{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}}</translation>
 <translation id="4207873326995387292">Gwybodaeth am y Porwr</translation>
 <translation id="421070604241073551">Pan fydd ymlaen, mae data'n cael eu cadw yn eich Cyfrif Google. Pan fydd wedi'i ddiffodd, dim ond i'r ddyfais hon y caiff data eu cadw.</translation>
@@ -1507,6 +1508,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6494931198667773526">Yn gorffen</translation>
 <translation id="6503077044568424649">Yr ymwelwyd â nhw y mwyaf</translation>
 <translation id="6503763061813913607">Hysbysiadau Gwiriad Diogelwch</translation>
+<translation id="6504541289630702018">Cael mynediad hawdd at eich grwpiau tabiau bwrdd gwaith</translation>
 <translation id="6505334220040167806">Crebachu'r grŵp tab.</translation>
 <translation id="6506996418997555004">Rhannu'r Grŵp Tabiau "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Mewngofnodwch i gael eich rhestr ddarllen ar eich holl ddyfeisiau.</translation>
@@ -2137,6 +2139,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8731268612289859741">Cod diogelwch</translation>
 <translation id="87371078663613140">Archwiliwch yr opsiynau yn y bar dewislen</translation>
+<translation id="8739546376441802490">Mae'r wefan sydd wedi'i phinio eisoes yn bodoli</translation>
 <translation id="8741627442233023406">{count,plural, =1{Adolygu'r tab…}zero{Adolygu'r holl dabiau…}two{Adolygu'r holl dabiau…}few{Adolygu'r holl dabiau…}many{Adolygu'r holl dabiau…}other{Adolygu'r holl dabiau…}}</translation>
 <translation id="8741995161408053644">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Creu dolen</translation>

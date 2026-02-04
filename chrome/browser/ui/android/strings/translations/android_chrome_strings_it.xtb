@@ -851,6 +851,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4685741273709472646">Seleziona dall'elenco a discesa</translation>
 <translation id="4687718960473379118">Annunci suggeriti dai siti</translation>
 <translation id="468924408576231679">Copia il link alla pagina web <ph name="PAGE_TITLE" />. Fonte: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Motori di ricerca</translation>
 <translation id="469286762610133730">Ottieni contenuti migliori</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Attive: <ph name="ITEM_COUNT" /></translation>
@@ -1531,6 +1532,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7376560087009844242">Se includi più testo di una pagina, potresti vedere risultati migliori quando utilizzi Tocca per cercare. Puoi andare alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" /> per modificare questa scelta in qualsiasi momento.</translation>
 <translation id="7379900596734708416">Il tema scuro per i siti è disponibile</translation>
 <translation id="7384486627147155832">Notifica di promozione suggerita aperta nella parte inferiore dello schermo</translation>
+<translation id="7387951778417998929">Per usare un motore di ricerca diverso da quello predefinito, digita la relativa scorciatoia nella barra degli indirizzi seguita dalla tua scorciatoia da tastiera preferita. Puoi anche modificare il tuo motore di ricerca predefinito qui.</translation>
 <translation id="7388615499319468910">Siti e inserzionisti possono conoscere il rendimento degli annunci. Questa impostazione non è attiva.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Altro, 1 file nell'elenco}other{Altro, # file nell'elenco}}</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">Chromium tarvitsee pääsyn Bluetoothiin etsiäkseen
  Bluetooth-laitteita. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Tunnista kieli</translation>
+<translation id="1330742950061766891">Käytä Chromiumin suositeltuja selainasetuksia</translation>
 <translation id="1342274909142618978">Poista data myös Chromiumista (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Kiinnitetty! Voit käyttää kuvahakua jatkossa yläpalkin uudella painikkeella</translation>
 <translation id="1356661055722410047">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1397530502368084401">&amp;Ylläpidä Chromium-profiileja</translation>
+<translation id="1404026649028693342">Näytä aina tekoälytila</translation>
 <translation id="141901961143729572">Kerro mielipiteesi</translation>
 <translation id="1465192221147974788">Jos haluat jakaa ikkunan, salli Chromiumin näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="1478370723027452770">Ohjeita Chrome for Testingin käyttöön</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">Asetukset.</translation>
 <translation id="2049376729098081731">Valitse, käytetäänkö Chromium-historiaa personoituun kokemukseen Google-palveluissa</translation>
 <translation id="2064856577282482477">Muokkaa Chromiumia klikkaamalla Uusi välilehti ‐sivun Yksilöi Chromiumia ‑painiketta</translation>
+<translation id="2066690553719545730">Näytä aina tekoälytila</translation>
 <translation id="2086476982681781442">Chromium on estänyt tämän latauksen, koska tiedosto on harhaanjohtava ja se voi tehdä odottamattomia muutoksia laitteellesi</translation>
 <translation id="208726765006323911">Näet kehotteen kokeilla ominaisuutta (<ph name="FEATURE_NAME" />) seuraavan kerran, kun avaat Chromiumin iOS:llä.</translation>
 <translation id="2099452623287920103">Salasanat ja muu Chromium-data tallennetaan Google-tilillesi ja poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromiumissa, kirjaudu takaisin sisään.</translation>
@@ -193,6 +196,8 @@
 <translation id="3095811995836568724">Chromium-historia</translation>
 <translation id="3103660991484857065">Asennusohjelma ei pystynyt purkamaan arkistotiedostoa. Lataa Chromium uudelleen.</translation>
 <translation id="310459126943037700">Tehtävien lopettaminen epäonnistui.</translation>
+<translation id="3104828284009500087">Hae mitä tahansa sivulla näkyvää</translation>
+<translation id="3126784891977756556">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chromium, niin saat tutut ominaisuudet helposti käyttöösi.</translation>
 <translation id="3130323860337406239">Chromium käyttää mikrofoniasi.</translation>
 <translation id="3130333203120345554">Uusi haku</translation>
 <translation id="3137969841538672700">Hae vetämällä</translation>
@@ -305,6 +310,7 @@
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4334241893986177674">Hae tätä kuvakaappausta</translation>
 <translation id="4334294535648607276">Lataus on valmis.</translation>
+<translation id="4384993550046411228">Kun valitset Chromiumin oletusselaimeksi, saat helposti käyttöösi tutut, luotettavat ominaisuudet. Chromium kiinnitetään tehtäväpalkkiin, jotta voit käyttää sitä nopeasti.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Chromium-käyttöjärjestelmän ehtoja.</translation>
 <translation id="4407044323746248786">Suljetaanko Chromium silti?</translation>
 <translation id="4413205837991854510">Näytä aina kuvahaun pikanäppäin</translation>

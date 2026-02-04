@@ -31,11 +31,13 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
 <translation id="1324107359134968521">Chromium a besoin d'un accès au Bluetooth pour découvrir les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Détecter la langue</translation>
+<translation id="1330742950061766891">Utiliser les paramètres du navigateur recommandés de Chromium</translation>
 <translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">La fonctionnalité a été épinglée! Vous pouvez à nouveau accéder à la recherche d'images à partir du nouveau bouton de la barre d'outils</translation>
 <translation id="1356661055722410047">Nouveau! Vous pouvez traduire à la fois le texte et les images sur votre écran</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1397530502368084401">&amp;Gérer les profils Chromium</translation>
+<translation id="1404026649028693342">Toujours afficher le mode IA</translation>
 <translation id="141901961143729572">Faites part de vos commentaires</translation>
 <translation id="1465192221147974788">Pour partager votre fenêtre, autorisez l'enregistrement de l'écran pour Chromium dans les Réglages système.</translation>
 <translation id="1478370723027452770">Obtenir de l'aide avec Chrome for Testing</translation>
@@ -92,6 +94,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2039417478970545937">Paramètres.</translation>
 <translation id="2049376729098081731">Choisissez si vous souhaitez inclure l'historique de Chromium pour rendre vos expériences des services Google plus personnalisées</translation>
 <translation id="2064856577282482477">Cliquez sur le bouton Personnaliser Chromium sur la page Nouvel onglet pour donner un nouveau style à Chromium</translation>
+<translation id="2066690553719545730">Toujours afficher le mode IA</translation>
 <translation id="2086476982681781442">Chromium a bloqué ce téléchargement, car le fichier est trompeur et pourrait apporter des modifications inattendues à votre appareil</translation>
 <translation id="208726765006323911">Une invite vous proposera d'essayer <ph name="FEATURE_NAME" /> la prochaine fois que vous ouvrirez Chromium pour iOS.</translation>
 <translation id="2099452623287920103">Vos mots de passe et d'autres données Chromium que vous avez enregistrés dans votre compte Google seront retirés de cet appareil. Pour les utiliser à nouveau dans Chromium, reconnectez-vous.</translation>
@@ -194,6 +197,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="3095811995836568724">Historique de Chromium</translation>
 <translation id="3103660991484857065">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Chromium de nouveau.</translation>
 <translation id="310459126943037700">Impossible de terminer la ou les tâches.</translation>
+<translation id="3126784891977756556">Gardez vos mots de passe, vos favoris et votre historique parfaitement synchronisés sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et que vous aimez en mettant à jour votre navigateur par défaut vers Chromium.</translation>
 <translation id="3130323860337406239">Chromium se sert de votre microphone.</translation>
 <translation id="3130333203120345554">Nouvelle recherche</translation>
 <translation id="3137969841538672700">Faire glisser pour rechercher</translation>
@@ -306,6 +310,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4334241893986177674">Recherchez dans cette capture d'écran</translation>
 <translation id="4334294535648607276">Téléchargement terminé.</translation>
+<translation id="4384993550046411228">Accédez facilement aux fonctionnalités que vous connaissez et aimez, et auxquelles vous faites confiance en définissant Chromium comme navigateur par défaut. Chromium sera épinglé à votre barre des tâches pour un accès rapide.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas ni ne restreignent pas les conditions d'utilisation de Chromium OS.</translation>
 <translation id="4407044323746248786">Quitter Chromium quand même?</translation>
 <translation id="4413205837991854510">Toujours afficher le raccourci de la recherche d'images</translation>

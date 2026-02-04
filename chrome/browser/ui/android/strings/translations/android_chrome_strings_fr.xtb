@@ -851,6 +851,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4685741273709472646">Sélectionnez depuis la liste déroulante</translation>
 <translation id="4687718960473379118">Annonces suggérées par les sites</translation>
 <translation id="468924408576231679">Copier le lien vers la page Web <ph name="PAGE_TITLE" />. Source : <ph name="PAGE_URL" />.</translation>
+<translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="469286762610133730">Pour des contenus qui vous ressemblent</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}}</translation>
 <translation id="4698757800236023795">Actives (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7376560087009844242">En incluant plus de texte d'une page, vous pourriez avoir de meilleurs résultats quand vous utilisez Appuyer pour rechercher. Vous pouvez toujours changer cela dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Le thème sombre pour les sites est disponible</translation>
 <translation id="7384486627147155832">Promotion des notifications de conseils ouverte à mi-hauteur</translation>
+<translation id="7387951778417998929">Pour utiliser un autre moteur de recherche que celui défini par défaut, saisissez son raccourci dans la barre d'adresse suivi du raccourci clavier de votre choix. Vous pouvez aussi modifier votre moteur de recherche par défaut ici.</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est désactivé.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Autres, un fichier dans la liste}one{Autres, # fichier dans la liste}other{Autres, # fichiers dans la liste}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1992,7 +1994,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="95817756606698420">Chrome peut utiliser <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour les recherches effectuées en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Suppr. données navigation</translation>
+<translation id="961856697154696964">Supprimer les données de navigation</translation>
 <translation id="963246339335003378">Ouvrir le gestionnaire de tâches</translation>
 <translation id="966131775676567255">Suppression des données du compte…</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>

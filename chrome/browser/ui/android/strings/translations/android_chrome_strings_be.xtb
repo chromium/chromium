@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">Выбраць з выпаднога спіса</translation>
 <translation id="4687718960473379118">Рэклама, якая прапануецца сайтамі</translation>
 <translation id="468924408576231679">Скапіраваць спасылку на вэб-старонку "<ph name="PAGE_TITLE" />". Крыніца: <ph name="PAGE_URL" />.</translation>
+<translation id="4692623383562244444">Пошукавыя сістэмы</translation>
 <translation id="469286762610133730">Атрымлівайце больш цікавае змесціва</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Актыўныя (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">Дадаючы больш тэксту са старонкі, пры выкарыстанні функцыі "Пошук дотыкам" можна атрымліваць лепшыя вынікі. Змяніць параметры заўсёды можна ў <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Цёмная тэма для сайтаў даступная</translation>
 <translation id="7384486627147155832">Апавяшчэнне з парадай адкрыта на палову экрана</translation>
+<translation id="7387951778417998929">Каб выкарыстаць іншую пошукавую сістэму, а не стандартную, увядзіце ў адрасным радку каманду для яе і націсніце выбранае спалучэнне клавіш. Тут можна таксама задаць іншую пошукавую сістэму ў якасці стандартнай.</translation>
 <translation id="7388615499319468910">Сайты і рэкламадаўцы могуць ацэньваць эфектыўнасць рэкламы. Гэта налада выключана.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Іншае, 1 файл у спісе}one{Іншае, # файл у спісе}few{Іншае, # файлы ў спісе}many{Іншае, # файлаў у спісе}other{Іншае, # файла ў спісе}}</translation>
 <translation id="7400418766976504921">URL-адрас</translation>

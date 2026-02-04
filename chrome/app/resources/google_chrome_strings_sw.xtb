@@ -42,6 +42,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1399397803214730675">Kompyuta hii tayari ina toleo jipya zaidi la Google Chrome. Ikiwa programu haifanyi kazi, tafadhali ondoa Google Chrome kisha ujaribu tena.</translation>
+<translation id="1404026649028693342">Onyesha Matumizi ya AI kila wakati</translation>
 <translation id="141901961143729572">Eleza mawazo yako</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya.}=1{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya. Dirisha lako fiche halitafunguka upya.}other{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya. Madirisha fiche yako # hayatafunguka upya.}}</translation>
 <translation id="1434626383986940139">Programu za Chrome Canary</translation>
@@ -66,6 +67,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1640672724030957280">Inapakua...</translation>
 <translation id="1651617469580841801">Unapotumia Lenzi ya Google, jina la ukurasa, URL na maudhui, ikijumuisha PDF, hutumwa kwenda Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Kuhusu ChromeOS Flex</translation>
+<translation id="1665867022636014702">Tumia mipangilio ya kivinjari inayopendekezwa na Google</translation>
 <translation id="1674870198290878346">Fungua Kiungo katika Dirisha Fiche la Chrome</translation>
 <translation id="1682634494516646069">Google Chrome haiwezi kusoma na kuandika kwenye saraka yake ya data:
 
@@ -101,6 +103,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2026377840141807639">Wasifu kwenye Chrome hukuwezesha kutenganisha shughuli za kuvinjari za binafsi na za kazini. Weka wasifu mpya sasa.</translation>
 <translation id="2034233344106846793">Chrome husasisha kiotomatiki miunganisho isiyo salama kuwa HTTPS inapowezekana</translation>
 <translation id="2039417478970545937">Mipangilio.</translation>
+<translation id="2066690553719545730">Onyesha Matumizi ya AI Kila Wakati</translation>
 <translation id="2091012649849228750">Ili upate masasisho yajayo ya Google Chrome, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo la Windows 8.</translation>
 <translation id="2094648590148273905">Sheria na masharti ya ChromeOS Flex</translation>
 <translation id="2094919256425865063">Ungependa kufunga Chrome?</translation>
@@ -358,6 +361,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4885446229353981848">Onyesha njia ya mkato ya Lenzi ya Google kila wakati</translation>
 <translation id="4891791193823137474">Ruhusu Google Chrome iendeshe katika mandharinyuma</translation>
 <translation id="4895437082222824641">Fungua kiungo katika kichupo kipya cha Chrome</translation>
+<translation id="4896867431081882115">Pata uwezo wa kufikia vipengele unavyovifahamu, kuvipenda na kuviamini kwa urahisi kwa kuweka Chrome iwe kivinjari chako chaguomsingi. Chrome itabandikwa kwenye upauzana wako ili uifikie kwa haraka.</translation>
 <translation id="4918086044614829423">Kubali</translation>
 <translation id="4918844574251943176">Picha imenakiliwa</translation>
 <translation id="4926882258455737990">Ili utumie Akaunti tofauti ya Google katika Gemini kwenye Chrome, <ph name="BEGIN_LINK" />fungua wasifu mpya<ph name="END_LINK" /> kisha uingie ukitumia akaunti unayotaka</translation>
@@ -562,6 +566,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6885412569789873916">Programu za Chrome Beta</translation>
 <translation id="6893363893008038481">Ondoa Akaunti kwenye Chrome</translation>
 <translation id="6896758677409633944">Nakili</translation>
+<translation id="6908182077349113099">Hakikisha manenosiri, alamisho na historia yako imesawazishwa kikamilifu kwenye vifaa mbalimbali. Fikia kwa urahisi vipengele unavyovifahamu na kuvipenda kwa kusasisha kivinjari chako chaguomsingi kiwe Chrome.</translation>
 <translation id="6930294499209825">Husasisha programu yako ya Google. Huduma hii ikizimwa au kusimamishwa, programu yako ya Google haitasasishwa, hali inayomaanisha kuwa hatari za usalama zinazoweza kutokea haziwezi kurekebishwa na huenda vipengele visifanye kazi. Huduma hii hujiondoa kwenye kifaa ikiwa hakuna programu ya Google inayoitumia.</translation>
 <translation id="6933858244219479645">Mfumo wa ChromeOS</translation>
 <translation id="6938166777909186039">Ili upate masasisho yajayo ya Google Chrome, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo Windows 8.1.</translation>

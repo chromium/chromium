@@ -1616,7 +1616,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2079053412993822885">Jika salah satu sertifikat dihapus, Anda tidak akan dapat lagi menggunakannya untuk mengidentifikasi diri Anda.</translation>
 <translation id="2079495302726689071">Buka link di tab <ph name="APP" /> baru</translation>
 <translation id="2079545284768500474">Urungkan</translation>
-<translation id="2079553700504470326">Gunakan lokasi presisi Anda untuk mendapatkan hasil Gemini yang paling akurat, bukan estimasi lokasi berdasarkan alamat IP Anda.</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2081816110395725788">Tidak ada aktivitas saat menggunakan baterai</translation>
 <translation id="2082187087049518845">Masukkan Tab ke Grup</translation>
@@ -5936,7 +5935,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5001526427543320409">Cookie pihak ketiga</translation>
 <translation id="5003070249435823986">Gunakan gestur untuk masuk ke mode scroll, lalu gerakkan kepala Anda ke arah yang Anda inginkan untuk men-scroll. Gunakan gestur lagi untuk keluar dari mode scroll.</translation>
 <translation id="5003993274120026347">Kalimat berikutnya</translation>
-<translation id="5005113238422129109">Gunakan mikrofon untuk melakukan percakapan dengan Gemini. Saat Anda berbicara dengan Gemini, audio disimpan di Aktivitas Aplikasi Gemini (jika diaktifkan)</translation>
 <translation id="5005498671520578047">Salin sandi</translation>
 <translation id="5006218871145547804">ADB aplikasi Android Crostini</translation>
 <translation id="5006778209728626987">Halilintar</translation>
@@ -7792,10 +7790,8 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6291953229176937411">&amp;Tampilkan di Penemu</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> dinonaktifkan</translation>
 <translation id="6294759976468837022">Kecepatan pemindaian otomatis</translation>
-<translation id="6295140892595702619">Gunakan mikrofon untuk melakukan percakapan dengan Gemini. Saat Anda berbicara dengan Gemini, audio disimpan di Aktivitas Aplikasi Gemini (jika diaktifkan). Data Anda tidak digunakan untuk meningkatkan kualitas model AI generatif</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
-<translation id="6296481987471548530">Gunakan lokasi presisi Anda untuk mendapatkan hasil Gemini yang paling akurat, bukan estimasi lokasi berdasarkan alamat IP Anda. Data Anda tidak digunakan untuk meningkatkan kualitas model AI generatif</translation>
 <translation id="6297986260307280218">Kirim data penggunaan dan diagnostik. Bantu tingkatkan pengalaman penggunaan Android Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta peningkatan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. <ph name="BEGIN_LINK1" />Setelan<ph name="END_LINK1" /> ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirim data diagnostik dan penggunaan untuk perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan Anda diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda. <ph name="BEGIN_LINK2" />Pelajari lebih lanjut metrik<ph name="BEGIN_LINK2_END" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Memengaruhi situs yang tercantum di sini. Menyisipkan “[*.]” sebelum nama domain akan membuat pengecualian untuk seluruh domain. Misalnya, menambahkan “[*.]google.com” berarti cookie pihak ketiga juga dapat aktif untuk mail.google.com, karena merupakan bagian dari google.com.</translation>
 <translation id="6298962879096096191">Menggunakan Google Play untuk menginstal aplikasi Android</translation>
@@ -11033,7 +11029,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> ingin menyimpan info di perangkat Android Anda</translation>
 <translation id="8509177919508253835">Reset kunci keamanan dan buat PIN</translation>
 <translation id="8509646642152301857">Download kamus periksa ejaan gagal.</translation>
-<translation id="8509967119010808787">Klik di sini untuk menelusuri tab</translation>
 <translation id="8512476990829870887">Akhiri Proses</translation>
 <translation id="851263357009351303">Selalu izinkan <ph name="HOST" /> menampilkan gambar</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>

@@ -5656,6 +5656,23 @@ Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzant
       Politika, Etkin değerine ayarlanırsa Gemini giriş ekranı gösterilir.
 
       Politika ayarlanmadan bırakılırsa Gemini giriş ekranı, kuruluş tarafından yönetilen kullanıcılar için atlanır, yönetilmeyen kullanıcılar için gösterilir.</translation>
+<translation id="4781685421378746692">Bu politika, <ph name="PRODUCT_NAME" /> yan paneli veya sekmeleri aracılığıyla sayfa ve dosya içeriğinin <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> ve <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ile paylaşılmasını kontrol eder.
+
+Bu politikanın web'deki <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> özelliğini etkilemediğini unutmayın. Yalnızca kullanıcıların <ph name="PRODUCT_NAME" /> kullanırken bu özellikle nasıl bilgi paylaşabileceğini kontrol eder.
+
+0/ayarlanmadı = Kullanıcılar, sayfa veya dosya içeriğini <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> ile paylaşabilir.
+
+1 = Kullanıcılar, sayfa veya dosya içeriğini <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> ile paylaşamaz. Bağlam paylaşımı için giriş noktaları ve yan panel devre dışı bırakılır veya gizlenir.
+
+Bu politika, <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> kullanıcıların varsayılan arama motoru olmadığında, özellik devre dışı bırakıldığından yok sayılır.
+
+Bu politika, <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> politikasından bağımsızdır. <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> politikası yalnızca çok amaçlı adres çubuğu veya yeni sekme sayfası arama kutusundaki giriş noktalarını kontrol ederken bu politika, yan panel veya sekmeler aracılığıyla bağlam paylaşımını kontrol eder.
+
+Bu politika, <ph name="GEMINI_SETTINGS_POLICY_NAME" /> tarafından devre dışı bırakılabilen <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> entegrasyonunu da kontrol etmez.
+
+Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="4783415902268741066">En son varsayılan arama motoru sonuç sayfasının, tarayıcı yan panelinde gösterilmesine izin ver</translation>
 <translation id="4786784434769279324">Bilgisayar boşta kaldığında gerçekleştirilecek işlemler</translation>
 <translation id="4787763197941188108">Varsayılan yazdırma sayfa boyutunu geçersiz kılar.
@@ -7249,6 +7266,7 @@ Masaüstü platformlarda model indirme işlemi, <ph name="COMPONENT_UPDATES_ENAB
 <translation id="5766438888216077649"><ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyen bağlantılar için <ph name="WINDOW_OPENER_PROPERTY" /> özelliğini ayarlamayın</translation>
 <translation id="5767776869128458023">Alternatif hata sayfalarını devre dışı bırak</translation>
 <translation id="5770738360657678870">Yeni geliştirilenler kanalı (kararsız olabilir)</translation>
+<translation id="5772841828612966342">Etkin: XSLT açıkça etkinleştirildi.</translation>
 <translation id="5774345930803672932">Politika, Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa etkinlikler, telemetri ve bilgiler Şifrelenmiş Raporlama Ardışık Düzeni'ne raporlanabilir. Politika, Yanlış değerine ayarlanırsa Şifrelenmiş Raporlama Ardışık Düzeni devre dışı bırakılır.</translation>
 <translation id="5774856474228476867">Varsayılan arama sağlayıcı arama URL'si</translation>
 <translation id="5775235485119094648">Pili belirlenmiş bir aralıktayken şarj et.</translation>
@@ -9944,6 +9962,11 @@ Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirili
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ürününün uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin ver.</translation>
 <translation id="7412456346709338637">Thunderbolt/USB4 çevre birimi veri erişimini etkinleştirir</translation>
 <translation id="7414890119082492552">Tercihim yok.</translation>
+<translation id="7416222110012824615">Bu politika, XSLT özelliğinin (XSLTProcessor JavaScript API ve XSL işleme talimatı) kullanılabilirliğini kontrol eder.
+Bu politika, Etkin değerine ayarlanırsa özelliğin tarayıcıdaki varsayılan durumundan bağımsız olarak XSLT kullanılabilir.
+Bu politika, Devre Dışı değerine ayarlanırsa özelliğin tarayıcıdaki varsayılan durumundan bağımsız olarak XSLT kullanılamaz.
+Bu politika ayarlanmadan bırakılırsa XSLT'nin kullanılabilirliği, tarayıcının varsayılan ayarlarına ve saha denemelerine göre belirlenir.
+Bu politika geçici bir çözüm olup M164 sürümünde kaldırılacaktır.</translation>
 <translation id="7417438464912687020">Bu makineye uzaktan erişim bağlantılarına izin ver</translation>
 <translation id="7417972229667085380">Sunum modundayken boşta gecikme süresini ölçekleme yüzdesi (kullanımdan kaldırıldı)</translation>
 <translation id="7421230730436851224">Sesi hiçbir zaman korumalı alana alma</translation>
@@ -9984,6 +10007,7 @@ Politika "<ph name="AUTOMATED_NAME" />" olarak ayarlandığında <ph name="GOOGL
 Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel olarak "<ph name="ALLOWED_NAME" />" değerine, kurumsal kullanıcılar için ise varsayılan olarak "<ph name="DISALLOWED_NAME" />" değerine ayarlanmasıyla eşdeğerdir.</translation>
 <translation id="7438982301540282785"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> kurulumunu otomatik hale getir</translation>
 <translation id="7443356543619955157">Politika ayarlanırsa bir <ph name="PRODUCT_OS_NAME" /> cihazın tüm kullanıcıları için ağ yapılandırması aktarılabilir. Ağ yapılandırması, Açık Ağ Yapılandırması biçimiyle tanımlanmış JSON biçimli bir dizedir.</translation>
+<translation id="744349502210151344">Varsayılan: XSLT kullanılabilirliği, tarayıcı varsayılanları ve saha denemeleriyle belirlenir.</translation>
 <translation id="7446978687387327623">Güvenli Tarama Proxy Kullanan Gerçek Zamanlı Kontrollere İzin Ver</translation>
 <translation id="7448430478749155471">Giriş ekranında seç ve dinle özelliğini etkinleştir</translation>
 <translation id="7455912144588577399">Politika "Doğru" değerine ayarlandığında kullanıcılar, metin okuma sürecini
@@ -11259,6 +11283,7 @@ Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde
           Politikanın min/maks aralığında olmayan bir değere ayarlanması, ana makinenin başlamasına engel olabilir.
 
           Pano boyutunun gerçek üst sınırının, bu politikanın kontrol etmediği WebRTC veri kanalının maksimum mesaj boyutuna dayalı olduğunu lütfen unutmayın.</translation>
+<translation id="8294127013911518331">XSLT özelliğinin kullanılabilirliğini kontrol et</translation>
 <translation id="8294750666104911727">Normalde, "ChromeFrameRendererSettings" politikası ne olursa olsun, chrome=1 olarak ayarlanmış X-UA Uyumlu sayfalar <ph name="PRODUCT_FRAME_NAME" /> ile oluşturulur.
 
           Bu ayarı etkinleştirirseniz sayfalarda meta etiketler taranmaz.
@@ -12016,6 +12041,7 @@ Bu politika Yanlış değerine ayarlandığında İlgili Web Sitesi Grupları ö
 <translation id="8807313206348471682">Oturum kapatma onayı iletişimini göster</translation>
 <translation id="8807728576820212213">Lens entegrasyonunu etkinleştir</translation>
 <translation id="8809082103104823938">Emoji Seçici'de GIF Desteği</translation>
+<translation id="8809276335775270751">Devre dışı: XSLT açıkça devre dışı bırakıldı.</translation>
 <translation id="8812091410765157924">Yalnızca <ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyerek açılan pop-up'lara, pop-up'ı açan sayfayla etkileşimde bulunma izni ver. Bu izin, pop-up'ı açan sayfa böyle bir etkileşimi açıkça etkinleştirirse verilir.</translation>
 <translation id="8812631362927615118">Kullanıcı güvenlik sinyallerini raporlarken birinci taraf kimlik doğrulamasını etkinleştir</translation>
 <translation id="8816370949847593408">Kullanımdan kaldırma durumuna bağlı olarak Chrome Uygulamalarının çalışmasına izin verilmeyebilir.</translation>

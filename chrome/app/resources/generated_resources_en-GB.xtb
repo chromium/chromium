@@ -160,6 +160,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="109647177154844434">Uninstalling Parallels Desktop will delete your Windows image. This includes its applications, settings and data. Are you sure that you wish to continue?</translation>
 <translation id="1097016918605049747">This page couldn't be translated</translation>
 <translation id="1097658378307015415">Before signing in, please enter as Guest to activate the network <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">To power features like scam detection, Chrome can use AI models that run directly on your device without sending your data to Google servers. When this is off, these features might not work. <ph name="BEGIN_LINK" />Learn more about on-device AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Image copied from <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Current icon</translation>
 <translation id="1102759278139578486">Can't download main node annotation files. Please try again later.</translation>
@@ -1401,6 +1402,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="192564025059434655">Old versions of Chrome Apps won't open on Windows devices after December 2022. You can check if there's a new version available.</translation>
 <translation id="1926339101652878330">These settings are controlled by enterprise policy. Please contact your administrator for more information.</translation>
 <translation id="1926887872692564784">Cursor</translation>
+<translation id="1927075772688962338">Pin reading mode</translation>
 <translation id="1927632033341042996">Finger <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Screen lock PIN</translation>
 <translation id="192858925209436740">Connect OneDrive to the Files app to manage your stored documents from your Chromebook. You'll need to sign in with your Microsoft account.</translation>
@@ -1616,7 +1618,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2079053412993822885">If you delete one of your own certificates, you can no longer use it to identify yourself.</translation>
 <translation id="2079495302726689071">Open link in new <ph name="APP" /> tab</translation>
 <translation id="2079545284768500474">Undo</translation>
-<translation id="2079553700504470326">Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address.</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2081816110395725788">Idle power on battery</translation>
 <translation id="2082187087049518845">Group Tab</translation>
@@ -3790,6 +3791,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were enabled and how much memory was typically used.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> – Gemini is working on your task…</translation>
 <translation id="3559079791149580653">Stop casting screen to <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">Failed to install policy on the device.</translation>
 <translation id="3559533181353831840">About <ph name="TIME_LEFT" /> left</translation>
@@ -5619,6 +5621,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> wants to use personal info from your digital wallet.</translation>
 <translation id="4785719467058219317">You're using a security key that's not registered with this website</translation>
 <translation id="4785914069240823137">Cancel crop</translation>
+<translation id="4786430656008801173">On-device AI</translation>
 <translation id="4787471921443575924">Edit passkey for username: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Please check your network connection and try again.</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
@@ -5936,7 +5939,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5003070249435823986">Use the gesture to enter scroll mode, then move your head in the direction you'd like to scroll. Use the gesture again to exit scroll mode.</translation>
 <translation id="5003993274120026347">Next sentence</translation>
-<translation id="5005113238422129109">Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps activity (if it's on)</translation>
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5006218871145547804">Crostini Android app ADB</translation>
 <translation id="5006778209728626987">Lightning</translation>
@@ -7792,10 +7794,8 @@ You can assign multiple switches to this action.</translation>
 <translation id="6291953229176937411">&amp;Show in Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is turned off</translation>
 <translation id="6294759976468837022">Auto-scan speed</translation>
-<translation id="6295140892595702619">Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps activity (if it's on). Your data is not used to improve generative AI models</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
-<translation id="6296481987471548530">Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. Your data is not used to improve generative AI models</translation>
 <translation id="6297986260307280218">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more about metrics<ph name="BEGIN_LINK2_END" />Learn more<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.co.uk” means that third-party cookies can also be active for mail.google.co.uk, because it’s part of google.co.uk.</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
@@ -11034,7 +11034,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> wants to save info on your Android device</translation>
 <translation id="8509177919508253835">Reset security keys and create PINs</translation>
 <translation id="8509646642152301857">Spell check dictionary download failed.</translation>
-<translation id="8509967119010808787">To search your tabs, click here</translation>
 <translation id="8512476990829870887">End Process</translation>
 <translation id="851263357009351303">Always allow <ph name="HOST" /> to show images</translation>
 <translation id="8513108775083588393">Auto-rotate</translation>
@@ -12209,6 +12208,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> wants to get info from your mobile device</translation>
 <translation id="988320949174893488">Occasional stutter</translation>
 <translation id="988978206646512040">Empty passphrase is not allowed</translation>
+<translation id="989685714699739712">Organise your tabs by grouping them together and label them with a custom name and colour</translation>
 <translation id="992032470292211616">Extensions, apps and themes can harm your mobile device. Are you sure that you want to continue?</translation>
 <translation id="992256792861109788">Pink</translation>
 <translation id="992592832486024913">Disable ChromeVox (spoken feedback)</translation>

@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Nyelvek</translation>
 <translation id="4183350924949589798">Nagyobb biztonságot szeretne?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} gyenge jelszó}other{{count} gyenge jelszó}}</translation>
+<translation id="4196758674971560031">Az Ön által létrehozott lapcsoportok a lapcsoportok szakaszban vannak elmentve, és az összes eszközén frissülnek.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} elemet csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné, mentse Google-fiókjába ({email}).}other{{count} elemet csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába ({email}).}}</translation>
 <translation id="4207873326995387292">Böngésző adatok</translation>
 <translation id="421070604241073551">Ha be van kapcsolva, a rendszer az Ön Google-fiókjába menti az adatokat. Ha ki van kapcsolva, a rendszer csak erre az eszközre menti az adatokat.</translation>
@@ -1507,6 +1508,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6494931198667773526">Vége</translation>
 <translation id="6503077044568424649">Gyakori</translation>
 <translation id="6503763061813913607">A biztonsági ellenőrzés értesítései</translation>
+<translation id="6504541289630702018">Könnyen hozzáférhet az asztali lapcsoportokhoz</translation>
 <translation id="6505334220040167806">Lapcsoport összecsukása.</translation>
 <translation id="6506996418997555004">A(z) „<ph name="GROUP_NAME" />” lapcsoport megosztása</translation>
 <translation id="6507973708545996744">Ha bejelentkezik, az összes eszközén hozzáférhet az olvasólistájához.</translation>
@@ -2137,6 +2139,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8731268612289859741">Biztonsági kód</translation>
 <translation id="87371078663613140">Fedezze fel a menüsorban rendelkezésre álló beállításokat</translation>
+<translation id="8739546376441802490">A kitűzött webhely már létezik</translation>
 <translation id="8741627442233023406">{count,plural, =1{A lap áttekintése…}other{Az összes lap áttekintése…}}</translation>
 <translation id="8741995161408053644">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> címen.</translation>
 <translation id="874599634440689554">Link létrehozása</translation>

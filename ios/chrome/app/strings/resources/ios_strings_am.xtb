@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">ቋንቋዎች</translation>
 <translation id="4183350924949589798">ተጨማሪ ደህንነት?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} ደካማ የይለፍ ቃል}one{{count} ደካማ የይለፍ ቃል}other{{count} ደካማ የይለፍ ቃሎች}}</translation>
+<translation id="4196758674971560031">የፈጠሯቸው የትር ቡድኖች የትር ቡድን ክፍል ውስጥ ይቀመጣሉ እና በመላው መሣሪያዎችዎ ላይ ይዘመናሉ።</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}one{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}other{{count} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="4207873326995387292">የአሳሽ መረጃ</translation>
 <translation id="421070604241073551">ሲበራ ውሂብ በGoogle መለያዎ ውስጥ ይቀመጣል። ሲጠፋ፣ ውሂብ ወደዚህ መሣሪያ ብቻ ይቀመጣል።</translation>
@@ -1507,6 +1508,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6494931198667773526">ያበቃል</translation>
 <translation id="6503077044568424649">በይበልጥ የተጎበኙ</translation>
 <translation id="6503763061813913607">የደህንነት ፍተሻ ማሳወቂያዎች</translation>
+<translation id="6504541289630702018">የዴስክቶፕ ትር ቡድኖችዎን በቀላሉ ይድረሱ</translation>
 <translation id="6505334220040167806">የትር ቡድኑን ሰብስብ።</translation>
 <translation id="6506996418997555004">«<ph name="GROUP_NAME" />» የትር ቡድንን ያጋሩ</translation>
 <translation id="6507973708545996744">የንባብ ዝርዝርዎን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ ይግቡ።</translation>
@@ -2137,6 +2139,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8731268612289859741">የደህንነት ኮድ</translation>
 <translation id="87371078663613140">በምናሌ አሞሌው ውስጥ ያሉትን አማራጮች ያስሱ</translation>
+<translation id="8739546376441802490">የተሰካ ጣቢያ ቀድሞውኑ አለ</translation>
 <translation id="8741627442233023406">{count,plural, =1{ትሩን ይገምግሙ…}one{ሁሉንም ትር ይገምግሙ…}other{ሁሉንም ትር ይገምግሙ…}}</translation>
 <translation id="8741995161408053644">የእርስዎ Google መለያ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="874599634440689554">አገናኝ ፍጠር</translation>

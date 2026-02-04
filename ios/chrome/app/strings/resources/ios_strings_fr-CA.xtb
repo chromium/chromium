@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4183350924949589798">Plus de sécurité?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} mot de passe faible}one{{count} mot de passe faible}other{{count} mots de passe faibles}}</translation>
+<translation id="4196758674971560031">Les groupes d'onglets que vous avez créés sont enregistrés dans la section des groupes d'onglets et mis à jour sur vos appareils.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}one{{count} élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}other{{count} éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
 <translation id="4207873326995387292">Renseignements sur le navigateur</translation>
 <translation id="421070604241073551">Activé : les données sont enregistrées dans votre compte Google. Désactivé : les données sont enregistrées uniquement sur cet appareil.</translation>
@@ -1507,6 +1508,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6503077044568424649">Les plus visités</translation>
 <translation id="6503763061813913607">Notifications de Vérification de sécurité</translation>
+<translation id="6504541289630702018">Accéder facilement à vos groupes d'onglets de bureau</translation>
 <translation id="6505334220040167806">Réduire le groupe d'onglets.</translation>
 <translation id="6506996418997555004">Partager le groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
 <translation id="6507973708545996744">Connectez-vous pour obtenir votre liste de lecture sur tous vos appareils.</translation>
@@ -2137,6 +2139,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="87371078663613140">Explorer les options dans la barre de menu</translation>
+<translation id="8739546376441802490">Le site épinglé existe déjà</translation>
 <translation id="8741627442233023406">{count,plural, =1{Vérifier l'onglet…}one{Vérifier tous les onglets...}other{Vérifier tous les onglets…}}</translation>
 <translation id="8741995161408053644">D'autres formes d'historique de navigation peuvent exister sur votre compte Google : <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Créer un lien</translation>

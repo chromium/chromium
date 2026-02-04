@@ -852,6 +852,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4685741273709472646">Selecione na lista suspensa</translation>
 <translation id="4687718960473379118">Anúncios sugeridos pelo site</translation>
 <translation id="468924408576231679">Copiar o link para a página da Web <ph name="PAGE_TITLE" />. Fonte: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Mecanismos de pesquisa</translation>
 <translation id="469286762610133730">Receba conteúdos melhores</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Guias ativas (<ph name="ITEM_COUNT" />)</translation>
@@ -1532,6 +1533,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7376560087009844242">Ao incluir mais texto de uma página, você poderá ver resultados melhores ao usar a Pesquisa por toque. Você pode mudar essa opção nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" /> quando quiser.</translation>
 <translation id="7379900596734708416">O tema escuro para sites está disponível</translation>
 <translation id="7384486627147155832">Mensagem promocional de notificações de dicas aberta na metade da altura</translation>
+<translation id="7387951778417998929">Para usar outro mecanismo de pesquisa diferente do padrão, digite o atalho dele na barra de endereço seguido pelo atalho de teclado da sua preferência Também é possível mudar seu mecanismo de pesquisa padrão nesta página.</translation>
 <translation id="7388615499319468910">Sites e anunciantes podem medir a performance dos anúncios. Esta configuração está desativada.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Mais 1 arquivo na lista}one{Mais # arquivo na lista}other{Mais # arquivos na lista}}</translation>
 <translation id="7400418766976504921">URL</translation>

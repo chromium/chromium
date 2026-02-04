@@ -994,6 +994,7 @@
 <translation id="1652326691684645429">የአቅራቢያ አጋራን ያንቁ</translation>
 <translation id="1652862280638399816">የሚስጥር ቁልፍ አስተዳዳሪን ከ macOS Keychain ጋር ለመጠቀም Chromium ን እንደገና ያስጀምሩ እና የ Keychain መዳረሻን ይፍቀዱ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="1653958716132599769">ቡድን ተዛማች ትሮች</translation>
+<translation id="165448107578581061">Gemini በተግባርዎ ላይ እየሠራ ነው...</translation>
 <translation id="1654580009054503925">ጥያቄዎችን ለማሳየት አልተፈቀደም</translation>
 <translation id="1654713139320245449">ምንም የcast መድረሻዎች አልተገኙም። እገዛ ይፈልጋሉ?</translation>
 <translation id="1656528038316521561">የበስተጀርባ ብርሃን-ከልነት</translation>
@@ -1613,7 +1614,6 @@
 <translation id="2079053412993822885">ከእውቅና ማረጋገጫዎችዎ ውስጥ አንዱን ከሰረዙ ከአሁን በኋላ ማንነትዎን ለማሳወቅ ሊጠቀሙበት አይችሉም።</translation>
 <translation id="2079495302726689071">አገናኝን በአዲስ <ph name="APP" /> ትር ውስጥ ይክፈቱ</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
-<translation id="2079553700504470326">በጣም ትክክል ለሆኑት የGemini ውጤቶች በአይፒ አድራሻዎ መሠረት ከተገመተው አካባቢ ይልቅ ትክክለኛ አካባቢዎን ይጠቀሙ።</translation>
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2081816110395725788">በባትሪ ላይ ሥራ ፈት ኃይል</translation>
 <translation id="2082187087049518845">ትርን ሰብስብ</translation>
@@ -3884,6 +3884,7 @@
 <translation id="3619294456800709762">ጣቢያዎች በራስ-ሰር ስዕል-ላይ-ስዕል መግባት ይችላሉ</translation>
 <translation id="3620136223548713675">ጂዮ አካባቢ</translation>
 <translation id="3621202678540785336">ግብዓት</translation>
+<translation id="3621841019087952625">በኋላ አቀናብር</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{አንድ መተግበሪያ}one{# መተግበሪያዎች}other{# መተግበሪያዎች}}</translation>
 <translation id="3622820753353315928">የማያ ገጽ ብልጭታ ቀለም</translation>
 <translation id="3623318122257816196">የሚጎበኟቸው ጣቢያዎች ከሌሎች ጣቢያዎች ይዘት መክተት ይችላሉ፣ ለምሳሌ ምስሎች፣ ማስታወቂያዎች እና ጽሑፍ። እነዚህ ሌሎች ጣቢያዎች እርስዎ ጣቢያውን በሚያስሱበት ጊዜ ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ፈቃድ መጠየቅ ይችላሉ።</translation>
@@ -4284,6 +4285,7 @@
 <translation id="3856096718352044181">ይህ ልክ የሆነ አገልግሎት አቅራቢ መሆኑን እባክዎ ያረጋግጡ ወይም ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="3856470183388031602">የእርስዎን Google መለያ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይጠቀሙ</translation>
 <translation id="3856800405688283469">የሰዓት ሰቅ ይምረጡ</translation>
+<translation id="3856902135796972992">ይህ ጣቢያ ተጨማሪ እርምጃ ይፈልጋል። የይለፍ ቃል ለውጡ እንዲጠናቀቅ በገፁ ላይ ያጠናቅቁ።</translation>
 <translation id="3857807444929313943">ያንሱ፣ ከዚያ እንደገና ይንኩ</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="385939467708172187">ጠንካራ የይለፍ ቃል ይጠቀሙ</translation>
@@ -5927,7 +5929,6 @@
 <translation id="5001526427543320409">የሦስተኛ ወገን ኩኪዎች</translation>
 <translation id="5003070249435823986">የማሸብለል ሁነታ ውስጥ ለመግባት ምልክቱን ይጠቀሙ፣ ከዚያ ማሸብለል ወደሚፈልጉበት አቅጣጫ ጭንቅላትዎን ያንቀሳቅሱ። ከማሸብለል ሁነታ ለመውጣት ምልክቱን እንደገና ይጠቀሙ።</translation>
 <translation id="5003993274120026347">ቀጣይ ዓረፍተ ነገር</translation>
-<translation id="5005113238422129109">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini መተግበሪያ እንቅስቃሴ (ከበራ) ውስጥ ይከማቻል።</translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
 <translation id="5006218871145547804">የCrostini Android መተግበሪያ ADB</translation>
 <translation id="5006778209728626987">መብራት</translation>
@@ -6254,6 +6255,7 @@
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{የትር ቡድን ይበተን?}one{የትር ቡድን ይበተን?}other{የትር ቡድኖች ይበተኑ?}}</translation>
 <translation id="5230190638672215545">«ươ» ለማግኘት «uow» ብለው ይተይቡ</translation>
 <translation id="5230516054153933099">መስኮት</translation>
+<translation id="5231255476752743708">Chrome የይለፍ ቃልዎን ለመለወጥ እገዛ ይፈልጋል</translation>
 <translation id="5232714764496316200">በGoogle ሌንስ የቤት ሥራ እገዛ ያግኙ</translation>
 <translation id="5233231016133573565">የሂደት መለያ ቁጥር</translation>
 <translation id="5233638681132016545">አዲስ ትር</translation>
@@ -7782,10 +7784,8 @@
 <translation id="6291953229176937411">በፈላጊ ውስጥ &amp;አሳይ</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ጠፍቷል</translation>
 <translation id="6294759976468837022">የራስ-ቅኝት ፍጥነት</translation>
-<translation id="6295140892595702619">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini መተግበሪያ እንቅስቃሴ (ከበራ) ውስጥ ይከማቻል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም</translation>
 <translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
 <translation id="6295855836753816081">በማስቀመጥ ላይ...</translation>
-<translation id="6296481987471548530">በጣም ትክክል ለሆኑት የGemini ውጤቶች በአይፒ አድራሻዎ መሠረት ከተገመተው አካባቢ ይልቅ ትክክለኛ አካባቢዎን ይጠቀሙ። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም</translation>
 <translation id="6297986260307280218">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ Google በመላክ የAndroid ተሞክሮዎ እንዲሻሻል ያግዙ። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። እንዲሁም አንዳንድ ውሑድ ውሂብ የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛል። ይህ <ph name="BEGIN_LINK1" />ቅንብር<ph name="END_LINK1" /> በባለቤቱ ተፈጻሚ ይደረጋል። ባለቤቱ የዚህ መሣሪያ የምርመራ እና የአጠቃቀም ለGoogle ለመላክ ሊመርጥ ይችላሉ። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር ከበራ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />ስለ መለኪያዎች የበለጠ ይረዱ<ph name="BEGIN_LINK2_END" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">እዚህ የተዘረዘሩትን ጣቢያዎች ይነካል። ከጎራ ስም በፊት "[*.]" ማስገባት ለመላው ጎራ ለየት ያለ ሁኔታ ይፈጥራል። ለምሳሌ፣ "[*.]google.com" ማከል ማለት የGoogle.com አካል በመሆኑ ምክንያት የሶስተኛ ወገን ኩኪዎች ለ mail.google.com እንዲሁ ንቁ ሊሆኑ ይችላሉ።</translation>
 <translation id="6298962879096096191">የAndroid መተግበሪያዎችን ለመጫን Google Playን ይጠቀሙ</translation>
@@ -8319,6 +8319,7 @@
 <translation id="6677527809400770913">የተዛወረ ምልክት <ph name="GESTURE" /> ወደ <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">ትላልቅ ማዕበሎች በባህር ውስጥ ይረጫሉ፣ ከርቀት ከበስተጀርባ ከሚታይ መሬት ጋር። የብርቱካናማ ብርሃን ፍንጮች ከአድማስ በላይ ናቸው፣ በሌላ መልኩ ጨለማ በሆነ ስሜት በተሞላ ሰማይ።</translation>
 <translation id="6678717876183468697">የጥያቄ ዩአርኤል</translation>
+<translation id="6678974601734442817">Chromium የይለፍ ቃልዎን ለመለወጥ እገዛ ይፈልጋል</translation>
 <translation id="6679947539429331601">ለ12 ሰዓታት ደብቅ</translation>
 <translation id="6680442031740878064">ይገኛል፦ <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ደረጃ ይስጡ</translation>
@@ -11030,7 +11031,6 @@ nil</translation>
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> በAndroid መሣሪያዎ ላይ መረጃ ማስቀመጥ ይፈልጋል</translation>
 <translation id="8509177919508253835">የደህንነት ቁልፎችን ዳግም ያስጀምሩ እና ፒኖችን ይፍጠሩ</translation>
 <translation id="8509646642152301857">የፊደል ማረሚያ መዝገበ-ቃላት ማውረድ አልተሳካም።</translation>
-<translation id="8509967119010808787">ትሮችዎን ለመፈለግ እዚህ ጠቅ ያድርጉ</translation>
 <translation id="8512476990829870887">ሂደቱን ግታ</translation>
 <translation id="851263357009351303">ሁልጊዜ <ph name="HOST" /> ምስሎችን እዲያሳይ ፍቀድ</translation>
 <translation id="8513108775083588393">በራስ ሰር አሽከርክር</translation>

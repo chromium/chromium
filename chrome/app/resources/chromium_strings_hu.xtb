@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">A Chromiumnak Bluetooth-hozzáférésre van szüksége a 
  Bluetooth-eszközök felfedezéséhez. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Nyelvfelismerés</translation>
+<translation id="1330742950061766891">A Chromium ajánlott böngészőbeállításainak használata</translation>
 <translation id="1342274909142618978">Az adatok a Chromiumból is legyenek törölve (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Sikeres kitűzés. A Képkereső funkcióhoz az eszköztár új gombjával is hozzáférhet</translation>
 <translation id="1356661055722410047">Új! A képernyőn megjelenő szöveget és képeket is lefordíthatja.</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1397530502368084401">&amp;Chromium-profilok kezelése</translation>
+<translation id="1404026649028693342">Mindig látszódjon az AI-mód</translation>
 <translation id="141901961143729572">Ossza meg gondolatait</translation>
 <translation id="1465192221147974788">Az ablak megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="1478370723027452770">Segítség kérése a Chrome for Testing verzióval kapcsolatban</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">Beállítások.</translation>
 <translation id="2049376729098081731">Válassza ki, hogy szeretné-e használni a Chromium-előzményeket személyre szabott élmények biztosításához a Google-szolgáltatásokban.</translation>
 <translation id="2064856577282482477">Az Új lap oldalon található A Chromium személyre szabása gombra kattintva új megjelenést adhat a Chromiumnak</translation>
+<translation id="2066690553719545730">Mindig látszódjon az AI-mód</translation>
 <translation id="2086476982681781442">A Chromium letiltotta ezt a letöltést, mert a fájl megtévesztő, és váratlan módosításokat végezhet az eszközön</translation>
 <translation id="208726765006323911">A Chromium iOS következő megnyitásakor megjelenik egy üzenet, amely a(z) <ph name="FEATURE_NAME" /> funkció kipróbálását javasolja.</translation>
 <translation id="2099452623287920103">A Google-fiókjába mentett jelszavai és egyéb Chromium-adatai el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chromiumban, jelentkezzen be újra.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Chromium-előzmények</translation>
 <translation id="3103660991484857065">Nem sikerült a telepítőnek kibontani a tömörített állományt. Kérjük, töltse le újra a Chromium böngészőt.</translation>
 <translation id="310459126943037700">A feladatok befejezése nem sikerült.</translation>
+<translation id="3126784891977756556">Jelszavai, könyvjelzői és előzményei tökéletesen szinkronizálódnak az eszközök között. Ha a Chromiumot állítja be alapértelmezett böngészőként, könnyen hozzáférhet a már ismert és szeretett funkciókhoz.</translation>
 <translation id="3130323860337406239">A Chromium használja a mikrofont.</translation>
 <translation id="3130333203120345554">Új keresés</translation>
 <translation id="3137969841538672700">Húzza a kereséshez</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4334241893986177674">Keresés ezen a képernyőképen</translation>
 <translation id="4334294535648607276">A letöltés befejeződött.</translation>
+<translation id="4384993550046411228">A Chromium alapértelmezett böngészőként való beállításával könnyen hozzáférhet a már ismert, szeretett és megbízható funkciókhoz. A Chromium a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
 <translation id="439358628917130594">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a ChromiumOS feltételeit.</translation>
 <translation id="4407044323746248786">Biztosan kilép a Chromiumból?</translation>
 <translation id="4413205837991854510">A Képkereső parancsikonja mindig jelenjen meg</translation>

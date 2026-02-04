@@ -994,6 +994,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1652326691684645429">Aktiveer Nabydeling</translation>
 <translation id="1652862280638399816">Herbegin Chromium en laat Keychain-toegang toe om Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="1653958716132599769">Groepverwante oortjies</translation>
+<translation id="165448107578581061">Gemini werk tans aan jou taak …</translation>
 <translation id="1654580009054503925">Nie toegelaat om versoeke te wys nie</translation>
 <translation id="1654713139320245449">Geen uitsaaibestemmings gevind nie. Het jy hulp nodig?</translation>
 <translation id="1656528038316521561">Agtergrondondeursigtigheid</translation>
@@ -1615,7 +1616,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2079053412993822885">As jy een van jou eie sertifikate uitvee, kan jy dit nie meer gebruik om jouself te identifiseer nie.</translation>
 <translation id="2079495302726689071">Maak skakel in nuwe <ph name="APP" />-oortjie oop</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
-<translation id="2079553700504470326">Gebruik jou presiese ligging vir die akkuraatste Gemini-resultate, pleks van ’n geskatte ligging op grond van jou IP-adres.</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2081816110395725788">Sluimerkraggebruik wanneer battery gebruik word</translation>
 <translation id="2082187087049518845">Groepoortjie</translation>
@@ -3888,6 +3888,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3619294456800709762">Werwe kan prent-in-prent outomaties ingaan</translation>
 <translation id="3620136223548713675">Geoligging</translation>
 <translation id="3621202678540785336">Invoer</translation>
+<translation id="3621841019087952625">Stel later</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{'n app}other{# apps}}</translation>
 <translation id="3622820753353315928">Skerm se flitskleur</translation>
 <translation id="3623318122257816196">Werwe wat jy besoek kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Hierdie ander werwe kan toestemming vra om inligting wat hulle oor jou gestoor het te gebruik terwyl jy deur die webwerf blaai.</translation>
@@ -4288,6 +4289,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3856096718352044181">Bevestig dat dit 'n geldige verskaffer is of probeer later weer</translation>
 <translation id="3856470183388031602">Gebruik jou Google-rekening op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Kies tydsone</translation>
+<translation id="3856902135796972992">Hierdie werf vereis ’n bykomende handeling. Voltooi dit op die bladsy sodat die wagwoordverandering voltooi kan word.</translation>
 <translation id="3857807444929313943">Lig en raak dan weer</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="385939467708172187">Gebruik sterk wagwoord</translation>
@@ -5933,7 +5935,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
 <translation id="5003070249435823986">Gebruik die gebaar om na rolleesmodus te gaan en beweeg dan jou kop in die rigting wat jy graag wil rollees. Gebruik weer die gebaar om uit rolleesmodus te gaan.</translation>
 <translation id="5003993274120026347">Volgende sin</translation>
-<translation id="5005113238422129109">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-appsaktiwiteit gestoor (as dit aan is)</translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
 <translation id="5006218871145547804">Android-app-ADB in Crostini</translation>
 <translation id="5006778209728626987">Weerlig</translation>
@@ -6260,6 +6261,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Ongroepeer oortjiegroep?}other{Ongroepeer oortjiegroepe?}}</translation>
 <translation id="5230190638672215545">Tik “uow” om “ươ” te kry</translation>
 <translation id="5230516054153933099">Venster</translation>
+<translation id="5231255476752743708">Chrome het hulp nodig om jou wagwoord te verander</translation>
 <translation id="5232714764496316200">Kry huiswerkhulp met Google Lens</translation>
 <translation id="5233231016133573565">Proses-ID</translation>
 <translation id="5233638681132016545">Nuwe oortjie</translation>
@@ -7789,10 +7791,8 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6291953229176937411">Wys in vinder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is afgeskakel</translation>
 <translation id="6294759976468837022">Outoskanderingspoed</translation>
-<translation id="6295140892595702619">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-appsaktiwiteit gestoor (as dit aan is). Jou data word nie gebruik om generatiewe KI-modelle te verbeter</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
 <translation id="6295855836753816081">Stoor tans …</translation>
-<translation id="6296481987471548530">Gebruik jou presiese ligging vir die akkuraatste Gemini-resultate, pleks van ’n geskatte ligging op grond van jou IP-adres. Jou data word nie gebruik om generatiewe KI-modelle te verbeter nie</translation>
 <translation id="6297986260307280218">Stuur gebruik- en diagnostiese data. Help om jou Android-ervaring beter te maak deur diagnostiese, toestel- en appgebruikdata outomaties na Google toe te stuur. Dit sal met stelsel- en appstabiliteit en ander verbeteringe help. Sekere aggregaatdata sal ook Google-apps en -vennote, soos Android-ontwikkelaars, help. Hierdie <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> word deur die eienaar afgedwing. Die eienaar kan kies om diagnostiese en gebruikdata vir hierdie toestel na Google toe te stuur. As jou bykomende Web- en Appaktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Meer inligting oor maatstawwe<ph name="BEGIN_LINK2_END" />Meer inligting<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Beïnvloed die werwe wat hier gelys word Die invoeging van “[*.]“ voor ’n domeinnaam skep ’n uitsondering vir die hele domein. Byvoorbeeld, deur “[*.]google.com” by te voeg, kan derdepartywebkoekies ook aktief wees vir mail.google.com omdat dit deel is van google.com.</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-programme te installeer</translation>
@@ -8324,6 +8324,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6677527809400770913">Toegewysde gebaar <ph name="GESTURE" /> na <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Groot golwe plons in die see, met die land ver in die agtergrond. Tikkies oranje lig lê net anderkant die horison, in ’n andersins donker, swaarmoedige lug.</translation>
 <translation id="6678717876183468697">Navraag-URL</translation>
+<translation id="6678974601734442817">Chromium het hulp nodig om jou wagwoord te verander</translation>
 <translation id="6679947539429331601">Versteek vir 12 uur</translation>
 <translation id="6680442031740878064">Beskikbaar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Gradeer</translation>
@@ -11028,7 +11029,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> wil inligting op jou Android-toestel stoor</translation>
 <translation id="8509177919508253835">Stel sekuriteitsleutels terug en skep PIN'e</translation>
 <translation id="8509646642152301857">Kon nie speltoetserwoordeboek aflaai nie.</translation>
-<translation id="8509967119010808787">Klik hier om jou oortjies te deursoek</translation>
 <translation id="8512476990829870887">Beëindig proses</translation>
 <translation id="851263357009351303">Laat <ph name="HOST" /> altyd toe om prente te wys</translation>
 <translation id="8513108775083588393">Outodraai</translation>

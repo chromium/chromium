@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4183350924949589798">Mai multă securitate?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} parolă slabă}few{{count} parole slabe}other{{count} de parole slabe}}</translation>
+<translation id="4196758674971560031">Grupurile de file pe care le-ai creat sunt salvate în secțiunea Grup de file și se actualizează pe toate dispozitivele.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul tău Google, {email}.}few{{count} elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}other{{count} de elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}}</translation>
 <translation id="4207873326995387292">Informații despre browser</translation>
 <translation id="421070604241073551">Când opțiunea este activată, datele se salvează în Contul Google. Când este dezactivată, datele se salvează numai pe acest dispozitiv.</translation>
@@ -1507,6 +1508,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6494931198667773526">Se termină</translation>
 <translation id="6503077044568424649">Cele mai vizitate</translation>
 <translation id="6503763061813913607">Notificări pentru Verificarea de siguranță</translation>
+<translation id="6504541289630702018">Accesează cu ușurință grupurile de file de pe computer</translation>
 <translation id="6505334220040167806">Restrânge grupul de file.</translation>
 <translation id="6506996418997555004">Trimite grupul de file <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Conectează-te pentru a accesa lista de lecturi pe toate dispozitivele.</translation>
@@ -2137,6 +2139,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8731268612289859741">Cod de securitate</translation>
 <translation id="87371078663613140">Explorează opțiunile din bara de meniu</translation>
+<translation id="8739546376441802490">Site-ul fixat există deja</translation>
 <translation id="8741627442233023406">{count,plural, =1{Examinează fila…}few{Examinează toate filele…}other{Examinează toate filele…}}</translation>
 <translation id="8741995161408053644">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Creează un link</translation>

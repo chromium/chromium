@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">డ్రాప్‌డౌన్ లిస్ట్ నుండి ఎంచుకోండి</translation>
 <translation id="4687718960473379118">సైట్ సూచించిన యాడ్‌లు</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> వెబ్‌పేజీకి లింక్‌ను కాపీ చేయండి. సోర్స్: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">సెర్చ్ ఇంజిన్‌లు</translation>
 <translation id="469286762610133730">మెరుగైన కంటెంట్ పొందండి</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">యాక్టివ్‌గా ఉంది (<ph name="ITEM_COUNT" />)</translation>
@@ -1529,6 +1530,7 @@
 <translation id="7376560087009844242">'వెతకడానికి తాకండి'ని ఉపయోగించినప్పుడు, పేజీ తాలూకు ఎక్కువ టెక్స్ట్‌ను చేర్చడం ద్వారా మీరు మెరుగైన ఫలితాలను చూడవచ్చు. దీనిని మార్చడానికి మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లవచ్చు.</translation>
 <translation id="7379900596734708416">సైట్‌ల కోసం డార్క్ థీమ్‌ అందుబాటులో ఉంది</translation>
 <translation id="7384486627147155832">సగం మాత్రమే తెరుచుకున్న చిట్కాల నోటిఫికేషన్ ప్రోమో</translation>
+<translation id="7387951778417998929">ఆటోమేటిక్ సెర్చ్ ఇంజిన్ కాకుండా వేరొక సెర్చ్ ఇంజిన్‌ను ఉపయోగించాలంటే, అడ్రస్ బార్‌లో దాని షార్ట్‌కట్‌ను టైప్ చేసి, ఆ తర్వాత మీ ప్రాధాన్య కీబోర్డ్ షార్ట్‌కట్‌ను టైప్ చేయండి. మీరు ఇక్కడ మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను కూడా మార్చవచ్చు.</translation>
 <translation id="7388615499319468910">యాడ్‌ల పనితీరు ఎలా ఉంది అనేది సైట్‌లు, అడ్వర్టయిజర్‌లు అర్థం చేసుకోగలరు. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{లిస్ట్‌లో మరో 1 ఫైల్ ఉంది}other{లిస్ట్‌లో మరో # ఫైల్స్ ఉన్నాయి}}</translation>
 <translation id="7400418766976504921">URL</translation>

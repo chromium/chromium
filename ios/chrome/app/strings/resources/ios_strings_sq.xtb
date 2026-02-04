@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4183350924949589798">Më shumë siguri?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} fjalëkalim i dobët}other{{count} fjalëkalime të dobëta}}</translation>
+<translation id="4196758674971560031">Grupet e skedave që ke krijuar ruhen në seksionin e grupit të skedave dhe përditësohen në pajisjet e tua.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} artikull është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje atë në "Llogarinë tënde të Google", {email}.}other{{count} artikuj janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="4207873326995387292">Informacioni i shfletuesit</translation>
 <translation id="421070604241073551">Kur është aktivizuar, të dhënat ruhen në "Llogarinë tënde të Google". Kur është çaktivizuar, të dhënat ruhen vetëm në këtë pajisje.</translation>
@@ -1507,6 +1508,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6494931198667773526">Mbaron</translation>
 <translation id="6503077044568424649">Më të vizituara</translation>
 <translation id="6503763061813913607">Njoftimet e "Kontrollit të sigurisë"</translation>
+<translation id="6504541289630702018">Qasu me lehtësi te grupet e skedave të desktopit</translation>
 <translation id="6505334220040167806">Palos grupin e skedave.</translation>
 <translation id="6506996418997555004">Ndaj grupin e skedave "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Identifikohu për të marrë listën tënde të leximit në të gjitha pajisjet e tua.</translation>
@@ -2137,6 +2139,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8731268612289859741">Kodi i sigurisë</translation>
 <translation id="87371078663613140">Eksploro opsionet në shiritin e menysë</translation>
+<translation id="8739546376441802490">Sajti i gozhduar ekziston tashmë</translation>
 <translation id="8741627442233023406">{count,plural, =1{Rishiko skedën…}other{Rishiko të gjitha skedat…}}</translation>
 <translation id="8741995161408053644">Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Krijo një lidhje</translation>

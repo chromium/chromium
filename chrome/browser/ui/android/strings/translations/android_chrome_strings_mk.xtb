@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">Изберете од паѓачкиот список</translation>
 <translation id="4687718960473379118">Реклами предложени од сајтови</translation>
 <translation id="468924408576231679">Копирајте го линкот до веб-страницата <ph name="PAGE_TITLE" />. Извор: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Пребарувачи</translation>
 <translation id="469286762610133730">Добивајте подобри содржини</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Активни (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">Ако вклучите повеќе текст од страницата, можеби ќе гледате подобри резултати кога ќе користите „Допрете за пребарување“ Може да одите во <ph name="BEGIN_LINK" />поставки<ph name="END_LINK" /> во секое време за да го промените ова.</translation>
 <translation id="7379900596734708416">Темната тема за сајтови е достапна</translation>
 <translation id="7384486627147155832">Промоцијата на „Известувања за совети“ е отворена на половина висина</translation>
+<translation id="7387951778417998929">За да користите некој друг пребарувач, а не стандардниот, напишете ја неговата кратенка во лентата за адреси заедно со вашата претпочитана кратенка од тастатура. Стандардниот пребарувач може да го промените и тука.</translation>
 <translation id="7388615499319468910">Сајтовите и огласувачите може да ја разберат изведбата на рекламите. Оваа поставка е исклучена.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Друго, 1 датотека во список}one{Друго, # датотека во список}other{Друго, # датотеки во список}}</translation>
 <translation id="7400418766976504921">URL</translation>

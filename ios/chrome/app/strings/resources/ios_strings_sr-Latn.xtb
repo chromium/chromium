@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4183350924949589798">Više bezbednosti?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} slaba lozinka}one{{count} slaba lozinka}few{{count} slabe lozinke}other{{count} slabih lozinki}}</translation>
+<translation id="4196758674971560031">Grupe kartica koje ste napravili čuvaju se u odeljku za grupe kartica i ažuriraju se na svim uređajima.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} stavka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, sačuvajte je na Google nalogu, {email}.}one{{count} stavka je sačuvana samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}few{{count} stavke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}other{{count} stavki je sačuvano samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}}</translation>
 <translation id="4207873326995387292">Informacije o pregledaču</translation>
 <translation id="421070604241073551">Kada je uključeno, podaci se čuvaju na Google nalogu. Kada je isključeno, podaci se čuvaju samo na ovom uređaju.</translation>
@@ -1507,6 +1508,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6494931198667773526">Završava se</translation>
 <translation id="6503077044568424649">Najposećeniji</translation>
 <translation id="6503763061813913607">Obaveštenja Provere bezbednosti</translation>
+<translation id="6504541289630702018">Lako pristupajte grupama kartica na računaru</translation>
 <translation id="6505334220040167806">Skupite grupu kartica.</translation>
 <translation id="6506996418997555004">Delite grupu kartica <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Prijavite se da bi vam lista za čitanje bila dostupna na svim uređajima.</translation>
@@ -2137,6 +2139,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731268612289859741">Bezbednosni kôd</translation>
 <translation id="87371078663613140">Istražite opcije na traci menija</translation>
+<translation id="8739546376441802490">Prikačeni sajt već postoji</translation>
 <translation id="8741627442233023406">{count,plural, =1{Pregledaj karticu…}one{Pregledaj sve kartice…}few{Pregledaj sve kartice…}other{Pregledaj sve kartice…}}</translation>
 <translation id="8741995161408053644">Google nalog ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Napravi link</translation>

@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4183350924949589798">Dodatna zaštita?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} slaba zaporka}one{{count} slaba zaporka}few{{count} slabe zaporke}other{{count} slabih zaporki}}</translation>
+<translation id="4196758674971560031">Grupe kartica koje ste izradili spremaju se u odjeljak grupe kartica i ažuriraju na svim vašim uređajima.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} stavka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun, {email}.}one{{count} stavka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun, {email}.}few{{count} stavke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}other{{count} stavki sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}}</translation>
 <translation id="4207873326995387292">Informacije o pregledniku</translation>
 <translation id="421070604241073551">Kada je postavka uključena, podaci se spremaju na vaš Google račun. Kad je ta postavka isključena, podaci se spremaju samo na ovaj uređaj.</translation>
@@ -1507,6 +1508,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6494931198667773526">Završava</translation>
 <translation id="6503077044568424649">Najposjećenije</translation>
 <translation id="6503763061813913607">Obavijesti sigurnosne provjere</translation>
+<translation id="6504541289630702018">Jednostavno pristupajte grupama kartica na radnoj površini</translation>
 <translation id="6505334220040167806">Sažmite grupu kartica.</translation>
 <translation id="6506996418997555004">Podijelite grupu kartica <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Prijavite se da biste dobili popis za čitanje na svim svojim uređajima.</translation>
@@ -2137,6 +2139,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>
 <translation id="87371078663613140">Istražite opcije na traci izbornika</translation>
+<translation id="8739546376441802490">Prikvačena web-lokacija već postoji</translation>
 <translation id="8741627442233023406">{count,plural, =1{Pregledajte karticu…}one{Pregledajte sve kartice…}few{Pregledajte sve kartice…}other{Pregledajte sve kartice…}}</translation>
 <translation id="8741995161408053644">Na Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Izradi vezu</translation>

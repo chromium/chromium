@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Хэл</translation>
 <translation id="4183350924949589798">Илүү аюулгүй байдал?</translation>
 <translation id="4184063163998877398">{count,plural, =1{Сул {count} нууц үг}other{Сул {count} нууц үг}}</translation>
+<translation id="4196758674971560031">Таны үүсгэсэн табын бүлгүүдийг табын бүлэг хэсэгт хадгалж, төхөөрөмжүүд дээр тань шинэчилдэг.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Үүнийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}other{{count} зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="4207873326995387292">Хөтчийн мэдээлэл</translation>
 <translation id="421070604241073551">Асаалттай байхад өгөгдлийг таны Google Бүртгэлд хадгалдаг. Унтраалттай байхад өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
@@ -1507,6 +1508,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6494931198667773526">Дуусна</translation>
 <translation id="6503077044568424649">Хамгийн олон хандалт авсан</translation>
 <translation id="6503763061813913607">Аюулгүй байдлын шалгалтын мэдэгдэл</translation>
+<translation id="6504541289630702018">Компьютерынхоо табын бүлгүүдэд хялбархан хандаарай</translation>
 <translation id="6505334220040167806">Табын бүлгийг хураана уу.</translation>
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" табын бүлгийг хуваалцах</translation>
 <translation id="6507973708545996744">Бүх төхөөрөмждөө унших жагсаалтаа авахын тулд нэвтэрнэ үү.</translation>
@@ -2137,6 +2139,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8731268612289859741">Аюулгүй байдлын код</translation>
 <translation id="87371078663613140">Цэсийн талбар дахь сонголтыг судална уу</translation>
+<translation id="8739546376441802490">Бэхэлсэн сайт аль хэдийн байна</translation>
 <translation id="8741627442233023406">{count,plural, =1{Табыг хянах…}other{Бүх табыг хянах…}}</translation>
 <translation id="8741995161408053644">Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="874599634440689554">Холбоос үүсгэх</translation>

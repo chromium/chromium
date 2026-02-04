@@ -995,6 +995,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1652326691684645429">Iespējot funkciju Kopīgošana tuvumā</translation>
 <translation id="1652862280638399816">Lai izmantotu paroļu pārvaldnieku ar macOS sistēmu Keychain, atkārtoti palaidiet pārlūku Chromium un atļaujiet piekļuvi sistēmai Keychain. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="1653958716132599769">Grupēt saistītas cilnes</translation>
+<translation id="165448107578581061">Gemini strādā pie jūsu uzdevuma…</translation>
 <translation id="1654580009054503925">Nedrīkst rādīt pieprasījumus</translation>
 <translation id="1654713139320245449">Netika atrasts neviens apraides galamērķis. Vai nepieciešama palīdzība?</translation>
 <translation id="1656528038316521561">Fona necaurredzamība</translation>
@@ -1607,7 +1608,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2079053412993822885">Ja dzēsīsiet kādu no saviem sertifikātiem, vairs nevarēsiet to izmantot sevis identificēšanai.</translation>
 <translation id="2079495302726689071">Atvērt saiti jaunā <ph name="APP" /> cilnē</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
-<translation id="2079553700504470326">Lai iegūtu atbilstošākus Gemini rezultātus, izmantojiet precīzu atrašanās vietu, nevis aptuvenu atrašanās vietu, kas noteikta pēc jūsu IP adreses.</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2081816110395725788">Barošanas iestatījumi miega režīmā, kad tiek izmantots akumulators</translation>
 <translation id="2082187087049518845">Pievienot cilni grupai</translation>
@@ -3875,6 +3875,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3619294456800709762">Vietnēs drīkst automātiski aktivizēt režīmu “Attēls attēlā”</translation>
 <translation id="3620136223548713675">Ģeolokācija</translation>
 <translation id="3621202678540785336">Ievade</translation>
+<translation id="3621841019087952625">Iestatīt vēlāk</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{lietotne}zero{# lietotņu}one{# lietotne}other{# lietotnes}}</translation>
 <translation id="3622820753353315928">Ekrāna zibpaziņojuma krāsa</translation>
 <translation id="3623318122257816196">Jūsu apmeklētajās vietnēs var būt iegults citu vietņu saturs, piemēram, attēli, reklāmas un teksts. Šīs citas vietnes drīkst pieprasīt atļauju izmantot par jums saglabāto informāciju, kad pārlūkojat vietni.</translation>
@@ -4275,6 +4276,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3856096718352044181">Pārbaudiet, vai pakalpojumu sniedzējs ir derīgs, vai arī vēlāk mēģiniet vēlreiz</translation>
 <translation id="3856470183388031602">Google konta izmantošana ierīcē <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Laika joslas atlasīšana</translation>
+<translation id="3856902135796972992">Šajā vietnē ir jāveic papildu darbība. Veiciet to attiecīgajā lapā, lai varētu pabeigt paroles nomaiņu.</translation>
 <translation id="3857807444929313943">Paceliet un pieskarieties vēlreiz</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="385939467708172187">Izmantojiet drošu paroli</translation>
@@ -5920,7 +5922,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5001526427543320409">Trešo pušu sīkfaili</translation>
 <translation id="5003070249435823986">Izmantojiet žestu, lai ieslēgtu ritināšanas režīmu, un pēc tam kustiniet galvu virzienā, kurā vēlaties ritināt. Lai izietu no ritināšanas režīma, vēlreiz izmantojiet žestu.</translation>
 <translation id="5003993274120026347">Nākamais teikums</translation>
-<translation id="5005113238422129109">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Kad runājat ar Gemini, audio tiek saglabāts sadaļā “Gemini Apps darbības” (ja šis iestatījums ir ieslēgts).</translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
 <translation id="5006218871145547804">Android–Chromebook ierīču savienojums Crostini Android lietotnēm</translation>
 <translation id="5006778209728626987">Zibens</translation>
@@ -6247,6 +6248,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Vai atcelt grupēšanu ciļņu grupā?}zero{Vai atcelt grupēšanu ciļņu grupās?}one{Vai atcelt grupēšanu ciļņu grupās?}other{Vai atcelt grupēšanu ciļņu grupās?}}</translation>
 <translation id="5230190638672215545">Ierakstiet “uow”, lai iegūtu “ươ”</translation>
 <translation id="5230516054153933099">Logs</translation>
+<translation id="5231255476752743708">Pārlūkam Chrome nepieciešama palīdzība saistībā ar paroles nomaiņu</translation>
 <translation id="5232714764496316200">Saņemiet palīdzību mājasdarbos, izmantojot Google Lens</translation>
 <translation id="5233231016133573565">Procesa ID</translation>
 <translation id="5233638681132016545">Jauna cilne</translation>
@@ -7771,10 +7773,8 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6291953229176937411">Rādīt lietojumprogrammā &amp;Finder</translation>
 <translation id="6293862149782163840">Ierīce (<ph name="DEVICE_NAME" />) ir izslēgta.</translation>
 <translation id="6294759976468837022">Automātiskās pārlūkošanas ātrums</translation>
-<translation id="6295140892595702619">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Kad runājat ar Gemini, audio tiek saglabāts sadaļā “Gemini Apps darbības” (ja šis iestatījums ir ieslēgts). Jūsu dati netiek izmantoti ģeneratīvo MI modeļu uzlabošanai.</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
 <translation id="6295855836753816081">Notiek saglabāšana...</translation>
-<translation id="6296481987471548530">Lai iegūtu atbilstošākus Gemini rezultātus, izmantojiet precīzu atrašanās vietu, nevis aptuvenu atrašanās vietu, kas noteikta pēc jūsu IP adreses. Jūsu dati netiek izmantoti ģeneratīvo MI modeļu uzlabošanai.</translation>
 <translation id="6297986260307280218">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotos datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo <ph name="BEGIN_LINK1" />iestatījumu<ph name="END_LINK1" /> ir noteicis īpašnieks. Īpašnieks var izvēlēties nosūtīt šīs ierīces diagnostikas un lietojuma datus Google serveriem. Ja ir ieslēgts iestatījums “Papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. <ph name="BEGIN_LINK2" />Uzzināt vairāk par rādītājiem<ph name="BEGIN_LINK2_END" />Uzzināt vairāk<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Iestatījums ietekmē šeit norādītās vietnes. Ievietojot “[*.]” domēna nosaukuma priekšā, tiek izveidots izņēmums visam domēnam. Piemēram, ja pievienojat domēnu “[*.]google.com”, tas nozīmē, ka trešo pušu sīkfaili var būt aktīvi arī vietnē mail.google.com, jo tā ir daļa no domēna google.com.</translation>
 <translation id="6298962879096096191">Izmantojiet Google Play, lai instalētu Android lietotnes</translation>
@@ -8310,6 +8310,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6677527809400770913">Žests “<ph name="GESTURE" />” ir piešķirts darbībai “<ph name="ACTION" />”</translation>
 <translation id="6678604587151240716">Milzīgi viļņi jūrā, zeme tālumā fonā Tumšas, drūmas debesis ar oranžu gaismas atblāzmu aiz apvāršņa</translation>
 <translation id="6678717876183468697">Vaicājuma URL</translation>
+<translation id="6678974601734442817">Pārlūkam Chromium nepieciešama palīdzība saistībā ar paroles nomaiņu</translation>
 <translation id="6679947539429331601">Paslēpt uz 12 stundām</translation>
 <translation id="6680442031740878064">Pieejamā vieta: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ātrums</translation>
@@ -11016,7 +11017,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8508532351844333131">Vietne <ph name="WEBSITE_ORIGIN" /> vēlas saglabāt informāciju jūsu Android ierīcē.</translation>
 <translation id="8509177919508253835">Atiestatiet drošības atslēgas un izveidojiet PIN kodus</translation>
 <translation id="8509646642152301857">Pareizrakstības pārbaudes vārdnīcas lejupielāde neizdevās.</translation>
-<translation id="8509967119010808787">Lai meklētu cilnes, noklikšķiniet šeit</translation>
 <translation id="8512476990829870887">Pārtraukt procesu</translation>
 <translation id="851263357009351303">Vienmēr atļaut vietnei <ph name="HOST" /> rādīt attēlus</translation>
 <translation id="8513108775083588393">Pagriezt aut.</translation>

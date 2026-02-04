@@ -31,11 +31,13 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1315551408014407711">Konfiguratu Chromium-eko profil berria</translation>
 <translation id="1324107359134968521">Bluetooth bidezko gailuak arakatzeko, Bluetootha erabiltzeko baimena behar du Chromium-ek. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Hauteman hizkuntza</translation>
+<translation id="1330742950061766891">Erabili Chromium-en arakatzailearen ezarpen gomendatuak</translation>
 <translation id="1342274909142618978">Ezabatu datuak Chromium-etik ere bai (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Ainguratu da! Tresna-barrako botoi berriaren bidez erabil dezakezu berriro irudi-bilaketa.</translation>
 <translation id="1356661055722410047">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1397530502368084401">&amp;Kudeatu Chromium-eko profilak</translation>
+<translation id="1404026649028693342">Erakutsi beti AA modua</translation>
 <translation id="141901961143729572">Partekatu burutazioak</translation>
 <translation id="1465192221147974788">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren ezarpenetan.</translation>
 <translation id="1478370723027452770">Lortu Chrome for Testing-en inguruko laguntza</translation>
@@ -92,6 +94,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2039417478970545937">Ezarpenak.</translation>
 <translation id="2049376729098081731">Aukeratu ea Chromium-eko historia kontuan hartu nahi duzun ala ez Google-ren zerbitzuak modu pertsonalizatuago batean erabiltzeko</translation>
 <translation id="2064856577282482477">Chromium-i itxura berri bat emateko, sakatu fitxa berriaren orriko "Pertsonalizatu Chromium" botoia</translation>
+<translation id="2066690553719545730">Erakutsi beti AA modua</translation>
 <translation id="2086476982681781442">Chromium-ek deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
 <translation id="208726765006323911"><ph name="FEATURE_NAME" /> probatzeko eskatuko zaizu iOS-erako Chromium irekitzen duzun hurrengo aldian.</translation>
 <translation id="2099452623287920103">Google-ko kontuan gordetako pasahitzak eta Chromium-eko beste datuak gailu honetatik kenduko dira. Chromium-en haiek berriro ere erabiltzeko, hasi saioa berriro.</translation>
@@ -194,6 +197,8 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3095811995836568724">Chromium-eko historia</translation>
 <translation id="3103660991484857065">Instalatzaileak ezin izan du artxiboa deskonprimitu. Deskargatu berriro Chromium.</translation>
 <translation id="310459126943037700">Ezin izan dira amaitu zereginak.</translation>
+<translation id="3104828284009500087">Bilatu orriko edozein gauza</translation>
+<translation id="3126784891977756556">Mantendu pasahitzak, laster-markak eta historia gailuen artean ezin hobeto sinkronizatuta. Atzitu erraz eginbide ezagun eta gogokoak Chromium arakatzaile lehenetsi bihurtuta.</translation>
 <translation id="3130323860337406239">Chromium zure mikrofonoa erabiltzen ari da.</translation>
 <translation id="3130333203120345554">Bilaketa berria</translation>
 <translation id="3137969841538672700">Arrastatu bilatzeko</translation>
@@ -306,6 +311,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
 <translation id="4334241893986177674">Bilatu pantaila-argazki honetan</translation>
 <translation id="4334294535648607276">Deskargatu da.</translation>
+<translation id="4384993550046411228">Atzitu erraz eginbide ezagun, gogoko eta fidagarriak Chromium arakatzaile lehenetsi bihurtuta. Chromium zereginen barran ainguratuko da, hura bizkor atzitzeko.</translation>
 <translation id="439358628917130594">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Chromium OS-ren Baldintzak.</translation>
 <translation id="4407044323746248786">Chromium-etik irten nahi duzu hala ere?</translation>
 <translation id="4413205837991854510">Erakutsi beti irudi-bilaketaren lasterbidea</translation>

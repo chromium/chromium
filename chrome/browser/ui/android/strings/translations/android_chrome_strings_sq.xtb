@@ -851,6 +851,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4685741273709472646">Zgjidh nga lista me lëshim poshtë</translation>
 <translation id="4687718960473379118">Reklamat e sugjeruara nga sajtet</translation>
 <translation id="468924408576231679">Kopjo lidhjen për te faqja e uebit <ph name="PAGE_TITLE" />. Burimi: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Motorët e kërkimit</translation>
 <translation id="469286762610133730">Merr përmbajtje më të mirë</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
 <translation id="4698757800236023795">Aktiv (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7376560087009844242">Duke përfshirë më shumë nga teksti i një faqeje, mund të shikosh rezultate më të mira kur përdor "Prek për të kërkuar". Mund të vizitosh gjithmonë <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" /> për ta ndryshuar këtë.</translation>
 <translation id="7379900596734708416">Ofrohet "Tema e errët" për sajtet</translation>
 <translation id="7384486627147155832">Promovimi i njoftimeve të këshillave i hapur në gjysmë lartësi</translation>
+<translation id="7387951778417998929">Për të përdorur një motor kërkimi të ndryshëm nga ai i parazgjedhur, shkruaj shkurtoren e tij në shiritin e adresave, të ndjekur nga shkurtorja jote e preferuar e tastierës. Mund ta ndryshosh po ashtu motorin tënd të parazgjedhur të kërkimit këtu.</translation>
 <translation id="7388615499319468910">Sajtet dhe reklamuesit mund të kuptojnë se si funksionojnë reklamat. Ky cilësim është joaktiv.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Tjetër, 1 skedar në listë}other{Tjetër, # skedarë në listë}}</translation>
 <translation id="7400418766976504921">URL-ja</translation>

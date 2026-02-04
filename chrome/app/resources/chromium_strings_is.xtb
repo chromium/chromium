@@ -32,11 +32,13 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1324107359134968521">Chromium þarf aðgang að Bluetooth til að kanna 
  Bluetooth-tæki. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Greina tungumál</translation>
+<translation id="1330742950061766891">Notaðu ráðlagðar vafrastillingar Chromium</translation>
 <translation id="1342274909142618978">Eyða einnig gögnum úr Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Fest! Nú geturðu opnað myndaleit aftur með því að ýta á nýja hnappinn á tækjastikunni</translation>
 <translation id="1356661055722410047">Nýtt! Þú getur þýtt bæði texta og myndir á skjánum þínum</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1397530502368084401">&amp;Stjórna Chromium-prófílum</translation>
+<translation id="1404026649028693342">Alltaf sýna gervigreindarstillingu</translation>
 <translation id="141901961143729572">Segðu skoðun þína</translation>
 <translation id="1465192221147974788">Leyfðu skjáupptöku í Chromium í kerfisstillingunum til að deila glugganum þínum.</translation>
 <translation id="1478370723027452770">Fá hjálp með Chrome for Testing</translation>
@@ -93,6 +95,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2039417478970545937">Stillingar.</translation>
 <translation id="2049376729098081731">Veldu hvort Chromium-ferill á að fylgja með til að fá sérsniðnari upplifun í Google-þjónustum</translation>
 <translation id="2064856577282482477">Smelltu á hnappinn „Sérsníða Chromium“ á síðu nýrra flipa til að gefa Chromium nýtt útlit</translation>
+<translation id="2066690553719545730">Alltaf sýna gervigreindarstillingu</translation>
 <translation id="2086476982681781442">Chromium lokaði á þetta niðurhal vegna þess að skráin er blekkjandi og gæti gert óvæntar breytingar á tækinu þínu</translation>
 <translation id="208726765006323911">Þú munt sjá ábendingu um að prófa <ph name="FEATURE_NAME" /> næst þegar þú opnar Chromium iOS.</translation>
 <translation id="2099452623287920103">Lykilorðið þitt og önnur Chromium-gögn sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chromium skaltu skrá þig aftur inn.</translation>
@@ -195,6 +198,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3095811995836568724">Chromium-ferill</translation>
 <translation id="3103660991484857065">Uppsetningarforritinu mistókst að afþjappa safnskránni. Sæktu Chromium aftur.</translation>
 <translation id="310459126943037700">Ekki tókst að ljúka verkefni/verkefnum.</translation>
+<translation id="3126784891977756556">Haltu aðgangsorðunum þínum, bókamerkjum og ferli fullkomlega samstilltum á milli tækja. Fáðu greiðan aðgang að eiginleikunum sem þú þekkir og elskar með því að uppfæra sjálfgefna vafrann þinn í Chromium.</translation>
 <translation id="3130323860337406239">Chromium er að nota hljóðnemann þinn.</translation>
 <translation id="3130333203120345554">Ný leit</translation>
 <translation id="3137969841538672700">Dragðu til að leita</translation>
@@ -307,6 +311,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
 <translation id="4334241893986177674">Leita að þessari skjámynd</translation>
 <translation id="4334294535648607276">Niðurhali lokið.</translation>
+<translation id="4384993550046411228">Fáðu greiðan aðgang að eiginleikunum sem þú þekkir, elskar og treystir með því að stilla Chromium sem sjálfgefinn vafra. Chromium verður festur við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> krefst þess að þú lesir og samþykkir eftirfarandi þjónustuskilmála áður en þú notar þetta tæki. Þessir skilmálar auka ekki við, breyta eða takmarka skilmála ChromiumOS.</translation>
 <translation id="4407044323746248786">Viltu samt loka Chromium?</translation>
 <translation id="4413205837991854510">Alltaf sýna flýtileið myndaleitar</translation>

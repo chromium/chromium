@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
 <translation id="1324107359134968521">Chromium 需获得蓝牙使用权限，才能浏览蓝牙设备。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">检测语言</translation>
+<translation id="1330742950061766891">使用 Chromium 推荐的浏览器设置</translation>
 <translation id="1342274909142618978">同时删除 Chromium 中的数据 (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">已固定！您可以通过工具栏中的新按钮再次使用图片搜索功能</translation>
 <translation id="1356661055722410047">新功能！您可以翻译屏幕上的文字和图片</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1397530502368084401">管理 Chromium 个人资料(&amp;M)</translation>
+<translation id="1404026649028693342">始终显示 AI 模式</translation>
 <translation id="141901961143729572">分享您的想法</translation>
 <translation id="1465192221147974788">若要共享窗口，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">设置。</translation>
 <translation id="2049376729098081731">选择是否要包含 Chromium 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
 <translation id="2064856577282482477">点击“新标签页”页面上的“自定义 Chromium”按钮，即可为 Chromium 换上全新外观</translation>
+<translation id="2066690553719545730">始终显示 AI 模式</translation>
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="208726765006323911">下次打开 Chromium iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
 <translation id="2099452623287920103">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chromium 数据。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>
@@ -192,6 +195,7 @@
 <translation id="3095811995836568724">Chromium 历史记录</translation>
 <translation id="3103660991484857065">安装程序解压缩归档失败。请重新下载 Chromium。</translation>
 <translation id="310459126943037700">未能结束任务。</translation>
+<translation id="3126784891977756556">让您的密码、书签和历史记录在所有设备上完美同步。将默认浏览器更新为 Chromium，即可轻松使用您熟悉且喜爱的功能。</translation>
 <translation id="3130323860337406239">Chromium 正在使用您的麦克风。</translation>
 <translation id="3130333203120345554">新搜索</translation>
 <translation id="3137969841538672700">拖动即可搜索</translation>
@@ -304,6 +308,7 @@
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4334241893986177674">搜索此屏幕截图</translation>
 <translation id="4334294535648607276">下载完毕。</translation>
+<translation id="4384993550046411228">将 Chromium 设为默认浏览器，即可轻松使用您熟悉、喜爱和信任的功能。Chromium 将固定到任务栏，以便您快速访问。</translation>
 <translation id="439358628917130594">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Chromium 操作系统条款。</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
 <translation id="4413205837991854510">始终显示图片搜索快捷方式</translation>

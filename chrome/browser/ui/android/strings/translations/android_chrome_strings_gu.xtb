@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">ડ્રૉપડાઉન સૂચિમાંથી પસંદ કરો</translation>
 <translation id="4687718960473379118">સાઇટ દ્વારા સૂચવેલી જાહેરાતો</translation>
 <translation id="468924408576231679">વેબપેજ <ph name="PAGE_TITLE" />ની લિંક કૉપિ કરો. સૉર્સ: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">શોધ એન્જિન</translation>
 <translation id="469286762610133730">બહેતર કન્ટેન્ટ મેળવો</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">સક્રિય (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">પેજની વધુ ટેક્સ્ટને શામેલ કરીને, 'શોધવા માટે ટચ કરો'માં તમે કદાચ બહેતર પરિણામો જોઈ શકશો. આમાં ફેરફાર કરવા માટે, તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />ની મુલાકાત લઈ શકો છો.</translation>
 <translation id="7379900596734708416">સાઇટ માટેની ઘેરી થીમ ઉપલબ્ધ છે</translation>
 <translation id="7384486627147155832">ટિપ સંબંધિત નોટિફિકેશન પ્રોમો અડધી ઊંચાઈએ ખોલ્યો</translation>
+<translation id="7387951778417998929">ડિફૉલ્ટ સિવાયના શોધ એન્જિનનો ઉપયોગ કરવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી તમારી પસંદગીનો કીબોર્ડ શૉર્ટકટ ટાઇપ કરો. તમે અહીં તમારા ડિફૉલ્ટ શોધ એન્જિનને બદલી પણ શકો છો.</translation>
 <translation id="7388615499319468910">જાહેરાતોના પર્ફોર્મન્સ સંબંધી બાબતો સાઇટ અને જાહેરાતકર્તાઓ સમજી શકે છે. આ સેટિંગ બંધ છે.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{સૂચિમાં અન્ય 1 ફાઇલ છે}one{સૂચિમાં અન્ય # ફાઇલ છે}other{સૂચિમાં અન્ય # ફાઇલ છે}}</translation>
 <translation id="7400418766976504921">URL</translation>

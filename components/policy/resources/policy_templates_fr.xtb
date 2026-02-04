@@ -5548,6 +5548,23 @@ Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</transl
       Si elle est activée, il s'affichera.
 
       Si elle n'est pas configurée, l'écran d'introduction de Gemini sera passé pour les utilisateurs gérés par une entreprise, mais s'affichera pour les utilisateurs non gérés.</translation>
+<translation id="4781685421378746692">Cette règle contrôle le partage du contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> et <ph name="GOOGLE_LENS_PRODUCT_NAME" /> via le panneau latéral ou les onglets de <ph name="PRODUCT_NAME" />.
+
+Sachez que cette règle n'a pas d'incidence sur le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sur le Web. Elle contrôle uniquement la façon dont les utilisateurs peuvent partager des informations avec ce mode lorsqu'ils utilisent <ph name="PRODUCT_NAME" />.
+
+0/Non configurée : les utilisateurs peuvent partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 : les utilisateurs ne peuvent pas partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Les points d'entrée pour partager le contexte et le panneau latéral sont alors désactivés ou masqués.
+
+Cette règle est ignorée lorsque la <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> n'est pas le moteur de recherche par défaut des utilisateurs, car la fonctionnalité est désactivée.
+
+Cette règle est indépendante de la règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> ne contrôle que les points d'entrée sur l'omnibox ou le champ de recherche de la page "Nouvel onglet", tandis que cette règle contrôle le partage de contexte via le panneau latéral ou les onglets.
+
+Cette règle ne contrôle pas non plus l'intégration de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, qui peut être désactivée par <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Si cette règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4783415902268741066">Autoriser l'affichage de la page des résultats les plus récents du moteur de recherche par défaut dans un panneau latéral du navigateur</translation>
 <translation id="4786784434769279324">Actions à exécuter lorsque l'ordinateur est inactif</translation>
 <translation id="4787763197941188108">Cette règle permet d'ignorer le format de la page d'impression par défaut.
@@ -7139,6 +7156,7 @@ Sur les plates-formes de bureau, le téléchargement du modèle peut également 
 <translation id="5766438888216077649">Ne définissez pas <ph name="WINDOW_OPENER_PROPERTY" /> pour les liens ciblant <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Désactiver les pages d'erreur alternatives</translation>
 <translation id="5770738360657678870">Version en développement (peut être instable)</translation>
+<translation id="5772841828612966342">Activée : XSLT est explicitement activée.</translation>
 <translation id="5774345930803672932">Si vous définissez cette règle sur "True" ou que vous ne la configurez pas, les événements, les données télémétriques et les informations peuvent être transmis au pipeline de rapports chiffrés. Si vous la définissez sur "False", ce pipeline est désactivé.</translation>
 <translation id="5774856474228476867">URL de recherche du moteur de recherche par défaut</translation>
 <translation id="5775235485119094648">Recharge de la batterie tant que le niveau de charge défini n'est pas atteint.</translation>
@@ -9757,6 +9775,11 @@ Si elle est définie sur "False", l'ancien comportement est activé.</translatio
 <translation id="7410074797376205571">Autoriser <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> à exécuter les requêtes API WebAuthn envoyées par un proxy à partir d'un hôte à distance.</translation>
 <translation id="7412456346709338637">Activer l'accès aux données des périphériques Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Aucune préférence.</translation>
+<translation id="7416222110012824615">Cette règle contrôle la disponibilité de la fonctionnalité XSLT (l'API JavaScript XSLTProcessor et l'instruction de traitement XSL).
+Si cette règle est activée, XSLT sera disponible, quel que soit l'état par défaut de la fonctionnalité dans le navigateur.
+Si cette règle est désactivée, XSLT ne sera pas disponible, quel que soit l'état par défaut de la fonctionnalité dans le navigateur.
+Si cette règle n'est pas configurée, la disponibilité de XSLT sera déterminée par les paramètres par défaut du navigateur et les tests en conditions réelles.
+Cette règle est une solution temporaire et sera supprimée dans M164.</translation>
 <translation id="7417438464912687020">Autoriser les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="7417972229667085380">Pourcentage d'adaptation du délai d'inactivité en mode Présentation (abandonné)</translation>
 <translation id="7421230730436851224">Ne jamais utiliser de bac à sable pour le processus audio</translation>
@@ -9797,6 +9820,7 @@ Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", le flux <ph nam
 Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards. Pour les utilisateurs de la version Enterprise, si cette règle n'est pas configurée, elle est définie par défaut sur "<ph name="DISALLOWED_NAME" />".</translation>
 <translation id="7438982301540282785">Automatiser la configuration de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7443356543619955157">Si cette règle est activée, la configuration réseau est appliquée à tous les utilisateurs d'un appareil <ph name="PRODUCT_OS_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
+<translation id="744349502210151344">Par défaut : la disponibilité de XSLT est déterminée par les paramètres par défaut du navigateur et les tests en conditions réelles.</translation>
 <translation id="7446978687387327623">Autoriser les vérifications en temps réel via proxy pour la navigation sécurisée</translation>
 <translation id="7448430478749155471">Activer Sélectionner pour écouter sur l'écran de connexion</translation>
 <translation id="7455912144588577399">Si cette règle est définie sur "True", les utilisateurs peuvent bénéficier de la synthèse vocale pour que les pages Web éligibles soient lues à voix haute. Cela est réalisé par la distillation de contenu et la synthèse audio côté serveur. Si cette règle est définie sur "False", cette fonctionnalité est désactivée. Si cette règle est définie sur la valeur par défaut ou n'est pas configurée, la lecture à voix haute est activée.</translation>
@@ -11045,6 +11069,7 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
           Si la durée définie dans cette règle n'est pas comprise dans les limites indiquées, l'hôte risque de ne pas démarrer.
 
           Veuillez noter que la taille maximale réelle du presse-papiers est basée sur la taille maximale de message du canal de données WebRTC, qui ne dépend pas de cette règle.</translation>
+<translation id="8294127013911518331">Contrôler la disponibilité de la fonctionnalité XSLT</translation>
 <translation id="8294750666104911727">Généralement, les pages dont la balise "X-UA-Compatible" est définie sur "chrome=1" sont rendues dans <ph name="PRODUCT_FRAME_NAME" /> indépendamment de la règle "ChromeFrameRendererSettings".
 
           Si vous activez ce paramètre, les pages ne sont pas analysées pour détecter les balises Meta.
@@ -11781,6 +11806,7 @@ Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />,
 <translation id="8807313206348471682">Afficher la boîte de dialogue de confirmation de déconnexion</translation>
 <translation id="8807728576820212213">Activer l'intégration Lens</translation>
 <translation id="8809082103104823938">Prise en charge des GIF dans le sélecteur d'emoji</translation>
+<translation id="8809276335775270751">Désactivée : XSLT est explicitement désactivée.</translation>
 <translation id="8812091410765157924">Autoriser les pop-up ouverts avec une cible <ph name="BLANK_PAGE_NAME" /> à interagir avec la page qui a ouvert le pop-up uniquement si celle-ci accepte explicitement ce type d'interaction</translation>
 <translation id="8812631362927615118">Activer l'authentification interne lors de la création de rapports sur les signaux de sécurité utilisateur</translation>
 <translation id="8816370949847593408">Il se peut que les applis Chrome ne soient pas autorisées à s'exécuter, selon l'état d'avancement du processus d'abandon.</translation>

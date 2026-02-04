@@ -993,6 +993,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1652326691684645429">Ativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="1652862280638399816">Para usar o Gestor de Palavras-passe com o Porta-chaves macOS, reinicie o Chromium e permita o acesso ao Porta-chaves. Os separadores reabrem depois de serem reiniciados.</translation>
 <translation id="1653958716132599769">Agrupar separadores relacionados</translation>
+<translation id="165448107578581061">O Gemini está a trabalhar na sua tarefa…</translation>
 <translation id="1654580009054503925">Sem autorização para mostrar pedidos</translation>
 <translation id="1654713139320245449">Não foi encontrado nenhum destino de transmissão. Precisa de ajuda?</translation>
 <translation id="1656528038316521561">Opacidade do fundo</translation>
@@ -1605,7 +1606,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2079053412993822885">Se eliminar um dos seus próprios certificados, deixará de poder utilizá-lo para se identificar.</translation>
 <translation id="2079495302726689071">Abrir link num novo separador da <ph name="APP" /></translation>
 <translation id="2079545284768500474">Anular</translation>
-<translation id="2079553700504470326">Use a sua localização exata para ver os resultados do Gemini mais precisos, em vez de uma localização estimada com base no seu endereço IP.</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2081816110395725788">Energia em suspensão na bateria</translation>
 <translation id="2082187087049518845">Agrupar separador</translation>
@@ -3876,6 +3876,7 @@ Quer pará-lo?</translation>
 <translation id="3619294456800709762">Os sites podem entrar automaticamente no modo ecrã no ecrã</translation>
 <translation id="3620136223548713675">Geolocalização</translation>
 <translation id="3621202678540785336">Entrada</translation>
+<translation id="3621841019087952625">Definir mais tarde</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{uma app}other{# apps}}</translation>
 <translation id="3622820753353315928">Cor do flash do ecrã</translation>
 <translation id="3623318122257816196">Os sites que visitar podem incorporar conteúdo de outros sites, por exemplo, imagens, anúncios e texto. Estes outros sites podem pedir autorização para usar as informações que guardaram sobre si enquanto navega no site.</translation>
@@ -4276,6 +4277,7 @@ Quer pará-lo?</translation>
 <translation id="3856096718352044181">Confirme que se trata de um fornecedor válido ou tente novamente mais tarde.</translation>
 <translation id="3856470183388031602">Use a sua Conta Google no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
+<translation id="3856902135796972992">Este site requer uma ação adicional. Conclua-a na página para concluir a alteração da palavra-passe.</translation>
 <translation id="3857807444929313943">Levante e toque novamente</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="385939467708172187">Usar palavra-passe forte</translation>
@@ -5921,7 +5923,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5003070249435823986">Use o gesto para entrar no modo de deslocamento e, de seguida, mova a cabeça na direção para a qual quer deslocar a página. Use novamente o gesto para sair do modo de deslocamento.</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
-<translation id="5005113238422129109">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada)</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
 <translation id="5006218871145547804">ADB de apps Android do Crostini</translation>
 <translation id="5006778209728626987">Relâmpago</translation>
@@ -6248,6 +6249,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Desagrupar o grupo de separadores?}other{Desagrupar os grupos de separadores?}}</translation>
 <translation id="5230190638672215545">Escrever "uow" para obter "ươ"</translation>
 <translation id="5230516054153933099">Janela</translation>
+<translation id="5231255476752743708">O Chrome precisa de ajuda para alterar a sua palavra-passe</translation>
 <translation id="5232714764496316200">Obtenha ajuda nos trabalhos de casa com o Google Lens</translation>
 <translation id="5233231016133573565">ID do processo</translation>
 <translation id="5233638681132016545">Novo separador</translation>
@@ -7777,10 +7779,8 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6291953229176937411">Mo&amp;strar no Finder</translation>
 <translation id="6293862149782163840">A rede da <ph name="DEVICE_NAME" /> está desativada</translation>
 <translation id="6294759976468837022">Velocidade da análise automática</translation>
-<translation id="6295140892595702619">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada). Os seus dados não são usados para melhorar os modelos de IA generativa</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6295855836753816081">A guardar...</translation>
-<translation id="6296481987471548530">Use a sua localização exata para ver os resultados do Gemini mais precisos, em vez de uma localização estimada com base no seu endereço IP. Os seus dados não são usados para melhorar os modelos de IA generativa</translation>
 <translation id="6297986260307280218">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android enviando automaticamente dados de diagnósticos, de utilização do dispositivo e das apps para a Google. Deste modo, vai ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnósticos e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Afeta os sites indicados aqui. Inserir "[*.]" antes de um nome de domínio cria uma exceção para todo o domínio. Por exemplo, adicionar "[*.]google.com" significa que os cookies de terceiros também podem estar ativos em mail.google.com, uma vez que fazem parte de google.com.</translation>
 <translation id="6298962879096096191">Usar o Google Play para instalar aplicações para Android</translation>
@@ -8312,6 +8312,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6677527809400770913">Atribuiu o gesto <ph name="GESTURE" /> a <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Grandes ondas a salpicar no mar, com terra no fundo distante. Alguns traços de luz laranja para lá do horizonte, num céu escuro e temperamental.</translation>
 <translation id="6678717876183468697">URL de consulta</translation>
+<translation id="6678974601734442817">O Chromium precisa de ajuda para alterar a sua palavra-passe</translation>
 <translation id="6679947539429331601">Ocultar durante 12 horas</translation>
 <translation id="6680442031740878064">Disponível: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>
@@ -11018,7 +11019,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> quer guardar informações no seu dispositivo Android</translation>
 <translation id="8509177919508253835">Reponha chaves de segurança e crie PINs</translation>
 <translation id="8509646642152301857">Falha na transferência do dicionário de verificação ortográfica.</translation>
-<translation id="8509967119010808787">Para pesquisar os separadores, clique aqui</translation>
 <translation id="8512476990829870887">Terminar Processo</translation>
 <translation id="851263357009351303">Permitir sempre que o site <ph name="HOST" /> mostre imagens</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>

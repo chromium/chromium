@@ -1390,6 +1390,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="192564025059434655">Chrome brauzerining eski versiyalari 2022-yil dekabr oyidan Windows qurilmalarida ochilmaydi. Yangilanishlar borligini quyidagicha tekshirish mumkin.</translation>
 <translation id="1926339101652878330">Bu sozlamalar korporativ tartib-qoidalarga ko‘ra nazorat qilinadi. Qo‘shimcha ma’lumot olish uchun administratorga murojaat qiling.</translation>
 <translation id="1926887872692564784">Kursor</translation>
+<translation id="1927075772688962338">Oʻqish rejimini qadash</translation>
 <translation id="1927632033341042996">Barmoq izi <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Ekran qulfi PIN kodi</translation>
 <translation id="192858925209436740">Saqlangan hujjatlarni Chromebook orqali boshqarish uchun OneDrive omborini Fayllar ilovasiga ulang. Buning uchun Microsoft hisobiga kirish zarur.</translation>
@@ -1605,7 +1606,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2079053412993822885">Shaxsiy sertifikatlaringizdan birini o‘chirsangiz, keyin o‘zingizni tasdiqlash tekshiruvidan o‘tkaza o‘lmaysiz.</translation>
 <translation id="2079495302726689071">Havolani yangi varaqda (<ph name="APP" />) ochish</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
-<translation id="2079553700504470326">Taxminiy yoki IP manzil asosidagi sozlamalar oʻrniga Gemini natijalarida aniq joylashuv ishlatilsin.</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
 <translation id="2081816110395725788">Uyqu rejimida batareyadan quvvatlanish</translation>
 <translation id="2082187087049518845">Varaqni guruhlash</translation>
@@ -3777,6 +3777,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3557101512409028104">Family Link orqali saytlar va qurilmadan foydalanish vaqtiga cheklovlarni sozlash</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani va odatda qancha xotira ishlatilishi kabi maʼlumotlar kirishi mumkin.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda farzandingizning ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini vazifangiz ustida ishlamoqda...</translation>
 <translation id="3559079791149580653">Ekranning <ph name="DEVICE_NAME" />ga translatsiyasini toʻxtatish</translation>
 <translation id="3559262020195162408">Qurilmaga parametrni oʻrnatib boʻlmadi.</translation>
 <translation id="3559533181353831840">Taxminan <ph name="TIME_LEFT" /> qoldi</translation>
@@ -5922,7 +5923,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5001526427543320409">Tashqi cookie fayllar</translation>
 <translation id="5003070249435823986">Ishora bilan varaqlash rejimini yoqish. Varaqlash vaqtida yoʻnalish bosh harakati asosida aniqlanadi. Varaqlash rejimini faolsizlantirish uchun ishorani takrorlang.</translation>
 <translation id="5003993274120026347">Keyingi gap</translation>
-<translation id="5005113238422129109">Gemini bilan suhbat qilish uchun mirofondan foydalaning. Geminiga gapirganingizda audio Gemini ilovalaridagi faoliyat tarixida saqlanadi (yoniq boʻlsa).</translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
 <translation id="5006218871145547804">Crostini tizimida Android ilovalar uchun ADB vositasi</translation>
 <translation id="5006778209728626987">Chaqmoq</translation>
@@ -7778,10 +7778,8 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6291953229176937411">&amp;Finder’da ko‘rsatish</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> oʻchirildi</translation>
 <translation id="6294759976468837022">Avtomatik skanerlash tezligi</translation>
-<translation id="6295140892595702619">Gemini bilan suhbat qilish uchun mirofondan foydalaning. Geminiga gapirganingizda audio Gemini ilovalaridagi faoliyat tarixida saqlanadi (yoniq boʻlsa). Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="6295158916970320988">Barcha saytlar</translation>
 <translation id="6295855836753816081">Saqlanmoqda...</translation>
-<translation id="6296481987471548530">Taxminiy yoki IP manzil asosidagi sozlamalar oʻrniga Gemini natijalarida aniq joylashuv ishlatilsin. Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="6297986260307280218">Foydalanish statistikasi va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim jamlangan axborotlar Google ilovalari va Android dasturchilar kabi hamkorlarga ham yordam beradi. Bu <ph name="BEGIN_LINK1" />parametr<ph name="END_LINK1" /> qurilma egasi tomonidan oʻrnatilgan. Qurilma egasi undagi foydalanish haqidagi va diagnostika axborotini Google serverlariga avtomatik yuborilishini tayinlashi mumkin. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar Google hisobingizda saqlanadi. <ph name="BEGIN_LINK2" />Koʻrsatkichlar haqida <ph name="BEGIN_LINK2_END" />batafsil<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Bu roʻyxatdagi saytlarga taʼsir qiladi. Butun domenga istisno yaratish uchun uning nomidan oldin “[*.]” kiriting. Masalan, “[*.]google.com” sayti qoʻshilsa, tashqi cookie fayllar mail.google.com saytida ham faol boʻladi, chunki u google.com saytining bqismi.</translation>
 <translation id="6298962879096096191">Android ilovalarini o‘rnatish uchun Google Play ishlatilsin</translation>
@@ -11018,7 +11016,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> Android qurilmangizga axborot saqlamoqchi</translation>
 <translation id="8509177919508253835">Elektron kalitlarni asliga qaytarish va PIN kodlar yaratish</translation>
 <translation id="8509646642152301857">Imlo lug‘atini yuklab olish amalga oshmadi.</translation>
-<translation id="8509967119010808787">Varaqlardan qidirish uchun bu yerga bosing</translation>
 <translation id="8512476990829870887">Jarayonni yakunlash</translation>
 <translation id="851263357009351303"><ph name="HOST" /> rasmlarni doim ko‘rsatsin</translation>
 <translation id="8513108775083588393">Avto-burilish</translation>
@@ -12193,6 +12190,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> mobil qurilmangizdan axborot olmoqchi</translation>
 <translation id="988320949174893488">Tasodifiy toʻxtalishlar bilan</translation>
 <translation id="988978206646512040">Kodli ibora kiritilishi majburiy</translation>
+<translation id="989685714699739712">Varaqlarni guruhlab, ularni maxsus nom va rang bilan belgilang</translation>
 <translation id="992032470292211616">Kengaytma, ilova va mavzular mobil qurilmangizga zararli bo‘lishi mumkin. Davom ettirilsinmi?</translation>
 <translation id="992256792861109788">Pushti</translation>
 <translation id="992592832486024913">ChromeVox‘ni (ovozli ta’rif) o‘chirib qo‘yish</translation>

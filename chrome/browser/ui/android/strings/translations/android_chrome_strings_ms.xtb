@@ -851,6 +851,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4685741273709472646">Pilih daripada senarai lungsur</translation>
 <translation id="4687718960473379118">Iklan yang dicadangkan laman</translation>
 <translation id="468924408576231679">Salin pautan kepada halaman web <ph name="PAGE_TITLE" />. Sumber: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Enjin carian</translation>
 <translation id="469286762610133730">Dapatkan kandungan yang lebih baik</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}}</translation>
 <translation id="4698757800236023795">Aktif (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7376560087009844242">Dengan menyertakan lebih banyak teks halaman, anda mungkin melihat hasil yang lebih baik apabila menggunakan Sentuh untuk Cari. Anda boleh melawati <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa untuk menukar tetapan ini.</translation>
 <translation id="7379900596734708416">Tema gelap untuk laman tersedia</translation>
 <translation id="7384486627147155832">Pemberitahuan petua promosi dibuka pada ketinggian separuh</translation>
+<translation id="7387951778417998929">Untuk menggunakan enjin carian lain selain yang lalai, taip pintasan enjin carian tersebut dalam bar alamat diikuti dengan pintasan papan kekunci pilihan anda. Anda juga boleh menukar enjin carian lalai anda di sini.</translation>
 <translation id="7388615499319468910">Laman dan pengiklan boleh mengetahui prestasi iklan. Tetapan ini dimatikan.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 fail lain dalam senarai}other{# fail lain dalam senarai}}</translation>
 <translation id="7400418766976504921">URL</translation>

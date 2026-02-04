@@ -851,6 +851,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4685741273709472646">Vælg fra rullelisten</translation>
 <translation id="4687718960473379118">Foreslåede annoncer fra websites</translation>
 <translation id="468924408576231679">Kopiér linket til websiden <ph name="PAGE_TITLE" />. Kilde: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Søgemaskiner</translation>
 <translation id="469286762610133730">Få bedre indhold</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}}</translation>
 <translation id="4698757800236023795">Aktive (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7376560087009844242">Medtag mere af sideteksten for at se bedre resultater, når du bruger Tryk for at søge. Du kan altid gå til <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" /> for at ændre dette.</translation>
 <translation id="7379900596734708416">Mørkt tema på websites er tilgængeligt</translation>
 <translation id="7384486627147155832">Promoveringen af notifikationer med tips er åbnet i halv højde</translation>
+<translation id="7387951778417998929">Hvis du vil bruge en søgemaskine, der ikke er din standardsøgemaskine, skal du angive genvejen til den i adresselinjen efterfulgt af din foretrukne tastaturgenvej. Du kan også ændre din standardsøgemaskine her.</translation>
 <translation id="7388615499319468910">Websites og annoncører kan få indblik i, hvordan annoncer klarer sig. Denne indstilling er deaktiveret.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 anden fil på listen}one{# anden fil på listen}other{# andre filer på listen}}</translation>
 <translation id="7400418766976504921">Webadresse</translation>

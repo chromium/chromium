@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">ଡ୍ରପଡାଉନ ତାଲିକାରୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4687718960473379118">ସାଇଟ ଦ୍ୱାରା-ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକ</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> ୱେବପୃଷ୍ଠାକୁ ଲିଙ୍କ କପି କରନ୍ତୁ। ସୋର୍ସ: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="469286762610133730">ଆହୁରି ଭଲ ବିଷୟବସ୍ତୁ ପାଆନ୍ତୁ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ଅଧିକ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ଅଧିକ}}</translation>
 <translation id="4698757800236023795">ସକ୍ରିୟ (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">ଗୋଟିଏ ପୃଷ୍ଠାର ଅଧିକ ଟେକ୍ସଟକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରି, ଆପଣ ଯେତେବେଳେ ଟଚ ଟୁ ସର୍ଚ୍ଚ ବ୍ୟବହାର କରନ୍ତି, ଉନ୍ନତ ଫଳାଫଳ ଦେଖିପାରନ୍ତି। ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଆପଣ ସର୍ବଦା <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />କୁ ଭିଜିଟ କରିପାରିବେ।</translation>
 <translation id="7379900596734708416">ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଗାଢ଼ା ଥିମ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7384486627147155832">ଟିପ୍ସ ବିଜ୍ଞପ୍ତି ପ୍ରୋମୋ ଅଧା ଖୋଲାଯାଇଛି</translation>
+<translation id="7387951778417998929">ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବ୍ୟତୀତ ଅନ୍ୟ କୌଣସି ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବ୍ୟବହାର କରିବାକୁ, ଠିକଣା ବାରରେ ଏହାର ସର୍ଟକଟ ଟାଇପ କରିବା ପରେ ଆପଣଙ୍କ ପସନ୍ଦର କୀବୋର୍ଡ ସର୍ଟକଟ ଟାଇପ କରନ୍ତୁ। ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ମଧ୍ୟ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="7388615499319468910">ବିଜ୍ଞାପନଗୁଡ଼ିକ କିପରି ପରଫର୍ମ କରେ ତାହା ସାଇଟଗୁଡ଼ିକ ଏବଂ ବିଜ୍ଞାପନଦାତାମାନେ ବୁଝିପାରିବେ। ଏହି ସେଟିଂ ବନ୍ଦ ଅଛି।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{ତାଲିକାରେ ଅନ୍ୟ 1 ଫାଇଲ}other{ତାଲିକାରେ ଅନ୍ୟ # ଫାଇଲ}}</translation>
 <translation id="7400418766976504921">URL</translation>

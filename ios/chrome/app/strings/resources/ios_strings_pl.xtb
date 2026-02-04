@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Streść</translation>
 <translation id="1227113644794103810">Nieaktywne karty</translation>
 <translation id="1231733316453485619">Włączyć synchronizację?</translation>
+<translation id="1238794841176717085">Udostępnij tę stronę</translation>
 <translation id="1253032109800629289">Ukryj moduł „Otrzymuj powiadomienia ze śledzenia cen”</translation>
 <translation id="1254424942107648268">Znajdź poprzedni</translation>
 <translation id="1258491128795710625">Nowe funkcje</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Usunąć kartę i grupę?</translation>
 <translation id="1698090540708020240">Importuj hasła…</translation>
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1702583479431863204">Witryna została odpięta</translation>
 <translation id="1709916727352927457">Usuwanie klucza</translation>
 <translation id="1715515772563243997">Jeśli ufasz stronie <ph name="SITE" />, możesz użyć zapisanego hasła, aby się zalogować.</translation>
 <translation id="1718835860248848330">Ostatnia godzina</translation>
@@ -847,6 +849,7 @@
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4183350924949589798">Więcej ustawień bezpieczeństwa?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} słabe hasło}few{{count} słabe hasła}many{{count} słabych haseł}other{{count} słabego hasła}}</translation>
+<translation id="4196758674971560031">Grupy kart, które tworzysz, są zapisywane w sekcji grup kart i aktualizowane na wszystkich Twoich urządzeniach.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google {email}.}few{{count} elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} elementów zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} elementu zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
 <translation id="4207873326995387292">Informacje o przeglądarce</translation>
 <translation id="421070604241073551">Gdy ta opcja jest włączona, dane są zapisywane na Twoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu.</translation>
@@ -1507,6 +1510,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6494931198667773526">Zakończenie</translation>
 <translation id="6503077044568424649">Najczęstsze</translation>
 <translation id="6503763061813913607">Powiadomienia o kontroli zabezpieczeń</translation>
+<translation id="6504541289630702018">Łatwy dostęp do grup kart na komputerze</translation>
 <translation id="6505334220040167806">Zwiń grupę kart.</translation>
 <translation id="6506996418997555004">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="6507973708545996744">Zaloguj się, aby pobrać listę Do przeczytania na wszystkich urządzeniach.</translation>
@@ -2137,6 +2141,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8731268612289859741">Kod bezpieczeństwa</translation>
 <translation id="87371078663613140">Zapoznaj się z opcjami na pasku menu</translation>
+<translation id="8739546376441802490">Przypięta witryna już istnieje</translation>
 <translation id="8741627442233023406">{count,plural, =1{Sprawdź kartę…}few{Sprawdź wszystkie karty…}many{Sprawdź wszystkie karty…}other{Sprawdź wszystkie karty…}}</translation>
 <translation id="8741995161408053644">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Utwórz link</translation>

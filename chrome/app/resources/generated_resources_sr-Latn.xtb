@@ -992,6 +992,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1652326691684645429">Omogući Deljenje u blizini</translation>
 <translation id="1652862280638399816">Da biste koristili Menadžer lozinki sa macOS Keychain-om, ponovo pokrenite Chromium i dozvolite pristup Keychain-u. Kartice će se ponovo otvoriti posle ponovnog pokretanja.</translation>
 <translation id="1653958716132599769">Grupišite srodne kartice</translation>
+<translation id="165448107578581061">Gemini radi na vašem zadatku…</translation>
 <translation id="1654580009054503925">Prikazivanje zahteva nije dozvoljeno</translation>
 <translation id="1654713139320245449">Nije pronađeno nijedno odredište za prebacivanje. Treba vam pomoć?</translation>
 <translation id="1656528038316521561">Neprozirnost pozadine</translation>
@@ -1603,7 +1604,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2079053412993822885">Ako izbrišete neki svoj sertifikat, više nećete moći da ga koristite da se identifikujete.</translation>
 <translation id="2079495302726689071">Otvori link na novoj kartici u aplikaciji <ph name="APP" /></translation>
 <translation id="2079545284768500474">Opozovi</translation>
-<translation id="2079553700504470326">Koristite preciznu lokaciju da biste dobijali najtačnije Gemini rezultate, umesto približne lokacije zasnovane na IP adresi.</translation>
 <translation id="2080070583977670716">Više podešavanja</translation>
 <translation id="2081816110395725788">Napajanje tokom neaktivnosti kad se koristi baterija</translation>
 <translation id="2082187087049518845">Dodajte karticu u grupu</translation>
@@ -3873,6 +3873,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3619294456800709762">Sajtovi mogu automatski da uđu u sliku u slici</translation>
 <translation id="3620136223548713675">Geolociranje</translation>
 <translation id="3621202678540785336">Ulaz</translation>
+<translation id="3621841019087952625">Podesi kasnije</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="3622820753353315928">Boja treperenja ekrana</translation>
 <translation id="3623318122257816196">Sajtovi koje posećujete mogu da ugrade sadržaj sa drugih sajtova, na primer, slike, oglase i tekst. Ovi drugi sajtovi mogu da traže dozvolu za korišćenje informacija koje su sačuvali tokom pregledanja sajta.</translation>
@@ -4273,6 +4274,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3856096718352044181">Proverite da li je ovo važeći dobavljač usluge ili probajte ponovo kasnije</translation>
 <translation id="3856470183388031602">Koristite Google nalog na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Izaberite vremensku zonu</translation>
+<translation id="3856902135796972992">Ovaj sajt zahteva dodatnu radnju. Dovršite je na stranici kako bi se promena lozinke završila.</translation>
 <translation id="3857807444929313943">Podignite, pa opet dodirnite</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="385939467708172187">Koristite jaku lozinku</translation>
@@ -5918,7 +5920,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5001526427543320409">Kolačići treće strane</translation>
 <translation id="5003070249435823986">Koristite pokret da biste ušli u režim skrolovanja, pa pomerite glavu u pravcu u kom želite da skrolujete. Ponovo koristite pokret da biste izašli iz režima skrolovanja.</translation>
 <translation id="5003993274120026347">Sledeća rečenica</translation>
-<translation id="5005113238422129109">Koristite mikrofon da biste razgovarali sa Gemini-jem. Kada razgovarate sa Gemini-jem, zvuk se čuva u Aktivnostima u Gemini aplikacijama (ako su uključene)</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5006218871145547804">ADB za Android aplikacije za Crostini</translation>
 <translation id="5006778209728626987">Munja</translation>
@@ -6245,6 +6246,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Želite da razdvojite grupu kartica?}one{Želite da razdvojite grupe kartica?}few{Želite da razdvojite grupe kartica?}other{Želite da razdvojite grupe kartica?}}</translation>
 <translation id="5230190638672215545">Unesite „uow“ da biste dobili „ươ“</translation>
 <translation id="5230516054153933099">Prozor</translation>
+<translation id="5231255476752743708">Chrome-u treba pomoć da promeni lozinku</translation>
 <translation id="5232714764496316200">Pronađite pomoć za domaće zadatke pomoću Google objektiva</translation>
 <translation id="5233231016133573565">ID procesa</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
@@ -7772,10 +7774,8 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6291953229176937411">&amp;Prikaži u Finder-u</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> je isključena</translation>
 <translation id="6294759976468837022">Brzina automatskog skeniranja</translation>
-<translation id="6295140892595702619">Koristite mikrofon da biste razgovarali sa Gemini-jem. Kada razgovarate sa Gemini-jem, zvuk se čuva u Aktivnostima u Gemini aplikacijama (ako su uključene). Podaci se ne koriste za poboljšavanje modela generativne veštačke inteligencije</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
 <translation id="6295855836753816081">Čuva se…</translation>
-<translation id="6296481987471548530">Koristite preciznu lokaciju da biste dobijali najtačnije Gemini rezultate, umesto približne lokacije zasnovane na IP adresi. Podaci se ne koriste za poboljšavanje modela generativne veštačke inteligencije</translation>
 <translation id="6297986260307280218">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da vam pružimo bolji doživljaj Android-a tako što ćete automatski slati podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. To <ph name="BEGIN_LINK1" />podešavanje<ph name="END_LINK1" /> primenjuje vlasnik. Vlasnik može da izabere da se podaci o dijagnostici i korišćenju za ovaj uređaj šalju Google-u. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu. <ph name="BEGIN_LINK2" />Saznajte više o pokazateljima<ph name="BEGIN_LINK2_END" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Utiče na sajtove navedene ovde. Ako umetnete „[*.]“ ispred imena domena, napravićete izuzetak za ceo domen. Na primer, ako dodate „[*.]google.com“, to znači da kolačići treće strane mogu da budu aktivni i za mail.google.com jer je to deo google.com.</translation>
 <translation id="6298962879096096191">Koristite Google Play da biste instalirali Android aplikacije</translation>
@@ -8311,6 +8311,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6677527809400770913">Dodelili ste pokret <ph name="GESTURE" /> radnji <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Veliki talasi u moru, sa kopnom u dalekoj pozadini. Nagoveštaji narandžaste svetlosti su odmah iza horizonta, na inače mračnom, sumornom nebu.</translation>
 <translation id="6678717876183468697">URL upita</translation>
+<translation id="6678974601734442817">Chromium-u treba pomoć da promeni lozinku</translation>
 <translation id="6679947539429331601">Sakrij na 12 sati</translation>
 <translation id="6680442031740878064">Dostupno: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ocenite</translation>
@@ -11017,7 +11018,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> želi da sačuva informacije na Android uređaju</translation>
 <translation id="8509177919508253835">Resetujte bezbednosne ključeve i napravite PIN-ove</translation>
 <translation id="8509646642152301857">Preuzimanje rečnika za proveru pravopisa nije uspelo.</translation>
-<translation id="8509967119010808787">Da biste pretraživali kartice, kliknite ovde</translation>
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvek dozvoli sajtu <ph name="HOST" /> da prikazuje slike</translation>
 <translation id="8513108775083588393">Autom. rotir.</translation>

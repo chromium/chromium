@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Dillər</translation>
 <translation id="4183350924949589798">Daha çox güvənliyə ehtiyacınız var?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} zəif parol}other{{count} zəif parol}}</translation>
+<translation id="4196758674971560031">Yaratdığınız tab qrupları tab qrupu bölməsində yadda saxlanılır və cihazlarınız arasında güncəllənir.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}other{{count} element yalnız bu cihazda yadda saxlanır. Onları digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}}</translation>
 <translation id="4207873326995387292">Brauzer haqqında məlumat</translation>
 <translation id="421070604241073551">Yanılı olduqda data Google Hesabında yadda saxlanılır. Sönülü olduqda data yalnız bu cihazda yadda saxlanılır.</translation>
@@ -1507,6 +1508,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6494931198667773526">Bitir</translation>
 <translation id="6503077044568424649">Ən çox ziyarət edilən</translation>
 <translation id="6503763061813913607">Təhlükəsizlik yoxlanışı bildirişləri</translation>
+<translation id="6504541289630702018">Masaüstü tab qruplarına asanlıqla daxil olun</translation>
 <translation id="6505334220040167806">Tab qrupunu yığcamlaşdırın.</translation>
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" tab qrupunu paylaşın</translation>
 <translation id="6507973708545996744">Bütün cihazlarda oxu siyahısı əldə etmək üçün daxil olun.</translation>
@@ -2137,6 +2139,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8731268612289859741">Təhlükəsizlik kodu</translation>
 <translation id="87371078663613140">Menyu panelində seçimləri araşdırın</translation>
+<translation id="8739546376441802490">Bərkidilmiş sayt artıq mövcuddur</translation>
 <translation id="8741627442233023406">{count,plural, =1{Tabı nəzərdən keçirin…}other{Bütün tabları nəzərdən keçirin…}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> bölməsində Google Hesabının axtarış tarixçəsinin digər formaları ola bilər.</translation>
 <translation id="874599634440689554">Link yaradın</translation>

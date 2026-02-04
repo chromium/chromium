@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">აირჩიეთ ჩამოსაშლელი სიიდან</translation>
 <translation id="4687718960473379118">საიტების მიერ შემოთავაზებული რეკლამები</translation>
 <translation id="468924408576231679">დააკოპირეთ ვებგვერდის „<ph name="PAGE_TITLE" />“ ბმული. წყარო: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">საძიებო სისტემები</translation>
 <translation id="469286762610133730">მიიღეთ უკეთესი კონტენტი</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>
 <translation id="4698757800236023795">აქტიური (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">გვერდზე არსებული მეტი ტექსტის დართვის შემთხვევაში, შესაძლოა, უკეთესი შედეგები იხილოთ „ძიებისთვის შეხებით“ სარგებლობისას. ამ ფუნქციის შეცვლა ნებისმიერ დროს შეგიძლიათ <ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">ხელმისაწვდომია მუქი თემა საიტებისთვის</translation>
 <translation id="7384486627147155832">რჩევების შეტყობინების პრომო გაიხსნა ნახევარ სიმაღლეზე</translation>
+<translation id="7387951778417998929">ნაგულისხმევისგან განსხვავებული საძიებო სისტემა რომ გამოიყენოთ, მისამართთა ზოლში აკრიფეთ ჯერ მისი მალსახმობი, შემდეგ კი კლავიატურის სასურველი მალსახმობი. აქვე შეგიძლიათ ნაგულისხმევი საძიებო სისტემის შეცვლაც.</translation>
 <translation id="7388615499319468910">საიტებსა და რეკლამის განმთავსებლებს შეუძლიათ რეკლამის ეფექტურობის გარკვევა. ეს პარამეტრი გამორთულია.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{სიაშია 1 სხვა ფაილი}other{სიაშია # სხვა ფაილი}}</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">O Chromium precisa de acesso ao Bluetooth para explorar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detetar idioma</translation>
+<translation id="1330742950061766891">Usar as definições do navegador recomendadas pelo Chromium</translation>
 <translation id="1342274909142618978">Eliminar também dados do Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Fixado! Pode aceder novamente à Pesquisa de imagens através do novo botão na barra de ferramentas</translation>
 <translation id="1356661055722410047">Novo! Pode traduzir texto e imagens no ecrã</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1397530502368084401">&amp;Gerir perfis do Chromium</translation>
+<translation id="1404026649028693342">Mostrar sempre o Modo IA</translation>
 <translation id="141901961143729572">Partilhe a sua opinião</translation>
 <translation id="1465192221147974788">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">Definições.</translation>
 <translation id="2049376729098081731">Escolha se quer incluir o histórico do Chromium para obter mais experiências personalizadas nos serviços Google</translation>
 <translation id="2064856577282482477">Clique no botão Personalizar o Chromium na página Novo separador para dar um novo aspeto ao Chromium</translation>
+<translation id="2066690553719545730">Mostrar sempre o Modo IA</translation>
 <translation id="2086476982681781442">O Chromium bloqueou esta transferência porque o ficheiro é fraudulento e pode fazer alterações inesperadas ao seu dispositivo</translation>
 <translation id="208726765006323911">É apresentada uma indicação para experimentar o <ph name="FEATURE_NAME" /> da próxima vez que abrir o Chromium no iOS.</translation>
 <translation id="2099452623287920103">As suas palavras-passe e outros dados do Chromium que guardou na sua Conta Google vão ser removidos deste dispositivo. Para os usar novamente no Chromium, volte a iniciar sessão.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Histórico do Chromium</translation>
 <translation id="3103660991484857065">Houve uma falha no programa de instalação ao descompactar o arquivo. Descarregue novamente o Chromium.</translation>
 <translation id="310459126943037700">Falha ao terminar as tarefas.</translation>
+<translation id="3126784891977756556">Mantenha as suas palavras-passe, marcadores e histórico perfeitamente sincronizados entre dispositivos. Atualize o navegador predefinido para o Chromium e aceda facilmente às funcionalidades que conhece e adora.</translation>
 <translation id="3130323860337406239">O Chromium está a utilizar o microfone.</translation>
 <translation id="3130333203120345554">Nova pesquisa</translation>
 <translation id="3137969841538672700">Arraste para pesquisar</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4334241893986177674">Pesquisar esta captura de ecrã</translation>
 <translation id="4334294535648607276">Transferência concluída.</translation>
+<translation id="4384993550046411228">Tenha acesso fácil às funcionalidades que conhece, adora e em que confia definindo o Chromium como o navegador predefinido. O Chromium vai ser afixado à barra de tarefas para um acesso rápido.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requer a leitura e a aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do ChromiumOS.</translation>
 <translation id="4407044323746248786">Quer sair do Chromium mesmo assim?</translation>
 <translation id="4413205837991854510">Mostrar sempre o atalho da pesquisa de imagens</translation>

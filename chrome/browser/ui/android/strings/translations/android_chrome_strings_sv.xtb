@@ -852,6 +852,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4685741273709472646">Välj i rullgardinsmenyn</translation>
 <translation id="4687718960473379118">Föreslagna annonser på webbplatser</translation>
 <translation id="468924408576231679">Kopiera länk till webbsidan <ph name="PAGE_TITLE" />. Källa: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Sökmotorer</translation>
 <translation id="469286762610133730">Få bättre innehåll</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}}</translation>
 <translation id="4698757800236023795">Aktiva (<ph name="ITEM_COUNT" />)</translation>
@@ -1532,6 +1533,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7376560087009844242">Om du tar med mer av sidans text kanske du får bättre resultat när du använder Tryck för att söka. Du kan alltid öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill ändra detta.</translation>
 <translation id="7379900596734708416">Mörkt tema för webbplatser är tillgängligt</translation>
 <translation id="7384486627147155832">Kampanjen för tipsaviseringar har öppnats över halva skärmen</translation>
+<translation id="7387951778417998929">Om du vill använda en annan sökmotor än standardinställningen skriver du genvägen i adressfältet följt av önskat kortkommando. Du kan även ändra standardsökmotorn här.</translation>
 <translation id="7388615499319468910">Webbplatser och annonsörer kan mäta annonsernas resultat. Inställningen är inaktiverad.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annat, 1 fil i listan}other{Annat, # filer i listan}}</translation>
 <translation id="7400418766976504921">Webbadress</translation>

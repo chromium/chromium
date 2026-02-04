@@ -42,6 +42,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1399397803214730675">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Google Chrome. As die sagteware nie werk nie, deïnstalleer Google Chrome en probeer weer.</translation>
+<translation id="1404026649028693342">Wys altyd KI-modus</translation>
 <translation id="141901961143729572">Deel jou gedagtes</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word.}=1{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou Incognito-venster sal nie weer oopgemaak word nie.}other{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou # Incognito-vensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1434626383986940139">Chrome Kanarie-programme</translation>
@@ -66,6 +67,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1640672724030957280">Laai tans af …</translation>
 <translation id="1651617469580841801">Wanneer jy Google Lens gebruik, word die bladsytitel, URL en inhoud, insluitend PDF’s, na Google toe gestuur. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Meer oor Chrome OS Flex</translation>
+<translation id="1665867022636014702">Gebruik Google se aanbevole blaaierinstellings</translation>
 <translation id="1674870198290878346">Maak skakel in 'n incognitovenster in Chrome oop</translation>
 <translation id="1682634494516646069">Google Chrome kan nie sy datagids lees of daarheen skryf nie:
 
@@ -101,6 +103,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2026377840141807639">Met Chrome-profiele kan jy persoonlike blaai-aktiwiteit en werk apart hou. Voeg nou ’n nuwe profiel by.</translation>
 <translation id="2034233344106846793">Chrome gradeer onveilige verbindings outomaties op na HTTPS, wanneer moontlik</translation>
 <translation id="2039417478970545937">Instellings.</translation>
+<translation id="2066690553719545730">Wys altyd KI-modus</translation>
 <translation id="2091012649849228750">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex-bepalings</translation>
 <translation id="2094919256425865063">Verlaat Chrome in elk geval?</translation>
@@ -358,6 +361,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4885446229353981848">Wys altyd Google Lens-kortpad</translation>
 <translation id="4891791193823137474">Laat Google Chrome in die agtergrond loop.</translation>
 <translation id="4895437082222824641">Maak skakel in 'n nuwe Chrome-oortjie oop</translation>
+<translation id="4896867431081882115">Kry maklik toegang tot die kenmerke wat jy ken, van hou en vertrou deur Chrome as jou verstekblaaier te stel. Chrome sal vir kitstoegang op jou taakbalk vasgespeld word.</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4918844574251943176">Prent is gekopieer</translation>
 <translation id="4926882258455737990">Om ’n ander Google-rekening met Gemini in Chrome te gebruik, <ph name="BEGIN_LINK" />skep ’n nuwe profiel<ph name="END_LINK" /> en meld aan met die rekening wat jy wil gebruik</translation>
@@ -562,6 +566,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6885412569789873916">Chrome Beta-programme</translation>
 <translation id="6893363893008038481">Verwyder rekening uit Chrome</translation>
 <translation id="6896758677409633944">Kopieer</translation>
+<translation id="6908182077349113099">Hou jou wagwoorde, boekmerke en geskiedenis perfek gesinkroniseer op alle toestelle. Kry maklik toegang tot die kenmerke wat jy ken en van hou deur jou verstekblaaier na Chrome op te gradeer.</translation>
 <translation id="6930294499209825">Hou jou Google-sagteware bygewerk. As hierdie diens gedeaktiveer of gestop word, sal jou Google-sagteware nie bygewerk gehou word nie, wat beteken dat sekuriteitskwesbaarhede kan opduik wat nie reggestel kan word nie, en dat kenmerke dalk nie sal werk nie. Hierdie diens deïnstalleer vanself wanneer geen Google-sagteware dit gebruik nie.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.1.</translation>

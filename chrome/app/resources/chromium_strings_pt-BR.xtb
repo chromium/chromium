@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">O Chromium precisa acessar o Bluetooth para buscar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
+<translation id="1330742950061766891">Usar as configurações de navegador recomendadas do Chromium</translation>
 <translation id="1342274909142618978">Também excluir dados do Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Fixado. Você pode acessar a pesquisa por imagens de novo usando o novo botão na barra de ferramentas</translation>
 <translation id="1356661055722410047">Novidade! Agora é possível traduzir textos e imagens na tela.</translation>
 <translation id="1383876407941801731">Pesquise</translation>
 <translation id="1397530502368084401">&amp;Gerenciar perfis do Chromium</translation>
+<translation id="1404026649028693342">Sempre mostrar o Modo IA</translation>
 <translation id="141901961143729572">Envie feedback</translation>
 <translation id="1465192221147974788">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium.</translation>
 <translation id="1478370723027452770">Receber ajuda com o Chrome for Testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">configurações.</translation>
 <translation id="2049376729098081731">Escolha se você quer incluir o histórico do Chromium para ter experiências mais personalizadas nos Serviços do Google</translation>
 <translation id="2064856577282482477">Clique no botão "Personalizar o Chromium" na página "Nova guia" para mudar o visual do navegador</translation>
+<translation id="2066690553719545730">Sempre mostrar o Modo IA</translation>
 <translation id="2086476982681781442">O Chromium bloqueou o download porque o arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="208726765006323911">Você verá uma mensagem para testar o recurso <ph name="FEATURE_NAME" /> na próxima vez que abrir o Chromium para iOS.</translation>
 <translation id="2099452623287920103">As senhas e outros dados do Chromium salvos na sua Conta do Google serão removidos deste dispositivo. Para os usar de novo no Chromium, faça login outra vez.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Histórico do Chromium</translation>
 <translation id="3103660991484857065">Ocorreu uma falha no instalador ao descompactar o arquivo. Baixe o Chromium novamente.</translation>
 <translation id="310459126943037700">Falha ao encerrar tarefas.</translation>
+<translation id="3126784891977756556">Mantenha senhas, favoritos e histórico sincronizados entre os dispositivos. Aproveite melhor seus recursos favoritos definindo o Chromium como o navegador padrão.</translation>
 <translation id="3130323860337406239">O Chromium está usando seu microfone.</translation>
 <translation id="3130333203120345554">Nova pesquisa</translation>
 <translation id="3137969841538672700">Arraste para pesquisar</translation>
@@ -303,6 +307,7 @@
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4334241893986177674">Pesquisar esta captura de tela</translation>
 <translation id="4334294535648607276">Download concluído</translation>
+<translation id="4384993550046411228">Defina o Chromium como o navegador padrão para acessar com facilidade seus recursos favoritos. O Chromium será fixado na barra de tarefas para agilizar seu acesso.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do ChromiumOS.</translation>
 <translation id="4407044323746248786">Sair do Chromium mesmo assim?</translation>
 <translation id="4413205837991854510">Sempre mostrar o atalho da pesquisa por imagens</translation>

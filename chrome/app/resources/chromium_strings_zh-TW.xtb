@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
 <translation id="1324107359134968521">Chromium 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">偵測語言</translation>
+<translation id="1330742950061766891">使用 Chromium 建議的瀏覽器設定</translation>
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">已固定！之後只要點選工具列上的新按鈕，就能使用「圖片搜尋」</translation>
 <translation id="1356661055722410047">新功能！你可以翻譯畫面上的文字和圖片</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1397530502368084401">管理 Chromium 設定檔(&amp;M)</translation>
+<translation id="1404026649028693342">一律顯示 AI 模式</translation>
 <translation id="141901961143729572">分享你的想法</translation>
 <translation id="1465192221147974788">如要分享視窗內容，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">設定。</translation>
 <translation id="2049376729098081731">選擇是否要包含 Chromium 歷史記錄，取得更貼近個人需求的 Google 服務體驗</translation>
 <translation id="2064856577282482477">點選新分頁的「自訂 Chromium」按鈕，即可變更 Chromium 外觀</translation>
+<translation id="2066690553719545730">一律顯示 AI 模式</translation>
 <translation id="2086476982681781442">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
 <translation id="208726765006323911">下次開啟 iOS 版 Chromium 時，系統會提示你試用「<ph name="FEATURE_NAME" />」。</translation>
 <translation id="2099452623287920103">Google 帳戶中儲存的密碼和其他 Chromium 資料將從這部裝置上移除。如要在 Chromium 中再次使用這些資料，請重新登入。</translation>
@@ -192,6 +195,7 @@
 <translation id="3095811995836568724">Chromium 歷史記錄</translation>
 <translation id="3103660991484857065">安裝程式無法解壓縮封存檔案，請重新下載 Chromium。</translation>
 <translation id="310459126943037700">無法結束工作。</translation>
+<translation id="3126784891977756556">在各裝置完美同步密碼、書籤和歷史記錄。將預設瀏覽器更新為 Chromium，輕鬆存取熟悉且喜愛的功能。</translation>
 <translation id="3130323860337406239">Chromium 正在使用你的麥克風。</translation>
 <translation id="3130333203120345554">新搜尋</translation>
 <translation id="3137969841538672700">拖曳即可搜尋</translation>
@@ -304,6 +308,7 @@
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334241893986177674">搜尋這張螢幕截圖</translation>
 <translation id="4334294535648607276">下載完成。</translation>
+<translation id="4384993550046411228">將 Chromium 設為預設瀏覽器，輕鬆存取你熟悉、喜愛且信任的功能。Chromium 會釘選到工作列，方便你快速存取。</translation>
 <translation id="439358628917130594">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Chromium OS 條款》。</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>
 <translation id="4413205837991854510">一律顯示「圖片搜尋」捷徑</translation>

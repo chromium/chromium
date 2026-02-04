@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4183350924949589798">Vuoi maggiore sicurezza?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} password inefficace}other{{count} password inefficaci}}</translation>
+<translation id="4196758674971560031">I gruppi di schede che hai creato vengono salvati nella sezione dei gruppi di schede e aggiornati su tutti i tuoi dispositivi.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} elemento è salvato solo su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google {email}.}other{{count} elementi sono salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google {email}.}}</translation>
 <translation id="4207873326995387292">Informazioni del browser</translation>
 <translation id="421070604241073551">In caso di attivazione, i dati vengono salvati nel tuo Account Google. In caso di disattivazione, i dati vengono salvati solo su questo dispositivo.</translation>
@@ -1507,6 +1508,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6494931198667773526">Fine</translation>
 <translation id="6503077044568424649">Più visitati</translation>
 <translation id="6503763061813913607">Notifiche del controllo di sicurezza</translation>
+<translation id="6504541289630702018">Accedi facilmente ai gruppi di schede del desktop</translation>
 <translation id="6505334220040167806">Comprimi il gruppo di schede.</translation>
 <translation id="6506996418997555004">Condividi il gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Accedi per visualizzare il tuo elenco di lettura su tutti i tuoi dispositivi.</translation>
@@ -2137,6 +2139,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>
 <translation id="87371078663613140">Esplora le opzioni nella barra dei menu</translation>
+<translation id="8739546376441802490">Il sito fissato esiste già</translation>
 <translation id="8741627442233023406">{count,plural, =1{Rivedi la scheda…}other{Rivedi tutte le schede…}}</translation>
 <translation id="8741995161408053644">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crea link</translation>

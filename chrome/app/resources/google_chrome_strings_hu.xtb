@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome Béta</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1399397803214730675">A számítógépen már megtalálható a Google Chrome újabb verziója. Ha a szoftver nem működik, kérjük, távolítsa el a Google Chrome-ot, majd próbálkozzon újra.</translation>
+<translation id="1404026649028693342">Mindig látszódjon az AI-mód</translation>
 <translation id="141901961143729572">Ossza meg gondolatait</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni.}=1{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. Az inkognitó ablak nem fog újra megnyílni.}other{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-alkalmazások</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">Letöltés...</translation>
 <translation id="1651617469580841801">A Google Lens használatakor a rendszer elküldi az oldal címét, URL-jét és tartalmát (beleértve a PDF-eket is) a Google-nak. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">A ChromeOS Flex névjegye</translation>
+<translation id="1665867022636014702">A Google által ajánlott böngészőbeállítások használata</translation>
 <translation id="1674870198290878346">Link megnyitása Chrome-inko&amp;gnitóablakban</translation>
 <translation id="1682634494516646069">A Chrome nem tudja olvasni és írni az adatkönyvtárát: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Amikor beír valamit a címsávba vagy a keresőmezőbe, a Chrome elküldi a beírt szöveget a szervezet keresési, AI- és ügynökeszközeinek javaslatok biztosítása érdekében.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">A Chrome-profilok segítségével különválaszthatja a magáncélú és a munkahelyi böngészést. Adjon hozzá új profilt most.</translation>
 <translation id="2034233344106846793">A Chrome automatikusan frissíti a nem biztonságos kapcsolatokat HTTPS-re, amikor lehetséges</translation>
 <translation id="2039417478970545937">Beállítások.</translation>
+<translation id="2066690553719545730">Mindig látszódjon az AI-mód</translation>
 <translation id="2091012649849228750">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8 operációs rendszer fut.</translation>
 <translation id="2094648590148273905">A ChromeOS Flex feltételei</translation>
 <translation id="2094919256425865063">Biztosan kilép a Chrome-ból?</translation>
@@ -354,6 +357,7 @@
 <translation id="4885446229353981848">Mindig jelenjen meg a Google Lens gyorsparancsa</translation>
 <translation id="4891791193823137474">A Google Chrome futhat a háttérben</translation>
 <translation id="4895437082222824641">Link megnyi&amp;tása új Chrome-lapon</translation>
+<translation id="4896867431081882115">A Chrome alapértelmezett böngészőként való beállításával könnyen hozzáférhet a már ismert, szeretett és megbízható funkciókhoz. A Chrome a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
 <translation id="4918844574251943176">Kép másolva</translation>
 <translation id="4926882258455737990">Ha másik Google-fiókot szeretne használni a Gemini a Chrome-ban funkcióval, <ph name="BEGIN_LINK" />hozzon létre új profilt<ph name="END_LINK" />, és jelentkezzen be a kívánt fiókkal.</translation>
@@ -554,6 +558,7 @@
 <translation id="6885412569789873916">Chrome Beta-alkalmazások</translation>
 <translation id="6893363893008038481">Fiók eltávolítása a Chrome-ból</translation>
 <translation id="6896758677409633944">Másolás</translation>
+<translation id="6908182077349113099">Jelszavai, könyvjelzői és előzményei tökéletesen szinkronizálódnak az eszközök között. Ha a Chrome-ot állítja be alapértelmezett böngészőként, könnyen hozzáférhet a már ismert és szeretett funkciókhoz.</translation>
 <translation id="6930294499209825">Rendszeresen frissíti az Ön által használt Google-szoftvereket. Ha kikapcsolja vagy leállítja ezt a szolgáltatást, a Google-szoftverek nem kerülnek frissítésre, ami azt jelenti, hogy az esetlegesen felmerülő biztonsági hibákat nem lehet kijavítani, és az új funkciók sem jelennek meg. Ez a szolgáltatás eltávolítja saját magát, ha semmilyen Google-szoftver nem használja.</translation>
 <translation id="6933858244219479645">ChromeOS rendszer</translation>
 <translation id="6938166777909186039">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8.1 operációs rendszer fut.</translation>

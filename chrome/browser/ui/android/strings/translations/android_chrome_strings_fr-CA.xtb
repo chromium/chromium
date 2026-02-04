@@ -851,6 +851,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4685741273709472646">Sélectionnez dans la liste du menu déroulant</translation>
 <translation id="4687718960473379118">Annonces suggérées par les sites</translation>
 <translation id="468924408576231679">Copier le lien vers la page Web <ph name="PAGE_TITLE" />. Source : <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="469286762610133730">Obtenir un meilleur contenu</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres options de livraison}}</translation>
 <translation id="4698757800236023795">Actif (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7376560087009844242">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats lorsque vous utilisez la fonctionnalité Toucher pour rechercher. Vous pouvez toujours accéder aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" /> pour modifier cette option.</translation>
 <translation id="7379900596734708416">Le thème sombre pour les sites est accessible</translation>
 <translation id="7384486627147155832">Promotion des notifications de conseils ouverte à mi-hauteur</translation>
+<translation id="7387951778417998929">Pour utiliser un moteur de recherche autre que celui par défaut, entrez son raccourci dans la barre d'adresse suivi de votre raccourci-clavier favori. Vous pouvez aussi modifier votre moteur de recherche par défaut ici.</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est désactivé.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Autre, 1 fichier dans la liste}one{Autre, # fichier dans la liste}other{Autre, # fichiers dans la liste}}</translation>
 <translation id="7400418766976504921">URL</translation>

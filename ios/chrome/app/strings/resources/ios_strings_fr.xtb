@@ -779,7 +779,7 @@
 <translation id="3941941395924123592">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
 <translation id="3946483119107054883">Télécharger en CSV</translation>
 <translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour utiliser le mode navigation privée.</translation>
-<translation id="3949712484278252781">Ni vos conversations avec Gemini, ni vos <ph name="GOOGLE_WORKSPACE_DATA" /> ne seront examinées par des réviseurs humains ou utilisées pour améliorer les modèles d'IA générative.</translation>
+<translation id="3949712484278252781">Vos conversations avec Gemini et vos <ph name="GOOGLE_WORKSPACE_DATA" /> ne seront pas examinées par des réviseurs humains ni utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="3950479158728806902">Créer automatiquement une clé d'accès pour vous connecter plus vite</translation>
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3955740319737378355">OK</translation>
@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4183350924949589798">Renforcer la sécurité ?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} mot de passe peu sécurisé}one{{count} mot de passe peu sécurisé}other{{count} mots de passe peu sécurisés}}</translation>
+<translation id="4196758674971560031">Les groupes d'onglets que vous avez créés sont enregistrés dans la section "Groupes d'onglets" et mis à jour sur tous vos appareils.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} élément n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}one{{count} élément n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}other{{count} éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}}</translation>
 <translation id="4207873326995387292">Informations sur le navigateur</translation>
 <translation id="421070604241073551">Lorsque cette option est activée, les données sont enregistrées dans votre compte Google. Désactivez-la pour n'enregistrer les données que sur cet appareil.</translation>
@@ -1507,6 +1508,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6503077044568424649">Les + visités</translation>
 <translation id="6503763061813913607">Notifications du contrôle de sécurité</translation>
+<translation id="6504541289630702018">Accédez facilement à vos groupes d'onglets sur tous vos appareils</translation>
 <translation id="6505334220040167806">Réduire le groupe d'onglets.</translation>
 <translation id="6506996418997555004">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Connectez-vous pour accéder à votre liste de lecture sur tous vos appareils.</translation>
@@ -2000,7 +2002,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, appuyez sur "Continuer" ci-dessous.</translation>
 <translation id="8273982424131314219">Les informations saisies seront partagées avec <ph name="URL" /></translation>
 <translation id="8275068909952022340">Plus…</translation>
-<translation id="8277328362018795342">Le contenu de vos pages est partagé pour vous offrir des réponses plus pertinentes</translation>
+<translation id="8277328362018795342">Le contenu de votre page est partagé pour vous offrir des réponses plus pertinentes</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8282657446819506217">Ouvrir dans un groupe d'onglets</translation>
@@ -2137,6 +2139,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8730621377337864115">OK</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="87371078663613140">Explorez les options de la barre de menu</translation>
+<translation id="8739546376441802490">Le site est déjà épinglé</translation>
 <translation id="8741627442233023406">{count,plural, =1{Consulter l'onglet…}one{Consulter l'onglet…}other{Consulter tous les onglets…}}</translation>
 <translation id="8741995161408053644">Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Créer un lien</translation>
@@ -2283,7 +2286,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="954667170699278022">Liste de lecture</translation>
 <translation id="956066588046842680">L'importation de ces données n'est pas autorisée par la règle de votre organisation.</translation>
 <translation id="956218893102219091">Utilisez votre position exacte pour obtenir les résultats Gemini les plus précis, au lieu d'une position estimée en fonction de votre adresse IP. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="961856697154696964">Suppr. données navigation</translation>
+<translation id="961856697154696964">Supprimer les données de navigation</translation>
 <translation id="963102227019621224">Activité sur le Web et les applications</translation>
 <translation id="965259330007686240">Créer une image avec Gemini</translation>
 <translation id="965879457362663186">Ajouter une pièce jointe</translation>

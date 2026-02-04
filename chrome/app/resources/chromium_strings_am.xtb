@@ -32,11 +32,13 @@
 <translation id="1324107359134968521">Chromium የብሉቱዝ መሣሪያዎችን ለማሰስ የብሉቱዝ መዳረሻ 
 ያስፈልገዋል። <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ቋንቋ አግኝ</translation>
+<translation id="1330742950061766891">በChromium የሚመከሩ የአሳሽ ቅንብሮችን ይጠቀሙ</translation>
 <translation id="1342274909142618978">እንዲሁም ከChromium (<ph name="URL" />) ውሂብን ይሰርዙ</translation>
 <translation id="1345251407431278948">ፒን ተደርጓል! የምስል ፍለጋን እንደገና የመሣሪያ አሞሌው ላይ ካለው ከአዲሱ አዝራር መድረስ ይችላሉ</translation>
 <translation id="1356661055722410047">አዲስ! ማያ ገፅዎ ላይ ሁለቱንም ጽሁፍ እና ምስሎችን መተርጎም ይችላሉ</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1397530502368084401">እና የChromium መገለጫዎችን ያስተዳድሩ</translation>
+<translation id="1404026649028693342">ሁልጊዜ የሰው ሠራሽ አስተውሎት ሁነታን አሳይ</translation>
 <translation id="141901961143729572">ሀሳቦችዎን ያጋሩ</translation>
 <translation id="1465192221147974788">መስኮትዎን ለማጋራት በሥርዓት ቅንብሮች ውስጥ ለChromium የማያ ገፅ መቅረጽን ይፍቀዱ።</translation>
 <translation id="1478370723027452770">በChrome ለሙከራ ላይ እገዛ ያግኙ</translation>
@@ -93,6 +95,7 @@
 <translation id="2039417478970545937">ቅንብሮች።</translation>
 <translation id="2049376729098081731">በGoogle አገልግሎቶች ውስጥ ተጨማሪ ግላዊነት የተላበሱ ተሞክሮዎችን ለማግኘት የChromium ታሪክን ለማካተት እና ላለማካተት ይምረጡ</translation>
 <translation id="2064856577282482477">ለChromium አዲስ መልክ ለመስጠት በአዲስ ትር ገጽ ላይ ያለውን Chromium አብጅ የሚለውን አዝራር ጠቅ ያድርጉ</translation>
+<translation id="2066690553719545730">ሁልጊዜ የሰው ሠራሽ አስተውሎት ሁኔታን አሳይ</translation>
 <translation id="2086476982681781442">ፋይሉ አታላይ ስለሆነ እና በመሣሪያዎ ላይ ያልተጠበቁ ለውጦችን ሊያደርግ ስለሚችል Chromium ይህን ውርድ አግዷል</translation>
 <translation id="208726765006323911">Chromium iOS በሚከፍቱበት ቀጣዩ ጊዜ <ph name="FEATURE_NAME" />ን ለመሞከር ጥያቄ ያያሉ።</translation>
 <translation id="2099452623287920103">Google መለያ ውስጥ ያስቀመጧቸው የይለፍ ቃላትዎ እና ሌላ Chromium ውሂብ ከዚህ መሣሪያ ይወገዳሉ። እንደገና Chromium ውስጥ እነሱን ለመጠቀም መልሰው በመለያ ይግቡ።</translation>
@@ -195,6 +198,7 @@
 <translation id="3095811995836568724">Chromium ታሪክ</translation>
 <translation id="3103660991484857065">ጫኚው መዝገቡን መበተን አልቻለም። እባክዎ Chromiumን እንደገና ያውርዱት።</translation>
 <translation id="310459126943037700">ተግባር(ራት)ን ማብቃት አልተሳካም።</translation>
+<translation id="3126784891977756556">የይለፍ ቃልዎን፣ ዕልባቶችዎን እና ታሪክዎን በመላው መሣሪያዎችዎ ላይ በትክክል ሠምረው እንዲቆዩ ያድርጉ። ነባሪ አሳሽዎን ወደ Chromium በማዘመን በቀላሉ የሚያውቋቸውን እና የሚወዷቸውን ባህሪያት ይድረሱ።</translation>
 <translation id="3130323860337406239">Chromium ማይክሮፎንዎን እየተጠቀመ ነው።</translation>
 <translation id="3130333203120345554">አዲስ ፍለጋ</translation>
 <translation id="3137969841538672700">ለመፈለግ ይጎትቱ</translation>
@@ -307,6 +311,7 @@
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4334241893986177674">ይህን ቅጽበታዊ ገጽ እይታ ይፈልጉ</translation>
 <translation id="4334294535648607276">ማውረድ ተጠናቅቋል።</translation>
+<translation id="4384993550046411228">Chromiumን እንደ ነባሪ አሳሽዎ በማቀናበር የሚያውቋቸውን፣ የሚወዷቸውን እና የሚያምኗቸውን ባህሪያት ቀላል መዳረሻ ያግኙ። ለፈጣን መዳረሻ Chromium በተግባር አሞሌዎ ላይ ሰካ ይደረጋል።</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> ይህን መሣሪያ ከመጠቀምዎ በፊት የሚከተለውን የአገልግሎት ውል እንዲያነብቡት እና እንዲቀበሉት ይፈለጋል። ይህ ውል የChromiumOS ውሉን አያስፋፋውም፣ አይቀይረውም ወይም አይገድበውም።</translation>
 <translation id="4407044323746248786">የሆነው ሆኖ ከChromium ይወጣ?</translation>
 <translation id="4413205837991854510">የምስል ፍለጋ አቋራጭን ሁልጊዜ አሳይ</translation>

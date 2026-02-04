@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">ব্লুটুথ ডিভাইসগুলি এক্সপ্লোর করতে 
  Chromium-কে ব্লুটুথের অ্যাক্সেস দিতে হবে। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ভাষা শনাক্ত করুন</translation>
+<translation id="1330742950061766891">Chromium-এর সাজেস্ট করা ব্রাউজার সেটিংস ব্যবহার করুন</translation>
 <translation id="1342274909142618978">এছাড়া, Chromium থেকেও ডেটা মুছে দিন (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">পিন করা আছে! টুলবারে থাকা নতুন বোতাম থেকে আবার আপনি 'ছবি সার্চ করা' ফিচার অ্যাক্সেস করতে পারবেন</translation>
 <translation id="1356661055722410047">নতুন! আপনি স্ক্রিনে টেক্সট ও ছবি দুটিই অনুবাদ করতে পারবেন</translation>
 <translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="1397530502368084401">Chromium প্রোফাইল ম্যানেজ করুন</translation>
+<translation id="1404026649028693342">সবসময় AI মোড দেখা যাবে</translation>
 <translation id="141901961143729572">আপনার মতামত শেয়ার করুন</translation>
 <translation id="1465192221147974788">আপনার উইন্ডো শেয়ার করতে, সিস্টেম সেটিংস থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন।</translation>
 <translation id="1478370723027452770">Chrome for Testing ব্যবহার করে সহায়তা পান</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">সেটিংস।</translation>
 <translation id="2049376729098081731">Google পরিষেবাতে আরও পছন্দমতো অভিজ্ঞতার জন্য Chromium ইতিহাস অন্তর্ভুক্ত করবেন কিনা তা বেছে নিন</translation>
 <translation id="2064856577282482477">Chromium-কে নতুন লুক দিতে নতুন ট্যাব পৃষ্ঠায় 'Chromium কাস্টমাইজ করুন' বোতামে ক্লিক করুন</translation>
+<translation id="2066690553719545730">সবসময় AI মোড দেখা যাবে</translation>
 <translation id="2086476982681781442">এই ফাইলটি প্রতারণামূলক এবং এটি ডিভাইসে অপ্রত্যাশিত পরিবর্তন করে দিতে পারে, তাই Chromium এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="208726765006323911">পরেরবার Chromium iOS খোলার সময় আপনি <ph name="FEATURE_NAME" /> ব্যবহার করে দেখার প্রম্পট দেখতে পাবেন।</translation>
 <translation id="2099452623287920103">আপনার Google অ্যাকাউন্টে সেভ করেছেন এমন পাসওয়ার্ড ও Chromium-এর অন্যান্য ডেটা এই ডিভাইস থেকে সরানো হবে। Chromium-এ সেগুলি পুনরায় ব্যবহার করতে, আবার সাইন-ইন করুন।</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Chromium ইতিহাস</translation>
 <translation id="3103660991484857065">ইনস্টলার আর্কাইভ আনকমপ্রেস করতে পারেনি৷ অনুগ্রহ করে Chromium আবার ডাউনলোড করুন৷</translation>
 <translation id="310459126943037700">টাস্ক শেষ করা যায়নি।</translation>
+<translation id="3126784891977756556">আপনার সব ডিভাইস জুড়ে পাসওয়ার্ড, বুকমার্ক ও ইতিহাস সিঙ্ক করে রাখুন। আপনার ডিফল্ট ব্রাউজার Chromium-এ আপডেট করে আপনার পরিচিত ও পছন্দের ফিচারগুলি সহজেই অ্যাক্সেস করুন।</translation>
 <translation id="3130323860337406239">Chromium আপনার মাইক্রোফোন ব্যবহার করছে৷</translation>
 <translation id="3130333203120345554">নতুন সার্চ</translation>
 <translation id="3137969841538672700">সার্চ করতে টেনে আনুন</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="4334241893986177674">এই স্ক্রিনশট সার্চ করুন</translation>
 <translation id="4334294535648607276">ডাউনলোড সম্পূর্ণ।</translation>
+<translation id="4384993550046411228">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করে, আপনার পরিচিত, পছন্দের এবং বিশ্বস্ত ফিচারে সহজেই অ্যাক্সেস পান। দ্রুত অ্যাক্সেসের জন্য Chromium আপনার টাস্কবারে পিন করা হবে।</translation>
 <translation id="439358628917130594"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত ChromiumOS-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
 <translation id="4407044323746248786">তা স্বত্তেও Chromium ছেড়ে যাবেন?</translation>
 <translation id="4413205837991854510">ছবি সার্চ করা শর্টকাট সবসময় দেখুন</translation>

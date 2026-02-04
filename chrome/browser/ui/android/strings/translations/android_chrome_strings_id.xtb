@@ -851,6 +851,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4685741273709472646">Pilih dari daftar dropdown</translation>
 <translation id="4687718960473379118">Iklan yang disarankan situs</translation>
 <translation id="468924408576231679">Salin link ke halaman web <ph name="PAGE_TITLE" />. Sumber: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Mesin telusur</translation>
 <translation id="469286762610133730">Dapatkan konten yang lebih baik</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}}</translation>
 <translation id="4698757800236023795">Aktif (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7376560087009844242">Dengan menyertakan lebih banyak teks halaman, Anda dapat melihat hasil yang lebih baik saat menggunakan fitur Sentuh untuk Menelusuri. Anda dapat membuka <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja untuk mengubahnya.</translation>
 <translation id="7379900596734708416">Tema gelap untuk situs tersedia</translation>
 <translation id="7384486627147155832">Promo notifikasi tips dibuka setengah</translation>
+<translation id="7387951778417998929">Untuk menggunakan mesin telusur selain mesin telusur default, ketik pintasannya di kolom URL, lalu tekan pintasan keyboard yang diinginkan. Anda juga dapat mengubah mesin telusur default di sini.</translation>
 <translation id="7388615499319468910">Situs dan pengiklan dapat memahami performa iklan. Setelan ini nonaktif.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Lainnya, 1 file dalam daftar}other{Lainnya, # file dalam daftar}}</translation>
 <translation id="7400418766976504921">URL</translation>

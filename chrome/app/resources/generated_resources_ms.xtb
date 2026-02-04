@@ -1401,6 +1401,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="192564025059434655">Versi lama Apl Chrome tidak akan dibuka pada peranti Windows selepas Disember 2022. Anda boleh menyemak jika terdapat versi baharu.</translation>
 <translation id="1926339101652878330">Tetapan ini dikawal oleh dasar perusahaan. Sila hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="1926887872692564784">Kursor</translation>
+<translation id="1927075772688962338">Sematkan mod membaca</translation>
 <translation id="1927632033341042996">Jari <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN kunci skrin</translation>
 <translation id="192858925209436740">Sambungkan OneDrive kepada apl Fail untuk mengurus dokumen disimpan anda daripada Chromebook anda. Anda perlu log masuk dengan akaun Microsoft anda.</translation>
@@ -1616,7 +1617,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2079053412993822885">Jika anda memadamkan salah satu sijil milik anda, anda tidak lagi boleh menggunakannya untuk mengenal pasti diri anda.</translation>
 <translation id="2079495302726689071">Buka pautan dalam tab <ph name="APP" /> baharu</translation>
 <translation id="2079545284768500474">Buat asal</translation>
-<translation id="2079553700504470326">Gunakan lokasi tepat anda untuk hasil carian Gemini yang paling tepat, bukannya lokasi anggaran berdasarkan alamat IP anda.</translation>
 <translation id="2080070583977670716">Lagi tetapan</translation>
 <translation id="2081816110395725788">Kuasa melahu pada bateri</translation>
 <translation id="2082187087049518845">Tab Kumpulan</translation>
@@ -3790,6 +3790,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3557101512409028104">Tetapkan sekatan laman web &amp; had masa skrin menggunakan Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan diperbaik pada ChromeOS. Laporan ini boleh mengandungi maklumat seperti waktu ranap sistem OS Chrome, ciri yang digunakan dan jumlah memori yang biasanya digunakan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti ChromeOS anak anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini sedang mengusahakan tugasan anda...</translation>
 <translation id="3559079791149580653">Hentikan penghantaran skrin pada <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">Gagal memasang dasar pada peranti.</translation>
 <translation id="3559533181353831840">Kira-kira <ph name="TIME_LEFT" /> lagi</translation>
@@ -5936,7 +5937,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5001526427543320409">Kuki pihak ketiga</translation>
 <translation id="5003070249435823986">Gunakan gerak isyarat untuk memasuki mod tatal, kemudian gerakkan kepala anda mengikut arah yang mahu anda tatal. Gunakan gerak isyarat sekali lagi untuk keluar daripada mod tatal.</translation>
 <translation id="5003993274120026347">Ayat seterusnya</translation>
-<translation id="5005113238422129109">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Aktiviti Apl Gemini (jika dihidupkan)</translation>
 <translation id="5005498671520578047">Salin kata laluan</translation>
 <translation id="5006218871145547804">ADB apl Android Crostini</translation>
 <translation id="5006778209728626987">Kilat</translation>
@@ -7792,10 +7792,8 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6291953229176937411">&amp;Paparkan dalam Pencari</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> telah dimatikan</translation>
 <translation id="6294759976468837022">Kelajuan autoimbas</translation>
-<translation id="6295140892595702619">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Aktiviti Apl Gemini (jika dihidupkan). Data anda tidak digunakan untuk meningkatkan model AI generatif</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
-<translation id="6296481987471548530">Gunakan lokasi tepat anda untuk hasil carian Gemini yang paling tepat, bukannya lokasi anggaran berdasarkan alamat IP anda. Data anda tidak digunakan untuk meningkatkan model AI generatif</translation>
 <translation id="6297986260307280218">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Pemilik mungkin memilih untuk menghantar data diagnostik dan penggunaan bagi peranti ini kepada Google. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Menjejaskan laman yang disenaraikan di sini. Tindakan memasukkan “[*.]” sebelum nama domain akan menghasilkan pengecualian untuk keseluruhan domain. Sebagai contoh, tindakan menambahkan “[*.]google.com” bermakna kuki pihak ketiga juga boleh menjadi aktif untuk mail.google.com kerana mail.google.com merupakan sebahagian daripada google.com.</translation>
 <translation id="6298962879096096191">Gunakan Google Play untuk memasang apl Android</translation>
@@ -11035,7 +11033,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> mahu menyimpan maklumat pada peranti Android anda</translation>
 <translation id="8509177919508253835">Tetapkan semula kunci keselamatan dan buat PIN</translation>
 <translation id="8509646642152301857">Muat turun kamus semakan ejaan gagal.</translation>
-<translation id="8509967119010808787">Untuk mencari tab anda, klik di sini</translation>
 <translation id="8512476990829870887">Tamatkan Proses</translation>
 <translation id="851263357009351303">Sentiasa benarkan <ph name="HOST" /> untuk memaparkan imej</translation>
 <translation id="8513108775083588393">Autoputar</translation>
@@ -12210,6 +12207,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> mahu mendapatkan maklumat daripada peranti mudah alih anda</translation>
 <translation id="988320949174893488">Tersentak-sentak Sekali-sekala</translation>
 <translation id="988978206646512040">Ungkapan laluan yang dikosongkan tidak dibenarkan</translation>
+<translation id="989685714699739712">Atur tab anda dengan mengumpulkan tab tersebut bersama serta melabelkan tab dengan nama dan warna tersuai</translation>
 <translation id="992032470292211616">Sambungan, apl dan tema boleh mengancam peranti anda. Adakah anda pasti mahu meneruskan?</translation>
 <translation id="992256792861109788">Merah Jambu</translation>
 <translation id="992592832486024913">Lumpuhkan ChromeVox (maklum balas dituturkan)</translation>

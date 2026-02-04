@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">語言</translation>
 <translation id="4183350924949589798">想要加強安全性嗎？</translation>
 <translation id="4184063163998877398">{count,plural, =1{有 {count} 組低強度密碼}other{有 {count} 組低強度密碼}}</translation>
+<translation id="4196758674971560031">你建立的分頁群組會儲存在「分頁群組」專區，並同步到所有裝置。</translation>
 <translation id="4197456013861852807">{count,plural, =1{這 {count} 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="4207873326995387292">瀏覽器資訊</translation>
 <translation id="421070604241073551">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置。</translation>
@@ -1507,6 +1508,7 @@
 <translation id="6494931198667773526">結束時間</translation>
 <translation id="6503077044568424649">最常造訪</translation>
 <translation id="6503763061813913607">安全檢查通知</translation>
+<translation id="6504541289630702018">輕鬆存取電腦的分頁群組</translation>
 <translation id="6505334220040167806">收合分頁群組。</translation>
 <translation id="6506996418997555004">共用「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="6507973708545996744">只要登入帳戶，即可在所有裝置上取用自己的閱讀清單。</translation>
@@ -2137,6 +2139,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全碼</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
+<translation id="8739546376441802490">已釘選這個網站</translation>
 <translation id="8741627442233023406">{count,plural, =1{查看分頁…}other{查看所有分頁…}}</translation>
 <translation id="8741995161408053644">您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的各種瀏覽記錄。</translation>
 <translation id="874599634440689554">建立連結</translation>

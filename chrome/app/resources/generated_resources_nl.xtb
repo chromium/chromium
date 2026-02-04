@@ -1606,7 +1606,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2079053412993822885">Als je een van je eigen certificaten verwijdert, kun je deze niet langer gebruiken om jezelf te identificeren.</translation>
 <translation id="2079495302726689071">Link openen in een nieuw tabblad van <ph name="APP" /></translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
-<translation id="2079553700504470326">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres.</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2081816110395725788">Inactieve stand bij batterijvoeding</translation>
 <translation id="2082187087049518845">Tabblad toevoegen aan groep</translation>
@@ -5919,7 +5918,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5001526427543320409">Cookies van derden</translation>
 <translation id="5003070249435823986">Gebruik het gebaar om de scrollmodus te openen en beweeg dan je hoofd in de richting waarin je wilt scrollen. Gebruik het gebaar opnieuw om de scrollmodus te sluiten.</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
-<translation id="5005113238422129109">Gebruik je microfoon om te chatten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini Apps-activiteit (als dit aanstaat)</translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
 <translation id="5006218871145547804">Android-app-ADB voor Crostini</translation>
 <translation id="5006778209728626987">Bliksem</translation>
@@ -7771,10 +7769,8 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6291953229176937411">&amp;Toon in Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is uitgezet</translation>
 <translation id="6294759976468837022">Snelheid voor automatisch scannen</translation>
-<translation id="6295140892595702619">Gebruik je microfoon om te chatten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini Apps-activiteit (als dit aanstaat). Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6295855836753816081">Opslaan...</translation>
-<translation id="6296481987471548530">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres. Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="6297986260307280218">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Dit heeft gevolgen voor de hier vermelde sites. Als je [*.] invoegt vóór een domeinnaam, wordt er een uitzondering gemaakt voor het hele domein. Als je bijvoorbeeld '[*.]google.com' toevoegt, kunnen cookies van derden ook actief zijn voor mail.google.com, omdat dit onderdeel is van google.com.</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-apps te installeren</translation>
@@ -11012,7 +11008,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> wil informatie opslaan op je Android-apparaat</translation>
 <translation id="8509177919508253835">Reset beveiligingssleutels en maak pincodes</translation>
 <translation id="8509646642152301857">Downloaden van woordenboek voor spellingcontrole is mislukt.</translation>
-<translation id="8509967119010808787">Klik hier om je tabbladen te zoeken</translation>
 <translation id="8512476990829870887">Proces beëindigen</translation>
 <translation id="851263357009351303"><ph name="HOST" /> altijd toestaan afbeeldingen te bekijken</translation>
 <translation id="8513108775083588393">Autom. draaien</translation>

@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Beta verzija preglednika Chrome</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1399397803214730675">Na ovom računalu već postoji novija verzija programa Google Chrome. Ako softver ne radi, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
+<translation id="1404026649028693342">Uvijek prikaži AI način</translation>
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti.}=1{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Anonimni se prozor neće ponovno otvoriti.}one{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1434626383986940139">Aplikacije kanala Chrome Canary</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">Preuzimanje...</translation>
 <translation id="1651617469580841801">Kad upotrebljavate Google objektiv, naslov, URL i sadržaj stranice, uključujući PDF-ove, šalju se Googleu. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O ChromeOS Flexu</translation>
+<translation id="1665867022636014702">Upotrijebite postavke preglednika koje preporučuje Google</translation>
 <translation id="1674870198290878346">Otvori vezu u ano&amp;nimnom prozoru Chromea</translation>
 <translation id="1682634494516646069">Google Chrome ne može čitati iz svojeg podatkovnog direktorija niti u njega pisati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upišete Chrome šalje alatima za pretraživanje, AI alatima i alatima za agente vaše organizacije kako bi vam pružio prijedloge.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">Chromeovi profili omogućuju vam da odvojite osobno pregledavanje od poslovnog. Odmah dodajte novi profil.</translation>
 <translation id="2034233344106846793">Chrome automatski nadograđuje nesigurne veze na HTTPS kad je to moguće</translation>
 <translation id="2039417478970545937">Postavke.</translation>
+<translation id="2066690553719545730">Uvijek prikaži AI način</translation>
 <translation id="2091012649849228750">Da biste primali buduća ažuriranja Google Chromea, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.</translation>
 <translation id="2094648590148273905">Uvjeti za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Želite li ipak zatvoriti Chrome?</translation>
@@ -354,6 +357,7 @@
 <translation id="4885446229353981848">Uvijek prikaži prečac za Google objektiv</translation>
 <translation id="4891791193823137474">Neka Google Chrome radi u pozadini</translation>
 <translation id="4895437082222824641">Otvori vezu na novoj &amp;kartici Chromea</translation>
+<translation id="4896867431081882115">Postavite Chrome kao zadani preglednik da biste jednostavno pristupali svojim omiljenim pouzdanim značajkama. Chrome će se prikvačiti na traku sa zadacima radi brzog pristupa.</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4918844574251943176">Slika je kopirana</translation>
 <translation id="4926882258455737990">Da biste upotrebljavali drugi Google račun s Geminijem u Chromeu, <ph name="BEGIN_LINK" />izradite novi profil<ph name="END_LINK" /> i prijavite se željenim računom</translation>
@@ -501,7 +505,7 @@
 <translation id="6321592572353357376">Proširenje <ph name="EXTENSION_NAME" /> traži da se prijavite u Chrome</translation>
 <translation id="6326175484149238433">Ukloni iz programa Chrome</translation>
 <translation id="6327105987658262776">Ažuriranja nisu dostupna.</translation>
-<translation id="6333195756043503664">Otvori Chrome kad se pokrene moje računalo</translation>
+<translation id="6333195756043503664">Otvori Chrome pri pokretanju računala</translation>
 <translation id="6334815226785304306">Postavite Google Chrome kao zadani preglednik i prikvačite ga na traku sa zadacima</translation>
 <translation id="63540178978900677">Chrome više nije vaš zadani preglednik. Neka Chrome bude zadani preglednik?</translation>
 <translation id="6360449101159168105">Dok je ova kartica bila neaktivna, memorija je oslobođena kako bi Chrome ostao brz. Možete odabrati da ta web-lokacija uvijek bude neaktivna.</translation>
@@ -554,6 +558,7 @@
 <translation id="6885412569789873916">Aplikacije preglednika Chrome Beta</translation>
 <translation id="6893363893008038481">Uklanjanje računa iz Chromea</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6908182077349113099">Sinkronizirajte zaporke, oznake i povijest na svim uređajima. Jednostavno pristupite svojim omiljenim značajkama tako da ažurirate zadani preglednik na Chrome.</translation>
 <translation id="6930294499209825">Održava Googleov softver ažurnim. Ako se ta usluga onemogući ili zaustavi, Googleov softver neće se ažurirati, što znači da se mogu pojaviti sigurnosne ranjivosti koje se neće moći popraviti, pa značajke možda neće funkcionirati. Ova se usluga sama deinstalira kada ne postoji Googleov softver koji je koristi.</translation>
 <translation id="6933858244219479645">Sustav ChromeOS</translation>
 <translation id="6938166777909186039">Da biste primali buduća ažuriranja Google Chromea, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.1.</translation>

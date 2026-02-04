@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">Yeni Chromium profilinizi oluşturun</translation>
 <translation id="1324107359134968521">Chromium'un Bluetooth cihazları keşfedebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Dili algıla</translation>
+<translation id="1330742950061766891">Chromium'un önerdiği tarayıcı ayarlarını kullanın</translation>
 <translation id="1342274909142618978">Chromium'daki verileri de sil (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Sabitlendi. Araç çubuğundaki yeni düğmeyi kullanarak Görsel Arama'ya tekrar erişebilirsiniz</translation>
 <translation id="1356661055722410047">Yeni! Ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1397530502368084401">&amp;Chromium Profillerini Yönetin</translation>
+<translation id="1404026649028693342">AI Modu'nu her zaman göster</translation>
 <translation id="141901961143729572">Düşüncelerinizi paylaşın</translation>
 <translation id="1465192221147974788">Pencerenizi paylaşmak için Sistem Ayarları'nda Chromium'un ekranı kaydetmesine izin verin.</translation>
 <translation id="1478370723027452770">Chrome for Testing ile ilgili yardım alın</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">Ayarlar.</translation>
 <translation id="2049376729098081731">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chromium geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="2064856577282482477">Chromium'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chromium'u Özelleştir düğmesini tıklayın</translation>
+<translation id="2066690553719545730">AI Modu'nu Her Zaman Göster</translation>
 <translation id="2086476982681781442">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="208726765006323911">Chromium iOS'i bir sonraki açışınızda <ph name="FEATURE_NAME" /> özelliğini denemeniz için bir istem görürsünüz.</translation>
 <translation id="2099452623287920103">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chromium verileri bu cihazdan kaldırılır. Bu bilgileri Chromium'da tekrar kullanmak için yeniden oturum açın.</translation>
@@ -192,6 +195,7 @@
 <translation id="3095811995836568724">Chromium geçmişi</translation>
 <translation id="3103660991484857065">Yükleyici sıkıştırılmış arşivi açamadı. Lütfen Chromium'u yeniden indirin.</translation>
 <translation id="310459126943037700">Görevler sonlandırılamadı.</translation>
+<translation id="3126784891977756556">Şifreleriniz, yer işaretleriniz ve geçmişinizi cihazlar arasında mükemmel şekilde senkronize edin. Varsayılan tarayıcınızı Chromium'a güncelleyerek sevdiğiniz ve bildiğiniz özelliklere kolayca erişin.</translation>
 <translation id="3130323860337406239">Chromium mikrofonunuzu kullanıyor.</translation>
 <translation id="3130333203120345554">Yeni arama</translation>
 <translation id="3137969841538672700">Aramak için sürükleyin</translation>
@@ -302,6 +306,7 @@
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4334241893986177674">Bu ekran görüntüsünde arama yapın</translation>
 <translation id="4334294535648607276">İndirme işlemi tamamlandı.</translation>
+<translation id="4384993550046411228">Chromium'u varsayılan tarayıcınız olarak ayarlayarak bildiğiniz, sevdiğiniz ve güvendiğiniz özelliklere kolayca erişin. Chromium, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, ChromiumOS Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="4407044323746248786">Yine de Chromium'dan çıkılsın mı?</translation>
 <translation id="4413205837991854510">Görsel Arama Kısayolunu Her Zaman Göster</translation>

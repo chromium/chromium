@@ -31,11 +31,13 @@
 <translation id="1315551408014407711">‏اپنی نئی Chromium پروفائل سیٹ اپ کریں</translation>
 <translation id="1324107359134968521">‏‫Chromium کو بلوٹوتھ آلات دریافت کرنے کے لیے بلوٹوتھ تک رسائی درکار ہے۔ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">زبان کا پتا لگائیں</translation>
+<translation id="1330742950061766891">‏‫Chromium کی تجویز کردہ براؤزر کی ترتیبات استعمال کریں</translation>
 <translation id="1342274909142618978">‏Chromium (<ph name="URL" />) سے ڈیٹا بھی حذف کریں</translation>
 <translation id="1345251407431278948">پن کر دیا گیا! آپ ٹول بار پر نئے بٹن سے دوبارہ تصاویر کا استعمال کر کے تلاش تک رسائی حاصل کر سکتے ہیں</translation>
 <translation id="1356661055722410047">نیا! آپ اپنی اسکرین پر ٹیکسٹ اور تصاویر دونوں کا ترجمہ کر سکتے ہیں</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1397530502368084401">‏‫Chromium پروفائلز کا &amp;نظم کریں</translation>
+<translation id="1404026649028693342">‏ہمیشہ AI وضع دکھائیں</translation>
 <translation id="141901961143729572">اپنے خیالات کا اشتراک کریں</translation>
 <translation id="1465192221147974788">‏اپنی ونڈو کا اشتراک کرنے کیلئے، سسٹم کی ترتیبات میں Chromium کیلئے اسکرین ریکارڈنگ کی اجازت دیں۔</translation>
 <translation id="1478370723027452770">‏Chrome for Testing کے سلسلے میں مدد حاصل کریں</translation>
@@ -92,6 +94,7 @@
 <translation id="2039417478970545937">ترتیبات۔</translation>
 <translation id="2049376729098081731">‏منتخب کریں کہ آیا Google سروسز میں مزید ذاتی نوعیت کے تجربات کے لیے Chromium کی سرگزشت کو شامل کریں</translation>
 <translation id="2064856577282482477">‏‫Chromium کو نئی شکل دینے کے لیے نئے ٹیب کے صفحہ پر Chromium کو حسب ضرورت بنائیں بٹن پر کلک کریں</translation>
+<translation id="2066690553719545730">‏ہمیشہ AI وضع دکھائیں</translation>
 <translation id="2086476982681781442">‏Chromium نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ یہ فائل فریب والی ہے اور آپ کے آلے میں غیر متوقع تبدیلیاں کر سکتی ہے</translation>
 <translation id="208726765006323911">‏اگلی بار جب آپ Chromium iOS کھولیں گے تو آپ کو <ph name="FEATURE_NAME" /> کو آزمانے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>
 <translation id="2099452623287920103">‏آپ کے پاس ورڈز اور دیگر Chromium ڈیٹا جو آپ نے اپنے Google اکاؤنٹ میں محفوظ کیا ہے انہیں اس آلہ سے ہٹا دیا جائے گا۔ انہیں Chromium میں دوبارہ استعمال کرنے کے لیے، دوبارہ سائن ان کریں۔</translation>
@@ -194,6 +197,7 @@
 <translation id="3095811995836568724">‏‫Chromium کی سرگزشت</translation>
 <translation id="3103660991484857065">‏انسٹالر آرکائیو کا کمپریشن ختم کرنے میں ناکام ہوگیا۔ براہ کرم Chromium کو دوبارہ ڈاؤن لوڈ کریں۔</translation>
 <translation id="310459126943037700">ٹاسک (ٹاسکس) ختم کرنے میں ناکام۔</translation>
+<translation id="3126784891977756556">‏اپنے پاس ورڈز، بُک مارکس اور سرگزشت کو آلات پر مکمل طور پر مطابقت پذیر رکھیں۔ اپنے ڈیفالٹ براؤزر کو Chromium میں اپ ڈیٹ کر کے ان خصوصیات تک آسانی سے رسائی حاصل کریں جنہیں آپ جانتے اور پسند کرتے ہیں۔</translation>
 <translation id="3130323860337406239">‏Chromium آپ کا مائیکروفون استعمال کر رہا ہے۔</translation>
 <translation id="3130333203120345554">نئی تلاش</translation>
 <translation id="3137969841538672700">تلاش کرنے کے لیے گھسیٹیں</translation>
@@ -306,6 +310,7 @@
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="4334241893986177674">اس اسکرین شاٹ کو تلاش کریں</translation>
 <translation id="4334294535648607276">ڈاؤن لوڈ مکمل ہوگیا۔</translation>
+<translation id="4384993550046411228">‏‫Chromium کو اپنے ڈیفالٹ براؤزر کے طور پر سیٹ کر کے ان خصوصیات تک آسان رسائی حاصل کریں جنہیں آپ جانتے، پسند کرتے اور ان پر بھروسہ کرتے ہیں۔ فوری رسائی کے لیے Chromium کو آپ کے ٹاسک بار میں پن کر دیا جائے گا۔</translation>
 <translation id="439358628917130594">‏<ph name="MANAGER" /> تقاضہ کرتا ہے کہ آپ یہ آلہ استعمال کرنے سے پہلے مندرجہ ذیل سروس کی شرائط کو پڑھیں اور قبول کریں۔ یہ شرائط ChromiumOS کی شرائط کی توسیع، ان میں ترمیم یا انہیں محدود نہیں کرتی ہیں۔</translation>
 <translation id="4407044323746248786">‏بہر حال Chromium کو بند کریں؟</translation>
 <translation id="4413205837991854510">ہمیشہ تصاویر کا استعمال کر کے تلاش کا شارٹ کٹ دکھائیں</translation>

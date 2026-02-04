@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">زبانیں</translation>
 <translation id="4183350924949589798">مزید سیکیورٹی؟</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} کمزور پاس ورڈ}other{{count} کمزور پاس ورڈز}}</translation>
+<translation id="4196758674971560031">آپ کے بنائے ہوئے ٹیب گروپس ٹیب گروپ سیکشن میں محفوظ ہوتے ہیں اور آپ کے تمام آلات پر اپ ڈیٹ ہوتے ہیں۔</translation>
 <translation id="4197456013861852807">{count,plural, =1{‏{count} آئٹم صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {email} میں محفوظ کریں۔}other{‏{count} آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="4207873326995387292">براؤزر کی معلومات</translation>
 <translation id="421070604241073551">‏آن ہونے پر، ڈیٹا آپ کے Google اکاؤنٹ میں محفوظ ہوتا ہے۔ آف ہونے پر، ڈیٹا صرف اس آلے میں محفوظ ہوتا ہے۔</translation>
@@ -1507,6 +1508,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6494931198667773526">وقت اختتام</translation>
 <translation id="6503077044568424649">سب سے زیادہ ملاحظہ کردہ</translation>
 <translation id="6503763061813913607">سیفٹی چیک کی اطلاعات</translation>
+<translation id="6504541289630702018">اپنے ڈیسک ٹاپ ٹیب گروپس تک آسانی سے رسائی حاصل کریں</translation>
 <translation id="6505334220040167806">ٹیب گروپ کو سکیڑیں۔</translation>
 <translation id="6506996418997555004">‫"<ph name="GROUP_NAME" />" ٹیب گروپ کا اشتراک کریں</translation>
 <translation id="6507973708545996744">اپنے سبھی آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے سائن ان کریں۔</translation>
@@ -2137,6 +2139,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8731268612289859741">سیکیورٹی کوڈ</translation>
 <translation id="87371078663613140">مینیو بار میں موجود اختیارات کو دریافت کریں</translation>
+<translation id="8739546376441802490">پن کردہ سائٹ پہلے سے موجود ہے</translation>
 <translation id="8741627442233023406">{count,plural, =1{ٹیب کا جائزہ لیں…}other{تمام ٹیبز کا جائزہ لیں…}}</translation>
 <translation id="8741995161408053644">‏ممکن ہے کہ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر فارمز موجود ہوں۔</translation>
 <translation id="874599634440689554">لنک بنائیں</translation>

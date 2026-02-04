@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1399397803214730675">Este equipo ya cuenta con una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y descárgalo nuevamente.</translation>
+<translation id="1404026649028693342">Mostrar siempre el Modo IA</translation>
 <translation id="141901961143729572">Comparte tu opinión</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales.}=1{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverá a abrir la ventana de incógnito.}other{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverán a abrir # ventanas de incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">Descargando...</translation>
 <translation id="1651617469580841801">Cuando usas Google Lens, el título de la página, la URL y el contenido, incluidos los archivos PDF, se envían a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Acerca de ChromeOS Flex</translation>
+<translation id="1665867022636014702">Usar la configuración recomendada del navegador Google</translation>
 <translation id="1674870198290878346">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chrome</translation>
 <translation id="1682634494516646069">Google Chrome no puede leer ni agregar datos al directorio de datos: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a las herramientas de búsqueda, IA y agentes de tu organización para obtener sugerencias.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">Los perfiles de Chrome te permiten mantener separadas la navegación personal y la laboral. Agrega un perfil nuevo ahora.</translation>
 <translation id="2034233344106846793">Chrome actualiza automáticamente las conexiones no seguras a HTTPS cuando es posible</translation>
 <translation id="2039417478970545937">Configuración.</translation>
+<translation id="2066690553719545730">Mostrar siempre el Modo IA</translation>
 <translation id="2091012649849228750">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 8.</translation>
 <translation id="2094648590148273905">Condiciones de ChromeOS Flex</translation>
 <translation id="2094919256425865063">¿Deseas salir de Chrome de todos modos?</translation>
@@ -354,6 +357,7 @@
 <translation id="4885446229353981848">Mostrar siempre el acceso directo a Google Lens</translation>
 <translation id="4891791193823137474">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="4895437082222824641">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>
+<translation id="4896867431081882115">Establece Chrome como tu navegador predeterminado para acceder fácilmente a las funciones que conoces, te encantan y en las que confías. Chrome se fijará a la barra de tareas para que puedas acceder a él rápidamente.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4918844574251943176">Se copió la imagen</translation>
 <translation id="4926882258455737990">Para usar otra Cuenta de Google con Gemini en Chrome, <ph name="BEGIN_LINK" />crea un nuevo perfil<ph name="END_LINK" /> y accede con la cuenta que quieras</translation>
@@ -554,6 +558,7 @@
 <translation id="6885412569789873916">Apps de Chrome Beta</translation>
 <translation id="6893363893008038481">Quitar la cuenta de Chrome</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6908182077349113099">Mantén tus contraseñas, favoritos y el historial perfectamente sincronizados en todos los dispositivos. Actualiza tu navegador predeterminado a Chrome para acceder fácilmente a las funciones que conoces y te encantan.</translation>
 <translation id="6930294499209825">Mantiene actualizado tu software de Google. Si este servicio se desactiva o se detiene, tu software de Google no se mantendrá actualizado, lo que implica que las vulnerabilidades de seguridad que puedan aparecer no podrán solucionarse y es posible que no se puedan usar algunas funciones. Este servicio se desinstalará automáticamente si ningún software de Google lo utiliza.</translation>
 <translation id="6933858244219479645">Sistema de ChromeOS</translation>
 <translation id="6938166777909186039">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 8.1.</translation>

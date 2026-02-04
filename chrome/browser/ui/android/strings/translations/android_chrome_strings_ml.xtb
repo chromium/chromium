@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">ഡ്രോപ്പ്ഡൗൺ ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4687718960473379118">സൈറ്റ് നിർദ്ദേശിത പരസ്യം</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> എന്ന വെബ്പേജിലേക്കുള്ള ലിങ്ക് പകർത്തുക. ഉറവിടം: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">തിരയൽ യന്ത്രങ്ങൾ</translation>
 <translation id="469286762610133730">കൂടുതൽ മെച്ചപ്പെട്ട ഉള്ളടക്കം നേടുക</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="4698757800236023795">സജീവമായവ (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">പേജിലുള്ള കൂടുതൽ ടെക്സ്റ്റ് ഉൾപ്പെടുത്തുന്നതിലൂടെ, 'തിരയാൻ സ്‌പർശിക്കുക' ഉപയോഗിക്കുമ്പോൾ നിങ്ങൾക്ക് മെച്ചപ്പെട്ട ഫലങ്ങൾ ലഭിച്ചേക്കാം. ഇത് മാറ്റാൻ നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> സന്ദർശിക്കാം.</translation>
 <translation id="7379900596734708416">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീം ലഭ്യമാണ്</translation>
 <translation id="7384486627147155832">'നുറുങ്ങുകളെ കുറിച്ചുള്ള അറിയിപ്പുകൾ' പ്രമോ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
+<translation id="7387951778417998929">ഡിഫോൾട്ടല്ലാത്ത മറ്റൊരു തിരയൽ യന്ത്രം ഉപയോഗിക്കാൻ, വിലാസ ബാറിൽ അതിന്റെ കുറുക്കുവഴി ടൈപ്പ് ചെയ്ത ശേഷം നിങ്ങൾ മുൻഗണന നൽകിയിട്ടുള്ള കീബോർഡ് കുറുക്കുവഴി അമർത്തുക. നിങ്ങൾക്ക് ഇവിടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രം മാറ്റുകയും ചെയ്യാം.</translation>
 <translation id="7388615499319468910">പരസ്യങ്ങളുടെ പ്രകടനം എങ്ങനെയുണ്ടെന്ന് സൈറ്റുകൾക്കും പരസ്യദാതാക്കൾക്കും മനസ്സിലാക്കാനാകും. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{മറ്റുള്ളവ, ലിസ്റ്റിൽ ഒരു ഫയൽ}other{മറ്റുള്ളവ, ലിസ്റ്റിൽ # ഫയലുകൾ}}</translation>
 <translation id="7400418766976504921">URL</translation>

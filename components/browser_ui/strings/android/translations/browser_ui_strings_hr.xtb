@@ -9,7 +9,7 @@
 <translation id="1074758928858737435">Možete zatražiti prikaz verzije web-lokacija za računala</translation>
 <translation id="1085696779717592361">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću pokazivača za tekst kad je tipkovnica povezana</translation>
-<translation id="1149644372535087155">Spremajte zaporke u Chromeu</translation>
+<translation id="1149644372535087155">Spremite zaporke u Chromeu</translation>
 <translation id="1178015372320901893">Donja tablica Moji prečaci</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -402,7 +402,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="512938610812707830">Donja tablica zbirki tema izgleda stranice Nova kartica otvorena je u punoj visini</translation>
 <translation id="5137460097045297858">Donja tablica feeda Discovera otvorena je na pola visine</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sniženje cijene na otvorenoj kartici}one{Sniženja cijena na otvorenim karticama}few{Sniženja cijena na otvorenim karticama}other{Sniženja cijena na otvorenim karticama}}</translation>
-<translation id="5150048675001754041">Brza i jednostavna prijava na web-lokacije i u aplikacije</translation>
+<translation id="5150048675001754041">Brzo se i jednostavno prijavite na web-lokacije i u aplikacije</translation>
 <translation id="5186036860380548585">Opcija je dostupna pri vrhu zaslona</translation>
 <translation id="5197729504361054390">Kontakti koje odaberete podijelit će se s web-lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Zatvorena je prilagodba donje tablice stranice nove kartice</translation>

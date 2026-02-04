@@ -1616,7 +1616,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2079053412993822885">Om du tar bort ett av dina egna certifikat kan du inte längre använda det för att identifiera dig själv.</translation>
 <translation id="2079495302726689071">Öppna länken på en ny flik i <ph name="APP" /></translation>
 <translation id="2079545284768500474">Ångra</translation>
-<translation id="2079553700504470326">Använd din exakta plats för att få Gemini-resultat som är så specifika som möjligt i stället för en ungefärlig plats baserat på din IP-adress.</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2081816110395725788">Inaktivitet vid batteridrift</translation>
 <translation id="2082187087049518845">Gruppflik</translation>
@@ -5936,7 +5935,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5003070249435823986">Använd rörelsen för att aktivera scrollningsläget och rör sedan huvudet i den riktning du vill scrolla. Använd rörelsen igen för att avsluta scrollningsläget.</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
-<translation id="5005113238422129109">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini lagras ljud i Gemini-appaktiviteten (om den är aktiverad)</translation>
 <translation id="5005498671520578047">Kopiera lösenord</translation>
 <translation id="5006218871145547804">ADB för Android-appar i Crostini</translation>
 <translation id="5006778209728626987">Blixtar</translation>
@@ -7792,10 +7790,8 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6291953229176937411">&amp;Visa i Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> är inaktiverad</translation>
 <translation id="6294759976468837022">Hastighet för automatisk genomsökning</translation>
-<translation id="6295140892595702619">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini lagras ljud i Gemini-appaktiviteten (om den är aktiverad). Din data används inte för att förbättra generativa AI-modeller</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6295855836753816081">Sparar ...</translation>
-<translation id="6296481987471548530">Använd din exakta plats för att få Gemini-resultat som är så specifika som möjligt i stället för en ungefärlig plats baserat på din IP-adress. Din data används inte för att förbättra generativa AI-modeller</translation>
 <translation id="6297986260307280218">Skicka användnings- och diagnostikdata. Hjälp till att göra Android bättre genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används bland annat till att förbättra systemets och apparnas stabilitet. Viss samlad data används även till att förbättra appar från Google och Googles partners, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Ägaren kan ange att användnings- och diagnostikdata för den här enheten ska skickas till Google. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer om mätvärden<ph name="BEGIN_LINK2_END" />Läs mer<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Påverkar webbplatserna som anges här. Om du infogar ”[*.]” före ett domännamn skapas ett undantag för hela domänen. Om du till exempel lägger till “[*.]google.com” innebär det att tredjepartscookies också kan vara aktiva för mail.google.com, eftersom det är en del av google.com.</translation>
 <translation id="6298962879096096191">Installera appar med hjälp av Google Play</translation>
@@ -11034,7 +11030,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> vill spara information på din Android-enhet</translation>
 <translation id="8509177919508253835">Återställ säkerhetsnycklar och skapa pinkoder</translation>
 <translation id="8509646642152301857">Det gick inte att ladda ned ordlistan för stavningskontrollen.</translation>
-<translation id="8509967119010808787">Klicka här om du vill söka på flikarna</translation>
 <translation id="8512476990829870887">Avsluta process</translation>
 <translation id="851263357009351303">Tillåt alltid att <ph name="HOST" /> visar bilder</translation>
 <translation id="8513108775083588393">Rotera automatiskt</translation>

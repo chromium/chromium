@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">Skonfiguruj nowy profil w Chromium</translation>
 <translation id="1324107359134968521">Aby można było przeglądać urządzenia Bluetooth, Chromium musi mieć dostęp do Bluetootha. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Wykryj język</translation>
+<translation id="1330742950061766891">Użyj zalecanych ustawień przeglądarki Chromium</translation>
 <translation id="1342274909142618978">Usuń też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Przypięto. Możesz ponownie uzyskać dostęp do wyszukiwania obrazów za pomocą nowego przycisku na pasku narzędzi</translation>
 <translation id="1356661055722410047">Nowość! Możesz tłumaczyć tekst i obrazy na ekranie</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1397530502368084401">Zarządzaj profila&amp;mi Chromium</translation>
+<translation id="1404026649028693342">Zawsze pokazuj Tryb AI</translation>
 <translation id="141901961143729572">Podziel się swoimi wrażeniami</translation>
 <translation id="1465192221147974788">Aby udostępnić okno, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu.</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">Ustawienia.</translation>
 <translation id="2049376729098081731">Określ, czy chcesz uwzględniać historię Chromium w celu lepszego dostosowania usług Google</translation>
 <translation id="2064856577282482477">Kliknij przycisk Dostosuj Chromium na stronie nowej karty, aby zmienić wygląd przeglądarki</translation>
+<translation id="2066690553719545730">Zawsze pokazuj Tryb AI</translation>
 <translation id="2086476982681781442">Pobieranie zostało zablokowane przez Chromium, ponieważ ten plik ma na celu oszukanie użytkownika i może wprowadzić nieoczekiwane zmiany na urządzeniu</translation>
 <translation id="208726765006323911">Gdy następnym razem otworzysz Chromium na iOS, zobaczysz prośbę o wypróbowanie funkcji <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Hasła i inne dane z Chromium zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chromium, zaloguj się ponownie.</translation>
@@ -192,6 +195,8 @@
 <translation id="3095811995836568724">Historia Chromium</translation>
 <translation id="3103660991484857065">Instalator nie może prawidłowo rozpakować archiwum. Pobierz Chromium ponownie.</translation>
 <translation id="310459126943037700">Nie udało się ukończyć zadań.</translation>
+<translation id="3104828284009500087">Wyszukaj dowolny element na stronie</translation>
+<translation id="3126784891977756556">Synchronizuj hasła, zakładki i historię na wszystkich swoich urządzeniach. Zaktualizuj przeglądarkę domyślną do Chromium, aby mieć łatwy dostęp do znanych i lubianych funkcji.</translation>
 <translation id="3130323860337406239">Chromium używa Twojego mikrofonu.</translation>
 <translation id="3130333203120345554">Nowe wyszukiwanie</translation>
 <translation id="3137969841538672700">Przeciągnij, aby wyszukać</translation>
@@ -302,6 +307,7 @@
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4334241893986177674">Przeszukaj ten zrzut ekranu</translation>
 <translation id="4334294535648607276">Pobieranie ukończone.</translation>
+<translation id="4384993550046411228">Ustaw Chromium jako przeglądarkę domyślną, aby mieć łatwy dostęp do znanych, lubianych i zaufanych funkcji. Przeglądarka Chromium zostanie przypięta do paska zadań, aby była łatwo dostępna.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> wymaga, aby przed korzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Chromium OS.</translation>
 <translation id="4407044323746248786">Zamknąć Chromium mimo to?</translation>
 <translation id="4413205837991854510">Zawsze pokazuj skrót do wyszukiwania obrazów</translation>

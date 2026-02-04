@@ -988,6 +988,7 @@
 <translation id="1652326691684645429">启用“附近分享”功能</translation>
 <translation id="1652862280638399816">若要将密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chromium 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="1653958716132599769">将相关标签页分为一组</translation>
+<translation id="165448107578581061">Gemini 正在处理您的任务…</translation>
 <translation id="1654580009054503925">不得显示请求</translation>
 <translation id="1654713139320245449">找不到目标 Cast 设备。需要帮助吗？</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
@@ -1598,7 +1599,6 @@
 <translation id="2079053412993822885">如果您删除了自己的某个证书，则不能再用该证书标识自己的身份。</translation>
 <translation id="2079495302726689071">在新的<ph name="APP" />标签页中打开链接</translation>
 <translation id="2079545284768500474">撤消</translation>
-<translation id="2079553700504470326">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2081816110395725788">使用电池时让电源闲置</translation>
 <translation id="2082187087049518845">为标签页建组</translation>
@@ -3865,6 +3865,7 @@
 <translation id="3619294456800709762">网站可以自动进入画中画模式</translation>
 <translation id="3620136223548713675">地理定位</translation>
 <translation id="3621202678540785336">输入</translation>
+<translation id="3621841019087952625">稍后设置</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 款应用}other{# 款应用}}</translation>
 <translation id="3622820753353315928">屏幕闪烁颜色</translation>
 <translation id="3623318122257816196">您访问的网站可能会嵌入来自其他网站的内容，例如图片、广告和文字。这些其他网站可能会向您请求权限，以便在您浏览相关网站时使用之前保存的与您相关的信息。</translation>
@@ -4265,6 +4266,7 @@
 <translation id="3856096718352044181">请检查并确保这是一个有效的提供商，或者稍后重试</translation>
 <translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用您的 Google 账号</translation>
 <translation id="3856800405688283469">选择时区</translation>
+<translation id="3856902135796972992">此网站需要您执行额外操作。请在页面上完成验证，以便完成密码更改。</translation>
 <translation id="3857807444929313943">移开手指，然后再次触摸传感器</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="385939467708172187">使用安全系数高的密码</translation>
@@ -5908,7 +5910,6 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5003070249435823986">使用手势进入滚动模式，然后将头转向要滚动的方向。再次使用手势可退出滚动模式。</translation>
 <translation id="5003993274120026347">下一句</translation>
-<translation id="5005113238422129109">使用麦克风与 Gemini 对话。与 Gemini 对话时，对话音频会存储在 Gemini 应用活动记录中（如果已开启这项设置）</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5006218871145547804">Crostini Android 应用 ADB</translation>
 <translation id="5006778209728626987">闪电</translation>
@@ -6235,6 +6236,7 @@
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{要取消标签页分组吗？}other{要取消标签页分组吗？}}</translation>
 <translation id="5230190638672215545">输入“uow”即可显示“ươ”</translation>
 <translation id="5230516054153933099">窗口</translation>
+<translation id="5231255476752743708">Chrome 需要您协助更改密码</translation>
 <translation id="5232714764496316200">借助 Google 智能镜头获取作业辅导</translation>
 <translation id="5233231016133573565">进程 ID</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
@@ -7759,10 +7761,8 @@
 <translation id="6291953229176937411">在 Finder 中显示(&amp;S)</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" />已关闭</translation>
 <translation id="6294759976468837022">自动扫描速度</translation>
-<translation id="6295140892595702619">使用麦克风与 Gemini 对话。与 Gemini 对话时，对话音频会存储在 Gemini 应用活动记录中（如果已开启这项设置）。您的数据不会用于改进生成式 AI 模型</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6295855836753816081">正在保存…</translation>
-<translation id="6296481987471548530">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。您的数据不会用于改进生成式 AI 模型</translation>
 <translation id="6297986260307280218">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。<ph name="BEGIN_LINK2" />详细了解指标<ph name="BEGIN_LINK2_END" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">此设置会影响这里列出的网站。在域名前插入“[*.]”可以为整个域创建例外情况。例如，添加“[*.]google.com”意味着也可为 mail.google.com 启用第三方 Cookie，因为此网域是 google.com 的一部分。</translation>
 <translation id="6298962879096096191">使用 Google Play 安装 Android 应用</translation>
@@ -8294,6 +8294,7 @@
 <translation id="6677527809400770913">已将手势“<ph name="GESTURE" />”分配给“<ph name="ACTION" />”</translation>
 <translation id="6678604587151240716">海中巨浪翻滚，远处背景是一片陆地。天空暗沉，地平线上隐约透出橙色光芒。</translation>
 <translation id="6678717876183468697">查询网址</translation>
+<translation id="6678974601734442817">Chromium 需要您协助更改密码</translation>
 <translation id="6679947539429331601">隐藏 12 小时</translation>
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">语速</translation>
@@ -11000,7 +11001,6 @@
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> 想将信息保存到您的 Android 设备上</translation>
 <translation id="8509177919508253835">重置安全密钥并创建 PIN 码</translation>
 <translation id="8509646642152301857">拼写检查字典下载失败。</translation>
-<translation id="8509967119010808787">如要搜索您的标签页，请点击此处</translation>
 <translation id="8512476990829870887">结束进程</translation>
 <translation id="851263357009351303">始终允许 <ph name="HOST" /> 显示图片</translation>
 <translation id="8513108775083588393">自动屏幕旋转</translation>

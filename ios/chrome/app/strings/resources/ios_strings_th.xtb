@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">ภาษา</translation>
 <translation id="4183350924949589798">หากต้องการความปลอดภัยมากขึ้น</translation>
 <translation id="4184063163998877398">{count,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {count} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {count} รายการ}}</translation>
+<translation id="4196758674971560031">ระบบจะบันทึกกลุ่มแท็บที่คุณสร้างไว้ในส่วนกลุ่มแท็บและอัปเดตในอุปกรณ์ต่างๆ</translation>
 <translation id="4197456013861852807">{count,plural, =1{ข้อมูล {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{ข้อมูล {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
 <translation id="4207873326995387292">ข้อมูลเบราว์เซอร์</translation>
 <translation id="421070604241073551">เมื่อเปิดไว้ ระบบจะบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
@@ -1507,6 +1508,7 @@
 <translation id="6494931198667773526">สิ้นสุด</translation>
 <translation id="6503077044568424649">เข้าชมบ่อยสุด</translation>
 <translation id="6503763061813913607">การแจ้งเตือนการตรวจสอบความปลอดภัย</translation>
+<translation id="6504541289630702018">เข้าถึงกลุ่มแท็บในเดสก์ท็อปได้อย่างง่ายดาย</translation>
 <translation id="6505334220040167806">ยุบกลุ่มแท็บ</translation>
 <translation id="6506996418997555004">แชร์กลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">ลงชื่อเข้าใช้เพื่อรับเรื่องรออ่านในอุปกรณ์ทุกเครื่อง</translation>
@@ -2137,6 +2139,7 @@
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
 <translation id="87371078663613140">สํารวจตัวเลือกในแถบเมนู</translation>
+<translation id="8739546376441802490">มีเว็บไซต์ที่ปักหมุดอยู่แล้ว</translation>
 <translation id="8741627442233023406">{count,plural, =1{ดูแท็บ…}other{ดูแท็บทั้งหมด…}}</translation>
 <translation id="8741995161408053644">บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="874599634440689554">สร้างลิงก์</translation>

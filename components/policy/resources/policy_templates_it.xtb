@@ -5641,6 +5641,23 @@ Se viene disattivata, all'utente non viene mostrata la promozione dell'estension
       Se impostata su Attivata, la schermata introduttiva di Gemini verrà mostrata.
 
       Se non viene configurata, la schermata introduttiva di Gemini verrà ignorata per gli utenti gestiti a livello aziendale e mostrata per gli utenti non gestiti.</translation>
+<translation id="4781685421378746692">Questa policy consente di controllare la condivisione dei contenuti di pagine e file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> e <ph name="GOOGLE_LENS_PRODUCT_NAME" /> tramite il riquadro laterale o le schede di <ph name="PRODUCT_NAME" />.
+
+Tieni presente che questa policy non influisce su <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sul web. Controlla solo il modo in cui gli utenti possono condividere informazioni con esso quando utilizzano <ph name="PRODUCT_NAME" />.
+
+0/non impostata = gli utenti possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = gli utenti non possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Gli entry point per la condivisione del contesto e il riquadro laterale verranno disattivati o nascosti.
+
+Questa policy verrà ignorata quando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> non è il motore di ricerca predefinito degli utenti perché la funzionalità è disattivata.
+
+Questa policy è indipendente dalla policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> controlla solo gli entry point nella omnibox o nella casella di ricerca della pagina Nuova scheda, mentre questa policy controlla la condivisione del contesto tramite il riquadro laterale o le schede.
+
+Questa policy non controlla l'integrazione di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere disattivata da <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Se questa policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4783415902268741066">Consenti la visualizzazione della pagina di risultati più recente del motore di ricerca predefinito in un riquadro laterale del browser</translation>
 <translation id="4786784434769279324">Azioni da eseguire quando il computer è inattivo</translation>
 <translation id="4787763197941188108">Consente di sostituire le dimensioni della pagina di stampa predefinita.
@@ -7224,6 +7241,7 @@ Sulle piattaforme desktop, il download del modello può essere disattivato anche
 <translation id="5766438888216077649">Non impostare <ph name="WINDOW_OPENER_PROPERTY" /> per i link indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Disattiva pagine di errore sostitutive</translation>
 <translation id="5770738360657678870">Canale Dev (potrebbe essere instabile)</translation>
+<translation id="5772841828612966342">Abilitata: XSLT è abilitata in modo esplicito.</translation>
 <translation id="5774345930803672932">Se la policy viene impostata su True o se non viene configurata, gli eventi, la telemetria e le informazioni possono essere segnalati alla Pipeline di reporting criptato. Se la policy viene impostata su False, la Pipeline di reporting criptato viene disabilitata.</translation>
 <translation id="5774856474228476867">URL di ricerca del provider di ricerca predefinito</translation>
 <translation id="5775235485119094648">Carica la batteria mentre si trova in un intervallo stabilito.</translation>
@@ -9918,6 +9936,11 @@ Se questa policy viene impostata su False, viene attivato il comportamento prece
 <translation id="7410074797376205571">Consenti a <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> di eseguire richieste API WebAuthn trasferite al proxy da un host remoto.</translation>
 <translation id="7412456346709338637">Attiva accesso ai dati per le periferiche Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Nessuna preferenza.</translation>
+<translation id="7416222110012824615">Questa policy consente di controllare la disponibilità della funzionalità XSLT (l'API JavaScript XSLTProcessor e l'istruzione di elaborazione XSL).
+Se questa policy viene impostata su Attivata, XSLT sarà disponibile, indipendentemente dallo stato predefinito della funzionalità nel browser.
+Se questa policy viene impostata su Disattivata, XSLT non sarà disponibile, indipendentemente dallo stato predefinito della funzionalità nel browser.
+Se questa policy non viene configurata, la disponibilità di XSLT verrà determinata dalle impostazioni predefinite del browser e dalle prove sul campo.
+Questa policy è una misura temporanea e verrà rimossa nella versione M164.</translation>
 <translation id="7417438464912687020">Consenti le connessioni di accesso remoto a questo computer</translation>
 <translation id="7417972229667085380">Percentuale di regolazione del ritardo di inattività in modalità di presentazione (obsoleta)</translation>
 <translation id="7421230730436851224">Non limitare mai il processo audio tramite sandbox</translation>
@@ -9958,6 +9981,7 @@ Se la policy viene impostata su "<ph name="AUTOMATED_NAME" />", il flusso <ph na
 Se la policy non viene configurata, in pratica equivale a impostarla su "<ph name="ALLOWED_NAME" />" per gli utenti normali e su "<ph name="DISALLOWED_NAME" />" per gli utenti aziendali.</translation>
 <translation id="7438982301540282785">Automatizza la configurazione di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7443356543619955157">La configurazione della policy consente di forzare l'applicazione della configurazione di rete per tutti gli utenti di un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
+<translation id="744349502210151344">Impostazione predefinita: la disponibilità di XSLT sarà determinata dalle impostazioni predefinite del browser e dalle prove sul campo.</translation>
 <translation id="7446978687387327623">Consenti i controlli in tempo reale inviati tramite proxy di Navigazione sicura</translation>
 <translation id="7448430478749155471">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="7455912144588577399">Se la policy viene impostata su true, gli utenti possono fare in modo che le pagine web idonee vengano lette utilizzando la sintesi vocale. Ciò si ottiene mediante la distillazione dei contenuti lato server e la sintesi audio. Se viene impostata su false, la funzionalità viene disattivata. Se questa policy viene impostata sul valore predefinito o se non viene configurata, Leggi ad alta voce è attiva.</translation>
@@ -11218,6 +11242,7 @@ Esistono più policy che elencano le origini che influiscono sulle richieste al 
           Se la policy viene impostata su un valore che non rientra nell'intervallo minimo/massimo, l'host potrebbe non essere avviato.
 
           Tieni presente che l'effettivo limite superiore per le dimensioni degli appunti è basato sulle dimensioni massime del messaggio di canale dei dati WebRTC, che non sono controllate da questa policy.</translation>
+<translation id="8294127013911518331">Controlla la disponibilità della funzionalità XSLT</translation>
 <translation id="8294750666104911727">In genere le pagine con X-UA-Compatible impostato su chrome=1 saranno visualizzate in <ph name="PRODUCT_FRAME_NAME" /> nonostante la norma "£ChromeFrameRendererSettings".
 
 Se attivi questa impostazione, le pagine non saranno sottoposte a scansione per i metatag.
@@ -11977,6 +12002,7 @@ Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUC
 <translation id="8807313206348471682">Mostra la finestra di dialogo di conferma di disconnessione</translation>
 <translation id="8807728576820212213">Attiva l'integrazione di Lens</translation>
 <translation id="8809082103104823938">Supporto delle GIF nel selettore di emoji</translation>
+<translation id="8809276335775270751">Disabilitata: XSLT è disabilitata in modo esplicito.</translation>
 <translation id="8812091410765157924">Consenti ai popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha aperto il popup soltanto se la pagina di apertura attiva esplicitamente questa interazione</translation>
 <translation id="8812631362927615118">Attiva l'autenticazione proprietaria quando segnali di sicurezza dell'utente vengono inviati in report</translation>
 <translation id="8816370949847593408">Potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.</translation>

@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4183350924949589798">Chcete lepší zabezpečení?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} slabé heslo}few{{count} slabá hesla}many{{count} slabého hesla}other{{count} slabých hesel}}</translation>
+<translation id="4196758674971560031">Vytvořené skupiny karet se ukládají do sekce skupin karet a aktualizují se na všech vašich zařízeních.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} položka je uložena pouze na tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google {email}.}few{{count} položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}many{{count} položky je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}other{{count} položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}}</translation>
 <translation id="4207873326995387292">Informace o prohlížeči</translation>
 <translation id="421070604241073551">Když je tato funkce zapnutá, ukládají se data do vašeho účtu Google. Když je vypnutá, ukládají se pouze do tohoto zařízení.</translation>
@@ -1507,6 +1508,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6494931198667773526">Končí</translation>
 <translation id="6503077044568424649">Nejnavštěvovanější</translation>
 <translation id="6503763061813913607">Oznámení bezpečnostní kontroly</translation>
+<translation id="6504541289630702018">Snadný přístup ke skupinám karet na počítači</translation>
 <translation id="6505334220040167806">Sbalit skupinu karet.</translation>
 <translation id="6506996418997555004">Sdílení skupiny karet <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Pokud seznam četby chcete mít na všech svých zařízeních, přihlaste se.</translation>
@@ -2137,6 +2139,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731268612289859741">Bezpečnostní kód</translation>
 <translation id="87371078663613140">Prozkoumejte možnosti na liště s nabídkou.</translation>
+<translation id="8739546376441802490">Připnutý web už existuje</translation>
 <translation id="8741627442233023406">{count,plural, =1{Zkontrolovat kartu…}few{Zkontrolovat všechny karty…}many{Zkontrolovat všechny karty…}other{Zkontrolovat všechny karty…}}</translation>
 <translation id="8741995161408053644">Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> mohou být k dispozici další formy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="874599634440689554">Vytvořit odkaz</translation>

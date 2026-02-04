@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">语言</translation>
 <translation id="4183350924949589798">想提升安全性？</translation>
 <translation id="4184063163998877398">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
+<translation id="4196758674971560031">您创建的标签页分组会保存在“标签页分组”部分，并在您的所有设备上更新。</translation>
 <translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="4207873326995387292">浏览器信息</translation>
 <translation id="421070604241073551">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上。</translation>
@@ -1507,6 +1508,7 @@
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="6503763061813913607">安全检查通知</translation>
+<translation id="6504541289630702018">轻松访问桌面设备保存的标签页分组</translation>
 <translation id="6505334220040167806">收起标签页分组。</translation>
 <translation id="6506996418997555004">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
 <translation id="6507973708545996744">登录后即可将您的阅读清单同步到您的所有设备上。</translation>
@@ -2137,6 +2139,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全码</translation>
 <translation id="87371078663613140">浏览菜单栏中的选项</translation>
+<translation id="8739546376441802490">已经固定过该网站</translation>
 <translation id="8741627442233023406">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
 <translation id="8741995161408053644">您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="874599634440689554">创建链接</translation>

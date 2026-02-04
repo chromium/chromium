@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Pesquise</translation>
 <translation id="1399397803214730675">Este computador já tem uma versão mais recente do Google Chrome. Caso o software não esteja funcionando, desinstale-o e tente novamente.</translation>
+<translation id="1404026649028693342">Sempre mostrar o Modo IA</translation>
 <translation id="141901961143729572">Envie feedback</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas.}=1{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua janela anônima não será aberta novamente.}one{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua # janela anônima não será aberta novamente.}other{O Chrome foi atualizado. Reinicie para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1434626383986940139">Aplicativos Canary do Google Chrome</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">Fazendo download...</translation>
 <translation id="1651617469580841801">Quando você usa o Google Lens, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados ao Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Sobre o ChromeOS Flex</translation>
+<translation id="1665867022636014702">Usar as configurações de navegador recomendadas do Google</translation>
 <translation id="1674870198290878346">Abrir link na janela &amp;sem rastros do Chrome</translation>
 <translation id="1682634494516646069">O Google Chrome não pode ler e gravar neste diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">O Chrome envia o que você digitou na barra de endereço ou na caixa de pesquisa para as ferramentas de pesquisa, IA e agente da sua organização e recebe sugestões.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">Com os perfis do Chrome, você separa o trabalho da vida pessoal na hora de navegar. Adicione um agora.</translation>
 <translation id="2034233344106846793">Quando possível, o Chrome faz upgrade automático de conexões sem segurança para HTTPS</translation>
 <translation id="2039417478970545937">configurações.</translation>
+<translation id="2066690553719545730">Sempre mostrar o Modo IA</translation>
 <translation id="2091012649849228750">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.</translation>
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
 <translation id="2094919256425865063">Sair do Chrome mesmo assim?</translation>
@@ -354,6 +357,7 @@
 <translation id="4885446229353981848">Sempre mostrar o atalho do Google Lens</translation>
 <translation id="4891791193823137474">Executar o Google Chrome em segundo plano</translation>
 <translation id="4895437082222824641">Abrir link em nova &amp;guia do Chrome</translation>
+<translation id="4896867431081882115">Defina o Chrome como o navegador padrão para acessar com facilidade seus recursos favoritos. O Chrome será fixado na barra de tarefas para agilizar o seu acesso.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>
 <translation id="4926882258455737990">Para usar outra Conta do Google com o Gemini no Chrome, <ph name="BEGIN_LINK" />crie um novo perfil<ph name="END_LINK" /> e faça login com a conta desejada</translation>
@@ -554,6 +558,7 @@
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>
 <translation id="6893363893008038481">Remover conta do Chrome</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6908182077349113099">Mantenha senhas, favoritos e histórico sincronizados entre os dispositivos. Aproveite melhor seus recursos favoritos definindo o Chrome como o navegador padrão.</translation>
 <translation id="6930294499209825">Mantém seu software do Google atualizado. Se este serviço for desativado ou interrompido, o software do Google não será atualizado. Isso significa que as vulnerabilidades de segurança que surgirem não serão corrigidas e talvez recursos não funcionem. O serviço é desinstalado automaticamente quando não está sendo usado por nenhum software do Google.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.1.</translation>

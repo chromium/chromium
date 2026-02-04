@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">Ընտրել իջնող ցանկից</translation>
 <translation id="4687718960473379118">Կայքերի առաջարկած գովազդներ</translation>
 <translation id="468924408576231679">Պատճենել «<ph name="PAGE_TITLE" />» վեբէջի հղումը։ Աղբյուրը՝ <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Որոնիչներ</translation>
 <translation id="469286762610133730">Ստացեք ավելի հետաքրքիր բովանդակություն</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
 <translation id="4698757800236023795">Ակտիվ (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">Ներառելով ավելի շատ տեքստ էջից՝ դուք կարող եք ավելի լավ արդյունքներ ստանալ «Հպումով որոնում» գործառույթից օգտվելիս։ Այս պարամետրը կարող եք ցանկացած ժամանակ փոխել <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="7379900596734708416">Կայքերի համար մուգ թեման հասանելի է</translation>
 <translation id="7384486627147155832">Ծանուցումներով պրոմոհուշումը բացված է կիսով չափ</translation>
+<translation id="7387951778417998929">Կանխադրված որոնողական համակարգի փոխարեն մեկ ուրիշն օգտագործելու համար հասցեագոտում մուտքագրեք դրա դյուրանցումը, ապա՝ ձեր նախընտրած ստեղնային դյուրանցումը։ Այստեղ կարող եք նաև փոխել ձեր կանխադրված որոնողական համակարգը։</translation>
 <translation id="7388615499319468910">Կայքերն ու գովազդատուները կարող են գնահատել իրենց գովազդի արդյունավետությունը։ Այս կարգավորումն անջատված է։</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Եվս 1 ֆայլ ցանկում}one{Եվս # ֆայլ ցանկում}other{Եվս # ֆայլ ցանկում}}</translation>
 <translation id="7400418766976504921">URL</translation>

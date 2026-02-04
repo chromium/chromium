@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Sprog</translation>
 <translation id="4183350924949589798">Større sikkerhed?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} svag adgangskode}one{{count} svag adgangskode}other{{count} svage adgangskoder}}</translation>
+<translation id="4196758674971560031">De fanegrupper, du har oprettet, gemmes i sektionen for fanegrupper og opdateres på alle dine enheder.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}one{{count} element gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}other{{count} elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, {email}.}}</translation>
 <translation id="4207873326995387292">Browseroplysninger</translation>
 <translation id="421070604241073551">Når denne indstilling er aktiveret, gemmes data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
@@ -1507,6 +1508,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6503077044568424649">Mest besøgte</translation>
 <translation id="6503763061813913607">Notifikationer om Sikkerhedstjek</translation>
+<translation id="6504541289630702018">Få nem adgang til dine fanegrupper på computeren</translation>
 <translation id="6505334220040167806">Skjul fanegruppe.</translation>
 <translation id="6506996418997555004">Del fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Log ind for at se din læseliste på alle dine enheder.</translation>
@@ -2137,6 +2139,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8730621377337864115">Udført</translation>
 <translation id="8731268612289859741">Sikkerhedskode</translation>
 <translation id="87371078663613140">Se valgmulighederne i menulinjen</translation>
+<translation id="8739546376441802490">Det fastgjorte website findes allerede</translation>
 <translation id="8741627442233023406">{count,plural, =1{Gennemgå fanen…}one{Gennemgå alle faner…}other{Gennemgå alle faner…}}</translation>
 <translation id="8741995161408053644">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Opret link</translation>

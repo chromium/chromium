@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">Выберите из списка</translation>
 <translation id="4687718960473379118">Реклама, предлагаемая сайтами</translation>
 <translation id="468924408576231679">Скопировать ссылку на веб-страницу "<ph name="PAGE_TITLE" />". Источник: <ph name="PAGE_URL" />.</translation>
+<translation id="4692623383562244444">Поисковые системы</translation>
 <translation id="469286762610133730">Сделайте рекомендации интереснее</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">Благодаря этой функции при использовании быстрого поиска результаты могут стать точнее. Включить или отключить ее можно в любое время в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Доступна тёмная тема для сайтов</translation>
 <translation id="7384486627147155832">Уведомление для продвижения функции открыто наполовину</translation>
+<translation id="7387951778417998929">Чтобы выбрать другую поисковую систему, в адресной строке введите подходящую быструю команду и нажмите нужное сочетание клавиш. Здесь также можно изменить поисковую систему по умолчанию.</translation>
 <translation id="7388615499319468910">Сайты и рекламодатели могут оценивать эффективность рекламы. Параметр отключен.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Другое, 1 файл в списке}one{Другое, # файл в списке}few{Другое, # файла в списке}many{Другое, # файлов в списке}other{Другое, # файла в списке}}</translation>
 <translation id="7400418766976504921">URL</translation>

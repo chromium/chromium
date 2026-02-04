@@ -32,11 +32,13 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1324107359134968521">Chromium necesita acceso al Bluetooth para buscar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
+<translation id="1330742950061766891">Usar la configuración de navegador recomendada de Chromium</translation>
 <translation id="1342274909142618978">Eliminar también los datos de Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">¡Fijada! Puedes volver a acceder a la búsqueda por imágenes desde el nuevo botón de la barra de herramientas.</translation>
 <translation id="1356661055722410047">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1397530502368084401">&amp;Gestionar perfiles de Chromium</translation>
+<translation id="1404026649028693342">Mostrar siempre el Modo IA</translation>
 <translation id="141901961143729572">Comparte tus ideas</translation>
 <translation id="1465192221147974788">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Ajustes del sistema</translation>
 <translation id="1478370723027452770">Obtener ayuda con Chrome for Testing</translation>
@@ -93,6 +95,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2039417478970545937">Configuración.</translation>
 <translation id="2049376729098081731">Indica si quieres incluir el historial de Chromium para ofrecer una experiencia más personalizada de los servicios de Google</translation>
 <translation id="2064856577282482477">Haz clic en el botón Personalizar Chromium de la página Nueva pestaña para cambiar el diseño de Chromium</translation>
+<translation id="2066690553719545730">Mostrar siempre el Modo IA</translation>
 <translation id="2086476982681781442">Chromium ha bloqueado esta descarga porque el archivo es engañoso y podría hacer cambios inesperados en tu dispositivo</translation>
 <translation id="208726765006323911">La próxima vez que abras Chromium en iOS, verás una petición para probar <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Tus contraseñas y otros datos de Chromium que hayas guardado en tu cuenta de Google se eliminarán de este dispositivo. Para usarlos de nuevo en Chromium, vuelve a iniciar sesión.</translation>
@@ -195,6 +198,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3095811995836568724">Historial de Chromium</translation>
 <translation id="3103660991484857065">El programa de instalación no ha podido descomprimir el archivo. Vuelve a descargar Chromium.</translation>
 <translation id="310459126943037700">No se han podido finalizar las tareas.</translation>
+<translation id="3126784891977756556">Mantén tus contraseñas, marcadores e historial perfectamente sincronizados en todos tus dispositivos. Accede fácilmente a las funciones que ya conoces y te encantan actualizando tu navegador predeterminado a Chromium.</translation>
 <translation id="3130323860337406239">Chromium está utilizando el micrófono.</translation>
 <translation id="3130333203120345554">Nueva búsqueda</translation>
 <translation id="3137969841538672700">Arrastra para buscar</translation>
@@ -307,6 +311,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4334241893986177674">Buscar en esta captura de pantalla</translation>
 <translation id="4334294535648607276">Descarga completa.</translation>
+<translation id="4384993550046411228">Accede fácilmente a las funciones que conoces, te encantan y en las que confías estableciendo Chromium como navegador predeterminado. Chromium se fijará en la barra de tareas para que puedas acceder rápidamente.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requiere que leas y aceptes los siguientes Términos del Servicio antes de utilizar este dispositivo. Estos términos no amplían, modifican ni limitan los Términos de ChromiumOS.</translation>
 <translation id="4407044323746248786">¿Quieres salir de Chromium de todas formas?</translation>
 <translation id="4413205837991854510">Mostrar siempre el acceso directo a la búsqueda por imágenes</translation>

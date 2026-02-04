@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4183350924949589798">Mais segurança?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} palavra-passe fraca}other{{count} palavras-passe fracas}}</translation>
+<translation id="4196758674971560031">Os grupos de separadores que criou são guardados na secção de grupos de separadores e atualizados em todos os seus dispositivos.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item está guardado apenas neste dispositivo. Para usá-lo nos seus outros dispositivos, guarde-o na sua Conta Google, {email}.}other{{count} itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google, {email}.}}</translation>
 <translation id="4207873326995387292">Informações do navegador</translation>
 <translation id="421070604241073551">Quando esta opção está ativada, os dados são guardados na sua Conta Google. Quando esta opção está desativada, os dados são guardados apenas neste dispositivo.</translation>
@@ -1507,6 +1508,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6503077044568424649">Mais visitadas</translation>
 <translation id="6503763061813913607">Notificações da verificação de segurança</translation>
+<translation id="6504541289630702018">Aceda facilmente aos grupos de separadores do computador</translation>
 <translation id="6505334220040167806">Reduzir grupo de separadores.</translation>
 <translation id="6506996418997555004">Partilhe o grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Inicie sessão para obter a sua Lista de leitura em todos os dispositivos.</translation>
@@ -2137,6 +2139,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8731268612289859741">Código de segurança</translation>
 <translation id="87371078663613140">Explore as opções na barra de menu</translation>
+<translation id="8739546376441802490">O site afixado já existe</translation>
 <translation id="8741627442233023406">{count,plural, =1{Rever o separador…}other{Rever todos os separadores…}}</translation>
 <translation id="8741995161408053644">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Criar link</translation>

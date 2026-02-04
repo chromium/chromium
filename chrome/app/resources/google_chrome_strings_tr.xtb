@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1399397803214730675">Bu bilgisayarda Google Chrome'un daha yeni bir sürümü zaten var. Yazılım çalışmıyorsa, lütfen Google Chrome'un yüklemesini kaldırın ve tekrar deneyin.</translation>
+<translation id="1404026649028693342">AI Modu'nu her zaman göster</translation>
 <translation id="141901961143729572">Düşüncelerinizi paylaşın</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır.}=1{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. Gizli pencereniz yeniden açılmayacak.}other{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. # gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Uygulamaları</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">İndiriliyor...</translation>
 <translation id="1651617469580841801">Google Lens'i kullandığınızda sayfa başlığı, URL'si ve içeriği (PDF'ler dahil) Google'a gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex hakkında</translation>
+<translation id="1665867022636014702">Google'ın önerdiği tarayıcı ayarlarını kullanın</translation>
 <translation id="1674870198290878346">Bağlantıyı Chrome &amp;Gizli Penceresinde Aç</translation>
 <translation id="1682634494516646069">Google Chrome, veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, öneriler almak için, yazdıklarınızı kuruluşunuzun arama, yapay zeka ve temsilci araçlarına gönderir.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">Chrome profilleri, kişisel tarama işlemlerinizi ve iş için yaptığınız tarama işlemlerinizi ayrı tutmanızı sağlar. Hemen yeni bir profil ekleyin.</translation>
 <translation id="2034233344106846793">Chrome, güvensiz bağlantıları mümkün olduğunda otomatik olarak HTTPS'ye yükseltir</translation>
 <translation id="2039417478970545937">Ayarlar.</translation>
+<translation id="2066690553719545730">AI Modu'nu Her Zaman Göster</translation>
 <translation id="2091012649849228750">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8 kullanıyor.</translation>
 <translation id="2094648590148273905">ChromeOS Flex şartları</translation>
 <translation id="2094919256425865063">Yine de Chrome'dan çıkılsın mı?</translation>
@@ -353,6 +356,7 @@
 <translation id="4885446229353981848">Google Lens kısayolunu her zaman göster</translation>
 <translation id="4891791193823137474">Google Chrome'un arka planda çalışmasına izin ver</translation>
 <translation id="4895437082222824641">Bağlantıyı yeni Chrome &amp;sekmesinde aç</translation>
+<translation id="4896867431081882115">Chrome'u varsayılan tarayıcınız olarak ayarlayarak bildiğiniz, sevdiğiniz ve güvendiğiniz özelliklere kolayca erişin. Chrome, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4918844574251943176">Resim kopyalandı</translation>
 <translation id="4926882258455737990">Chrome'da Gemini ile farklı bir Google Hesabı kullanmak için <ph name="BEGIN_LINK" />yeni bir profil oluşturun<ph name="END_LINK" /> ve istediğiniz hesapla oturum açın</translation>
@@ -555,6 +559,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6885412569789873916">Chrome Beta Uygulamaları</translation>
 <translation id="6893363893008038481">Hesabı Chrome'dan kaldır</translation>
 <translation id="6896758677409633944">Kopyala</translation>
+<translation id="6908182077349113099">Şifreleriniz, yer işaretleriniz ve geçmişinizi cihazlar arasında mükemmel şekilde senkronize edin. Varsayılan tarayıcınızı Chrome'a güncelleyerek sevdiğiniz ve bildiğiniz özelliklere kolayca erişin.</translation>
 <translation id="6930294499209825">Google yazılımlarınızı güncel tutar. Bu hizmet devre dışı bırakılırsa veya durdurulursa, Google yazılımlarınız güncel tutulmayacaktır; bu da onarılamayacak güvenlik açıkları meydana gelebileceği ve özelliklerin çalışmayabileceği anlamına gelir. Bu hizmet, kendisini kullanan herhangi bir Google yazılımı olmadığında kendi kendini kaldırır.</translation>
 <translation id="6933858244219479645">ChromeOS Sistemi</translation>
 <translation id="6938166777909186039">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8.1 kullanıyor.</translation>

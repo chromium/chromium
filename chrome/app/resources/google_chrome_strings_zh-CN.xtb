@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome 测试版</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
+<translation id="1404026649028693342">始终显示 AI 模式</translation>
 <translation id="141901961143729572">分享您的想法</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页。}=1{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的无痕式窗口。}other{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的 # 个无痕式窗口。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="1651617469580841801">当您使用 Google 智能镜头时，系统会将网页的标题、网址和内容（包括 PDF 文件）发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex 简介</translation>
+<translation id="1665867022636014702">使用 Google 推荐的浏览器设置</translation>
 <translation id="1674870198290878346">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome 无法对其数据目录 <ph name="USER_DATA_DIRECTORY" /> 执行读写操作</translation>
 <translation id="1688214853608504530">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">借助 Chrome 资料，您可以将个人浏览内容和工作内容分开。立即添加新的资料。</translation>
 <translation id="2034233344106846793">Chrome 会尽可能将不安全的连接自动升级为 HTTPS</translation>
 <translation id="2039417478970545937">设置。</translation>
+<translation id="2066690553719545730">始终显示 AI 模式</translation>
 <translation id="2091012649849228750">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 条款</translation>
 <translation id="2094919256425865063">仍要退出 Chrome？</translation>
@@ -353,6 +356,7 @@
 <translation id="4885446229353981848">始终显示 Google 智能镜头快捷方式</translation>
 <translation id="4891791193823137474">让 Google Chrome 浏览器在后台运行</translation>
 <translation id="4895437082222824641">在 Chrome 新标签页中打开链接(&amp;T)</translation>
+<translation id="4896867431081882115">将 Chrome 设为默认浏览器，即可轻松使用您熟悉、喜爱和信赖的功能。Chrome 将固定到任务栏，以便您快速访问。</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918844574251943176">已复制图片</translation>
 <translation id="4926882258455737990">如需通过其他 Google 账号使用 Chrome 中的 Gemini，请<ph name="BEGIN_LINK" />新建资料<ph name="END_LINK" />并使用所需的账号登录</translation>
@@ -553,6 +557,7 @@
 <translation id="6885412569789873916">Chrome 测试版应用</translation>
 <translation id="6893363893008038481">从 Chrome 中移除账号</translation>
 <translation id="6896758677409633944">复制</translation>
+<translation id="6908182077349113099">让您的密码、书签和历史记录在所有设备上完美同步。将默认浏览器更新为 Chrome，即可轻松使用您熟悉和喜爱的功能。</translation>
 <translation id="6930294499209825">使您的 Google 软件保持为最新状态。如果此服务已停用或已停止运行，您的 Google 软件将无法保持最新状态，这意味着可能出现的安全漏洞无法得到修复，并且某些功能可能无法正常运行。当没有 Google 软件使用此服务时，此服务会自行卸载。</translation>
 <translation id="6933858244219479645">ChromeOS 系统</translation>
 <translation id="6938166777909186039">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8.1。</translation>

@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">ড্রপডাউন তালিকা থেকে বেছে নিন</translation>
 <translation id="4687718960473379118">সাইট-প্রস্তাবিত বিজ্ঞাপন</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> ওয়েবপেজে লিঙ্ক কপি করুন। সোর্স: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">সার্চ ইঞ্জিনসমূহ</translation>
 <translation id="469286762610133730">আরও ভালো কন্টেন্ট পান</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}}</translation>
 <translation id="4698757800236023795">চালু আছে (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">কোনও পৃষ্ঠার টেক্সটে আরও শব্দ যোগ করলে, 'সার্চ করতে টাচ করুন' ফিচার ব্যবহার করার সময় আপনি হয়ত আরও ভাল ফলাফল দেখতে পারবেন। এটি পরিবর্তন করতে আপনি সব সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" />-এ যেতে পারবেন।</translation>
 <translation id="7379900596734708416">সাইটের জন্য ডার্ক থিম উপলভ্য আছে</translation>
 <translation id="7384486627147155832">পরামর্শ বিজ্ঞপ্তি প্রোমো অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
+<translation id="7387951778417998929">ডিফল্ট সার্চ ইঞ্জিনের পরিবর্তে অন্য কোনও একটি ব্যবহার করতে, অ্যাড্রেস বারে সেটির শর্টকাট টাইপ করে আপনার পছন্দের কীবোর্ড শর্টকাট প্রেস করুন। এছাড়াও, আপনি এখান থেকে আপনার ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{তালিকাতে অন্য ১টি ফাইল আছে}one{তালিকাতে অন্য #টি ফাইল আছে}other{তালিকাতে অন্য #টি ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>

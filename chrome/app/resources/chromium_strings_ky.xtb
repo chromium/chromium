@@ -32,11 +32,13 @@
 <translation id="1324107359134968521">Chromium 
 Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайдаланууга уруксат алышы керек. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Тил тандоо</translation>
+<translation id="1330742950061766891">Chromium сунуштаган серепчинин параметрлерин колдонуу</translation>
 <translation id="1342274909142618978">Chromium'дан да (<ph name="URL" />) дайындарды өчүрүү</translation>
 <translation id="1345251407431278948">Кадалды! Эми Сүрөт издөө функциясын куралдар тилкесиндеги жаңы баскыч аркылуу колдоно аласыз</translation>
 <translation id="1356661055722410047">Жаңылык! Экрандагы текстти да, сүрөттөрдү да которо аласыз</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1397530502368084401">&amp;Chromium профилдерин тескөө</translation>
+<translation id="1404026649028693342">ЖИ режими ар дайым көрсөтүлсүн</translation>
 <translation id="141901961143729572">Ойлоруңузду бөлүшүңүз</translation>
 <translation id="1465192221147974788">Терезени бөлүшүү үчүн Тутумдун параметрлеринен Chromium'га экрандан видео жаздырып алууга уруксат бериңиз.</translation>
 <translation id="1478370723027452770">Chrome for Testing боюнча жардам алуу</translation>
@@ -93,6 +95,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2039417478970545937">Параметрлер.</translation>
 <translation id="2049376729098081731">Chromium таржымалын Google кызматтарын жекелештирүү үчүн колдонуп же колдонбоону тандаңыз</translation>
 <translation id="2064856577282482477">Chromium'га жаңы көрүнүш берүү үчүн Жаңы өтмөк бетиндеги Chromium'ду ыңгайлаштыруу баскычын басыңыз</translation>
+<translation id="2066690553719545730">ЖИ режими ар дайым көрсөтүлсүн</translation>
 <translation id="2086476982681781442">Файл адаштыруучу болуп, түзмөгүңүзгө күтүлбөгөн өзгөртүүлөрдү киргизиши мүмкүн болгондуктан, Chromium бул жүктөп алууну бөгөттөдү</translation>
 <translation id="208726765006323911">Кийинки жолу Chromium iOS'ту ачканыңызда <ph name="FEATURE_NAME" /> функциясын колдонуп көрүү сунушталат.</translation>
 <translation id="2099452623287920103">Сырсөздөрүңүз жана Chromium'дагы башка маалымат Google аккаунтуңузга сакталып, бул түзмөктөн өчүрүлөт. Аларды Chromium'да кайра колдонуу үчүн кайра кириңиз.</translation>
@@ -195,6 +198,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3095811995836568724">Chromium таржымалы</translation>
 <translation id="3103660991484857065">Орноткуч архивди чыгара албай койду. Chromium'ду кайра жүктөп алыңыз.</translation>
 <translation id="310459126943037700">Жасалчу иш(-тер) аткарылган жок.</translation>
+<translation id="3126784891977756556">Сырсөздөрүңүздү, кыстармаларыңызды жана таржымалыңызды түзмөктөрдө шайкештирип туруңуз. Демейки серепчиңизди Chromium'га жаңыртып, сиз билген жана жактырган функцияларды оңой колдонуңуз.</translation>
 <translation id="3130323860337406239">Chromium микрофонуңузду колдонууда.</translation>
 <translation id="3130333203120345554">Жаңы издөө</translation>
 <translation id="3137969841538672700">Издөө үчүн сүйрөңүз</translation>
@@ -307,6 +311,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4304713468139749426">Сырсөздөрдү башкаргыч</translation>
 <translation id="4334241893986177674">Бул скриншотту издөө</translation>
 <translation id="4334294535648607276">Жүктөп алуу аяктады.</translation>
+<translation id="4384993550046411228">Chromium'ду демейки серепчи катары коюп, сиз билген, жактырган жана ишенген функцияларды оңой колдонуңуз. Тез ачуу үчүн Chromium тапшырмалар тактасына кадалат.</translation>
 <translation id="439358628917130594">Бул түзмөктү колдонуудан мурун, <ph name="MANAGER" /> төмөнкү Тейлөө шарттарын окуп, кабыл алууңузду талап кылат. Бул шарттар ChromiumOS шарттарын кеңейтип, өзгөртүп же чектебейт.</translation>
 <translation id="4407044323746248786">Баары бир Chromium'дан чыгасызбы?</translation>
 <translation id="4413205837991854510">Сүрөт издөө ыкчам баскычын ар дайым көрсөтүү</translation>

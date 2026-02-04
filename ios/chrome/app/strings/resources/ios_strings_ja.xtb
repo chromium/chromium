@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">要約</translation>
 <translation id="1227113644794103810">アクティブでないタブ</translation>
 <translation id="1231733316453485619">同期を ON にしますか？</translation>
+<translation id="1238794841176717085">このページを共有</translation>
 <translation id="1253032109800629289">[価格トラッキングの通知を受け取る] を表示しない</translation>
 <translation id="1254424942107648268">前を検索</translation>
 <translation id="1258491128795710625">最新情報</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">タブとグループを削除しますか？</translation>
 <translation id="1698090540708020240">パスワードをインポート…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
+<translation id="1702583479431863204">サイトの固定を解除しました</translation>
 <translation id="1709916727352927457">パスキーの削除</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> を信頼できる場合は、保存済みのパスワードを使用してログインできます。</translation>
 <translation id="1718835860248848330">過去 1 時間</translation>
@@ -847,6 +849,7 @@
 <translation id="4181841719683918333">言語</translation>
 <translation id="4183350924949589798">セキュリティを強化しますか？</translation>
 <translation id="4184063163998877398">{count,plural, =1{脆弱なパスワード: {count} 件}other{脆弱なパスワード: {count} 件}}</translation>
+<translation id="4196758674971560031">作成したタブグループはタブグループ セクションに保存され、お使いのすべてのデバイスに反映されます。</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} 件のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
 <translation id="4207873326995387292">ブラウザ情報</translation>
 <translation id="421070604241073551">オンにすると、データが Google アカウントに保存されます。オフにすると、データはこのデバイスのみに保存されます。</translation>
@@ -1507,6 +1510,7 @@
 <translation id="6494931198667773526">終了</translation>
 <translation id="6503077044568424649">よくアクセスするページ</translation>
 <translation id="6503763061813913607">安全チェックの通知</translation>
+<translation id="6504541289630702018">パソコンのタブグループに簡単にアクセス</translation>
 <translation id="6505334220040167806">タブグループを閉じる。</translation>
 <translation id="6506996418997555004">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
 <translation id="6507973708545996744">ログインすると、どのデバイスでもリーディング リストを利用できます。</translation>
@@ -2137,6 +2141,7 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
 <translation id="87371078663613140">メニューバーのオプションを確認します</translation>
+<translation id="8739546376441802490">固定されたサイトはすでに存在します</translation>
 <translation id="8741627442233023406">{count,plural, =1{タブを確認…}other{すべてのタブを確認…}}</translation>
 <translation id="8741995161408053644">Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="874599634440689554">リンクを作成</translation>

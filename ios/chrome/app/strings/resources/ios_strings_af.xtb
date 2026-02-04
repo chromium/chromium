@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Tale</translation>
 <translation id="4183350924949589798">Nog sekuriteit?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} swak wagwoord}other{{count} swak wagwoorde}}</translation>
+<translation id="4196758674971560031">Die oortjiegroepe wat jy geskep het, word in die oortjiegroepafdeling gestoor en dateer op al jou toestelle op.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, {email}, om dit op jou ander toestelle te gebruik.}other{{count} items word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {email}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="4207873326995387292">Blaaierinligting</translation>
 <translation id="421070604241073551">Wanneer dit aan is, word data in jou Google-rekening gestoor. Wanneer dit af is, word data net op hierdie toestel gestoor.</translation>
@@ -1507,6 +1508,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6494931198667773526">Eindig</translation>
 <translation id="6503077044568424649">Mees besoekte</translation>
 <translation id="6503763061813913607">Kennisgewings vir veiligheidskontrole</translation>
+<translation id="6504541289630702018">Kry maklik toegang tot jou werkskermoortjiegroepe</translation>
 <translation id="6505334220040167806">Vou oortjiegroep in.</translation>
 <translation id="6506996418997555004">Deel “<ph name="GROUP_NAME" />”-oortjiegroep</translation>
 <translation id="6507973708545996744">Meld aan om jou leeslys op al jou toestelle te kry.</translation>
@@ -2137,6 +2139,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731268612289859741">Sekuriteitkode</translation>
 <translation id="87371078663613140">Verken die opsies op die kieslysbalk</translation>
+<translation id="8739546376441802490">Vasgespelde werf bestaan reeds</translation>
 <translation id="8741627442233023406">{count,plural, =1{Gaan die oortjie na …}other{Gaan alle oortjies na …}}</translation>
 <translation id="8741995161408053644">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Skep skakel</translation>

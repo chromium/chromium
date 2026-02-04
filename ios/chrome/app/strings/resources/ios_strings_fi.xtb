@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Tee yhteenveto</translation>
 <translation id="1227113644794103810">Ei-aktiiviset välilehdet</translation>
 <translation id="1231733316453485619">Otetaanko synkronointi käyttöön?</translation>
+<translation id="1238794841176717085">Jaa tämä sivu</translation>
 <translation id="1253032109800629289">Piilota "Tilaa hintaseurantailmoitukset"</translation>
 <translation id="1254424942107648268">Hae edellinen</translation>
 <translation id="1258491128795710625">Uutta</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Poistetaanko välilehti ja ryhmä?</translation>
 <translation id="1698090540708020240">Tuo salasanoja…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valittu</translation>
+<translation id="1702583479431863204">Sivusto irrotettu</translation>
 <translation id="1709916727352927457">Avainkoodin poistaminen</translation>
 <translation id="1715515772563243997">Jos <ph name="SITE" /> on luotettava, voit kirjautua sisään tallennetulla salasanalla.</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
@@ -847,6 +849,7 @@
 <translation id="4181841719683918333">Kielet</translation>
 <translation id="4183350924949589798">Parempi tietoturva?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} heikko salasana}other{{count} heikkoa salasanaa}}</translation>
+<translation id="4196758674971560031">Luomasi välilehtiryhmät tallennetaan välilehtiryhmäosioon, ja ne päivittyvät kaikilla laitteillasi.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} kohde tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi ({email}).}other{{count} kohdetta tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi ({email}).}}</translation>
 <translation id="4207873326995387292">Selaimen tiedot</translation>
 <translation id="421070604241073551">Kun tämä on päällä, data tallennetaan Google-tilillesi. Kun asetus on pois päältä, data tallennetaan vain tälle laitteelle.</translation>
@@ -1507,6 +1510,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6494931198667773526">Päättyy</translation>
 <translation id="6503077044568424649">Käydyimmät</translation>
 <translation id="6503763061813913607">Turvatarkistusilmoitukset</translation>
+<translation id="6504541289630702018">Käytä tietokoneen välilehtiryhmiä helposti</translation>
 <translation id="6505334220040167806">Tiivistä välilehtiryhmä.</translation>
 <translation id="6506996418997555004">Jaa välilehtiryhmä "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Kirjaudu sisään, niin näet lukulistan kaikilla laitteillasi.</translation>
@@ -2137,6 +2141,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731268612289859741">Turvakoodi</translation>
 <translation id="87371078663613140">Tutustu valikkopalkkiin</translation>
+<translation id="8739546376441802490">Kiinnitetty sivusto on jo olemassa</translation>
 <translation id="8741627442233023406">{count,plural, =1{Tarkista välilehti…}other{Tarkista kaikki välilehdet…}}</translation>
 <translation id="8741995161408053644">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Luo linkki</translation>

@@ -32,11 +32,13 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1324107359134968521">Chromium het Bluetooth-toegang nodig om 
  Bluetooth-toestelle te verken. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Bespeur taal</translation>
+<translation id="1330742950061766891">Gebruik Chromium se aanbevole blaaierinstellings</translation>
 <translation id="1342274909142618978">Vee ook data uit Chromium uit (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Vasgespeld! Jy kan weer toegang tot Prentsoektog kry vanaf die nuwe knoppie op die nutsbalk</translation>
 <translation id="1356661055722410047">Nuut! Jy kan sowel teks as prente op jou skerm vertaal</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1397530502368084401">&amp;Bestuur Chromium-profiele</translation>
+<translation id="1404026649028693342">Wys altyd KI-modus</translation>
 <translation id="141901961143729572">Deel jou gedagtes</translation>
 <translation id="1465192221147974788">Om jou venster te deel, moet jy skermopname vir Chromium in Stelselinstellings toelaat.</translation>
 <translation id="1478370723027452770">Kry hulp met Chrome-toetsweergawe</translation>
@@ -93,6 +95,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2039417478970545937">Instellings.</translation>
 <translation id="2049376729098081731">Kies of jy Chromium-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
 <translation id="2064856577282482477">Klik die Pasmaak Chromium-knoppie op die Nuwe Oortjie-bladsy om vir Chromium ’n nuwe voorkoms te gee</translation>
+<translation id="2066690553719545730">Wys altyd KI-modus</translation>
 <translation id="2086476982681781442">Chromium het hierdie aflaai geblokkeer omdat die lêer misleidend is en onverwagte veranderinge aan jou toestel kan maak</translation>
 <translation id="208726765006323911">Jy sal ’n porboodskap sien om <ph name="FEATURE_NAME" /> te probeer wanneer jy volgende keer Chromium iOS oopmaak.</translation>
 <translation id="2099452623287920103">Jou wagwoorde en ander Chromium-data wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chromium wil gebruik.</translation>
@@ -195,6 +198,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3095811995836568724">Chromium-geskiedenis</translation>
 <translation id="3103660991484857065">Die installeerder kon nie die argief se saampersing omkeer nie. Laai Chromium asseblief weer af.</translation>
 <translation id="310459126943037700">Kon nie taak(take) beëindig nie.</translation>
+<translation id="3126784891977756556">Hou jou wagwoorde, boekmerke en geskiedenis perfek gesinkroniseer op alle toestelle. Kry maklik toegang tot die kenmerke wat jy ken en van hou deur jou verstekblaaier na Chromium op te dateer.</translation>
 <translation id="3130323860337406239">Chromium gebruik tans jou mikrofoon.</translation>
 <translation id="3130333203120345554">Nuwe soektog</translation>
 <translation id="3137969841538672700">Sleep om te soek</translation>
@@ -307,6 +311,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4304713468139749426">Wagwoordbestuurder</translation>
 <translation id="4334241893986177674">Deursoek hierdie skermskoot</translation>
 <translation id="4334294535648607276">Aflaai is voltooi.</translation>
+<translation id="4384993550046411228">Kry maklik toegang tot die kenmerke wat jy ken, van hou en vertrou deur Chromium as jou verstekblaaier te stel. Chromium sal vir kitstoegang op jou taakbalk vasgespeld word.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> vereis dat jy die volgende diensbepalings lees en aanvaar voordat jy hierdie toestel gebruik. Hierdie bepalings verander, beperk of brei nie Chromium-bedryfstelsel se bepalings uit nie.</translation>
 <translation id="4407044323746248786">Verlaat Chromium in elk geval?</translation>
 <translation id="4413205837991854510">Wys altyd kortpad vir Prentsoektog</translation>

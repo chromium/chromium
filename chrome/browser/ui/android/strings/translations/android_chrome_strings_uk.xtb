@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">Виберіть варіант зі спадного списку</translation>
 <translation id="4687718960473379118">Реклама, пропонована сайтами</translation>
 <translation id="468924408576231679">Копіювати посилання на вебсторінку "<ph name="PAGE_TITLE" />". Джерело: <ph name="PAGE_URL" />.</translation>
+<translation id="4692623383562244444">Пошукові системи</translation>
 <translation id="469286762610133730">Отримуйте кращий контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Активні (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">Урахування контексту на сторінці може покращити результати, які надаватиме функція Пошуку дотиком. Щоб змінити параметри, можна будь-коли перейти в <ph name="BEGIN_LINK" />налаштування<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Доступна темна тема для сайтів</translation>
 <translation id="7384486627147155832">Пропозицію отримувати сповіщення з порадами відкрито на половину висоти</translation>
+<translation id="7387951778417998929">Щоб скористатись іншою пошуковою системою, а не стандартною, введіть команду для неї в адресному рядку, а потім натисніть вибрану комбінацію клавіш. На цій сторінці також можна змінити пошукову систему за умовчанням.</translation>
 <translation id="7388615499319468910">Власники сайтів і рекламодавці можуть оцінювати ефективність своїх оголошень. Це налаштування вимкнено.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Інше (1 файл у списку)}one{Інше (# файл у списку)}few{Інше (# файли в списку)}many{Інше (# файлів у списку)}other{Інше (# файлу в списку)}}</translation>
 <translation id="7400418766976504921">URL-адреса</translation>

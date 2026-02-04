@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4183350924949589798">Daha fazla güvenlik mi istiyorsunuz?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} zayıf şifre}other{{count} zayıf şifre}}</translation>
+<translation id="4196758674971560031">Oluşturduğunuz sekme grupları, sekme grubu bölümüne kaydedilir ve cihazlarınız genelinde güncellenir.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} öğe yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}other{{count} öğe yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}}</translation>
 <translation id="4207873326995387292">Tarayıcı Bilgileri</translation>
 <translation id="421070604241073551">Bu ayar etkinleştirildiğinde veriler Google Hesabınıza kaydedilir. Devre dışı bırakıldığında veriler yalnızca bu cihaza kaydedilir.</translation>
@@ -1507,6 +1508,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6494931198667773526">Bitiş zamanı</translation>
 <translation id="6503077044568424649">En çok ziyaret edilenler</translation>
 <translation id="6503763061813913607">Güvenlik Kontrolü Bildirimleri</translation>
+<translation id="6504541289630702018">Masaüstü sekme gruplarınıza kolayca erişin</translation>
 <translation id="6505334220040167806">Sekme grubunu daraltın.</translation>
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" sekme grubunu paylaşma</translation>
 <translation id="6507973708545996744">Okuma listenize tüm cihazlarınızdan erişmek için oturum açın.</translation>
@@ -2137,6 +2139,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8731268612289859741">Güvenlik kodu</translation>
 <translation id="87371078663613140">Menü çubuğundaki seçenekleri keşfedin</translation>
+<translation id="8739546376441802490">Sabitlenmiş site zaten mevcut</translation>
 <translation id="8741627442233023406">{count,plural, =1{Sekmeyi incele…}other{Tüm sekmeleri incele…}}</translation>
 <translation id="8741995161408053644">Google Hesabınızın <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir.</translation>
 <translation id="874599634440689554">Bağlantı oluştur</translation>

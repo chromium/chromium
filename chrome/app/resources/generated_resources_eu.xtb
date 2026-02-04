@@ -993,6 +993,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1652326691684645429">Gaitu Nearby Share</translation>
 <translation id="1652862280638399816">Google-ren Pasahitz-kudeatzailea macOS Keychain-ekin erabiltzeko, exekutatu berriro Chromium eta eman Keychain erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
 <translation id="1653958716132599769">Taldekatu erlazionatutako fitxak</translation>
+<translation id="165448107578581061">Gemini zure zereginean lanean ari da…</translation>
 <translation id="1654580009054503925">Ez du eskaerak erakusteko baimenik</translation>
 <translation id="1654713139320245449">Ez da aurkitu igortzeko helmugarik. Laguntza behar duzu?</translation>
 <translation id="1656528038316521561">Atzeko planoaren opakutasuna</translation>
@@ -1390,6 +1391,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="192564025059434655">2022ko abendutik aurrera, Chrome-ren aplikazioen bertsio zaharrak ez dira irekiko Windows darabilten gailuetan. Bertsio berririk dagoen ikus dezakezu.</translation>
 <translation id="1926339101652878330">Enpresa-gidalerroek arautzen dituzte ezarpen hauek. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="1926887872692564784">Kurtsorea</translation>
+<translation id="1927075772688962338">Ainguratu irakurtzeko modua</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />. hatza</translation>
 <translation id="192817607445937251">Pantaila desblokeatzeko PINa</translation>
 <translation id="192858925209436740">Gordetako dokumentuak Chromebook-aren bidez kudeatzeko, konektatu OneDrive Fitxategiak aplikaziora. Microsoft-eko kontuarekin hasi beharko duzu saioa.</translation>
@@ -1605,7 +1607,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2079053412993822885">Zeure ziurtagirietako bat ezabatzen baduzu, ezin izango duzu berriro erabili zeure burua identifikatzeko.</translation>
 <translation id="2079495302726689071">Ireki esteka <ph name="APP" /> aplikazioaren beste fitxa batean</translation>
 <translation id="2079545284768500474">Desegin</translation>
-<translation id="2079553700504470326">Gemini-k emaitzarik zehatzenak eman ditzan, erabili kokapen zehatza, IP helbidean oinarritutako kokapen estimatu baten ordez.</translation>
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2081816110395725788">Modu inaktiboan bateria erabili bitartean</translation>
 <translation id="2082187087049518845">Taldekatu fitxa</translation>
@@ -3774,6 +3775,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3557101512409028104">Webguneen murriztapenak eta erabilera-orduak ezartzeko, erabili Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan honako hauek sar daitezke, bestek beste: ChromeOS-en gertatzen diren hutsegiteak, zer eginbide erabili diren eta zenbat memoria erabili ohi den.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan haurraren ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" />: Gemini zeregina osatzen ari da…</translation>
 <translation id="3559079791149580653">Utzi pantaila <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
 <translation id="3559262020195162408">Ezin izan da instalatu gidalerroa gailuan.</translation>
 <translation id="3559533181353831840"><ph name="TIME_LEFT" /> inguru falta dira</translation>
@@ -3873,6 +3875,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3619294456800709762">Webguneek automatikoki ireki dezakete pantaila txiki gainjarria</translation>
 <translation id="3620136223548713675">Geokokapena</translation>
 <translation id="3621202678540785336">Idazketa</translation>
+<translation id="3621841019087952625">Ezarri geroago</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikazio bat}other{# aplikazio}}</translation>
 <translation id="3622820753353315928">Pantailako argi-jakinarazpenen kolorea</translation>
 <translation id="3623318122257816196">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Halaber, webgune horiek arakatzen dituzun bitartean zuri buruz gorde duten informazioa erabiltzeko baimena eska dezakete.</translation>
@@ -4273,6 +4276,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3856096718352044181">Egiaztatu hornitzaile horrek balio duela edo saiatu berriro geroago</translation>
 <translation id="3856470183388031602">Erabili Google-ko kontua <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="3856800405688283469">Hautatu ordu-zona</translation>
+<translation id="3856902135796972992">Webgune honek beste ekintza bat behar du. Osatu orrian, pasahitz-aldaketa amai dadin.</translation>
 <translation id="3857807444929313943">Jaso hatza eta sakatu berriro</translation>
 <translation id="3858860766373142691">Izena</translation>
 <translation id="385939467708172187">Erabili pasahitz konplexu bat</translation>
@@ -5917,7 +5921,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5001526427543320409">Hirugarrenen cookieak</translation>
 <translation id="5003070249435823986">Erabili gora/behera egiteko moduaren keinua eta mugitu burua ikuspegia mugitzea nahi duzun norabidean. Modu horretatik irteteko, erabili keinua berriro.</translation>
 <translation id="5003993274120026347">Hurrengo esaldia</translation>
-<translation id="5005113238422129109">Erabili mikrofonoa Gemini-rekin txateatzeko. Gemini-rekin hitz egiten duzunean, audioa "Gemini-ren aplikazioetako jarduerak" erregistroan gordetzen da (aktibatuta badago).</translation>
 <translation id="5005498671520578047">Kopiatu pasahitza</translation>
 <translation id="5006218871145547804">Crostini-ren Android-erako aplikazioen ADB</translation>
 <translation id="5006778209728626987">Tximista</translation>
@@ -6244,6 +6247,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Fitxa taldea desegin nahi duzu?}other{Fitxa taldeak desegin nahi dituzu?}}</translation>
 <translation id="5230190638672215545">"ươ" lortzeko, idatzi "uow"</translation>
 <translation id="5230516054153933099">Leihoa</translation>
+<translation id="5231255476752743708">Chrome-k laguntza behar du pasahitza aldatzeko</translation>
 <translation id="5232714764496316200">Lortu etxeko lanak egiteko laguntza Google Lens-ekin</translation>
 <translation id="5233231016133573565">Prozesu-identifikatzailea</translation>
 <translation id="5233638681132016545">Fitxa berria</translation>
@@ -7768,10 +7772,8 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6291953229176937411">&amp;Erakutsi Finder-en</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> desaktibatuta dago</translation>
 <translation id="6294759976468837022">Pantailan automatikoki mugitzeko abiadura</translation>
-<translation id="6295140892595702619">Erabili mikrofonoa Gemini-rekin txateatzeko. Gemini-rekin hitz egiten duzunean, audioa "Gemini-ren aplikazioetako jarduerak" erregistroan gordetzen da (aktibatuta badago). Zure datuak ez dira erabiltzen AA generatiboko ereduak hobetzeko.</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
 <translation id="6295855836753816081">Gordetzen…</translation>
-<translation id="6296481987471548530">Gemini-k emaitzarik zehatzenak eman ditzan, erabili kokapen zehatza, IP helbidean oinarritutako kokapen estimatu baten ordez. Zure datuak ez dira erabiltzen AA generatiboko ereduak hobetzeko.</translation>
 <translation id="6297986260307280218">Bidali erabilera- eta diagnostiko-datuak. Hobetu Android-en erabilera Google-ra diagnostikoei buruzko datuak eta gailuaren eta aplikazioen erabilera-datuak automatikoki bidalita. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Jabeak konfiguratu du <ph name="BEGIN_LINK1" />ezarpen<ph name="END_LINK1" /> hori. Gailu honen diagnostiko- eta erabilera-datuak Google-ri bidaltzea aukera dezake jabeak. Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu neurketei buruzko informazio gehiago<ph name="BEGIN_LINK2_END" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Hemen zerrendatuta agertzen diren webguneei eragiten die. Domeinu-izen baten aurretik "[*.]" txertatuz gero, domeinu osorako salbuespen bat sortuko da. Adibidez, "[*.]google.com" gehituz gero, mail.google.com helbidean ere egongo dira aktibo hirugarrenen cookieak, google.com helbidearen parte baita.</translation>
 <translation id="6298962879096096191">Erabili Google Play Android-erako aplikazioak instalatzeko</translation>
@@ -8303,6 +8305,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6677527809400770913">Esleitu zaio <ph name="GESTURE" /> keinua <ph name="ACTION" /> ekintzari</translation>
 <translation id="6678604587151240716">Itsasoko olatu handiak zipriztintzen, atzean, urrunean, lurra ikusten delarik. Zeruertzean argi-izpi laranja batzuk ikusten dira, zeru ilun eta goibel batean.</translation>
 <translation id="6678717876183468697">Kontsultaren URLa</translation>
+<translation id="6678974601734442817">Chromium-ek pasahitza aldatzeko laguntza behar du</translation>
 <translation id="6679947539429331601">Ezkutatu 12 orduz</translation>
 <translation id="6680442031740878064">Libre: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Abiadura</translation>
@@ -11006,7 +11009,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> webguneak informazioa gorde nahi du Android-eko gailuan</translation>
 <translation id="8509177919508253835">Berrezarri segurtasun-giltzak eta sortu PIN kodeak</translation>
 <translation id="8509646642152301857">Ezin izan da deskargatu ortografia-zuzenketarako hiztegia.</translation>
-<translation id="8509967119010808787">Fitxak bilatzeko, sakatu hau</translation>
 <translation id="8512476990829870887">Amaitu prozesua</translation>
 <translation id="851263357009351303">Eman beti irudiak erakusteko baimena <ph name="HOST" /> webguneari</translation>
 <translation id="8513108775083588393">Biratu auto.</translation>
@@ -12181,6 +12183,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> webguneak gailu mugikorretik informazioa lortu nahi du</translation>
 <translation id="988320949174893488">Noizbehinka moztu egiten da</translation>
 <translation id="988978206646512040">Pasaesaldia ezin da hutsik utzi</translation>
+<translation id="989685714699739712">Fitxak antolatzeko, taldeka itzazu eta etiketa itzazu izen eta kolore pertsonalizatuekin</translation>
 <translation id="992032470292211616">Luzapenek, aplikazioek eta gaiek gailua kalte diezazukete. Ziur aurrera jarraitu nahi duzula?</translation>
 <translation id="992256792861109788">Arrosa</translation>
 <translation id="992592832486024913">Desgaitu ChromeVox (ahozko argibideak)</translation>

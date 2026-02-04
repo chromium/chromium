@@ -31,11 +31,13 @@
 <translation id="1315551408014407711">ඔබගේ නව Chromium පැතිකඩ පිහිටුවන්න</translation>
 <translation id="1324107359134968521">බ්ලූටූත් උපාංග ගවේෂණය කිරීමට Chromium හට බ්ලූටූත් ප්‍රවේශය අවශ්‍යයි.<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">භාෂාව අනාවරණය කරන්න</translation>
+<translation id="1330742950061766891">Chromium නිර්දේශිත බ්‍රව්සර සැකසීම් භාවිතා කරන්න</translation>
 <translation id="1342274909142618978">Chromium වෙතින් ද දත්ත මකන්න (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">අමුණන ලදි! ඔබට මෙවලම් තීරුවේ ඇති නව බොත්තමෙන් රූප සෙවීම වෙත නැවත ප්‍රවේශ විය හැක</translation>
 <translation id="1356661055722410047">අලුත්! ඔබට ඔබේ තිරයේ ඇති පෙළ සහ පින්තූර දෙකම පරිවර්තනය කළ හැක</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1397530502368084401">&amp;Chromium පැතිකඩ කළමනාකරණය කරන්න</translation>
+<translation id="1404026649028693342">සැම විට ම AI මාදිලිය පෙන්වන්න</translation>
 <translation id="141901961143729572">ඔබේ සිතුවිලි බෙදා ගන්න</translation>
 <translation id="1465192221147974788">ඔබේ කවුළුව බෙදා ගැනීමට, පද්ධති සැකසීම් තුළ Chromium සඳහා තිර පටිගත කිරීමට ඉඩ දෙන්න.</translation>
 <translation id="1478370723027452770">පරීක්ෂා කිරීම සඳහා Chrome සමග උදවු ලබා ගන්න</translation>
@@ -92,6 +94,7 @@
 <translation id="2039417478970545937">සැකසීම්</translation>
 <translation id="2049376729098081731">Google සේවාවල වඩාත් පුද්ගලිකකරණය කළ අත්දැකීම් සඳහා Chromium ඉතිහාසය ඇතුළත් කළ යුතුද යන්න තෝරන්න</translation>
 <translation id="2064856577282482477">Chromium හට නව පෙනුමක් ලබා දීමට නව පටිති පිටුවේ Chromium අභිරුචි කරන්න බොත්තම ක්ලික් කරන්න</translation>
+<translation id="2066690553719545730">සැම විට ම AI මාදිලිය පෙන්වන්න</translation>
 <translation id="2086476982681781442">ගොනුව රැවටිලිකාර සහ ඔබේ උපාංගයට අනපේක්ෂිත වෙනස්කම් සිදු කළ හැකි නිසා Chromium මෙම බාගැනීම අවහිර කර ඇත</translation>
 <translation id="208726765006323911">ඔබ මීළඟ වතාවේ Chromium iOS විවෘත කරන විට <ph name="FEATURE_NAME" /> උත්සාහ කිරීමට ඔබට ප්‍රේරකයක් පෙනෙනු ඇත.</translation>
 <translation id="2099452623287920103">ඔබ ඔබේ Google ගිණුමේ සුරකින ලද ඔබේ මුරපද සහ අනෙකුත් Chromium දත්ත මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ. ඒවා නැවත Chromium තුළ භාවිතා කිරීමට, නැවත පුරනය වන්න.</translation>
@@ -194,6 +197,7 @@
 <translation id="3095811995836568724">Chromium ඉතිහාසය</translation>
 <translation id="3103660991484857065">ස්ථාපකය සංරක්ෂිතය සම්පීඩනය නොකිරීමට අසමත් විය. කරුණාකර නැවත Chromium බාගන්න.</translation>
 <translation id="310459126943037700">කාර්යය(යන්) නිමා කිරීමට අසමත් විය.</translation>
+<translation id="3126784891977756556">ඔබේ මුරපද, පිටුසන් සහ ඉතිහාසය උපාංග හරහා පරිපූර්ණව සමමුහුර්තව තබා ගන්න. ඔබේ පෙරනිමි බ්‍රව්සරය Chromium වෙත යාවත්කාලීන කිරීමෙන් ඔබ දන්නා සහ ආදරය කරන විශේෂාංග වෙත පහසුවෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="3130323860337406239">Chromium ඔබේ මයික්‍රෆෝනය භාවිත කරයි.</translation>
 <translation id="3130333203120345554">අලුත් සෙවීම</translation>
 <translation id="3137969841538672700">සෙවීමට අදින්න</translation>
@@ -306,6 +310,7 @@
 <translation id="4304713468139749426">මුරපද කළමනාකරු</translation>
 <translation id="4334241893986177674">මෙම තිර රුව සොයන්න</translation>
 <translation id="4334294535648607276">බාගැනීම සම්පූර්ණයි.</translation>
+<translation id="4384993550046411228">Chromium ඔබේ පෙරනිමි බ්‍රව්සරය ලෙස සැකසීමෙන් ඔබ දන්නා, ආදරය කරන සහ විශ්වාස කරන විශේෂාංග වෙත පහසු ප්‍රවේශයක් ලබා ගන්න. ඉක්මන් ප්‍රවේශය සඳහා Chromium ඔබේ කාර්ය තීරුවට අමුණනු ලැබේ.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> හට ඔබ මෙම උපාංගය භාවිත කිරීමට පෙර පහත සේවා නියම කියවා පිළිගැනීමට අවශ්‍යයි. මෙම නියම ChromiumOS නියම පුළුල් කිරීම, වෙනස් කිරීම හෝ සීමා කිරීම නොකරයි.</translation>
 <translation id="4407044323746248786">කෙසේ වුවත් Chromium වෙතින් ඉවත් වන්න ද?</translation>
 <translation id="4413205837991854510">සෑම විටම රූප සෙවීම් කෙටිමඟ පෙන්වන්න</translation>

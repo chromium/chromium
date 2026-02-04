@@ -5537,6 +5537,23 @@ Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmelde
       Wenn sie aktiviert ist, wird der Einführungsbildschirm für Gemini angezeigt.
 
       Ist die Richtlinie nicht konfiguriert, wird der Einführungsbildschirm für Gemini bei von Unternehmen verwalteten Nutzern übersprungen und nicht verwalteten Nutzern angezeigt.</translation>
+<translation id="4781685421378746692">Mit dieser Richtlinie wird das Teilen von Seiten- und Dateiinhalten mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> und <ph name="GOOGLE_LENS_PRODUCT_NAME" /> über die Seitenleiste oder Tabs von <ph name="PRODUCT_NAME" /> gesteuert.
+
+Diese Richtlinie wirkt sich nicht auf die Webversion von <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> aus. Sie legt nur fest, wie Nutzer Informationen teilen können, wenn sie <ph name="PRODUCT_NAME" /> verwenden.
+
+0 / nicht festgelegt = Nutzer können Seiten- oder Dateiinhalte mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> teilen.
+
+1 = Nutzer können keine Seiten- oder Dateiinhalte mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> teilen. Die Zugangspunkte zum Teilen von Kontext und die Seitenleiste werden deaktiviert oder ausgeblendet.
+
+Diese Richtlinie wird ignoriert, wenn <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> nicht die Standardsuchmaschine der Nutzer ist, da die Funktion deaktiviert ist.
+
+Diese Richtlinie ist unabhängig von der Richtlinie „<ph name="AI_MODE_SETTINGS_POLICY_NAME" />“. Die Richtlinie „<ph name="AI_MODE_SETTINGS_POLICY_NAME" />“ steuert nur Zugangspunkte in der Omnibox oder im Suchfeld auf der Seite „Neuer Tab“, während diese Richtlinie das Teilen von Kontext über die Seitenleiste oder Tabs steuert.
+
+Diese Richtlinie steuert auch nicht die <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Integration, die von <ph name="GEMINI_SETTINGS_POLICY_NAME" /> deaktiviert werden kann.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4783415902268741066">Zulassen, dass die neuesten Ergebnisse der Standardsuchmaschine in der Seitenleiste eines Browsers angezeigt werden</translation>
 <translation id="4786784434769279324">Aktionen, die ausgeführt werden sollen, wenn der Computer inaktiv ist</translation>
 <translation id="4787763197941188108">Überschreibt die standardmäßige Druckseitengröße.
@@ -7125,6 +7142,7 @@ Auf Desktop-Plattformen kann das Herunterladen von Modellen auch über die Richt
 <translation id="5766438888216077649">Für Links, die <ph name="BLANK_PAGE_NAME" /> zum Ziel haben, sollte <ph name="WINDOW_OPENER_PROPERTY" /> nicht aktiviert werden</translation>
 <translation id="5767776869128458023">Alternative Fehlerseiten deaktivieren</translation>
 <translation id="5770738360657678870">Entwicklerversion (möglicherweise nicht stabil)</translation>
+<translation id="5772841828612966342">Aktiviert: XSLT ist explizit aktiviert.</translation>
 <translation id="5774345930803672932">Wenn die Richtlinie auf „Wahr“ gesetzt oder nicht konfiguriert ist, können Ereignisse, Telemetrie und Informationen an die verschlüsselte Pipeline für die Berichterstellung gemeldet werden. Ist die Richtlinie auf „Falsch“ festgelegt, ist die verschlüsselte Pipeline für die Berichterstellung deaktiviert.</translation>
 <translation id="5774856474228476867">Such-URL der Standardsuchmaschine</translation>
 <translation id="5775235485119094648">Lädt den Akku auf, solange er sich in einem festen Bereich befindet.</translation>
@@ -9742,6 +9760,11 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
 <translation id="7410074797376205571">Zulassen, dass <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="7412456346709338637">Datenzugriff von Thunderbolt/USB4-Peripheriegeräten aktivieren</translation>
 <translation id="7414890119082492552">Keine Präferenz.</translation>
+<translation id="7416222110012824615">Mit dieser Richtlinie wird die Verfügbarkeit der XSLT-Funktion (XSLTProcessor JavaScript API und XSL-Verarbeitungsanweisung) gesteuert.
+Wenn diese Richtlinie aktiviert ist, ist XSLT unabhängig vom Standardstatus der Funktion im Browser verfügbar.
+Wenn diese Richtlinie deaktiviert ist, ist XSLT unabhängig vom Standardstatus der Funktion im Browser nicht verfügbar.
+Wenn diese Richtlinie nicht konfiguriert ist, wird die Verfügbarkeit von XSLT durch die Standardeinstellungen des Browsers und Field Trials bestimmt.
+Diese Richtlinie ist eine vorübergehende Maßnahme und wird in M164 entfernt.</translation>
 <translation id="7417438464912687020">Verbindungen zu diesem Computer per Remote-Zugriff erlauben</translation>
 <translation id="7417972229667085380">Prozentsatz für die Skalierung der Inaktivitätsspanne im Präsentationsmodus (veraltet)</translation>
 <translation id="7421230730436851224">Audiovorgang nie in einer Sandbox ausführen</translation>
@@ -9782,6 +9805,7 @@ Wenn die Richtlinie auf „<ph name="AUTOMATED_NAME" />“ gesetzt ist, wird der
 Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph name="ALLOWED_NAME" />“ für normale Nutzer. Für Unternehmensnutzer gilt bei nicht konfigurierter Richtlinie die Einstellung „<ph name="DISALLOWED_NAME" />“.</translation>
 <translation id="7438982301540282785">Einrichtung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisieren</translation>
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
+<translation id="744349502210151344">Standard: Die Verfügbarkeit von XSLT wird durch die Standardeinstellungen des Browsers und Field Trials bestimmt.</translation>
 <translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="7455912144588577399">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer sich kompatible Webseiten per Sprachausgabe vorlesen lassen. Dies ist durch serverseitige Inhaltsanalyse und Audiosynthese möglich. Ist sie auf „false“ gesetzt, so ist diese Funktion deaktiviert. Wenn die Richtlinie auf die Standardeinstellung gesetzt oder nicht konfiguriert ist, ist die Funktion „Vorlesen“ aktiviert.</translation>
@@ -11019,6 +11043,7 @@ Es gibt mehrere Richtlinien, in denen Ursprünge aufgeführt sind, die sich auf 
           Wird die Richtlinie auf einen Wert festgelegt, der nicht zwischen dem Höchst- und dem Mindestwert liegt, kann der Host möglicherweise nicht starten.
 
           Beachte: Die tatsächliche Obergrenze für die Größe der Zwischenablage hängt von der maximalen Nachrichtengröße für den WebRTC-Datenkanal ab, die nicht durch diese Richtlinie gesteuert wird.</translation>
+<translation id="8294127013911518331">Verfügbarkeit der XSLT-Funktion steuern</translation>
 <translation id="8294750666104911727">Normalerweise werden Seiten, bei denen das Meta-Tag "X-UA-Compatible" auf "chrome=1" gesetzt ist, unabhängig von der Richtlinie "ChromeFrameRendererSettings" in <ph name="PRODUCT_FRAME_NAME" /> gerendert.
 
           Bei aktivierter Einstellung werden die Seiten nicht nach Meta-Tags durchsucht.
@@ -11760,6 +11785,7 @@ Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Ein
 <translation id="8807313206348471682">Dialogfeld zur Bestätigung der Abmeldung anzeigen</translation>
 <translation id="8807728576820212213">Lens-Integration aktivieren</translation>
 <translation id="8809082103104823938">GIF-Unterstützung in der Emoji-Auswahl</translation>
+<translation id="8809276335775270751">Deaktiviert: XSLT ist explizit deaktiviert.</translation>
 <translation id="8812091410765157924">Nur geöffneten Pop-ups mit dem Ziel <ph name="BLANK_PAGE_NAME" /> erlauben, mit der Seite zu interagieren, auf der das Pop-up geöffnet wurde, sofern die Seite einer solchen Interaktion ausdrücklich zustimmt</translation>
 <translation id="8812631362927615118">Eigene Authentifizierung beim Erheben von Nutzersicherheitssignalen aktivieren</translation>
 <translation id="8816370949847593408">Chrome-Apps dürfen unter Umständen nicht ausgeführt werden, je nach dem Status des Einstellungs-Roll-outs.</translation>

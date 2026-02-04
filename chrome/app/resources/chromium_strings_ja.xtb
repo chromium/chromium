@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
 <translation id="1324107359134968521">Bluetooth デバイスを検出するには、Chromium に Bluetooth へのアクセスを許可する必要があります。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">検出言語</translation>
+<translation id="1330742950061766891">Chromium の推奨ブラウザ設定を使用する</translation>
 <translation id="1342274909142618978">Chromium（<ph name="URL" />）からもデータを削除する</translation>
 <translation id="1345251407431278948">固定しました。ツールバーの新しいボタンから、画像検索にアクセスできます</translation>
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1397530502368084401">Chromium プロフィールを管理(&amp;M)</translation>
+<translation id="1404026649028693342">AI モードを常に表示する</translation>
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">設定に移動。</translation>
 <translation id="2049376729098081731">Chromium の履歴を含めて、Google サービスのパーソナライズに使用するかどうかを選択してください</translation>
 <translation id="2064856577282482477">新しいタブページで [Chromium をカスタマイズ] ボタンをクリックして、Chromium のレイアウトを変更できます</translation>
+<translation id="2066690553719545730">AI モードを常に表示する</translation>
 <translation id="2086476982681781442">このダウンロードは Chromium でブロックされました。ファイルが虚偽のもので、デバイスに予期しない変更を加える可能性があります</translation>
 <translation id="208726765006323911">次回 Chromium iOS を開いたときに、<ph name="FEATURE_NAME" /> を試すよう求めるメッセージが表示されます。</translation>
 <translation id="2099452623287920103">Google アカウントに保存したパスワードなどの Chromium データは、このデバイスから削除されます。Chromium でこれらのデータを再度使用するには、もう一度ログインしてください。</translation>
@@ -192,6 +195,8 @@
 <translation id="3095811995836568724">Chromium の履歴</translation>
 <translation id="3103660991484857065">インストーラ アーカイブを解凍できませんでした。Chromium をダウンロードし直してください。</translation>
 <translation id="310459126943037700">タスクを終了できませんでした。</translation>
+<translation id="3104828284009500087">ページ上のコンテンツを検索</translation>
+<translation id="3126784891977756556">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chromium に変更すると、お馴染みの機能を簡単に利用できるようになります。</translation>
 <translation id="3130323860337406239">Chromium がマイクを使用しています。</translation>
 <translation id="3130333203120345554">新しい検索</translation>
 <translation id="3137969841538672700">ドラッグして検索</translation>
@@ -300,6 +305,7 @@
 <translation id="4304713468139749426">パスワード マネージャー</translation>
 <translation id="4334241893986177674">このスクリーンショットを検索</translation>
 <translation id="4334294535648607276">ダウンロードが完了しました。</translation>
+<translation id="4384993550046411228">Chromium を既定のブラウザに設定すると、お馴染みの信頼できる機能を簡単に利用できるようになります。Chromium はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Chromium OS 利用規約を拡張、変更、制限するものではありません。</translation>
 <translation id="4407044323746248786">今すぐ Chromium を終了しますか？</translation>
 <translation id="4413205837991854510">画像検索のショートカットを常に表示する</translation>

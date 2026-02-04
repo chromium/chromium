@@ -31,11 +31,13 @@
 <translation id="1315551408014407711">Наладзьце свой профіль Chromium</translation>
 <translation id="1324107359134968521">Браўзеру Chromium неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Выявіць мову</translation>
+<translation id="1330742950061766891">Выкарыстоўвайце рэкамендаваныя налады браўзера Chromium</translation>
 <translation id="1342274909142618978">Выдаліць таксама даныя з Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Замацавана! Цяпер пошук відарысаў можна запускаць з дапамогай новай кнопкі панэлі інструментаў.</translation>
 <translation id="1356661055722410047">Навінка! Вы можаце перакладаць тэкст і відарысы на экране</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1397530502368084401">&amp;Кіраваць профілямі Chromium</translation>
+<translation id="1404026649028693342">Заўсёды паказваць рэжым AI</translation>
 <translation id="141901961143729572">Што вы думаеце</translation>
 <translation id="1465192221147974788">Каб абагуліць акно, у сістэмных наладах дазвольце браўзеру Chromium запіс экрана.</translation>
 <translation id="1478370723027452770">Атрымаць даведку па Chrome for Testing</translation>
@@ -92,6 +94,7 @@
 <translation id="2039417478970545937">Налады.</translation>
 <translation id="2049376729098081731">Выберыце, ці выкарыстоўваць гісторыю Chromium для персаналізацыі сэрвісаў Google</translation>
 <translation id="2064856577282482477">Каб змяніць выгляд Chromium, націсніце кнопку "Наладзіць Chromium" на старонцы новай укладкі</translation>
+<translation id="2066690553719545730">Заўсёды паказваць рэжым AI</translation>
 <translation id="2086476982681781442">Браўзер Chromium заблакіраваў спампоўку, бо гэты файл з’яўляецца падманным і можа ўнесці нечаканыя змяненні на вашай прыладзе</translation>
 <translation id="208726765006323911">Пры наступным адкрыцці Chromium на прыладзе iOS вы ўбачыце прапанову паспрабаваць функцыю "<ph name="FEATURE_NAME" />".</translation>
 <translation id="2099452623287920103">Вашы паролі і іншыя даныя Chromium, захаваныя ва Уліковым запісе Google, будуць выдалены з гэтай прылады. Увайдзіце паўторна, каб яны зноў сталі даступнымі ў Chromium.</translation>
@@ -194,6 +197,7 @@
 <translation id="3095811995836568724">Гісторыя Chromium</translation>
 <translation id="3103660991484857065">Усталёўшчык не змог распакаваць архіў. Спампуйце Chromium зноў.</translation>
 <translation id="310459126943037700">Не ўдалося завяршыць задачы.</translation>
+<translation id="3126784891977756556">Паролі, закладкі і гісторыя будуць сінхранізавацца на ўсіх прыладах. Зрабіце Chromium стандартным браўзерам, каб мець лёгкі доступ да знаёмых і любімых функцый.</translation>
 <translation id="3130323860337406239">Chromium выкарыстоўвае ваш мікрафон.</translation>
 <translation id="3130333203120345554">Новы пошук</translation>
 <translation id="3137969841538672700">Перацягніце для пошуку</translation>
@@ -306,6 +310,7 @@
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="4334241893986177674">Пошук па гэтым здымку экрана</translation>
 <translation id="4334294535648607276">Спампоўванне завершана.</translation>
+<translation id="4384993550046411228">Зрабіце Chromium стандартным браўзерам, каб мець лёгкі доступ да знаёмых, любімых і надзейных функцый. Для хуткага доступу Chromium будзе замацаваны на панэлі задач.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> патрабуе ад вас прачытаць і прыняць наступныя Умовы выкарыстання, перш чым пачаць карыстацца прыладай. Гэтыя ўмовы не пашыраюць, не змяняюць і не абмяжоўваюць Умовы выкарыстання Chromium OS.</translation>
 <translation id="4407044323746248786">Усё роўна выйсці з Chromium?</translation>
 <translation id="4413205837991854510">Заўсёды паказваць ярлык для пошуку відарысаў</translation>

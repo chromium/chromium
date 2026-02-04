@@ -42,6 +42,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1399397803214730675">Ky kompjuter e ka tashmë një version më të ri të Google Chrome. Nëse softueri nuk punon, çinstaloje Google Chrome dhe provo sërish.</translation>
+<translation id="1404026649028693342">Shfaq gjithmonë "Modalitetin e IA-së"</translation>
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri.}=1{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1434626383986940139">Aplikacionet e Chrome Canary</translation>
@@ -66,6 +67,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1640672724030957280">Po shkarkohet...</translation>
 <translation id="1651617469580841801">Kur përdor "Lenten e Google", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
+<translation id="1665867022636014702">Përdor cilësimet e rekomanduara të shfletuesit të Google</translation>
 <translation id="1674870198290878346">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="1682634494516646069">Google Chrome nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
@@ -101,6 +103,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2026377840141807639">Profilet e Chrome të lejojnë t'i mbash të veçuar shfletimin personal dhe atë të punës. Shto një profil të ri tani.</translation>
 <translation id="2034233344106846793">Chrome i përmirëson lidhjet e pasigurta automatikisht në HTTPS kur është e mundur</translation>
 <translation id="2039417478970545937">Cilësimet.</translation>
+<translation id="2066690553719545730">Shfaq gjithmonë "Modalitetin e IA-së"</translation>
 <translation id="2091012649849228750">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
 <translation id="2094648590148273905">Kushtet e Chrome OS Flex</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
@@ -357,6 +360,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4885446229353981848">Shfaq gjithmonë shkurtoren e "Lentes së Google"</translation>
 <translation id="4891791193823137474">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="4895437082222824641">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
+<translation id="4896867431081882115">Përfito qasje të lehtë te veçoritë që njeh, që të pëlqejnë dhe që u beson duke caktuar Chrome si shfletuesin tënd të parazgjedhur. Chrome do të gozhdohet te shiriti i detyrave për qasje të shpejtë.</translation>
 <translation id="4918086044614829423">Prano</translation>
 <translation id="4918844574251943176">Imazhi u kopjua</translation>
 <translation id="4926882258455737990">Për të përdorur një "Llogari tjetër të Google" me Gemini në Chrome, <ph name="BEGIN_LINK" />krijo një profil të ri<ph name="END_LINK" /> dhe identifikohu me llogarinë që dëshiron</translation>
@@ -561,6 +565,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6885412569789873916">Aplikacionet e Chrome Beta</translation>
 <translation id="6893363893008038481">Hiqe llogarinë nga Chrome</translation>
 <translation id="6896758677409633944">Kopjo</translation>
+<translation id="6908182077349113099">Mbaji fjalëkalimet, faqeshënuesit dhe historikun të sinkronizuar në mënyrë të përsosur në pajisje. Qasu me lehtësi te veçoritë që njeh dhe që të pëlqejnë duke e përditësuar shfletuesin tënd të parazgjedhur në Chrome.</translation>
 <translation id="6930294499209825">E mban të përditësuar softuerin e Google. Nëse ky shërbim çaktivizohet ose ndalohet, softueri yt i Google nuk do të mbahet i përditësuar, që do të thotë se dobësitë e sigurisë që mund të lindin nuk mund të rregullohen dhe veçoritë mund të mos funksionojnë. Ky shërbim çinstalohet vetë kur nuk ka një softuer të Google që e përdor atë.</translation>
 <translation id="6933858244219479645">Sistemi i ChromeOS</translation>
 <translation id="6938166777909186039">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.1.</translation>

@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">ဆွဲချမီနူးစာရင်းမှ ရွေးချယ်နိုင်သည်</translation>
 <translation id="4687718960473379118">ဝဘ်ဆိုက်အကြံပြု ကြော်ငြာများ</translation>
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> ဝဘ်စာမျက်နှာသို့ လင့်ခ်ကို မိတ္တူကူးနိုင်သည်။ ရင်းမြစ်- <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">ရှာဖွေမှု အင်ဂျင်</translation>
 <translation id="469286762610133730">ပိုကောင်းသောအကြောင်းအရာများ ရယူခြင်း</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="4698757800236023795">သုံးနေသည်များ (<ph name="ITEM_COUNT" /> ခု)</translation>
@@ -1530,6 +1531,7 @@
 <translation id="7376560087009844242">‘ရှာဖွေရန်-ထိခြင်း’ သုံးသောအခါ စာမျက်နှာ၏စာသားများ ပိုမိုပါဝင်ပါက ပိုကောင်းသောရလဒ်များ တွေ့ရနိုင်သည်။ ၎င်းကိုပြောင်းရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> ကို အချိန်မရွေးဝင်ကြည့်နိုင်သည်။</translation>
 <translation id="7379900596734708416">ဝဘ်ဆိုက်များအတွက် အမှောင်နောက်ခံ ရနိုင်သည်</translation>
 <translation id="7384486627147155832">အကြံပြုချက်ဆိုင်ရာ အကြောင်းကြားချက် ပရိုမိုးရှင်း မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်</translation>
+<translation id="7387951778417998929">မူရင်းမဟုတ်သော ရှာဖွေရေး အင်ဂျင်သုံးရန် လိပ်စာဘားတွင် ၎င်း၏ ဖြတ်လမ်းလင့်ခ် ရိုက်ထည့်ပြီးနောက် ဦးစားပေး လက်ကွက်ဖြတ်လမ်း ထည့်ပါ။ သင်၏မူရင်း ရှာဖွေရေး အင်ဂျင်ကိုလည်း ဤနေရာတွင် ပြောင်းနိုင်သည်။</translation>
 <translation id="7388615499319468910">ဝဘ်ဆိုက်နှင့် ကြော်ငြာရှင်များက ကြော်ငြာလုပ်ဆောင်ပုံကို နားလည်နိုင်သည်။ ဤဆက်တင်ကို ပိတ်ထားသည်။</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{စာရင်းရှိ အခြားဖိုင် ၁ ဖိုင်}other{စာရင်းရှိ အခြားဖိုင် # ဖိုင်}}</translation>
 <translation id="7400418766976504921">URL</translation>

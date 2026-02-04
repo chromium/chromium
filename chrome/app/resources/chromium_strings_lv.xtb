@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">Jaunā Chromium profila iestatīšana</translation>
 <translation id="1324107359134968521">Pārlūkam Chromium ir nepieciešama Bluetooth piekļuve, lai atrastu Bluetooth ierīces. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Valodas noteikšana</translation>
+<translation id="1330742950061766891">Izmantojiet Chromium ieteicamos pārlūka iestatījumus</translation>
 <translation id="1342274909142618978">Dzēst arī datus no pārlūka Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Piesprausts! Varat atkal piekļūt funkcijai Attēlu meklēšana, izmantojot jauno pogu rīkjoslā.</translation>
 <translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1397530502368084401">&amp;Pārvaldīt Chromium profilus</translation>
+<translation id="1404026649028693342">Vienmēr rādīt MI režīmu</translation>
 <translation id="141901961143729572">Dalieties domās!</translation>
 <translation id="1465192221147974788">Lai kopīgotu logu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
 <translation id="1478370723027452770">Saņemt palīdzību saistībā ar Chrome for Testing</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">Iestatījumi.</translation>
 <translation id="2049376729098081731">Izvēlieties, vai iekļaut Chromium vēsturi, lai iegūtu personalizētākas iespējas Google pakalpojumos.</translation>
 <translation id="2064856577282482477">Jaunas cilnes lapā noklikšķiniet uz pogas Pielāgot Chromium, lai piešķirtu pārlūkam Chromium jaunu izskatu.</translation>
+<translation id="2066690553719545730">Vienmēr rādīt MI režīmu</translation>
 <translation id="2086476982681781442">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo fails ir maldinošs un var veikt neparedzētas izmaiņas jūsu ierīcē.</translation>
 <translation id="208726765006323911">Kad nākamreiz iOS ierīcē atvērsiet pārlūku Chromium, tiks parādīts aicinājums izmēģināt funkciju <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Jūsu paroles un citi Chromium dati, ko saglabājāt savā Google kontā, tiks noņemti no šīs ierīces. Lai atkal izmantotu šos datus pārlūkā Chromium, atkārtoti pierakstieties.</translation>
@@ -192,6 +195,7 @@
 <translation id="3095811995836568724">Chromium vēsture</translation>
 <translation id="3103660991484857065">Instalēšanas programmai neizdevās atarhivēt arhīvu. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="310459126943037700">Neizdevās pabeigt uzdevumus.</translation>
+<translation id="3126784891977756556">Nevainojami sinhronizējiet savas paroles, grāmatzīmes un vēsturi visās ierīcēs. Ērti piekļūstiet zināmajām un iecienītajām funkcijām, atjauninot noklusējuma pārlūku uz Chromium.</translation>
 <translation id="3130323860337406239">Pārlūkā Chromium tiek izmantots jūsu mikrofons.</translation>
 <translation id="3130333203120345554">Jauns meklējums</translation>
 <translation id="3137969841538672700">Velciet, lai meklētu</translation>
@@ -304,6 +308,7 @@
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="4334241893986177674">Meklēt šajā ekrānuzņēmumā</translation>
 <translation id="4334294535648607276">Lejupielāde pabeigta.</translation>
+<translation id="4384993550046411228">Iegūstiet ērtu piekļuvi zināmajām, iecienītajām un uzticamajām funkcijām, iestatot Chromium kā noklusējuma pārlūku. Lai nodrošinātu ātru piekļuvi, pārlūks Chromium tiks piesprausts uzdevumu joslai.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> pieprasa, lai pirms šīs ierīces lietošanas jūs izlasītu tālāk sniegtos pakalpojumu sniegšanas noteikumus un piekristu tiem. Šie noteikumi nepaplašina, nepārveido un neierobežo operētājsistēmas Chromium OS noteikumus.</translation>
 <translation id="4407044323746248786">Vai tik un tā aizvērt pārlūku Chromium?</translation>
 <translation id="4413205837991854510">Vienmēr rādīt funkcijas Attēlu meklēšana saīsni</translation>

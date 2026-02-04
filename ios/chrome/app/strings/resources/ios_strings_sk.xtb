@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4183350924949589798">Chcete zvýšiť zabezpečenie?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} slabé heslo}few{{count} slabé heslá}many{{count} weak passwords}other{{count} slabých hesiel}}</translation>
+<translation id="4196758674971560031">Vami vytvorené skupiny kariet sa ukladajú do sekcie skupín kariet a aktualizujú sa vo vašich zariadeniach.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} položka je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju do účtu Google {email}.}few{{count} položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}many{{count} items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}other{{count} položiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}}</translation>
 <translation id="4207873326995387292">Informácie o prehliadači</translation>
 <translation id="421070604241073551">Keď je táto možnosť zapnutá, údaje sa ukladajú do vášho účtu Google. Keď je vypnutá, údaje sa ukladajú iba do tohto zariadenia.</translation>
@@ -1507,6 +1508,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6494931198667773526">Končí sa</translation>
 <translation id="6503077044568424649">Najnavštevovanejšie</translation>
 <translation id="6503763061813913607">Upozornenia kontroly bezpečnosti</translation>
+<translation id="6504541289630702018">Jednoduchý prístup k skupinám kariet vytvoreným v počítači</translation>
 <translation id="6505334220040167806">Zbaliť skupinu kariet</translation>
 <translation id="6506996418997555004">Zdieľanie skupiny kariet <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Ak chcete mať čitateľský zoznam k dispozícii vo všetkých zariadeniach, prihláste sa.</translation>
@@ -2137,6 +2139,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731268612289859741">Bezpečnostný kód</translation>
 <translation id="87371078663613140">Preskúmajte možnosti na paneli s ponukami</translation>
+<translation id="8739546376441802490">Pripnutý web už existuje</translation>
 <translation id="8741627442233023406">{count,plural, =1{Skontrolovať kartu…}few{Skontrolovať všetky karty…}many{Review all tabs…}other{Skontrolovať všetky karty…}}</translation>
 <translation id="8741995161408053644">Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Vytvoriť odkaz</translation>

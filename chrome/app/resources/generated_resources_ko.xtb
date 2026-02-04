@@ -994,6 +994,7 @@
 <translation id="1652326691684645429">Nearby Share 사용</translation>
 <translation id="1652862280638399816">비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chromium을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="1653958716132599769">관련 탭 그룹화</translation>
+<translation id="165448107578581061">Gemini가 작업을 처리하는 중…</translation>
 <translation id="1654580009054503925">요청 표시가 허용되지 않음</translation>
 <translation id="1654713139320245449">전송 대상을 찾을 수 없습니다. 도움이 필요하신가요?</translation>
 <translation id="1656528038316521561">배경 불투명도</translation>
@@ -1616,7 +1617,6 @@
 <translation id="2079053412993822885">인증서 중 하나를 삭제하면 더 이상 삭제한 인증서를 사용하여 신원을 확인할 수 없습니다.</translation>
 <translation id="2079495302726689071">새 <ph name="APP" /> 탭에서 링크 열기</translation>
 <translation id="2079545284768500474">실행취소</translation>
-<translation id="2079553700504470326">IP 주소를 기반으로 한 예상 위치 대신 정확한 위치를 사용하여 가장 정확한 Gemini 결과를 얻으세요.</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
 <translation id="2081816110395725788">배터리 사용 시 전력 유휴 상태로 설정</translation>
 <translation id="2082187087049518845">탭 그룹화</translation>
@@ -3890,6 +3890,7 @@
 <translation id="3619294456800709762">사이트에서 PIP 모드를 자동으로 시작할 수 있음</translation>
 <translation id="3620136223548713675">위치정보</translation>
 <translation id="3621202678540785336">입력</translation>
+<translation id="3621841019087952625">나중에 설정</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{앱 1개}other{앱 #개}}</translation>
 <translation id="3622820753353315928">플래시 화면 색상</translation>
 <translation id="3623318122257816196">내가 방문한 사이트에서는 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 이러한 다른 사이트에서는 사이트를 탐색할 때 나에 관해 저장된 정보를 사용할 권한을 요청할 수 있습니다.</translation>
@@ -4290,6 +4291,7 @@
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" />에서 Google 계정 사용하기</translation>
 <translation id="3856800405688283469">시간대 선택</translation>
+<translation id="3856902135796972992">이 사이트에 추가 조치가 필요합니다. 비밀번호 변경을 완료할 수 있도록 페이지에서 추가 조치를 완료하세요.</translation>
 <translation id="3857807444929313943">손가락을 뗀 후 다시 터치하세요</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="385939467708172187">안전한 비밀번호 사용</translation>
@@ -5934,7 +5936,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5003070249435823986">동작을 사용하여 스크롤 모드로 전환한 다음 스크롤하려는 방향으로 머리를 움직입니다. 스크롤 모드를 종료하려면 동작을 다시 사용합니다.</translation>
 <translation id="5003993274120026347">다음 문장</translation>
-<translation id="5005113238422129109">마이크를 사용하여 Gemini와 채팅하세요. Gemini와 대화할 때 오디오가 Gemini 앱 활동에 저장됩니다(사용 설정된 경우).</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5006218871145547804">Crostini Android 앱 ADB</translation>
 <translation id="5006778209728626987">번개</translation>
@@ -6261,6 +6262,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{탭 그룹을 그룹화 해제하시겠습니까?}other{탭 그룹을 그룹화 해제하시겠습니까?}}</translation>
 <translation id="5230190638672215545">'uow'를 입력하면 'ươ'가 표시됩니다</translation>
 <translation id="5230516054153933099">창</translation>
+<translation id="5231255476752743708">Chrome에서 비밀번호를 변경하는 데 도움이 필요함</translation>
 <translation id="5232714764496316200">숙제할 때 Google 렌즈로 도움을 받으세요</translation>
 <translation id="5233231016133573565">프로세스 ID</translation>
 <translation id="5233638681132016545">새 탭</translation>
@@ -7789,10 +7791,8 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6291953229176937411">Finder에서 보기(&amp;S)</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> 사용 중지됨</translation>
 <translation id="6294759976468837022">자동 스캔 속도</translation>
-<translation id="6295140892595702619">마이크를 사용하여 Gemini와 채팅하세요. Gemini와 대화할 때 오디오가 Gemini 앱 활동에 저장됩니다(사용 설정된 경우). 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6295855836753816081">저장 중...</translation>
-<translation id="6296481987471548530">IP 주소를 기반으로 한 예상 위치 대신 정확한 위치를 사용하여 가장 정확한 Gemini 결과를 얻으세요. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="6297986260307280218">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK2_END" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">여기에 표시된 사이트에 영향을 미칩니다. 도메인 이름 앞에 '[*.]'를 삽입하면 전체 도메인에 예외가 적용됩니다. 예를 들어 '[*.]google.com'을 추가하면 mail.google.com이 google.com의 일부이므로 서드 파티 쿠키도 활성화될 수 있습니다.</translation>
 <translation id="6298962879096096191">Google Play를 사용하여 Android 앱을 설치합니다.</translation>
@@ -8324,6 +8324,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6677527809400770913"><ph name="ACTION" />에 <ph name="GESTURE" /> 동작이 할당됨</translation>
 <translation id="6678604587151240716">바다에 솟구치는 큰 파도 뒤로 멀리 육지가 보입니다. 어둡고 우울한 하늘에 빛나는 주황색 빛이 수평선 너머로 스며들고 있습니다.</translation>
 <translation id="6678717876183468697">쿼리 URL</translation>
+<translation id="6678974601734442817">Chromium에서 비밀번호를 변경하는 데 도움이 필요함</translation>
 <translation id="6679947539429331601">12시간 동안 숨기기</translation>
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">속도</translation>
@@ -11030,7 +11031,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" />에서 내 Android 기기에 정보를 저장하려고 합니다.</translation>
 <translation id="8509177919508253835">보안 키를 재설정하고 PIN 생성</translation>
 <translation id="8509646642152301857">맞춤법 검사 사전을 다운로드하지 못했습니다.</translation>
-<translation id="8509967119010808787">탭을 검색하려면 여기를 클릭하세요.</translation>
 <translation id="8512476990829870887">프로세스 종료</translation>
 <translation id="851263357009351303"><ph name="HOST" />에서 이미지 표시 항상 허용</translation>
 <translation id="8513108775083588393">자동 회전</translation>

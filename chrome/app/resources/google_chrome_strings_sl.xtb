@@ -42,6 +42,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1399397803214730675">V tem računalniku je že nameščena novejša različica Google Chroma. Če programska oprema ne deluje, odstranite Google Chrome in poskusite znova.</translation>
+<translation id="1404026649028693342">Vedno pokaži način umetne inteligence</translation>
 <translation id="141901961143729572">Povejte svoje mnenje</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli.}=1{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. Anonimno okno se ne bo znova odprlo.}one{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimno okno se ne bo znova odprlo.}two{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimni okni se ne bosta znova odprli.}few{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimna okna se ne bodo znova odprla.}other{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="1434626383986940139">Delovne različice aplikacij za Chrome</translation>
@@ -66,6 +67,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1640672724030957280">Prenos ...</translation>
 <translation id="1651617469580841801">Če uporabljate Google Lens, se naslov strani, URL in vsebina, vključno s PDF-ji, pošljejo Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O sistemu ChromeOS Flex</translation>
+<translation id="1665867022636014702">Uporaba Googlovih priporočenih nastavitev brskalnika</translation>
 <translation id="1674870198290878346">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
 <translation id="1682634494516646069">Google Chrome ne more brati svojega imenika s podatki ali pisati vanj:
 
@@ -101,6 +103,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2026377840141807639">S profili v Chromu lahko osebno brskanje ločite od službenega. Dodajte nov profil.</translation>
 <translation id="2034233344106846793">Povezave, ki niso varne, Chrome samodejno nadgradi na HTTPS, ko je to mogoče</translation>
 <translation id="2039417478970545937">Nastavitve.</translation>
+<translation id="2066690553719545730">Vedno pokaži način umetne inteligence</translation>
 <translation id="2091012649849228750">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.</translation>
 <translation id="2094648590148273905">Pogoji za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Želite vseeno zapreti Chrome?</translation>
@@ -204,6 +207,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="308397506772922478">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Poimenujte profil v Chromu</translation>
 <translation id="310459126943037700">Opravil ni bilo mogoče končati.</translation>
+<translation id="3104828284009500087">Iščite kar koli na strani</translation>
 <translation id="3112458742631356345">Chrome je blokiral ta prenos, ker se datoteka ne prenaša pogosto in je morda nevarna</translation>
 <translation id="3114643501466072395">Če želite preveriti, ali so druga gesla varna pred podatkovnimi kršitvami in drugimi varnostnimi težavami, <ph name="BEGIN_LINK" />se prijavite v Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome je blokiral ta prenos, ker arhivska datoteka vsebuje druge datoteke, ki morda skrivajo zlonamerno programsko opremo</translation>
@@ -358,6 +362,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4885446229353981848">Vedno pokaži bližnjico do Googla Lens</translation>
 <translation id="4891791193823137474">Naj se Google Chrome izvaja v ozadju</translation>
 <translation id="4895437082222824641">Odpiranje povezave na novem &amp;zavihku v Chromu</translation>
+<translation id="4896867431081882115">Nastavite Chrome kot privzeti brskalnik in si zagotovite preprost dostop do funkcij, ki jih poznate, so vam všeč in jim zaupate. Chrome bo pripet v opravilno vrstico za hitri dostop.</translation>
 <translation id="4918086044614829423">Sprejmi</translation>
 <translation id="4918844574251943176">Slika je kopirana</translation>
 <translation id="4926882258455737990">Če želite z Geminijem v Chromu uporabljati drug račun Google, <ph name="BEGIN_LINK" />ustvarite nov profil<ph name="END_LINK" /> in se prijavite z želenim računom</translation>
@@ -562,6 +567,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6893363893008038481">Odstranitev računa iz Chroma</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6908182077349113099">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah. Posodobite privzeti brskalnik na Chrome in preprosto dostopajte do funkcij, ki jih poznate in so vam všeč.</translation>
 <translation id="6930294499209825">Poskrbi, da je Googlova programska oprema posodobljena. Če je ta storitev onemogočena ali ustavljena, Googlova programska oprema ne bo posodobljena, kar pomeni, da varnostnih ranljivosti, ki se lahko pojavijo, ni mogoče odpraviti in funkcije morda ne delujejo. Ta storitev se samodejno odstrani, če ni Googlove programske opreme, ki bi jo uporabljala.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.1.</translation>

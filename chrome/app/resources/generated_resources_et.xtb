@@ -1392,6 +1392,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="192564025059434655">Chrome'i rakenduste vanad versioonid ei avane Windowsi seadmetes enam pärast 2022. aasta detsembrit. Võite kontrollida, kas saadaval on uus versioon.</translation>
 <translation id="1926339101652878330">Neid seadeid juhitakse ettevõtte reegliga. Lisateabe saamiseks võtke ühendust oma administraatoriga.</translation>
 <translation id="1926887872692564784">Kursor</translation>
+<translation id="1927075772688962338">Kinnita lugemisrežiim</translation>
 <translation id="1927632033341042996"><ph name="NEW_FINGER_NUMBER" />. sõrm</translation>
 <translation id="192817607445937251">Ekraaniluku PIN-kood</translation>
 <translation id="192858925209436740">Ühendage OneDrive rakendusega Files, et hallata talletatud dokumente oma Chromebookis. Peate sisse logima oma Microsofti kontoga.</translation>
@@ -1607,7 +1608,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2079053412993822885">Kui kustutate ühe enda sertifikaatidest, ei saa te enam seda enda tuvastamiseks kasutada.</translation>
 <translation id="2079495302726689071">Ava link rakenduse <ph name="APP" /> uuel vahelehel</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
-<translation id="2079553700504470326">Võimalikult täpsete Gemini tulemuste hankimiseks kasutatakse teie täpset asukohta, mitte IP-aadressil põhinevat hinnangulist asukohta.</translation>
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2081816110395725788">Aku puhul kasutatakse tegevusetut režiimi</translation>
 <translation id="2082187087049518845">Vahelehe grupeerimine</translation>
@@ -3781,6 +3781,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3557101512409028104">Seadke teenusega Family Link veebisaitide ja ekraaniaja piirangud</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Kui lubate Chrome OS-i seadmetel meile saata automaatseid aruandeid, aitab see meil prioriseerida, mida Chrome OS-is parandada ja täiustada. Need aruanded sisaldavad näiteks Chrome OS-i kokkujooksmiste, kasutatud funktsioonide ja seadme mälukasutuse andmeid.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Võite oma lapse Chrome OS-i seadme seadetes need aruanded igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> – Gemini töötab teie ülesande kallal …</translation>
 <translation id="3559079791149580653">Peata ekraani ülekandmine seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">Reeglit ei õnnestunud seadmesse installida.</translation>
 <translation id="3559533181353831840">Ligikaudu <ph name="TIME_LEFT" /> jäänud</translation>
@@ -5927,7 +5928,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5001526427543320409">Kolmanda osapoole küpsisefailid</translation>
 <translation id="5003070249435823986">Kasutage liigutust, et aktiveerida kerimisrežiim, seejärel liigutage oma pead suunas, kuhu soovite kerida. Kerimisrežiimist väljumiseks kasutage liigutust uuesti.</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
-<translation id="5005113238422129109">Kasutage Geminiga suhtlemiseks oma mikrofoni. Kui vestlete Geminiga, talletatakse heli Gemini rakenduste tegevuses (kui see on sisse lülitatud)</translation>
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
 <translation id="5006218871145547804">Crostini Androidi rakenduse ADB</translation>
 <translation id="5006778209728626987">Välk</translation>
@@ -7783,10 +7783,8 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6291953229176937411">&amp;Näita otsijas</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> on välja lülitatud</translation>
 <translation id="6294759976468837022">Automaatse skannimise kiirus</translation>
-<translation id="6295140892595702619">Kasutage Geminiga suhtlemiseks oma mikrofoni. Kui vestlete Geminiga, talletatakse heli Gemini rakenduste tegevuses (kui see on sisse lülitatud). Teie andmeid ei kasutata generatiivse AI mudelite täiustamiseks.</translation>
 <translation id="6295158916970320988">Kõik saidid</translation>
 <translation id="6295855836753816081">Salvestamine ...</translation>
-<translation id="6296481987471548530">Võimalikult täpsete Gemini tulemuste hankimiseks kasutatakse teie täpset asukohta, mitte IP-aadressil põhinevat hinnangulist asukohta. Teie andmeid ei kasutata generatiivse AI mudelite täiustamiseks.</translation>
 <translation id="6297986260307280218">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle <ph name="BEGIN_LINK1" />seade<ph name="END_LINK1" /> on jõustanud omanik. Omanik võib otsustada saata Google'ile selle seadme diagnostika- ja kasutusandmeid. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK2_END" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Mõjutab siin loendatud saite. Sisestades domeeninime ette „[*.]“, luuakse erand kogu domeeni jaoks. Näiteks „[*].google.com” lisamine tähendab, et kolmanda osapoole küpsisefailid võivad olla aktiivsed ka saidi mail.google.com jaoks, kuna see on osa saidist google.com.</translation>
 <translation id="6298962879096096191">Androidi rakenduste installimiseks kasutatakse Google Playd</translation>
@@ -11025,7 +11023,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> soovib teie Androidi seadmesse teavet salvestada.</translation>
 <translation id="8509177919508253835">Turvavõtmete lähtestamine ja PIN-koodide loomine</translation>
 <translation id="8509646642152301857">Õigekirjakontrolli sõnastiku allalaadimine ebaõnnestus.</translation>
-<translation id="8509967119010808787">Vahelehtede otsimiseks klõpsake siin</translation>
 <translation id="8512476990829870887">Lõpeta protsess</translation>
 <translation id="851263357009351303">Luba alati saidil <ph name="HOST" /> pilte kuvada</translation>
 <translation id="8513108775083588393">Aut. pööramine</translation>
@@ -12200,6 +12197,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> soovib teie mobiilseadmest teavet hankida.</translation>
 <translation id="988320949174893488">Aeg-ajalt katkendlik</translation>
 <translation id="988978206646512040">Tühi parool ei ole lubatud</translation>
+<translation id="989685714699739712">Korraldage oma vahelehti, rühmitades need ning lisades neile kohandatud nime ja värvi</translation>
 <translation id="992032470292211616">Laiendused, rakendused ja teemad võivad teie seadet kahjustada. Kas soovite kindlasti jätkata?</translation>
 <translation id="992256792861109788">Roosa</translation>
 <translation id="992592832486024913">Keela ChromeVox (kõnena esitatud tagasiside)</translation>

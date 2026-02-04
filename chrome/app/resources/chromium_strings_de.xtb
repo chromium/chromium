@@ -29,11 +29,13 @@
 <translation id="1315551408014407711">Neues Chromium-Profil erstellen</translation>
 <translation id="1324107359134968521">Chromium benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Sprache erkennen</translation>
+<translation id="1330742950061766891">Empfohlene Browsereinstellungen von Chromium verwenden</translation>
 <translation id="1342274909142618978">Auch Daten aus Chromium löschen (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Angepinnt! Über den neuen Button in der Symbolleiste kannst du wieder auf die Bildersuche zugreifen.</translation>
 <translation id="1356661055722410047">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen lassen</translation>
 <translation id="1383876407941801731">Suchen</translation>
 <translation id="1397530502368084401">&amp;Chromium-Profile verwalten</translation>
+<translation id="1404026649028693342">KI-Modus immer anzeigen</translation>
 <translation id="141901961143729572">Lass uns wissen, was du denkst</translation>
 <translation id="1465192221147974788">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="1478370723027452770">Hilfe zu Chrome for Testing</translation>
@@ -90,6 +92,7 @@
 <translation id="2039417478970545937">den Einstellungen.</translation>
 <translation id="2049376729098081731">Lege fest, ob der Chromium-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
 <translation id="2064856577282482477">Wenn du Chromium einen neuen Look geben möchtest, klicke auf der Seite „Neuer Tab“ auf den Button „Chromium anpassen“</translation>
+<translation id="2066690553719545730">KI-Modus immer anzeigen</translation>
 <translation id="2086476982681781442">Chromium hat diesen Download blockiert, weil dich die Datei täuschen soll und unerwartete Änderungen an deinem Gerät vornehmen könnte</translation>
 <translation id="208726765006323911">Wenn du Chromium unter iOS das nächste Mal öffnest, wirst du aufgefordert, die Funktion „<ph name="FEATURE_NAME" />“ auszuprobieren.</translation>
 <translation id="2099452623287920103">Deine Passwörter und anderen in deinem Google-Konto gespeicherten Chromium-Daten werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chromium verwenden möchtest, melde dich einfach wieder an.</translation>
@@ -192,6 +195,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="3095811995836568724">Chromium-Verlauf</translation>
 <translation id="3103660991484857065">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Bitte lade Chromium erneut herunter.</translation>
 <translation id="310459126943037700">Die Aufgabe(n) konnte(n) nicht beendet werden.</translation>
+<translation id="3126784891977756556">Passwörter, Lesezeichen und Verlauf werden auf allen Geräten synchronisiert. Wenn du deinen Standardbrowser auf Chromium aktualisierst, kannst du ganz einfach auf die vertrauten Funktionen zugreifen.</translation>
 <translation id="3130323860337406239">Chromium verwendet dein Mikrofon.</translation>
 <translation id="3130333203120345554">Neue Suche</translation>
 <translation id="3137969841538672700">Zum Suchen ziehen</translation>
@@ -304,6 +308,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="4304713468139749426">Passwort­manager</translation>
 <translation id="4334241893986177674">In diesem Screenshot suchen</translation>
 <translation id="4334294535648607276">Download abgeschlossen.</translation>
+<translation id="4384993550046411228">Wenn du Chromium als Standardbrowser festlegst, hast du ganz einfach Zugriff auf die vertrauten Funktionen. Chromium wird für den Schnellzugriff an die Taskleiste angepinnt.</translation>
 <translation id="439358628917130594">Für <ph name="MANAGER" /> ist erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptierst. Durch diese Nutzungsbedingungen werden die Chromium OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="4407044323746248786">Chromium trotzdem beenden?</translation>
 <translation id="4413205837991854510">Button für die Bildersuche immer anzeigen</translation>

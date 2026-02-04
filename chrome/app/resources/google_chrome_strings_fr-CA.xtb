@@ -42,6 +42,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="137466361146087520">Google Chrome bêta</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1399397803214730675">Une version plus récente de Google Chrome est déjà installée sur cet ordinateur. Si celle-ci ne fonctionne pas, désinstallez Google Chrome, puis réessayez.</translation>
+<translation id="1404026649028693342">Toujours afficher le mode IA</translation>
 <translation id="141901961143729572">Faites part de vos commentaires</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau.}=1{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Votre fenêtre de navigation privée ne s'ouvrira pas à nouveau.}one{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. # fenêtre de navigation privée ne sera pas rouverte.}other{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1434626383986940139">Applications Google Chrome Canary</translation>
@@ -66,6 +67,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
 <translation id="1651617469580841801">Lorsque vous utilisez Lentille Google, le titre de la page, l'URL et le contenu, y compris les fichiers PDF, sont envoyés à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">À propos de ChromeOS Flex</translation>
+<translation id="1665867022636014702">Utiliser les paramètres du navigateur recommandés par Google</translation>
 <translation id="1674870198290878346">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ne peut pas lire et écrire dans son répertoire de données :
 
@@ -101,6 +103,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2026377840141807639">Les profils Chrome vous permettent de séparer votre navigation personnelle de votre travail. Ajoutez un nouveau profil maintenant.</translation>
 <translation id="2034233344106846793">Chrome met automatiquement à niveau les connexions non sécurisées vers HTTPS lorsque cela est possible</translation>
 <translation id="2039417478970545937">Paramètres.</translation>
+<translation id="2066690553719545730">Toujours afficher le mode IA</translation>
 <translation id="2091012649849228750">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 8.</translation>
 <translation id="2094648590148273905">Conditions de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Quitter Chrome quand même?</translation>
@@ -357,6 +360,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4885446229353981848">Toujours afficher le raccourci Lentille Google</translation>
 <translation id="4891791193823137474">Laisser Google Chrome s'exécuter en arrière-plan</translation>
 <translation id="4895437082222824641">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
+<translation id="4896867431081882115">Accédez facilement aux fonctionnalités que vous connaissez et aimez, et auxquelles vous faites confiance en définissant Chrome comme navigateur par défaut. Chrome sera épinglé à votre barre des tâches pour un accès rapide.</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918844574251943176">Image copiée</translation>
 <translation id="4926882258455737990">Pour utiliser un autre compte Google avec Gemini dans Chrome, <ph name="BEGIN_LINK" />créez un profil<ph name="END_LINK" /> et connectez-vous avec le compte souhaité</translation>
@@ -560,6 +564,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6885412569789873916">Applications Chrome bêta</translation>
 <translation id="6893363893008038481">Retirer le compte de Chrome</translation>
 <translation id="6896758677409633944">Copier</translation>
+<translation id="6908182077349113099">Gardez vos mots de passe, vos favoris et votre historique parfaitement synchronisés sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et que vous aimez en mettant à jour votre navigateur par défaut vers Chrome.</translation>
 <translation id="6930294499209825">Maintient votre logiciel Google à jour. Si ce service est désactivé ou arrêté, votre logiciel Google ne sera pas mis à jour, ce qui signifie que les vulnérabilités de sécurité qui pourraient survenir ne pourront pas être corrigées et que les fonctionnalités risquent de ne pas fonctionner. Ce service se désinstalle si aucun logiciel Google ne l'utilise.</translation>
 <translation id="6933858244219479645">Système ChromeOS</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 8.1.</translation>

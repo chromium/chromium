@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Valodas</translation>
 <translation id="4183350924949589798">Vai uzlabot drošību?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} nedroša parole}zero{{count} nedrošu paroļu}one{{count} nedroša parole}other{{count} nedrošas paroles}}</translation>
+<translation id="4196758674971560031">Jūsu izveidotās ciļņu grupas tiek saglabātas ciļņu grupu sadaļā un atjauninātas visās jūsu ierīcēs.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} vienums ir saglabāts tikai šajā ierīcē. Lai varētu šo vienumu izmantot citās ierīcēs, saglabājiet to savā Google kontā ({email}).}zero{{count} vienumi ir saglabāti tikai šajā ierīcē. Lai varētu šos vienumus izmantot citās ierīcēs, saglabājiet tos savā Google kontā ({email}).}one{{count} vienums ir saglabāts tikai šajā ierīcē. Lai varētu šos vienumus izmantot citās ierīcēs, saglabājiet tos savā Google kontā ({email}).}other{{count} vienumi ir saglabāti tikai šajā ierīcē. Lai varētu šos vienumus izmantot citās ierīcēs, saglabājiet tos savā Google kontā ({email}).}}</translation>
 <translation id="4207873326995387292">Informācija par pārlūku</translation>
 <translation id="421070604241073551">Ja šis iestatījums ir ieslēgts, dati tiek saglabāti jūsu Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē.</translation>
@@ -1507,6 +1508,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6494931198667773526">Beigas</translation>
 <translation id="6503077044568424649">Visapmeklētākais</translation>
 <translation id="6503763061813913607">Drošības pārbaudes paziņojumi</translation>
+<translation id="6504541289630702018">Ērti piekļūstiet galddatorā izveidotajām ciļņu grupām</translation>
 <translation id="6505334220040167806">Sakļaut ciļņu grupu.</translation>
 <translation id="6506996418997555004">Ciļņu grupas “<ph name="GROUP_NAME" />” kopīgošana</translation>
 <translation id="6507973708545996744">Pierakstieties, lai lasīšanas saraksts būtu pieejams visās jūsu ierīcēs.</translation>
@@ -2137,6 +2139,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8731268612289859741">Drošības kods</translation>
 <translation id="87371078663613140">Izpētiet izvēļņu joslā pieejamās opcijas.</translation>
+<translation id="8739546376441802490">Piespraustā vietne jau pastāv</translation>
 <translation id="8741627442233023406">{count,plural, =1{Pārskatīt cilni…}zero{Pārskatīt visas cilnes…}one{Pārskatīt visas cilnes…}other{Pārskatīt visas cilnes…}}</translation>
 <translation id="8741995161408053644">Jūsu Google kontam var būt cita veida pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Izveidot saiti</translation>

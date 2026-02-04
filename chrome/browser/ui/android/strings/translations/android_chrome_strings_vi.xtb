@@ -851,6 +851,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4685741273709472646">Chọn từ danh sách thả xuống</translation>
 <translation id="4687718960473379118">Quảng cáo do trang web đề xuất</translation>
 <translation id="468924408576231679">Sao chép đường liên kết đến trang web <ph name="PAGE_TITLE" />. Nguồn: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Công cụ tìm kiếm</translation>
 <translation id="469286762610133730">Nhận nội dung phù hợp hơn</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}}</translation>
 <translation id="4698757800236023795">Đang hoạt động (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7376560087009844242">Bạn có thể thấy kết quả phù hợp hơn khi dùng tính năng Chạm để tìm kiếm bằng cách bao gồm thêm nhiều văn bản của trang. Bạn có thể truy cập phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> để thay đổi lựa chọn này bất cứ lúc nào.</translation>
 <translation id="7379900596734708416">Đã có giao diện tối cho các trang web</translation>
 <translation id="7384486627147155832">Thông báo quảng cáo kèm mẹo đã mở trên một nửa màn hình</translation>
+<translation id="7387951778417998929">Để dùng một công cụ tìm kiếm khác với công cụ mặc định, hãy nhập lối tắt của công cụ đó trong thanh địa chỉ rồi nhập phím tắt ưu tiên của bạn. Bạn cũng có thể thay đổi công cụ tìm kiếm mặc định tại đây.</translation>
 <translation id="7388615499319468910">Các trang web và nhà quảng cáo có thể nắm được hiệu suất quảng cáo của họ. Chế độ cài đặt này đang tắt.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Khác, 1 tệp trong danh sách}other{Khác, # tệp trong danh sách}}</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -851,6 +851,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4685741273709472646">Valige ripploendist</translation>
 <translation id="4687718960473379118">Saitide soovitatud reklaamid</translation>
 <translation id="468924408576231679">Kopeerige veebilehe <ph name="PAGE_TITLE" /> link. Allikas: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Otsingumootorid</translation>
 <translation id="469286762610133730">Hankige paremat sisu</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Aktiivne (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7376560087009844242">Kaasates rohkem lehe teksti võite näha paremaid tulemusi, kui kasutate otsimiseks puudutamist. Selle muutmiseks võite alati avada <ph name="BEGIN_LINK" />seaded<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Saitide tume teema on saadaval</translation>
 <translation id="7384486627147155832">Nõuandemärguannete promo on avatud poolkõrguses</translation>
+<translation id="7387951778417998929">Kui soovite kasutada muud otsingumootorit peale vaikeotsingumootori, sisestage selle otsetee aadressiribale ja seejärel vajutage valitud klaviatuuriotseteed. Samuti saate siin oma vaikeotsingumootorit muuta.</translation>
 <translation id="7388615499319468910">Saidid ja reklaamijad saavad hankida teavet reklaamide toimivuse kohta. See seade on välja lülitatud.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Muu, loendis on 1 fail}other{Muu, loendis on # faili}}</translation>
 <translation id="7400418766976504921">URL</translation>

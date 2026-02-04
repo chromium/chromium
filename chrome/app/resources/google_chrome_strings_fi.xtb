@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chromen betaversio</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1399397803214730675">Tietokoneessa on jo Google Chromen uudempi versio. Jos sovellus ei toimi, poista Google Chrome ja yritä uudelleen.</translation>
+<translation id="1404026649028693342">Näytä aina tekoälytila</translation>
 <translation id="141901961143729572">Kerro mielipiteesi</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen.}=1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito-ikkunaasi ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">Ladataan...</translation>
 <translation id="1651617469580841801">Kun käytät Google Lensia, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään Googlelle. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tietoa ChromeOS Flexistä</translation>
+<translation id="1665867022636014702">Käytä Googlen suosittelemia selainasetuksia</translation>
 <translation id="1674870198290878346">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
 <translation id="1682634494516646069">Chrome ei voi lukea tietohakemistoaan <ph name="USER_DATA_DIRECTORY" /> tai kirjoittaa siihen</translation>
 <translation id="1688214853608504530">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin organisaatiosi haku-, tekoäly- ja agenttityökaluille, jotta saat ehdotuksia.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">Chrome-profiilien avulla voit pitää henkilökohtaisen selaamisen ja työn erillään. Lisää uusi profiili nyt.</translation>
 <translation id="2034233344106846793">Chrome päivittää suojaamattomat yhteydet HTTPS:ään automaattisesti, jos mahdollista</translation>
 <translation id="2039417478970545937">Asetukset.</translation>
+<translation id="2066690553719545730">Näytä aina tekoälytila</translation>
 <translation id="2091012649849228750">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.</translation>
 <translation id="2094648590148273905">ChromeOS Flexin ehdot</translation>
 <translation id="2094919256425865063">Suljetaanko Chrome silti?</translation>
@@ -200,6 +203,7 @@
 <translation id="308397506772922478">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Nimeä Chrome-profiilisi</translation>
 <translation id="310459126943037700">Tehtävien lopettaminen epäonnistui.</translation>
+<translation id="3104828284009500087">Hae mitä tahansa sivulla näkyvää</translation>
 <translation id="3112458742631356345">Chrome on estänyt tämän latauksen, koska tiedostoa ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="3114643501466072395">Jos haluat tarkistaa, ovatko muut salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromeen<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome on estänyt tämän latauksen, koska arkistotiedosto sisältää muita tiedostoja, jotka voivat piilottaa haittaohjelmia</translation>
@@ -354,6 +358,7 @@
 <translation id="4885446229353981848">Näytä aina Google Lens ‐pikanäppäin</translation>
 <translation id="4891791193823137474">Jätä Google Chrome käyntiin taustalle</translation>
 <translation id="4895437082222824641">Avaa linkki uudella Chromen välilehdellä</translation>
+<translation id="4896867431081882115">Kun valitset Chromen oletusselaimeksi, saat helposti käyttöösi tutut, luotettavat ominaisuudet. Chrome kiinnitetään tehtäväpalkkiin, jotta voit käyttää sitä nopeasti.</translation>
 <translation id="4918086044614829423">Hyväksy</translation>
 <translation id="4918844574251943176">Kuva kopioitu</translation>
 <translation id="4926882258455737990">Jos haluat käyttää toista Google-tiliä Gemini in Chromessa, <ph name="BEGIN_LINK" />luo uusi profiili<ph name="END_LINK" /> ja kirjaudu sisään haluamallasi tilillä</translation>
@@ -554,6 +559,7 @@
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
 <translation id="6893363893008038481">Poista tili Chromesta</translation>
 <translation id="6896758677409633944">Kopioi</translation>
+<translation id="6908182077349113099">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chrome, niin saat tutut ominaisuudet helposti käyttöösi.</translation>
 <translation id="6930294499209825">Pitää Google-ohjelmiston ajan tasalla. Jos palvelu on poistettu käytöstä tai lopetettu, Google-ohjelmistoa ei pidetä ajan tasalla. Tämä tarkoittaa, että mahdollisia tietoturvahaavoittuvuuksia ei voida korjata ja ominaisuudet eivät välttämättä toimi. Tämän palvelun asennus poistetaan automaattisesti, kun sitä ei käytä mikään Google-ohjelmisto.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>

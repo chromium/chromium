@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Lugha</translation>
 <translation id="4183350924949589798">Je, unahitaji usalama zaidi?</translation>
 <translation id="4184063163998877398">{count,plural, =1{Nenosiri {count} dhaifu}other{Manenosiri {count} dhaifu}}</translation>
+<translation id="4196758674971560031">Vikundi vya vichupo ulivyoanzisha vimehifadhiwa kwenye sehemu ya kikundi cha vichupo na kusasishwa kwenye vifaa vyako mbalimbali.</translation>
 <translation id="4197456013861852807">{count,plural, =1{Kipengee {count} kimehifadhiwa kwenye kifaa hiki pekee. Ili ukitumie kwenye vifaa vingine, kihifadhi kwenye Akaunti yako ya Google, {email}.}other{Vipengee {count} vimehifadhiwa kwenye kifaa hiki pekee. Ili uvitumie kwenye vifaa vyako vingine, vihifadhi kwenye Akaunti yako ya Google, {email}.}}</translation>
 <translation id="4207873326995387292">Maelezo ya Kivinjari</translation>
 <translation id="421070604241073551">Ukiwasha, data inahifadhiwa kwenye Akaunti yako ya Google. Ukizima, data inahifadhiwa kwenye kifaa hiki pekee.</translation>
@@ -1507,6 +1508,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6494931198667773526">Utaisha</translation>
 <translation id="6503077044568424649">Zinazotembelewa zaidi</translation>
 <translation id="6503763061813913607">Arifa za Kipengele cha Ukaguzi wa Usalama</translation>
+<translation id="6504541289630702018">Fikia kwa urahisi vikundi vya vichupo vyako kwenye kompyuta ya mezani</translation>
 <translation id="6505334220040167806">Kunja kikundi cha vichupo.</translation>
 <translation id="6506996418997555004">Kuruhusu ufikiaji wa Kikundi cha Vichupo cha "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Ingia katika akaunti ili upate orodha yako ya kusoma kwenye vifaa vyako vyote.</translation>
@@ -2137,6 +2139,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8731268612289859741">Msimbo wa usalama</translation>
 <translation id="87371078663613140">Angalia chaguo katika upau wa menyu</translation>
+<translation id="8739546376441802490">Tayari umepachika tovuti</translation>
 <translation id="8741627442233023406">{count,plural, =1{Kagua kichupo…}other{Kagua vichupo vyote…}}</translation>
 <translation id="8741995161408053644">Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Buni kiungo</translation>

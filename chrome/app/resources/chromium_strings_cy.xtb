@@ -32,11 +32,13 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1324107359134968521">Mae angen mynediad Bluetooth ar Chromium i archwilio 
  dyfeisiau Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Canfod yr iaith</translation>
+<translation id="1330742950061766891">Defnyddio gosodiadau porwr a argymhellir gan Chromium</translation>
 <translation id="1342274909142618978">Dileu data o Chromium hefyd (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Piniwyd! Gallwch gyrchu Chwilio Lluniau eto o'r botwm newydd ar y bar offer</translation>
 <translation id="1356661055722410047">Newydd! Gallwch gyfieithu testun a lluniau ar eich sgrîn</translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1397530502368084401">&amp;Rheoli Proffiliau Chromium</translation>
+<translation id="1404026649028693342">Dangos Dull AI bob amser</translation>
 <translation id="141901961143729572">Rhannwch eich meddyliau</translation>
 <translation id="1465192221147974788">I rannu'ch ffenestr, caniatewch recordio sgrîn ar gyfer Chromium yn y Gosodiadau System.</translation>
 <translation id="1478370723027452770">Cael help gyda Chrome for Testing</translation>
@@ -93,6 +95,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2039417478970545937">Gosodiadau.</translation>
 <translation id="2049376729098081731">Dewiswch a ddylid cynnwys hanes Chromium i gael profiadau mwy personol yng ngwasanaethau Google</translation>
 <translation id="2064856577282482477">Cliciwch y botwm Personoleiddio Chromium ar y Dudalen Tab Newydd i roi gwedd newydd i Chromium</translation>
+<translation id="2066690553719545730">Dangos Dull AI Bob Amser</translation>
 <translation id="2086476982681781442">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil yn dwyllodrus a gallai wneud newidiadau annisgwyl i'ch dyfais</translation>
 <translation id="208726765006323911">Byddwch yn gweld anogwr i roi cynnig ar <ph name="FEATURE_NAME" /> y tro nesaf y byddwch yn agor Chromium iOS.</translation>
 <translation id="2099452623287920103">Bydd eich cyfrineiriau a data Chromium arall a gadwyd gennych yn eich Cyfrif Google yn cael eu tynnu o'r ddyfais hon. I'w defnyddio eto yn Chromium, mewngofnodwch eto.</translation>
@@ -195,6 +198,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3095811995836568724">Hanes Chromium</translation>
 <translation id="3103660991484857065">Methodd y gosodwr ag anghywasgu archif. Lawrlwythwch Chromium eto.</translation>
 <translation id="310459126943037700">Wedi methu â dod â'r dasg/tasgau i ben.</translation>
+<translation id="3126784891977756556">Cadwch eich cyfrineiriau, nodau tudalen a hanes wedi'u cysoni'n berffaith ar draws dyfeisiau. Cael mynediad hawdd at y nodweddion rydych yn eu hadnabod ac yn eu caru trwy ddiweddaru eich porwr diofyn i Chromium.</translation>
 <translation id="3130323860337406239">Mae Chromium yn defnyddio'ch meicroffon.</translation>
 <translation id="3130333203120345554">Chwiliad newydd</translation>
 <translation id="3137969841538672700">Llusgwch i chwilio</translation>
@@ -307,6 +311,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4304713468139749426">Rheolwr Cyfrineiriau</translation>
 <translation id="4334241893986177674">Chwilio'r sgrinlun hwn</translation>
 <translation id="4334294535648607276">Lawrlwytho wedi'i gwblhau.</translation>
+<translation id="4384993550046411228">Cael mynediad hawdd at y nodweddion rydych chi'n eu hadnabod, eu caru ac yn ymddiried ynddynt trwy osod Chromium fel eich porwr diofyn. Bydd Chromium yn cael ei binio i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="439358628917130594">Mae <ph name="MANAGER" /> yn gofyn i chi ddarllen a derbyn y Telerau Gwasanaeth canlynol cyn defnyddio'r ddyfais hon. Nid yw'r telerau hyn yn ehangu, addasu na chyfyngu ar Delerau ChromiumOS.</translation>
 <translation id="4407044323746248786">Gadael Chromium beth bynnag?</translation>
 <translation id="4413205837991854510">Dangos Llwybr Byr Chwilio Lluniau Bob Amser</translation>

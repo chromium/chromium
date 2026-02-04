@@ -994,6 +994,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1652326691684645429">Activer la fonctionnalité Partage à proximité</translation>
 <translation id="1652862280638399816">Pour utiliser le gestionnaire de mots de passe avec le trousseau macOS, relancez Chromium et autorisez l'accès au trousseau. Vos onglets s'ouvriront à nouveau après la relance.</translation>
 <translation id="1653958716132599769">Onglets associés au groupe</translation>
+<translation id="165448107578581061">Gemini travaille sur votre tâche…</translation>
 <translation id="1654580009054503925">Non autorisé à afficher les demandes</translation>
 <translation id="1654713139320245449">Aucune destination de diffusion trouvée. Besoin d'aide?</translation>
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
@@ -1606,7 +1607,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2079053412993822885">Si vous supprimez l'un de vos propres certificats, vous ne pouvez plus l'utiliser pour vous identifier.</translation>
 <translation id="2079495302726689071">Ouvrir le lien dans un nouvel onglet <ph name="APP" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
-<translation id="2079553700504470326">Utilisez votre position exacte plutôt qu'une position estimée en fonction de votre adresse IP pour optimiser la précision des résultats de Gemini.</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2081816110395725788">Mode veille lorsque l'appareil utilise la pile</translation>
 <translation id="2082187087049518845">Ajouter l'onglet à un groupe</translation>
@@ -3878,6 +3878,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3619294456800709762">Les sites peuvent entrer automatiquement l'Incrustation d'image</translation>
 <translation id="3620136223548713675">Géolocalisation</translation>
 <translation id="3621202678540785336">Entrée</translation>
+<translation id="3621841019087952625">Définir plus tard</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une application}one{# application}other{# applications}}</translation>
 <translation id="3622820753353315928">Couleur du clignotement d'écran</translation>
 <translation id="3623318122257816196">Les sites que vous visitez peuvent intégrer du contenu provenant d'autres sites, p. ex. des images, des publicités et du texte. Ces autres sites peuvent demander l'autorisation d'utiliser les informations qu'ils ont enregistrées à votre sujet lorsque vous naviguez sur le site.</translation>
@@ -4278,6 +4279,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3856470183388031602">Utilisez votre compte Google sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Sélectionner un fuseau horaire</translation>
+<translation id="3856902135796972992">Ce site nécessite une action supplémentaire. Effectuez-la sur la page pour que la modification du mot de passe puisse se terminer.</translation>
 <translation id="3857807444929313943">Relever le doigt et toucher le capteur de nouveau</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="385939467708172187">Utilisez un mot de passe fort</translation>
@@ -5922,7 +5924,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5001526427543320409">Témoins tiers</translation>
 <translation id="5003070249435823986">Utilisez le geste pour passer en mode de défilement, puis bougez la tête dans la direction dans laquelle vous souhaitez faire défiler l'écran. Utilisez à nouveau le geste pour quitter le mode de défilement.</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
-<translation id="5005113238422129109">Utilisez votre microphone pour clavarder avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'Activité dans les applis Gemini (si cette fonctionnalité est activée)</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5006218871145547804">Pont interappareil d'applications Android pour Crostini</translation>
 <translation id="5006778209728626987">Foudre</translation>
@@ -6249,6 +6250,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Dissocier le groupe d'onglets?}one{Dissocier le groupe d'onglets?}other{Dissocier les groupes d'onglets?}}</translation>
 <translation id="5230190638672215545">Tapez « uow » pour obtenir « ươ »</translation>
 <translation id="5230516054153933099">Fenêtre</translation>
+<translation id="5231255476752743708">Chrome a besoin d'aide pour modifier votre mot de passe</translation>
 <translation id="5232714764496316200">Obtenez de l'aide pour vos devoirs avec Lentille Google</translation>
 <translation id="5233231016133573565">Identifiant de processus</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
@@ -7776,10 +7778,8 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6291953229176937411">&amp;Afficher dans le Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> est désactivé</translation>
 <translation id="6294759976468837022">Vitesse du balayage automatique</translation>
-<translation id="6295140892595702619">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'Activité dans les applis Gemini (si ce paramètre est activé). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6295855836753816081">Enregistrement en cours...</translation>
-<translation id="6296481987471548530">Utilisez votre position exacte plutôt qu'une position estimée en fonction de votre adresse IP pour optimiser la précision des résultats de Gemini. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="6297986260307280218">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. Cela nous permettra d'assurer la stabilité du système et des applis, et d'apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus sur les mesures<ph name="BEGIN_LINK2_END" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">A une incidence sur les sites répertoriés ici. L'insertion de « [*.] » avant un nom de domaine crée une exception pour l'ensemble du domaine. Par exemple, en ajoutant « [*.]google.com », les témoins tiers peuvent également être actifs pour mail.google.com, car ce dernier fait partie de google.com.</translation>
 <translation id="6298962879096096191">Utilisez Google Play pour installer des applications Android</translation>
@@ -8313,6 +8313,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6677527809400770913">Geste <ph name="GESTURE" /> attribué à <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">De grandes vagues écument dans la mer, avec la terre au loin dans l'arrière-plan. Des brins de lumière orangée sont visibles aux confins de l'horizon, dans un ciel par ailleurs sombre et ténébreux.</translation>
 <translation id="6678717876183468697">URL de requête</translation>
+<translation id="6678974601734442817">Chromium a besoin d'aide pour modifier votre mot de passe</translation>
 <translation id="6679947539429331601">Masquer pendant 12 heures</translation>
 <translation id="6680442031740878064">Disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Vitesse</translation>
@@ -11017,7 +11018,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> souhaite enregistrer des informations sur votre appareil Android</translation>
 <translation id="8509177919508253835">Réinitialiser les clés de sécurité et les NIP</translation>
 <translation id="8509646642152301857">Le téléchargement du dictionnaire de vérification orthographique a échoué.</translation>
-<translation id="8509967119010808787">Pour rechercher vos onglets, cliquez ici</translation>
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513108775083588393">Rotation auto</translation>

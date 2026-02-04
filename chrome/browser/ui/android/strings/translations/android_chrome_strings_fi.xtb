@@ -851,6 +851,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4685741273709472646">Valitse avattavasta listasta</translation>
 <translation id="4687718960473379118">Sivustojen ehdottamat mainokset</translation>
 <translation id="468924408576231679">Kopioi linkki verkkosivulle <ph name="PAGE_TITLE" />. Lähde: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Hakukoneet</translation>
 <translation id="469286762610133730">Saat parempaa sisältöä</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muu}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muuta}}</translation>
 <translation id="4698757800236023795">Aktiivinen (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7376560087009844242">Voit saada parempia tuloksia käyttäessäsi Koskettamalla hakemista, jos sisällytät enemmän tekstiä sivulta. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Sivustojen tumma teema on saatavilla</translation>
 <translation id="7384486627147155832">Vinkki-ilmoitusten mainos avattu puolen näytön kokoisena</translation>
+<translation id="7387951778417998929">Käytä muuta kuin oletushakukonetta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi pikanäppäintä. Täällä voit myös vaihtaa oletushakukonetta.</translation>
 <translation id="7388615499319468910">Sivustot ja mainostajat saavat tietoa mainostuloksista. Tämä asetus on poissa päältä.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Muu, 1 tiedosto listassa}other{Muu, # tiedostoa listalla}}</translation>
 <translation id="7400418766976504921">URL-osoite</translation>

@@ -42,6 +42,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="137466361146087520">Beta Google Chrome</translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1399397803214730675">Mae gan y cyfrifiadur hwn fersiwn mwy diweddar o Google Chrome. Os nad yw'r feddalwedd yn gweithio, dadosodwch Google Chrome a rhowch gynnig arall arni.</translation>
+<translation id="1404026649028693342">Dangos Dull AI bob amser</translation>
 <translation id="141901961143729572">Rhannwch eich meddyliau</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor.}=1{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
 <translation id="1434626383986940139">Apiau Chrome Canary</translation>
@@ -66,6 +67,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1640672724030957280">Wrthi'n lawrlwytho...</translation>
 <translation id="1651617469580841801">Pan fyddwch yn defnyddio Google Lens, mae teitl y dudalen, URL, a chynnwys, gan gynnwys PDFs, yn cael eu hanfon at Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Ynghylch ChromeOS Flex</translation>
+<translation id="1665867022636014702">Defnyddio gosodiadau porwr a argymhellir gan Google</translation>
 <translation id="1674870198290878346">Agor y Ddolen mewn Ffenestr Anhy&amp;sbys Chrome</translation>
 <translation id="1682634494516646069">Ni all Google Chrome ddarllen nac ysgrifennu i'w gyfeiriadur data:
 
@@ -101,6 +103,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2026377840141807639">Mae proffiliau Chrome yn gadael i chi gadw pori personol a gwaith ar wahân. Ychwanegwch broffil newydd nawr.</translation>
 <translation id="2034233344106846793">Mae Chrome yn uwchraddio cysylltiadau anniogel i HTTPS yn awtomatig pan fo modd</translation>
 <translation id="2039417478970545937">Gosodiadau.</translation>
+<translation id="2066690553719545730">Dangos Dull AI Bob Amser</translation>
 <translation id="2091012649849228750">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.</translation>
 <translation id="2094648590148273905">Termau ChromeOS Flex</translation>
 <translation id="2094919256425865063">Gadael Chrome beth bynnag?</translation>
@@ -358,6 +361,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4885446229353981848">Dangos llwybr byr Google Lens bob amser</translation>
 <translation id="4891791193823137474">Caniatáu i Google Chrome redeg yn y cefndir</translation>
 <translation id="4895437082222824641">Agor dolen mewn tab Chrome newydd</translation>
+<translation id="4896867431081882115">Cael mynediad hawdd at y nodweddion rydych chi'n eu hadnabod, eu caru ac yn ymddiried ynddynt trwy osod Chrome fel eich porwr diofyn. Bydd Chrome yn cael ei binio i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="4918086044614829423">Derbyn</translation>
 <translation id="4918844574251943176">Llun wedi'i gopïo</translation>
 <translation id="4926882258455737990">I ddefnyddio Cyfrif Google gwahanol gyda Gemini yn Chrome, <ph name="BEGIN_LINK" />crëwch broffil newydd<ph name="END_LINK" /> a mewngofnodwch gyda'r cyfrif rydych ei eisiau</translation>
@@ -562,6 +566,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6885412569789873916">Apiau Beta Chrome</translation>
 <translation id="6893363893008038481">Tynnu Cyfrif o Chrome</translation>
 <translation id="6896758677409633944">Copïo</translation>
+<translation id="6908182077349113099">Cadwch eich cyfrineiriau, nodau tudalen a hanes wedi'u cysoni'n berffaith ar draws dyfeisiau. Cael mynediad hawdd at y nodweddion rydych yn eu hadnabod ac yn eu caru trwy ddiweddaru eich porwr diofyn i Chrome.</translation>
 <translation id="6930294499209825">Yn cadw'ch meddalwedd Google yn gyfredol. Os yw'r gwasanaeth hwn wedi'i analluogi neu ei stopio, ni fydd eich meddalwedd Google yn cael ei gadw'n gyfredol, sy'n golygu na all gwendidau diogelwch a all godi gael eu trwsio ac efallai na fydd nodweddion yn gweithio. Mae'r gwasanaeth hwn yn dadosod ei hun pan nad oes meddalwedd Google yn ei ddefnyddio.</translation>
 <translation id="6933858244219479645">System ChromeOS</translation>
 <translation id="6938166777909186039">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.1.</translation>

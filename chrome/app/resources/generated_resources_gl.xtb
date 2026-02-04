@@ -1390,6 +1390,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="192564025059434655">As versións antigas das aplicacións de Chrome non se poderán abrir nos dispositivos Windows despois de decembro de 2022. Podes comprobar se hai unha nova versión dispoñible.</translation>
 <translation id="1926339101652878330">Estas opcións de configuración están controladas pola política empresarial. Ponte en contacto co administrador para obter máis información.</translation>
 <translation id="1926887872692564784">Cursor</translation>
+<translation id="1927075772688962338">Fixar o modo de lectura</translation>
 <translation id="1927632033341042996">Dedo <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN de bloqueo de pantalla</translation>
 <translation id="192858925209436740">Conecta OneDrive á aplicación Ficheiros para xestionar os documentos almacenados desde Chromebook. Terás que iniciar sesión coa túa conta de Microsoft.</translation>
@@ -1605,7 +1606,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2079053412993822885">Se eliminas un dos teus propios certificados, non poderás volver utilizalo para identificarte.</translation>
 <translation id="2079495302726689071">Abrir ligazón nunha pestana nova de <ph name="APP" /></translation>
 <translation id="2079545284768500474">Desfacer</translation>
-<translation id="2079553700504470326">Usa a túa localización precisa en lugar dunha localización estimada baseada no teu enderezo IP para obter os resultados máis precisos de Gemini.</translation>
 <translation id="2080070583977670716">Máis opcións de configuración</translation>
 <translation id="2081816110395725788">Activar modo de suspensión mentres se use a batería</translation>
 <translation id="2082187087049518845">Agrupar pestana</translation>
@@ -2916,7 +2916,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2950666755714083615">Rexistrarse</translation>
 <translation id="2953210795988451570">Deixaron de recibirse as actualizacións de seguranza. Faite cun novo Chromebook.</translation>
 <translation id="2953218713108551165">Non se permiten notificacións para <ph name="SITE" />. Preguntaráseche de novo na túa próxima visita.</translation>
-<translation id="2954777802959138493">Produciuse un erro ao consultar o estado da ferramenta e actualización</translation>
+<translation id="2954777802959138493">Produciuse un erro ao consultar o estado do actualizador</translation>
 <translation id="2955048943983973430">Servizos de Google relacionados</translation>
 <translation id="2956070239128776395">Hai unha sección aniñada dentro dun grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Activa o modo de programador para usar esta extensión, que non pode revisarse en Chrome Web Store.</translation>
@@ -3756,7 +3756,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="354068948465830244">Pode consultar e modificar os datos do sitio</translation>
 <translation id="3541823293333232175">Asignado</translation>
 <translation id="3543296862747913985">Que fai?</translation>
-<translation id="3543298914473315872">Proceso de actualización</translation>
+<translation id="3543298914473315872">Proceso do actualizador</translation>
 <translation id="3543393733900874979">Non se puido efectuar a actualización (erro: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Sinatura X9.62 ECDSA con SHA-512</translation>
 <translation id="3544058026430919413">Unha empresa pode definir un grupo de sitios que poden usar as cookies para compartir a túa actividade no grupo. Esta opción está desactivada no modo de incógnito.</translation>
@@ -3776,6 +3776,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3557101512409028104">Define as restricións de sitios web e o tempo diante da pantalla con Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos ChromeOS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes poden incluírse datos sobre cando falla ChromeOS, as funcións que se utilizaron e o espazo de memoria que adoita empregarse, entre outros.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do dispositivo ChromeOS do teu fillo ou filla. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" />: Gemini está traballando na túa tarefa...</translation>
 <translation id="3559079791149580653">Deixar de emitir a pantalla no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">Non se puido instalar a política no dispositivo.</translation>
 <translation id="3559533181353831840">Tempo restante aproximado: <ph name="TIME_LEFT" /></translation>
@@ -5925,7 +5926,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5003070249435823986">Usa o xesto para entrar no modo de desprazamento e, a continuación, move a cabeza na dirección na que queiras moverte. Utiliza ese mesmo xesto para saír do modo.</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
-<translation id="5005113238422129109">Usa o micrófono para chatear con Gemini. Cando falas con Gemini, o audio almacénase na actividade das aplicacións Gemini (se a opción está activada)</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5006218871145547804">ADB para aplicacións para Android en Crostini</translation>
 <translation id="5006778209728626987">Lóstrego</translation>
@@ -7778,10 +7778,8 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6291953229176937411">&amp;Mostrar en Finder</translation>
 <translation id="6293862149782163840">Desactivouse o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6294759976468837022">Velocidade da exploración automática</translation>
-<translation id="6295140892595702619">Usa o micrófono para chatear con Gemini. Cando falas con Gemini, o audio almacénase na actividade das aplicacións Gemini (se a opción está activada). Os teus datos non se usan para mellorar os modelos de IA xenerativa</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
 <translation id="6295855836753816081">Gardando...</translation>
-<translation id="6296481987471548530">Usa a túa localización precisa en lugar dunha localización estimada baseada no teu enderezo IP para obter os resultados máis precisos de Gemini. Os teus datos non se usan para mellorar os modelos de IA xenerativa</translation>
 <translation id="6297986260307280218">Envía datos de uso e diagnóstico. Para axudar a mellorar a túa experiencia en Android, envíalle automaticamente a Google datos de diagnóstico, do dispositivo e de uso das aplicacións. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e implementar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta <ph name="BEGIN_LINK1" />opción de configuración<ph name="END_LINK1" /> aplicouna a persoa propietaria, quen pode decidir se quere que se envíen a Google os datos de diagnóstico e de uso do dispositivo. Se está activada Actividade web e das aplicacións adicional, estes datos pódense gardar na túa conta de Google. <ph name="BEGIN_LINK2" />Máis información sobre as métricas<ph name="BEGIN_LINK2_END" />Máis información<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Afecta aos sitios incluídos aquí. Ao inserir “[*.]” antes dun nome de dominio, créase unha excepción para todo o dominio. Por exemplo, se engades [*.]google.com, as cookies de terceiros tamén poderán estar activas en mail.google.com, xa que forma parte de google.com.</translation>
 <translation id="6298962879096096191">Utiliza Google Play para instalar aplicacións para Android</translation>
@@ -11018,7 +11016,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> quere gardar información no teu dispositivo Android</translation>
 <translation id="8509177919508253835">Restablece as chaves de seguranza e crea os PIN</translation>
 <translation id="8509646642152301857">Non se puido descargar o dicionario da verificación ortográfica.</translation>
-<translation id="8509967119010808787">Para buscar unha pestana, fai clic aquí</translation>
 <translation id="8512476990829870887">Finalizar proceso</translation>
 <translation id="851263357009351303">Permitir sempre a <ph name="HOST" /> mostrar imaxes</translation>
 <translation id="8513108775083588393">Xirar autom.</translation>
@@ -11624,7 +11621,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8911914282056933784">Ocultar os proxectos</translation>
 <translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8912810933860534797">Activar a exploración automática</translation>
-<translation id="8913485523736543337">Ferramenta de actualización</translation>
+<translation id="8913485523736543337">Actualizador</translation>
 <translation id="8914030287343429787">Se queres consultar os teus contrasinais mesmo cando non uses Chrome ou Android, podes facelo iniciando sesión en <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8915307125957890427">Fai clic co botón dereito nunha pestana e selecciona Engadir pestana ao grupo e despois selecciona Novo grupo</translation>
@@ -12193,6 +12190,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> quere obter información do teu dispositivo móbil</translation>
 <translation id="988320949174893488">Pestanexo ocasional</translation>
 <translation id="988978206646512040">A frase de acceso non pode estar baleira</translation>
+<translation id="989685714699739712">Organiza as pestanas agrupándoas e etiquetándoas cunha cor e un nome personalizados</translation>
 <translation id="992032470292211616">As extensións, as aplicacións e os temas poden danar o teu dispositivo. Seguro que queres continuar?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desactivar ChromeVox (comentarios orais)</translation>

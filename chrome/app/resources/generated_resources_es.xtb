@@ -993,6 +993,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
 <translation id="1652862280638399816">Para usar el Gestor de contraseñas con el llavero de macOS, reinicia Chromium y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="1653958716132599769">Agrupar pestañas relacionadas</translation>
+<translation id="165448107578581061">Gemini está trabajando en tu tarea...</translation>
 <translation id="1654580009054503925">No tiene permiso para mostrar solicitudes</translation>
 <translation id="1654713139320245449">No se han encontrado destinos de envío. ¿Necesitas ayuda?</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
@@ -1605,7 +1606,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2079053412993822885">Si eliminas uno de tus propios certificados, ya no podrás utilizarlo para identificarte.</translation>
 <translation id="2079495302726689071">Abrir enlace en una pestaña nueva de <ph name="APP" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
-<translation id="2079553700504470326">Usa tu ubicación precisa para obtener los resultados de Gemini más exactos, en lugar de una ubicación estimada basada en tu dirección IP.</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2081816110395725788">Modo de inactividad con batería</translation>
 <translation id="2082187087049518845">Agrupar pestañas</translation>
@@ -3876,6 +3876,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3619294456800709762">Los sitios pueden activar la función Imagen en imagen automáticamente</translation>
 <translation id="3620136223548713675">Geolocalización</translation>
 <translation id="3621202678540785336">Entrada</translation>
+<translation id="3621841019087952625">Establecer más tarde</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{una aplicación}other{# aplicaciones}}</translation>
 <translation id="3622820753353315928">Color del flash de pantalla</translation>
 <translation id="3623318122257816196">Los sitios que visites pueden insertar contenido de otros sitios, como imágenes, anuncios y texto. Estos otros sitios pueden solicitar permiso para usar información que hayan guardado sobre ti mientras navegas por el sitio.</translation>
@@ -4276,6 +4277,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
 <translation id="3856470183388031602">Usa tu cuenta de Google en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Seleccionar zona horaria</translation>
+<translation id="3856902135796972992">Este sitio requiere una acción adicional. Complétala en la página para que se pueda terminar de cambiar la contraseña.</translation>
 <translation id="3857807444929313943">Levanta el dedo y toca de nuevo</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="385939467708172187">Usar contraseña segura</translation>
@@ -5919,7 +5921,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5003070249435823986">Usa el gesto para entrar en el modo de desplazamiento y, a continuación, mueve la cabeza en la dirección en la que quieras desplazarte. Vuelve a usar el gesto para salir del modo de desplazamiento.</translation>
 <translation id="5003993274120026347">Siguiente frase</translation>
-<translation id="5005113238422129109">Usa el micrófono para chatear con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las Aplicaciones de Gemini (si la opción está activada).</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006218871145547804">ADB de aplicaciones Android en Crostini</translation>
 <translation id="5006778209728626987">Relámpago</translation>
@@ -6246,6 +6247,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{¿Desagrupar grupo de pestañas?}other{¿Desagrupar grupos de pestañas?}}</translation>
 <translation id="5230190638672215545">Escribe "uow" para obtener "ươ"</translation>
 <translation id="5230516054153933099">Ventana</translation>
+<translation id="5231255476752743708">Chrome necesita ayuda para cambiar tu contraseña</translation>
 <translation id="5232714764496316200">Recibe ayuda con los deberes con Google Lens</translation>
 <translation id="5233231016133573565">ID de proceso</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
@@ -7773,10 +7775,8 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6291953229176937411">&amp;Mostrar en Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> está desactivada</translation>
 <translation id="6294759976468837022">Velocidad de la búsqueda automática</translation>
-<translation id="6295140892595702619">Usa el micrófono para hablar con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las Aplicaciones de Gemini (si la opción está activada). Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6295855836753816081">Guardando...</translation>
-<translation id="6296481987471548530">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="6297986260307280218">Envía datos de uso y diagnóstico. Contribuye a mejorar tu experiencia de Android enviando automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema, y para realizar otras mejoras. Algunos datos agregados también ayudarán a las aplicaciones y los partners de Google, como los desarrolladores de Android. El propietario ha aplicado este <ph name="BEGIN_LINK1" />ajuste<ph name="END_LINK1" />. El propietario puede elegir si se envían a Google datos de uso y diagnóstico de este dispositivo. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en tu cuenta de Google. <ph name="BEGIN_LINK2" />Más información sobre las métricas<ph name="BEGIN_LINK2_END" />Más información<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Afecta a los sitios que aparecen aquí. Si insertas [*.] antes del nombre de dominio, se creará una excepción para todo el dominio. Por ejemplo, si añades [*.]google.com, las cookies de terceros también podrán estar activas en mail.google.com, ya que forma parte de google.com.</translation>
 <translation id="6298962879096096191">Usa Google Play para descargar aplicaciones de Android</translation>
@@ -8308,6 +8308,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6677527809400770913">Gesto "<ph name="GESTURE" />" asignado a "<ph name="ACTION" />"</translation>
 <translation id="6678604587151240716">Grandes olas rompiendo en el mar, con tierra de fondo. Destellos anaranjados más allá del horizonte, en un cielo oscuro y melancólico.</translation>
 <translation id="6678717876183468697">URL de la consulta</translation>
+<translation id="6678974601734442817">Chromium necesita ayuda para cambiar tu contraseña</translation>
 <translation id="6679947539429331601">Ocultar durante 12 horas</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidad</translation>
@@ -11014,7 +11015,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> quiere guardar información en tu dispositivo Android</translation>
 <translation id="8509177919508253835">Restablece llaves de seguridad y crea PINs</translation>
 <translation id="8509646642152301857">Se ha producido un error al descargar el diccionario del corrector ortográfico.</translation>
-<translation id="8509967119010808787">Haz clic aquí para buscar pestañas</translation>
 <translation id="8512476990829870887">Finalizar proceso</translation>
 <translation id="851263357009351303">Permitir siempre que <ph name="HOST" /> muestre imágenes</translation>
 <translation id="8513108775083588393">Giro automático</translation>

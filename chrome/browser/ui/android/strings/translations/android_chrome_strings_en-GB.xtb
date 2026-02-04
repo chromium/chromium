@@ -851,6 +851,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4685741273709472646">Select from the drop-down list</translation>
 <translation id="4687718960473379118">Site-suggested ads</translation>
 <translation id="468924408576231679">Copy link to web page <ph name="PAGE_TITLE" />. Source: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Search engines</translation>
 <translation id="469286762610133730">Get better content</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
 <translation id="4698757800236023795">Active (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7376560087009844242">By including more of a page’s text, you might see better results when using Touch to Search. You can always visit <ph name="BEGIN_LINK" />settings<ph name="END_LINK" /> to change this.</translation>
 <translation id="7379900596734708416">Dark theme for sites is available</translation>
 <translation id="7384486627147155832">Tips notifications promo opened at half height</translation>
+<translation id="7387951778417998929">To use a search engine other than the default, type its shortcut in the address bar followed by your preferred keyboard shortcut. You can also change your default search engine here.</translation>
 <translation id="7388615499319468910">Sites and advertisers can understand how ads perform. This setting is off.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Other 1 file in list}other{Other # files in list}}</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Tungumál</translation>
 <translation id="4183350924949589798">Aukið öryggi?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} lélegt aðgangsorð}one{{count} lélegt aðgangsorð}other{{count} léleg aðgangsorð}}</translation>
+<translation id="4196758674971560031">Flipahóparnir sem þú býrð til eru vistaðir í flipahópahlutanum og uppfærðir í öllum tækjunum þínum.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} atriði er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum, {email}.}one{{count} atriði er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}other{{count} atriði eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}}</translation>
 <translation id="4207873326995387292">Upplýsingar um vafra</translation>
 <translation id="421070604241073551">Ef kveikt er á þessu verða gögn vistuð á Google-reikningnum þínum. Ef slökkt er á þessu verða gögn eingöngu vistuð í þessu tæki.</translation>
@@ -1507,6 +1508,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6494931198667773526">Lýkur</translation>
 <translation id="6503077044568424649">Oftast heimsótt</translation>
 <translation id="6503763061813913607">Tilkynningar fyrir öryggisathugun</translation>
+<translation id="6504541289630702018">Hafðu greiðan aðgang að flipahópum í tölvu</translation>
 <translation id="6505334220040167806">Draga saman flipahóp.</translation>
 <translation id="6506996418997555004">Deildu flipahópnum „<ph name="GROUP_NAME" />“</translation>
 <translation id="6507973708545996744">Skráðu þig inn til að fá leslistann þinn í öllum tækjunum þínum.</translation>
@@ -2137,6 +2139,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8731268612289859741">Öryggiskóði</translation>
 <translation id="87371078663613140">Skoðaðu valkosti á valmyndarstikunni</translation>
+<translation id="8739546376441802490">Fest vefsvæði er þegar til</translation>
 <translation id="8741627442233023406">{count,plural, =1{Fara yfir flipann…}one{Fara yfir alla flipa…}other{Fara yfir alla flipa…}}</translation>
 <translation id="8741995161408053644">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Búa til tengil</translation>

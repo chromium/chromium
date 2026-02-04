@@ -1615,7 +1615,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2079053412993822885">Uma ususa esisodwa sezitifiketi zakho, ngeke usakzwazi ukusisebenzisa ukuze uzikhombe.</translation>
 <translation id="2079495302726689071">Vula Ilinki kuthebhu entsha ye-<ph name="APP" /></translation>
 <translation id="2079545284768500474">Hlehlisa</translation>
-<translation id="2079553700504470326">Sebenzisa indawo yakho eqondile ukuze uthole imiphumela yeGemini enembile, esikhundleni sokusebenzisa indawo elinganiselwayo esekelwe ekhelini lakho lasesizindeni se-inthanethi.</translation>
 <translation id="2080070583977670716">Ezinye izilungiselelo</translation>
 <translation id="2081816110395725788">Amandla angenzi lutho ebhethri</translation>
 <translation id="2082187087049518845">Ithebhu Yeqembu</translation>
@@ -5936,7 +5935,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5001526427543320409">Amakhukhi wongahlangene ngqo</translation>
 <translation id="5003070249435823986">Sebenzisa ukuthinta ukuze ufake imodi yokuskrola, bese uhambisa ikhanda lakho ohlangothini ongathanda ukuskrola ngalo. Sebenzisa ukuthinta futhi ukuze uphume kumodi yokuskrola.</translation>
 <translation id="5003993274120026347">Umusho olandelayo</translation>
-<translation id="5005113238422129109">Sebenzisa imakrofoni yakho ukuze uxoxe neGemini. Uma ukhuluma neGemini, umsindo ugcinwa Emsebenzini wama-App eGemini (uma ivuliwe)</translation>
 <translation id="5005498671520578047">Kopisha iphasiwedi</translation>
 <translation id="5006218871145547804">I-ADB yohlelo lokusebenza le-Crostini Android</translation>
 <translation id="5006778209728626987">Umbani</translation>
@@ -7793,10 +7791,8 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6291953229176937411">Bonisa kusitholi</translation>
 <translation id="6293862149782163840">I-<ph name="DEVICE_NAME" /> ivaliwe</translation>
 <translation id="6294759976468837022">Isivinini sokuskena okuzenzakalelayo</translation>
-<translation id="6295140892595702619">Sebenzisa imakrofoni yakho ukuze uxoxe neGemini. Uma ukhuluma neGemini, umsindo ugcinwa Emsebenzini wama-App eGemini (uma ivuliwe). Idatha yakho isetshenziselwe ukuthuthukisa izinhlelo ze-AI ekhiqizayo.</translation>
 <translation id="6295158916970320988">Wonke amasayithi</translation>
 <translation id="6295855836753816081">Iyalondoloza...</translation>
-<translation id="6296481987471548530">Sebenzisa indawo ngqo yakho ukuze uthole imiphumela yeGemini enembile, esikhundleni sokusebenzisa indawo ehlawunjiselwayo esekelwe ekhelini lakho lasesizindeni se-inthanethi. Idatha yakho isetshenziselwe ukuthuthukisa izinhlelo ze-AI ekhiqizayo.</translation>
 <translation id="6297986260307280218">Thumela idatha yokusetshenziswa neyokuxilonga. Siza ukuthuthukisa umuzwa wakho we-Android ngokuthumela ngokuzenzakalela idatha yokuxilonga, yedivayisi, neyokusetshenziswa kwe-app ku-Google. Lokhu kuzosiza isistimu nokuzinza kwe-app nokunye ukuthuthukiswa. Enye idatha yosilinganisozinga izophinda isize ama-app we-Google nozakwethu, abafana nonjiniyela be-Android. Leli <ph name="BEGIN_LINK1" />sethingi<ph name="END_LINK1" /> liphoqelelwa umnikazi. Umnikazi angakhetha ukuthumela idatha yokuxilonga neyokusetshenziswa yale divayisi ku-Google. Uma isethingi lakho elingeziwe Lomsebenzi Wewebhu nowe-App livuliwe, le datha ingalondolozwa ku-Google Account yakho. <ph name="BEGIN_LINK2" />Funda kabanzi mayelana nama-metric<ph name="BEGIN_LINK2_END" />Funda Kabanzi<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Ithinta amasayithi afakwe ohlwini lapha. Ukufaka okuthi “[*.]” ngaphambi kwegama lesizinda kudala ukwehluka kuso sonke isizinda. Isibonelo, ukungeza okuthi “[*.]google.com” kusho ukuthi amakhukhi enkampani yangaphandle angaphinda asebenze kokuthi mail.google.com, ngoba ayingxenye ye-google.com.</translation>
 <translation id="6298962879096096191">Sebenzisa i-Google Play ukuze ufake izinhlelo zokusebenza ze-Android</translation>
@@ -11035,7 +11031,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8508532351844333131">I-<ph name="WEBSITE_ORIGIN" /> ifuna ukulondoloza imininingwane kudivayisi yakho ye-Android</translation>
 <translation id="8509177919508253835">Setha kabusha okhiye bokuqinisekisa ubunikazi uphinde udale amaphinikhodi</translation>
 <translation id="8509646642152301857">Ukulandwa kokuhlolwa kokupelwa kwesichazamazwi kuhlulekile.</translation>
-<translation id="8509967119010808787">Ukusesha amathebhu wakho, chofoza lapha</translation>
 <translation id="8512476990829870887">Qeda inqubo</translation>
 <translation id="851263357009351303">Hlala uvumela i-<ph name="HOST" /> ukuthi ibonise izithombe</translation>
 <translation id="8513108775083588393">I-auto-rotate</translation>

@@ -852,6 +852,7 @@
 <translation id="4685741273709472646">الاختيار من القائمة المنسدلة</translation>
 <translation id="4687718960473379118">الإعلانات المقترَحة من المواقع الإلكترونية</translation>
 <translation id="468924408576231679">يؤدي النقر على الزرّ إلى نسخ رابط صفحة الويب "<ph name="PAGE_TITLE" />". المصدر: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">محرّكات البحث</translation>
 <translation id="469286762610133730">اقتراحات محتوى أفضل بانتظارك</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخيار إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}zero{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخياران إضافيان (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}few{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات إضافية}many{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا إضافيًا}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}}</translation>
 <translation id="4698757800236023795">نشطة (<ph name="ITEM_COUNT" />)</translation>
@@ -1533,6 +1534,7 @@
 <translation id="7376560087009844242">من خلال تضمين المزيد من نص صفحة معيَّنة، يمكنك الحصول على نتائج أفضل عند استخدام ميزة "النقر للبحث". ويمكنك متى شئت الانتقال إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" /> لتغيير هذا الإعداد.</translation>
 <translation id="7379900596734708416">يتوفّر المظهر الداكن للمواقع الإلكترونية</translation>
 <translation id="7384486627147155832">تم فتح بطاقة العرض الترويجي لإشعارات النصائح في نصف الشاشة</translation>
+<translation id="7387951778417998929">لاستخدام محرّك بحث غير محرّك البحث التلقائي، اكتب اختصاره في شريط العناوين متبوعًا باختصار لوحة المفاتيح المفضَّل لديك. ويمكنك أيضًا تغيير محرّك البحث التلقائي من هنا.</translation>
 <translation id="7388615499319468910">يمكن للمواقع الإلكترونية والمعلنين الاطّلاع على أداء إعلاناتهم. هذا الإعداد غير مفعَّل.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{تحتوي القائمة على ملف واحد من إجمالي الملفات الأخرى.}zero{تحتوي القائمة على # ملف من إجمالي الملفات الأخرى.}two{تحتوي القائمة على ملفيَن من إجمالي الملفات الأخرى.}few{تحتوي القائمة على # ملفات من إجمالي الملفات الأخرى.}many{تحتوي القائمة على # ملفًا من إجمالي الملفات الأخرى.}other{تحتوي القائمة على # ملف من إجمالي الملفات الأخرى.}}</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>

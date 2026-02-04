@@ -32,11 +32,13 @@
 <translation id="1324107359134968521">Chromium-д Bluetooth төхөөрөмжүүдийг судлахад 
  Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Хэл илрүүлэх</translation>
+<translation id="1330742950061766891">Chromium-н санал болгосон хөтчийн тохиргоог ашиглах</translation>
 <translation id="1342274909142618978">Мөн Chromium-с өгөгдөл устгах (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Бэхэлсэн! Та Зурган хайлтад самбар дээрх шинэ товчоос дахин хандах боломжтой</translation>
 <translation id="1356661055722410047">Шинэ! Та дэлгэц дээрх текст, зургийн аль алиныг орчуулах боломжтой</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1397530502368084401">&amp;Chromium-н профайлуудыг удирдах</translation>
+<translation id="1404026649028693342">ХОУ-ы горимыг үргэлж харуулах</translation>
 <translation id="141901961143729572">Бодол санаагаа хуваалц</translation>
 <translation id="1465192221147974788">Цонхоо хуваалцахын тулд Системийн тохиргоонд Chromium-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү.</translation>
 <translation id="1478370723027452770">Chrome for Testing-р тусламж авах</translation>
@@ -93,6 +95,7 @@
 <translation id="2039417478970545937">Тохиргоо.</translation>
 <translation id="2049376729098081731">Google-н үйлчилгээнүүдэд илүү хувийн болгосон туршлага авахын тулд Chromium-н түүхийг багтаах эсэхээ сонгоно уу</translation>
 <translation id="2064856577282482477">Chromium-д шинэ дүр төрх өгөхийн тулд Шинэ таб хуудсан дээрх Chromium-г тусгайлан өөрчлөх товчин дээр товшино уу</translation>
+<translation id="2066690553719545730">ХОУ-ы горимыг үргэлж харуулах</translation>
 <translation id="2086476982681781442">Файл нь хуурамч бөгөөд таны төхөөрөмжид гэнэтийн өөрчлөлт хийж магадгүй тул Chromium энэ таталтыг блоклосон</translation>
 <translation id="208726765006323911">Та дараагийн удаа Chromium iOS-г нээхдээ <ph name="FEATURE_NAME" />-г туршиж үзэхийг сануулсан сануулга харна.</translation>
 <translation id="2099452623287920103">Таны Google Бүртгэлдээ хадгалсан нууц үг болон Chromium-н бусад өгөгдлийг энэ төхөөрөмжөөс хасна. Тэдгээрийг Chromium-д дахин ашиглахын тулд буцаж нэвтэрнэ үү.</translation>
@@ -195,6 +198,7 @@
 <translation id="3095811995836568724">Chromium-н түүх</translation>
 <translation id="3103660991484857065">Програм суулгагч нь архивыг задалж үл чадсан тул Chromium-г дахин татаж авна уу.</translation>
 <translation id="310459126943037700">Ажил(ууд)-ыг дуусгаж чадсангүй.</translation>
+<translation id="3126784891977756556">Нууц үг, хавчуурга, түүхээ төхөөрөмжүүд дээр төгс синк хийсэн байлгаарай. Та өгөгдмөл хөтчөө Chromium болгон шинэчилж мэддэг, дуртай онцлогууддаа хялбархан хандаарай.</translation>
 <translation id="3130323860337406239">Chromium нь таны микрофоныг ашиглаж байна.</translation>
 <translation id="3130333203120345554">Шинэ хайлт</translation>
 <translation id="3137969841538672700">Хайхын тулд чирнэ үү</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
 <translation id="4334241893986177674">Энэ дэлгэцийн агшнаас хайх</translation>
 <translation id="4334294535648607276">Татаж дууслаа.</translation>
+<translation id="4384993550046411228">Та Chromium-г өгөгдмөл хөтчөөрөө тохируулж мэддэг, дуртай, итгэдэг онцлогууддаа хялбархан хандаарай. Chromium-г шуурхай хандахад зориулж таны ажлын хэсэгт бэхэлнэ.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь ChromiumOS-н нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
 <translation id="4407044323746248786">Ямар ч байсан Chromium-с гарах уу?</translation>
 <translation id="4413205837991854510">Зурган хайлтын товчлолыг үргэлж харуулах</translation>

@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4183350924949589798">Mehr Sicherheit?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} schwaches Passwort}other{{count} schwache Passwörter}}</translation>
+<translation id="4196758674971560031">Von dir erstellte Tabgruppen sind im Bereich „Tabgruppen“ gespeichert und werden auf allen deinen Geräten aktualisiert.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} Element ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {email}.}other{{count} Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="4207873326995387292">Browserinformationen</translation>
 <translation id="421070604241073551">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert.</translation>
@@ -1507,6 +1508,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6494931198667773526">Ende</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
 <translation id="6503763061813913607">„Sicherheitscheck“-Benachrichtigungen</translation>
+<translation id="6504541289630702018">Einfacher Zugriff auf deine Desktop-Tabgruppen</translation>
 <translation id="6505334220040167806">Tabgruppe minimieren.</translation>
 <translation id="6506996418997555004">Tabgruppe „<ph name="GROUP_NAME" />“ teilen</translation>
 <translation id="6507973708545996744">Melde dich an, um deine Lesezeichen auf allen deinen Geräten abrufen zu können.</translation>
@@ -2137,6 +2139,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8731268612289859741">Sicherheitscode</translation>
 <translation id="87371078663613140">Optionen in der Menüleiste ansehen</translation>
+<translation id="8739546376441802490">Angepinnte Website ist bereits vorhanden</translation>
 <translation id="8741627442233023406">{count,plural, =1{Tab ansehen…}other{Alle Tabs ansehen…}}</translation>
 <translation id="8741995161408053644">Möglicherweise sind in deinem Google-Konto noch andere Formen des Browserverlaufs unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> vorhanden.</translation>
 <translation id="874599634440689554">Link erstellen</translation>

@@ -851,6 +851,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4685741273709472646">Wähle eine Option aus der Drop-down-Liste aus</translation>
 <translation id="4687718960473379118">Von Websites vorgeschlagene Werbung</translation>
 <translation id="468924408576231679">Link zur Webseite „<ph name="PAGE_TITLE" />“ kopieren. Quelle: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Suchmaschinen</translation>
 <translation id="469286762610133730">Bessere Inhalte erhalten</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}}</translation>
 <translation id="4698757800236023795">Aktiv (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7376560087009844242">Wenn du mehr Text einer Seite einschließt, kannst du beim Verwenden von „Zum Suchen antippen“ bessere Ergebnisse erhalten. In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du das jederzeit ändern.</translation>
 <translation id="7379900596734708416">Dunkles Design für Websites verfügbar</translation>
 <translation id="7384486627147155832">Werbeangebot zu Benachrichtigungen mit Tipps halb geöffnet</translation>
+<translation id="7387951778417998929">Du kannst eine andere Suchmaschine als deine Standardsuchmaschine verwenden, indem du das zugehörige Kürzel in die Adressleiste eingibst und dann das von dir bevorzugte Tastenkürzel drückst. Außerdem kannst du hier deine Standardsuchmaschine ändern.</translation>
 <translation id="7388615499319468910">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren. Diese Einstellung ist deaktiviert.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Sonstiges, 1 Datei in der Liste}other{Sonstiges, # Dateien in der Liste}}</translation>
 <translation id="7400418766976504921">URL</translation>

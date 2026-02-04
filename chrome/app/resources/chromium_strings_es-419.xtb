@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">Chromium necesita acceso a la conexión Bluetooth para explorar 
  los dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
+<translation id="1330742950061766891">Usar la configuración recomendada del navegador Chromium</translation>
 <translation id="1342274909142618978">Borrar también datos de Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Se fijó. Puedes volver a acceder a la Búsqueda con imágenes desde el nuevo botón en la barra de herramientas.</translation>
 <translation id="1356661055722410047">¡Novedad! Puedes traducir texto e imágenes en pantalla</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1397530502368084401">&amp;Administrar perfiles de Chromium</translation>
+<translation id="1404026649028693342">Mostrar siempre el Modo IA</translation>
 <translation id="141901961143729572">Comparte tu opinión</translation>
 <translation id="1465192221147974788">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Configuración del sistema.</translation>
 <translation id="1478370723027452770">Obtener ayuda con Chrome for Testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">Configuración.</translation>
 <translation id="2049376729098081731">Elige si quieres incluir el historial de Chromium para tener experiencias más personalizadas en los servicios de Google</translation>
 <translation id="2064856577282482477">Haz clic en el botón Personalizar Chromium en la página Nueva pestaña para darle un nuevo aspecto</translation>
+<translation id="2066690553719545730">Mostrar siempre el Modo IA</translation>
 <translation id="2086476982681781442">Chromium bloqueó esta descarga porque el archivo es engañoso y puede realizar cambios inesperados en tu dispositivo</translation>
 <translation id="208726765006323911">Verás un mensaje para probar <ph name="FEATURE_NAME" /> la próxima vez que abras Chromium para iOS.</translation>
 <translation id="2099452623287920103">Se quitarán de este dispositivo tus contraseñas y otros datos de Chromium que guardaste en tu Cuenta de Google. Para volver a usarlas en Chromium, vuelve a acceder.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Historial de Chromium</translation>
 <translation id="3103660991484857065">El instalador no pudo descomprimir el archivo. Descarga Chromium nuevamente.</translation>
 <translation id="310459126943037700">No se pudieron finalizar las tareas.</translation>
+<translation id="3126784891977756556">Mantén tus contraseñas, favoritos y el historial perfectamente sincronizados en todos los dispositivos. Actualiza tu navegador predeterminado a Chromium para acceder fácilmente a las funciones que conoces y te encantan.</translation>
 <translation id="3130323860337406239">Chromium está usando tu micrófono.</translation>
 <translation id="3130333203120345554">Nueva búsqueda</translation>
 <translation id="3137969841538672700">Arrastrar para buscar</translation>
@@ -303,6 +307,7 @@
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
 <translation id="4334241893986177674">Buscar esta captura de pantalla</translation>
 <translation id="4334294535648607276">Descarga completa</translation>
+<translation id="4384993550046411228">Establece Chromium como tu navegador predeterminado para acceder fácilmente a las funciones que conoces, te encantan y en las que confías. Chromium se fijará a la barra de tareas para que puedas acceder rápidamente.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de Chromium OS.</translation>
 <translation id="4407044323746248786">¿Deseas salir de Chromium de todos modos?</translation>
 <translation id="4413205837991854510">Mostrar siempre el atajo de Búsqueda con imágenes</translation>

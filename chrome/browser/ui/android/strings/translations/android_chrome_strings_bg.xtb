@@ -851,6 +851,7 @@
 <translation id="4685741273709472646">Избиране от падащия списък</translation>
 <translation id="4687718960473379118">Предложени от сайтовете реклами</translation>
 <translation id="468924408576231679">Копиране на връзката към уеб страницата <ph name="PAGE_TITLE" />. Източник: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Търсещи машини</translation>
 <translation id="469286762610133730">Получавайте по-добро съдържание</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698757800236023795">Активно (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@
 <translation id="7376560087009844242">С включването на повече текст от страницата може да виждате по-добри резултати, когато използвате функцията за търсене чрез докосване. Винаги можете да отворите <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />, за да промените това.</translation>
 <translation id="7379900596734708416">Налице е тъмна тема за сайтовете</translation>
 <translation id="7384486627147155832">Долният лист за известия със съвети е отворен на половината височина</translation>
+<translation id="7387951778417998929">За да използвате търсеща машина, различна от основната, въведете прекия ѝ път в адресната лента и натиснете предпочитаната от вас клавишна комбинация. Тук можете също да промените основната си търсеща машина.</translation>
 <translation id="7388615499319468910">Сайтовете и рекламодателите могат да разберат ефективността на рекламите. Тази настройка е изключена.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Други, 1 файл в списъка}other{Други, # файла в списъка}}</translation>
 <translation id="7400418766976504921">URL адрес</translation>

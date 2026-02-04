@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1399397803214730675">Denne computer har allerede en nyere version af Google Chrome. Hvis programmet ikke virker, skal du afinstallere Google Chrome og prøve igen.</translation>
+<translation id="1404026649028693342">Vis altid AI-tilstand</translation>
 <translation id="141901961143729572">Del dine tanker</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen.}=1{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dit inkognitovindue åbnes ikke igen.}one{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. # inkognitovindue åbnes ikke igen.}other{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1651617469580841801">Når du bruger Google Lens, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
+<translation id="1665867022636014702">Brug de browserindstillinger, der anbefales af Google</translation>
 <translation id="1674870198290878346">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke læse og skrive i sin egen datamappe: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Når du skriver i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">Chrome-profiler giver dig mulighed for at holde personlig browsing og arbejde adskilt. Tilføj en ny profil nu.</translation>
 <translation id="2034233344106846793">Chrome opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
 <translation id="2039417478970545937">Indstillinger.</translation>
+<translation id="2066690553719545730">Vis altid AI-tilstand</translation>
 <translation id="2091012649849228750">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vil du slutte Chrome alligevel?</translation>
@@ -354,6 +357,7 @@
 <translation id="4885446229353981848">Vis altid genvejen til Google Lens</translation>
 <translation id="4891791193823137474">Lad Google Chrome køre i baggrunden</translation>
 <translation id="4895437082222824641">Åbn linket i en ny Chrome-&amp;fane</translation>
+<translation id="4896867431081882115">Få nem adgang til de funktioner, du kender, elsker og har tillid til, ved at angive Chrome som din standardbrowser. Chrome fastgøres til proceslinjen, så du hurtigt kan tilgå browseren.</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918844574251943176">Billedet er kopieret</translation>
 <translation id="4926882258455737990">Hvis du vil bruge en anden Google-konto med Gemini i Chrome, skal du <ph name="BEGIN_LINK" />oprette en ny profil<ph name="END_LINK" /> og logge ind med den konto, du vil bruge</translation>
@@ -554,6 +558,7 @@
 <translation id="6885412569789873916">Apps i Chrome beta</translation>
 <translation id="6893363893008038481">Fjern kontoen fra Chrome</translation>
 <translation id="6896758677409633944">Kopiér</translation>
+<translation id="6908182077349113099">Hold dine adgangskoder, bogmærker og din historik perfekt synkroniseret på alle enheder. Få nem adgang til de funktioner, du kender og elsker, ved at opdatere din standardbrowser til Chrome.</translation>
 <translation id="6930294499209825">Holder din Google-software opdateret. Hvis denne tjeneste deaktiveres eller stoppes, bliver din Google-software ikke opdateret. Dette betyder, at eventuelle sikkerhedsbrister ikke kan rettes, og at funktioner muligvis ikke fungerer. Denne tjeneste afinstallerer sig selv, når den ikke bruges af nogen Google-software.</translation>
 <translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 8.1.</translation>

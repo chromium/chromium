@@ -1606,7 +1606,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2079053412993822885">Si suprimiu un dels vostres certificats, ja no el podreu utilitzar per identificar-vos.</translation>
 <translation id="2079495302726689071">Obre l'enllaç en una pestanya nova de <ph name="APP" /></translation>
 <translation id="2079545284768500474">Desfés</translation>
-<translation id="2079553700504470326">Utilitza la teva ubicació precisa per obtenir resultats de Gemini més acurats, en lloc de fer servir una ubicació estimada basada en l'adreça IP.</translation>
 <translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2081816110395725788">Inactiu mentre utilitza la bateria</translation>
 <translation id="2082187087049518845">Agrupa la pestanya</translation>
@@ -4542,7 +4541,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4036778507053569103">La política que s'ha baixat del servidor no és vàlida.</translation>
 <translation id="4037084878352560732">Cavall</translation>
 <translation id="403725336528835653">Prova-ho primer</translation>
-<translation id="4039835815168788100">L'extensió <ph name="EXTENSION_NAME" /> ha provat de canviar el motor de cerca a <ph name="SEARCH_PROVIDER" />. Confirma la teva preferència a continuació</translation>
+<translation id="4039835815168788100">L'extensió <ph name="EXTENSION_NAME" /> ha provat de canviar el motor de cerca a <ph name="SEARCH_PROVIDER" />. Confirma la teva preferència a continuació.</translation>
 <translation id="4039966970282098406">Gestiona la teva privadesa controlant l'accés al micròfon, a la càmera i més</translation>
 <translation id="4040041015953651705">Idioma de partida de la traducció</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Surt de la pàgina}other{Surt de les pàgines}}</translation>
@@ -5919,7 +5918,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5001526427543320409">Galetes de tercers</translation>
 <translation id="5003070249435823986">Fes el gest per entrar al mode de desplaçament. A continuació, mou el cap en la direcció cap a la qual vulguis desplaçar-te. Torna a fer el gest per sortir del mode de desplaçament.</translation>
 <translation id="5003993274120026347">Frase següent</translation>
-<translation id="5005113238422129109">Utilitza el micròfon per xatejar amb Gemini. Quan parles amb Gemini, l'àudio s'emmagatzema a Activitat en aplicacions de Gemini (si està activada)</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5006218871145547804">ADB d'aplicacions d'Android a Crostini</translation>
 <translation id="5006778209728626987">Llampec</translation>
@@ -7773,10 +7771,8 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6291953229176937411">&amp;Mostra a Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> està desactivada</translation>
 <translation id="6294759976468837022">Velocitat de cerca automàtica</translation>
-<translation id="6295140892595702619">Utilitza el micròfon per xatejar amb Gemini. Quan parles amb Gemini, l'àudio s'emmagatzema a Activitat en aplicacions de Gemini (si està activada). Les teves dades no s'utilitzen per millorar els models d'IA generativa.</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6295855836753816081">S'està desant…</translation>
-<translation id="6296481987471548530">Utilitza la teva ubicació precisa per obtenir resultats de Gemini més acurats, en lloc de fer servir una ubicació estimada basada en l'adreça IP. Les teves dades no s'utilitzen per millorar els models d'IA generativa.</translation>
 <translation id="6297986260307280218">Envia dades d'ús i de diagnòstic. Ajuda a millorar la teva experiència a Android enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. És possible que el propietari decideixi enviar a Google dades de diagnòstic i d'ús sobre aquest dispositiu. Si l'opció de configuració Activitat al web i en aplicacions addicional està activada, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK2" />Més informació sobre les mètriques<ph name="BEGIN_LINK2_END" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Afecta els llocs web que s'enumeren aquí. Si insereixes "[*.]" abans d'un nom de domini, es crea una excepció per a tot el domini. Per exemple, si afegeixes "[*.]google.com", les galetes de tercers també poden estar actives per a mail.google.com, ja que forma part de google.com.</translation>
 <translation id="6298962879096096191">Utilitza Google Play per instal·lar aplicacions per a Android</translation>
@@ -11015,7 +11011,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> vol desar informació al teu dispositiu Android</translation>
 <translation id="8509177919508253835">Restableix les claus de seguretat i crea codis PIN</translation>
 <translation id="8509646642152301857">La baixada del diccionari del corrector ortogràfic ha fallat.</translation>
-<translation id="8509967119010808787">Per cercar a les pestanyes, fes clic aquí</translation>
 <translation id="8512476990829870887">Finalitza el procés</translation>
 <translation id="851263357009351303">Permet sempre que <ph name="HOST" /> mostri imatges</translation>
 <translation id="8513108775083588393">Rotació autom.</translation>

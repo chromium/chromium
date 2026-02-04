@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4183350924949589798">¿Más seguridad?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} contraseña poco segura}other{{count} contraseñas poco seguras}}</translation>
+<translation id="4196758674971560031">Los grupos de pestañas que has creado se guardan en la sección de grupos de pestañas y se actualizan en todos tus dispositivos.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} elemento solo se guarda en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google: {email}.}other{{count} elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}}</translation>
 <translation id="4207873326995387292">Información del navegador</translation>
 <translation id="421070604241073551">Si esta opción está activada, los datos se guardan en tu cuenta de Google. Si está desactivada, los datos solo se guardan en este dispositivo.</translation>
@@ -1507,6 +1508,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6494931198667773526">A</translation>
 <translation id="6503077044568424649">Más visitado</translation>
 <translation id="6503763061813913607">Notificaciones de Comprobación de tu estado</translation>
+<translation id="6504541289630702018">Accede fácilmente a tus grupos de pestañas del ordenador</translation>
 <translation id="6505334220040167806">Contraer grupo de pestañas.</translation>
 <translation id="6506996418997555004">Compartir el grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Inicia sesión para consultar tu lista de lectura en todos tus dispositivos.</translation>
@@ -2137,6 +2139,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8730621377337864115">Hecho</translation>
 <translation id="8731268612289859741">Código de seguridad</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú</translation>
+<translation id="8739546376441802490">El sitio fijado ya existe</translation>
 <translation id="8741627442233023406">{count,plural, =1{Revisar la pestaña…}other{Revisar todas las pestañas…}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crear enlace</translation>

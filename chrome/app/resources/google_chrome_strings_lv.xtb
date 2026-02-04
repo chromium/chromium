@@ -40,6 +40,7 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1399397803214730675">Šim datoram jau ir instalēta jaunākā Google Chrome versija. Ja programmatūra nedarbojas, atinstalējiet Google Chrome un mēģiniet vēlreiz.</translation>
+<translation id="1404026649028693342">Vienmēr rādīt MI režīmu</translation>
 <translation id="141901961143729572">Dalieties domās!</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes.}=1{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary lietotnes</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">Notiek lejupielāde...</translation>
 <translation id="1651617469580841801">Kad izmantojat Google Lens, lapas nosaukums, vietrādis URL un saturs, tostarp PDF faili, tiek nosūtīti Google serveriem. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Par Chrome OS Flex</translation>
+<translation id="1665867022636014702">Izmantojiet Google ieteicamos pārlūka iestatījumus</translation>
 <translation id="1674870198290878346">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
 <translation id="1682634494516646069">Google Chrome nevar nolasīt savu datu direktoriju un ierakstīt tajā:
 
@@ -99,6 +101,7 @@
 <translation id="2026377840141807639">Izmantojot Chrome profilus, varat nošķirt pārlūkošanu darba un personīgajām vajadzībām. Pievienojiet jaunu profilu tūlīt.</translation>
 <translation id="2034233344106846793">Pārlūkā Chrome nedrošie savienojumi tiek automātiski jaunināti uz HTTPS, ja iespējams.</translation>
 <translation id="2039417478970545937">Iestatījumi.</translation>
+<translation id="2066690553719545730">Vienmēr rādīt MI režīmu</translation>
 <translation id="2091012649849228750">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex noteikumi</translation>
 <translation id="2094919256425865063">Vai tik un tā aizvērt pārlūku Chrome?</translation>
@@ -355,6 +358,7 @@
 <translation id="4885446229353981848">Vienmēr rādīt Google Lens saīsni</translation>
 <translation id="4891791193823137474">Ļaut Google Chrome darboties fonā</translation>
 <translation id="4895437082222824641">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
+<translation id="4896867431081882115">Iegūstiet ērtu piekļuvi zināmajām, iecienītajām un uzticamajām funkcijām, iestatot Chrome kā noklusējuma pārlūku. Lai nodrošinātu ātru piekļuvi, pārlūks Chrome tiks piesprausts uzdevumu joslai.</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
 <translation id="4918844574251943176">Attēls ir nokopēts</translation>
 <translation id="4926882258455737990">Lai izmantotu citu Google kontu ar Gemini pārlūkā Chrome, <ph name="BEGIN_LINK" />izveidojiet jaunu profilu<ph name="END_LINK" /> un pierakstieties, izmantojot attiecīgo kontu.</translation>
@@ -557,6 +561,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6885412569789873916">Chrome Beta lietotnes</translation>
 <translation id="6893363893008038481">Noņemt kontu no pārlūka Chrome</translation>
 <translation id="6896758677409633944">Kopēt</translation>
+<translation id="6908182077349113099">Nevainojami sinhronizējiet savas paroles, grāmatzīmes un vēsturi visās ierīcēs. Ērti piekļūstiet zināmajām un iecienītajām funkcijām, atjauninot noklusējuma pārlūku uz Chrome.</translation>
 <translation id="6930294499209825">Nodrošina Google programmatūras pastāvīgu atjaunināšanu. Ja šis pakalpojums tiks atspējots vai pārtraukts, jūsu Google programmatūra netiks pastāvīgi atjaunināta, kas nozīmē, ka nebūs iespējams labot drošības ievainojamības, ja tādas radīsies, turklāt var nedarboties funkcijas. Šis pakalpojums pats tiek atinstalēts, ja neviena Google programmatūra to neizmanto.</translation>
 <translation id="6933858244219479645">ChromeOS sistēma</translation>
 <translation id="6938166777909186039">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.1.</translation>

@@ -993,6 +993,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1652326691684645429">Attiva Condivisione nelle vicinanze</translation>
 <translation id="1652862280638399816">Per usare Gestore delle password con il Portachiavi di macOS, riavvia Chromium e consenti l'accesso al Portachiavi. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="1653958716132599769">Raggruppa le schede correlate</translation>
+<translation id="165448107578581061">Gemini sta lavorando alla tua attività…</translation>
 <translation id="1654580009054503925">Non autorizzate a mostrare richieste</translation>
 <translation id="1654713139320245449">Nessuna destinazione per la trasmissione. Serve aiuto?</translation>
 <translation id="1656528038316521561">Opacità sfondo</translation>
@@ -1605,7 +1606,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2079053412993822885">Se elimini uno dei tuoi certificati, non potrai più utilizzarlo per identificarti.</translation>
 <translation id="2079495302726689071">Apri link in un'altra scheda di <ph name="APP" /></translation>
 <translation id="2079545284768500474">Annulla</translation>
-<translation id="2079553700504470326">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta.</translation>
 <translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2081816110395725788">Inattività durante l'utilizzo della batteria</translation>
 <translation id="2082187087049518845">Aggiungi scheda a nuovo gruppo</translation>
@@ -3875,6 +3875,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3619294456800709762">I siti possono attivare automaticamente la modalità Picture in picture</translation>
 <translation id="3620136223548713675">Localizzazione</translation>
 <translation id="3621202678540785336">Ingresso</translation>
+<translation id="3621841019087952625">Imposta più tardi</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{un'app}other{# app}}</translation>
 <translation id="3622820753353315928">Colore flash dello schermo</translation>
 <translation id="3623318122257816196">I siti visitati possono incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. Questi altri siti possono chiedere l'autorizzazione a usare le informazioni su di te che hanno salvato durante la navigazione nei siti.</translation>
@@ -4275,6 +4276,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3856470183388031602">Utilizza il tuo Account Google su <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Seleziona il fuso orario</translation>
+<translation id="3856902135796972992">Questo sito richiede un'azione aggiuntiva. Completala nella pagina in modo che la modifica della password possa essere completata.</translation>
 <translation id="3857807444929313943">Solleva, quindi tocca di nuovo</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="385939467708172187">Usa una password efficace</translation>
@@ -5919,7 +5921,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5001526427543320409">Cookie di terze parti</translation>
 <translation id="5003070249435823986">Utilizza il gesto per attivare la modalità di scorrimento, quindi muovi la testa nella direzione in cui vuoi scorrere. Utilizza di nuovo il gesto per uscire dalla modalità di scorrimento.</translation>
 <translation id="5003993274120026347">Frase successiva</translation>
-<translation id="5005113238422129109">Usa il microfono per parlare con Gemini. Quando parli con Gemini, l'audio viene memorizzato nell'Attività delle app Gemini (se è attiva)</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5006218871145547804">ADB app Android su Crostini</translation>
 <translation id="5006778209728626987">Fulmine</translation>
@@ -6246,6 +6247,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Vuoi separare il gruppo di schede?}other{Vuoi separare i gruppi di schede?}}</translation>
 <translation id="5230190638672215545">Digita "uow" per ottenere "ươ"</translation>
 <translation id="5230516054153933099">Finestra</translation>
+<translation id="5231255476752743708">Chrome ha bisogno di aiuto per cambiare la password</translation>
 <translation id="5232714764496316200">Ricevi aiuto per i compiti con Google Lens</translation>
 <translation id="5233231016133573565">ID processo</translation>
 <translation id="5233638681132016545">Nuova scheda</translation>
@@ -7771,10 +7773,8 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6291953229176937411">Mo&amp;stra nel Finder</translation>
 <translation id="6293862149782163840">La <ph name="DEVICE_NAME" /> è disattiva</translation>
 <translation id="6294759976468837022">Velocità della scansione automatica</translation>
-<translation id="6295140892595702619">Usa il microfono per parlare con Gemini. Quando parli con Gemini, l'audio viene memorizzato nell'Attività delle app Gemini (se è attiva). I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6295855836753816081">Salvataggio in corso...</translation>
-<translation id="6296481987471548530">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="6297986260307280218">Invia dati su utilizzo e diagnostica. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Questi dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati diagnostici e sull'utilizzo di questo dispositivo. Se l'impostazione Attività web e app aggiuntiva è attiva, questi dati potrebbero essere salvati nel tuo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="6298456705131259420">Sono interessati i siti elencati qui. Inserire "[*.]" prima di un nome di dominio crea un'eccezione per l'intero dominio. Ad esempio, aggiungere "[*.]google.com" significa che i cookie di terze parti possono essere attivi anche per mail.google.com, perché fa parte di google.com.</translation>
 <translation id="6298962879096096191">Utilizza Google Play per installare le app Android</translation>
@@ -8306,6 +8306,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6677527809400770913">Gesto <ph name="GESTURE" /> assegnato a <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Grandi onde che si infrangono in mare, con la terra sullo sfondo in lontananza. Cenni di luce arancione appena oltre l'orizzonte, in un cielo altrimenti cupo e malinconico.</translation>
 <translation id="6678717876183468697">URL query</translation>
+<translation id="6678974601734442817">Chromium ha bisogno di aiuto per cambiare la password</translation>
 <translation id="6679947539429331601">Nascondi per 12 ore</translation>
 <translation id="6680442031740878064">Disponibile: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocità</translation>
@@ -11012,7 +11013,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> vuole salvare informazioni sul tuo dispositivo Android</translation>
 <translation id="8509177919508253835">Reimposta i token di sicurezza e crea PIN</translation>
 <translation id="8509646642152301857">Download del dizionario per il controllo ortografico non riuscito.</translation>
-<translation id="8509967119010808787">Fai clic qui per effettuare ricerche nelle schede</translation>
 <translation id="8512476990829870887">Termina processo</translation>
 <translation id="851263357009351303">Consenti sempre la visualizzazione di immagini in <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>

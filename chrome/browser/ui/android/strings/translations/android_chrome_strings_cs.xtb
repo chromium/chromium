@@ -851,6 +851,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4685741273709472646">Vyberte z rozbalovacího seznamu</translation>
 <translation id="4687718960473379118">Reklamy navrhované weby</translation>
 <translation id="468924408576231679">Zkopírovat odkaz na webovou stránku <ph name="PAGE_TITLE" />. Zdroj: <ph name="PAGE_URL" /></translation>
+<translation id="4692623383562244444">Vyhledávače</translation>
 <translation id="469286762610133730">Získejte lepší obsah</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}few{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}many{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}other{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> dalších}}</translation>
 <translation id="4698757800236023795">Aktivní (<ph name="ITEM_COUNT" />)</translation>
@@ -1531,6 +1532,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7376560087009844242">Zahrnutím většího množství textu ze stránky můžete pomocí Vyhledání klepnutím získat lepší výsledky. Tuto možnost můžete v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> kdykoliv změnit.</translation>
 <translation id="7379900596734708416">Pro weby je k dispozici tmavý motiv</translation>
 <translation id="7384486627147155832">Propagační oznámení s tipy otevřené na polovinu výšky</translation>
+<translation id="7387951778417998929">Pokud chcete použít jiný než výchozí vyhledávač, zadejte do adresního řádku jeho zkratku a poté stiskněte svoji preferovanou klávesovou zkratku. Zde také můžete změnit výchozí vyhledávač.</translation>
 <translation id="7388615499319468910">Weby a inzerenti se mohou dozvědět, jak si reklamy vedou. Toto nastavení je vypnuté.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Jiný 1 soubor v seznamu}few{Jiné # soubory v seznamu}many{Jiných # souboru v seznamu}other{Jiných # souborů v seznamu}}</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
