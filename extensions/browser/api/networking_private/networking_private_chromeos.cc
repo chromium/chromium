@@ -32,6 +32,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using ::ash::NetworkCertificateHandler;
 using ::ash::NetworkHandler;
@@ -699,7 +700,7 @@ void NetworkingPrivateChromeOS::GetEnabledNetworkTypes(
 
 void NetworkingPrivateChromeOS::GetDeviceStateList(
     DeviceStateListCallback callback) {
-  std::set<std::string> technologies_found;
+  absl::flat_hash_set<std::string> technologies_found;
   NetworkStateHandler::DeviceStateList devices;
   NetworkHandler::Get()->network_state_handler()->GetDeviceList(&devices);
 
