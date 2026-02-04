@@ -430,9 +430,11 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
   }
 }
 
-void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
-                                               bool delay_upload,
-                                               AddTabContextCallback callback) {
+void ContextualSearchboxHandler::ContinueAddTabContext(
+    int32_t tab_id,
+    bool delay_upload,
+    base::UnguessableToken context_token,
+    AddTabContextCallback callback) {
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
     std::move(callback).Run(std::nullopt);
@@ -450,7 +452,6 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
 
   RecordTabAddedMetric(tab, /*is_tab_suggestion_chip=*/delay_upload);
 
-  auto context_token = contextual_session_handle->CreateContextToken();
   lens::TabContextualizationController* tab_contextualization_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
   tab_contextualization_controller->GetPageContext(base::BindOnce(
@@ -458,6 +459,19 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
       weak_ptr_factory_.GetWeakPtr(), delay_upload, context_token));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), context_token));
+}
+
+void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
+                                               bool delay_upload,
+                                               AddTabContextCallback callback) {
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  if (!contextual_session_handle) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  auto context_token = contextual_session_handle->CreateContextToken();
+  ContinueAddTabContext(tab_id, delay_upload, context_token,
+                        std::move(callback));
 }
 
 std::vector<base::UnguessableToken>
