@@ -593,7 +593,7 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
       // The background of the root element or the body element could propagate
       // up to the canvas. Just dirty the entire canvas when our style changes
       // substantially.
-      if (diff.NeedsNormalPaintInvalidation() || diff.NeedsLayout()) {
+      if (diff.NeedsNormalPaintInvalidation()) {
         View()->SetShouldDoFullPaintInvalidation();
       }
     }
