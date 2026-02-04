@@ -98,7 +98,10 @@ public class UrlUtilities {
      */
     public static boolean isAcceptedScheme(@Nullable GURL url) {
         if (GURL.isEmptyOrInvalid(url)) return false;
-        return SUPPORTED_SCHEMES.contains(url.getScheme());
+        return SUPPORTED_SCHEMES.contains(url.getScheme())
+                || (url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                        && EmbedderSupportFeatures.ANDROID_CHROME_SCHEME_NAVIGATION_KILL_SWITCH
+                                .isEnabled());
     }
 
     /**

@@ -9,6 +9,9 @@
 
 namespace embedder_support::features {
 
+// Enables navigation to chrome:// scheme from chrome:// tabs.
+BASE_DECLARE_FEATURE(kAndroidChromeSchemeNavigationKillSwitch);
+
 // Enables optimizations to input stream handling.
 BASE_DECLARE_FEATURE(kInputStreamOptimizations);
 

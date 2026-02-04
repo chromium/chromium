@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
@@ -91,6 +93,7 @@ public class UrlUtilitiesUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(EmbedderSupportFeatures.ANDROID_CHROME_SCHEME_NAVIGATION_KILL_SWITCH_NAME)
     public void testIsAcceptedScheme() {
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("about:awesome")));
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("data:data")));
@@ -103,6 +106,8 @@ public class UrlUtilitiesUnitTest {
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("javascript:alert(1)")));
         Assert.assertTrue(
                 UrlUtilities.isAcceptedScheme(new GURL("http://foo.bar/has[square].html")));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("chrome://version")));
+        Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("chrome://http://version")));
 
         Assert.assertFalse(UrlUtilities.isAcceptedScheme(new GURL("super:awesome")));
         Assert.assertFalse(
@@ -113,8 +118,14 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(
                 UrlUtilities.isAcceptedScheme(
                         new GURL("google-search://https:password@example.com/?http:#http:")));
-        Assert.assertFalse(UrlUtilities.isAcceptedScheme(new GURL("chrome://http://version")));
         Assert.assertFalse(UrlUtilities.isAcceptedScheme(GURL.emptyGURL()));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(EmbedderSupportFeatures.ANDROID_CHROME_SCHEME_NAVIGATION_KILL_SWITCH_NAME)
+    public void testIsAcceptedScheme_featureDisabled() {
+        Assert.assertFalse(UrlUtilities.isAcceptedScheme(new GURL("chrome://version")));
     }
 
     @Test
