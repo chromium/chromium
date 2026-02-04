@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/containers/span_reader.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/null_task_runner.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "media/base/video_frame.h"
@@ -30,7 +32,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -470,14 +472,18 @@ TEST_F(VideoFrameTest, ImageReuse_VideoFrameFromVideoFrameFromImage) {
 TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
   V8TestingScope scope;
 
-  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
-  auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      gfx::Size(100, 100), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-      gfx::ColorSpace::CreateSRGB(),
-      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      RasterMode::kGPU, gpu::SharedImageUsageSet());
+  auto client_si = gpu::ClientSharedImage::CreateForTesting(
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ);
+  gpu::SyncToken token;
+  token.Set(gpu::CommandBufferNamespace::GPU_IO,
+            gpu::CommandBufferId::FromUnsafeValue(64), 100);
 
-  scoped_refptr<StaticBitmapImage> bitmap = resource_provider->Snapshot();
+  scoped_refptr<StaticBitmapImage> bitmap =
+      AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+          std::move(client_si), token, kPremul_SkAlphaType,
+          SharedGpuContext::ContextProviderWrapper(),
+          base::PlatformThread::CurrentRef(),
+          base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
   ASSERT_TRUE(bitmap->IsTextureBacked());
 
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(bitmap);
