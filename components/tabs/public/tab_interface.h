@@ -67,11 +67,6 @@ class TabLookupFromWebContents
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-// TODO(crbug.com/404889112): This interface will be reused for Android as part
-// of the effort to share tab collections between desktop and Android. Some
-// features of TabInterface are unsupported on Android. A buildflag is used to
-// turn off this functionality.
-
 // This is the public interface for tabs in a desktop browser. Most features in
 // //chrome/browser depend on this interface, and thus to prevent circular
 // dependencies this interface should not depend on anything else in //chrome.
@@ -128,6 +123,13 @@ class TabInterface : public SupportsTabHandles {
   // cache the WebContents pointer directly. Instead, they should hold a
   // reference to the TabInterface and call GetContents() when needed, or use
   // RegisterWillDiscardContents() to be notified of swaps.
+  //
+  // Note on Android there are different invariants:
+  // 1. This may return nullptr for tabs that have not loaded in the current
+  //    session. If kLoadAllTabsOnStartup is enabled, this will be non-null for
+  //    all tabs in models with TabModelType::kStandard.
+  // 2. This object will NOT be replaced on Android and discarding or swapping
+  //    contents is not supported.
   virtual content::WebContents* GetContents() const = 0;
 
   // Closes the tab.
@@ -247,9 +249,9 @@ class TabInterface : public SupportsTabHandles {
   // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
   // always non-nullptr.
   //
-  // NOTE: On Desktop Android this works correctly. However, on Mobile Android
-  // BrowserWindowInterface is not yet supported and will return nullptr.
-  // TODO(crbug.com/475200706): Support BrowserWindowInterface on all Android.
+  // TODO(crbug.com/481636328): Support BrowserWindowInterface on all Android
+  // form factors. Currently, this is only supported on Desktop Android. On
+  // other Android form factors, this will return nullptr.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
   virtual const BrowserWindowInterface* GetBrowserWindowInterface() const = 0;
 
