@@ -558,6 +558,15 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
     const panelStateKindSection = getRequiredElement('localPanels');
     panelStateKindSection.classList.toggle('hidden', id === 'guestPanel');
+
+    if (loadTimeData.getBoolean('glicWebContentsWarming')) {
+      // These resizes really aren't needed at all for multi-instance, but in
+      // instance warming mode they get dropped most of the time. In the move to
+      // webContentsWarming, they're causing unwanted size changes on
+      // conversation switching in floaty. They can be deleted as part of single
+      // instance cleanup.
+      return;
+    }
     // Resize widget to size of new panel.
     if (id === 'guestPanel') {
       // For the guest webview, use the most recently requested size.
