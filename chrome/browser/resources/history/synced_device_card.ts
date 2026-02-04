@@ -21,12 +21,6 @@ import type {ForeignSessionTab} from './externs.js';
 import {getCss} from './synced_device_card.css.js';
 import {getHtml} from './synced_device_card.html.js';
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'history-synced-device-card': HistorySyncedDeviceCardElement;
-  }
-}
-
 export interface HistorySyncedDeviceCardElement {
   $: {
     'card-heading': HTMLElement,
