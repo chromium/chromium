@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -427,10 +429,19 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
                                               ->launch_handler()
                                               .value_or(LaunchHandler())
                                               .parsed_client_mode();
+
   if (client_mode != LaunchHandler::ClientMode::kFocusExisting &&
       client_mode != LaunchHandler::ClientMode::kNavigateExisting) {
     return false;
   }
+
+  // For IWA navigate existing is the same as focus existing,
+  // because IWA does not support navigation to non isolate-app:// schemes.
+  if (registrar.AppMatches(app_id, WebAppFilter::IsIsolatedApp()) ||
+      registrar.AppMatches(app_id, WebAppFilter::IsIsolatedSubApp())) {
+    client_mode = LaunchHandler::ClientMode::kFocusExisting;
+  }
+
   std::optional<AppBrowserController::BrowserAndTabIndex> existing_app_host =
       AppBrowserController::FindTopLevelBrowsingContextForWebApp(
           *profile, app_id, /*for_app_browser=*/true,
@@ -508,8 +519,12 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
     std::move(completion_callback).Run(contents);
     return nullptr;
   }
-
-  if (registrar.AppMatches(app_id, WebAppFilter::IsAppSurfaceableToUser())) {
+  bool is_iwa = registrar.AppMatches(app_id, WebAppFilter::IsIsolatedApp()) ||
+                registrar.AppMatches(app_id, WebAppFilter::IsIsolatedSubApp());
+  // Since iwa will result in a new app open and this web contents closed,
+  // History pruning is not necessary.
+  if (!is_iwa &&
+      registrar.AppMatches(app_id, WebAppFilter::IsAppSurfaceableToUser())) {
     std::optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope) {
       app_scope = registrar.GetAppStartUrl(app_id).GetWithoutFilename();
@@ -543,6 +558,25 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
             registrar)) {
       return nullptr;
     }
+  }
+
+  if (is_iwa) {
+    provider->scheduler().LaunchApp(
+        app_id, launch_url,
+        base::BindOnce(
+            [](base::WeakPtr<content::WebContents> old_contents,
+               base::WeakPtr<Browser> browser,
+               base::WeakPtr<content::WebContents> web_contents,
+               apps::LaunchContainer container) {
+              if (old_contents) {
+                old_contents->Close();
+              }
+              return web_contents.get();
+            },
+            contents->GetWeakPtr())
+            .Then(std::move(completion_callback)));
+
+    return nullptr;
   }
 
   if (web_app->launch_handler()

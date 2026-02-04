@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
@@ -12,16 +13,23 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_navigation_capturing_browsertest_base.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -231,5 +239,200 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   EXPECT_FALSE(
       apps::EnableLinkCapturingInfoBarDelegate::FindInfoBar(new_contents));
 }
+
+// -----------------------------------------------------------------------------
+// Isolated Web App Tests
+// -----------------------------------------------------------------------------
+
+namespace {
+constexpr std::string_view kIwaHtmlContent = R"(
+  <html>
+  <script src="script.js">
+  </script>
+  <body>
+    <h1>Intent Picker Navigation Capture test</h1>
+    <pre id="message">Launch params received:</pre>
+  </body>
+  </html>
+)";
+
+constexpr std::string_view kIwaJsContent = R"(
+  console.log('Setting up the launch queue');
+  var launchParamsTargetUrls = [];
+  function recordLaunchParam(url) {
+    // Display the launch param received.
+    launchParamsTargetUrls.push(url);
+  }
+  window.launchQueue.setConsumer((launchParams) => {
+    recordLaunchParam(launchParams.targetURL);
+  });
+)";
+
+std::string OriginAssociationFileFromAppIdentity(std::string iwa_bundle_id) {
+  return *base::WriteJson(base::DictValue().Set(
+      base::StringPrintf("isolated-app://%s/", iwa_bundle_id),
+      base::DictValue().Set("scope",
+                            "/web_apps/intent_picker_nav_capture/index.html")));
+}
+}  // namespace
+
+class IsolatedWebAppNavigationCapturingIntentPickerBrowserTest
+    : public WebAppNavigationCapturingBrowserTestBase,
+      public testing::WithParamInterface<ManifestBuilder::ClientMode> {
+ public:
+  IsolatedWebAppNavigationCapturingIntentPickerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps,
+#if !BUILDFLAG(IS_CHROMEOS)
+         features::kIsolatedWebApps
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+        },
+        {});
+  }
+
+ protected:
+  GURL GetAppUrl() {
+    return https_server()->GetURL(
+        "/web_apps/intent_picker_nav_capture/index.html");
+  }
+
+  GURL GetAppUrlWithQuery() {
+    return https_server()->GetURL(
+        "/web_apps/intent_picker_nav_capture/"
+        "index.html?q=fake_query_to_check_navigation");
+  }
+
+  void SetFakeOriginAssociationFetcher(
+      url::Origin request_origin,
+      const web_package::SignedWebBundleId& bundle_id) {
+    auto origin_association_fetcher =
+        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+
+    origin_association_fetcher->SetData(
+        {{std::move(request_origin),
+          OriginAssociationFileFromAppIdentity(bundle_id.id())}});
+
+    provider().origin_association_manager().SetFetcherForTest(
+        std::move(origin_association_fetcher));
+  }
+
+  IsolatedWebAppUrlInfo InstallIsolatedWebApp(
+      ManifestBuilder::ClientMode client_mode) {
+    const auto bundle_id = web_package::SignedWebBundleId::CreateForPublicKey(
+        web_package::test::GetDefaultEd25519KeyPair().public_key);
+
+    const url::Origin scope_extended_origin = url::Origin::Create(GetAppUrl());
+    SetFakeOriginAssociationFetcher(scope_extended_origin, bundle_id);
+
+    IsolatedWebAppUrlInfo url_info =
+        IsolatedWebAppBuilder(
+            ManifestBuilder()
+                .SetLaunchHandlerClientMode(client_mode)
+                .AddScopeExtension(scope_extended_origin,
+                                   /*has_origin_wildcard=*/false))
+            .AddHtml("/", kIwaHtmlContent)
+            .AddJs("script.js", kIwaJsContent)
+            .BuildBundle(bundle_id,
+                         {web_package::test::GetDefaultEd25519KeyPair()})
+            ->InstallChecked(browser()->profile());
+
+    return url_info;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
+                       LaunchParams) {
+  ManifestBuilder::ClientMode client_mode = GetParam();
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(client_mode);
+
+  // Launch First Instance (Window 1)
+  content::RenderFrameHost* first_app_rfh =
+      OpenIsolatedWebApp(profile(), url_info.app_id());
+  content::WebContents* first_app_contents =
+      content::WebContents::FromRenderFrameHost(first_app_rfh);
+
+  // Verify Window 1 received its initial launch param.
+  WaitForLaunchParams(first_app_contents, /*min_launch_params_to_wait_for=*/1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  first_app_contents, "launchParamsTargetUrls"),
+              testing::ElementsAre(url_info.origin().GetURL()));
+
+  // Navigate Main Browser to capturable URL
+  content::RenderFrameHost* host =
+      ui_test_utils::NavigateToURL(browser(), GetAppUrlWithQuery());
+  ASSERT_NE(nullptr, host);
+
+  if (client_mode == ManifestBuilder::ClientMode::kNavigateNew) {
+    // Click Intent Picker and Wait for New Browser (Window 2)
+    ui_test_utils::BrowserCreatedObserver browser_observer;
+    ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
+    Browser* second_app_browser = browser_observer.Wait();
+
+    // Verify the new browser is for the correct app.
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(second_app_browser,
+                                                  url_info.app_id()));
+    EXPECT_NE(second_app_browser, browser());
+    EXPECT_NE(second_app_browser->tab_strip_model()->GetWebContentsAt(0),
+              first_app_contents);
+
+    // Verify Launch Params.
+    content::WebContents* second_app_contents =
+        second_app_browser->tab_strip_model()->GetActiveWebContents();
+    WaitForLaunchParams(second_app_contents,
+                        /*min_launch_params_to_wait_for=*/1);
+
+    // Window 1 should NOT have received new params (still size 1).
+    EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                    first_app_contents, "launchParamsTargetUrls"),
+                testing::ElementsAre(url_info.origin().GetURL()));
+
+    // Window 2 SHOULD have received the captured navigation param.
+    EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                    second_app_contents, "launchParamsTargetUrls"),
+                testing::ElementsAre(GetAppUrlWithQuery()));
+  } else {
+    // kFocusExisting and kNavigateExisting behavior for IWA in this context:
+    // Warning: A `tab_contents` pointer obtained from browser() will be invalid
+    // after calling this function.
+    ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
+
+    WaitForLaunchParams(first_app_contents,
+                        /* min_launch_params_to_wait_for= */ 2);
+
+    // Check the end state for the browser() -- it should have survived the
+    // Intent Picker action.
+    EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+    // There should be two launch params -- one for the initial launch and one
+    // for when the existing app got focus (via the Intent Picker) and launch
+    // params were enqueued.
+    EXPECT_THAT(
+        apps::test::GetLaunchParamUrlsInContents(first_app_contents,
+                                                 "launchParamsTargetUrls"),
+        testing::ElementsAre(url_info.origin().GetURL(), GetAppUrlWithQuery()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
+    testing::Values(ManifestBuilder::ClientMode::kFocusExisting,
+                    ManifestBuilder::ClientMode::kNavigateExisting,
+                    ManifestBuilder::ClientMode::kNavigateNew),
+    [](const testing::TestParamInfo<ManifestBuilder::ClientMode>& info) {
+      switch (info.param) {
+        case ManifestBuilder::ClientMode::kFocusExisting:
+          return "FocusExisting";
+        case ManifestBuilder::ClientMode::kNavigateExisting:
+          return "NavigateExisting";
+        case ManifestBuilder::ClientMode::kNavigateNew:
+          return "NavigateNew";
+        default:
+          return "Unknown";
+      }
+    });
 
 }  // namespace web_app

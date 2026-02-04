@@ -625,8 +625,18 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
     return errors::WebAppUnavailable();
   }
 
+  GURL manifest_url(in_manifest_id);
   const webapps::AppId app_id =
-      web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
+      web_app::GenerateAppIdFromManifestId(manifest_url);
+
+  // TODO(crbug.com/478855148): Add support for IWA's.
+  if (manifest_url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    return protocol::Response::InvalidRequest(
+        base::StrCat({"The command OpenCurrentPageInApp is not supported yet "
+                      "for Isolated Web Apps ",
+                      in_manifest_id}));
+  }
+
   // Since this logic is only needed on MacOS, for the sake of simplicity the
   // unsafe access of the registrar is fine at the moment instead of wrapping it
   // in a command.

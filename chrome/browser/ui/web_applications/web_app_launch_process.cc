@@ -379,7 +379,16 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
   TabStripModel* const tab_strip = browser->GetFeatures().tab_strip_model();
   if (tab_strip->empty() ||
       navigation_disposition != WindowOpenDisposition::CURRENT_TAB) {
-    NavigateParams nav_params(browser->GetBrowserForMigrationOnly(), launch_url,
+    // Expected use-case for navigation capturing in Isolated Web Apps,
+    // launch_url will be queued in window.launchQueue.
+    const GURL& url_to_navigate =
+        AppBrowserController::IsIsolatedWebApp(browser) &&
+                launch_url.SchemeIsHTTPOrHTTPS()
+            ? AppBrowserController::From(browser)->GetAppStartUrl()
+            : launch_url;
+
+    NavigateParams nav_params(browser->GetBrowserForMigrationOnly(),
+                              url_to_navigate,
                               ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     nav_params.disposition = navigation_disposition;
     return {.web_contents = NavigateWebAppUsingParams(nav_params),
