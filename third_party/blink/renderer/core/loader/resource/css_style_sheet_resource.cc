@@ -190,16 +190,16 @@ bool CSSStyleSheetResource::CanUseSheet(const CSSParserContext* parser_context,
     if (parser_context) {
       parser_context->Count(WebFeature::kLocalCSSFile);
     }
+    String mime_type;
     // Grab |sheet_url|'s filename's extension (if present), and check whether
     // or not it maps to a `text/css` MIME type:
-    String extension;
-    String last_path_component = sheet_url.LastPathComponent().ToString();
-    int last_dot = last_path_component.ReverseFind('.');
-    if (last_dot != -1) {
-      extension = last_path_component.Substring(last_dot + 1);
+    StringView last_path_component = sheet_url.LastPathComponent();
+    wtf_size_t last_dot = last_path_component.rfind('.');
+    if (last_dot != kNotFound) {
+      StringView extension = last_path_component.substr(last_dot + 1);
+      mime_type = MIMETypeRegistry::GetMIMETypeForExtension(extension);
     }
-    if (!EqualIgnoringASCIICase(
-            MIMETypeRegistry::GetMIMETypeForExtension(extension), "text/css")) {
+    if (!EqualIgnoringASCIICase(mime_type, "text/css")) {
       if (parser_context) {
         parser_context->CountDeprecation(
             WebFeature::kLocalCSSFileExtensionRejected);
