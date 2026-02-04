@@ -43,6 +43,13 @@ export enum GlifAnimationState {
 
 const ContextMenuEntrypointElementBase = I18nMixinLit(CrLitElement);
 
+/*
+ * This class is superceded by the `contextual_entrypoint_button.ts` and
+ * `contextual_action_menu.ts` files which support InputState model controlled
+ * menu action items. See: go/contexual-inputs-menu This class will be
+ * removed once the PEC API InputState feature launches.
+ * @deprecated
+ */
 export class ContextMenuEntrypointElement extends
     ContextMenuEntrypointElementBase {
   static get is() {
