@@ -28,6 +28,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -52,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link RecentlyClosedEntriesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,6 +62,8 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 public class RecentlyClosedEntriesManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+
     private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW = 25;
     @Mock MultiInstanceManager mMultiInstanceManager;
     @Mock RecentlyClosedTabManager mRecentlyClosedTabManager;
@@ -157,6 +162,33 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         greaterThan(entry.getDate().getTime()));
             }
         }
+    }
+
+    @Test
+    public void testMergeRecentlyClosedEntriesWithWindow_ExpiredSessionEntry() {
+        // Create a few windows closed within 6 months ago from now.
+        createRecentlyClosedWindows(/* numOfWindows= */ 2);
+        // Create a session entry with an expired retention period.
+        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt()))
+                .thenReturn(
+                        List.of(
+                                new SessionRecentlyClosedEntry(
+                                        /* sessionId= */ 1,
+                                        getDaysAgoMillis(/* numDaysAgo= */ 185))));
+
+        // This method should exclude the expired session entry.
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+
+        // Assert merged size and ordering.
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(2, entries.size());
+        assertTrue(
+                "Index 0 should be a RecentlyClosedWindow.",
+                entries.get(0) instanceof RecentlyClosedWindow);
+        assertTrue(
+                "Index 1 should be a RecentlyClosedWindow.",
+                entries.get(1) instanceof RecentlyClosedWindow);
     }
 
     @Test
@@ -748,10 +780,13 @@ public class RecentlyClosedEntriesManagerUnitTest {
     public void testMergeRecentlyClosedEntriesWithWindow_TabTimestampZero_WindowNewerThanNextTab() {
         // Test merging when a tab has a timestamp of 0 and the window is newer than the next tab
         // with a valid timestamp. The window should be prioritized.
-        createRecentlyClosedWindows(/* numOfWindows= */ 1); // timestamp = 2
+        createRecentlyClosedWindows(/* numOfWindows= */ 1);
         List<RecentlyClosedEntry> sessionEntries = new ArrayList<>();
         sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 1, /* timestamp= */ 0));
-        sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 2, /* timestamp= */ 1));
+        sessionEntries.add(
+                new SessionRecentlyClosedEntry(
+                        /* sessionId= */ 2,
+                        /* timestamp= */ getDaysAgoMillis(/* numDaysAgo= */ 1) + 1));
         when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt()))
                 .thenReturn(sessionEntries);
 
@@ -771,7 +806,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
     public void testMergeRecentlyClosedEntriesWithWindow_NextTwoTabTimestampsZero() {
         // Test merging when the next two tabs have timestamps of 0. The window should be
         // prioritized.
-        createRecentlyClosedWindows(/* numOfWindows= */ 1); // timestamp = 2
+        createRecentlyClosedWindows(/* numOfWindows= */ 1);
         List<RecentlyClosedEntry> sessionEntries = new ArrayList<>();
         sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 1, /* timestamp= */ 0));
         sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 2, /* timestamp= */ 0));
@@ -813,11 +848,14 @@ public class RecentlyClosedEntriesManagerUnitTest {
     public void testMergeRecentlyClosedEntriesWithWindow_TabTimestampZero_NextTabNewerThanWindow() {
         // Test merging when a tab has a timestamp of 0 and the next tab is newer than the window.
         // The tab with timestamp 0 should be prioritized.
-        createRecentlyClosedWindows(/* numOfWindows= */ 1); // timestamp = 2
+        createRecentlyClosedWindows(/* numOfWindows= */ 1);
 
         List<RecentlyClosedEntry> sessionEntries = new ArrayList<>();
         sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 1, /* timestamp= */ 0));
-        sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 2, /* timestamp= */ 3));
+        sessionEntries.add(
+                new SessionRecentlyClosedEntry(
+                        /* sessionId= */ 2,
+                        /* timestamp= */ getDaysAgoMillis(/* numDaysAgo= */ 1) + 3));
 
         when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt()))
                 .thenReturn(sessionEntries);
@@ -842,7 +880,10 @@ public class RecentlyClosedEntriesManagerUnitTest {
         createRecentlyClosedWindows(/* numOfWindows= */ 2);
 
         List<RecentlyClosedEntry> sessionEntries = new ArrayList<>();
-        sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 1, /* timestamp= */ 3));
+        sessionEntries.add(
+                new SessionRecentlyClosedEntry(
+                        /* sessionId= */ 1,
+                        /* timestamp= */ getDaysAgoMillis(/* numDaysAgo= */ 1) + 3));
         sessionEntries.add(new SessionRecentlyClosedEntry(/* sessionId= */ 2, /* timestamp= */ 0));
 
         when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt()))
@@ -979,7 +1020,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
      */
     private void createSessionRecentlyClosedEntries(int numOfEntries) {
         List<RecentlyClosedEntry> sessionEntries = new ArrayList<>();
-        int timestamp = 1;
+        long timestamp = getDaysAgoMillis(/* numDaysAgo= */ 1) + 1;
         int sessionId = 1;
         for (int i = 0; i < numOfEntries; i++) {
             sessionEntries.add(0, new SessionRecentlyClosedEntry(sessionId, timestamp));
@@ -1004,7 +1045,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
      */
     private void createRecentlyClosedWindows(int numOfWindows) {
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        int closureTime = 2;
+        long closureTime = getDaysAgoMillis(/* numDaysAgo= */ 1) + 2;
         int instanceId = 2;
         for (int i = 0; i < numOfWindows; i++) {
             InstanceInfo instanceInfo =
@@ -1026,5 +1067,9 @@ public class RecentlyClosedEntriesManagerUnitTest {
             closureTime += 2;
         }
         when(mMultiInstanceManager.getInstanceInfo(anyInt())).thenReturn(instanceInfoList);
+    }
+
+    private static long getDaysAgoMillis(int numDaysAgo) {
+        return TimeUtils.currentTimeMillis() - TimeUnit.DAYS.toMillis(numDaysAgo);
     }
 }

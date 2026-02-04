@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manages a list of recently closed tabs or windows. Window closure events will be dictated by the
@@ -45,6 +47,7 @@ import java.util.List;
 public class RecentlyClosedEntriesManager {
     private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT = 5;
     private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW = 25;
+    private static final long SIX_MONTHS_MS = TimeUnit.DAYS.toMillis(6 * 30);
     private static @Nullable RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
     private static @Nullable Integer sMaxEntriesForTests;
 
@@ -309,13 +312,15 @@ public class RecentlyClosedEntriesManager {
     }
 
     private void getRecentlyClosedTabsAndWindows(
-            List<RecentlyClosedEntry> recentlyClosedSessionEntries) {
+            @Nullable List<RecentlyClosedEntry> recentlyClosedSessionEntries) {
         List<RecentlyClosedWindow> recentlyClosedWindows = getRecentlyClosedWindows();
+        // Cleanup old session entries.
+        recentlyClosedSessionEntries = removeInvalidSessionEntries(recentlyClosedSessionEntries);
+
         mRecentlyClosedEntries = new ArrayList<>();
 
         int windowEntrySize = recentlyClosedWindows.size();
-        int sessionEntrySize =
-                recentlyClosedSessionEntries == null ? 0 : recentlyClosedSessionEntries.size();
+        int sessionEntrySize = recentlyClosedSessionEntries.size();
         int windowCount = 0;
         int sessionEntryCount = 0;
         while (windowCount + sessionEntryCount < getRecentlyClosedMaxEntry()
@@ -402,6 +407,28 @@ public class RecentlyClosedEntriesManager {
         }
     }
 
+    /* Removes session entries whose retention period has expired and clears them from storage. */
+    private List<RecentlyClosedEntry> removeInvalidSessionEntries(
+            @Nullable List<RecentlyClosedEntry> sessionEntries) {
+        if (sessionEntries == null) return new ArrayList<>();
+        int currentIndex = 0;
+        int size = sessionEntries.size();
+        while (currentIndex < size) {
+            long timestampMs = sessionEntries.get(currentIndex).getDate().getTime();
+            if (timestampMs > 0 && (TimeUtils.currentTimeMillis() - timestampMs) > SIX_MONTHS_MS) {
+                break;
+            }
+            currentIndex++;
+        }
+
+        // Clear the current and all subsequent entries since their retention period has expired.
+        if (currentIndex < size) {
+            mRecentlyClosedTabManager.clearLeastRecentlyUsedClosedEntries(size - currentIndex);
+        }
+
+        return sessionEntries.subList(0, currentIndex);
+    }
+
     private List<RecentlyClosedWindow> getRecentlyClosedWindows() {
         List<InstanceInfo> instanceInfoList = getAllInactiveInstances();
         List<RecentlyClosedWindow> recentlyClosedWindows = new ArrayList<>();
@@ -426,7 +453,7 @@ public class RecentlyClosedEntriesManager {
         return recentlyClosedWindows;
     }
 
-    private boolean canRestoreWindow() {
+    private static boolean canRestoreWindow() {
         int instanceCount =
                 MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
         int instanceLimit = MultiWindowUtils.getMaxInstances();

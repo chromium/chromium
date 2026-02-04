@@ -298,5 +298,26 @@ TEST_F(RecentlyClosedTabsBridgeTest, ClearLeastRecentlyUsedClosedEntries) {
   EXPECT_EQ(tab_restore_service_->entries().front()->id.id(), sessionId->id());
 }
 
+// Verify that ClearLeastRecentlyUsedClosedEntries removes all recently closed
+// entries when the specified size is bigger than the entries size.
+TEST_F(RecentlyClosedTabsBridgeTest,
+       ClearLeastRecentlyUsedClosedEntries_ClearAll) {
+  // Create 3 entries.
+  NavigateToNonEmptyPage();
+  AddHistoricalEntries(0);
+  AddHistoricalEntries(1);
+  std::optional<SessionID> sessionId = AddHistoricalEntries(2);
+  ASSERT_TRUE(sessionId.has_value());
+
+  // Verify there are 3 entries in the TabRestoreService.
+  EXPECT_EQ(tab_restore_service_->entries().size(), 3U);
+
+  // Trigger clear 4 least recently used entries.
+  bridge_->ClearLeastRecentlyUsedClosedEntries(nullptr, 4);
+
+  // Verify the entries in the TabRestoreService are cleared.
+  EXPECT_EQ(tab_restore_service_->entries().size(), 0U);
+}
+
 }  // namespace
 }  // namespace recent_tabs

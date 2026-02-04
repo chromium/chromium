@@ -648,8 +648,14 @@ public class RecentTabsPageTest {
         final RecentlyClosedTab tab =
                 new RecentlyClosedTab(
                         0, 0, "Tab Title", new GURL("https://www.example.com/"), null);
-        setRecentlyClosedEntries(Arrays.asList(tab, window));
-        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
+        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
+                mActivity.getRecentlyClosedEntriesManagerForTesting();
+        setRecentlyClosedEntries(List.of(tab));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        recentlyClosedEntriesManager.onWindowClosed(
+                                window, /* isPermanentDeletion= */ false));
+        assertEquals(2, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
 
         final String windowDescriptionString = "google.com and " + (tabCount - 1) + " other tabs";
         View windowView = waitForView(windowTitle);
@@ -661,8 +667,6 @@ public class RecentTabsPageTest {
         // Confirm the recently closed entries are all gone after "Remove all" is clicked.
         openContextMenuAndInvokeItem(
                 windowView, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
-        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
-                mActivity.getRecentlyClosedEntriesManagerForTesting();
         assertEquals(0, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         waitForViewToDisappear(windowDescriptionString);
     }
