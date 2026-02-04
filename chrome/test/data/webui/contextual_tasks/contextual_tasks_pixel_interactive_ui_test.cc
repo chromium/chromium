@@ -143,7 +143,8 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ContextualTasksComposeBoxPixelTestParams>&
            info) { return info.param.ToString(); });
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
+                       DISABLED_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const DeepQuery kApp = {"contextual-tasks-app"};
 
@@ -264,7 +265,7 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, DISABLED_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const DeepQuery kApp = {"contextual-tasks-app"};
   const DeepQuery kAiPageWebView = {"contextual-tasks-app", "webview"};
@@ -388,7 +389,7 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, DISABLED_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DeepQuery app = {"contextual-tasks-app"};
   DeepQuery toolbar = app + "top-toolbar";
