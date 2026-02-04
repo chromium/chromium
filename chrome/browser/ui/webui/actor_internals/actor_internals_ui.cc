@@ -17,6 +17,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
+bool ActorInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(features::kGlicActor);
+}
+
 ActorInternalsUI::ActorInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
   // Set up the chrome://actor-internals/ source.

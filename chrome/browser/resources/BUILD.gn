@@ -291,6 +291,7 @@ if (!is_android) {
 group("dev_ui_resources") {
   public_deps = [
     "accessibility:resources",
+    "actor_internals:resources",
     "bluetooth_internals:resources",
     "browsing_topics:resources",
     "components:resources",
@@ -337,7 +338,6 @@ group("dev_ui_resources") {
     ]
   } else {
     public_deps += [
-      "actor_internals:resources",
       "color_pipeline_internals:resources",
       "infobar_internals:resources",
       "media_router/internals:resources",
@@ -365,6 +365,7 @@ repack("dev_ui_paks") {
 
   sources = [
     "$root_gen_dir/chrome/accessibility_resources.pak",
+    "$root_gen_dir/chrome/actor_internals_resources.pak",
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
     "$root_gen_dir/chrome/browsing_topics_internals_resources.pak",
     "$root_gen_dir/chrome/components_resources.pak",
@@ -411,7 +412,6 @@ repack("dev_ui_paks") {
     ]
   } else {
     sources += [
-      "$root_gen_dir/chrome/actor_internals_resources.pak",
       "$root_gen_dir/chrome/color_pipeline_internals_resources.pak",
       "$root_gen_dir/chrome/infobar_internals_resources.pak",
       "$root_gen_dir/chrome/media_router_internals_resources.pak",

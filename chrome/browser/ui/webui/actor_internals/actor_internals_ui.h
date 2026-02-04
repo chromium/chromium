@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ACTOR_INTERNALS_ACTOR_INTERNALS_UI_H_
 
 #include "chrome/browser/ui/webui/actor_internals/actor_internals.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -20,6 +21,8 @@ class ActorInternalsUIConfig
  public:
   ActorInternalsUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUIActorInternalsHost) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The UI for chrome://actor-internals/

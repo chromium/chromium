@@ -8,6 +8,8 @@
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
+#include "chrome/browser/ui/webui/actor_internals/actor_internals.mojom.h"
+#include "chrome/browser/ui/webui/actor_internals/actor_internals_ui.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
@@ -121,6 +123,9 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   RegisterWebUIControllerInterfaceBinder<
       privacy_sandbox_internals::mojom::PageHandler,
       privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      actor_internals::mojom::PageHandlerFactory, ActorInternalsUI>(map);
 
   // End of PopulateChromeWebUIFrameBindersPartsAllPlatforms().
   // Please do not add platform-specific logic to this function.

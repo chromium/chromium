@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
-#include "chrome/browser/ui/webui/actor_internals/actor_internals.mojom.h"
-#include "chrome/browser/ui/webui/actor_internals/actor_internals_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_ml_internals/autofill_ml_internals_ui.h"
@@ -234,8 +232,6 @@ void BindColorChangeListener(
 void PopulateChromeWebUIFrameBindersPartsDesktop(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
-  RegisterWebUIControllerInterfaceBinder<
-      actor_internals::mojom::PageHandlerFactory, ActorInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       search_engine_choice::mojom::PageHandlerFactory, SearchEngineChoiceUI>(

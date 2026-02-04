@@ -68,7 +68,6 @@ source_set("actor") {
       ":browser_tests",
     ]
     public += [
-      "actor_util.h",
       "tools/attempt_form_filling_tool_request.h",
       "tools/attempt_login_tool_request.h",
       "tools/history_tool_request.h",

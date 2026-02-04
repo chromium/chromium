@@ -9,6 +9,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
+#include "chrome/browser/ui/webui/actor_internals/actor_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"  // nogncheck
@@ -80,7 +81,6 @@
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
-#include "chrome/browser/ui/webui/actor_internals/actor_internals_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_ml_internals/autofill_ml_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
@@ -245,6 +245,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<chrome_urls::ChromeUrlsUIConfig>());
   map.AddWebUIConfig(std::make_unique<CrashesUIConfig>());
   map.AddWebUIConfig(std::make_unique<commerce::CommerceInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ActorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ComponentsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<security_interstitials::ConnectionHelpUIConfig>());
@@ -313,7 +314,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<media_router::CastFeedbackUIConfig>());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   map.AddWebUIConfig(std::make_unique<actor::ui::ActorOverlayUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ActorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<AppServiceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<AutofillMlInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<media_router::AccessCodeCastUIConfig>());
