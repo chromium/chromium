@@ -446,6 +446,20 @@ void SyncServiceImpl::StartSyncingWithServer() {
   if (IsLocalSyncEnabled()) {
     TriggerRefresh(TriggerRefreshSource::kLocalSync, DataTypeSet::All());
   }
+
+  if (engine_ && sync_client_->IsMetricsAndCrashReportingEnabled() &&
+      base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
+    device_statistics_tracker_ = std::make_unique<DeviceStatisticsTracker>(
+        sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
+        sync_service_url_,
+        base::BindRepeating(
+            &CreateDeviceStatisticsRequest, sync_client_->GetIdentityManager(),
+            url_loader_factory_, MakeUserAgentForSync(channel_)),
+        SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+            sync_client_->GetPrefService()));
+    device_statistics_tracker_->Start(base::BindOnce(
+        &SyncServiceImpl::DeviceStatisticsTrackerDone, base::Unretained(this)));
+  }
 }
 
 DataTypeSet SyncServiceImpl::GetRegisteredDataTypesForTest() const {
