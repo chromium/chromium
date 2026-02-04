@@ -157,3 +157,26 @@ cr-icon-button {
 #name-text {
   flex: 1;
 }
+
+#accountInfo {
+  background-color: var(--color-sys-primary-container);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+}
+
+#accountLabel {
+  color: var(--color-sys-on-surface);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+#accountEmail {
+  color: var(--color-sys-on-surface-subtle);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}

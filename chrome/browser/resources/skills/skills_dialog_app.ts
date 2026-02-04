@@ -41,6 +41,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       canUndoRefine_: {type: Boolean},
       canRedoRefine_: {type: Boolean},
       shouldShowErrorPage_: {type: Boolean},
+      signedInEmail_: {type: String},
     };
   }
 
@@ -60,12 +61,15 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor canRedoRefine_: boolean = false;
   protected accessor shouldShowErrorPage_: boolean =
       !loadTimeData.getBoolean('isGlicEnabled');
+  protected accessor signedInEmail_: string = '';
+
+  private originalPrompt_: string = '';
+  private refinedPrompt_: string = '';
+
   protected get isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
         this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
   }
-  private originalPrompt_: string = '';
-  private refinedPrompt_: string = '';
 
   /** Initializes dialog. */
   override async connectedCallback() {
@@ -78,6 +82,10 @@ export class SkillsDialogAppElement extends CrLitElement {
       this.skill_ = initialSkill;
       this.skill_.icon = initialSkill.icon || DEFAULT_EMOJI;
     }
+    SkillsDialogBrowserProxy.getInstance().handler.getSignedInEmail().then(
+        ({email}) => {
+          this.signedInEmail_ = email;
+        });
   }
 
   protected onEmojiBtnClick_(e: Event) {

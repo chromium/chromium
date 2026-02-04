@@ -75,4 +75,7 @@ interface DialogHandler {
   // Called when dialog is opened to get the initial skill when
   // editing/remixing.
   GetInitialSkill() => (skills.mojom.Skill skill);
+
+  // Gets the signed in user's email.
+  GetSignedInEmail() => (string email);
 };

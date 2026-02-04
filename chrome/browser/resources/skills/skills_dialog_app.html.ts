@@ -64,6 +64,10 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
       </div>
     </div>
   </div>
+  <div id="accountInfo">
+    <div id="accountLabel">This skill will save to your Google Account</div>
+    <div id="accountEmail">${this.signedInEmail_}</div>
+  </div>
   <div class="buttons-group">
     <cr-button id="cancelButton" class="cancel-button" @click="${this.cancel_}">
         $i18n{cancel}

@@ -26,6 +26,8 @@ suite('SkillsDialogAppPage', function() {
     dialogHandler.setResultFor(
         'refineSkill', Promise.resolve({refinedSkill: {}}));
     dialogHandler.setResultFor('getInitialSkill', Promise.resolve({skill: {}}));
+    dialogHandler.setResultFor(
+        'getSignedInEmail', Promise.resolve({email: ''}));
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     skillsDialogApp = document.createElement('skills-dialog-app');
     document.body.appendChild(skillsDialogApp);
@@ -268,5 +270,25 @@ suite('SkillsDialogAppPage', function() {
 
     assertTrue(undoBtn.disabled, 'Manual edit should clear undo state');
     assertTrue(redoBtn.disabled, 'Manual edit should clear redo state');
+  });
+
+  test('DisplaysSignedInEmail', async function() {
+    const testEmail = 'user@example.com';
+    dialogHandler.setResultFor(
+        'getSignedInEmail', Promise.resolve({email: testEmail}));
+
+    // Re-create the element to trigger connectedCallback
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    skillsDialogApp = document.createElement('skills-dialog-app');
+    document.body.appendChild(skillsDialogApp);
+
+    await dialogHandler.whenCalled('getSignedInEmail');
+
+    await skillsDialogApp.updateComplete;
+
+    const emailElement = skillsDialogApp.$['accountEmail'];
+
+    assertTrue(!!emailElement, 'Email element should exist');
+    assertEquals(testEmail, emailElement.textContent);
   });
 });
