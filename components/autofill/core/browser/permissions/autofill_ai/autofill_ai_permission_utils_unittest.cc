@@ -227,6 +227,7 @@ TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
 
 // Tests that the opt-in IPH cannot be shown if its feature is off.
 TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
+  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       feature_engagement::kIPHAutofillAiOptInFeature);
@@ -235,7 +236,9 @@ TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
   const bool is_allowed =
       GetParam() == AutofillAiAction::kOptIn ||
       GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
-  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      is_allowed);
 }
 
 // Tests that listing entities is the only action permitted if the
@@ -243,14 +246,17 @@ TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
 // is saved in the EntityDataManager.
 TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillAiEnterprisePolicyDisabled) {
+  using enum EntityTypeName;
   client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
       kAutofillPredictionSettingsDisable);
   if (GetParam() == AutofillAiAction::kListEntityInstancesInSettings) {
-    EXPECT_TRUE(MayPerformAutofillAiAction(client(), GetParam()));
+    EXPECT_TRUE(MayPerformAutofillAiAction(client(), GetParam(),
+                                           EntityType(kPassport)));
   } else {
-    EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+    EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam(),
+                                            EntityType(kPassport)));
   }
 }
 
