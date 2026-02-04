@@ -44,6 +44,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -97,19 +98,22 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
  private:
   // ui::EventHandler
   void OnEvent(ui::Event* event) override {
+    ArcNotificationContentView* owner = owner_;
+    views::ViewTracker tracker(owner);
+
     // Do not forward event targeted to the floating close button so that
     // keyboard press and tap are handled properly.
-    if (owner_->floating_control_buttons_widget_ && event->target() &&
-        owner_->floating_control_buttons_widget_->GetNativeWindow() ==
+    if (owner->floating_control_buttons_widget_ && event->target() &&
+        owner->floating_control_buttons_widget_->GetNativeWindow() ==
             event->target()) {
       return;
     }
 
-    if (!owner_->item_ || !owner_->surface_) {
+    if (!owner->item_ || !owner->surface_) {
       return;
     }
 
-    views::Widget* widget = owner_->GetWidget();
+    views::Widget* widget = owner->GetWidget();
     if (!widget || !widget->GetNativeWindow()) {
       return;
     }
@@ -127,7 +131,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
                                                     located_event);
       if (located_event->type() == ui::EventType::kMouseEntered ||
           located_event->type() == ui::EventType::kMouseExited) {
-        owner_->UpdateControlButtonsVisibility();
+        owner->UpdateControlButtonsVisibility();
         widget->OnMouseEvent(located_event->AsMouseEvent());
         return;
       }
@@ -136,7 +140,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
           located_event->IsMouseWheelEvent()) {
         widget->OnMouseEvent(located_event->AsMouseEvent());
       } else if (located_event->IsScrollEvent()) {
-        owner_->item_->CancelPress();
+        owner->item_->CancelPress();
         widget->OnScrollEvent(located_event->AsScrollEvent());
         return;
       } else if (located_event->IsGestureEvent() &&
@@ -147,10 +151,10 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
              event->type() == ui::EventType::kGestureScrollEnd ||
              event->type() == ui::EventType::kGestureSwipe)) {
           gfx::RectF rect =
-              owner_->surface_->GetContentWindow()->transform().MapRect(
-                  gfx::RectF(owner_->item_->GetSwipeInputRect()));
+              owner->surface_->GetContentWindow()->transform().MapRect(
+                  gfx::RectF(owner->item_->GetSwipeInputRect()));
           gfx::Point location = located_event->location();
-          views::View::ConvertPointFromWidget(owner_, &location);
+          views::View::ConvertPointFromWidget(owner, &location);
           bool contains = rect.Contains(gfx::PointF(location));
 
           if (contains && event->type() == ui::EventType::kGestureScrollBegin) {
@@ -161,7 +165,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
         }
 
         if (event->type() == ui::EventType::kGestureScrollBegin) {
-          owner_->item_->CancelPress();
+          owner->item_->CancelPress();
         }
 
         if (event->type() == ui::EventType::kGestureScrollEnd) {
@@ -171,14 +175,18 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
         if (slide_handled_by_android &&
             event->type() == ui::EventType::kGestureScrollBegin) {
           is_current_slide_handled_by_android_ = true;
-          owner_->message_view_->DisableSlideForcibly(true);
+          owner->message_view_->DisableSlideForcibly(true);
         } else if (is_current_slide_handled_by_android_ &&
                    event->type() == ui::EventType::kGestureScrollEnd) {
           is_current_slide_handled_by_android_ = false;
-          owner_->message_view_->DisableSlideForcibly(false);
+          owner->message_view_->DisableSlideForcibly(false);
         }
 
         widget->OnGestureEvent(located_event->AsGestureEvent());
+      }
+
+      if (!tracker.view()) {
+        return;
       }
 
       // Records UMA when user clicks/taps on the notification surface. Note
@@ -199,7 +207,7 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
       // When the ARC notification is slid out, all mouse presses and taps
       // should go to underlying widget so the swipe control buttons can
       // pressed. See crbug.com/965603.
-      if (owner_->slide_in_progress()) {
+      if (owner->slide_in_progress()) {
         if (event->type() == ui::EventType::kMouseReleased ||
             event->type() == ui::EventType::kMousePressed) {
           widget->OnMouseEvent(event->AsMouseEvent());
@@ -207,20 +215,19 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
           widget->OnGestureEvent(event->AsGestureEvent());
         }
       }
-    }
-
-    // If AXTree is attached to notification content view, notification surface
-    // always gets focus. Tab key events are consumed by the surface, and tab
-    // focus traversal gets stuck at Android notification. To prevent it, always
-    // pass tab key event to focus manager of content view.
-    if (owner_->surface_ &&
-        owner_->surface_->GetAXTreeId() != ui::AXTreeIDUnknown() &&
-        event->IsKeyEvent()) {
-      ui::KeyEvent* key_event = event->AsKeyEvent();
-      if (key_event->key_code() == ui::VKEY_TAB &&
-          (key_event->flags() == ui::EF_NONE ||
-           key_event->flags() == ui::EF_SHIFT_DOWN)) {
-        widget->GetFocusManager()->OnKeyEvent(*key_event);
+    } else if (event->IsKeyEvent()) {
+      // If AXTree is attached to notification content view, notification
+      // surface always gets focus. Tab key events are consumed by the surface,
+      // and tab focus traversal gets stuck at Android notification. To prevent
+      // it, always pass tab key event to focus manager of content view.
+      if (owner->surface_ &&
+          owner->surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
+        ui::KeyEvent* key_event = event->AsKeyEvent();
+        if (key_event->key_code() == ui::VKEY_TAB &&
+            (key_event->flags() == ui::EF_NONE ||
+             key_event->flags() == ui::EF_SHIFT_DOWN)) {
+          widget->GetFocusManager()->OnKeyEvent(*key_event);
+        }
       }
     }
   }

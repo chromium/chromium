@@ -266,6 +266,10 @@ class ArcNotificationContentViewTest : public AshTestBase {
     return notification_view_->content_view_;
   }
 
+  aura::Window* GetSurfaceWindow() const {
+    return GetArcNotificationContentView()->surface_->GetWindow();
+  }
+
   void ActivateArcNotification() {
     GetArcNotificationContentView()->ActivateWidget(true);
   }
@@ -858,6 +862,46 @@ TEST_F(ArcNotificationContentViewTest, AccessibleProperties) {
   EXPECT_EQ(u"item_title\nitem_message",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   CloseNotificationView();
+}
+
+TEST_F(ArcNotificationContentViewTest,
+       NoCrashWhenDestroyedDuringEventForwarding) {
+  std::string key("notification id");
+  auto notification_item = std::make_unique<MockArcNotificationItem>(key);
+  auto notification = CreateNotification(notification_item.get());
+
+  PrepareSurface(key);
+  CreateAndShowNotificationView(notification);
+  ArcNotificationContentView* content_view = GetArcNotificationContentView();
+  ASSERT_TRUE(content_view);
+
+  class DestructionHandler : public ui::EventHandler {
+   public:
+    explicit DestructionHandler(base::OnceClosure destroy_callback)
+        : destroy_callback_(std::move(destroy_callback)) {}
+    void OnGestureEvent(ui::GestureEvent* event) override {
+      if (destroy_callback_) {
+        std::move(destroy_callback_).Run();
+      }
+    }
+
+   private:
+    base::OnceClosure destroy_callback_;
+  };
+
+  DestructionHandler handler(
+      base::BindOnce(&ArcNotificationContentViewTest::CloseNotificationView,
+                     base::Unretained(this)));
+  aura::Window* surface_window = GetSurfaceWindow();
+  surface_window->AddPreTargetHandler(&handler);
+
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
+                                     surface_window);
+  // Trigger a gesture event that will be forwarded.
+  generator.GestureScrollSequence(gfx::Point(10, 10), gfx::Point(20, 20),
+                                  base::Milliseconds(100), 1);
+
+  // If we reach here without crashing, the test passed.
 }
 
 }  // namespace ash
