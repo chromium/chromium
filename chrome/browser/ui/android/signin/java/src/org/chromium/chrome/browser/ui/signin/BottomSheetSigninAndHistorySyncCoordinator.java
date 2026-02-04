@@ -290,7 +290,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
         mConfig = config;
         mDidShowSigninStep = false;
-        mProfileSupplier.runSyncOrOnAvailable(this::onProfileAvailable);
+        mProfileSupplier.onAvailable(this::onProfileAvailable);
     }
 
     /**
@@ -473,7 +473,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
     private void onProfileAvailable(ProfileProvider profileProvider) {
         mProfile = assumeNonNull(profileProvider.getOriginalProfile());
-        validateProfile(mProfile);
         AccountManagerFacadeProvider.getInstance()
                 .getAccounts()
                 .then(
@@ -481,14 +480,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                             mFlowInitialized = true;
                             finishLoadingAndSelectSigninFlow(accounts);
                         });
-    }
-
-    private void validateProfile(Profile profile) {
-        if (profile.isOffTheRecord()
-                && SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            throw new IllegalStateException(
-                    "This sign-in flow should not be initiated with an incognito profile.");
-        }
     }
 
     private void finishLoadingAndSelectSigninFlow(List<AccountInfo> accounts) {
