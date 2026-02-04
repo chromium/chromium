@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTi
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_MARK_COMPLETED;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_TITLE;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.MODULE_TITLE;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.SEE_MORE_CLICK_HANDLER;
 
 import android.view.View;
 
@@ -33,6 +34,9 @@ public class EducationalTipModuleTwoCellViewBinder {
 
         if (MODULE_TITLE == propertyKey) {
             moduleView.setModuleTitle(model.get(MODULE_TITLE));
+        }
+        if (SEE_MORE_CLICK_HANDLER == propertyKey) {
+            moduleView.setSeeMoreOnClickListener(v -> model.get(SEE_MORE_CLICK_HANDLER).run());
         } else if (ITEM_1_TITLE == propertyKey) {
             moduleView.setItem1Title(model.get(ITEM_1_TITLE));
         } else if (ITEM_1_DESCRIPTION == propertyKey) {

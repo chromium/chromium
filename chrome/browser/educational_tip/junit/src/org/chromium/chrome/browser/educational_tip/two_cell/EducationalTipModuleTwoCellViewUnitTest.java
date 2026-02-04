@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.educational_tip.R;
 public class EducationalTipModuleTwoCellViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private View.OnClickListener mSeeMoreClickListener;
     @Mock private View.OnClickListener mItem1ClickListener;
     @Mock private View.OnClickListener mItem2ClickListener;
 
@@ -58,6 +59,17 @@ public class EducationalTipModuleTwoCellViewUnitTest {
         String testTitle = "Test Module Title";
         mModuleView.setModuleTitle(testTitle);
         Assert.assertEquals(testTitle, moduleTitleView.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetOnClickListenerSeeMore() {
+        TextView seeMoreTextView = mModuleView.findViewById(R.id.see_more);
+        mModuleView.setSeeMoreOnClickListener(mSeeMoreClickListener);
+
+        seeMoreTextView.performClick();
+        ShadowLooper.idleMainLooper();
+        verify(mSeeMoreClickListener).onClick(seeMoreTextView);
     }
 
     @Test

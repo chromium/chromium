@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTi
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_MARK_COMPLETED;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_TITLE;
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.MODULE_TITLE;
+import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.SEE_MORE_CLICK_HANDLER;
 
 import android.content.Context;
 
@@ -64,6 +65,10 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
         mModel.set(
                 MODULE_TITLE,
                 actionDelegate.getContext().getString(R.string.educational_tip_module_title));
+
+        EducationalTipBottomSheetCoordinator educationalTipBottomSheetCoordinator =
+                new EducationalTipBottomSheetCoordinator(actionDelegate);
+        mModel.set(SEE_MORE_CLICK_HANDLER, educationalTipBottomSheetCoordinator::showBottomSheet);
 
         Runnable removeModuleCallback = () -> mModuleDelegate.removeModule(getModuleType());
         List<Integer> setupListModuleTypes = SetupListModuleUtils.getRankedModuleTypes();

@@ -18,6 +18,10 @@ public class EducationalTipModuleTwoCellProperties {
     public static final WritableObjectPropertyKey<String> MODULE_TITLE =
             new WritableObjectPropertyKey<>();
 
+    /** The OnClickListener for the "See more" text view */
+    public static final WritableObjectPropertyKey<Runnable> SEE_MORE_CLICK_HANDLER =
+            new WritableObjectPropertyKey<>();
+
     // Two-cell layout properties
     public static final WritableObjectPropertyKey<String> ITEM_1_TITLE =
             new WritableObjectPropertyKey<>();
@@ -43,6 +47,7 @@ public class EducationalTipModuleTwoCellProperties {
 
     public static final PropertyKey[] ALL_KEYS = {
         MODULE_TITLE,
+        SEE_MORE_CLICK_HANDLER,
         ITEM_1_TITLE,
         ITEM_1_DESCRIPTION,
         ITEM_1_ICON,
