@@ -12,8 +12,8 @@ include_rules = [
   "+ios/chrome/browser/signin/model/capabilities_types.h",
   "+ios/chrome/browser/signin/model/system_identity.h",
   "+ios/chrome/browser/signin/model/system_identity_manager.h",
-  "+ios/chrome/browser/signin/model/trusted_vault_client_backend.h",
-  "+ios/chrome/browser/signin/model/trusted_vault_configuration.h",
+  "+ios/chrome/browser/signin/model/trusted_vault/trusted_vault_client_backend.h",
+  "+ios/chrome/browser/signin/model/trusted_vault/trusted_vault_configuration.h",
   # keep-sorted end
 ]
 

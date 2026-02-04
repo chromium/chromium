@@ -19,10 +19,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
-
-    # TODO(crbug.com/40264840): move trusted_vault code from i/c/b/signin to
-    # i/c/b/trusted_vault.
-    "//ios/chrome/browser/signin/model:trusted_vault",
-    "//ios/chrome/browser/signin/model:trusted_vault_factory",
+    "//ios/chrome/browser/signin/model/trusted_vault",
+    "//ios/chrome/browser/signin/model/trusted_vault:trusted_vault_factory",
   ]
 }
