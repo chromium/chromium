@@ -102,12 +102,13 @@ class FontPrewarmerCoordinator : public base::SupportsUserData::Data,
   // a search page. Prewarming is done at most once per RenderProcessHost.
   void SendFontsToPrewarm(content::RenderProcessHost* rph) {
     // Only need to prewarm a particular host once.
-    if (prewarmed_hosts_.count(rph))
+    bool inserted = prewarmed_hosts_.insert(rph).second;
+    if (!inserted) {
       return;
+    }
 
     // The following code may early out. Insert the entry to ensure an early out
     // doesn't attempt to send the fonts again.
-    prewarmed_hosts_.insert(rph);
     rph->AddObserver(this);
 
     std::vector<std::string> font_names =

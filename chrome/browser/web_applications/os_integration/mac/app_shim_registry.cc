@@ -142,9 +142,10 @@ void AppShimRegistry::OnAppInstalledForProfile(const std::string& app_id,
                                                const base::FilePath& profile) {
   std::set<base::FilePath> installed_profiles =
       GetInstalledProfilesForApp(app_id);
-  if (installed_profiles.count(profile))
+  bool inserted = installed_profiles.insert(profile).second;
+  if (!inserted) {
     return;
-  installed_profiles.insert(profile);
+  }
   // Also add the profile to the last active profiles. This way the next time
   // the app is launched, it will at least launch in the most recently
   // installed profile.

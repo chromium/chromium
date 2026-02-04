@@ -62,9 +62,9 @@ class ExtensionOverrideTest : public ExtensionApiTest {
       }
       const base::DictValue& dict = val.GetDict();
       const std::string* entry = dict.FindString("entry");
-      if (!entry || seen_overrides.count(*entry) != 0)
+      if (!entry || !seen_overrides.insert(*entry).second) {
         return false;
-      seen_overrides.insert(*entry);
+      }
     }
 
     return true;

@@ -96,9 +96,9 @@ void InitializeOverridesList(base::ListValue& list) {
       NOTREACHED();
     }
 
-    // |entry_name| will be set by this point.
-    if (seen_entries.count(entry_name) == 0) {
-      seen_entries.insert(entry_name);
+    // `entry_name` will be set by this point.
+    bool inserted = seen_entries.insert(entry_name).second;
+    if (inserted) {
       migrated.Append(std::move(new_dict));
     }
   }

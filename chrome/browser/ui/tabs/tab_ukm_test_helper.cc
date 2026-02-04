@@ -160,9 +160,9 @@ void UkmEntryChecker::ExpectNewEntriesBySource(
     const ukm::SourceId& source_id = entry->source_id;
     const auto& expected_data_for_id = expected_data.find(source_id);
     EXPECT_TRUE(expected_data_for_id != expected_data.end());
-    EXPECT_EQ(0u, found_source_ids.count(source_id));
 
-    found_source_ids.insert(source_id);
+    bool inserted = found_source_ids.insert(source_id).second;
+    EXPECT_TRUE(inserted);
     const std::pair<GURL, UkmMetricMap>& expected_url_metrics =
         expected_data_for_id->second;
 
