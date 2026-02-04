@@ -2,12 +2,10 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Basic tests for chromium_docs.py"""
+# pylint: disable=protected-access
 
 import unittest
-import tempfile
-import os
 from pathlib import Path
 
 from chromium_docs import ChromiumDocs, SearchResult
@@ -111,14 +109,12 @@ class ChromiumDocsTest(unittest.TestCase):
 
     def test_search_result_dataclass(self):
         """Test SearchResult dataclass."""
-        result = SearchResult(
-            path="docs/test.md",
-            title="Test Doc",
-            summary="A test document.",
-            score=5.0,
-            category="testing",
-            keywords=["test"]
-        )
+        result = SearchResult(path="docs/test.md",
+                              title="Test Doc",
+                              summary="A test document.",
+                              score=5.0,
+                              category="testing",
+                              keywords=["test"])
 
         self.assertEqual(result.path, "docs/test.md")
         self.assertEqual(result.score, 5.0)

@@ -2,7 +2,6 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Chromium Documentation Search System
 
 A unified module that provides document indexing and search capabilities
@@ -50,8 +49,8 @@ class ChromiumDocs:
         if config_path:
             self.config_path = Path(config_path)
         else:
-            self.config_path = (
-                self.data_dir / "configs" / "search_config.json")
+            self.config_path = (self.data_dir / "configs" /
+                                "search_config.json")
 
         self.config = self._load_config()
         self.doc_index = {}
@@ -62,7 +61,7 @@ class ChromiumDocs:
     def _load_config(self) -> Dict:
         """Load search configuration."""
         try:
-            with open(self.config_path, 'r') as f:
+            with open(self.config_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
             return self._default_config()
@@ -73,11 +72,13 @@ class ChromiumDocs:
             "indexing": {
                 "max_file_size_mb": 10,
                 "scan_patterns": ["docs/**/*.md", "*/README.md"],
-                "excluded_patterns": [
-                    "third_party/", "out/", ".git/", ".claude/"
-                ]
+                "excluded_patterns":
+                ["third_party/", "out/", ".git/", ".claude/"]
             },
-            "search": {"default_limit": 10, "max_limit": 50}
+            "search": {
+                "default_limit": 10,
+                "max_limit": 50
+            }
         }
 
     def _load_indexes(self):
@@ -85,11 +86,14 @@ class ChromiumDocs:
         index_dir = self.data_dir / "indexes"
 
         try:
-            with open(index_dir / "doc_index.json", 'r') as f:
+            with open(index_dir / "doc_index.json", 'r',
+                      encoding='utf-8') as f:
                 self.doc_index = json.load(f)
-            with open(index_dir / "keyword_index.json", 'r') as f:
+            with open(index_dir / "keyword_index.json", 'r',
+                      encoding='utf-8') as f:
                 self.keyword_index = json.load(f)
-            with open(index_dir / "category_index.json", 'r') as f:
+            with open(index_dir / "category_index.json", 'r',
+                      encoding='utf-8') as f:
                 self.category_index = json.load(f)
         except FileNotFoundError:
             # Indexes don't exist yet - will need to build them
@@ -138,11 +142,10 @@ class ChromiumDocs:
             'total_categories': len(category_index)
         }
 
-    def search(
-            self,
-            query: str,
-            category: Optional[str] = None,
-            limit: int = 10) -> List[SearchResult]:
+    def search(self,
+               query: str,
+               category: Optional[str] = None,
+               limit: int = 10) -> List[SearchResult]:
         """Search documentation."""
         if not self.doc_index:
             return []
@@ -157,16 +160,16 @@ class ChromiumDocs:
 
             score = self._calculate_score(doc_data, query_terms)
             if score > 0:
-                results.append(SearchResult(
-                    path=doc_path,
-                    title=doc_data.get('title', 'Untitled'),
-                    summary=doc_data.get('summary', ''),
-                    score=score,
-                    category=doc_data.get('category', 'general'),
-                    keywords=doc_data.get('keywords', []),
-                    excerpt=self._extract_excerpt(
-                        doc_data.get('content', ''), query_terms)
-                ))
+                results.append(
+                    SearchResult(path=doc_path,
+                                 title=doc_data.get('title', 'Untitled'),
+                                 summary=doc_data.get('summary', ''),
+                                 score=score,
+                                 category=doc_data.get('category', 'general'),
+                                 keywords=doc_data.get('keywords', []),
+                                 excerpt=self._extract_excerpt(
+                                     doc_data.get('content', ''),
+                                     query_terms)))
 
         # Sort by score and limit results
         results.sort(key=lambda x: x.score, reverse=True)
@@ -177,9 +180,7 @@ class ChromiumDocs:
         if not self.category_index:
             return {}
 
-        return {
-            cat: len(docs) for cat, docs in self.category_index.items()
-        }
+        return {cat: len(docs) for cat, docs in self.category_index.items()}
 
     def _scan_documents(self) -> List[Path]:
         """Scan for markdown documentation files."""
@@ -263,23 +264,59 @@ class ChromiumDocs:
         """Extract keywords from content."""
         chromium_terms = {
             # Core processes and architecture
-            'browser', 'renderer', 'gpu', 'utility', 'network', 'service',
+            'browser',
+            'renderer',
+            'gpu',
+            'utility',
+            'network',
+            'service',
             # Communication and IPC
-            'mojo', 'ipc', 'pipe', 'message', 'interface', 'binding',
+            'mojo',
+            'ipc',
+            'pipe',
+            'message',
+            'interface',
+            'binding',
             # Web technologies
-            'blink', 'v8', 'webrtc', 'webgl', 'javascript',
-            'html', 'css',
+            'blink',
+            'v8',
+            'webrtc',
+            'webgl',
+            'javascript',
+            'html',
+            'css',
             # Security
-            'sandbox', 'site-isolation', 'permission', 'origin', 'cors',
+            'sandbox',
+            'site-isolation',
+            'permission',
+            'origin',
+            'cors',
             # Platforms
-            'chromeos', 'android', 'ios', 'windows', 'linux', 'mac',
+            'chromeos',
+            'android',
+            'ios',
+            'windows',
+            'linux',
+            'mac',
             # Development tools
-            'gn', 'ninja', 'gclient', 'depot-tools',
-            'unittest', 'browsertest',
+            'gn',
+            'ninja',
+            'gclient',
+            'depot-tools',
+            'unittest',
+            'browsertest',
             # Graphics and media
-            'skia', 'vulkan', 'opengl', 'webassembly', 'codec',
+            'skia',
+            'vulkan',
+            'opengl',
+            'webassembly',
+            'codec',
             # Core APIs
-            'api', 'mojom', 'content', 'chrome', 'chromium'
+            'api',
+            'mojom',
+            'content',
+            'chrome',
+            'chromium'
         }
 
         keywords = set()
@@ -291,8 +328,7 @@ class ChromiumDocs:
                 keywords.add(term)
 
         # Extract technical identifiers
-        camel_matches = re.findall(
-            r'\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b', content)
+        camel_matches = re.findall(r'\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b', content)
         for match in camel_matches:
             if len(match) > 4:
                 keywords.add(match.lower())
@@ -310,26 +346,23 @@ class ChromiumDocs:
                 or 'browser_test' in content_lower):
             return 'testing'
         elif ('gpu/' in path_str or 'graphics/' in path_str
-                or 'webgl' in content_lower
-                or 'vulkan' in content_lower):
+              or 'webgl' in content_lower or 'vulkan' in content_lower):
             return 'gpu'
         elif ('security/' in path_str or 'sandbox/' in path_str
-                or 'site-isolation' in content_lower
-                or 'permission' in content_lower):
+              or 'site-isolation' in content_lower
+              or 'permission' in content_lower):
             return 'security'
         elif ('net/' in path_str or 'network/' in path_str
-                or 'http' in content_lower
-                or 'quic' in content_lower):
+              or 'http' in content_lower or 'quic' in content_lower):
             return 'network'
         elif ('ui/' in path_str or 'views/' in path_str
-                or 'aura/' in path_str):
+              or 'aura/' in path_str):
             return 'ui'
         elif ('build/' in path_str or 'gn/' in path_str
-                or 'ninja' in content_lower
-                or 'compilation' in content_lower):
+              or 'ninja' in content_lower or 'compilation' in content_lower):
             return 'build'
         elif ('media/' in path_str or 'audio/' in path_str
-                or 'video/' in path_str):
+              or 'video/' in path_str):
             return 'media'
         elif 'android/' in path_str or 'java/' in path_str:
             return 'android'
@@ -338,33 +371,31 @@ class ChromiumDocs:
         elif 'chromeos/' in path_str or 'ash/' in path_str:
             return 'chromeos'
         elif (('api' in content_lower and 'interface' in content_lower)
-                or 'mojom' in content_lower):
+              or 'mojom' in content_lower):
             return 'api'
-        elif ('architecture' in content_lower
-                or 'design-document' in path_str
-                or 'multi-process' in content_lower):
+        elif ('architecture' in content_lower or 'design-document' in path_str
+              or 'multi-process' in content_lower):
             return 'architecture'
-        elif ('performance' in content_lower
-                or 'benchmark' in content_lower
-                or ('memory' in content_lower and 'usage' in content_lower)):
+        elif ('performance' in content_lower or 'benchmark' in content_lower
+              or ('memory' in content_lower and 'usage' in content_lower)):
             return 'performance'
         elif 'accessibility' in path_str or 'a11y' in content_lower:
             return 'accessibility'
         elif ('dev' in path_str or 'debug' in content_lower
-                or 'tools/' in path_str):
+              or 'tools/' in path_str):
             return 'development'
 
         return 'general'
 
-    def _calculate_score(
-            self, doc_data: Dict, query_terms: List[str]) -> float:
+    def _calculate_score(self, doc_data: Dict,
+                         query_terms: List[str]) -> float:
         """Calculate relevance score with improved matching."""
         score = 0.0
         title = doc_data.get('title', '').lower()
         content = doc_data.get('content', '').lower()
         keywords = [k.lower() for k in doc_data.get('keywords', [])]
-        file_path = (
-            doc_data.get('path', '').lower() if 'path' in doc_data else '')
+        file_path = (doc_data.get('path', '').lower()
+                     if 'path' in doc_data else '')
 
         for term in query_terms:
             term_lower = term.lower()
@@ -399,8 +430,7 @@ class ChromiumDocs:
 
         return score
 
-    def _extract_excerpt(
-            self, content: str, query_terms: List[str]) -> str:
+    def _extract_excerpt(self, content: str, query_terms: List[str]) -> str:
         """Extract relevant excerpt from content."""
         lines = content.split('\n')
 
@@ -417,13 +447,15 @@ class ChromiumDocs:
         index_dir = self.data_dir / "indexes"
         index_dir.mkdir(exist_ok=True, parents=True)
 
-        with open(index_dir / "doc_index.json", 'w') as f:
+        with open(index_dir / "doc_index.json", 'w', encoding='utf-8') as f:
             json.dump(docs, f, indent=2)
 
-        with open(index_dir / "keyword_index.json", 'w') as f:
+        with open(index_dir / "keyword_index.json", 'w',
+                  encoding='utf-8') as f:
             json.dump(keywords, f, indent=2)
 
-        with open(index_dir / "category_index.json", 'w') as f:
+        with open(index_dir / "category_index.json", 'w',
+                  encoding='utf-8') as f:
             json.dump(categories, f, indent=2)
 
         self.doc_index = docs
@@ -441,8 +473,8 @@ def search_chromium_docs(query: str, category: str = None) -> str:
 
 The documentation index needs to be built first. Run:
 ```bash
-cd skills/chromium-docs
-python src/chromium_docs.py --build-index
+cd agents/skills/chromium-docs
+python scripts/chromium_docs.py --build-index
 ```"""
 
     results = docs.search(query, category)
@@ -450,8 +482,7 @@ python src/chromium_docs.py --build-index
     if not results:
         return f"No documentation found for '{query}'"
 
-    output = [
-        f"**Found {len(results)} Chromium documentation results:**\n"]
+    output = [f"**Found {len(results)} Chromium documentation results:**\n"]
 
     for i, result in enumerate(results[:10], 1):
         link = f"[{result.title}]({result.path})"
@@ -460,9 +491,8 @@ python src/chromium_docs.py --build-index
         if result.excerpt:
             output.append(f"   💡 {result.excerpt}")
         elif result.summary:
-            summary = (
-                result.summary[:120] + "..."
-                if len(result.summary) > 120 else result.summary)
+            summary = (result.summary[:120] +
+                       "..." if len(result.summary) > 120 else result.summary)
             output.append(f"   📄 {summary}")
         output.append("")
 
@@ -478,8 +508,9 @@ def show_doc_categories() -> str:
         return "No documentation categories available. Build the index first."
 
     output = ["**Available Chromium Documentation Categories:**\n"]
-    for category, count in sorted(
-            categories.items(), key=lambda x: x[1], reverse=True):
+    for category, count in sorted(categories.items(),
+                                  key=lambda x: x[1],
+                                  reverse=True):
         output.append(f"• **{category.title()}** ({count} documents)")
 
     return "\n".join(output)
@@ -494,31 +525,31 @@ def browse_docs_category(category: str) -> str:
         return f"No documents found in category '{category}'"
 
     output = [
-        f"**{category.title()} Documentation ({len(results)} documents):**\n"]
+        f"**{category.title()} Documentation ({len(results)} documents):**\n"
+    ]
 
     for i, result in enumerate(results, 1):
         link = f"[{result.title}]({result.path})"
         output.append(f"{i}. {link}")
         if i <= 5 and result.summary:
-            summary = (
-                result.summary[:100] + "..."
-                if len(result.summary) > 100 else result.summary)
+            summary = (result.summary[:100] +
+                       "..." if len(result.summary) > 100 else result.summary)
             output.append(f"   {summary}\n")
 
     return "\n".join(output)
 
 
 if __name__ == "__main__":
-    docs = ChromiumDocs()
+    chromium_docs = ChromiumDocs()
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "--build-index":
-            result = docs.build_index()
-            print(f"Index built: {result}")
+            build_result = chromium_docs.build_index()
+            print(f"Index built: {build_result}")
         else:
-            query = " ".join(sys.argv[1:])
-            result = search_chromium_docs(query)
-            print(result)
+            search_query = " ".join(sys.argv[1:])
+            search_result = search_chromium_docs(search_query)
+            print(search_result)
     else:
-        result = show_doc_categories()
-        print(result)
+        categories_result = show_doc_categories()
+        print(categories_result)

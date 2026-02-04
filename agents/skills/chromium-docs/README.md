@@ -6,7 +6,7 @@ A Claude Code skill that provides intelligent search across Chromium's official 
 
 1. Build the documentation index:
 ```bash
-cd skills/chromium-docs
+cd agents/skills/chromium-docs
 python scripts/chromium_docs.py --build-index
 ```
 
@@ -24,17 +24,19 @@ Ask questions about Chromium development and the SKILL will search official docu
 ## File Structure
 
 ```
-skills/chromium-docs/
+agents/skills/chromium-docs/
 ├── OWNERS                      # Code ownership
-├── SKILL.md                    # SKILL definition
+├── SKILL.md                    # SKILL definition (source)
 ├── README.md                   # This file
 ├── .gitignore                  # Excludes generated data
 ├── scripts/
-│   └── chromium_docs.py        # Main search implementation (15KB)
+│   └── chromium_docs.py        # Main search implementation
 └── data/
     └── configs/
         └── search_config.json  # Search configuration
 ```
+
+To use this skill, symlink or copy SKILL.md to your agent's skills directory (e.g., `.claude/skills/chromium-docs/`).
 
 ## Configuration
 
@@ -61,7 +63,7 @@ Categories and patterns should match actual directory structures in the Chromium
 ### Run Unit Tests
 
 ```bash
-cd .claude/skills/chromium-docs/scripts
+cd agents/skills/chromium-docs/scripts
 python -m pytest chromium_docs_test.py -v
 # Or without pytest:
 python chromium_docs_test.py
