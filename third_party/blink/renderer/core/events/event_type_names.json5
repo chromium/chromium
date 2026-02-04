@@ -329,6 +329,8 @@
     "timezonechange",
     "toggle",
     "tonechange",
+    "toolactivation",
+    "toolcancel",
     "touchcancel",
     "touchend",
     "touchmove",

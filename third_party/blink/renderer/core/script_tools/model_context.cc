@@ -8,6 +8,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/web_mcp_event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -215,6 +218,12 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
     return std::nullopt;
   }
 
+  if (LocalDOMWindow* window = document_->domWindow()) {
+    // This is a synchronous, non-cancelable event.
+    window->DispatchEvent(
+        *WebMCPEvent::Create(event_type_names::kToolactivation, name));
+  }
+
   if (it->value->v8_tool_function) {
     return ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
                          std::move(tool_executed_cb));
@@ -233,10 +242,16 @@ void ModelContext::CancelTool(uint32_t execution_id) {
     return;
   }
 
+  if (LocalDOMWindow* window = document_->domWindow()) {
+    // This is a synchronous, non-cancelable event.
+    window->DispatchEvent(*WebMCPEvent::Create(
+        event_type_names::kToolcancel, pending_execution->value.tool_name));
+  }
+
   task_runner_->PostTask(
       FROM_HERE,
       blink::BindOnce(
-          std::move(pending_execution->value),
+          std::move(pending_execution->value.callback),
           base::unexpected(WebDocument::ScriptToolError::kToolCancelled)));
   pending_executions_.erase(pending_execution);
 }
@@ -328,7 +343,9 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
   }
 
   uint32_t execution_id = ++next_execution_id_;
-  pending_executions_.insert(execution_id, std::move(tool_executed_cb));
+  pending_executions_.insert(
+      execution_id, PendingExecution{.tool_name = name,
+                                     .callback = std::move(tool_executed_cb)});
 
   result.Then(script_state,
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
@@ -413,10 +430,11 @@ void ModelContext::OnToolExecuted(uint32_t execution_id,
   }
 
   if (result) {
-    std::move(it->value).Run(*result);
+    std::move(it->value.callback).Run(*result);
   } else {
-    std::move(it->value).Run(
-        base::unexpected(WebDocument::ScriptToolError::kToolInvocationFailed));
+    std::move(it->value.callback)
+        .Run(base::unexpected(
+            WebDocument::ScriptToolError::kToolInvocationFailed));
   }
   pending_executions_.erase(it);
 }

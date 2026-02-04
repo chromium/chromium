@@ -604,4 +604,56 @@ TEST_F(ModelContextTest, CancelTool) {
   run_loop.Run();
 }
 
+TEST_F(ModelContextTest, ToolEventsDispatched) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+
+  main_resource.Complete(R"(
+<body>
+    <script>
+    async function longRunning(obj) {
+      await new Promise(r => setTimeout(r, 10000));
+      return "done";
+    }
+
+    navigator.modelContext.registerTool({
+      execute: longRunning,
+      name: "slow",
+      description: "slow tool",
+    });
+
+    window.events = [];
+    window.addEventListener('toolactivation', e => window.events.push('activation:' + e.toolName));
+    window.addEventListener('toolcancel', e => window.events.push('cancel:' + e.toolName));
+  </script>
+  </body>
+)");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+
+  // Execute and Cancel
+  std::optional<uint32_t> execution_id = model_context->ExecuteTool(
+      "slow", "{}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            run_loop.Quit();
+          }));
+
+  EXPECT_EQ(EvalJsString("window.events.join(',')"), "activation:slow");
+
+  ASSERT_TRUE(execution_id.has_value());
+  model_context->CancelTool(*execution_id);
+  run_loop.Run();
+
+  EXPECT_EQ(EvalJsString("window.events.join(',')"),
+            "activation:slow,cancel:slow");
+}
+
 }  // namespace blink

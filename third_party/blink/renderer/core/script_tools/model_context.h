@@ -115,8 +115,11 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   HeapHashMap<String, Member<ToolData>> tool_map_;
 
   uint32_t next_execution_id_ = 0;
-  HashMap<uint32_t, WebDocument::ScriptToolExecutedCallback>
-      pending_executions_;
+  struct PendingExecution {
+    String tool_name;
+    WebDocument::ScriptToolExecutedCallback callback;
+  };
+  HashMap<uint32_t, PendingExecution> pending_executions_;
 
   Vector<CrossDocumentScriptToolResultCallback>
       cross_document_result_callbacks_;

@@ -280,6 +280,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/events/ui_event_init.idl",
   "//third_party/blink/renderer/core/events/wheel_event.idl",
   "//third_party/blink/renderer/core/events/wheel_event_init.idl",
+  "//third_party/blink/renderer/core/events/web_mcp_event.idl",
   "//third_party/blink/renderer/core/fetch/attribution_reporting.idl",
   "//third_party/blink/renderer/core/fetch/body.idl",
   "//third_party/blink/renderer/core/fetch/deferred_request_init.idl",
