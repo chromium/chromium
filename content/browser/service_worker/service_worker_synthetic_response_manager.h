@@ -129,7 +129,7 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   std::optional<RaceNetworkRequestSimpleBufferManager> simple_buffer_manager_;
   std::optional<ServiceWorkerSyntheticResponseDataPipeConnector>
       data_pipe_connector_;
-  bool did_start_synthetic_response = false;
+  bool did_start_synthetic_response_ = false;
 
   base::TimeTicks request_start_time_;
   base::TimeTicks response_received_time_;
