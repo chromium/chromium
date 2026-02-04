@@ -18,7 +18,39 @@ void CombineCallbacks(WebFilteringResult::Callback a,
   std::move(a).Run(result);
   std::move(b).Run(result);
 }
+
+FilteringBehavior GetBehaviorFromSafeSearchClassification(
+    safe_search_api::Classification classification) {
+  switch (classification) {
+    case safe_search_api::Classification::SAFE:
+      return FilteringBehavior::kAllow;
+    case safe_search_api::Classification::UNSAFE:
+      return FilteringBehavior::kBlock;
+  }
+  NOTREACHED();
+}
+
+void UrlCheckerCallback(WebFilteringResult::Callback callback,
+                        GURL request_url,
+                        const GURL& checked_url,
+                        safe_search_api::Classification classification,
+                        safe_search_api::ClassificationDetails details) {
+  std::move(callback).Run(
+      {.url = request_url,
+       .behavior = GetBehaviorFromSafeSearchClassification(classification),
+       .reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
+       .async_check_details = details});
+}
 }  // namespace
+
+// Creates a callback for safe search api that will invoke `callback` argument
+// with check result.
+safe_search_api::URLChecker::CheckCallback
+WebFilteringResult::BindUrlCheckerCallback(Callback callback,
+                                           const GURL& requested_url) {
+  return base::BindOnce(&UrlCheckerCallback, std::move(callback),
+                        requested_url);
+}
 
 SupervisedUserUrlFilteringService::SupervisedUserUrlFilteringService(
     const SupervisedUserService& supervised_user_service)

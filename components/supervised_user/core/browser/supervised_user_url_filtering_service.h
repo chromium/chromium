@@ -63,6 +63,12 @@ struct WebFilteringResult {
                safe_search_api::ClassificationDetails::Reason::
                    kFailedUseDefault;
   }
+
+  // Creates a callback for safe search api that will invoke `callback` argument
+  // with check result.
+  static safe_search_api::URLChecker::CheckCallback BindUrlCheckerCallback(
+      Callback callback,
+      const GURL& requested_url);
 };
 
 // Internal observer interface for communication between delegates and the
@@ -93,6 +99,8 @@ class UrlFilteringDelegate {
   virtual ~UrlFilteringDelegate();
 
   virtual WebFilterType GetWebFilterType() const = 0;
+
+  // TODO(crbug.com/481303877): Reconsider naming of GetFiltering* methods.
   virtual WebFilteringResult GetFilteringBehavior(const GURL& url) const = 0;
 
   // TODO(crbug.com/478188599): Declare const after url_checker_ clients are

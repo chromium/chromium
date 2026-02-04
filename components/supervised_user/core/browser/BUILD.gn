@@ -96,6 +96,8 @@ static_library("browser") {
   sources = [
     "child_account_service.cc",
     "child_account_service.h",
+    "device_parental_controls_url_filter.cc",
+    "device_parental_controls_url_filter.h",
     "family_link_settings_data_type_controller.cc",
     "family_link_settings_data_type_controller.h",
     "family_link_settings_service.cc",
@@ -204,6 +206,7 @@ source_set("unit_tests") {
   sources = [
     "api_access_token_fetcher_unittest.cc",
     "child_account_service_unittest.cc",
+    "device_parental_controls_url_filter_unittest.cc",
     "family_link_settings_data_type_controller_unittest.cc",
     "family_link_settings_service_unittest.cc",
     "family_link_url_filter_manual_behavior_unittest.cc",
@@ -231,6 +234,7 @@ source_set("unit_tests") {
     ":device_parental_controls",
     ":fetcher",
     ":fetcher_config",
+    ":synthetic_field_trial_delegate",
     ":test_support",
     "//base",
     "//base/test:test_support",
