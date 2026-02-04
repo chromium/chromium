@@ -70,7 +70,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             .name = "UnitConversion",
             .query = "2 miles in meters",
-            .expected = "3218.68 meters",
+            .expected = "3218.69 meters",
         },
 
         {
@@ -124,7 +124,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             .name = "PercentSymbol",
             .query = "11/12*100%",
-            .expected = "91.66%",
+            .expected = "91.67%",
         },
         {
             .name = "MultiplePercent",

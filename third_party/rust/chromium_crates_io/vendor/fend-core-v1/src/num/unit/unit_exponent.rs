@@ -5,6 +5,7 @@ use crate::interrupt::test_int;
 use crate::num::complex::{self, Complex, UseParentheses};
 use crate::num::{Base, Exact, FormattingStyle};
 use crate::result::FResult;
+use crate::serialize::{CborValue, Deserialize, Serialize};
 use crate::{DecimalSeparatorStyle, Interrupt};
 
 use super::{base_unit::BaseUnit, named_unit::NamedUnit};
@@ -25,14 +26,14 @@ impl UnitExponent {
 
 	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
 		self.unit.serialize(write)?;
-		self.exponent.serialize(write)?;
+		self.exponent.serialize().serialize(write)?;
 		Ok(())
 	}
 
 	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
 		Ok(Self {
 			unit: NamedUnit::deserialize(read)?,
-			exponent: Complex::deserialize(read)?,
+			exponent: Complex::deserialize(CborValue::deserialize(read)?)?,
 		})
 	}
 

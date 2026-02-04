@@ -52,6 +52,8 @@ fn expr_unit<I: Interrupt>(
 			.map_err(|e| {
 				FendError::Wrap(format!("failed to retrieve {singular} exchange rate"), e)
 			})?;
+		let sep = context.decimal_separator;
+		context.decimal_separator = DecimalSeparatorStyle::Dot;
 		let value = evaluate_to_value(
 			format!("(1/{one_base_in_currency}) BASE_CURRENCY").as_str(),
 			None,
@@ -61,6 +63,7 @@ fn expr_unit<I: Interrupt>(
 			int,
 		)?
 		.expect_num()?;
+		context.decimal_separator = sep;
 		let value = Number::create_unit_value_from_value(
 			&value,
 			Cow::Borrowed(""),
@@ -261,11 +264,7 @@ fn query_unit_internal(
 				|| (!case_sensitive
 					&& (s.eq_ignore_ascii_case(ident) || p.eq_ignore_ascii_case(ident)))
 			{
-				return Ok((
-					s.to_string().into(),
-					p.to_string().into(),
-					d.to_string().into(),
-				));
+				return Ok((s.clone().into(), p.clone().into(), d.clone().into()));
 			}
 		}
 	}

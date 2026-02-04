@@ -5,7 +5,7 @@ use super::base_unit::BaseUnit;
 use crate::Interrupt;
 use crate::num::complex::Complex;
 use crate::result::FResult;
-use crate::serialize::{Deserialize, Serialize};
+use crate::serialize::{CborValue, Deserialize, Serialize};
 
 /// A named unit, like kilogram, megabyte or percent.
 #[derive(Clone)]
@@ -67,10 +67,10 @@ impl NamedUnit {
 		self.base_units.len().serialize(write)?;
 		for (a, b) in &self.base_units {
 			a.serialize(write)?;
-			b.serialize(write)?;
+			b.serialize().serialize(write)?;
 		}
 
-		self.scale.serialize(write)?;
+		self.scale.serialize().serialize(write)?;
 		Ok(())
 	}
 
@@ -84,7 +84,7 @@ impl NamedUnit {
 		let mut hashmap = HashMap::with_capacity(len);
 		for _ in 0..len {
 			let k = BaseUnit::deserialize(read)?;
-			let v = Complex::deserialize(read)?;
+			let v = Complex::deserialize(CborValue::deserialize(read)?)?;
 			hashmap.insert(k, v);
 		}
 		Ok(Self {
@@ -93,7 +93,7 @@ impl NamedUnit {
 			plural_name: Cow::Owned(plural_name),
 			alias,
 			base_units: hashmap,
-			scale: Complex::deserialize(read)?,
+			scale: Complex::deserialize(CborValue::deserialize(read)?)?,
 		})
 	}
 

@@ -4,9 +4,10 @@ use crate::num::Exact;
 use crate::num::real::{self, Real};
 use crate::num::{Base, FormattingStyle};
 use crate::result::FResult;
+use crate::serialize::CborValue;
 use std::cmp::Ordering;
+use std::fmt;
 use std::ops::Neg;
-use std::{fmt, io};
 
 #[derive(Clone, Hash)]
 pub(crate) struct Complex {
@@ -40,16 +41,39 @@ impl Complex {
 		}
 	}
 
-	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
-		self.real.serialize(write)?;
-		self.imag.serialize(write)?;
-		Ok(())
+	pub(crate) fn serialize(&self) -> CborValue {
+		let real = self.real.serialize();
+		if self.imag.is_zero() {
+			real
+		} else {
+			let imag = self.imag.serialize();
+			CborValue::Tag(43000, Box::new(CborValue::Array(vec![real, imag])))
+		}
 	}
 
-	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
-		Ok(Self {
-			real: Real::deserialize(read)?,
-			imag: Real::deserialize(read)?,
+	pub(crate) fn deserialize(value: CborValue) -> FResult<Self> {
+		Ok(match value {
+			CborValue::Tag(43000, inner) => {
+				if let CborValue::Array(arr) = *inner
+					&& arr.len() == 2
+				{
+					let mut arr = arr.into_iter();
+					let real = Real::deserialize(arr.next().unwrap())?;
+					let imag = Real::deserialize(arr.next().unwrap())?;
+					Self { real, imag }
+				} else {
+					return Err(FendError::DeserializationError(
+						"tag 43000 must contain a length-2 array",
+					));
+				}
+			}
+			value => {
+				let real = Real::deserialize(value)?;
+				Self {
+					real,
+					imag: 0.into(),
+				}
+			}
 		})
 	}
 

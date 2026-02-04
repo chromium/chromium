@@ -94,7 +94,8 @@ impl Month {
 	}
 
 	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
-		Self::try_from(u8::deserialize(read)?).map_err(|_| FendError::DeserializationError)
+		Self::try_from(u8::deserialize(read)?)
+			.map_err(|_| FendError::DeserializationError("month is out of range"))
 	}
 
 	fn as_u8(self) -> u8 {

@@ -86,7 +86,11 @@ impl FormattingStyle {
 			5 => Self::DecimalPlaces(usize::deserialize(read)?),
 			6 => Self::SignificantFigures(usize::deserialize(read)?),
 			7 => Self::Auto,
-			_ => return Err(FendError::DeserializationError),
+			_ => {
+				return Err(FendError::DeserializationError(
+					"formatting style is out of range",
+				));
+			}
 		})
 	}
 }

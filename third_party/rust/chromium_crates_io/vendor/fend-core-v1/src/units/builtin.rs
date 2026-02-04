@@ -776,6 +776,8 @@ const CURRENCIES: &[UnitTuple] = &[
 	("NZ$", "NZ$", "NZD", ""),
 	("zł", "zł", "PLN", ""), // the local abbreviation for PLN, see https://en.wikipedia.org/wiki/Polish_z%C5%82oty
 	("zl", "zl", "PLN", ""),
+	("₺", "₺", "TRY", ""), // Turkish Lira symbol, see https://en.wikipedia.org/wiki/Turkish_lira
+	("TL", "TL", "TRY", ""), // Turkish Lira abbreviation, see https://en.wikipedia.org/wiki/Turkish_lira
 ];
 
 const HISTORICAL_UNITS: &[UnitTuple] = &[

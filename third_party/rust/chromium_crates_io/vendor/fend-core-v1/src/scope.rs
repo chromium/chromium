@@ -72,7 +72,7 @@ impl ScopeValue {
 pub(crate) struct Scope {
 	ident: Ident,
 	value: ScopeValue,
-	inner: Option<Arc<Scope>>,
+	inner: Option<Arc<Self>>,
 }
 
 pub(crate) fn compare_option_arc_scope<I: Interrupt>(

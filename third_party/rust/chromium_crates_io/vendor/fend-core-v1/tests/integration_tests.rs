@@ -109,17 +109,17 @@ fn version() {
 
 #[test]
 fn pi() {
-	test_eval("pi", "approx. 3.1415926535");
+	test_eval("pi", "approx. 3.1415926536");
 }
 
 #[test]
 fn pi_times_two() {
-	test_eval("pi * 2", "approx. 6.2831853071");
+	test_eval("pi * 2", "approx. 6.2831853072");
 }
 
 #[test]
 fn two_pi() {
-	test_eval("2 pi", "approx. 6.2831853071");
+	test_eval("2 pi", "approx. 6.2831853072");
 }
 
 #[test]
@@ -324,12 +324,12 @@ fn large_multiplication() {
 
 #[test]
 fn pi_times_pi() {
-	test_eval("pi * pi", "approx. 9.869604401");
+	test_eval("pi * pi", "approx. 9.869604402");
 }
 
 #[test]
 fn four_pi_plus_one() {
-	test_eval("4pi + 1", "approx. 13.5663706143");
+	test_eval("4pi + 1", "approx. 13.5663706144");
 }
 
 #[test]
@@ -359,7 +359,7 @@ fn implicit_lambda_5() {
 
 #[test]
 fn implicit_lambda_6() {
-	test_eval("///sqrt! 16", "approx. 0.0416666666");
+	test_eval("///sqrt! 16", "approx. 0.0416666667");
 }
 
 #[test]
@@ -404,7 +404,7 @@ fn inverse_sin() {
 
 #[test]
 fn inverse_sin_point_five() {
-	test_eval("sin^-1 0.5", "approx. 0.5235987755");
+	test_eval("sin^-1 0.5", "approx. 0.5235987756");
 }
 
 #[test]
@@ -555,7 +555,7 @@ fn large_simple_subtraction() {
 
 #[test]
 fn three_pi_minus_two_pi() {
-	test_eval("3pi - 2pi", "approx. 3.1415926535");
+	test_eval("3pi - 2pi", "approx. 3.1415926536");
 }
 
 #[test]
@@ -573,7 +573,7 @@ fn large_simple_subtraction_2() {
 
 #[test]
 fn sqrt_half() {
-	test_eval("sqrt (1/2)", "approx. 0.7071067811");
+	test_eval("sqrt (1/2)", "approx. 0.7071067812");
 }
 
 #[test]
@@ -588,7 +588,7 @@ fn sqrt_1() {
 
 #[test]
 fn sqrt_2() {
-	test_eval("sqrt 2", "approx. 1.4142135623");
+	test_eval("sqrt 2", "approx. 1.4142135624");
 }
 
 #[test]
@@ -708,7 +708,7 @@ fn sqrt_kg_squared_2() {
 
 #[test]
 fn lightyear_to_parsecs() {
-	test_eval("1 lightyear to parsecs", "approx. 0.3066013937 parsecs");
+	test_eval("1 lightyear to parsecs", "approx. 0.3066013938 parsecs");
 }
 
 #[test]
@@ -1029,7 +1029,7 @@ fn recurring_product_with_e() {
 
 #[test]
 fn recurring_product_with_function() {
-	test_eval("2.0(ln 5)", "approx. 3.2188758248");
+	test_eval("2.0(ln 5)", "approx. 3.2188758249");
 }
 
 #[test]
@@ -1202,19 +1202,19 @@ fn powers_15() {
 
 #[test]
 fn powers_16() {
-	test_eval("4^(1/4)", "approx. 1.4142135623");
+	test_eval("4^(1/4)", "approx. 1.4142135624");
 }
 
 #[test]
 fn powers_17() {
-	test_eval("(2/3)^(4/5)", "approx. 0.7229811807");
+	test_eval("(2/3)^(4/5)", "approx. 0.7229811808");
 }
 
 #[test]
 fn powers_18() {
 	test_eval(
 		"5.2*10^15*300^(3/2)",
-		"approx. 27019992598074485776.9266786817",
+		"approx. 27019992598074485776.9266786818",
 	);
 }
 
@@ -1262,7 +1262,7 @@ fn four_to_the_power_of_i() {
 
 #[test]
 fn i_to_the_power_of_i() {
-	test_eval("i^i", "approx. 0.2078795763");
+	test_eval("i^i", "approx. 0.2078795764");
 }
 
 #[test]
@@ -1810,12 +1810,13 @@ fn three_electroncharge() {
 
 #[test]
 fn e_to_1() {
-	test_eval("e to 1", "approx. 2.7182818284");
+	test_eval("e to 1", "approx. 2.7182818285");
 }
 
 #[test]
 fn e_in_binary() {
-	test_eval("e in binary", "approx. 10.1011011111");
+	// FIXME: trailing zeroes
+	test_eval_simple("e in binary", "approx. 10.1011100000");
 }
 
 #[test]
@@ -1953,7 +1954,7 @@ fn exponents_19() {
 
 #[test]
 fn exponents_20() {
-	test_eval("e", "approx. 2.7182818284");
+	test_eval("e", "approx. 2.7182818285");
 }
 
 #[test]
@@ -1968,12 +1969,12 @@ fn exponents_22() {
 
 #[test]
 fn exponents_23() {
-	test_eval("2e/2", "approx. 2.7182818284");
+	test_eval("2e/2", "approx. 2.7182818285");
 }
 
 #[test]
 fn exponents_24() {
-	test_eval("2e / 2", "approx. 2.7182818284");
+	test_eval("2e / 2", "approx. 2.7182818285");
 }
 
 #[test]
@@ -1998,7 +1999,7 @@ fn exponents_28() {
 
 #[test]
 fn exponents_29() {
-	test_eval("e^2.72", "approx. 15.1803222449");
+	test_eval_simple("e^2.72", "approx. 15.1803222450");
 }
 
 #[test]
@@ -2173,7 +2174,7 @@ fn units_2() {
 
 #[test]
 fn units_3() {
-	test_eval("0m/s + 1 km/hr", "approx. 0.2777777777 m / s");
+	test_eval("0m/s + 1 km/hr", "approx. 0.2777777778 m / s");
 }
 
 #[test]
@@ -2218,7 +2219,8 @@ fn units_13() {
 
 #[test]
 fn units_14() {
-	test_eval("5 pi/2", "approx. 7.8539816339");
+	// FIXME: trailing zeroes
+	test_eval_simple("5 pi/2", "approx. 7.8539816340");
 }
 
 #[test]
@@ -2228,7 +2230,7 @@ fn units_15() {
 
 #[test]
 fn units_22() {
-	test_eval("1psi as kPa as 5dp", "approx. 6.89475 kPa");
+	test_eval("1psi as kPa as 5dp", "approx. 6.89476 kPa");
 }
 
 #[test]
@@ -2321,12 +2323,12 @@ fn units_39() {
 
 #[test]
 fn units_40() {
-	test_eval("5 foot 2 inches", "approx. 5.1666666666 feet");
+	test_eval("5 foot 2 inches", "approx. 5.1666666667 feet");
 }
 
 #[test]
 fn units_41() {
-	test_eval("5 foot 1 inch 1 inch", "approx. 5.1666666666 feet");
+	test_eval("5 foot 1 inch 1 inch", "approx. 5.1666666667 feet");
 }
 
 #[test]
@@ -2366,12 +2368,12 @@ fn mixed_fraction_to_improper_fraction() {
 
 #[test]
 fn mixed_fractions_1() {
-	test_eval("5/3", "approx. 1.6666666666");
+	test_eval("5/3", "approx. 1.6666666667");
 }
 
 #[test]
 fn mixed_fractions_2() {
-	test_eval("4 + 1 2/3", "approx. 5.6666666666");
+	test_eval("4 + 1 2/3", "approx. 5.6666666667");
 }
 
 #[test]
@@ -2501,7 +2503,7 @@ fn abs_2_i() {
 
 #[test]
 fn abs_1_plus_i() {
-	test_eval("abs (1 + i)", "approx. 1.4142135623");
+	test_eval("abs (1 + i)", "approx. 1.4142135624");
 }
 
 #[test]
@@ -2581,12 +2583,12 @@ fn positive_mixed_fraction_sum() {
 
 #[test]
 fn negative_mixed_fraction_sum() {
-	test_eval("1 2/3 + -4 5/6", "approx. -3.1666666666");
+	test_eval("1 2/3 + -4 5/6", "approx. -3.1666666667");
 }
 
 #[test]
 fn positive_mixed_fraction_subtraction() {
-	test_eval("1 2/3 - 4 5/6", "approx. -3.1666666666");
+	test_eval("1 2/3 - 4 5/6", "approx. -3.1666666667");
 }
 
 #[test]
@@ -2854,7 +2856,7 @@ fn sin_1_percent() {
 
 #[test]
 fn atan_1_percent() {
-	test_eval("atan (1%)", "approx. 0.0099996666");
+	test_eval("atan (1%)", "approx. 0.0099996667");
 }
 
 #[test]
@@ -2984,7 +2986,7 @@ fn cos_0() {
 
 #[test]
 fn cos_1() {
-	test_eval("cos 1", "approx. 0.5403023058");
+	test_eval("cos 1", "approx. 0.5403023059");
 }
 
 #[test]
@@ -3094,7 +3096,7 @@ fn cos_minus_5_pi_over_3() {
 
 #[test]
 fn tau() {
-	test_eval("tau", "approx. 6.2831853071");
+	test_eval("tau", "approx. 6.2831853072");
 }
 
 #[test]
@@ -3104,12 +3106,12 @@ fn sin_tau_over_two() {
 
 #[test]
 fn greek_pi_symbol() {
-	test_eval("π", "approx. 3.1415926535");
+	test_eval("π", "approx. 3.1415926536");
 }
 
 #[test]
 fn greek_tau_symbol() {
-	test_eval("τ", "approx. 6.2831853071");
+	test_eval("τ", "approx. 6.2831853072");
 }
 
 #[test]
@@ -3129,32 +3131,32 @@ fn tan_2pi() {
 
 #[test]
 fn asin_1() {
-	test_eval("asin 1", "approx. 1.5707963267");
+	test_eval("asin 1", "approx. 1.5707963268");
 }
 
 #[test]
 fn asin_3() {
-	test_eval("asin 3", "approx. 1.5707963267 - 1.762747174i");
+	test_eval("asin 3", "approx. 1.5707963268 - 1.762747174i");
 }
 
 #[test]
 fn asin_minus_3() {
-	test_eval("asin (-3)", "approx. -1.5707963267 + 1.762747174i");
+	test_eval("asin (-3)", "approx. -1.5707963268 + 1.762747174i");
 }
 
 #[test]
 fn asin_one_point_zero_one() {
-	test_eval("asin 1.01", "approx. 1.5707963267 - 0.1413037694i");
+	test_eval("asin 1.01", "approx. 1.5707963268 - 0.1413037695i");
 }
 
 #[test]
 fn asin_minus_one_point_zero_one() {
-	test_eval("asin (-1.01)", "approx. -1.5707963267 + 0.1413037694i");
+	test_eval("asin (-1.01)", "approx. -1.5707963268 + 0.1413037695i");
 }
 
 #[test]
 fn acos_0() {
-	test_eval("acos 0", "approx. 1.5707963267");
+	test_eval("acos 0", "approx. 1.5707963268");
 }
 
 #[test]
@@ -3164,17 +3166,17 @@ fn acos_3() {
 
 #[test]
 fn acos_minus_3() {
-	test_eval("acos (-3)", "approx. 3.1415926535 - 1.762747174i");
+	test_eval("acos (-3)", "approx. 3.1415926536 - 1.762747174i");
 }
 
 #[test]
 fn acos_one_point_zero_one() {
-	test_eval_simple("acos 1.01", "approx. 0 + 0.1413037694i");
+	test_eval_simple("acos 1.01", "approx. 0 + 0.1413037695i");
 }
 
 #[test]
 fn acos_minus_one_point_zero_one() {
-	test_eval("acos (-1.01)", "approx. 3.1415926535 - 0.1413037694i");
+	test_eval("acos (-1.01)", "approx. 3.1415926536 - 0.1413037695i");
 }
 
 #[test]
@@ -3184,12 +3186,12 @@ fn acos_one() {
 
 #[test]
 fn acos_minus_one() {
-	test_eval("acos (-1)", "approx. 3.1415926535");
+	test_eval("acos (-1)", "approx. 3.1415926536");
 }
 
 #[test]
 fn atan_1() {
-	test_eval("atan 1", "approx. 0.7853981633");
+	test_eval("atan 1", "approx. 0.7853981634");
 }
 
 #[test]
@@ -3214,7 +3216,7 @@ fn asinh_0() {
 
 #[test]
 fn acosh_0() {
-	test_eval("acosh 0", "approx. 1.5707963267i");
+	test_eval("acosh 0", "approx. 1.5707963268i");
 }
 
 #[test]
@@ -3229,22 +3231,22 @@ fn atanh_0() {
 
 #[test]
 fn atanh_3() {
-	test_eval("atanh 3", "approx. 0.3465735902 + 1.5707963267i");
+	test_eval("atanh 3", "approx. 0.3465735903 + 1.5707963268i");
 }
 
 #[test]
 fn atanh_minus_3() {
-	test_eval("atanh (-3)", "approx. -0.3465735902 + 1.5707963267i");
+	test_eval("atanh (-3)", "approx. -0.3465735903 + 1.5707963268i");
 }
 
 #[test]
 fn atanh_one_point_zero_one() {
-	test_eval("atanh 1.01", "approx. 2.651652454 + 1.5707963267i");
+	test_eval("atanh 1.01", "approx. 2.651652454 + 1.5707963268i");
 }
 
 #[test]
 fn atanh_minus_one_point_zero_one() {
-	test_eval("atanh (-1.01)", "approx. -2.651652454 + 1.5707963267i");
+	test_eval("atanh (-1.01)", "approx. -2.651652454 + 1.5707963268i");
 }
 
 #[test]
@@ -3259,7 +3261,7 @@ fn atanh_minus_1() {
 
 #[test]
 fn ln_2() {
-	test_eval("ln 2", "approx. 0.6931471805");
+	test_eval("ln 2", "approx. 0.6931471806");
 }
 
 #[test]
@@ -3284,7 +3286,7 @@ fn log10_1000() {
 
 #[test]
 fn log10_10000() {
-	test_eval("log10 10000", "approx. 3.9999999999");
+	test_eval_simple("log10 10000", "approx. 4.0000000000");
 }
 
 #[test]
@@ -3304,7 +3306,7 @@ fn log_1000() {
 
 #[test]
 fn log_10000() {
-	test_eval("log 10000", "approx. 3.9999999999");
+	test_eval_simple("log 10000", "approx. 4.0000000000");
 }
 
 #[test]
@@ -3339,7 +3341,7 @@ fn log2_minus_1() {
 
 #[test]
 fn sqrt_minus_two() {
-	test_eval_simple("sqrt(-2)", "approx. 0 + 1.4142135623i");
+	test_eval_simple("sqrt(-2)", "approx. 0 + 1.4142135624i");
 }
 
 #[test]
@@ -3409,24 +3411,24 @@ fn auto() {
 
 #[test]
 fn sqrt_i() {
-	test_eval("sqrt i", "approx. 0.7071067811 + 0.7071067811i");
+	test_eval("sqrt i", "approx. 0.7071067812 + 0.7071067812i");
 }
 
 #[test]
 fn sqrt_minus_two_i() {
-	// FIXME: exactly 1 - i
-	test_eval("sqrt (-2i)", "approx. 0.9999999999 - 0.9999999999i");
+	// FIXME: no trailing zeroes
+	test_eval_simple("sqrt (-2i)", "approx. 1.0000000000 - 1.0000000000i");
 }
 
 #[test]
 fn cbrt_i() {
-	// FIXME: exactly 0.8660 + 0.5i
-	test_eval("cbrt i", "approx. 0.8660254037 + 0.4999999999i");
+	// FIXME: no trailing zeroes
+	test_eval_simple("cbrt i", "approx. 0.8660254038 + 0.5000000000i");
 }
 
 #[test]
 fn cbrt_minus_two_i() {
-	test_eval("cbrt (-2i)", "approx. 1.0911236359 - 0.6299605249i");
+	test_eval_simple("cbrt (-2i)", "approx. 1.0911236360 - 0.6299605249i");
 }
 
 #[test]
@@ -3441,12 +3443,12 @@ fn cos_i() {
 
 #[test]
 fn tan_i() {
-	test_eval("tan i", "approx. 0.7615941559i");
+	test_eval_simple("tan i", "approx. 0.7615941560i");
 }
 
 #[test]
 fn ln_i() {
-	test_eval("ln i", "approx. 1.5707963267i");
+	test_eval("ln i", "approx. 1.5707963268i");
 }
 
 #[test]
@@ -3493,7 +3495,7 @@ fn lambda_2() {
 fn lambda_3() {
 	test_eval(
 		"(cis: (cis (pi/3))) (x: cos x + i * (sin x))",
-		"approx. 0.5 + 0.8660254037i",
+		"approx. 0.5 + 0.8660254038i",
 	);
 }
 
@@ -3634,7 +3636,7 @@ fn cis_minus_two_pi() {
 
 #[test]
 fn cis_pi_over_six() {
-	test_eval("cis (pi/6)", "approx. 0.8660254037 + 0.5i");
+	test_eval("cis (pi/6)", "approx. 0.8660254038 + 0.5i");
 }
 
 #[test]
@@ -4253,17 +4255,17 @@ fn sf_6() {
 
 #[test]
 fn sf_7() {
-	test_eval("1234567.55645 to 7 sf", "approx. 1234567");
+	test_eval("1234567.55645 to 7 sf", "approx. 1234568");
 }
 
 #[test]
 fn sf_8() {
-	test_eval("1234567.55645 to 8 sf", "approx. 1234567.5");
+	test_eval("1234567.55645 to 8 sf", "approx. 1234567.6");
 }
 
 #[test]
 fn sf_9() {
-	test_eval("1234567.55645 to 9 sf", "approx. 1234567.55");
+	test_eval("1234567.55645 to 9 sf", "approx. 1234567.56");
 }
 
 #[test]
@@ -4273,7 +4275,7 @@ fn sf_10() {
 
 #[test]
 fn sf_11() {
-	test_eval("1234567.55645 to 11 sf", "approx. 1234567.5564");
+	test_eval("1234567.55645 to 11 sf", "approx. 1234567.5565");
 }
 
 #[test]
@@ -4297,18 +4299,28 @@ fn sf_small_2() {
 }
 
 #[test]
+fn sf_rounding_integer_carry() {
+	test_eval("123.9 to 3 sf", "approx. 124");
+}
+
+#[test]
+fn sf_rounding_small_decimal() {
+	test_eval("0.00555 to 2 sf", "approx. 0.0056");
+}
+
+#[test]
 fn sf_small_3() {
 	test_eval("pi / 1000000 to 3 sf", "approx. 0.00000314");
 }
 
 #[test]
 fn sf_small_4() {
-	test_eval("pi / 1000000 to 4 sf", "approx. 0.000003141");
+	test_eval("pi / 1000000 to 4 sf", "approx. 0.000003142");
 }
 
 #[test]
 fn sf_small_5() {
-	test_eval("pi / 1000000 to 5 sf", "approx. 0.0000031415");
+	test_eval("pi / 1000000 to 5 sf", "approx. 0.0000031416");
 }
 
 #[test]
@@ -4318,12 +4330,12 @@ fn sf_small_6() {
 
 #[test]
 fn sf_small_7() {
-	test_eval_simple("pi / 1000000 to 7 sf", "approx. 0.000003141592");
+	test_eval_simple("pi / 1000000 to 7 sf", "approx. 0.000003141593");
 }
 
 #[test]
 fn sf_small_8() {
-	test_eval_simple("pi / 1000000 to 8 sf", "approx. 0.0000031415926");
+	test_eval_simple("pi / 1000000 to 8 sf", "approx. 0.0000031415927");
 }
 
 #[test]
@@ -4333,12 +4345,12 @@ fn sf_small_9() {
 
 #[test]
 fn sf_small_10() {
-	test_eval_simple("pi / 1000000 to 10 sf", "approx. 0.000003141592653");
+	test_eval_simple("pi / 1000000 to 10 sf", "approx. 0.000003141592654");
 }
 
 #[test]
 fn sf_small_11() {
-	test_eval_simple("pi / 1000000 to 11 sf", "approx. 0.0000031415926535");
+	test_eval_simple("pi / 1000000 to 11 sf", "approx. 0.0000031415926536");
 }
 
 #[test]
@@ -4383,12 +4395,12 @@ fn million_pi_6_sf() {
 
 #[test]
 fn million_pi_7_sf() {
-	test_eval("1e6 pi to 7 sf", "approx. 3141592");
+	test_eval("1e6 pi to 7 sf", "approx. 3141593");
 }
 
 #[test]
 fn million_pi_8_sf() {
-	test_eval("1e6 pi to 8 sf", "approx. 3141592.6");
+	test_eval("1e6 pi to 8 sf", "approx. 3141592.7");
 }
 
 #[test]
@@ -4398,7 +4410,7 @@ fn million_pi_9_sf() {
 
 #[test]
 fn million_pi_10_sf() {
-	test_eval("1e6 pi to 10 sf", "approx. 3141592.653");
+	test_eval("1e6 pi to 10 sf", "approx. 3141592.654");
 }
 
 #[test]
@@ -4506,12 +4518,12 @@ fn square_m_to_sqft() {
 
 #[test]
 fn test_hex_unit_conversion() {
-	test_eval_simple("1 yard lb to hex to kg m to 3sf", "approx. 0.6a2 kg m");
+	test_eval_simple("1 yard lb to hex to kg m to 3sf", "approx. 0.6a3 kg m");
 }
 
 #[test]
 fn test_hex_unit_conversion_complex() {
-	test_eval_simple("i yard lb to hex to kg m to 3sf", "approx. 0.6a2 i kg m");
+	test_eval_simple("i yard lb to hex to kg m to 3sf", "approx. 0.6a3 i kg m");
 }
 
 #[test]
@@ -4634,7 +4646,7 @@ fn kelvin_plus_celsius() {
 
 #[test]
 fn kelvin_plus_fahrenheit() {
-	test_eval("1K+1°F", "approx. 1.5555555555 K");
+	test_eval("1K+1°F", "approx. 1.5555555556 K");
 }
 
 #[test]
@@ -4649,12 +4661,12 @@ fn fahrenheit_plus_kelvin() {
 
 #[test]
 fn celsius_plus_fahrenheit() {
-	test_eval("1°C+1°F", "approx. 1.5555555555 °C");
+	test_eval("1°C+1°F", "approx. 1.5555555556 °C");
 }
 
 #[test]
 fn celsius_plus_rankine() {
-	test_eval("1°C+1°R", "approx. 1.5555555555 °C");
+	test_eval("1°C+1°R", "approx. 1.5555555556 °C");
 }
 
 #[test]
@@ -4674,7 +4686,7 @@ fn celsius_plus_millikelvin() {
 
 #[test]
 fn joule_per_kelvin_to_joule_per_fahrenheit() {
-	test_eval("1J/K to J/°F", "approx. 0.5555555555 J / °F");
+	test_eval("1J/K to J/°F", "approx. 0.5555555556 J / °F");
 }
 
 #[test]
@@ -4820,7 +4832,7 @@ fn string_debug_representation() {
 
 #[test]
 fn cis_4() {
-	test_eval("cis 4", "approx. -0.6536436208 - 0.7568024953i");
+	test_eval("cis 4", "approx. -0.6536436209 - 0.7568024953i");
 }
 
 #[test]
@@ -4880,7 +4892,7 @@ fn triple_string_concatenation() {
 
 #[test]
 fn number_to_string() {
-	test_eval_simple("\"pi = \" + (pi to string)", "pi = approx. 3.1415926535");
+	test_eval_simple("\"pi = \" + (pi to string)", "pi = approx. 3.1415926536");
 }
 
 #[test]
@@ -5268,7 +5280,7 @@ fn mixed_case_meter() {
 
 #[test]
 fn asin_minus_1_1() {
-	test_eval("asin -1.1", "approx. -1.5707963267 + 0.4435682543i");
+	test_eval("asin -1.1", "approx. -1.5707963268 + 0.4435682544i");
 }
 
 #[test]
@@ -5408,7 +5420,7 @@ fn five_dollars() {
 
 #[test]
 fn dollar_prefix() {
-	test_eval_simple("$200/3 to 2dp", "approx. $66.66");
+	test_eval_simple("$200/3 to 2dp", "approx. $66.67");
 }
 
 #[test]
@@ -5581,12 +5593,12 @@ fn planck() {
 
 #[test]
 fn implicit_unit_fudging() {
-	test_eval("5'1 to m to 2dp", "approx. 1.54 m");
+	test_eval("5'1 to m to 2dp", "approx. 1.55 m");
 }
 
 #[test]
 fn implicit_unit_fudging_2() {
-	test_eval("0'1 to m to 2dp", "approx. 0.02 m");
+	test_eval("0'1 to m to 2dp", "approx. 0.03 m");
 }
 
 #[test]
@@ -5599,7 +5611,7 @@ fn implicit_unit_fudging_3() {
 
 #[test]
 fn implicit_unit_fudging_4() {
-	test_eval("5'1 + 5m", "approx. 21.4875328083'");
+	test_eval("5'1 + 5m", "approx. 21.4875328084'");
 }
 
 #[test]
@@ -5622,12 +5634,12 @@ fn millifarad() {
 
 #[test]
 fn point() {
-	test_eval("0.5 points to mm", "approx. 0.1763888888 mm");
+	test_eval("0.5 points to mm", "approx. 0.1763888889 mm");
 }
 
 #[test]
 fn rad_per_sec() {
-	test_eval("10 RPM to rad/s", "approx. 1.0471975511 rad / s")
+	test_eval("10 RPM to rad/s", "approx. 1.0471975512 rad / s")
 }
 
 #[test]
@@ -5891,7 +5903,7 @@ fn simplification_ohms_2() {
 fn alias_sqrt() {
 	test_eval(
 		"partial_result = 2*(0.84 femto meter) / (1.35e-22 m/s^2); sqrt(partial_result)",
-		"approx. 3527.6684147527 s",
+		"approx. 3527.6684147528 s",
 	);
 }
 
@@ -6082,7 +6094,7 @@ fn european_formatting() {
 		fend_core::evaluate("sin(1,2)", &mut ctx)
 			.unwrap()
 			.get_main_result(),
-		"approx. 0,9320390859"
+		"approx. 0,9320390860"
 	);
 }
 
@@ -6141,10 +6153,17 @@ fn decimal_separator_comma() {
 	context.set_decimal_separator_style(fend_core::DecimalSeparatorStyle::Comma);
 	assert_eq!(
 		evaluate("e", &mut context).unwrap().get_main_result(),
-		"approx. 2,7182818284"
+		"approx. 2,7182818285"
 	);
 	assert_eq!(
 		evaluate("1' to m", &mut context).unwrap().get_main_result(),
 		"0,3048 m"
+	);
+	context.set_exchange_rate_handler_v2(fend_core::test_utils::DummyCurrencyHandler);
+	assert_eq!(
+		evaluate("1,3 eur to aud", &mut context)
+			.unwrap()
+			.get_main_result(),
+		"1,69 AUD"
 	);
 }
