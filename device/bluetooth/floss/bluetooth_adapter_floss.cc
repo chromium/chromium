@@ -1330,9 +1330,9 @@ void BluetoothAdapterFloss::SetAdvertisingInterval(
       std::min(static_cast<int64_t>(std::numeric_limits<uint16_t>::max()),
                max.InMilliseconds()));
 
-  // TODO(b/253718595): Support a 'no preference' option so Floss can choose a
-  // default value for the advertising interval. We are temporarily performing
-  // parameter checking to fulfill existing callers' expectations.
+  // Parameter checking for the advertising interval is performed to fulfill
+  // existing callers' expectations, as a 'no preference' option is not
+  // supported. See b/253718595 for more details.
   if (min_ms < kMinIntervalMs || max_ms > kMaxIntervalMs || min_ms > max_ms) {
     std::move(error_callback)
         .Run(device::BluetoothAdvertisement::
