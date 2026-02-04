@@ -13,7 +13,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/ozone/public/ozone_switches.h"
 
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
@@ -24,7 +24,7 @@ namespace ui {
 
 namespace {
 
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 bool InspectWaylandDisplay(base::Environment& env) {
   std::optional<std::string> wayland_display = env.GetVar("WAYLAND_DISPLAY");
   if (wayland_display.has_value()) {
@@ -43,7 +43,7 @@ bool InspectWaylandDisplay(base::Environment& env) {
   }
   return false;
 }
-#endif  // BUILDFLAG(IS_OZONE_WAYLAND)
+#endif  // BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 
 }  // namespace
 
@@ -54,7 +54,7 @@ void SetOzonePlatformForLinuxIfNeeded(base::CommandLine& command_line) {
     return;
   }
 
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   auto env = base::Environment::Create();
   std::optional<std::string> xdg_session_type =
       env->GetVar(base::nix::kXdgSessionTypeEnvVar);
@@ -64,26 +64,26 @@ void SetOzonePlatformForLinuxIfNeeded(base::CommandLine& command_line) {
   }
 #endif
 
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
   command_line.AppendSwitchASCII(switches::kOzonePlatform, "x11");
 #endif
 }
 
 bool HasWaylandDisplay(base::Environment& env) {
-#if !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   return false;
 #else
   static bool has_wayland_display = InspectWaylandDisplay(env);
   return has_wayland_display;
-#endif  // !BUILDFLAG(IS_OZONE_WAYLAND)
+#endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 }
 
 bool HasX11Display(base::Environment& env) {
-#if !BUILDFLAG(IS_OZONE_X11)
+#if !BUILDFLAG(SUPPORTS_OZONE_X11)
   return false;
 #else
   return env.GetVar("DISPLAY").has_value();
-#endif  // !BUILDFLAG(IS_OZONE_X11)
+#endif  // !BUILDFLAG(SUPPORTS_OZONE_X11)
 }
 
 }  // namespace ui

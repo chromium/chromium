@@ -234,12 +234,12 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
   void ActivateBrowser(BrowserWindowInterface* browser_window_interface) {
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
     // TODO(nicolaso): BrowserActivationWaiter times out on Wayland. Figure out
     // why.
 #else
     ActivateBrowserImpl(browser_window_interface);
-#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   }
 
   void ActivateBrowserImpl(BrowserWindowInterface* browser_window_interface) {

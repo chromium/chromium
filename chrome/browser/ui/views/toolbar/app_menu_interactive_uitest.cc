@@ -189,7 +189,8 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 // completion because the native widget's state is not properly updated.
 // TODO(crbug.com/388531778): DND tests are flaky on Windows. This should be
 // re-enabled once de-flaked.
-#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_DISABLED(test_name) DISABLED_##test_name
 #else
 #define MAYBE_DISABLED(test_name) test_name

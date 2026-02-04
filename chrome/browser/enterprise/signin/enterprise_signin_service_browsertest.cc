@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, OpensNewTabOnSyncPaused) {
 // TODO(nicolaso): Wayland doesn't support programmatically changing window
 // activation. This test relies on `browser2` having activation, so it doesn't
 // work on Wayland.
-#if !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
                        CurrentlyActiveTabIsAlreadyLoginPage) {
   GURL example_url(kExampleUrl);
@@ -234,6 +234,6 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
       CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
       CheckTabs(browser2, {{example_url, ACTIVE}, {auth_url}}));
 }
-#endif  // !BUILDFLAG(IS_OZONE_WAYLAND)
+#endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 
 }  // namespace enterprise_signin

@@ -195,9 +195,9 @@ void WindowEventFilterLinux::MaybeToggleMaximizedState(aura::Window* window) {
 }
 
 void WindowEventFilterLinux::LowerWindow() {
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
   desktop_window_tree_host_->LowerWindow();
-#endif  // BUILDFLAG(IS_OZONE_X11)
+#endif  // BUILDFLAG(SUPPORTS_OZONE_X11)
 }
 
 void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(

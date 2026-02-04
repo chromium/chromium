@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
 
 // This test cannot work on Wayland because the platform does not allow clients
 // to position top level windows, activate them, and set focus.
-#if !(BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_CHROMEOS))
+#if !(BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_CHROMEOS))
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
                        StorePendingNewEntryFromIncognitoBrowser) {
   ASSERT_TRUE(browser()->IsActive());

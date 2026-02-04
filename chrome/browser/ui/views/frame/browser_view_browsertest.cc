@@ -812,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
 }
 
 // TODO(crbug.com/425715421): Re-enable when wayland supports drag and drop
-#if !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_DragNotSupportedInFullscreen DragNotSupportedInFullscreen
 #else
 #define MAYBE_DragNotSupportedInFullscreen DISABLED_DragNotSupportedInFullscreen

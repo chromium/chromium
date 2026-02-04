@@ -59,13 +59,13 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
 
  private:
   // ui::CompositorObserver:
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
   void OnCompositingCompleteSwapWithNewSize(ui::Compositor* compositor,
                                             const gfx::Size& size) override {
     DCHECK(compositor_observation_.IsObservingSource(compositor));
     callback_.Run(size);
   }
-#endif  // BUILDFLAG(IS_OZONE_X11)
+#endif  // BUILDFLAG(SUPPORTS_OZONE_X11)
 
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {
     DCHECK(compositor_observation_.IsObservingSource(compositor));

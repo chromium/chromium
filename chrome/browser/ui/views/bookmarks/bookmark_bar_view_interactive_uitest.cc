@@ -241,8 +241,8 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
 // TODO(crbug.com/388531778): DND tests are fail on Windows and Wayland. This
 // should be re-enabled once fix.
 // TODO(crbug.com/448993919): Re-enable this test on Mac.
-#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(SUPPORTS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
 #define MAYBE_DISABLED(test_name) DISABLED_##test_name
 #else
 #define MAYBE_DISABLED(test_name) test_name
@@ -285,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
 // TODO(crbug.com/388531778): DND tests are fail on Windows and Wayland. This
 // should be re-enabled once fix.
 // TODO(crbug.com/448993919): Re-enable this test on Mac.
-#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(SUPPORTS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
 #define MAYBE_BookmarksDragAndDropToNestedFolder \
   DISABLED_BookmarksDragAndDropToNestedFolder
 #else

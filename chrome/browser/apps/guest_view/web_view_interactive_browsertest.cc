@@ -77,7 +77,7 @@ using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
-#if !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 // Some test helpers, like ui_test_utils::SendMouseMoveSync, don't work properly
 // on some platforms. Tests that require these helpers need to be skipped for
 // these cases.

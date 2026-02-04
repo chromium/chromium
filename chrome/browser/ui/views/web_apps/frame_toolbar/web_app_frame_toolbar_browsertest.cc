@@ -2500,7 +2500,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/459532445): Flaky on Linux Wayland.
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_FullscreenAndRestoreWindowWithApi \
   DISABLED_FullscreenAndRestoreWindowWithApi
 #else

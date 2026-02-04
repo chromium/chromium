@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
 // TODO: crbug.com/352244303 - For some reason the test fails on
 // linux_wayland_rel when kKeyboardAndPointerLockPrompt is disabled. Re-enable
 // the test when the feature is enabled by default.
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_HandleKeyEvent_KeyboardLocked \
   DISABLED_HandleKeyEvent_KeyboardLocked
 #else

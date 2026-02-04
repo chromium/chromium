@@ -26,7 +26,7 @@ void InitializeOzoneKeyboardEngineManager() {
       keyboard_layout_engine_.get());
 }
 
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
 bool ConvertKeyCodeToTextOzone
 #else
 bool ConvertKeyCodeToText
@@ -68,7 +68,7 @@ bool ConvertKeyCodeToText
   return true;
 }
 
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
 bool ConvertCharToKeyCodeOzone
 #else
 bool ConvertCharToKeyCode

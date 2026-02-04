@@ -1407,7 +1407,7 @@ void MenuController::OnDragComplete(bool should_close) {
   // is not updated when the mouse button is released to end a drag. Therefore,
   // all subsequent mouse movements will be delivered as "MouseDragged" events.
   // Until this is fixed, the menu should be closed.
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
   should_close = true;
 #endif
 

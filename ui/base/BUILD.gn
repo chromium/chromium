@@ -1410,7 +1410,7 @@ buildflag_header("ozone_buildflags") {
   header = "ozone_buildflags.h"
 
   flags = [
-    "IS_OZONE_WAYLAND=$ozone_platform_wayland",
-    "IS_OZONE_X11=$ozone_platform_x11",
+    "SUPPORTS_OZONE_WAYLAND=$ozone_platform_wayland",
+    "SUPPORTS_OZONE_X11=$ozone_platform_x11",
   ]
 }

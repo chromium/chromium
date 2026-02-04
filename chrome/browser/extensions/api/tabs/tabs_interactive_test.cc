@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
 
   bool check_window_active_state = true;
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    BUILDFLAG(IS_OZONE_WAYLAND)
+    BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   check_window_active_state = false;
 #endif
 

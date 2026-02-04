@@ -50,7 +50,7 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
 
 // TODO(crbug.com/388101855): Remove buildflag when GlobalAcceleratorListener
 // supports Linux Wayland.
-#if !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateShortcutSuspension) {
   auto* const global_accelerator_listener =
       ui::GlobalAcceleratorListener::GetInstance();
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateShortcutSuspension) {
       base::ListValue().Append(false));
   EXPECT_FALSE(global_accelerator_listener->IsShortcutHandlingSuspended());
 }
-#endif  //  !BUILDFLAG(IS_OZONE_WAYLAND)
+#endif  //  !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 
 // TODO(crbug.com/416160303): Enable the test.
 #if BUILDFLAG(IS_WIN)

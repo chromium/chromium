@@ -9,8 +9,10 @@ Chromium by providing an implementation of the platform interface.
 > Note: There are 2 buildflags which target platforms who use OZONE.
 > They are slightly different from each other:
 > * IS_OZONE: Targets Linux, ChromeOS, and Fuchsia.
-> * IS_OZONE_WAYLAND: Targets only Linux systems using the Wayland window
-> manager. Does not include ChromeOS or Fuchsia.
+> * SUPPORTS_OZONE_WAYLAND: Targets only Linux systems supporting the Wayland
+    window manager. Does not include ChromeOS or Fuchsia. Note that this flag
+    only indicates that the build supports wayland, it does not mean that the
+    build is running with the Wayland window manager.
 
 ## Guiding Principles
 

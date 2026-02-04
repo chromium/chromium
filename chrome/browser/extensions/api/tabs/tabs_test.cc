@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
 // current fix only applies to X11.
 #if BUILDFLAG(IS_LINUX)
 // Must be checked inside IS_LINUX to compile on windows/mac.
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
   // DesktopWindowTreeHostX11::IsMinimized() relies on an asynchronous update
   // from the window server
   views::test::PropertyWaiter minimize_waiter(
@@ -1078,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
                           base::Unretained(new_browser->window())),
       true);
   EXPECT_TRUE(minimize_waiter.Wait());
-#elif BUILDFLAG(IS_OZONE_WAYLAND)
+#elif BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   // TODO(crbug.com/40252593): Find a fix/workaround for wayland and add
   // verification of IsMinimized() for as well.
 #endif

@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
 // Ensure the bubble reshows on mouse move events after a suppression period.
 // TODO(crbug.com/336399260): Enable on macOS
 // TODO(crbug.com/372814576): Enable on Wayland
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_ReshowOnMove DISABLED_ReshowOnMove
 #else
 #define MAYBE_ReshowOnMove ReshowOnMove
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnMove) {
 // Ensure the bubble reshows on mouse click events after a suppression period.
 // TODO(crbug.com/336399260): Enable on macOS
 // TODO(crbug.com/372814576): Enable on Wayland
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_ReshowOnClick DISABLED_ReshowOnClick
 #else
 #define MAYBE_ReshowOnClick ReshowOnClick

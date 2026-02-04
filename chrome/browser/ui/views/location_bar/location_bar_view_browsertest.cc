@@ -470,7 +470,7 @@ class LocationBarViewPageActionsMigrationTest
 // Wayland doesn't support changing window activation programmatically.
 // TODO(crbug.com/376285664): Remove this test altogether once the migration
 // is complete.
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_LocationBarFocusOrder DISABLED_LocationBarFocusOrder
 #else
 #define MAYBE_LocationBarFocusOrder LocationBarFocusOrder

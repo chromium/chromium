@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId));
 }
 
-#if !(BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND))
+#if !(BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
 // TODO(crbug.com/40863331): Linux Wayland doesn't support window activation
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        UiShowsOnlyOnActiveWindow) {

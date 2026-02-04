@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabDestroyed) {
 
 // TODO(crbug.com/430097333): Wayland doesn't support programmatic window
 // activation. Re-enable when activation is supported.
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_FocusedWindowChange DISABLED_FocusedWindowChange
 #else
 #define MAYBE_FocusedWindowChange FocusedWindowChange

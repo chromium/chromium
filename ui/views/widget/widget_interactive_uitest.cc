@@ -2735,7 +2735,7 @@ TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
 // moves instead of drags.
 // TODO(crbug.com/375959961): On X11, the native widget's mouse button state is
 // not updated when the mouse button is released to end a drag.
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
 #define MAYBE_RunShellDragUpdatesMouseButtonState \
   DISABLED_RunShellDragUpdatesMouseButtonState
 #else

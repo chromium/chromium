@@ -12,7 +12,7 @@
 #include "gpu/ipc/service/gpu_config.h"
 #include "ui/base/ozone_buildflags.h"
 
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
 
 namespace gpu {
 
@@ -36,6 +36,6 @@ typedef struct __GLXcontextRec *GLXContext;
 
 }  // namespace gpu
 
-#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_X11)
 
 #endif  // GPU_IPC_SERVICE_X_UTIL_H_

@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   ui_test_utils::WaitForBrowserSetLastActive(browser2);
   EXPECT_EQ(profile1, profile_manager->GetProfileForLaunch());
 
-#if !BUILDFLAG(IS_OZONE_WAYLAND)
+#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   // profile0 is the most recently used profile
 #if BUILDFLAG(IS_CHROMEOS)
   session_manager::SessionManager::Get()->SwitchActiveSession(kAccountId0);
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   browser()->window()->Activate();
   ui_test_utils::WaitForBrowserSetLastActive(browser());
   EXPECT_EQ(profile0, profile_manager->GetProfileForLaunch());
-#endif  // !BUILDFLAG(IS_OZONE_WAYLAND)
+#endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 }
 
 class GlicProfileManagerPreloadingTest

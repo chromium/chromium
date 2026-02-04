@@ -1054,7 +1054,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 }
 
 // Linux wayland does not support window activation.
-#if (BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND))
+#if (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
 #define MAYBE_TestOsSystemAutoResolves DISABLED_TestOsSystemAutoResolves
 #else
 #define MAYBE_TestOsSystemAutoResolves TestOsSystemAutoResolves

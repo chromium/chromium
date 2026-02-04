@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(DisplayMediaAccessHandlerInteractiveUITest,
   const bool focus_opener = std::get<0>(GetParam());
   const bool request_from_opener = std::get<1>(GetParam());
 #if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   // Wayland doesn't support changing window activation programmatically, so we
   // can't focus the opener.  The pip window will have the focus when it opens.
   // Note that if it doesn't have focus for some reason (i.e., something
@@ -170,7 +170,7 @@ INSTANTIATE_TEST_SUITE_P(DisplayMediaAccessHandlerInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerInteractiveUITest,
                        PickerShowsUpEvenIfOpenerIsHidden) {
 #if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   // Wayland doesn't support changing window activation programmatically, so we
   // can't re-focus the pip window.
   GTEST_SKIP();

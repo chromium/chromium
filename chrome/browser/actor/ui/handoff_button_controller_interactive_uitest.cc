@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
 #endif  // BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/465113623) Test flaky on Wayland.
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_ButtonHidesWhenOmniboxIsFocused \
   DISABLED_ButtonHidesWhenOmniboxIsFocused
 #else

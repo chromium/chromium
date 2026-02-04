@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, SelectAccount) {
 }
 
 // TODO(https://crbug.com/441413537): Fix this on linux-wayland-mutter-rel
-#if BUILDFLAG(IS_OZONE_WAYLAND) && BUILDFLAG(USE_DBUS)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) && BUILDFLAG(USE_DBUS)
 #define MAYBE_BubbleHidesWhenModalUIShown DISABLED_BubbleHidesWhenModalUIShown
 #else
 #define MAYBE_BubbleHidesWhenModalUIShown BubbleHidesWhenModalUIShown

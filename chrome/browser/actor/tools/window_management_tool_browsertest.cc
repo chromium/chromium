@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
   EXPECT_TRUE(actor_task().GetTabs().empty());
 }
 
-#if BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 // Wayland doesn't support programmatic window activation at all so this test
 // (and functionality?) isn't relevant.
 #define MAYBE_ActivateWindow DISABLED_ActivateWindow

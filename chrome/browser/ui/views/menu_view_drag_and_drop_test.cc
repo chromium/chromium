@@ -381,7 +381,7 @@ void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragComplete(
 
 // TODO(crbug.com/375959961): For X11, the menu is always closed on drag
 // completion because the native widget's state is not properly updated.
-#if !BUILDFLAG(IS_OZONE_X11)
+#if !BUILDFLAG(SUPPORTS_OZONE_X11)
   EXPECT_TRUE(menu()->GetSubmenu()->IsShowing());
 #endif
 
@@ -500,7 +500,7 @@ void MenuViewDragAndDropTestTestInMenuDragNoDrop::StartDrag() {
 
 // TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
 // because the native widget's state is not properly updated.
-#if BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
 #define MAYBE_TestInMenuDragNoDrop DISABLED_TestInMenuDragNoDrop
 #else
 #define MAYBE_TestInMenuDragNoDrop TestInMenuDragNoDrop
@@ -558,7 +558,7 @@ void MenuViewDragAndDropTestNestedDrag::OnWidgetDragComplete(
   // all subsequent mouse movements will be delivered as "MouseDragged" events
   // to MenuController.
   // Until this is fixed, the menu closes at the end of drags.
-  EXPECT_NE(submenu->IsShowing(), BUILDFLAG(IS_OZONE_X11));
+  EXPECT_NE(submenu->IsShowing(), BUILDFLAG(SUPPORTS_OZONE_X11));
 
   // Clean up.
   submenu->Close();
@@ -603,7 +603,7 @@ void MenuViewDragAndDropTestNestedDrag::StartDrag() {
 // after the drag.
 // TODO(pkasting): https://crbug.com/939621 Fails on Mac.
 // TODO(crbug.com/41496561): Test is failing under ChromeRefresh2023 on wayland.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 #define MAYBE_MenuViewDragAndDropNestedDrag \
   DISABLED_MenuViewDragAndDropNestedDrag
 #else
