@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -94,6 +95,8 @@
           initWithPhotosService:photosService
                     prefService:prefService
           accountManagerService:accountManagerService
+          authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                    self.profile)
                 identityManager:identityManager
       manageStorageAlertHandler:manageStorageAlertHandler
                    sceneHandler:sceneHandler

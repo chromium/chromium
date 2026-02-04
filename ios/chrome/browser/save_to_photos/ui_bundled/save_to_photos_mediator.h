@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol GoogleOneCommands;
 class GURL;
@@ -57,6 +58,8 @@ extern NSString* const kGooglePhotosAppURLScheme;
                           prefService:(PrefService*)prefService
                 accountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
+                authenticationService:
+                    (AuthenticationService*)authenticationService
                       identityManager:(signin::IdentityManager*)identityManager
             manageStorageAlertHandler:
                 (id<ManageStorageAlertCommands>)manageStorageAlertHandler

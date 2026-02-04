@@ -9,10 +9,12 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
@@ -26,13 +28,17 @@
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/photos/test_photos_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -121,7 +127,12 @@ class SaveToPhotosMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
+    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
@@ -129,14 +140,24 @@ class SaveToPhotosMediatorTest : public PlatformTest {
     builder.AddTestingFactory(PhotosServiceFactory::GetInstance(),
                               PhotosServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
-    web_state_ = std::make_unique<web::FakeWebState>();
-    FakeImageFetchTabHelper::CreateForWebState(web_state_.get());
-    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
-    FakeSystemIdentityManager* system_identity_manager =
+    fake_system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
-    system_identity_manager->AddIdentity(fake_identity_);
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+    fake_system_identity_manager_->AddIdentity(fake_identity_);
+    signin::MakeAccountAvailable(
+        identity_manager_,
+        signin::AccountAvailabilityOptionsBuilder()
+            .WithGaiaId(fake_identity_.gaiaId)
+            .Build(base::SysNSStringToUTF8(fake_identity_.userEmail)));
+    authentication_service->SignIn(fake_identity_,
+                                   signin_metrics::AccessPoint::kUnknown);
+    web_state_ = std::make_unique<web::FakeWebState>();
+
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    FakeImageFetchTabHelper::CreateForWebState(web_state_.get());
     mock_application_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_handler_
@@ -154,8 +175,6 @@ class SaveToPhotosMediatorTest : public PlatformTest {
 
     mock_application_ = OCMClassMock([UIApplication class]);
     OCMStub([mock_application_ sharedApplication]).andReturn(mock_application_);
-    // The feature requires the user being signed-in.
-    SignIn();
   }
 
   // Set-up the FakeImageFetchTabHelper so it quits the run loop when calling
@@ -191,18 +210,12 @@ class SaveToPhotosMediatorTest : public PlatformTest {
             initWithPhotosService:photos_service
                       prefService:pref_service
             accountManagerService:account_manager_service
+            authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                      profile_.get())
                   identityManager:identity_manager
         manageStorageAlertHandler:mock_manage_storage_alert_handler_
                      sceneHandler:mock_application_handler_
                  googleOneHandler:mock_google_one_handler_];
-  }
-
-  // Sign-in with a fake account.
-  void SignIn() {
-    signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(profile_.get()),
-        base::SysNSStringToUTF8(fake_identity_.userEmail),
-        signin::ConsentLevel::kSignin);
   }
 
   // Returns the TestPhotosService tied to the browser state.
@@ -217,16 +230,25 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         ImageFetchTabHelper::FromWebState(web_state_.get()));
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
+  // ScopedTestingLocalState needed for the authentication service and profile
+  // manager.
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> web_state_;
+  raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   id mock_application_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   id<SystemIdentity> fake_identity_;
   base::HistogramTester histogram_tester_;
   id mock_application_handler_;
   id mock_manage_storage_alert_handler_;
   id mock_google_one_handler_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 // Tests that the mediator attempts to fetch the image data when started.

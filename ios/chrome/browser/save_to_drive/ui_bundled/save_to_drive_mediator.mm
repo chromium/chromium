@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/web/public/download/download_task.h"
@@ -36,7 +38,8 @@
 #import "net/base/url_util.h"
 // TODO(crbug.com/40286505): Depend on account_picker_consumer.h directly.
 
-@interface SaveToDriveMediator () <CRWWebStateObserver,
+@interface SaveToDriveMediator () <AuthenticationServiceObserving,
+                                   CRWWebStateObserver,
                                    CRWDownloadTaskObserver,
                                    IdentityManagerObserverBridgeDelegate>
 
@@ -74,20 +77,24 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   // The file uploader is used to fetch the storage quota for a given identity.
   std::unique_ptr<DriveFileUploader> _fileUploader;
   BOOL _prefsLoaded;
+  raw_ptr<AuthenticationService> _authenticationService;
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
   int _numberOfAttempts;
 }
 
-- (instancetype)initWithDownloadTask:(web::DownloadTask*)downloadTask
-                  saveToDriveHandler:(id<SaveToDriveCommands>)saveToDriveHandler
-           manageStorageAlertHandler:
-               (id<ManageStorageAlertCommands>)manageStorageAlertHandler
-                accountPickerHandler:
-                    (id<AccountPickerCommands>)accountPickerHandler
-                         prefService:(PrefService*)prefService
-               accountManagerService:
-                   (ChromeAccountManagerService*)accountManagerService
-                     identityManager:(signin::IdentityManager*)identityManager
-                        driveService:(drive::DriveService*)driveService {
+- (instancetype)
+         initWithDownloadTask:(web::DownloadTask*)downloadTask
+           saveToDriveHandler:(id<SaveToDriveCommands>)saveToDriveHandler
+    manageStorageAlertHandler:
+        (id<ManageStorageAlertCommands>)manageStorageAlertHandler
+         accountPickerHandler:(id<AccountPickerCommands>)accountPickerHandler
+                  prefService:(PrefService*)prefService
+        authenticationService:(AuthenticationService*)authenticationService
+        accountManagerService:
+            (ChromeAccountManagerService*)accountManagerService
+              identityManager:(signin::IdentityManager*)identityManager
+                 driveService:(drive::DriveService*)driveService {
   self = [super init];
   if (self) {
     _downloadTask = downloadTask;
@@ -114,6 +121,11 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
+    _authenticationService = authenticationService;
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
+    CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M152);
   }
   return self;
 }
@@ -138,6 +150,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   _driveService = nullptr;
   _saveToDriveHandler = nil;
   _manageStorageAlertHandler = nil;
+  _authenticationService = nil;
+  _authServiceObserverBridge = nullptr;
   _accountPickerHandler = nil;
 }
 
@@ -359,4 +373,12 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   }
 }
 
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    // Signin is now disabled, so drive can’t be accessed anymore.
+    [_saveToDriveHandler hideSaveToDrive];
+  }
+}
 @end

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -82,15 +83,17 @@
   PrefService* prefService = profile->GetPrefs();
   id<SaveToDriveCommands> saveToDriveHandler =
       HandlerForProtocol(dispatcher, SaveToDriveCommands);
-  _mediator =
-      [[SaveToDriveMediator alloc] initWithDownloadTask:_downloadTask
-                                     saveToDriveHandler:saveToDriveHandler
-                              manageStorageAlertHandler:self
-                                   accountPickerHandler:self
-                                            prefService:prefService
-                                  accountManagerService:accountManagerService
-                                        identityManager:identityManager
-                                           driveService:driveService];
+  _mediator = [[SaveToDriveMediator alloc]
+           initWithDownloadTask:_downloadTask
+             saveToDriveHandler:saveToDriveHandler
+      manageStorageAlertHandler:self
+           accountPickerHandler:self
+                    prefService:prefService
+          authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                    self.profile)
+          accountManagerService:accountManagerService
+                identityManager:identityManager
+                   driveService:driveService];
 
   AccountPickerConfiguration* accountPickerConfiguration =
       drive::GetAccountPickerConfiguration(_downloadTask);

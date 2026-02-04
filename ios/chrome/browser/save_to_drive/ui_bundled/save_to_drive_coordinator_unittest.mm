@@ -122,6 +122,8 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
                 manageStorageAlertHandler:[OCMArg any]
                      accountPickerHandler:[OCMArg any]
                               prefService:pref_service_
+                    authenticationService:ios::OCM::AnyPointer<
+                                              AuthenticationService>()
                     accountManagerService:account_manager_service_
                           identityManager:ios::OCM::AnyPointer<
                                               signin::IdentityManager>()
@@ -191,6 +193,8 @@ TEST_F(SaveToDriveCoordinatorTest, StartsAndDisconnectsMediator) {
                 manageStorageAlertHandler:manage_storage_commands
                      accountPickerHandler:account_picker_commands
                               prefService:pref_service_
+                    authenticationService:ios::OCM::AnyPointer<
+                                              AuthenticationService>()
                     accountManagerService:account_manager_service_
                           identityManager:IdentityManagerFactory::GetForProfile(
                                               profile_.get())

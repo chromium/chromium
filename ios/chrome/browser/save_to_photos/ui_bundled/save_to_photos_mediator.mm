@@ -33,6 +33,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
@@ -83,7 +85,8 @@ NSString* const kGooglePhotosRecentlyAddedURLString =
 
 NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
-@interface SaveToPhotosMediator () <IdentityManagerObserverBridgeDelegate>
+@interface SaveToPhotosMediator () <AuthenticationServiceObserving,
+                                    IdentityManagerObserverBridgeDelegate>
 
 // Identity used to perform an upload. Should be set when the user selects an
 // identity, right before starting to upload. If the upload fails, should be
@@ -109,6 +112,9 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   BOOL _successSnackbarAppeared;
   BOOL _successSnackbarDisappeared;
   BOOL _uploadCompletedSuccessfully;
+  raw_ptr<AuthenticationService> _authenticationService;
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 #pragma mark - Initialization
@@ -117,6 +123,8 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                           prefService:(PrefService*)prefService
                 accountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
+                authenticationService:
+                    (AuthenticationService*)authenticationService
                       identityManager:(signin::IdentityManager*)identityManager
             manageStorageAlertHandler:
                 (id<ManageStorageAlertCommands>)manageStorageAlertHandler
@@ -143,6 +151,11 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
+    _authenticationService = authenticationService;
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
+    CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M152);
   }
   return self;
 }
@@ -242,6 +255,8 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 - (void)disconnect {
   self.delegate = nil;
   _photosService = nullptr;
+  _authenticationService = nil;
+  _authServiceObserverBridge = nullptr;
   _prefService = nullptr;
   _accountManagerService = nullptr;
   _identityManager = nullptr;
@@ -558,6 +573,15 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    [self.delegate hideSaveToPhotos];
+  }
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    // Signin is now disabled, so Google Photo can’t be accessed anymore.
     [self.delegate hideSaveToPhotos];
   }
 }

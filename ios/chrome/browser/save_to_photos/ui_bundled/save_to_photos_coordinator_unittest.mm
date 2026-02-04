@@ -112,6 +112,8 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
                               prefService:ios::OCM::AnyPointer<PrefService>()
                     accountManagerService:ios::OCM::AnyPointer<
                                               ChromeAccountManagerService>()
+                    authenticationService:ios::OCM::AnyPointer<
+                                              AuthenticationService>()
                           identityManager:ios::OCM::AnyPointer<
                                               signin::IdentityManager>()
                 manageStorageAlertHandler:[OCMArg any]
@@ -205,6 +207,8 @@ TEST_F(SaveToPhotosCoordinatorTest, StartsAndDisconnectsMediator) {
               initWithPhotosService:photosService
                         prefService:prefService
               accountManagerService:accountManagerService
+              authenticationService:ios::OCM::AnyPointer<
+                                        AuthenticationService>()
                     identityManager:identityManager
           manageStorageAlertHandler:static_cast<id<ManageStorageAlertCommands>>(
                                         browser_->GetCommandDispatcher())
