@@ -2566,17 +2566,44 @@ fyi_mac_builder(
     ),
     gn_args = gn_args.config(
         configs = [
+            "gpu_tests",
             "release_builder",
             "remoteexec",
             "mac",
             "x64",
-            "chrome_with_codecs",
             "minimal_symbols",
         ],
     ),
     targets = targets.bundle(
         targets = ["trees_in_viz_enabled_tests"],
-        mixins = ["mac_15_x64"],
+        mixins = [
+            "mac_15_x64",
+            "retry_only_failed_tests",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "gpu": None,
+                    },
+                    shards = 12,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # crbug.com/1361887
+                    shards = 20,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1475852
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+        },
     ),
     builderless = True,
     cores = None,
