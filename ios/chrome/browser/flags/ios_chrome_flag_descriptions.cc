@@ -1581,6 +1581,10 @@ const char kUseFeedEligibilityServiceDescription[] =
     "Use the new eligibility service to handle whether the Discover "
     "feed is displayed on NTP";
 
+const char kUseSceneViewControllerName[] = "Use Scene View Controller";
+const char kUseSceneViewControllerDescription[] =
+    "Enables the use of SceneViewController.";
+
 const char kVariationsSeedCorpusName[] = "Variations seed corpus";
 const char kVariationsSeedCorpusDescription[] =
     "The value of the 'corpus' parameter in the variations seed request. "

@@ -932,4 +932,9 @@ BASE_DECLARE_FEATURE(kShareInOmniboxLongPress);
 BASE_DECLARE_FEATURE(kShareInOverflowMenu);
 BASE_DECLARE_FEATURE(kShareInVerbatimMatch);
 
+BASE_DECLARE_FEATURE(kUseSceneViewController);
+
+// Returns true if the UseSceneViewController feature is enabled.
+bool IsUseSceneViewControllerEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

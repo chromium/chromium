@@ -957,6 +957,9 @@ extern const char kUseDefaultAppsDestinationForPromosDescription[];
 extern const char kUseFeedEligibilityServiceName[];
 extern const char kUseFeedEligibilityServiceDescription[];
 
+extern const char kUseSceneViewControllerName[];
+extern const char kUseSceneViewControllerDescription[];
+
 extern const char kVariationsSeedCorpusName[];
 extern const char kVariationsSeedCorpusDescription[];
 

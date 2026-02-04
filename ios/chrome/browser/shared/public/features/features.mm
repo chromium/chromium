@@ -1042,3 +1042,9 @@ BASE_FEATURE(kDisableShareButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShareInOmniboxLongPress, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShareInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShareInVerbatimMatch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseSceneViewController, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsUseSceneViewControllerEnabled() {
+  return base::FeatureList::IsEnabled(kUseSceneViewController);
+}

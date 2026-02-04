@@ -9389,6 +9389,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "use-scene-view-controller",
+    "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "use-search-click-for-right-click",
     "owners": [
       "jimmyxgong@chromium.org",
