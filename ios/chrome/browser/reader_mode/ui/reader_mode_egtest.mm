@@ -177,6 +177,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
             (testSampleContextualChipVisibleInReaderMode)] ||
       [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
     config.features_enabled_and_params.push_back({kPageActionMenu, {}});
+    config.features_enabled_and_params.push_back(
+        {kProactiveSuggestionsFramework, {}});
   } else {
     config.features_disabled.push_back(kPageActionMenu);
     config.features_enabled_and_params.push_back({kGeminiKillSwitch, {}});
@@ -221,6 +223,41 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 }
 
 #pragma mark - Helpers
+
+// Opens Reader mode via the contextual panel badge entrypoint UI.
+- (void)openReaderModeWithBadgeEntrypoint {
+  if ([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled]) {
+    // Tap the AI hub entrypoint.
+    id<GREYMatcher> entrypointMatcher = grey_allOf(
+        grey_accessibilityID(kAIHubEntrypointAccessibilityIdentifier),
+        grey_sufficientlyVisible(), nil);
+
+    [[EarlGrey selectElementWithMatcher:entrypointMatcher]
+        performAction:grey_tap()];
+
+    // Verify the bottom sheet appears.
+    id<GREYMatcher> bottomSheet =
+        grey_accessibilityID(kAIHubBottomSheetAccessibilityIdentifier);
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:bottomSheet];
+
+    // Tap the "Reading mode" button.
+    id<GREYMatcher> readingModeButton =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_IOS_AI_HUB_READER_MODE_LABEL);
+    [[EarlGrey selectElementWithMatcher:readingModeButton]
+        performAction:grey_tap()];
+
+    // Verify bottom sheet disappears.
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:bottomSheet];
+  } else {
+    // Wait for the contextual panel entrypoint to appear and tap it.
+    id<GREYMatcher> entrypoint =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:entrypoint];
+    [[EarlGrey selectElementWithMatcher:entrypoint] performAction:grey_tap()];
+  }
+}
 
 // Loads the URL with optimization guide hints for Reader Mode eligibility
 // set to true.
@@ -413,22 +450,16 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Tests that the user can show Reader Mode from the contextual panel entrypoint
 // on an eligible web page.
 - (void)testToggleReaderModeInContextualPanelEntrypointForDistillablePage {
+  [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
 
   // Open Reader Mode UI.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ContextualPanelEntrypointImageViewMatcher()];
-  [[EarlGrey
-      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
-      performAction:grey_tap()];
-
+  [self openReaderModeWithBadgeEntrypoint];
   [self assertReaderModePageIsVisible];
 
   // Check that the chip is a button with the expected accessibility label.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kReaderModeChipViewAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:ReaderModeCustomizationBadge()]
       assertWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                             IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL)];
 }
@@ -628,6 +659,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   GREYAssertTrue(
       [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
       @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
 
   // Open Reading Mode options view.
   [self openReaderModeCustomizationOptions];
@@ -838,6 +870,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Tests that the contextual panel entrypoint disappears and a failure snackbar
 // is presented when distillation fails.
 - (void)testReaderModeDistillationFailure {
+  [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
 
@@ -851,10 +884,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       evaluateJavaScriptForSideEffect:@"document.body.outerHTML = ''"];
 
   // Tap the entrypoint to trigger distillation.
-  [[EarlGrey selectElementWithMatcher:entrypoint] performAction:grey_tap()];
-
-  // The entrypoint should disappear.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint];
+  [self openReaderModeWithBadgeEntrypoint];
 
   // A snackbar should be displayed with a failure message.
   NSString* failureMessage =
@@ -868,19 +898,11 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // Tests that the contextual panel entrypoint disappears and a failure snackbar
 // is presented when distillation times out.
 - (void)testReaderModeDistillationTimeout {
+  [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
 
-  // Wait for the contextual panel entrypoint to appear.
-  id<GREYMatcher> entrypoint = chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:entrypoint];
-
-  // Tap the entrypoint to trigger distillation.
-  [[EarlGrey selectElementWithMatcher:entrypoint] performAction:grey_tap()];
-
-  // The entrypoint should disappear.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint];
+  [self openReaderModeWithBadgeEntrypoint];
 
   // A snackbar should be displayed with a failure message.
   NSString* failureMessage =
@@ -954,6 +976,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
 // Tests that the user can turn on Reader Mode from the page action menu.
 - (void)testTurnOnReaderModeViaPageActionMenu {
+  GREYAssertTrue([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled],
+                 @"Proactive suggestions framework feature must be enabled");
+
   [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
@@ -965,27 +990,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint
                                                  timeout:base::Seconds(10)];
 
-  id<GREYMatcher> entrypointMatcher =
-      grey_allOf(grey_accessibilityID(kAIHubEntrypointAccessibilityIdentifier),
-                 grey_sufficientlyVisible(), nil);
+  [self openReaderModeWithBadgeEntrypoint];
 
-  [[EarlGrey selectElementWithMatcher:entrypointMatcher]
-      performAction:grey_tap()];
-
-  // Verify the bottom sheet appears.
-  id<GREYMatcher> bottomSheet =
-      grey_accessibilityID(kAIHubBottomSheetAccessibilityIdentifier);
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:bottomSheet];
-
-  // Tap the "Reading mode" button.
-  id<GREYMatcher> readingModeButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_AI_HUB_READER_MODE_LABEL);
-  [[EarlGrey selectElementWithMatcher:readingModeButton]
-      performAction:grey_tap()];
-
-  // Verify bottom sheet disappears and Reader Mode UI is shown.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:bottomSheet];
   [self assertReaderModePageIsVisible];
 }
 
@@ -1213,6 +1219,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
 // Tests that the Reader mode chip is visible when leaving Reader mode if
 // PSF is disabled.
+// TODO(crbug.com/467908483): Remove this test once PSF is launched with
+// Reading Mode.
 - (void)testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled {
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
