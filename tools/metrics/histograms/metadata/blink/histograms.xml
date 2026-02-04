@@ -5986,7 +5986,7 @@ chromium-metrics-reviews@google.com.
     finishes.
   </summary>
   <token key="Backend">
-    <variant name="Libxm2"/>
+    <variant name="Libxml2"/>
     <variant name="Rust"/>
   </token>
 </histogram>
