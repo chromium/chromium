@@ -1028,4 +1028,57 @@ TEST_F(StatusAreaWidgetTest, AddingOrRemovingCustomIconUpdatesBounds) {
   EXPECT_EQ(status_area->GetWindowBoundsInScreen(), initial_bounds);
 }
 
+// Verifies that custom tray buttons are ordered correctly relative to other
+// items in the status area.
+// Expected order:
+// Contextual pods -> Configurable pods -> Custom pods -> Fixed pods.
+TEST_F(StatusAreaWidgetTest, CustomTrayButtonsOrder) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  auto* delegate = status_area->status_area_widget_delegate();
+
+  TrayIconConfiguration config1;
+  config1.id = 1;
+  status_area->AddTrayIcon(config1, base::DoNothing());
+  TrayIconConfiguration config2;
+  config2.id = 2;
+  status_area->AddTrayIcon(config2, base::DoNothing());
+
+  views::View* icon_1 = delegate->GetViewByID(10000 + config1.id);
+  views::View* icon_2 = delegate->GetViewByID(10000 + config2.id);
+  views::View* notification_tray = status_area->notification_center_tray();
+
+  // Custom Icons -> fixed pods (i.e Notification Center)
+  // Within Custom Icons: Insertion Order (Icon 1 -> Icon 2)
+  size_t icon_1_index = delegate->GetIndexOf(icon_1).value();
+  size_t icon_2_index = delegate->GetIndexOf(icon_2).value();
+  size_t notification_tray_index =
+      delegate->GetIndexOf(notification_tray).value();
+
+  EXPECT_LT(icon_1_index, icon_2_index);
+  EXPECT_LT(icon_2_index, notification_tray_index);
+
+  // Configurable pods -> Custom Icons -> fixed pods (i.e Notification Center)
+  // Within Custom Icons: Insertion Order (Icon 1 -> Icon 2 -> Icon 3)
+  TrayIconConfiguration config3;
+  config3.id = 3;
+  status_area->AddTrayIcon(config3, base::DoNothing());
+
+  TrayBackgroundView* dictation_button = status_area->dictation_button_tray();
+  dictation_button->SetVisiblePreferred(true);
+
+  views::View* icon_3 = delegate->GetViewByID(10000 + 3);
+  size_t icon_3_index = delegate->GetIndexOf(icon_3).value();
+  size_t dictation_button_index =
+      delegate->GetIndexOf(dictation_button).value();
+
+  // Re-fetch indices as they might have shifted
+  icon_2_index = delegate->GetIndexOf(icon_2).value();
+  notification_tray_index = delegate->GetIndexOf(notification_tray).value();
+
+  EXPECT_LT(icon_2_index, icon_3_index);
+  EXPECT_LT(icon_3_index, notification_tray_index);
+  EXPECT_LT(dictation_button_index, icon_1_index);
+}
+
 }  // namespace ash
