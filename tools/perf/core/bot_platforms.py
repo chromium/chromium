@@ -509,6 +509,14 @@ def _jetstream_main_crossbench(estimated_runtime=180, arguments=()):
                           arguments=arguments)
 
 
+def _jetstream3_turbolev_future_crossbench(estimated_runtime=180, arguments=()):
+  arguments += ('--js-flags=--turbolev-future', )
+  return CrossbenchConfig('jetstream3-turbolev_future.crossbench',
+                          'jetstream_3',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 # LoadLine:
 def _loadline_phone_crossbench(estimated_runtime=7000, arguments=()):
   return CrossbenchConfig('loadline_phone.crossbench',
