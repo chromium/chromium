@@ -188,6 +188,25 @@ class PropertyBase(object):
         # properties are use-counted the same way as their main properties.
         return self.ultimate_property.enum_key
 
+    @property
+    def may_be_affected_by_transition_all(self):
+        """Whether the property may be affected by transition: all.
+
+        See ComputedStyleBase::TransitionAllDiff() for caveats."""
+        return self.interpolable and not self.is_internal
+
+    @property
+    def may_be_affected_by_transition_all_discrete(self):
+        """Whether the property may be affected by transition: all if discrete.
+
+        Notably, this excludes everything marked may_be_affected_by_transition_all
+        (it is exclusive). See TransitionAllWithDiscreteDiff() for why."""
+        return \
+           not self.effective_is_animation_affecting \
+           and not self.is_shorthand \
+           and not self.is_internal \
+           and not self.is_extra_field \
+           and not self.may_be_affected_by_transition_all
 
 def generate_property_field(default):
     # Must use 'default_factory' rather than 'default' for list/dict.
@@ -217,6 +236,7 @@ def generate_property_class(parameters):
         'name': None,
         'alternative': None,
         'visited_property': None,
+        'is_extra_field': False,
     }
 
     fields += additional.items()
@@ -290,6 +310,8 @@ class CSSProperties(object):
             self._extra_fields = [
                 Property(**x) for x in fields.name_dictionaries
             ]
+            for property_ in self._extra_fields:
+                property_.is_extra_field = True
 
         self._properties_by_name = {p.name.original: p for p in properties}
 

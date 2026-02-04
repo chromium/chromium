@@ -204,6 +204,22 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
 
   {% endfor %}
 
+  // Computes a bitset of which properties may be unequal between the two ComputedStyles.
+  // Only cares about properties that may be relevant for “transition: all” (with or
+  // without discrete values depending on which function you are calling).
+  //
+  // Note that this set may be overbroad (return properties not in PropertiesForTransitionAll());
+  // in particular, it does not filter out runtime properties that are not web-exposed.
+  // So you'll need to use it as an extra filter on top of the property list, not as the
+  // single source of truth for which properties are relevant for “all”.
+  //
+  // Similarly, this is based on a simple equality check of the fields only, without much regard
+  // for _property_ equality. E.g., if the background field contains different objects between
+  // the two, most background properties will be marked as diffed. PropertyEquality will yield
+  // the true answer.
+  static CSSBitset TransitionAllDiff(const ComputedStyle& a, const ComputedStyle& b);
+  static CSSBitset TransitionAllWithDiscreteDiff(const ComputedStyle& a, const ComputedStyle& b);
+
 #if DCHECK_IS_ON()
   enum class DebugField {
     {% for field in computed_style.all_fields|sort(attribute='name') %}

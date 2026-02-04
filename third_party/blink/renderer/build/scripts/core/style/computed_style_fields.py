@@ -120,6 +120,10 @@ class Field(object):
             be one of: keyword, flag, or monotonic_flag.
         size: Number of bits needed for storage.
         default_value: Default value for this field when it is first initialized
+        may_be_affected_by_transition_all: If this is a property that could be
+            (but does not have to be) interpolated by “transition: all”
+        may_be_affected_by_transition_all_discrete: Same, if discrete-interpolating
+            properties are included
     """
 
     def __init__(self, field_role, name_for_methods, property_name, type_name,
@@ -128,10 +132,14 @@ class Field(object):
                  highlight_style_comes_from_originating_element, mutable,
                  getter_method_name, setter_method_name, initial_method_name,
                  computed_style_custom_functions,
-                 computed_style_protected_functions, **kwargs):
+                 computed_style_protected_functions,
+                 may_be_affected_by_transition_all,
+                 may_be_affected_by_transition_all_discrete, is_extra_field,
+                 **kwargs):
         name_source = NameStyleConverter(name_for_methods)
         self.name = name_source.to_class_data_member()
         self.property_name = property_name
+        self.enum_name = NameStyleConverter(property_name).to_enum_value()
         self.type_name = type_name
         self.wrapper_pointer_name = wrapper_pointer_name
         self.alignment_type = self.wrapper_pointer_name or self.type_name
@@ -144,6 +152,9 @@ class Field(object):
             NameStyleConverter(value).to_enum_value() for value in invalidate
         ]
         self.needs_diff = bool(invalidate)
+        self.may_be_affected_by_transition_all = may_be_affected_by_transition_all
+        self.may_be_affected_by_transition_all_discrete = may_be_affected_by_transition_all_discrete
+        self.is_extra_field = is_extra_field
         self.reset_on_new_style = reset_on_new_style
         self.custom_compare = custom_compare
         self.highlight_style_comes_from_originating_element = highlight_style_comes_from_originating_element

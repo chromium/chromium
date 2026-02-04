@@ -284,3 +284,89 @@ if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}}) {
 }
 {% endfor %}
 {% endmacro %}
+
+{% macro transition_all_diff(computed_style, properties, with_discrete) %}
+  {% set filter_name = with_discrete and 'may_be_affected_by_transition_all_discrete' or 'may_be_affected_by_transition_all' %}
+  {% set extra_properties = properties|selectattr('is_property')|selectattr(filter_name)|rejectattr('field_template')|rejectattr('legacy_overlapping')|rejectattr('is_logical')|list %}
+  {% for property in extra_properties %}
+    {% set _ = property.__setattr__('processed', False) %}
+  {% endfor %}
+  {{transition_all_diff_group(computed_style, properties, filter_name)}}
+
+  {% for property in extra_properties|rejectattr('processed') %}
+    {% if property.stored_on_extra_field and "crbug.com/40919412" in property.stored_on_extra_field %}
+      // TODO(crbug.com/40919412): Add support for {{property.name}} in PropertyEquality.
+    {% elif property.surrogate_for and property.surrogate_for.is_animation_affecting %}
+      {# Surrogates of animation-affecting properties are not processed, but that is not an error. Ignore. #}
+    {% else %}
+      #error Property {{property.name}} has missing or invalid stored_on_extra_field (in css_properties.json5)
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% macro transition_all_diff_group(group_to_diff, properties, filter_name) %}
+  {# Recurse into subgroups. We make local variables to tell the compiler that it
+     does not have to keep reloading the pointers even after calling non-inlined
+     comparison functions. #}
+  {% for subgroup in group_to_diff.subgroups %}
+    {% set subgroup_var_name = group_getter_expression(subgroup)|replace('->', '_') %}
+    auto* a_{{subgroup_var_name}} = a.{{group_getter_expression(subgroup)}}.Get();
+    auto* b_{{subgroup_var_name}} = b.{{group_getter_expression(subgroup)}}.Get();
+    if (a_{{subgroup_var_name}} != b_{{subgroup_var_name}}) {
+      {{transition_all_diff_group(subgroup, properties, filter_name)|
+        replace('.' + group_getter_expression(subgroup), '_' + subgroup_var_name)|
+        indent(2, true)}}
+    }
+  {% endfor %}
+
+  {# Output tests for properties stored in this group's property fields. #}
+  {% for field in group_to_diff.fields|selectattr(filter_name) %}
+    if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}}) {
+      diff.Set(CSSPropertyID::{{field.enum_name}});
+      {# If there are any surrogates of this field, they probably also want
+         their bits set, so that they get the proper events fired. #}
+      {% for surrogate_property in properties|selectattr('surrogate_for', 'equalto', field.property_if_main_field) %}
+         diff.Set(CSSPropertyID::{{surrogate_property.enum_key}});  // Surrogate.
+         {% set _ = surrogate_property.__setattr__('processed', True) %}
+      {% endfor %}
+    }
+  {% endfor %}
+
+  {# Output tests for properties whose visited properties are stored
+     in this group's property fields. #}
+  {% for field in group_to_diff.fields|selectattr('property_if_main_field') %}
+    {% set property = field.property_if_main_field.unvisited_property %}
+    {% if property and property[filter_name] %}
+      // {{property.name}} is partially stored on {{field.name}} in this group
+      // (which may not be the same as its home group), so test it here too.
+      if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}}) {
+        diff.Set(CSSPropertyID::{{property.enum_key}});
+      }
+    {% endif %}
+  {% endfor %}
+
+  {# Output tests for properties that are stored in extra_fields
+     stored in this group. #}
+  {% for field in group_to_diff.fields|selectattr('is_extra_field') %}
+    {% set properties_this_field = [] %}
+    {% for property in properties|selectattr(filter_name)|selectattr('stored_on_extra_field') %}
+      {% if field.property_name in property.stored_on_extra_field %}
+        {% set _ = properties_this_field.append(property) %}
+      {% endif %}
+    {% endfor %}
+    {% if properties_this_field %}
+      if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}}) {
+        {% for property in properties_this_field %}
+          {% if property.field_template %}
+            // {{property.name}} is partially stored on {{field.name}} in this group
+            // (which may not be the same as its home group), so test it here too.
+          {% else %}
+            // {{property.name}} is stored on {{field.name}} in this group, so test it here.
+          {% endif %}
+            diff.Set(CSSPropertyID::{{property.enum_key}});
+          {% set _ = property.__setattr__('processed', True) %}
+        {% endfor %}
+      }
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
