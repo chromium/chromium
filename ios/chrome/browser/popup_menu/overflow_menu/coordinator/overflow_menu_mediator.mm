@@ -99,6 +99,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_metrics.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -1620,6 +1621,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   if (base::FeatureList::IsEnabled(kShareInOverflowMenu) &&
       [self isCurrentURLWebURL]) {
+    base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
+                                  ShareThisPageLocation::kOverflowMenu);
     [appActions addObject:self.shareAction];
   }
 
@@ -2493,7 +2496,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (void)shareThisPage {
-  RecordAction(UserMetricsAction("MobileMenuShareThisPage"));
+  base::UmaHistogramEnumeration("Mobile.ShareThisPage.Used",
+                                ShareThisPageLocation::kOverflowMenu);
   [self dismissMenu];
   [self.activityServiceHandler showShareSheetFromShareButton:nil];
 }

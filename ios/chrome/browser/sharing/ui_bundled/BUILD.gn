@@ -5,6 +5,7 @@
 source_set("ui_bundled") {
   sources = [
     "sharing_coordinator.h",
+    "sharing_metrics.h",
     "sharing_params.h",
     "sharing_params.mm",
     "sharing_scenario.h",

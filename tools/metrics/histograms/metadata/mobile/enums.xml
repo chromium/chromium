@@ -525,6 +525,17 @@ chromium-metrics-reviews@google.com.
              [Bottom Sheet]"/>
 </enum>
 
+<!-- LINT.IfChange(ShareThisPageLocation) -->
+
+<enum name="ShareThisPageLocation">
+  <int value="0" label="Omnibox Long Press"/>
+  <int value="1" label="Overflow Menu"/>
+  <int value="2" label="Omnibox Verbatim Match"/>
+  <int value="3" label="Location bar"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/sharing/ui_bundled/sharing_metrics.h:ShareThisPageLocation) -->
+
 <enum name="SystemNotificationActionType">
   <int value="0" label="Download paused"/>
   <int value="1" label="Download resumed"/>

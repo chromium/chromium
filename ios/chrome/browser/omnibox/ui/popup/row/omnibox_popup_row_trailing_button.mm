@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_trailing_button.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_metrics.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -40,6 +42,12 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
   }
 
   _trailingIconType = trailingIconType;
+
+  if (_trailingIconType == TrailingIconType::kShare) {
+    base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
+                                  ShareThisPageLocation::kOmniboxVerbatimMatch);
+  }
+
   [self updateButtonImageForCurrentState];
 }
 
