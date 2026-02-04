@@ -13227,6 +13227,42 @@
             ]
         }
     ],
+    "HappinessTrackingSurveysForDesktopHistoryPageControl": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopHistoryPageControl"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HappinessTrackingSurveysForDesktopHistoryPageExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopHistoryPageExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSurveysForHistoryEmbeddings": [
         {
             "platforms": [
