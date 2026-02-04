@@ -217,7 +217,6 @@ class LocationBarMediator
     private final @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
 
     private boolean mNativeInitialized;
-    private boolean mUrlFocusedFromFakebox;
     private boolean mUrlFocusedWithoutAnimations;
     private boolean mUrlFocusedWithPastedText;
     private boolean mIsUrlFocusChangeInProgress;
@@ -426,7 +425,6 @@ class LocationBarMediator
                 mUrlCoordinator.setSelectAllOnFocus(true);
             }
         } else {
-            mUrlFocusedFromFakebox = false;
             mUrlFocusedWithoutAnimations = false;
         }
 
@@ -587,7 +585,7 @@ class LocationBarMediator
     }
 
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
-        if (mUrlHasFocus || mUrlFocusedFromFakebox) {
+        if (mUrlHasFocus || didFocusUrlFromFakebox()) {
             return;
         }
 
@@ -810,7 +808,17 @@ class LocationBarMediator
     }
 
     /* package */ boolean didFocusUrlFromFakebox() {
-        return mUrlFocusedFromFakebox;
+        var focusReason =
+                mCurrentInput == null ? mPendingFocusReason : mCurrentInput.getFocusReason();
+
+        return switch (focusReason) {
+            case OmniboxFocusReason.FAKE_BOX_TAP,
+                    OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
+                    OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS,
+                    OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP ->
+                    true;
+            default -> false;
+        };
     }
 
     /** Recalculates the visibility of the buttons inside the location bar. */
@@ -1914,13 +1922,6 @@ class LocationBarMediator
                 recordOmniboxFocusReason(reason);
                 // Record Lens button shown when Omnibox is focused.
                 if (shouldShowLensButton()) LensMetrics.recordOmniboxFocusedWhenLensShown();
-            }
-
-            if (reason == OmniboxFocusReason.FAKE_BOX_TAP
-                    || reason == OmniboxFocusReason.FAKE_BOX_LONG_PRESS
-                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
-                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP) {
-                mUrlFocusedFromFakebox = true;
             }
 
             mUrlFocusedWithPastedText = pastedText != null;
