@@ -102,7 +102,7 @@ void LayoutGrid::StyleDidChange(
       NamedGridLinesDefinitionDidChange(new_style, *old_style) ||
       !base::ValuesEquivalent(new_style.GridTemplateAreas(),
                               old_style->GridTemplateAreas()) ||
-      (diff.NeedsLayout() &&
+      (diff.NeedsFullLayout() &&
        (new_grid_columns_track_list.AutoRepeatTrackCount() ||
         new_grid_rows_track_list.AutoRepeatTrackCount()))) {
     SetGridPlacementDirty(true);

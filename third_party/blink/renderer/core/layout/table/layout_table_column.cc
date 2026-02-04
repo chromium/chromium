@@ -71,7 +71,7 @@ void LayoutTableColumn::StyleDidChange(
         if (StyleRef().HasBackground() || old_style->HasBackground())
           table->SetBackgroundNeedsFullPaintInvalidation();
       }
-      if (diff.NeedsLayout()) {
+      if (diff.NeedsFullLayout()) {
         table->SetIntrinsicLogicalWidthsDirty();
         if (old_style &&
             TableTypes::CreateColumn(*old_style,

@@ -793,13 +793,10 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsNormalPaintInvalidation();
   }
 
-  if (!diff.NeedsFullLayout() &&
-      DiffNeedsFullLayout(document, other, field_diff)) {
-    diff.SetNeedsFullLayout();
-  }
-
-  if (!diff.NeedsLayout()) {
-    if ((field_diff & kOutOfFlow) && HasOutOfFlowPosition()) {
+  if (!diff.NeedsFullLayout()) {
+    if (DiffNeedsFullLayout(document, other, field_diff)) {
+      diff.SetNeedsFullLayout();
+    } else if ((field_diff & kOutOfFlow) && HasOutOfFlowPosition()) {
       diff.SetNeedsPositionedMovementLayout();
     } else if ((field_diff & kInset) && HasInFlowPosition()) {
       diff.SetNeedsPositionedMovementLayout();

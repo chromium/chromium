@@ -99,9 +99,6 @@ class StyleDifference {
         static_cast<unsigned>(PaintInvalidationType::kNormal);
   }
 
-  bool NeedsLayout() const { return layout_type_ != kNoLayout; }
-  void ClearNeedsLayout() { layout_type_ = kNoLayout; }
-
   // The offset of this positioned object has been updated.
   bool NeedsPositionedMovementLayout() const {
     return layout_type_ == kPositionedMovement;

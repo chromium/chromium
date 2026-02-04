@@ -3188,7 +3188,7 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
 
     // Clearing these bits is required to avoid leaving stale layoutObjects.
     // FIXME: We shouldn't need that hack if our logic was totally correct.
-    if (diff.NeedsLayout()) {
+    if (diff.NeedsFullLayout()) {
       SetFloating(false);
       ClearPositionedState();
     }
@@ -3528,9 +3528,8 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
       first_line_container->SetShouldDoFullPaintInvalidationForFirstLine();
   }
 
-  if (diff.NeedsLayout()) {
-    if (diff.NeedsFullLayout())
-      SetNeedsCollectInlines();
+  if (diff.NeedsFullLayout()) {
+    SetNeedsCollectInlines();
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
   }
