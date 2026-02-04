@@ -565,7 +565,7 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlagsBaseInternal {
   DrawImageOp();
 
   // Scale that has already been applied to the decoded image during
-  // serialization. Used with OOP raster.
+  // serialization. Used with GPU raster.
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
 };
 

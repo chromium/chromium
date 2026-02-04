@@ -1453,7 +1453,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     SkIRect int_src_rect;
     op->src.roundOut(&int_src_rect);
 
-    // Dark mode is applied only for OOP raster during serialization.
+    // Dark mode is applied only for GPU raster during serialization.
     DrawImage draw_image(op->image, false, int_src_rect, op->GetImageQuality(),
                          matrix);
     scoped_result = params.image_provider->GetRasterContent(draw_image);
