@@ -2723,14 +2723,34 @@ ci.builder(
         mixins = [
             "15-x64-emulator",
             "emulator-8-cores",
+            "has_native_resultdb_integration",
             "linux-jammy",
             "x86-64",
+            "retry_only_failed_tests",
         ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                args = [
+                    # https://crbug.com/361042311
+                    "--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*",
+                ],
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
-    os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
             category = "treesinviz",
@@ -2743,6 +2763,7 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-gpu-team@google.com",
+    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
