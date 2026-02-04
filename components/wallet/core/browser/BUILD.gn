@@ -25,6 +25,8 @@ static_library("browser") {
     "network/get_unmasked_pass_request.h",
     "network/upsert_pass_request.cc",
     "network/upsert_pass_request.h",
+    "network/upsert_private_pass_request.cc",
+    "network/upsert_private_pass_request.h",
     "network/wallet_http_client.h",
     "network/wallet_http_client_impl.cc",
     "network/wallet_http_client_impl.h",
@@ -69,6 +71,7 @@ source_set("unit_tests") {
     "data_models/wallet_pass_unittest.cc",
     "ingestion/walletable_pass_ingestion_utils_unittest.cc",
     "network/upsert_pass_request_unittest.cc",
+    "network/upsert_private_pass_request_unittest.cc",
     "network/wallet_http_client_impl_unittest.cc",
     "walletable_permission_utils_unittest.cc",
   ]

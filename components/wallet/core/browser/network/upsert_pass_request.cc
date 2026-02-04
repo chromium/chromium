@@ -40,32 +40,6 @@ base::DictValue BuildLoyaltyCardRequest(const LoyaltyCard& card) {
                                    .Set("program_name", card.plan_name));
 }
 
-base::DictValue BuildPassportRequest(const Passport& passport) {
-  // TODO(crbug.com/478783796): Implement Passport request building.
-  return base::DictValue();
-}
-
-base::DictValue BuildDriverLicenseRequest(const DriverLicense& license) {
-  // TODO(crbug.com/478783796): Implement DriverLicense request building.
-  return base::DictValue();
-}
-
-base::DictValue BuildNationalIdentityCardRequest(
-    const NationalIdentityCard& card) {
-  // TODO(crbug.com/478783796): Implement NationalIdentityCard request building.
-  return base::DictValue();
-}
-
-base::DictValue BuildKTNRequest(const KTN& ktn) {
-  // TODO(crbug.com/478783796): Implement KTN request building.
-  return base::DictValue();
-}
-
-base::DictValue BuildRedressNumberRequest(const RedressNumber& number) {
-  // TODO(crbug.com/478783796): Implement RedressNumber request building.
-  return base::DictValue();
-}
-
 base::DictValue BuildPassDict(const WalletPass& pass) {
   base::DictValue response;
   if (pass.id) {
@@ -87,18 +61,9 @@ base::DictValue BuildPassDict(const WalletPass& pass) {
             NOTIMPLEMENTED();
             return base::DictValue();
           },
-          [](const Passport& passport) {
-            return BuildPassportRequest(passport);
-          },
-          [](const DriverLicense& license) {
-            return BuildDriverLicenseRequest(license);
-          },
-          [](const NationalIdentityCard& card) {
-            return BuildNationalIdentityCardRequest(card);
-          },
-          [](const KTN& ktn) { return BuildKTNRequest(ktn); },
-          [](const RedressNumber& number) {
-            return BuildRedressNumberRequest(number);
+          [](const auto&) {
+            NOTREACHED();
+            return base::DictValue();
           }},
       pass.pass_data));
   return response;

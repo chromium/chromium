@@ -18,6 +18,7 @@
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/network/get_unmasked_pass_request.h"
 #include "components/wallet/core/browser/network/upsert_pass_request.h"
+#include "components/wallet/core/browser/network/upsert_private_pass_request.h"
 #include "components/wallet/core/browser/network/wallet_request.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -63,8 +64,25 @@ void WalletHttpClientImpl::UpsertPass(WalletPass pass,
                                       UpsertPassCallback callback) {
   CHECK(SatisfiesFeatureRequirements(pass));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SendRequest(std::make_unique<UpsertPassRequest>(std::move(pass),
-                                                  std::move(callback)));
+  switch (pass.GetPassCategory()) {
+    case PassCategory::kLoyaltyCard:
+    case PassCategory::kEventPass:
+    case PassCategory::kTransitTicket:
+    case PassCategory::kBoardingPass:
+      SendRequest(std::make_unique<UpsertPassRequest>(std::move(pass),
+                                                      std::move(callback)));
+      break;
+    case PassCategory::kPassport:
+    case PassCategory::kDriverLicense:
+    case PassCategory::kNationalIdentityCard:
+    case PassCategory::kKTN:
+    case PassCategory::kRedressNumber:
+      SendRequest(std::make_unique<UpsertPrivatePassRequest>(
+          std::move(pass), std::move(callback)));
+      break;
+    case PassCategory::kUnspecified:
+      NOTREACHED();
+  }
 }
 
 void WalletHttpClientImpl::GetUnmaskedPass(std::string_view pass_id,
