@@ -97,6 +97,8 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     // Make sure the First Run Experience occurred more than 3 days ago.
     config.event_configs.insert(
         EventConfig(events::kIOSFirstRunComplete, Comparator(EQUAL, 0), 3, 3));
+
+    return config;
   }
 
   if (kIPHiOSPromoGenericDefaultBrowserFeature.name == feature->name) {
