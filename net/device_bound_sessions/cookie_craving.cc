@@ -482,7 +482,7 @@ std::unique_ptr<CanonicalCookie> CookieCraving::CreateCanonicalCookieForRequest(
   //  2) Can we refactor `AnnotateAndMoveUserBlockedCookies` to input a
   //     `CookieBase` instead?
   if (!url.HostIsIPAddress() &&
-      cookie_util::GetCookiePrefix(Name()) == COOKIE_PREFIX_HOST) {
+      cookie_util::GetCookiePrefix(Name()) == CookiePrefix::kHost) {
     domain = "";
   }
   return CanonicalCookie::CreateSanitizedCookie(

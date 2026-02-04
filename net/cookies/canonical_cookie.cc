@@ -425,8 +425,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie);
 
   if (collect_metrics) {
-    base::UmaHistogramEnumeration("Cookie.CookiePrefix.Subsampled", prefix,
-                                  COOKIE_PREFIX_LAST);
+    base::UmaHistogramEnumeration("Cookie.CookiePrefix.Subsampled", prefix);
   }
 
   if (parsed_cookie.Name() == "") {
@@ -546,7 +545,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
     // Check for "__" prefixed names, excluding the cookie prefixes.
     bool name_prefixed_with_underscores =
-        (prefix == COOKIE_PREFIX_NONE) &&
+        (prefix == CookiePrefix::kNone) &&
         parsed_cookie.Name().starts_with("__");
 
     base::UmaHistogramBoolean("Cookie.DoubleUnderscorePrefixedName.Subsampled",
@@ -1080,16 +1079,15 @@ CanonicalCookie::IsCanonicalForFromStorage() const {
                                         SecureAttribute(), IsHttpOnly(),
                                         Domain(), Path())) {
     switch (prefix) {
-      case COOKIE_PREFIX_HOST:
+      case CookiePrefix::kHost:
         return Fail(CanonicalizationFailure::kInvalidHostPrefix);
-      case COOKIE_PREFIX_SECURE:
+      case CookiePrefix::kSecure:
         return Fail(CanonicalizationFailure::kInvalidSecurePrefix);
-      case COOKIE_PREFIX_HTTP:
+      case CookiePrefix::kHttp:
         return Fail(CanonicalizationFailure::kInvalidHttpPrefix);
-      case COOKIE_PREFIX_HOSTHTTP:
+      case CookiePrefix::kHostHttp:
         return Fail(CanonicalizationFailure::kInvalidHostHttpPrefix);
-      case COOKIE_PREFIX_NONE:
-      case COOKIE_PREFIX_LAST:
+      case CookiePrefix::kNone:
         break;
     }
   }

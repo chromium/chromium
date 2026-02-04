@@ -341,10 +341,10 @@ struct CookiePrefixData {
 };
 
 constexpr CookiePrefixData kPrefixes[] = {
-    {"__Secure-", COOKIE_PREFIX_SECURE},
-    {"__Host-Http-", COOKIE_PREFIX_HOSTHTTP},
-    {"__Http-", COOKIE_PREFIX_HTTP},
-    {"__Host-", COOKIE_PREFIX_HOST},
+    {"__Secure-", CookiePrefix::kSecure},
+    {"__Host-Http-", CookiePrefix::kHostHttp},
+    {"__Http-", CookiePrefix::kHttp},
+    {"__Host-", CookiePrefix::kHost},
 };
 
 }  // namespace
@@ -777,7 +777,7 @@ CookiePrefix GetCookiePrefix(std::string_view name) {
       return prefix_data.prefix_type;
     }
   }
-  return COOKIE_PREFIX_NONE;
+  return CookiePrefix::kNone;
 }
 
 bool HasHiddenPrefixName(std::string_view cookie_value) {
@@ -809,19 +809,17 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
                          std::string_view domain,
                          std::string_view path) {
   switch (prefix) {
-    case COOKIE_PREFIX_NONE:
+    case CookiePrefix::kNone:
       return true;
-    case COOKIE_PREFIX_SECURE:
+    case CookiePrefix::kSecure:
       return HasValidSecurePrefixAttributes(url, secure);
-    case COOKIE_PREFIX_HOST:
+    case CookiePrefix::kHost:
       return HasValidHostPrefixAttributes(url, secure, domain, path);
-    case COOKIE_PREFIX_HTTP:
+    case CookiePrefix::kHttp:
       return HasValidHttpPrefixAttributes(url, secure, http_only);
-    case COOKIE_PREFIX_HOSTHTTP:
+    case CookiePrefix::kHostHttp:
       return HasValidHttpPrefixAttributes(url, secure, http_only) &&
              HasValidHostPrefixAttributes(url, secure, domain, path);
-    case COOKIE_PREFIX_LAST:
-      return true;
   }
   NOTREACHED();
 }

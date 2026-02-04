@@ -3811,34 +3811,38 @@ TEST(CanonicalCookieTest, TestPrefixHistograms) {
   EXPECT_FALSE(CanonicalCookie::CreateForTesting(https_url, "__Host-A=B;",
                                                  creation_time, server_time));
 
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_HOST, 1);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kHost, 1);
 
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__Host-A=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_HOST, 2);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kHost, 2);
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__HostA=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_HOST, 2);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kHost, 2);
 
   EXPECT_FALSE(CanonicalCookie::CreateForTesting(https_url, "__Secure-A=B;",
                                                  creation_time, server_time));
 
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE, 1);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kSecure,
+                               1);
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__Secure-A=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE, 2);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kSecure,
+                               2);
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__SecureA=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE, 2);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kSecure,
+                               2);
 
   // Prefix case variants will also increment the histogram.
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__SECURE-A=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_SECURE, 3);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kSecure,
+                               3);
 
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
       https_url, "__HOST-A=B; Path=/; Secure", creation_time, server_time));
-  histograms.ExpectBucketCount(kCookiePrefixHistogram, COOKIE_PREFIX_HOST, 3);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram, CookiePrefix::kHost, 3);
 }
 
 TEST(CanonicalCookieTest, TestHasNonASCIIHistograms) {

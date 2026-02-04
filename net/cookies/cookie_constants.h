@@ -393,13 +393,13 @@ enum class CookieSourceType {
 // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-13#name-cookie-name-prefixes
 //
 // This enum is being histogrammed; do not reorder or remove values.
-enum CookiePrefix {
-  COOKIE_PREFIX_NONE = 0,
-  COOKIE_PREFIX_SECURE,
-  COOKIE_PREFIX_HOST,
-  COOKIE_PREFIX_HTTP,
-  COOKIE_PREFIX_HOSTHTTP,
-  COOKIE_PREFIX_LAST
+enum class CookiePrefix {
+  kNone = 0,
+  kSecure,
+  kHost,
+  kHttp,
+  kHostHttp,
+  kMaxValue = kHostHttp
 };
 
 }  // namespace net
