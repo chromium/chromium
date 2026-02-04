@@ -3,6 +3,7 @@ dewittj@chromium.org
 harringtond@chromium.org
 iwells@chromium.org
 vollick@chromium.org
+bryantchandler@chromium.org
 
 per-file BUILD.gn=file://chrome/browser/glic/BUILD_OWNERS
 per-file *policy*=bokan@chromium.org
