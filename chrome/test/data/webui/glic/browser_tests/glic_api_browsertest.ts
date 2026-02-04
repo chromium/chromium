@@ -2763,14 +2763,10 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
         skills.find(s => s.id === 'contextual_skill_id_1');
     assertDefined(contextual_skill_1);
     assertEquals('contextual_skill_1', contextual_skill_1.name);
-    assertEquals(
-        'contextual_skill_description_1', contextual_skill_1.description);
     const contextual_skill_2 =
         skills.find(s => s.id === 'contextual_skill_id_2');
     assertDefined(contextual_skill_2);
     assertEquals('contextual_skill_2', contextual_skill_2.name);
-    assertEquals(
-        'contextual_skill_description_2', contextual_skill_2.description);
     assertDefined(skills.find(s => s.name === 'user_skill_1'));
     assertDefined(skills.find(s => s.name === 'user_skill_2'));
     await this.advanceToNextStep();
@@ -2783,8 +2779,6 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
         skills.find(s => s.id === 'contextual_skill_id_3');
     assertDefined(contextual_skill_3);
     assertEquals('contextual_skill_3', contextual_skill_3.name);
-    assertEquals(
-        'contextual_skill_description_3', contextual_skill_3.description);
     assertDefined(skills.find(s => s.name === 'user_skill_1'));
     assertDefined(skills.find(s => s.name === 'user_skill_2'));
   }

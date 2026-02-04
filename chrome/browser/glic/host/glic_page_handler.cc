@@ -206,8 +206,7 @@ mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::Skill* skill) {
     return nullptr;
   }
   return mojom::SkillPreview::New(skill->id, skill->name, skill->icon,
-                                  ToMojomSkillSource(skill->source),
-                                  skill->description);
+                                  ToMojomSkillSource(skill->source));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

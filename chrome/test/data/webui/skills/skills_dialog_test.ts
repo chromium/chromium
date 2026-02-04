@@ -42,7 +42,6 @@ suite('SkillsDialogAppPage', function() {
       name: 'test skill',
       icon: '',
       prompt: 'test prompt',
-      description: 'test description',
       source: SkillSource.kUserCreated,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},

@@ -252,8 +252,9 @@ interface PageHandler {
   GetInternalsDataPayload() => (InternalsDataPayload internals_data);
 
   // Sets the guest URL presets for the internals page.
-  SetGuestUrlPresets(
-      url.mojom.Url autopush, url.mojom.Url preprod, url.mojom.Url prod);
+  SetGuestUrlPresets(url.mojom.Url autopush,
+                     url.mojom.Url preprod,
+                     url.mojom.Url prod);
 };
 
 // @generate glic_api
@@ -608,7 +609,6 @@ enum SkillSource {
   // Skill created by an end-user.
   kUserCreated = 2,
 };
-
 // LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource,
 // //depot/chromium/components/sync/protocol/skill_specifics.proto:SkillSource)
 
@@ -623,8 +623,6 @@ struct SkillPreview {
   string icon;
   // The source of the skill which can be 1P or user created.
   SkillSource source;
-  // The description of the skill.
-  string description;
 };
 
 // A single skill.
@@ -634,9 +632,7 @@ struct Skill {
   // The prompt of the skill.
   string prompt;
 };
-
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:Skill,
-// //depot/chromium/components/skills/public/skill.h:Skill)
+// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:Skill, //depot/chromium/components/skills/public/skill.h:Skill)
 
 // Request to create a skill.
 struct CreateSkillRequest {

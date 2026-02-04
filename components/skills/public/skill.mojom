@@ -37,9 +37,6 @@ struct Skill {
   // The source of the skill which can be 1P or user created.
   SkillSource source;
 
-  // The description of the skill.
-  string description;
-
   // The Time when the skill was created.
   mojo_base.mojom.Time creation_time;
 

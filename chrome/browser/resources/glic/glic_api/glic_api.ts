@@ -2078,8 +2078,6 @@ export declare interface SkillPreview {
   icon: string;
   /** The source of the skill. */
   source: SkillSource;
-  /** The description of the skill. */
-  description?: string;
 }
 
 /** Represents a single skill. */

@@ -59,9 +59,6 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
   static sync_pb::SkillSource source(const skills::Skill& skill) {
     return skill.source;
   }
-  static const std::string& description(const skills::Skill& skill) {
-    return skill.description;
-  }
   static base::Time creation_time(const skills::Skill& skill) {
     return skill.creation_time;
   }
