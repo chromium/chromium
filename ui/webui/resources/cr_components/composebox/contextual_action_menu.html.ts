@@ -62,19 +62,19 @@ export function getHtml(this: ContextualActionMenuElement) {
           @click="${this.onToolClick_}"
           ?disabled="${this.isToolDisabled_(mode)}">
         <cr-icon icon="${tool.icon}"></cr-icon>
-        ${this.i18n(tool.id)}
+        ${this.getToolLabel_(mode)}
       </button>` : '')}
     ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) ? html`
         <hr/>
         ${this.showContextMenuHeaders_ ? html`
-        <h4 id="modelHeader">${this.i18n('composeboxContextMenuGeminiModels')}</h4>` : ''}` : ''}
+        <h4 id="modelHeader">${this.modelHeader_}</h4>` : ''}` : ''}
     ${Array.from(this.supportedModels_.entries()).map(([mode, model]) => this.isModelAllowed_(mode) ? html`
       <button id="${model.id}" class="dropdown-item"
           data-model="${mode}"
           @click="${this.onModelClick_}"
           ?disabled="${this.isModelDisabled_(mode)}">
         <cr-icon icon="${model.icon}"></cr-icon>
-        <span>${this.i18n(model.id)}</span>
+        <span>${this.getModelLabel_(mode)}</span>
         ${this.isModelActive_(mode) ? html`
           <cr-icon class="multi-tab-icon"
               icon="cr:check" id="model-check"></cr-icon>` : ''}

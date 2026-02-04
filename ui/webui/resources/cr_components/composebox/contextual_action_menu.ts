@@ -113,6 +113,13 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }> {
     return new Map([
       [
+        ModelMode.kGeminiRegular,
+        {
+          id: 'geminiModelRegular',
+          icon: 'composebox:geminiModelRegular',
+        },
+      ],
+      [
         ModelMode.kGeminiProAutoroute,
         {
           id: 'geminiModelAuto',
@@ -178,6 +185,29 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       return false;
     }
     return this.inputState.activeModel === model;
+  }
+
+  protected getToolLabel_(tool: ToolMode): string {
+    if (!this.inputState) {
+      return '';
+    }
+    const config = this.inputState.toolConfigs.find(c => c.tool === tool);
+    return config ? config.menuLabel : '';
+  }
+
+  protected getModelLabel_(model: ModelMode): string {
+    if (!this.inputState) {
+      return '';
+    }
+    const config = this.inputState.modelConfigs.find(c => c.model === model);
+    return config ? config.menuLabel : '';
+  }
+
+  protected get modelHeader_(): string {
+    if (this.inputState && this.inputState.modelSectionConfig) {
+      return this.inputState.modelSectionConfig.header;
+    }
+    return '';
   }
 
   // Checks if the image upload item in the context menu should be visible.
