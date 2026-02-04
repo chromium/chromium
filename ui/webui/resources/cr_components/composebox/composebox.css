@@ -709,8 +709,12 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   --cr-icon-button-icon-size: 20px;
 }
 
-:host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
-  margin-top: 14px;
+:host([searchbox-layout-mode]) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
+  margin-top: 16px;
+}
+
+contextual-entrypoint-and-carousel[is-omnibox-in-compact-mode_]::part(cr-composebox-file-carousel) {
+  margin-top: 12px !important;
 }
 
 :host([in-voice-search-mode_]) {
