@@ -266,23 +266,12 @@ Matcher<Member<T>> MemberField(Matcher<T*> matcher) {
   return Property("Get", &Member<T>::Get, matcher);
 }
 
-// Performs WebAuthn Base64URL encoding, which is always unpadded.
-String Base64URLEncode(DOMArrayPiece buffer) {
-  // blink::Base64URLEncode always pads, so we strip trailing '='.
-  String encoded = blink::Base64URLEncode(buffer.ByteSpan());
-  unsigned padding_start = encoded.length();
-  for (; padding_start > 0; --padding_start) {
-    if (encoded[padding_start - 1] != '=') {
-      break;
-    }
-  }
-  encoded.Truncate(padding_start);
-  return encoded;
-}
-
 // Matches the Base64URL-encoding of the byte contents of a DOMArrayPiece.
 MATCHER_P(Base64URL, matcher, "") {
-  String encoded = Base64URLEncode(arg);
+  const DOMArrayPiece buffer(arg);
+  // WebAuthn Base64URL encoding is always unpadded.
+  String encoded =
+      Base64UrlEncode(buffer.ByteSpan(), Base64UrlEncodePolicy::kOmitPadding);
   return ExplainMatchResult(matcher, encoded, result_listener);
 }
 

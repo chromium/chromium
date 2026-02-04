@@ -77,8 +77,10 @@ KURL GetAvailabilityUrl(const KURL& source,
   // source URL. |video_codec| and |audio_codec| are used for device capability
   // filter for Media Remoting based Remote Playback on Desktop. The codec
   // fields are optional.
-  std::string source_string = source.GetString().Utf8();
-  String encoded_source = Base64URLEncode(base::as_byte_span(source_string));
+  StringUtf8Adaptor source_adaptor(source.GetString());
+  String encoded_source =
+      Base64UrlEncode(base::as_byte_span(source_adaptor),
+                      Base64UrlEncodePolicy::kIncludePadding);
 
   std::string video_codec_str =
       video_codec.has_value()

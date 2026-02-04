@@ -27,21 +27,9 @@ namespace {
 // This method and its dependencies must remain constant time, thus not branch
 // based on the value of |buffer| while encoding, assuming a known length.
 String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
-  String value = Base64URLEncode(buffer->ByteSpan());
+  String value =
+      Base64UrlEncode(buffer->ByteSpan(), Base64UrlEncodePolicy::kOmitPadding);
   DCHECK_GT(value.length(), 0u);
-
-  unsigned padding_to_remove = 0;
-  for (unsigned position = value.length() - 1; position; --position) {
-    if (value[position] != '=')
-      break;
-
-    ++padding_to_remove;
-  }
-
-  DCHECK_LT(padding_to_remove, 4u);
-  DCHECK_GT(value.length(), padding_to_remove);
-
-  value.Truncate(value.length() - padding_to_remove);
   return value;
 }
 

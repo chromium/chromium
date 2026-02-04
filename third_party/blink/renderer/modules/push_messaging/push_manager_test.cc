@@ -61,18 +61,14 @@ TEST(PushManagerTest, ValidSenderKey) {
   ASSERT_NO_FATAL_FAILURE(IsApplicationServerKeyValid(output));
 }
 
-// applicationServerKey should be Unpadded 'base64url'
-// https://tools.ietf.org/html/rfc7515#appendix-C
-inline bool RemovePad(UChar character) {
-  return character == '=';
-}
-
 TEST(PushManagerTest, ValidBase64URLWithoutPaddingSenderKey) {
   test::TaskEnvironment task_environment;
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
-  String base64_url = Base64URLEncode(kApplicationServerKey);
-  base64_url = base64_url.RemoveCharacters(RemovePad);
+  // applicationServerKey should be Unpadded 'base64url'
+  // https://tools.ietf.org/html/rfc7515#appendix-C
+  String base64_url = Base64UrlEncode(kApplicationServerKey,
+                                      Base64UrlEncodePolicy::kOmitPadding);
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           base64_url));
@@ -126,7 +122,8 @@ TEST(PushManagerTest, InvalidBase64URLWithPaddingSenderKey) {
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-          Base64URLEncode(kApplicationServerKey)));
+          Base64UrlEncode(kApplicationServerKey,
+                          Base64UrlEncodePolicy::kIncludePadding)));
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =

@@ -129,8 +129,21 @@ bool Base64UnpaddedURLDecode(const String& in, Vector<uint8_t>& out) {
   return Base64Decode(NormalizeToBase64(in), out);
 }
 
-String Base64URLEncode(base::span<const uint8_t> data) {
-  return Base64Encode(data).Replace('+', '-').Replace('/', '_');
+String Base64UrlEncode(base::span<const uint8_t> data,
+                       Base64UrlEncodePolicy policy) {
+  String result = Base64Encode(data).Replace('+', '-').Replace('/', '_');
+  if (policy == Base64UrlEncodePolicy::kOmitPadding) {
+    wtf_size_t first_padding_index = result.length();
+    for (; first_padding_index; --first_padding_index) {
+      if (result[first_padding_index - 1] != '=') {
+        break;
+      }
+    }
+    DCHECK_LE(first_padding_index, result.length());
+    DCHECK_LT(result.length() - first_padding_index, 4u);
+    result.Truncate(first_padding_index);
+  }
+  return result;
 }
 
 String NormalizeToBase64(const String& encoding) {

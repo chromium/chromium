@@ -241,16 +241,9 @@ AuthenticationExtensionsClientInputsFromJSON(
 }  // namespace
 
 String WebAuthnBase64UrlEncode(DOMArrayPiece buffer) {
-  // Base64URLEncode always pads, so we strip trailing '='.
-  String encoded = Base64URLEncode(buffer.ByteSpan());
-  unsigned padding_start = encoded.length();
-  for (; padding_start > 0; --padding_start) {
-    if (encoded[padding_start - 1] != '=') {
-      break;
-    }
-  }
-  encoded.Truncate(padding_start);
-  return encoded;
+  // Tell Base64URLEncode to not include padding (trailing '=').
+  return Base64UrlEncode(buffer.ByteSpan(),
+                         Base64UrlEncodePolicy::kOmitPadding);
 }
 
 AuthenticationExtensionsClientOutputsJSON*
