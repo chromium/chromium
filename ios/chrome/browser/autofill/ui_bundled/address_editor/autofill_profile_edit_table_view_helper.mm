@@ -265,14 +265,27 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 - (void)loadFooterForSettings {
   CHECK(_addressContext == SaveAddressContext::kEditingSavedAddress);
-  TableViewModel* model = _controller.tableViewModel;
-
-  if ([self isAccountProfile] || [self isNameAndEmailProfile]) {
-    CHECK(_userEmail);
-    [model
-        addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFooter];
-    [model setFooter:[self footerItem]
-        forSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFooter];
+  switch (_recordType) {
+    case autofill::AutofillProfile::RecordType::kAccount:
+    case autofill::AutofillProfile::RecordType::kAccountHome:
+    case autofill::AutofillProfile::RecordType::kAccountWork:
+    case autofill::AutofillProfile::RecordType::kAccountNameEmail: {
+      // TODO(crbug.com/438521717): Replace with CHECK.
+      DUMP_WILL_BE_CHECK(_userEmail);
+      if (!_userEmail) {
+        // Early return if no email is present.
+        return;
+      }
+      TableViewModel* model = _controller.tableViewModel;
+      [model addSectionWithIdentifier:
+                 AutofillProfileDetailsSectionIdentifierFooter];
+      [model setFooter:[self footerItem]
+          forSectionWithIdentifier:
+              AutofillProfileDetailsSectionIdentifierFooter];
+      break;
+    }
+    case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
+      break;
   }
 }
 
