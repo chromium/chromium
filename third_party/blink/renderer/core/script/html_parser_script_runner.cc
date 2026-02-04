@@ -264,6 +264,12 @@ void HTMLParserScriptRunner::PendingScriptFinished(
     return;
   }
 
+  if (!document_) {
+    // It's possible to get here after HTMLParserScriptRunner::Detach(), which
+    // clears `document_`. See crbug.com/466701271.
+    return;
+  }
+
   // Posting the script execution part to a new task so that we can allow
   // yielding for cooperative scheduling. Cooperative scheduling requires that
   // the Blink C++ stack be thin when it executes JavaScript.
