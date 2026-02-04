@@ -117,8 +117,19 @@ void PageContentExtractionService::OnPageContentExtracted(
 std::optional<ExtractedPageContentResult>
 PageContentExtractionService::GetExtractedPageContentAndEligibilityForPage(
     content::Page& page) {
-  return GetCachedContentsFromWebContents(
-      content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+  AnnotatedPageContentRequest* request =
+      GetAnnotatedPageContentRequestFromWebContents(
+          content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+  return request ? request->GetCachedContentAndEligibility() : std::nullopt;
+}
+
+std::optional<bool>
+PageContentExtractionService::GetServerUploadEligibilityForPage(
+    content::Page& page) {
+  AnnotatedPageContentRequest* request =
+      GetAnnotatedPageContentRequestFromWebContents(
+          content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+  return request ? request->GetServerUploadEligibility() : std::nullopt;
 }
 
 void PageContentExtractionService::OnTabClosed(int64_t tab_id) {
@@ -137,16 +148,24 @@ void PageContentExtractionService::OnVisibilityChanged(
     std::optional<int64_t> tab_id,
     content::WebContents* web_contents,
     content::Visibility visibility) {
-  if (is_page_content_cache_enabled_) {
-    std::optional<ExtractedPageContentResult> extracted_result =
-        GetCachedContentsFromWebContents(web_contents);
-    if (extracted_result) {
-      page_content_cache_handler_->OnVisibilityChanged(
-          tab_id, ToWebStateWrapper(web_contents),
-          ToPageContext(std::move(extracted_result->page_content), web_contents,
-                        std::move(extracted_result->screenshot_data)),
-          extracted_result->extraction_timestamp);
-    }
+  if (!is_page_content_cache_enabled_) {
+    return;
+  }
+
+  AnnotatedPageContentRequest* request =
+      GetAnnotatedPageContentRequestFromWebContents(web_contents);
+  if (!request) {
+    return;
+  }
+
+  std::optional<ExtractedPageContentResult> extracted_result =
+      request->GetCachedContentAndEligibility();
+  if (extracted_result) {
+    page_content_cache_handler_->OnVisibilityChanged(
+        tab_id, ToWebStateWrapper(web_contents),
+        ToPageContext(std::move(extracted_result->page_content), web_contents,
+                      std::move(extracted_result->screenshot_data)),
+        extracted_result->extraction_timestamp);
   }
 }
 
@@ -173,22 +192,15 @@ PageContentCache* PageContentExtractionService::GetPageContentCache() {
              : nullptr;
 }
 
-std::optional<ExtractedPageContentResult>
-PageContentExtractionService::GetCachedContentsFromWebContents(
+AnnotatedPageContentRequest*
+PageContentExtractionService::GetAnnotatedPageContentRequestFromWebContents(
     content::WebContents* web_contents) {
   if (!web_contents) {
-    return std::nullopt;
+    return nullptr;
   }
   PageContentAnnotationsWebContentsObserver* observer =
       PageContentAnnotationsWebContentsObserver::FromWebContents(web_contents);
-  if (observer) {
-    AnnotatedPageContentRequest* request =
-        observer->GetAnnotatedPageContentRequest();
-    if (request) {
-      return request->GetCachedContentAndEligibility();
-    }
-  }
-  return std::nullopt;
+  return observer ? observer->GetAnnotatedPageContentRequest() : nullptr;
 }
 
 }  // namespace page_content_annotations

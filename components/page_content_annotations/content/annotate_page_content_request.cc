@@ -380,6 +380,12 @@ AnnotatedPageContentRequest::GetCachedContentAndEligibility() {
   return cached_content_;
 }
 
+std::optional<bool> AnnotatedPageContentRequest::GetServerUploadEligibility() {
+  return cached_content_ ? std::make_optional(
+                               cached_content_->is_eligible_for_server_upload)
+                         : std::nullopt;
+}
+
 void AnnotatedPageContentRequest::OnVisibilityChanged(
     content::Visibility visibility) {
   bool was_hidden = is_hidden_;

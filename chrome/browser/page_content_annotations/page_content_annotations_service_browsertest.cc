@@ -1722,6 +1722,8 @@ IN_PROC_BROWSER_TEST_F(
   // Should have cached data for page since there was an observer registered.
   ASSERT_TRUE(service->GetExtractedPageContentAndEligibilityForPage(
       web_contents->GetPrimaryPage()));
+  ASSERT_TRUE(service->GetServerUploadEligibilityForPage(
+      web_contents->GetPrimaryPage()));
 
   service->RemoveObserver(&observer);
 
@@ -1731,6 +1733,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make sure cached content is cleared with a new navigation.
   ASSERT_FALSE(service->GetExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage()));
+  ASSERT_FALSE(service->GetServerUploadEligibilityForPage(
       web_contents->GetPrimaryPage()));
 }
 
