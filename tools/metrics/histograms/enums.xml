@@ -5373,6 +5373,12 @@ shown properly on the user-facing crash UI.
       label="elevation_service::Elevator::kErrorChromePathNotFound"/>
   <int value="-2147180524"
       label="elevation_service::Elevator::kErrorCouldNotObtainUserEnvironment"/>
+  <int value="-2147180523"
+      label="elevation_service::Elevator::kErrorCouldMutatePrimaryToken"/>
+  <int value="-2147180522"
+      label="elevation_service::Elevator::kErrorCouldQueryPrimaryToken"/>
+  <int value="-2147180521"
+      label="elevation_service::Elevator::kErrorCouldCreateAccessControlList"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
   <int value="-2147174395"
       label="MSPR_E_PRO_HEADER_BYTES_NOT_SET (0x8004B805)"/>

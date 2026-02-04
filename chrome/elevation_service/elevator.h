@@ -139,6 +139,12 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA013);
   static constexpr HRESULT kErrorCouldNotObtainUserEnvironment =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA014);
+  static constexpr HRESULT kErrorCouldMutatePrimaryToken =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA015);
+  static constexpr HRESULT kErrorCouldQueryPrimaryToken =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA016);
+  static constexpr HRESULT kErrorCouldCreateAccessControlList =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA017);
 
   // Success codes.
   static constexpr HRESULT kSuccessShouldReencrypt =
