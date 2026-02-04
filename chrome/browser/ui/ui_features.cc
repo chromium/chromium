@@ -110,7 +110,10 @@ BASE_FEATURE(kTabGroupsCollapseFreezing, base::FEATURE_ENABLED_BY_DEFAULT);
 // General improvements to tab group menus
 BASE_FEATURE(kTabGroupMenuImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Update menus to use tab group menus in the action menu
+bool IsTabGroupMenuImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupMenuImprovements);
+}
+
 BASE_FEATURE(kTabGroupMenuMoreEntryPoints, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupMenuMoreEntryPointsEnabled() {

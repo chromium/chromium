@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -53,6 +54,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -112,6 +114,7 @@ BookmarkEditorView::BookmarkEditorView(
   }
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
+  SetProperty(views::kElementIdentifierKey, kBookmarkEditorId);
   Init();
 
   // TODO(crbug.com/40863584):  We need this View to have a role before setting
@@ -287,6 +290,12 @@ void BookmarkEditorView::ExecuteCommand(int command_id, int event_flags) {
 
 void BookmarkEditorView::Show(gfx::NativeWindow parent) {
   constrained_window::CreateBrowserModalDialogViews(this, parent);
+
+  if (views::View* ok_button = GetOkButton()) {
+    ok_button->SetProperty(views::kElementIdentifierKey,
+                           kBookmarkEditorOkButtonId);
+  }
+
   UserInputChanged();
   if (show_tree_ && bb_model_->loaded()) {
     ExpandAndSelect();

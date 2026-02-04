@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
@@ -39,6 +40,8 @@ static constexpr int kUIUpdateIconSize = 16;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kDeleteGroupMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kLeaveGroupMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
+                                      kConvertToBookmarkMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
                                       kMoveGroupToNewWindowMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kOpenGroup);
@@ -138,6 +141,22 @@ void STGTabsMenuModel::Build(
     command_id_to_action_.emplace(
         latest_command_id,
         TabGroupMenuAction{TabGroupMenuAction::Type::LEAVE_GROUP,
+                           sync_id_.value()});
+  }
+
+  if (!saved_group.is_shared_tab_group() &&
+      features::IsTabGroupMenuImprovementsEnabled()) {
+    latest_command_id = get_next_command_id.Run();
+    AddItemWithStringIdAndIcon(
+        latest_command_id,
+        IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER,
+        ui::ImageModel::FromVectorIcon(kBookmarkAllTabsChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize));
+    SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
+                           kConvertToBookmarkMenuItem);
+    command_id_to_action_.emplace(
+        latest_command_id,
+        TabGroupMenuAction{TabGroupMenuAction::Type::CONVERT_TO_BOOKMARK,
                            sync_id_.value()});
   }
 
