@@ -478,11 +478,15 @@ void NavigationEarlyHintsManager::MaybePreconnect(
 
   bool allow_credentials =
       link->cross_origin != network::mojom::CrossOriginAttribute::kAnonymous;
+
+  // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
+  // caller.
   network_context->PreconnectSockets(
       /*num_streams=*/1, link->href,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kOmit,
       isolation_info_.network_anonymization_key(),
+      /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(
           kEarlyHintsPreloadTrafficAnnotation),
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());

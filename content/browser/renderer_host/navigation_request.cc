@@ -2140,9 +2140,13 @@ NavigationRequest::NavigationRequest(
             frame_tree_node_->current_frame_host())) {
       auto* storage_partition =
           frame_tree_node_->current_frame_host()->GetStoragePartition();
+
+      // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
+      // caller.
       storage_partition->GetNetworkContext()->PreconnectSockets(
           1, common_params_->url, network::mojom::CredentialsMode::kInclude,
           GetIsolationInfo().network_anonymization_key(),
+          /*network_restrictions_id=*/std::nullopt,
           net::MutableNetworkTrafficAnnotationTag(),
           /*keepalive_config=*/std::nullopt, mojo::NullRemote());
     }

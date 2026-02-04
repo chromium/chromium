@@ -278,11 +278,13 @@ void PreconnectManagerImpl::PreconnectUrl(
 
   // TODO(crbug.com/406022435): pass the actual `keepalive_config` from the
   // caller.
+  // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
+  // caller.
   network_context->PreconnectSockets(
       num_sockets, url,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kOmit,
-      network_anonymization_key,
+      network_anonymization_key, /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       std::move(keepalive_config),
       std::move(connection_change_observer_client));

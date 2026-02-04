@@ -1485,13 +1485,19 @@ interface NetworkContext {
   // initiated from.
   // `keepalive_config` specifies keep-alive behavior such as periodic ping or
   // reconnect notifier.
-  // The preconnect is aborted if network access is disabled for
-  // `network_anonymization_key->GetNonce()`.
+  // The preconnect is aborted if
+  // 1. network access is disabled for `network_anonymization_key->GetNonce()`.
+  // 2. or the url is blocked by the connection-allowlist associated with the
+  // `network_restrictions_id`. Please see: crbug.com/447954811.
+  // More context on network revocation and connection-allowlist is in the
+  // comment for `RevokeNetworkForNonces()`. If `network_restrictions_id` is
+  // nullopt, connection-allowlist is not enforced on the preconnect.
   PreconnectSockets(
       uint32 num_streams,
       url.mojom.Url url,
       network.mojom.CredentialsMode credentials_mode,
       NetworkAnonymizationKey network_anonymization_key,
+      mojo_base.mojom.UnguessableToken? network_restrictions_id,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       ConnectionKeepAliveConfig? keepalive_config,
       pending_remote<ConnectionChangeObserverClient>? observer_client);

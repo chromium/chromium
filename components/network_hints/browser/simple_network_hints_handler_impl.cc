@@ -165,13 +165,17 @@ void SimpleNetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
       render_frame_host->GetPendingIsolationInfoForSubresources()
           .network_anonymization_key();
 
+  // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
+  // caller.
   render_frame_host->GetStoragePartition()
       ->GetNetworkContext()
       ->PreconnectSockets(
           /*num_streams=*/1, url.GetURL(),
           allow_credentials ? network::mojom::CredentialsMode::kInclude
                             : network::mojom::CredentialsMode::kOmit,
-          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag(),
+          network_anonymization_key,
+          /*network_restrictions_id=*/std::nullopt,
+          net::MutableNetworkTrafficAnnotationTag(),
           /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 

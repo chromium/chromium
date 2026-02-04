@@ -5,10 +5,12 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/unguessable_token.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -61,6 +63,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
       const GURL& url,
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      const std::optional<base::UnguessableToken>& network_restrictions_id,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>

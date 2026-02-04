@@ -2333,6 +2333,7 @@ void NetworkContext::PreconnectSockets(
     const GURL& original_url,
     mojom::CredentialsMode credentials_mode,
     const net::NetworkAnonymizationKey& network_anonymization_key,
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
     mojo::PendingRemote<mojom::ConnectionChangeObserverClient>
@@ -2352,6 +2353,10 @@ void NetworkContext::PreconnectSockets(
   if (network_anonymization_key.GetNonce().has_value() &&
       !IsNetworkForNonceAndUrlAllowed(
           network_anonymization_key.GetNonce().value(), url)) {
+    return;
+  }
+  if (network_restrictions_id.has_value() &&
+      !IsNetworkForNonceAndUrlAllowed(*network_restrictions_id, url)) {
     return;
   }
 

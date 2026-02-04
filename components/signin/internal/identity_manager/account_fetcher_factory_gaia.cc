@@ -60,6 +60,7 @@ void AccountFetcherFactoryGaia::PrepareForFetchingAccountCapabilities() {
       google_apis::GetOmitCredentialsModeForGaiaRequests(),
       net::NetworkAnonymizationKey::CreateSameSite(
           net::SchemefulSite(GetAccountCapabilitiesUrl())),
+      /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(),
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }

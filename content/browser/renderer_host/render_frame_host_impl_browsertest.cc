@@ -7707,6 +7707,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeNikBrowserTest,
         main_url_origin);
 
     // Preconnect a socket with the NetworkIsolationKey of the main frame.
+    // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
+    // caller.
     shell()
         ->web_contents()
         ->GetBrowserContext()
@@ -7716,6 +7718,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeNikBrowserTest,
                             network::mojom::CredentialsMode::kInclude,
                             main_rfh->GetIsolationInfoForSubresources()
                                 .network_anonymization_key(),
+                            /*network_restrictions_id=*/std::nullopt,
                             net::MutableNetworkTrafficAnnotationTag(
                                 TRAFFIC_ANNOTATION_FOR_TESTS),
                             std::nullopt, mojo::NullRemote());

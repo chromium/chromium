@@ -5906,7 +5906,7 @@ TEST_F(NetworkContextTest, PreconnectOne) {
 
   network_context->PreconnectSockets(
       1, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   connection_listener.WaitForAcceptedConnections(1u);
@@ -5923,18 +5923,18 @@ TEST_F(NetworkContextTest, PreconnectDifferentCredentialsMode) {
 
   network_context->PreconnectSockets(
       1, test_server.base_url(), network::mojom::CredentialsMode::kOmit,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   network_context->PreconnectSockets(
       1, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   network_context->PreconnectSockets(
       1, test_server.base_url(),
       network::mojom::CredentialsMode::kOmitBug_775438_Workaround,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
 
@@ -5987,7 +5987,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
 
     network_context->PreconnectSockets(
         1, server_http_url, network::mojom::CredentialsMode::kOmit,
-        network_anonymization_key,
+        network_anonymization_key, /*network_restrictions_id=*/std::nullopt,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::nullopt, mojo::NullRemote());
     connection_listener.WaitForAcceptedConnections(1u);
@@ -6000,7 +6000,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
         server_http_url.GetHost(), expiry, false);
     network_context->PreconnectSockets(
         1, server_http_url, network::mojom::CredentialsMode::kOmit,
-        network_anonymization_key,
+        network_anonymization_key, /*network_restrictions_id=*/std::nullopt,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::nullopt, mojo::NullRemote());
     connection_listener.WaitForAcceptedConnections(1u);
@@ -6022,7 +6022,7 @@ TEST_F(NetworkContextTest, PreconnectZero) {
 
   network_context->PreconnectSockets(
       0, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   base::RunLoop().RunUntilIdle();
@@ -6046,7 +6046,7 @@ TEST_F(NetworkContextTest, PreconnectTwo) {
 
   network_context->PreconnectSockets(
       2, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   connection_listener.WaitForAcceptedConnections(2u);
@@ -6067,7 +6067,7 @@ TEST_F(NetworkContextTest, PreconnectFour) {
 
   network_context->PreconnectSockets(
       4, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
 
@@ -6093,7 +6093,7 @@ TEST_F(NetworkContextTest, PreconnectMax) {
 
   network_context->PreconnectSockets(
       76, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
 
@@ -6133,10 +6133,12 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
   const auto kNak2 = net::NetworkAnonymizationKey::CreateSameSite(kSiteBar);
   network_context->PreconnectSockets(
       1, test_server.base_url(), network::mojom::CredentialsMode::kOmit, kKey1,
+      /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   network_context->PreconnectSockets(
       2, test_server.base_url(), network::mojom::CredentialsMode::kOmit, kKey2,
+      /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   connection_listener.WaitForAcceptedConnections(3u);
@@ -10112,7 +10114,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesCancelsPreconnectRequests) {
   // nonce.
   network_context->PreconnectSockets(
       1, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
-      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   connection_listener.WaitForAcceptedConnections(1u);
@@ -10124,12 +10126,55 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesCancelsPreconnectRequests) {
   network_context->PreconnectSockets(
       1, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
       net::NetworkAnonymizationKey::CreateFromFrameSite(site, site, nonce),
+      /*network_restrictions_id=*/std::nullopt,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt, mojo::NullRemote());
   base::RunLoop().RunUntilIdle();
 
   // No new sockets are opened because the preconnect request is cancelled.
   EXPECT_EQ(1, connection_listener.GetTotalSocketsSeen());
+}
+
+TEST_F(NetworkContextTest, PreconnectRequestWithNetworkRestrictionsID) {
+  base::test::ScopedFeatureList feature_list{
+      network::features::kConnectionAllowlists};
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken network_restrictions_id =
+      base::UnguessableToken::Create();
+
+  // Create an empty connection allowlist associated with the network
+  // restriction id.
+  base::test::TestFuture<void> revoked;
+  auto revoked_nonce_pattern =
+      CreateNonceAndAllowlistedPatterns(network_restrictions_id);
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Set up and start the test server.
+  net::EmbeddedTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+  ASSERT_FALSE(network_context->IsNetworkForNonceAndUrlAllowed(
+      network_restrictions_id, test_server.base_url()));
+
+  // Attempt to preconnect with the network restrictions id that accoresponds to
+  // an empty connection connection allowlist.
+  network_context->PreconnectSockets(
+      1, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
+      net::NetworkAnonymizationKey(), network_restrictions_id,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      std::nullopt, mojo::NullRemote());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return task_environment_.MainThreadIsIdle(); }));
+
+  // No socket is connected due to the empty connection allowlist.
+  ASSERT_EQ(GetSocketPoolInfo(network_context.get(), "idle_socket_count"), 0);
+  ASSERT_EQ(GetSocketPoolInfo(network_context.get(), "connecting_socket_count"),
+            0);
 }
 
 // ExemptUrlFromNetworkRevocationForNonce(exempted_url, nonce) exempts
