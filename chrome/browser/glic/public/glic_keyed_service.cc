@@ -220,21 +220,18 @@ GlicKeyedService::GlicKeyedService(
   CHECK(actor_keyed_service);
 #endif
 
+  // TODO(crbug.com/450026474): Consider not constructing this metrics
+  // instance for multi-instance
+  metrics_->ClearControllers();
+
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
   if (UseDefaultWindowController()) {
-    // TODO: Create the zero state suggestions manager on each instance.
     zero_state_suggestions_manager_ =
         std::make_unique<GlicZeroStateSuggestionsManager>(
             sharing_manager_.get(), &GetSingleInstanceWindowController(),
             contextual_cueing_service);
-  }
-  if (UseDefaultWindowController()) {
     metrics_->SetControllers(&GetSingleInstanceWindowController(),
                              sharing_manager_.get());
-  } else {
-    // TODO(crbug.com/450026474): Consider not constructing this metrics
-    // instance.
-    metrics_->ClearControllers();
   }
 #endif
 
