@@ -185,7 +185,7 @@ public class AutoplayMutedNotificationTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481443731
     public void testMutedPlaybackDoesNotTakeAudioFocus() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
 
@@ -217,7 +217,7 @@ public class AutoplayMutedNotificationTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481443731
     public void testUnmutedPlaybackTakesAudioFocus() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
 

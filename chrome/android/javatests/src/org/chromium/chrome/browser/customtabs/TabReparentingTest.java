@@ -204,7 +204,7 @@ public class TabReparentingTest {
      */
     @SmallTest
     @Test
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445694
     public void testTabReparentingSelectPopup() throws TimeoutException {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(

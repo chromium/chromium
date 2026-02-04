@@ -73,7 +73,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445076
 public class FullscreenManagerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

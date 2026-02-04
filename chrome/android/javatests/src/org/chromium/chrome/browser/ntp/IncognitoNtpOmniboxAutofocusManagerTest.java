@@ -57,7 +57,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/479863847
 public class IncognitoNtpOmniboxAutofocusManagerTest {
     /**
      * The maximum time to wait for omnibox focus and keyboard visibility. On some devices the

@@ -50,7 +50,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
     RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // PiP not supported on AAOS.
 })
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444525
 public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
     private static final String TEST_PATH = "/chrome/test/data/media/bigbuck-player.html";

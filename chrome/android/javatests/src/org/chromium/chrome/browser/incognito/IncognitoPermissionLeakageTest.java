@@ -250,7 +250,7 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.RegularToIncognito.class)
-    @DisabledTest(message = "crbug.com/390130917, crbug.com/446934111")
+    @DisabledTest(message = "crbug.com/390130917, crbug.com/479863847")
     public void testBlockPermissionLeakFromRegularToIncognito(
             String regularActivityType, String incognitoActivityType) throws Exception {
         ActivityType regularActivity = ActivityType.valueOf(regularActivityType);

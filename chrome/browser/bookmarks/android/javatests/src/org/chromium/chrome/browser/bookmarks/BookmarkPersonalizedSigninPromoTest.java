@@ -94,7 +94,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Test
     @MediumTest
     @DisableIf.Device(
-            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/372858049, https://crbug.com/446934111
+            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/372858049, https://crbug.com/481444730
     public void shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);

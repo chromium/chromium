@@ -83,7 +83,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445129
 public class OmniboxPedalsTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =

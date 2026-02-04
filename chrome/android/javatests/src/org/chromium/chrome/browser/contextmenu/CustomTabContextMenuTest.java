@@ -57,7 +57,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445755
 public class CustomTabContextMenuTest {
 
     private static final String TEST_PATH =

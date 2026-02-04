@@ -123,7 +123,7 @@ public class TouchToFillCreditCardTest {
     // TODO(crbug.com/462636368): Turn on the flag after blink bug is fixed.
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444440
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testSelectingLocalCard() throws TimeoutException {
         // Focus the field to bring up the touch to fill for credit cards.

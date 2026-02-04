@@ -128,7 +128,7 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444820
     public void testOpenedHistoryItem_SingleClickOpensInSameTab() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");

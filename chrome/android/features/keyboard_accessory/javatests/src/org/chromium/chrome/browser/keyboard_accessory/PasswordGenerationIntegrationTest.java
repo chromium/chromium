@@ -70,7 +70,7 @@ import java.util.concurrent.TimeoutException;
                 "TODO(crbug.com/40232561): add resetting logic for"
                         + "FakePasswordStoreAndroidBackend to allow batching")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445547
 public class PasswordGenerationIntegrationTest {
     /**
      * The number of buttons currently available in the keyboard accessory bar. The offered options

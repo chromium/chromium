@@ -216,7 +216,7 @@ public class PageLoadMetricsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445205
     public void testPageLoadMetricEmitted() throws InterruptedException {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",
@@ -235,7 +235,7 @@ public class PageLoadMetricsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445205
     public void testPageLoadMetricNavigationIdSetCorrectly() throws InterruptedException {
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
         ThreadUtils.runOnUiThreadBlocking(
@@ -260,7 +260,7 @@ public class PageLoadMetricsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445205
     public void testPageLoadMetricForPrerendering() throws Exception {
         Assert.assertFalse(
                 "Tab shouldn't be loading anything before we add observer",

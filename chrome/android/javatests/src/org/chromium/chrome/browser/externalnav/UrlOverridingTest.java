@@ -842,7 +842,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testNavigationFromXHRCallback() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -923,7 +923,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testNavigationWithFallbackURL() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
@@ -1194,7 +1194,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testIntentURIWithEmptySchemeDoesNothing() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         String targetUrl =
@@ -1721,7 +1721,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445778
     public void testExternalNavigationMessage() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
 

@@ -111,7 +111,7 @@ public class MostVisitedTilesPTTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444648
     public void testOpenItemInIncognitoTab() {
         RegularNewTabPageStation page = mCtaTestRule.startOnNtp();
 

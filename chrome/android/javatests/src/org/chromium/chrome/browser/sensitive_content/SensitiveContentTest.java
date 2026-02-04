@@ -283,7 +283,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/479863847
     public void testIncognitoTabSwitcherBecomesSensitive() {
         final String histogram =
                 "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity";
@@ -590,7 +590,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481447108
     public void testSensitiveContentIsRestoredFromTabState() {
         // Create a new tab.
         CtaPageStation page = mPage.openNewTabFast();

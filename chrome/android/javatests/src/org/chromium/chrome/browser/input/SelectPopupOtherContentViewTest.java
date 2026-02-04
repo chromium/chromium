@@ -70,7 +70,7 @@ public class SelectPopupOtherContentViewTest {
     @Test
     @LargeTest
     @Feature({"Browser"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445014
     public void testPopupNotClosedByOtherContentView() throws Exception, Throwable {
         // Load the test page.
         WebPageStation page = mActivityTestRule.startOnUrl(SELECT_URL);

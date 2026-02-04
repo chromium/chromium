@@ -62,7 +62,7 @@ public class ChromeCachedFlagsTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445559
     public void testValueIsConsistentWithDefault() {
         // In Chrome-branded builds, the fieldtrial_testing_config.json isn't applied, so
         // flag values may differ.

@@ -92,7 +92,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/479863847
     public void incognitoModeIsUnavailableFromAppMenu() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -111,7 +111,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41485872")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/479863847
     public void incognitoModeIsUnavailableFromTabSwitcherActionMenu() {
         onView(withId(R.id.tab_switcher_button)).perform(longClick());
         int incognitoMenuItemStringId =
