@@ -34,9 +34,7 @@ base::win::ScopedHandle SignedPolicy::GenerateRules(base::FilePath dll_path,
     return {};
   }
 
-  // Create a security descriptor with an empty DACL.
-  base::win::SecurityDescriptor sd;
-  sd.set_dacl({});
+  auto sd = base::win::SecurityDescriptor::CreateWithEmptyDacl();
   SECURITY_DESCRIPTOR sd_abs = sd.ToAbsolute();
   OBJECT_ATTRIBUTES obj_attr = {};
   InitializeObjectAttributes(&obj_attr, nullptr, OBJ_INHERIT, nullptr, &sd_abs);

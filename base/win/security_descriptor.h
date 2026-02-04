@@ -98,6 +98,10 @@ class BASE_EXPORT SecurityDescriptor {
   // |sddl| the security descriptor in SDDL format.
   static std::optional<SecurityDescriptor> FromSddl(wcstring_view sddl);
 
+  // Create a security descriptor with an empty DACL. This is a convenience
+  // method when you need a security descriptor which doesn't grant any access.
+  static SecurityDescriptor CreateWithEmptyDacl();
+
   SecurityDescriptor();
   SecurityDescriptor(const SecurityDescriptor&) = delete;
   SecurityDescriptor& operator=(const SecurityDescriptor&) = delete;
@@ -233,6 +237,10 @@ class BASE_EXPORT SecurityDescriptor {
     dacl_protected_ = dacl_protected;
   }
 
+  // Gets dacl_auto_inherited member, this is only for information purposes as
+  // the flag can't be directly written to a file.
+  bool dacl_auto_inherited() const { return dacl_auto_inherited_; }
+
   // Get, set and clear sacl member.
   const std::optional<AccessControlList>& sacl() const { return sacl_; }
   std::optional<AccessControlList>& sacl() { return sacl_; }
@@ -245,20 +253,28 @@ class BASE_EXPORT SecurityDescriptor {
     sacl_protected_ = sacl_protected;
   }
 
+  // Gets dacl_auto_inherited member, this is only for information purposes as
+  // the flag can't be directly written to a file.
+  bool sacl_auto_inherited() const { return sacl_auto_inherited_; }
+
  private:
-  SecurityDescriptor(std::optional<Sid>&& owner,
-                     std::optional<Sid>&& group,
-                     std::optional<AccessControlList>&& dacl,
+  SecurityDescriptor(std::optional<Sid> owner,
+                     std::optional<Sid> group,
+                     std::optional<AccessControlList> dacl,
                      bool dacl_protected,
-                     std::optional<AccessControlList>&& sacl,
-                     bool sacl_protected);
+                     bool dacl_auto_inherited,
+                     std::optional<AccessControlList> sacl,
+                     bool sacl_protected,
+                     bool sacl_auto_inherited);
 
   std::optional<Sid> owner_;
   std::optional<Sid> group_;
   std::optional<AccessControlList> dacl_;
   bool dacl_protected_ = false;
+  bool dacl_auto_inherited_ = false;
   std::optional<AccessControlList> sacl_;
   bool sacl_protected_ = false;
+  bool sacl_auto_inherited_ = false;
 };
 
 }  // namespace base::win
