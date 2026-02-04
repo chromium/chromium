@@ -280,6 +280,13 @@ if (enable_swift_cxx_interop) {
               root_build_dir),
     ]
 
+    # TODO(crbug.com/478110569): Remove this guard as soon as the FYI bots
+    # running with enable_swift_cxx_interop = true are updated to Swift 6.3.
+    # "-suppress-notes" flag is added in Swift 6.3.
+    if (xcode_version_int >= 2700) {
+      swiftflags += [ "-suppress-notes" ]
+    }
+
     # TODO(crbug.com/451945291): Move the following compiler flags to
     # build/config/compiler/BUILD.gn when Swift/C++ interop is enabled by default.
     # The '-std=c++' flag is not allowed with 'Objective-C'.
