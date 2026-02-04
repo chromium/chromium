@@ -55,6 +55,9 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
                          tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          tab_groups::TriggerSource source) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
 
  private:
   void SortTabGroups();

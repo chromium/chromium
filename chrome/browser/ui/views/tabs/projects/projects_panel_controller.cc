@@ -98,6 +98,24 @@ void ProjectsPanelController::OnTabGroupRemoved(
   }
 }
 
+void ProjectsPanelController::OnTabGroupLocalIdChanged(
+    const base::Uuid& sync_id,
+    const std::optional<tab_groups::LocalTabGroupID>& local_id) {
+  auto existing_group = std::ranges::find(
+      tab_groups_, sync_id, &tab_groups::SavedTabGroup::saved_guid);
+  if (existing_group == tab_groups_.end()) {
+    return;
+  }
+
+  int index = std::distance(tab_groups_.begin(), existing_group);
+  existing_group->SetLocalGroupId(local_id);
+
+  for (auto& observer : observers_) {
+    observer.OnTabGroupUpdated(*existing_group, index,
+                               /*new_index=*/std::nullopt);
+  }
+}
+
 void ProjectsPanelController::SortTabGroups() {
   std::stable_sort(tab_groups_.begin(), tab_groups_.end(),
                    [](const tab_groups::SavedTabGroup& left,

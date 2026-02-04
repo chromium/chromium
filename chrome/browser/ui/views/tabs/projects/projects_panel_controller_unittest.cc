@@ -278,3 +278,22 @@ TEST_F(ProjectsPanelControllerObserverTest, NotifiesObserverOnUnpinning) {
   EXPECT_EQ(group_to_unpin.saved_guid(),
             controller_->GetTabGroups()[1].saved_guid());
 }
+
+TEST_F(ProjectsPanelControllerObserverTest, NotifiesObserverOnLocalIdChange) {
+  auto group = CreateGroup(u"Group", kFixedTime);
+
+  EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
+      .WillOnce(
+          testing::Return(std::vector<tab_groups::SavedTabGroup>({group})));
+  InitializeController();
+
+  auto local_group_id = tab_groups::LocalTabGroupID::FromRawToken(
+      base::Token{0x12345678, 0x9ABCDEF0});
+  group.SetLocalGroupId(local_group_id);
+
+  EXPECT_CALL(observer_, OnTabGroupUpdated(GroupIs(group), 0, testing::_));
+  controller_->OnTabGroupLocalIdChanged(group.saved_guid(), local_group_id);
+
+  EXPECT_EQ(group.local_group_id(),
+            controller_->GetTabGroups()[0].local_group_id());
+}
