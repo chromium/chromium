@@ -30,6 +30,7 @@ export interface CrUrlListItemElement {
     content: HTMLSlotElement,
     description: HTMLSlotElement,
     metadata: HTMLElement,
+    customIcon: HTMLSlotElement,
   };
 }
 

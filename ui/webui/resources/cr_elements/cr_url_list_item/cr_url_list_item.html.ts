@@ -42,22 +42,24 @@ export function getHtml(this: CrUrlListItemElement) {
 <div id="item">
   <slot name="prefix"></slot>
   <div id="iconContainer">
-    <div class="favicon" ?hidden="${!this.shouldShowFavicon_()}"
-        .style="background-image: ${this.getFavicon_()};">
-    </div>
-    <div class="image-container" ?hidden="${!this.shouldShowUrlImage_()}">
-      <img class="url-image" is="cr-auto-img" auto-src="${this.imageUrls[0]}"
-          draggable="false">
-    </div>
-    <div class="folder-and-count"
-        ?hidden="${!this.shouldShowFolderCount_()}">
-      ${getFolderImagesHtml.bind(this)()}
-      <slot id="folder-icon" name="folder-icon">
-        <div class="folder cr-icon icon-folder-open"
-            ?hidden="${!this.shouldShowFolderIcon_()}"></div>
-      </slot>
-      <div class="count">${this.getDisplayedCount_()}</div>
-    </div>
+    <slot id="customIcon" name="customIcon">
+      <div class="favicon" ?hidden="${!this.shouldShowFavicon_()}"
+          .style="background-image: ${this.getFavicon_()};">
+      </div>
+      <div class="image-container" ?hidden="${!this.shouldShowUrlImage_()}">
+        <img class="url-image" is="cr-auto-img" auto-src="${this.imageUrls[0]}"
+            draggable="false">
+      </div>
+      <div class="folder-and-count"
+          ?hidden="${!this.shouldShowFolderCount_()}">
+        ${getFolderImagesHtml.bind(this)()}
+        <slot id="folder-icon" name="folder-icon">
+          <div class="folder cr-icon icon-folder-open"
+              ?hidden="${!this.shouldShowFolderIcon_()}"></div>
+        </slot>
+        <div class="count">${this.getDisplayedCount_()}</div>
+      </div>
+    </slot>
   </div>
   <slot id="content" name="content" @slotchange="${this.onContentSlotChange_}">
   </slot>

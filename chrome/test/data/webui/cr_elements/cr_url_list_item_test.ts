@@ -43,6 +43,18 @@ suite('CrUrlListItemTest', () => {
     assertTrue(folderIcon.hasAttribute('hidden'));
   });
 
+  test('UsesCustomIconSlotContent', async () => {
+    // Slot a custom icon.
+    const customIcon = document.createElement('div');
+    customIcon.slot = 'customIcon';
+    customIcon.id = 'customIcon';
+    element.appendChild(customIcon);
+    await microtasksFinished();
+    const slottedElement = element.$.customIcon.assignedElements()[0];
+    assertTrue(!!slottedElement);
+    assertEquals('customIcon', slottedElement.id);
+  });
+
   test('TruncatesAndDisplaysCount', async () => {
     const count = element.shadowRoot.querySelector('.count')!;
     element.count = 11;

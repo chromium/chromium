@@ -64,6 +64,14 @@ export function getHtml(this: CrUrlListItemDemoElement) {
   </cr-url-list-item>
 </div>
 
+<h2>Custom Icon</h2>
+<div class="demos">
+  <cr-url-list-item url="http://www.google.com" title="Custom Static Icon"
+    description="A custom computer Icon has been displayed">
+    <cr-icon icon="cr:computer" slot="customIcon"></cr-icon>
+  </cr-url-list-item>
+</div>
+
 <h2>Compact</h2>
 <div class="demos">
   <cr-url-list-item url="http://www.google.com" size="compact"
