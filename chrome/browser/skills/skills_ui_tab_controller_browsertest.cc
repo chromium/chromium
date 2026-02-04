@@ -5,6 +5,7 @@
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
@@ -57,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   EXPECT_FALSE(IsDialogVisible());
 
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   EXPECT_TRUE(IsDialogVisible());
 }
@@ -66,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
   // Open first dialog.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   ConstrainedWebDialogDelegate* first_delegate =
@@ -75,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
 
   // Try to open again immediately.
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill2);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2));
 
   // Dialog should still be visible.
   EXPECT_TRUE(IsDialogVisible());
@@ -93,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        CloseDialogDestroysWidget) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Trigger the close.
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        NativeCloseCleansUpState) {
   // Open dialog.
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Get the Widget to simulate a native close (like clicking 'X')
@@ -134,7 +135,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 
   // If OnDialogClosed didn't run, 'dialog_delegate_' would still be non-null,
   // and ShowDialog() would likely exit early.
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills::Skill test_skill2("id2", "name2", "icon2", "prompt2");
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2));
   EXPECT_TRUE(IsDialogVisible());
 }
 
@@ -142,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 // (Regression test for the destruction race condition).
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, TabCloseDoesNotCrash) {
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Close the tab.
@@ -160,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
 
   // Open dialog on Tab A.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  controller_a->ShowDialog(test_skill);
+  controller_a->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Open a new Tab B and switch to it.
@@ -175,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   // Controller B shouldn't have a dialog open.
   // Verify this by calling ShowDialog and ensuring it does open one.
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
-  controller_b->ShowDialog(test_skill2);
+  controller_b->ShowDialog(std::move(test_skill2));
 
   EXPECT_TRUE(IsDialogVisible());
 
@@ -193,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
 
   // Show the dialog.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Dig down to find the SkillsUI.
@@ -213,6 +215,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
   ASSERT_TRUE(skills_ui);
 
   EXPECT_TRUE(skills_ui->GetDelegateForTesting());
+  EXPECT_EQ(skills_ui->GetInitialSkillForTesting().name, "skill_name");
+  EXPECT_EQ(skills_ui->GetInitialSkillForTesting().icon, "icon");
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 #endif
 }
@@ -225,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // creation.
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(test_skill);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   auto* delegate = skills_ui_tab_controller()->GetDialogDelegateForTesting();
@@ -267,6 +271,75 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // Wait for native close.
   ASSERT_TRUE(close_future.Wait());
   EXPECT_FALSE(IsDialogVisible());
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+#endif
+}
+
+// Verify that the Skill data passed to ShowDialog correctly populates the
+// HTML input fields in the WebUI.
+IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
+                       SkillPopulatesUIFields) {
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  // Setup a specific test skill.
+  const std::string kTestName = "Vegan for 3";
+  const std::string kTestPrompt =
+      "Convert this recipe to vegan and adjust to serve 3 people.";
+  const std::string kTestIcon = "🥦";
+  skills::Skill test_skill("test-id", kTestName, kTestIcon, kTestPrompt);
+
+  // Open the dialog.
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
+  EXPECT_TRUE(IsDialogVisible());
+
+  //  Get the WebContents from the delegate and wait for it to load.
+  auto* delegate = skills_ui_tab_controller()->GetDialogDelegateForTesting();
+  ASSERT_TRUE(delegate);
+  content::WebContents* web_contents = delegate->GetWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Script to check values inside the shadow DOM of the custom element.
+  static constexpr char kCheckFieldsScript[] = R"(
+    (async function() {
+      const getApp = () => document.querySelector('skills-dialog-app');
+
+      for (let i = 0; i < 20; i++) {
+        const app = getApp();
+        // Wait for the app and its internal Lit rendering to be ready.
+        if (app && app.shadowRoot) {
+          await app.updateComplete;
+
+          const nameInput = app.$['nameText'];
+          const instructionText = app.$['instructionsText'];
+          const emojiInput = app.shadowRoot.querySelector('.emoji-trigger');
+
+          return {
+            name: nameInput ? nameInput.value : '',
+            prompt: instructionText ? instructionText.value : '',
+            icon: emojiInput ? emojiInput.value : ''
+          };
+        }
+        await new Promise(r => setTimeout(r, 50));
+      }
+      return {error: 'app not found'};
+    })();
+  )";
+
+  auto result = content::EvalJs(web_contents, kCheckFieldsScript);
+  const base::DictValue& values = result.ExtractDict();
+  // Assert the UI state matches the C++ test_skill.
+  const std::string* name = values.FindString("name");
+  const std::string* prompt = values.FindString("prompt");
+  const std::string* icon = values.FindString("icon");
+  ASSERT_TRUE(name);
+  ASSERT_TRUE(prompt);
+  ASSERT_TRUE(icon);
+  EXPECT_EQ(*name, kTestName);
+  EXPECT_EQ(*prompt, kTestPrompt);
+  EXPECT_EQ(*icon, kTestIcon);
+
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 #endif
 }

@@ -13,6 +13,7 @@
 #include "chrome/grit/skills_resources.h"
 #include "chrome/grit/skills_resources_map.h"
 #include "components/skills/features.h"
+#include "components/skills/public/skill.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -59,9 +60,10 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddLocalizedStrings(kStrings);
 }
 
-void SkillsUI::SetSkillsDialogDelegate(
-    base::WeakPtr<SkillsDialogDelegate> delegate) {
+void SkillsUI::InitializeDialog(base::WeakPtr<SkillsDialogDelegate> delegate,
+                                Skill skill) {
   delegate_ = delegate;
+  initial_skill_ = std::move(skill);
 }
 
 void SkillsUI::BindInterface(
@@ -83,7 +85,7 @@ void SkillsUI::CreateDialogHandler(
       std::move(receiver), web_ui()->GetWebContents(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())),
-      delegate_);
+      std::move(initial_skill_), delegate_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)

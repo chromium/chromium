@@ -37,10 +37,12 @@ SkillsDialogHandler::SkillsDialogHandler(
     mojo::PendingReceiver<DialogHandler> receiver,
     content::WebContents* web_contents,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
+    skills::Skill initial_skill,
     base::WeakPtr<SkillsDialogDelegate> delegate)
     : receiver_(this, std::move(receiver)),
       web_contents_(CHECK_DEREF(web_contents)),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
+      initial_skill_(std::move(initial_skill)),
       delegate_(delegate),
       profile_(CHECK_DEREF(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
@@ -74,8 +76,7 @@ void SkillsDialogHandler::ShowEmojiPicker() {
 }
 
 void SkillsDialogHandler::GetInitialSkill(GetInitialSkillCallback callback) {
-  // TODO(marissashen): Return initial skill from dialog creation.
-  std::move(callback).Run(skills::Skill());
+  std::move(callback).Run(initial_skill_);
 }
 
 void SkillsDialogHandler::OnRefineSkillResponse(

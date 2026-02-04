@@ -1349,7 +1349,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       skills::Skill skill(/*id=*/"",
                           /*name=*/"",
                           /*icon=*/"", request->prompt);
-      controller->ShowDialog(skill);
+      controller->ShowDialog(std::move(skill));
       std::move(scoped_callback).Run(true);
     }
 #else

@@ -8,10 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/skills/public/skill.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-
 namespace skills {
 
 class SkillsPageHandler;
@@ -33,11 +33,15 @@ class SkillsUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<skills::mojom::PageHandlerFactory> receiver);
 
-  void SetSkillsDialogDelegate(base::WeakPtr<SkillsDialogDelegate> delegate);
+  // Initializes the SkillsDialogDelegate and initial skill for the dialog.
+  void InitializeDialog(base::WeakPtr<SkillsDialogDelegate> delegate,
+                        Skill skill);
 
   base::WeakPtr<SkillsDialogDelegate> GetDelegateForTesting() {
     return delegate_;
   }
+
+  const Skill& GetInitialSkillForTesting() const { return initial_skill_; }
 
  private:
   // The PendingRemote must be valid and bind to a receiver in order to start
@@ -49,6 +53,9 @@ class SkillsUI : public ui::MojoWebUIController,
   void CreateDialogHandler(
       mojo::PendingReceiver<skills::mojom::DialogHandler> receiver) override;
 
+  // The initial state for the skills dialog. This is passed to the
+  // DialogHandler upon construction to populate the UI fields.
+  skills::Skill initial_skill_;
   std::unique_ptr<SkillsPageHandler> page_handler_;
   std::unique_ptr<SkillsDialogHandler> dialog_handler_;
   base::WeakPtr<SkillsDialogDelegate> delegate_;

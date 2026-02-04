@@ -33,7 +33,7 @@ class SkillsDialogHandlerTest : public testing::Test {
     web_ui_.set_web_contents(web_contents_.get());
     handler_ = std::make_unique<SkillsDialogHandler>(
         receiver_.BindNewPipeAndPassReceiver(), web_ui_.GetWebContents(),
-        &mock_opt_guide_service_, mock_delegate_);
+        &mock_opt_guide_service_, mock_skill_, mock_delegate_);
   }
 
  protected:
@@ -42,6 +42,7 @@ class SkillsDialogHandlerTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
   MockOptimizationGuideKeyedService mock_opt_guide_service_;
+  Skill mock_skill_;
   base::WeakPtr<SkillsDialogDelegate> mock_delegate_;
   mojo::Remote<mojom::DialogHandler> receiver_;
   std::unique_ptr<SkillsDialogHandler> handler_;
@@ -83,6 +84,31 @@ TEST_F(SkillsDialogHandlerTest, RefineSkillSuccess) {
                          Field(&skills::Skill::name, "suggested name")))));
 
   handler_->RefineSkill(std::move(skill), callback.Get());
+}
+
+// Tests that GetInitialSkill returns the skill passed in during construction.
+TEST_F(SkillsDialogHandlerTest, GetInitialSkillReturnsCorrectData) {
+  skills::Skill test_skill;
+  test_skill.name = "Unit Test Skill";
+  test_skill.prompt = "Unit Test Prompt";
+  test_skill.icon = "🧪";
+
+  // Re-initialize the handler with this data.
+  receiver_.reset();
+  handler_ = std::make_unique<SkillsDialogHandler>(
+      receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(),
+      &mock_opt_guide_service_, test_skill, mock_delegate_);
+
+  // Call the API using a lambda as the callback.
+  skills::Skill received_skill;
+  handler_->GetInitialSkill(
+      base::BindOnce([](skills::Skill* out_skill,
+                        const skills::Skill& result) { *out_skill = result; },
+                     &received_skill));
+
+  EXPECT_EQ(received_skill.name, "Unit Test Skill");
+  EXPECT_EQ(received_skill.prompt, "Unit Test Prompt");
+  EXPECT_EQ(received_skill.icon, "🧪");
 }
 
 }  // namespace

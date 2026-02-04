@@ -10,6 +10,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -29,6 +30,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
       mojo::PendingReceiver<skills::mojom::DialogHandler> receiver,
       content::WebContents* web_contents,
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
+      skills::Skill initial_skill,
       base::WeakPtr<SkillsDialogDelegate> delegate);
 
   SkillsDialogHandler(const SkillsDialogHandler&) = delete;
@@ -45,19 +47,21 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
       const skills::Skill& skill,
       skills::mojom::DialogHandler::RefineSkillCallback callback) override;
 
-  // Callback for the model execution result for `RefineSkill`.
  private:
+  // Callback for the model execution result for `RefineSkill`.
   void OnRefineSkillResponse(
       skills::mojom::DialogHandler::RefineSkillCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
- private:
   mojo::Receiver<skills::mojom::DialogHandler> receiver_;
   const raw_ref<content::WebContents> web_contents_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
+  // The skill data used to pre-populate the dialog's input fields.
+  skills::Skill initial_skill_;
   base::WeakPtr<SkillsDialogDelegate> delegate_;
+
   // Initialized with the browser_context passed in the constructor.
   const raw_ref<Profile> profile_;
   base::WeakPtrFactory<SkillsDialogHandler> weak_ptr_factory_{this};

@@ -65,7 +65,7 @@ SkillsUiTabController::SkillsUiTabController(tabs::TabInterface& tab)
 
 SkillsUiTabController::~SkillsUiTabController() = default;
 
-void SkillsUiTabController::ShowDialog(const skills::Skill& skill) {
+void SkillsUiTabController::ShowDialog(Skill skill) {
   if (dialog_delegate_) {
     return;
   }
@@ -73,8 +73,6 @@ void SkillsUiTabController::ShowDialog(const skills::Skill& skill) {
   CHECK(contents);
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
-  // TODO(crbug.com/476145843): Pass in the skill to the tab
-  // controller in the dialog.
   auto delegate = std::make_unique<SkillsDialog>(profile);
   delegate->RegisterOnDialogClosedCallback(base::BindOnce(
       &SkillsUiTabController::OnDialogClosed, weak_ptr_factory_.GetWeakPtr()));
@@ -87,7 +85,8 @@ void SkillsUiTabController::ShowDialog(const skills::Skill& skill) {
     if (dialog_contents && dialog_contents->GetWebUI()) {
       auto* controller = dialog_contents->GetWebUI()->GetController();
       if (auto* skills_ui = controller->GetAs<skills::SkillsUI>()) {
-        skills_ui->SetSkillsDialogDelegate(weak_ptr_factory_.GetWeakPtr());
+        skills_ui->InitializeDialog(weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(skill));
       }
     }
   }

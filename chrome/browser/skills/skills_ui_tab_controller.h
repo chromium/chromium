@@ -42,7 +42,7 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   DECLARE_USER_DATA(SkillsUiTabController);
 
   // Opens the skills dialog.
-  void ShowDialog(const skills::Skill& skill) override;
+  void ShowDialog(Skill skill) override;
 
   // Invokes the skill with skill_id in sidepanel.
   void InvokeSkill(std::string_view skill_id) override;
