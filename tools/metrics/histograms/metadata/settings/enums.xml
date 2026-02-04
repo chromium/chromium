@@ -53,6 +53,7 @@ chromium-metrics-reviews@google.com.
   <int value="-847585811" label="DeveloperSettings"/>
   <int value="-789502130" label="AutofillCardBenefitsFragment"/>
   <int value="-745020245" label="AllSiteSettings"/>
+  <int value="-726418910" label="GlicSettings"/>
   <int value="-676399019" label="SecureDnsSettings"/>
   <int value="-638132714" label="LegalInformationSettings"/>
   <int value="-571101369" label="SafeBrowsingSettingsFragment"/>

@@ -101,9 +101,14 @@ found in the LICENSE file.
         android:order="18"
         android:title="@string/tabs_settings_title"/>
     <Preference
+        android:fragment="org.chromium.chrome.browser.glic.GlicSettings"
+        android:key="glic"
+        android:order="19"
+        android:title="@string/glic_button_entrypoint_label"/>
+    <Preference
         android:fragment="org.chromium.chrome.browser.homepage.settings.HomepageSettings"
         android:key="homepage"
-        android:order="19"
+        android:order="20"
         android:title="@string/options_homepage_title"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"

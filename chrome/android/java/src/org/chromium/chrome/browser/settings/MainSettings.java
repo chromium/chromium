@@ -133,6 +133,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_ADDRESS_BAR = "address_bar";
     public static final String PREF_APPEARANCE = "appearance";
     public static final String PREF_DEFAULT_BROWSER = "default_browser";
+    public static final String PREF_GLIC = "glic";
 
     @VisibleForTesting static final int NEW_LABEL_MAX_VIEW_COUNT = 6;
 
@@ -313,6 +314,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         cachePreferences();
         updateAutofillPreferences();
         updatePlusAddressesPreference();
+        updateGlicPreference();
 
         // TODO(crbug.com/40242060): Remove the passwords managed subtitle for local and UPM
         // unenrolled users who can see it directly in the context of the setting.
@@ -741,6 +743,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     });
         } else {
             removePreferenceIfPresent(PREF_PLUS_ADDRESSES);
+        }
+    }
+
+    // TODO(crbug.com/481386779): Replace it with glic_enabling.
+    private void updateGlicPreference() {
+        if (ChromeFeatureList.sGlic.isEnabled()) {
+            addPreferenceIfAbsent(PREF_GLIC);
+        } else {
+            removePreferenceIfPresent(PREF_GLIC);
         }
     }
 

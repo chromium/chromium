@@ -10,12 +10,28 @@ generate_jni("jni_headers") {
       [ "java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java" ]
 }
 
+android_resources("java_resources") {
+  sources = [ "java/res/xml/glic_settings.xml" ]
+  deps = [ "//chrome/app:java_strings_grd" ]
+}
+
 android_library("java") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
+  ]
+  resources_package = "org.chromium.chrome.browser.glic"
   deps = [
+    ":java_resources",
     ":jni_headers_java",
+    "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//components/browser_ui/settings/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
@@ -31,5 +47,35 @@ source_set("android") {
     "//chrome/browser/ui",
     "//skia",
     "//third_party/jni_zero",
+  ]
+}
+
+robolectric_library("junit") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//build/android:build_java",
+    "//chrome/app:java_strings_grd",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
