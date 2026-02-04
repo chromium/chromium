@@ -5,25 +5,25 @@
 // Data for an accessibility event and/or an atomic change to an accessibility
 // tree. See ui/accessibility/ax_tree_update.h for an extended explanation of
 // the tree update format.
-dictionary AXEventParams {
+[nocompile] dictionary AXEventParams {
   // The tree id of the web contents that this update is for.
-  [nocompile] required DOMString treeID;
+  required DOMString treeID;
 
   // ID of the node that the event applies to.
-  [nocompile] required long targetID;
+  required long targetID;
 
   // The type of event that this update represents.
-  [nocompile] required DOMString eventType;
+  required DOMString eventType;
 
   // The source of this event.
-  [nocompile] required DOMString eventFrom;
+  required DOMString eventFrom;
 
   // The mouse coordinates when this event fired.
-  [nocompile] required double mouseX;
-  [nocompile] required double mouseY;
+  required double mouseX;
+  required double mouseY;
 
   // ID of an action request resulting in this event.
-  [nocompile] required long actionRequestID;
+  required long actionRequestID;
 };
 
 dictionary AXTextLocationParams {
@@ -230,7 +230,7 @@ interface AutomationInternal {
                                  object opt_args);
 
   // Fired when an accessibility event occurs
-  static attribute OnAccessibilityEventEvent onAccessibilityEvent;
+  [nocompile] static attribute OnAccessibilityEventEvent onAccessibilityEvent;
 
   static attribute OnAccessibilityTreeDestroyedEvent
       onAccessibilityTreeDestroyed;
