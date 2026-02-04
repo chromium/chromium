@@ -98,12 +98,15 @@ InputStateModel::InputStateModel(
     rule_set_ = mutable_config.rule_set();
 
     // Initialize allowed tools, models, inputs in `state_`.
+    state_.allowed_tools.reserve(rule_set_.allowed_tools().size());
     for (const auto& tool : rule_set_.allowed_tools()) {
       state_.allowed_tools.push_back(static_cast<omnibox::ToolMode>(tool));
     }
+    state_.allowed_models.reserve(rule_set_.allowed_models().size());
     for (const auto& model : rule_set_.allowed_models()) {
       state_.allowed_models.push_back(static_cast<omnibox::ModelMode>(model));
     }
+    state_.allowed_input_types.reserve(rule_set_.allowed_input_types().size());
     for (const auto& input_type : rule_set_.allowed_input_types()) {
       state_.allowed_input_types.push_back(
           static_cast<omnibox::InputType>(input_type));
@@ -217,7 +220,9 @@ const omnibox::ToolRule* GetToolRule(const omnibox::RuleSet& rule_set,
 std::vector<omnibox::InputType> GetCurrentInputTypes(
     const contextual_search::ContextualSearchSessionHandle& session_handle) {
   std::vector<omnibox::InputType> input_types;
-  for (const auto& file_info : session_handle.GetUploadedContextFileInfos()) {
+  const auto& uploaded_files = session_handle.GetUploadedContextFileInfos();
+  input_types.reserve(uploaded_files.size());
+  for (const auto& file_info : uploaded_files) {
     if (file_info.tab_url) {
       input_types.push_back(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
       continue;
@@ -290,6 +295,7 @@ void InputStateModel::UpdateDisabledTools() {
   // - Incompatible with the active model.
   // - Incompatible with the current inputs.
   state_.disabled_tools.clear();
+  state_.disabled_tools.reserve(state_.allowed_tools.size());
   const omnibox::ModelRule* active_model_rule =
       GetModelRule(rule_set_, state_.active_model);
   for (const auto& tool : state_.allowed_tools) {
@@ -321,6 +327,7 @@ void InputStateModel::UpdateDisabledModels() {
   // - Incompatible with the active tool.
   // - Incompatible with the current inputs.
   state_.disabled_models.clear();
+  state_.disabled_models.reserve(state_.allowed_models.size());
 
   for (const auto& model : state_.allowed_models) {
     if (model == state_.active_model) {
@@ -358,6 +365,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
   // - Incompatible with the active model.
   // - Incompatible with the active tool.
   state_.disabled_input_types.clear();
+  state_.disabled_input_types.reserve(state_.allowed_input_types.size());
 
   if (!IsSearchContentSharingEnabled()) {
     std::erase_if(state_.allowed_input_types, [](auto input_type) {
