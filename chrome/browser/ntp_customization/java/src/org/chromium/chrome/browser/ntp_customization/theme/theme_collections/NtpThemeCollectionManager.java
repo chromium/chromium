@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -85,7 +85,7 @@ public class NtpThemeCollectionManager {
     }
 
     public @Nullable String getSelectedThemeCollectionId() {
-        if (mNtpCustomizationConfigManager.getBackgroundImageType() != THEME_COLLECTION) {
+        if (mNtpCustomizationConfigManager.getBackgroundType() != THEME_COLLECTION) {
             return null;
         }
 
@@ -94,7 +94,7 @@ public class NtpThemeCollectionManager {
     }
 
     public @Nullable GURL getSelectedThemeCollectionImageUrl() {
-        if (mNtpCustomizationConfigManager.getBackgroundImageType() != THEME_COLLECTION) {
+        if (mNtpCustomizationConfigManager.getBackgroundType() != THEME_COLLECTION) {
             return null;
         }
 
@@ -103,7 +103,7 @@ public class NtpThemeCollectionManager {
     }
 
     public boolean getIsDailyRefreshEnabled() {
-        if (mNtpCustomizationConfigManager.getBackgroundImageType() != THEME_COLLECTION) {
+        if (mNtpCustomizationConfigManager.getBackgroundType() != THEME_COLLECTION) {
             return false;
         }
 
@@ -217,7 +217,7 @@ public class NtpThemeCollectionManager {
      * @param info The incoming {@link CustomBackgroundInfo}.
      */
     private boolean isNextThemeCollectionImage(CustomBackgroundInfo info) {
-        if (mNtpCustomizationConfigManager.getBackgroundImageType() != THEME_COLLECTION) {
+        if (mNtpCustomizationConfigManager.getBackgroundType() != THEME_COLLECTION) {
             return false;
         }
 

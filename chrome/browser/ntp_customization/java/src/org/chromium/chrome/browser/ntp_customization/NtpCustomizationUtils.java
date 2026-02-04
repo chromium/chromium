@@ -15,17 +15,17 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_SHOWN;
@@ -115,16 +115,16 @@ import java.util.concurrent.Executor;
 @NullMarked
 public class NtpCustomizationUtils {
 
-    // LINT.IfChange(NtpBackgroundImageType)
+    // LINT.IfChange(NtpBackgroundType)
     @IntDef({
-        NtpBackgroundImageType.DEFAULT,
-        NtpBackgroundImageType.IMAGE_FROM_DISK,
-        NtpBackgroundImageType.CHROME_COLOR,
-        NtpBackgroundImageType.THEME_COLLECTION,
-        NtpBackgroundImageType.COLOR_FROM_HEX
+        NtpBackgroundType.DEFAULT,
+        NtpBackgroundType.IMAGE_FROM_DISK,
+        NtpBackgroundType.CHROME_COLOR,
+        NtpBackgroundType.THEME_COLLECTION,
+        NtpBackgroundType.COLOR_FROM_HEX
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface NtpBackgroundImageType {
+    public @interface NtpBackgroundType {
         int DEFAULT = 0;
         int IMAGE_FROM_DISK = 1;
         int CHROME_COLOR = 2;
@@ -133,7 +133,7 @@ public class NtpCustomizationUtils {
         int NUM_ENTRIES = 5;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpBackgroundImageType)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpBackgroundType)
 
     /** An interface to get the current NTP's theme color. */
     interface PrimaryColorProvider {
@@ -280,15 +280,15 @@ public class NtpCustomizationUtils {
      */
     public @Nullable static @ColorInt Integer getPrimaryColorFromCustomizedThemeColor(
             Context context, boolean checkDailyRefresh) {
-        @NtpBackgroundImageType int imageType = getNtpBackgroundImageType();
-        if (imageType == NtpBackgroundImageType.DEFAULT) {
+        @NtpBackgroundType int imageType = getNtpBackgroundType();
+        if (imageType == NtpBackgroundType.DEFAULT) {
             return null;
         }
 
         NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
                 NtpThemeDailyRefreshManager.getInstance();
         @ColorInt int color;
-        if (imageType == NtpBackgroundImageType.CHROME_COLOR) {
+        if (imageType == NtpBackgroundType.CHROME_COLOR) {
             @NtpThemeColorId
             int colorId = ntpThemeDailyRefreshManager.getNtpThemeColorIdForChromeColorTheme();
             if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
@@ -298,7 +298,7 @@ public class NtpCustomizationUtils {
                 colorId = ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForChromeColor(colorId);
             }
             return context.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(colorId));
-        } else if (imageType == NtpBackgroundImageType.THEME_COLLECTION) {
+        } else if (imageType == NtpBackgroundType.THEME_COLLECTION) {
             if (checkDailyRefresh) {
                 ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForThemeCollection();
             }
@@ -327,13 +327,13 @@ public class NtpCustomizationUtils {
     public @Nullable static NtpThemeColorInfo loadColorInfoFromSharedPreference(Context context) {
         if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return null;
 
-        @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
-        if (imageType != NtpBackgroundImageType.CHROME_COLOR
-                && imageType != NtpBackgroundImageType.COLOR_FROM_HEX) {
+        @NtpBackgroundType int imageType = getNtpBackgroundTypeFromSharedPreference();
+        if (imageType != NtpBackgroundType.CHROME_COLOR
+                && imageType != NtpBackgroundType.COLOR_FROM_HEX) {
             return null;
         }
 
-        if (imageType == NtpBackgroundImageType.CHROME_COLOR) {
+        if (imageType == NtpBackgroundType.CHROME_COLOR) {
             // For CHROME_COLOR, a color resource id is saved in the SharedPreference.
             @NtpThemeColorId int colorId = getNtpThemeColorIdFromSharedPreference();
             if (colorId == NtpThemeColorId.DEFAULT) return null;
@@ -346,7 +346,7 @@ public class NtpCustomizationUtils {
         if (primaryColor == NtpThemeColorInfo.COLOR_NOT_SET) return null;
 
         @ColorInt int backgroundColor = NtpThemeColorInfo.COLOR_NOT_SET;
-        if (imageType == NtpBackgroundImageType.COLOR_FROM_HEX) {
+        if (imageType == NtpBackgroundType.COLOR_FROM_HEX) {
             backgroundColor =
                     getBackgroundColorFromSharedPreference(NtpThemeColorInfo.COLOR_NOT_SET);
         }
@@ -381,37 +381,34 @@ public class NtpCustomizationUtils {
      *
      * @param imageType The new image type.
      */
-    public static void setNtpBackgroundImageTypeToSharedPreference(
-            @NtpBackgroundImageType int imageType) {
+    public static void setNtpBackgroundTypeToSharedPreference(@NtpBackgroundType int imageType) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.writeInt(
-                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE, imageType);
+        prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE, imageType);
     }
 
-    /** Gets the current NTP's background image type from the SharedPreference. */
-    public static @NtpBackgroundImageType int getNtpBackgroundImageTypeFromSharedPreference() {
+    /** Gets the current NTP's background type from the SharedPreference. */
+    public static @NtpBackgroundType int getNtpBackgroundTypeFromSharedPreference() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
-                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
-                NtpBackgroundImageType.DEFAULT);
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE, NtpBackgroundType.DEFAULT);
     }
 
     /** Removes the NTP's background image type from the SharedPreference. */
-    public static void removeNtpBackgroundImageTypeFromSharedPreference() {
+    public static void removeNtpBackgroundTypeFromSharedPreference() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE);
     }
 
     /**
-     * Gets the current NTP's background image type from the SharedPreference. Returns
-     * NtpBackgroundImageType.DEFAULT if the feature flag is disabled.
+     * Gets the current NTP's background type from the SharedPreference. Returns
+     * NtpBackgroundType.DEFAULT if the feature flag is disabled.
      */
-    public static @NtpBackgroundImageType int getNtpBackgroundImageType() {
+    public static @NtpBackgroundType int getNtpBackgroundType() {
         if (!isNtpThemeCustomizationEnabled()) {
-            return NtpBackgroundImageType.DEFAULT;
+            return NtpBackgroundType.DEFAULT;
         }
 
-        return getNtpBackgroundImageTypeFromSharedPreference();
+        return getNtpBackgroundTypeFromSharedPreference();
     }
 
     /**
@@ -514,16 +511,16 @@ public class NtpCustomizationUtils {
         if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return false;
 
         return shouldApplyWhiteBackgroundOnSearchBox(
-                NtpCustomizationConfigManager.getInstance().getBackgroundImageType());
+                NtpCustomizationConfigManager.getInstance().getBackgroundType());
     }
 
     /**
      * Returns whether a white background should be applied on fake search box based on the provided
      * background image type.
      */
-    public static boolean shouldApplyWhiteBackgroundOnSearchBox(@NtpBackgroundImageType int type) {
-        return type == NtpBackgroundImageType.IMAGE_FROM_DISK
-                || type == NtpBackgroundImageType.THEME_COLLECTION;
+    public static boolean shouldApplyWhiteBackgroundOnSearchBox(@NtpBackgroundType int type) {
+        return type == NtpBackgroundType.IMAGE_FROM_DISK
+                || type == NtpBackgroundType.THEME_COLLECTION;
     }
 
     /**
@@ -811,18 +808,18 @@ public class NtpCustomizationUtils {
      */
     public static void maybeUpdateDailyRefreshTimestamp(
             long timestamp,
-            @NtpBackgroundImageType int backgroundImageType,
+            @NtpBackgroundType int backgroundType,
             @Nullable CustomBackgroundInfo customBackgroundInfo) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
 
-        if (backgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
+        if (backgroundType == NtpBackgroundType.CHROME_COLOR) {
             if (!prefsManager.readBoolean(
                     NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false)) {
                 return;
             }
         }
 
-        if (backgroundImageType == NtpBackgroundImageType.THEME_COLLECTION) {
+        if (backgroundType == NtpBackgroundType.THEME_COLLECTION) {
             if (customBackgroundInfo == null || !customBackgroundInfo.isDailyRefreshEnabled) {
                 return;
             }
@@ -896,14 +893,13 @@ public class NtpCustomizationUtils {
     /** Removes all NTP custom background related data. */
     public static void resetNtpCustomBackgroundData() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        if (!prefsManager.contains(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE)) {
+        if (!prefsManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE)) {
             // If the no data has been cached or has been cleaned up before, exits here.
             return;
         }
 
-        @NtpBackgroundImageType
-        int type = prefsManager.readInt(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
-        removeNtpBackgroundImageTypeFromSharedPreference();
+        @NtpBackgroundType int type = prefsManager.readInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE);
+        removeNtpBackgroundTypeFromSharedPreference();
         switch (type) {
             case CHROME_COLOR -> resetCustomizedColors();
             case IMAGE_FROM_DISK, THEME_COLLECTION -> resetCustomizedImage();
@@ -969,8 +965,8 @@ public class NtpCustomizationUtils {
             return;
         }
 
-        @NtpBackgroundImageType
-        int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
+        @NtpBackgroundType
+        int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundType();
         getTintedGoogleLogoDrawableImpl(
                 context,
                 defaultGoogleLogoDrawable,
@@ -991,7 +987,7 @@ public class NtpCustomizationUtils {
     public static Drawable getTintedGoogleLogoDrawableImpl(
             Context context,
             Drawable defaultGoogleLogoDrawable,
-            @NtpBackgroundImageType int backgroundType,
+            @NtpBackgroundType int backgroundType,
             @Nullable @ColorInt Integer primaryColor) {
         return getTintedGoogleLogoDrawableImpl(
                 context, defaultGoogleLogoDrawable, backgroundType, () -> primaryColor);
@@ -1008,19 +1004,19 @@ public class NtpCustomizationUtils {
     private static Drawable getTintedGoogleLogoDrawableImpl(
             Context context,
             Drawable defaultGoogleLogoDrawable,
-            @NtpBackgroundImageType int backgroundType,
+            @NtpBackgroundType int backgroundType,
             PrimaryColorProvider primaryColorProvider) {
         // Check the mode before applying a tinted color. A transparent tint in light mode will
         // cause the logo's color to disappear.
         boolean isNightMode = ColorUtils.inNightMode(context);
         // The colorful Google logo is shown for default theme in light mode.
-        if (!isNightMode && backgroundType == NtpBackgroundImageType.DEFAULT) {
+        if (!isNightMode && backgroundType == NtpBackgroundType.DEFAULT) {
             return defaultGoogleLogoDrawable;
         }
 
         @ColorInt int tintColor;
-        if (backgroundType == NtpBackgroundImageType.CHROME_COLOR
-                || backgroundType == NtpBackgroundImageType.COLOR_FROM_HEX) {
+        if (backgroundType == NtpBackgroundType.CHROME_COLOR
+                || backgroundType == NtpBackgroundType.COLOR_FROM_HEX) {
             @Nullable
             @ColorInt
             Integer primaryColor = primaryColorProvider.getPrimaryColor();
@@ -1085,11 +1081,10 @@ public class NtpCustomizationUtils {
     public static boolean shouldAdjustIconTintForNtp(boolean isTablet) {
         if (!canEnableEdgeToEdgeForCustomizedTheme(isTablet)) return false;
 
-        @NtpBackgroundImageType
-        int backgroundImageType =
-                NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
-        return backgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK
-                || backgroundImageType == NtpBackgroundImageType.THEME_COLLECTION;
+        @NtpBackgroundType
+        int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundType();
+        return backgroundType == NtpBackgroundType.IMAGE_FROM_DISK
+                || backgroundType == NtpBackgroundType.THEME_COLLECTION;
     }
 
     /**
@@ -1514,7 +1509,7 @@ public class NtpCustomizationUtils {
 
     public static void resetSharedPreferenceForTesting() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO);

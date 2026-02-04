@@ -15,7 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -77,7 +77,7 @@ public class NtpSyncedThemeManagerUnitTest {
 
     @Test
     public void testFetchNextThemeCollectionImageAfterDailyRefreshApplied_dailyRefreshDisabled() {
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(THEME_COLLECTION);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
         CustomBackgroundInfo currentInfo =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -93,7 +93,7 @@ public class NtpSyncedThemeManagerUnitTest {
 
     @Test
     public void testFetchNextThemeCollectionImageAfterDailyRefreshApplied_infoAlreadyExists() {
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(THEME_COLLECTION);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
         CustomBackgroundInfo currentInfo =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -119,7 +119,7 @@ public class NtpSyncedThemeManagerUnitTest {
     @Test
     public void testFetchNextThemeCollectionImageAfterDailyRefreshApplied() {
         // 1. Set up preconditions.
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(THEME_COLLECTION);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
         CustomBackgroundInfo currentInfo =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,

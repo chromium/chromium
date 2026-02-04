@@ -20,11 +20,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.COLOR_FROM_HEX;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_SELECTED;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
@@ -226,7 +226,7 @@ public class NtpThemeMediatorUnitTest {
 
     @Test
     public void testInitTrailingIcon() {
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(CHROME_COLOR);
         createMediator(true);
         verify(mThemePropertyModel)
                 .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(CHROME_COLOR, true)));
@@ -236,22 +236,22 @@ public class NtpThemeMediatorUnitTest {
     @Test
     public void testHandleSectionClick_onNewColorSelected() {
         createMediator(/* shouldShowAlone= */ true);
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpBackgroundImageType.DEFAULT);
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpBackgroundType.DEFAULT);
 
         // Verifies the case of background type from default to default.
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
 
         // Verifies the case of background type from upload-image to default.
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpBackgroundType.IMAGE_FROM_DISK);
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
 
         // Verifies the case of background type from chrome-color to default.
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpBackgroundImageType.CHROME_COLOR);
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpBackgroundType.CHROME_COLOR);
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mBottomSheetDelegate, times(2)).onNewColorSelected(eq(true));
     }

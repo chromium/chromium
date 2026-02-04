@@ -14,7 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
@@ -165,8 +165,7 @@ public class NtpThemeCoordinatorUnitTest {
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
         verify(mBottomSheetDelegate).onNewThemeCollectionImageSelected(eq(bitmap));
         verify(mMediator)
-                .updateTrailingIconVisibilityForSectionType(
-                        NtpBackgroundImageType.THEME_COLLECTION);
+                .updateTrailingIconVisibilityForSectionType(NtpBackgroundType.THEME_COLLECTION);
     }
 
     @Test

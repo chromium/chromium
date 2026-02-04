@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
 import android.content.Context;
 
@@ -48,7 +48,7 @@ public class NtpSyncedThemeManager {
      * image for the next day's refresh if one hasn't been fetched already.
      */
     public void fetchNextThemeCollectionImageAfterDailyRefreshApplied() {
-        if (NtpCustomizationUtils.getNtpBackgroundImageType() != THEME_COLLECTION) {
+        if (NtpCustomizationUtils.getNtpBackgroundType() != THEME_COLLECTION) {
             return;
         }
 

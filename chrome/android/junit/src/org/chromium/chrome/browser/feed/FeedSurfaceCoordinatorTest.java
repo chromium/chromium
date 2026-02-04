@@ -21,8 +21,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -518,7 +518,7 @@ public class FeedSurfaceCoordinatorTest {
     public void testSetBackground_withImageFromDisk_delegatesToView() {
         mCoordinator.setBackgroundImageCoordinatorForTesting(mBackgroundImageCoordinator);
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
-        configManager.setBackgroundImageTypeForTesting(CHROME_COLOR);
+        configManager.setBackgroundTypeForTesting(CHROME_COLOR);
 
         configManager.onUploadedImageSelected(mBitmap, mBackgroundImageInfo);
 

@@ -137,8 +137,8 @@ public class NtpThemeCollectionManagerUnitTest {
                         /* collectionId= */ "collectionId",
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true);
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION);
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION);
         when(mNtpCustomizationConfigManager.getCustomBackgroundInfo()).thenReturn(currentInfo);
 
         // A new image for the same collection arrives (simulating the pre-fetched image).
@@ -173,8 +173,8 @@ public class NtpThemeCollectionManagerUnitTest {
                         "collection_id",
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true);
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION);
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION);
         when(mNtpCustomizationConfigManager.getCustomBackgroundInfo()).thenReturn(info);
         mNtpThemeCollectionManager =
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
@@ -249,8 +249,8 @@ public class NtpThemeCollectionManagerUnitTest {
 
         // Mock config manager so isNextThemeCollectionImage returns false. This simulates the
         // first image for a collection arriving, not the prefetched "next day" image.
-        when(mNtpCustomizationConfigManager.getBackgroundImageType())
-                .thenReturn(NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT);
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpCustomizationUtils.NtpBackgroundType.DEFAULT);
 
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
 

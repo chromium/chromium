@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -98,9 +98,9 @@ public class NtpCustomizationMetricsUtils {
      * @param themeType The type of the NTP customization theme.
      */
     public static void recordNtpThemeType() {
-        int themeType = NtpCustomizationUtils.getNtpBackgroundImageType();
+        int themeType = NtpCustomizationUtils.getNtpBackgroundType();
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_THEME_TYPE, themeType, NtpBackgroundImageType.NUM_ENTRIES);
+                HISTOGRAM_THEME_TYPE, themeType, NtpBackgroundType.NUM_ENTRIES);
     }
 
     /**

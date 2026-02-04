@@ -76,7 +76,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -859,8 +859,8 @@ public class NewTabPage
                             Bitmap originalBitmap,
                             @Nullable BackgroundImageInfo backgroundImageInfo,
                             boolean fromInitialization,
-                            @NtpBackgroundImageType int oldType,
-                            @NtpBackgroundImageType int newType) {
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
                         onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ true);
                     }
 
@@ -869,13 +869,13 @@ public class NewTabPage
                             @Nullable NtpThemeColorInfo ntpThemeColorInfo,
                             @ColorInt int backgroundColor,
                             boolean fromInitialization,
-                            @NtpBackgroundImageType int oldType,
-                            @NtpBackgroundImageType int newType) {
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
                         onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
                     }
 
                     @Override
-                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                    public void onBackgroundReset(@NtpBackgroundType int oldType) {
                         onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
                     }
                 };
@@ -894,10 +894,10 @@ public class NewTabPage
     private void initUseLightIconTint() {
         if (mIsTablet) return;
 
-        @NtpBackgroundImageType
-        int imageType = NtpCustomizationConfigManager.getInstance().getBackgroundImageType();
-        if (imageType == NtpBackgroundImageType.IMAGE_FROM_DISK
-                || imageType == NtpBackgroundImageType.THEME_COLLECTION) {
+        @NtpBackgroundType
+        int imageType = NtpCustomizationConfigManager.getInstance().getBackgroundType();
+        if (imageType == NtpBackgroundType.IMAGE_FROM_DISK
+                || imageType == NtpBackgroundType.THEME_COLLECTION) {
             mUseLightIconTint = true;
         } else {
             mUseLightIconTint = false;
@@ -1284,8 +1284,8 @@ public class NewTabPage
         return mCanSupportEdgeToEdgeForCustomizedTheme
                 && !mIsTablet
                 && isInSingleUrlBarMode()
-                && NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
-                        != NtpBackgroundImageType.DEFAULT;
+                && NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                        != NtpBackgroundType.DEFAULT;
     }
 
     @Override

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.daily_refresh;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
 import android.graphics.Bitmap;
 
@@ -18,7 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
@@ -122,7 +122,7 @@ public class NtpThemeDailyRefreshManager {
     @VisibleForTesting
     public @NtpThemeColorId int maybeApplyDailyRefreshForChromeColor(
             @NtpThemeColorId int currentColorId) {
-        if (!isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR)) {
+        if (!isDailyRefreshEnabled(NtpBackgroundType.CHROME_COLOR)) {
             return currentColorId;
         }
 
@@ -141,13 +141,13 @@ public class NtpThemeDailyRefreshManager {
     }
 
     @VisibleForTesting
-    boolean isDailyRefreshEnabled(@NtpBackgroundImageType int backgroundType) {
-        if (backgroundType != NtpBackgroundImageType.CHROME_COLOR
+    boolean isDailyRefreshEnabled(@NtpBackgroundType int backgroundType) {
+        if (backgroundType != NtpBackgroundType.CHROME_COLOR
                 && backgroundType != THEME_COLLECTION) {
             return false;
         }
 
-        if (backgroundType == NtpBackgroundImageType.CHROME_COLOR
+        if (backgroundType == NtpBackgroundType.CHROME_COLOR
                 && !NtpCustomizationUtils
                         .getIsChromeColorDailyRefreshEnabledFromSharedPreference()) {
             return false;
@@ -219,8 +219,7 @@ public class NtpThemeDailyRefreshManager {
             mNtpThemeColorId = null;
         }
 
-        if (NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference()
-                == THEME_COLLECTION) {
+        if (NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference() == THEME_COLLECTION) {
             NtpCustomizationUtils.commitThemeCollectionDailyRefresh();
             onDailyRefreshThemeCollectionApplied.run();
         }

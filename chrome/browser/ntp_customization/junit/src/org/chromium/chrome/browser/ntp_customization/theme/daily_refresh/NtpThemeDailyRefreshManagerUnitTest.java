@@ -34,7 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
@@ -81,13 +81,13 @@ public class NtpThemeDailyRefreshManagerUnitTest {
     @Test
     public void testIsDailyRefreshEnabled_Disabled() {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(false);
-        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
+        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundType.CHROME_COLOR));
     }
 
     @Test
     public void testIsDailyRefreshEnabled_NotChromeColor() {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
-        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.IMAGE_FROM_DISK));
+        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundType.IMAGE_FROM_DISK));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
                 TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(1);
 
-        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
+        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundType.CHROME_COLOR));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
                 TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(1);
 
-        assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
+        assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundType.CHROME_COLOR));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
                 TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(TimeUtils.MILLISECONDS_PER_DAY + 10);
 
-        assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
+        assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundType.CHROME_COLOR));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(infoDisabled);
         assertFalse(
                 "Daily refresh should be disabled if not set in CustomBackgroundInfo.",
-                mManager.isDailyRefreshEnabled(NtpBackgroundImageType.THEME_COLLECTION));
+                mManager.isDailyRefreshEnabled(NtpBackgroundType.THEME_COLLECTION));
 
         // Test case 2: Daily refresh is enabled, but it's within 24 hours since the last refresh.
         CustomBackgroundInfo infoEnabled =
@@ -194,13 +194,13 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         mFakeTime.advanceMillis(1);
         assertFalse(
                 "Daily refresh should be disabled within 24 hours.",
-                mManager.isDailyRefreshEnabled(NtpBackgroundImageType.THEME_COLLECTION));
+                mManager.isDailyRefreshEnabled(NtpBackgroundType.THEME_COLLECTION));
 
         // Test case 3: Daily refresh is enabled, and it's been more than 24 hours.
         mFakeTime.advanceMillis(TimeUtils.MILLISECONDS_PER_DAY + 10);
         assertTrue(
                 "Daily refresh should be enabled after 24 hours.",
-                mManager.isDailyRefreshEnabled(NtpBackgroundImageType.THEME_COLLECTION));
+                mManager.isDailyRefreshEnabled(NtpBackgroundType.THEME_COLLECTION));
     }
 
     @Test
@@ -288,8 +288,8 @@ public class NtpThemeDailyRefreshManagerUnitTest {
     @Test
     public void testMaybeSaveDailyRefreshAndReset_forThemeCollection() {
         // 1. Set background type to THEME_COLLECTION.
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
-                NtpBackgroundImageType.THEME_COLLECTION);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.THEME_COLLECTION);
         // 2. Set up daily refresh info. This is what will be "committed".
         NtpCustomizationUtils.setDailyRefreshCustomizedPrimaryColorToSharedPreference(Color.BLUE);
         File dailyRefreshFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();

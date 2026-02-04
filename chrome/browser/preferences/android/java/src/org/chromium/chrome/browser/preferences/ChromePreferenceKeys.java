@@ -199,7 +199,7 @@ public final class ChromePreferenceKeys {
             "Chrome.Policy.NtpCustomBackgroundEnabled";
 
     /** The Uri of the NTP's background image. */
-    public static final String NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE =
+    public static final String NTP_CUSTOMIZATION_BACKGROUND_TYPE =
             "Chrome.NtpCustomization.NtpBackgroundImageType";
 
     /** The background color of NTP. */
@@ -1195,7 +1195,7 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 NTP_CUSTOMIZATION_BACKGROUND_ENABLED,
-                NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
+                NTP_CUSTOMIZATION_BACKGROUND_TYPE,
                 NTP_CUSTOMIZATION_THEME_COLOR_ID,
                 NTP_CUSTOMIZATION_BACKGROUND_COLOR,
                 NTP_CUSTOMIZATION_PRIMARY_COLOR,

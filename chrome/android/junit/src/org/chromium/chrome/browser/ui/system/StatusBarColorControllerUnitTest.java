@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
@@ -240,8 +240,7 @@ public class StatusBarColorControllerUnitTest {
                 new NtpCustomizationConfigManager();
         NtpCustomizationConfigManager.setInstanceForTesting(ntpCustomizationConfigManager);
 
-        ntpCustomizationConfigManager.setBackgroundImageTypeForTesting(
-                NtpBackgroundImageType.CHROME_COLOR);
+        ntpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
         ntpCustomizationConfigManager.setNtpThemeColorInfoForTesting(colorInfo);
 
         // Verifies when customized NTP background isn't supported, the status bar color is set to

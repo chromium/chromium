@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -317,8 +317,8 @@ public class UploadImagePreviewCoordinatorUnitTest {
 
         assertEquals(
                 "Background type should be updated to IMAGE_FROM_DISK.",
-                NtpBackgroundImageType.IMAGE_FROM_DISK,
-                mConfigManager.getBackgroundImageType());
+                NtpBackgroundType.IMAGE_FROM_DISK,
+                mConfigManager.getBackgroundType());
         assertTrue(
                 "The background image file should have been saved.",
                 NtpCustomizationUtils.createBackgroundImageFile().exists());

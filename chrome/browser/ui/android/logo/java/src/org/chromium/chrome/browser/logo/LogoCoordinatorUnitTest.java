@@ -39,7 +39,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
@@ -129,8 +129,8 @@ public class LogoCoordinatorUnitTest {
                         bitmap,
                         backgroundImageInfo,
                         false,
-                        NtpBackgroundImageType.DEFAULT,
-                        NtpBackgroundImageType.IMAGE_FROM_DISK);
+                        NtpBackgroundType.DEFAULT,
+                        NtpBackgroundType.IMAGE_FROM_DISK);
 
         verify(mLogoMediator, never()).updateDefaultGoogleLogo(any());
     }
@@ -155,8 +155,8 @@ public class LogoCoordinatorUnitTest {
                         bitmap,
                         backgroundImageInfo,
                         false,
-                        NtpBackgroundImageType.DEFAULT,
-                        NtpBackgroundImageType.IMAGE_FROM_DISK);
+                        NtpBackgroundType.DEFAULT,
+                        NtpBackgroundType.IMAGE_FROM_DISK);
 
         verify(mLogoMediator).updateDefaultGoogleLogo(any(Drawable.class));
     }
@@ -183,8 +183,8 @@ public class LogoCoordinatorUnitTest {
                         colorFromHexInfo,
                         backgroundColor,
                         false,
-                        NtpBackgroundImageType.DEFAULT,
-                        NtpBackgroundImageType.COLOR_FROM_HEX);
+                        NtpBackgroundType.DEFAULT,
+                        NtpBackgroundType.COLOR_FROM_HEX);
 
         verify(mLogoMediator).updateDefaultGoogleLogo(any(Drawable.class));
     }

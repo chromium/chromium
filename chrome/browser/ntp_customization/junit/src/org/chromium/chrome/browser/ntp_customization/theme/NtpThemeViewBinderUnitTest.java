@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.DEFAULT;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

@@ -29,7 +29,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
@@ -559,7 +559,7 @@ public class NtpCustomizationMediatorUnitTest {
         // selected and the background image type is THEME_COLLECTION.
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         mMediator.onNewThemeCollectionImageSelected(bitmap);
-        when(mConfigManager.getBackgroundImageType()).thenReturn(THEME_COLLECTION);
+        when(mConfigManager.getBackgroundType()).thenReturn(THEME_COLLECTION);
 
         observer.onSheetClosed(0);
 
@@ -570,8 +570,7 @@ public class NtpCustomizationMediatorUnitTest {
         // Verifies pickAndSavePrimaryColor() is NOT called if background image type is not
         // THEME_COLLECTION.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        when(mConfigManager.getBackgroundImageType())
-                .thenReturn(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        when(mConfigManager.getBackgroundType()).thenReturn(NtpBackgroundType.IMAGE_FROM_DISK);
         mMediator.onNewThemeCollectionImageSelected(bitmap);
         observer.onSheetClosed(0);
         assertEquals(
@@ -582,7 +581,7 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.onNewThemeCollectionImageSelected(null);
         // Clean up shared preference for the test.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        when(mConfigManager.getBackgroundImageType()).thenReturn(THEME_COLLECTION);
+        when(mConfigManager.getBackgroundType()).thenReturn(THEME_COLLECTION);
         assertEquals(
                 NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());

@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -138,8 +138,8 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
                             Bitmap originalBitmap,
                             @Nullable BackgroundImageInfo backgroundImageInfo,
                             boolean fromInitialization,
-                            @NtpBackgroundImageType int oldType,
-                            @NtpBackgroundImageType int newType) {
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
                         onNtpBackgroundChanged(fromInitialization, oldType, newType);
                     }
 
@@ -148,13 +148,13 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
                             @Nullable NtpThemeColorInfo ntpThemeColorInfo,
                             @ColorInt int backgroundColor,
                             boolean fromInitialization,
-                            @NtpBackgroundImageType int oldType,
-                            @NtpBackgroundImageType int newType) {
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
                         onNtpBackgroundChanged(fromInitialization, oldType, newType);
                     }
 
                     @Override
-                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                    public void onBackgroundReset(@NtpBackgroundType int oldType) {
                         onNtpBackgroundReset(oldType);
                     }
                 };
@@ -286,12 +286,12 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
     @VisibleForTesting
     void onNtpBackgroundChanged(
             boolean fromInitialization,
-            @NtpBackgroundImageType int oldType,
-            @NtpBackgroundImageType int newType) {
+            @NtpBackgroundType int oldType,
+            @NtpBackgroundType int newType) {
         if (oldType == newType) return;
 
         boolean shouldRefreshWindowInsets = false;
-        if (oldType == NtpBackgroundImageType.DEFAULT) {
+        if (oldType == NtpBackgroundType.DEFAULT) {
             addObservers();
             shouldRefreshWindowInsets = true;
         }
@@ -302,8 +302,8 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
     }
 
     @VisibleForTesting
-    void onNtpBackgroundReset(@NtpBackgroundImageType int oldType) {
-        if (oldType == NtpBackgroundImageType.DEFAULT) return;
+    void onNtpBackgroundReset(@NtpBackgroundType int oldType) {
+        if (oldType == NtpBackgroundType.DEFAULT) return;
 
         removeObservers();
         refreshWindowInsets(/* consumeTopInset= */ false);

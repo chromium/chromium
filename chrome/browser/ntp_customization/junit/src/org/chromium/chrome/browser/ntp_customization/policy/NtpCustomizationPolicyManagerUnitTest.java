@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -127,23 +127,23 @@ public class NtpCustomizationPolicyManagerUnitTest {
         // Test case for background image type.
         var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         sharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
-                NtpBackgroundImageType.IMAGE_FROM_DISK);
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
+                NtpBackgroundType.IMAGE_FROM_DISK);
         sharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR, Color.BLUE);
 
         manager.onDeferredStartup();
         assertFalse(
                 sharedPreferencesManager.contains(
-                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE));
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE));
         assertFalse(
                 sharedPreferencesManager.contains(
                         ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR));
 
         // Test case for background image type.
         sharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
-                NtpBackgroundImageType.CHROME_COLOR);
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
+                NtpBackgroundType.CHROME_COLOR);
         sharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID,
                 NtpThemeColorId.NTP_COLORS_BLUE);
@@ -151,7 +151,7 @@ public class NtpCustomizationPolicyManagerUnitTest {
         manager.onDeferredStartup();
         assertFalse(
                 sharedPreferencesManager.contains(
-                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE));
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE));
         assertFalse(
                 sharedPreferencesManager.contains(
                         ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID));
@@ -167,15 +167,15 @@ public class NtpCustomizationPolicyManagerUnitTest {
         // Set some keys that should NOT be cleared.
         var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         sharedPreferencesManager.writeInt(
-                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
-                NtpBackgroundImageType.IMAGE_FROM_DISK);
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
+                NtpBackgroundType.IMAGE_FROM_DISK);
 
         manager.onDeferredStartup();
         assertEquals(
-                NtpBackgroundImageType.IMAGE_FROM_DISK,
+                NtpBackgroundType.IMAGE_FROM_DISK,
                 sharedPreferencesManager.readInt(
-                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
-                        NtpBackgroundImageType.DEFAULT));
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
+                        NtpBackgroundType.DEFAULT));
     }
 
     @Test

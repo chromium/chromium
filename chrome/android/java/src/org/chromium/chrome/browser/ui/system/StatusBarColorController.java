@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -311,8 +311,8 @@ public class StatusBarColorController
                             @Nullable NtpThemeColorInfo ntpThemeColorInfo,
                             @ColorInt int backgroundColor,
                             boolean fromInitialization,
-                            @NtpBackgroundImageType int oldType,
-                            @NtpBackgroundImageType int newType) {
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
                         updateBackgroundColorForNtp(backgroundColor);
                     }
 
@@ -321,13 +321,13 @@ public class StatusBarColorController
                             Bitmap originalBitmap,
                             @Nullable BackgroundImageInfo backgroundImageInfo,
                             boolean fromInitialization,
-                            @NtpBackgroundImageType int oldType,
-                            @NtpBackgroundImageType int newType) {
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
                         updateForceLightIconColorForNtp();
                     }
 
                     @Override
-                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                    public void onBackgroundReset(@NtpBackgroundType int oldType) {
                         updateBackgroundColorForNtp(mDefaultBackgroundColorForNtp);
                     }
                 };

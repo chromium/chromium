@@ -9,11 +9,11 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.MAIN_MENU;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.TOOL_BAR;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.COLOR_FROM_HEX;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_AQUA;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_CITRON;
@@ -40,7 +40,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -140,14 +140,14 @@ public class NtpCustomizationMetricsUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testRecordNtpThemeType() {
         String histogramName = "NewTabPage.Customization.Theme.Type";
-        @NtpBackgroundImageType
-        int[] backgroundImageTypes =
+        @NtpBackgroundType
+        int[] backgroundTypes =
                 new int[] {
                     DEFAULT, IMAGE_FROM_DISK, CHROME_COLOR, COLOR_FROM_HEX, THEME_COLLECTION
                 };
 
-        for (@NtpBackgroundImageType int type : backgroundImageTypes) {
-            NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(type);
+        for (@NtpBackgroundType int type : backgroundTypes) {
+            NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(type);
             HistogramWatcher histogramWatcher =
                     HistogramWatcher.newSingleRecordWatcher(histogramName, type);
             NtpCustomizationMetricsUtils.recordNtpThemeType();
@@ -161,9 +161,9 @@ public class NtpCustomizationMetricsUtilsUnitTest {
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testRecordNtpThemeType_flagDisabled() {
         String histogramName = "NewTabPage.Customization.Theme.Type";
-        @NtpBackgroundImageType int backgroundImageTypes = IMAGE_FROM_DISK;
+        @NtpBackgroundType int backgroundTypes = IMAGE_FROM_DISK;
 
-        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(backgroundImageTypes);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(backgroundTypes);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(histogramName, DEFAULT);
         NtpCustomizationMetricsUtils.recordNtpThemeType();

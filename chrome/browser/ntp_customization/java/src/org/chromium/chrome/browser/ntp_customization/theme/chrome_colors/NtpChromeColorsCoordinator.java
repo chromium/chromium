@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -132,8 +132,8 @@ public class NtpChromeColorsCoordinator {
 
         // Initializes the state of the daily refresh toggle.
         mIsDailyRefreshEnabled =
-                NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
-                                == NtpBackgroundImageType.CHROME_COLOR
+                NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                                == NtpBackgroundType.CHROME_COLOR
                         && NtpCustomizationUtils
                                 .getIsChromeColorDailyRefreshEnabledFromSharedPreference();
         mPropertyModel.set(
@@ -161,8 +161,8 @@ public class NtpChromeColorsCoordinator {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(isChecked);
 
         if (isChecked
-                && NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
-                        != NtpBackgroundImageType.CHROME_COLOR) {
+                && NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                        != NtpBackgroundType.CHROME_COLOR) {
             // If the current background type isn't Chrome color and user turns on daily refresh,
             // highlights the first color info.
             mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, 0);
@@ -179,11 +179,11 @@ public class NtpChromeColorsCoordinator {
         mDelegate.onNewColorSelected(
                 !NtpThemeColorUtils.isPrimaryColorMatched(
                         mContext, mPrimaryColorInfo, ntpThemeColorInfo));
-        @NtpBackgroundImageType
+        @NtpBackgroundType
         int newType =
                 ntpThemeColorInfo instanceof NtpThemeColorFromHexInfo
-                        ? NtpBackgroundImageType.COLOR_FROM_HEX
-                        : NtpBackgroundImageType.CHROME_COLOR;
+                        ? NtpBackgroundType.COLOR_FROM_HEX
+                        : NtpBackgroundType.CHROME_COLOR;
 
         // Applies the primary theme color to the activity before calculating the background color
         // which is a themed color depending on the activity's theme.

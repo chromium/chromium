@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
@@ -533,8 +533,8 @@ public class FeedSurfaceCoordinator
                                 Bitmap originalBitmap,
                                 @Nullable BackgroundImageInfo backgroundImageInfo,
                                 boolean fromInitialization,
-                                @NtpBackgroundImageType int oldType,
-                                @NtpBackgroundImageType int newType) {
+                                @NtpBackgroundType int oldType,
+                                @NtpBackgroundType int newType) {
                             setBackground(originalBitmap, backgroundImageInfo, newType);
                         }
 
@@ -543,13 +543,13 @@ public class FeedSurfaceCoordinator
                                 @Nullable NtpThemeColorInfo ntpThemeColorInfo,
                                 @ColorInt int backgroundColor,
                                 boolean fromInitialization,
-                                @NtpBackgroundImageType int oldType,
-                                @NtpBackgroundImageType int newType) {
+                                @NtpBackgroundType int oldType,
+                                @NtpBackgroundType int newType) {
                             setBackgroundColor(backgroundColor);
                         }
 
                         @Override
-                        public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                        public void onBackgroundReset(@NtpBackgroundType int oldType) {
                             setBackgroundColor(mDefaultBackgroundColor);
                         }
                     };
@@ -706,7 +706,7 @@ public class FeedSurfaceCoordinator
     private void setBackground(
             Bitmap originalBitmap,
             @Nullable BackgroundImageInfo backgroundImageInfo,
-            @NtpBackgroundImageType int backgroundType) {
+            @NtpBackgroundType int backgroundType) {
         if (mNtpHeader != null) {
             mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
         }

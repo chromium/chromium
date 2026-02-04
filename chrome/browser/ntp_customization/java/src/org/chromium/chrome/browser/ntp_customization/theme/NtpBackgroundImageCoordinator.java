@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils.getCurrentWindowDimensions;
 
 import android.app.Activity;
@@ -22,7 +22,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
@@ -89,7 +89,7 @@ public class NtpBackgroundImageCoordinator {
     public void setBackground(
             Bitmap originalBitmap,
             @Nullable BackgroundImageInfo backgroundImageInfo,
-            @NtpBackgroundImageType int backgroundType) {
+            @NtpBackgroundType int backgroundType) {
         mOriginalBitmap = originalBitmap;
         mBackgroundImageType = backgroundType;
         mBackgroundImageInfo = backgroundImageInfo;

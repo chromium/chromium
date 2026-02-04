@@ -12,7 +12,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo.matrixToString;
 
 import android.app.Activity;
@@ -41,7 +41,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
@@ -114,13 +114,13 @@ public class NtpBackgroundImageCoordinatorUnitTest {
         verify(mUiConfig, never()).addObserver(any(DisplayStyleObserver.class));
 
         mCoordinator.setBackground(
-                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.THEME_COLLECTION);
+                mBitmap, mBackgroundImageInfo, NtpBackgroundType.THEME_COLLECTION);
         verify(mUiConfig).addObserver(any(DisplayStyleObserver.class));
 
         clearInvocations(mUiConfig);
         // Verifies observer won't be added again.
         mCoordinator.setBackground(
-                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.IMAGE_FROM_DISK);
+                mBitmap, mBackgroundImageInfo, NtpBackgroundType.IMAGE_FROM_DISK);
         verify(mUiConfig, never()).addObserver(any(DisplayStyleObserver.class));
     }
 
@@ -128,7 +128,7 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     public void testSetBackground() {
         // Background type is IMAGE_FROM_DISK:
         mCoordinator.setBackground(
-                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.IMAGE_FROM_DISK);
+                mBitmap, mBackgroundImageInfo, NtpBackgroundType.IMAGE_FROM_DISK);
         assertEquals(mBitmap, mPropertyModel.get(NtpBackgroundImageProperties.BACKGROUND_IMAGE));
         assertEquals(
                 ImageView.ScaleType.MATRIX,
@@ -136,7 +136,7 @@ public class NtpBackgroundImageCoordinatorUnitTest {
 
         // Background type is THEME_COLLECTION:
         mCoordinator.setBackground(
-                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.THEME_COLLECTION);
+                mBitmap, mBackgroundImageInfo, NtpBackgroundType.THEME_COLLECTION);
         assertEquals(mBitmap, mPropertyModel.get(NtpBackgroundImageProperties.BACKGROUND_IMAGE));
         assertEquals(
                 ImageView.ScaleType.MATRIX,
@@ -153,7 +153,7 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     @Test
     public void testDestroy() {
         mCoordinator.setBackground(
-                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.THEME_COLLECTION);
+                mBitmap, mBackgroundImageInfo, NtpBackgroundType.THEME_COLLECTION);
         verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
         mCoordinator.destroy();
 

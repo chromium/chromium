@@ -13,7 +13,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
@@ -117,7 +117,7 @@ public class NtpCustomizationMediator {
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                         // Pick and save the primary color if a new theme collection image is
                         // selected.
-                        if (NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
+                        if (NtpCustomizationConfigManager.getInstance().getBackgroundType()
                                         == THEME_COLLECTION
                                 && mNewThemeCollectionImage != null) {
                             NtpCustomizationUtils.pickAndSavePrimaryColor(mNewThemeCollectionImage);

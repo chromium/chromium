@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
@@ -121,11 +121,11 @@ public class LogoCoordinator {
                     }
 
                     @Override
-                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
-                        if (oldType == NtpBackgroundImageType.DEFAULT) return;
+                    public void onBackgroundReset(@NtpBackgroundType int oldType) {
+                        if (oldType == NtpBackgroundType.DEFAULT) return;
 
                         maybeUpdateTintForDefaultGoogleLogo(
-                                context, NtpBackgroundImageType.DEFAULT, /* primaryColor= */ null);
+                                context, NtpBackgroundType.DEFAULT, /* primaryColor= */ null);
                     }
                 };
         // Skips being notified from NtpCustomizationConfigManager since the drawable has been
@@ -232,7 +232,7 @@ public class LogoCoordinator {
      */
     private void maybeUpdateTintForDefaultGoogleLogo(
             Context context,
-            @NtpBackgroundImageType int backgroundType,
+            @NtpBackgroundType int backgroundType,
             @Nullable @ColorInt Integer primaryColor) {
         // If the default Google logo isn't shown, returns here.
         if (!mMediator.isDefaultGoogleLogoShown()) return;

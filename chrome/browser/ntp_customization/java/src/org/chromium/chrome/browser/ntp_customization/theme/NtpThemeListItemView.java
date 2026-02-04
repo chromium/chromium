@@ -15,7 +15,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -37,10 +37,10 @@ public class NtpThemeListItemView extends LinearLayout {
      * @param visible True to indicate a selected state, false otherwise.
      * @param sectionType The type of the NTP background image section.
      */
-    void updateTrailingIcon(boolean visible, @NtpBackgroundImageType int sectionType) {
+    void updateTrailingIcon(boolean visible, @NtpBackgroundType int sectionType) {
         ImageView ntpThemeListItemTrailingIcon = findViewById(R.id.trailing_icon);
 
-        if (sectionType == NtpBackgroundImageType.DEFAULT) {
+        if (sectionType == NtpBackgroundType.DEFAULT) {
             ntpThemeListItemTrailingIcon.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
             return;
         }
