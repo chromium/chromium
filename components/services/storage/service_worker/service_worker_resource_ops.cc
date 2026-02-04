@@ -526,12 +526,12 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
   }
 
   // Deserialize the http info structure, ensuring we got headers.
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(base::as_bytes(UNSAFE_TODO(
+  base::PickleIterator pickle_iter =
+      base::PickleIterator::WithData(base::as_bytes(UNSAFE_TODO(
           base::span(buffer->data(), base::checked_cast<size_t>(status)))));
   auto http_info = std::make_unique<net::HttpResponseInfo>();
   bool response_truncated = false;
-  if (!http_info->InitFromPickle(pickle, &response_truncated) ||
+  if (!http_info->InitFromPickle(pickle_iter, &response_truncated) ||
       !http_info->headers.get()) {
     FailReadResponseHead(net::ERR_FAILED);
     return;

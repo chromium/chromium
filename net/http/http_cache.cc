@@ -544,8 +544,8 @@ disk_cache::Backend* HttpCache::GetCurrentBackend() const {
 bool HttpCache::ParseResponseInfo(base::span<const uint8_t> data,
                                   HttpResponseInfo* response_info,
                                   bool* response_truncated) {
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(data);
-  return response_info->InitFromPickle(pickle, response_truncated);
+  return response_info->InitFromPickle(base::PickleIterator::WithData(data),
+                                       response_truncated);
 }
 
 void HttpCache::CloseAllConnections(int net_error,

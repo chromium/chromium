@@ -158,10 +158,8 @@ HttpResponseInfo::~HttpResponseInfo() = default;
 HttpResponseInfo& HttpResponseInfo::operator=(const HttpResponseInfo& rhs) =
     default;
 
-bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
+bool HttpResponseInfo::InitFromPickle(base::PickleIterator iter,
                                       bool* response_truncated) {
-  base::PickleIterator iter(pickle);
-
   // Read flags and verify version
   int flags;
   int extra_flags = 0;

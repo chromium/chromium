@@ -375,7 +375,8 @@ class NoVarySearchCacheStorage::Loader final {
       return StartFromScratch(Result::kBadSnapshotMagicNumber);
     }
 
-    auto pickle = base::Pickle::WithUnownedBuffer(snapshot_pickle);
+    base::PickleIterator pickle =
+        base::PickleIterator::WithData(snapshot_pickle);
     auto maybe_cache = ReadValueFromPickle<NoVarySearchCache>(pickle);
     if (!maybe_cache) {
       return StartFromScratch(Result::kInvalidSnapshotPickle);
@@ -447,13 +448,12 @@ class NoVarySearchCacheStorage::Loader final {
         break;
       }
       const auto pickle_span = pickles.take_first(size);
-      const auto pickle = base::Pickle::WithUnownedBuffer(pickle_span);
-      if (pickle.size() == 0) {
+      base::PickleIterator iter = base::PickleIterator::WithData(pickle_span);
+      if (iter.ReachedEnd()) {
         // The Pickle header was invalid.
         had_error = true;
         break;
       }
-      base::PickleIterator iter(pickle);
       auto maybe_type = ReadValueFromPickle<JournalEntryType>(iter);
       if (!maybe_type) {
         had_error = true;

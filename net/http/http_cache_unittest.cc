@@ -10181,7 +10181,8 @@ TEST_F(HttpCacheTest, PersistHttpResponseInfo) {
   // Unpickle.
   HttpResponseInfo response2;
   bool response_truncated;
-  EXPECT_TRUE(response2.InitFromPickle(*pickle, &response_truncated));
+  EXPECT_TRUE(response2.InitFromPickle(base::PickleIterator(*pickle),
+                                       &response_truncated));
   EXPECT_FALSE(response_truncated);
 
   // Verify fields.
