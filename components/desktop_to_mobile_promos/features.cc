@@ -11,7 +11,7 @@ BASE_FEATURE(kMobilePromoOnDesktopWithReminder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMobilePromoOnDesktopRecordActiveDays,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMobilePromoOnDesktopWithQRCode,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -17295,21 +17295,6 @@
             ]
         }
     ],
-    "MobilePromoOnDesktopDataCollection": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MobilePromoOnDesktopRecordActiveDays"
-                    ]
-                }
-            ]
-        }
-    ],
     "MobilePromoOnDesktopWithQRCode": [
         {
             "platforms": [
