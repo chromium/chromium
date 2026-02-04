@@ -18,18 +18,18 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class EntityType {
     // This maps to a C++ enum which defines the name/type of the entity.
-    public final @EntityTypeName int typeName;
+    private final @EntityTypeName int mTypeName;
     // When `isReadOnly` is true, this entity type does not allow adding, deleting or editing.
-    public final boolean isReadOnly;
+    private final boolean mIsReadOnly;
     // Used to sort entity types and groups and as title of each entity group in the list of
     // entities.
-    public final String typeNameAsString;
+    private final String mTypeNameAsString;
     // Used as title in the add entity dialog.
-    public final String addEntityTypeString;
+    private final String mAddEntityTypeString;
     // Used as title in the edit entity dialog.
-    public final String editEntityTypeString;
+    private final String mEditEntityTypeString;
     // Used as title in the delete entity dialog.
-    public final String deleteEntityTypeString;
+    private final String mDeleteEntityTypeString;
 
     @CalledByNative
     public EntityType(
@@ -39,16 +39,36 @@ public class EntityType {
             @JniType("std::string") String addEntityTypeString,
             @JniType("std::string") String editEntityTypeString,
             @JniType("std::string") String deleteEntityTypeString) {
-        this.typeName = typeName;
-        this.isReadOnly = isReadOnly;
-        this.typeNameAsString = typeNameAsString;
-        this.addEntityTypeString = addEntityTypeString;
-        this.editEntityTypeString = editEntityTypeString;
-        this.deleteEntityTypeString = deleteEntityTypeString;
+        mTypeName = typeName;
+        mIsReadOnly = isReadOnly;
+        mTypeNameAsString = typeNameAsString;
+        mAddEntityTypeString = addEntityTypeString;
+        mEditEntityTypeString = editEntityTypeString;
+        mDeleteEntityTypeString = deleteEntityTypeString;
     }
 
     @CalledByNative
     public @EntityTypeName int getTypeName() {
-        return typeName;
+        return mTypeName;
+    }
+
+    public boolean isReadOnly() {
+        return mIsReadOnly;
+    }
+
+    public String getTypeNameAsString() {
+        return mTypeNameAsString;
+    }
+
+    public String getAddEntityTypeString() {
+        return mAddEntityTypeString;
+    }
+
+    public String getEditEntityTypeString() {
+        return mEditEntityTypeString;
+    }
+
+    public String getDeleteEntityTypeString() {
+        return mDeleteEntityTypeString;
     }
 }

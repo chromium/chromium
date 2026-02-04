@@ -64,6 +64,6 @@ public class EntityEditorModuleTest {
     public void testShowEditorDialog() {
         mCoordinator.showEditorDialog(mEntityType);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
-        assertEquals(mEntityType.addEntityTypeString, toolbar.getTitle());
+        assertEquals(mEntityType.getAddEntityTypeString(), toolbar.getTitle());
     }
 }

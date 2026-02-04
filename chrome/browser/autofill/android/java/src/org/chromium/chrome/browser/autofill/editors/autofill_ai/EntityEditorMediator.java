@@ -24,7 +24,7 @@ class EntityEditorMediator {
         if (mEditorModel == null) {
             mEditorModel =
                     new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
-                            .with(EDITOR_TITLE, entityType.addEntityTypeString)
+                            .with(EDITOR_TITLE, entityType.getAddEntityTypeString())
                             .build();
         }
         return mEditorModel;
