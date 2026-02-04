@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   auto b1_intersection_state = b1_node->render_manager()
                                    ->GetProxyToParent()
                                    ->cross_process_frame_connector()
-                                   ->intersection_state();
+                                   ->GetIntersectionState();
 
   b1_intersection_state.outermost_main_frame_scroll_position.Offset(10, 0);
   // A change in outermost_main_frame_scroll_position by itself will not cause
@@ -1087,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   auto b2_intersection_state = b2_node->render_manager()
                                    ->GetProxyToParent()
                                    ->cross_process_frame_connector()
-                                   ->intersection_state();
+                                   ->GetIntersectionState();
 
   b2_intersection_state.outermost_main_frame_scroll_position.Offset(20, 0);
   b2_intersection_state.viewport_intersection.set_y(
@@ -1396,11 +1396,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // good way to avoid this due to various device-scale-factor. (e.g. when
   // dsf=3.375, ceil(round(50 * 3.375) / 3.375) = 51. Thus, we allow the screen
   // size in dip to be off by 1 here.
-  EXPECT_NEAR(50, connector->rect_in_parent_view_in_dip().size().width(), 1);
-  EXPECT_NEAR(50, connector->rect_in_parent_view_in_dip().size().height(), 1);
+  EXPECT_NEAR(50, connector->GetRectInParentViewInDip().size().width(), 1);
+  EXPECT_NEAR(50, connector->GetRectInParentViewInDip().size().height(), 1);
   EXPECT_EQ(gfx::Size(100, 100), rwhv_nested->GetViewBounds().size());
-  EXPECT_EQ(gfx::Size(100, 100), connector->local_frame_size_in_dip());
-  EXPECT_EQ(connector->local_frame_size_in_pixels(),
+  EXPECT_EQ(gfx::Size(100, 100), connector->GetLocalFrameSizeInDip());
+  EXPECT_EQ(connector->GetLocalFrameSizeInPixels(),
             rwhv_nested->GetCompositorViewportPixelSize());
 }
 

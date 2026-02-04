@@ -1813,6 +1813,7 @@ source_set("browser") {
     "renderer_host/embedded_frame_sink_provider_impl.h",
     "renderer_host/file_utilities_host_impl.cc",
     "renderer_host/file_utilities_host_impl.h",
+    "renderer_host/frame_connector.h",
     "renderer_host/frame_navigation_entry.cc",
     "renderer_host/frame_navigation_entry.h",
     "renderer_host/frame_token_message_queue.cc",
