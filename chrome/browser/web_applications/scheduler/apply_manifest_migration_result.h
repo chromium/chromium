@@ -21,7 +21,8 @@ enum class ApplyManifestMigrationResult {
   kUnableToRemoveSourceApp = 3,
   kDestinationAppDoesNotLinkToSourceApp = 4,
   kAppMigrationAppliedSuccessfully = 5,
-  kMaxValue = kAppMigrationAppliedSuccessfully
+  kAppMigrationFailedDuringIconCopy = 6,
+  kMaxValue = kAppMigrationFailedDuringIconCopy
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppApplyManifestMigrationResult)
 

@@ -91,6 +91,10 @@ struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
 enum class FetchManifestAndUpdateResult;
 
+namespace proto {
+enum WebAppMigrationBehavior : int;
+}  // namespace proto
+
 #if BUILDFLAG(IS_CHROMEOS)
 class CleanupBundleCacheSuccess;
 class CleanupBundleCacheError;
@@ -734,6 +738,7 @@ class WebAppCommandScheduler {
   void ApplyManifestMigration(
       const webapps::AppId& source_app_id,
       const webapps::AppId& destination_app_id,
+      const proto::WebAppMigrationBehavior migration_behavior,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       ApplyManifestMigrationResultCallback callback,

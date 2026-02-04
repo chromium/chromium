@@ -28,6 +28,10 @@ struct ShortcutInfo;
 struct ShortcutLocations;
 struct SynchronizeOsOptions;
 
+namespace proto {
+enum WebAppMigrationBehavior : int;
+}  // namespace proto
+
 // This command executes the core logic for a manifest migration in the
 // following order:
 // 1. Finalize the installation of the new application (|destination_app_id|),
@@ -35,13 +39,13 @@ struct SynchronizeOsOptions;
 // 2. Uninstall the old application (|source_app_id|).
 // 3. Update sync data to link the new app to the old app.
 // 4. Ensure UX consistency (name and icons) for forced migrations.
-// TODO(crbug.com/465762477): Implement all of the behavior outlined above.
 class ApplyManifestMigrationCommand
     : public WebAppCommand<AllAppsLock, ApplyManifestMigrationResult> {
  public:
   ApplyManifestMigrationCommand(
       const webapps::AppId& source_app_id,
       const webapps::AppId& destination_app_id,
+      const proto::WebAppMigrationBehavior migration_behavior,
       Profile* profile,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
@@ -52,6 +56,9 @@ class ApplyManifestMigrationCommand
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
 
  private:
+  // For forced migrations, start the OS integration process on successful
+  // copying of icons on disk.
+  void OnIconsCopiedGatherShortcutInfoForSourceApp(bool icon_copy_success);
   // Gathers OS integration information for the source app so that the shortcut
   // locations can be computed from it.
   void StartGatheringOsIntegrationInfoForSourceApp(
@@ -70,6 +77,7 @@ class ApplyManifestMigrationCommand
 
   const webapps::AppId source_app_id_;
   const webapps::AppId destination_app_id_;
+  const proto::WebAppMigrationBehavior migration_behavior_;
   const raw_ptr<Profile> profile_ = nullptr;
   // KeepAlive objects are needed to make sure that migration completes, even
   // when the browser windows have been closed.

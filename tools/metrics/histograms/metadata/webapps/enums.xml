@@ -484,6 +484,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Source app not removed during migration"/>
   <int value="4" label="Destination app did not link to source app"/>
   <int value="5" label="A suggested migration was successful"/>
+  <int value="6"
+      label="A forced migration failed while copying icons from source app"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h:ApplyManifestMigrationResult) -->

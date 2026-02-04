@@ -45,6 +45,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/apply_manifest_migration_command.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -412,6 +414,54 @@ TypedResult<bool> DeleteDirectoryAndGetResultBlocking(
     return {.error_log = {CreateError(
                 {"Failed to delete directory: ", file_path.AsUTF8Unsafe()})}};
   }
+  return {.value = true};
+}
+
+TypedResult<bool> CopyAppIconsFromOneAppToAnotherBlocking(
+    const base::FilePath& from_app_resources_directory,
+    const base::FilePath& to_app_resources_directory) {
+  base::File::Error file_error_to_app = base::File::FILE_OK;
+  const base::FilePath from_app_trusted_resources =
+      from_app_resources_directory.Append(kTrustedIconFolderName);
+  const base::FilePath to_app_trusted_resources =
+      to_app_resources_directory.Append(kTrustedIconFolderName);
+  if (!base::DirectoryExists(from_app_resources_directory)) {
+    return {.error_log = {CreateError(
+                {"Source app manifest resources directory does not exist: ",
+                 from_app_resources_directory.AsUTF8Unsafe()})}};
+  }
+
+  if (!base::CreateDirectoryAndGetError(to_app_resources_directory,
+                                        &file_error_to_app)) {
+    return {.error_log = {CreateError(
+                {"Destination app manifest resources directory could not be "
+                 "created: ",
+                 to_app_resources_directory.AsUTF8Unsafe(), " with error: ",
+                 base::File::ErrorToString(file_error_to_app)})}};
+  }
+
+  if (!base::CreateDirectoryAndGetError(to_app_trusted_resources,
+                                        &file_error_to_app)) {
+    return {
+        .error_log = {CreateError(
+            {"Destination app manifest trusted icons directory could not be "
+             "created: ",
+             to_app_trusted_resources.AsUTF8Unsafe(),
+             " with error: ", base::File::ErrorToString(file_error_to_app)})}};
+  }
+
+  TypedResult<bool> manifest_icons_copy = ReplacePurposedIcons(
+      from_app_resources_directory, to_app_resources_directory);
+  if (manifest_icons_copy.HasErrors()) {
+    return manifest_icons_copy;
+  }
+
+  TypedResult<bool> trusted_icons_copy = ReplacePurposedIcons(
+      from_app_trusted_resources, to_app_trusted_resources);
+  if (trusted_icons_copy.HasErrors()) {
+    return trusted_icons_copy;
+  }
+
   return {.value = true};
 }
 
@@ -1870,6 +1920,32 @@ void WebAppIconManager::DeletePendingIconData(
             })
                 .Then(base::BindOnce(&LogErrorsCallCallback<bool>, GetWeakPtr(),
                                      std::move(callback))));
+}
+
+void WebAppIconManager::CopyIconsFromOneAppToAnother(
+    const webapps::AppId& from_app_id,
+    const webapps::AppId& to_app_id,
+    base::PassKey<ApplyManifestMigrationCommand>,
+    AppIconsCopySuccessCallback callback) {
+  TRACE_EVENT0("ui", "WebAppIconManager::OverwriteIconsFromPendingIcons");
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!provider_->registrar_unsafe().GetInstallState(from_app_id) ||
+      !provider_->registrar_unsafe().GetInstallState(to_app_id)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const base::FilePath from_app_resources_directory =
+      GetManifestResourcesDirectoryForApp(web_apps_directory_, from_app_id);
+  const base::FilePath to_app_resources_directory =
+      GetManifestResourcesDirectoryForApp(web_apps_directory_, to_app_id);
+
+  icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&CopyAppIconsFromOneAppToAnotherBlocking,
+                     from_app_resources_directory, to_app_resources_directory),
+      base::BindOnce(&LogErrorsCallCallback<bool>, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 SkBitmap WebAppIconManager::GetFavicon(const webapps::AppId& app_id) const {

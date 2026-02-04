@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -20,12 +21,15 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -73,6 +77,7 @@ base::Value SynchronizeOptionsAsDebugValue(
 ApplyManifestMigrationCommand::ApplyManifestMigrationCommand(
     const webapps::AppId& source_app_id,
     const webapps::AppId& destination_app_id,
+    const proto::WebAppMigrationBehavior migration_behavior,
     Profile* profile,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
@@ -88,11 +93,14 @@ ApplyManifestMigrationCommand::ApplyManifestMigrationCommand(
           /*args_for_shutdown=*/ApplyManifestMigrationResult::kSystemShutdown),
       source_app_id_(source_app_id),
       destination_app_id_(destination_app_id),
+      migration_behavior_(migration_behavior),
       profile_(profile),
       keep_alive_(std::move(keep_alive)),
       profile_keep_alive_(std::move(profile_keep_alive)) {
   GetMutableDebugValue().Set("source_app_id", source_app_id_);
   GetMutableDebugValue().Set("destination_app_id", destination_app_id_);
+  GetMutableDebugValue().Set("migration_behavior_",
+                             base::ToString(migration_behavior_));
 }
 
 ApplyManifestMigrationCommand::~ApplyManifestMigrationCommand() = default;
@@ -137,15 +145,96 @@ void ApplyManifestMigrationCommand::StartWithLock(
     return;
   }
 
-  // Uninstall the source app if the destination app is already installed with
-  // OS integration.
-  if (destination_app_install_state == proto::INSTALLED_WITH_OS_INTEGRATION) {
-    SetupDestinationAppUninstallSourceApp();
+  bool is_forced_migration =
+      (migration_behavior_ ==
+       proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
+
+  // Handle all the use-cases where the forced migration isn't necessary.
+  if (!is_forced_migration) {
+    // Uninstall the source app if the destination app is already installed with
+    // OS integration.
+    if (destination_app_install_state == proto::INSTALLED_WITH_OS_INTEGRATION) {
+      SetupDestinationAppUninstallSourceApp();
+      return;
+    }
+
+    // For migrations that are not forced, start collecting OS integration
+    // state. The app and icon does not need to match the source app in this
+    // case.
+    all_apps_lock_->os_integration_manager().GetShortcutInfoForAppFromRegistrar(
+        source_app_id_,
+        base::BindOnce(&ApplyManifestMigrationCommand::
+                           StartGatheringOsIntegrationInfoForSourceApp,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
-  // Get the shortcut info metadata for the source app to obtain the OS
-  // integration locations on the device.
+  // For forced migrations, set up name, icon metadata and the sync fields to
+  // mimic the source app. Set up end state on disk as well.
+  CHECK(is_forced_migration);
+  const WebApp* source_app =
+      all_apps_lock_->registrar().GetAppById(source_app_id_);
+  {
+    ScopedRegistryUpdate update = all_apps_lock_->sync_bridge().BeginUpdate();
+    WebApp* destination_app = update->UpdateApp(destination_app_id_);
+    destination_app->SetName(source_app->untranslated_name());
+    destination_app->SetManifestIcons(source_app->manifest_icons());
+    destination_app->SetTrustedIcons(source_app->trusted_icons());
+    destination_app->SetDownloadedIconSizes(
+        IconPurpose::ANY, source_app->downloaded_icon_sizes(IconPurpose::ANY));
+    destination_app->SetDownloadedIconSizes(
+        IconPurpose::MASKABLE,
+        source_app->downloaded_icon_sizes(IconPurpose::MASKABLE));
+    destination_app->SetDownloadedIconSizes(
+        IconPurpose::MONOCHROME,
+        source_app->downloaded_icon_sizes(IconPurpose::MONOCHROME));
+
+    // There are no monochrome trusted icons.
+    destination_app->SetStoredTrustedIconSizes(
+        IconPurpose::ANY,
+        source_app->stored_trusted_icon_sizes(IconPurpose::ANY));
+    destination_app->SetStoredTrustedIconSizes(
+        IconPurpose::MASKABLE,
+        source_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE));
+
+    // Update the metadata in the sync proto as well.
+    sync_pb::WebAppSpecifics mutable_sync_proto = destination_app->sync_proto();
+    mutable_sync_proto.set_name(destination_app->untranslated_name());
+    mutable_sync_proto.clear_icon_infos();
+    for (const apps::IconInfo& manifest_icon :
+         destination_app->manifest_icons()) {
+      *(mutable_sync_proto.add_icon_infos()) =
+          AppIconInfoToSyncProto(manifest_icon);
+    }
+
+    mutable_sync_proto.clear_trusted_icons();
+    for (const apps::IconInfo& trusted_icon :
+         destination_app->trusted_icons()) {
+      *(mutable_sync_proto.add_trusted_icons()) =
+          AppIconInfoToSyncProto(trusted_icon);
+    }
+    destination_app->SetSyncProto(std::move(mutable_sync_proto));
+  }
+
+  all_apps_lock_->icon_manager().CopyIconsFromOneAppToAnother(
+      source_app_id_, destination_app_id_,
+      base::PassKey<ApplyManifestMigrationCommand>(),
+      base::BindOnce(&ApplyManifestMigrationCommand::
+                         OnIconsCopiedGatherShortcutInfoForSourceApp,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ApplyManifestMigrationCommand::OnIconsCopiedGatherShortcutInfoForSourceApp(
+    bool icon_copy_success) {
+  GetMutableDebugValue().Set("icon_copy_successful_for_forced_migration",
+                             icon_copy_success);
+  if (!icon_copy_success) {
+    CompleteCommandAndSelfDestruct(
+        ApplyManifestMigrationResult::kAppMigrationFailedDuringIconCopy);
+    return;
+  }
+
+  // Start gathering shortcut information for the source app.
   all_apps_lock_->os_integration_manager().GetShortcutInfoForAppFromRegistrar(
       source_app_id_,
       base::BindOnce(&ApplyManifestMigrationCommand::

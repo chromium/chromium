@@ -76,6 +76,7 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
@@ -892,14 +893,15 @@ void WebAppCommandScheduler::ScheduleWebAppInstallFromMigrateFromField(
 void WebAppCommandScheduler::ApplyManifestMigration(
     const webapps::AppId& source_app_id,
     const webapps::AppId& destination_app_id,
+    const proto::WebAppMigrationBehavior migration_behavior,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     ApplyManifestMigrationResultCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ApplyManifestMigrationCommand>(
-          source_app_id, destination_app_id, &profile_.get(),
-          std::move(keep_alive), std::move(profile_keep_alive),
+          source_app_id, destination_app_id, migration_behavior,
+          &profile_.get(), std::move(keep_alive), std::move(profile_keep_alive),
           std::move(callback)),
       location);
 }

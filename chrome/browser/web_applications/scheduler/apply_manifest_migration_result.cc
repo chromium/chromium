@@ -25,6 +25,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "DesinationAppDoesNotLinkToSourceApp";
     case ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully:
       return os << "AppMigrationAppliedSuccessfully";
+    case ApplyManifestMigrationResult::kAppMigrationFailedDuringIconCopy:
+      return os << "AppMigrationFailedDuringIconCopy";
   }
 }
 

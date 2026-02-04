@@ -45,6 +45,7 @@ class WebAppProvider;
 class ApplyPendingManifestUpdateCommand;
 class ManifestSilentUpdateCommand;
 class ManifestUpdateJob;
+class ApplyManifestMigrationCommand;
 
 using HomeTabIconBitmaps = std::vector<SkBitmap>;
 using SquareSizeDip = int;
@@ -263,6 +264,19 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void DeletePendingIconData(const webapps::AppId& app_id,
                              DeletePendingPassKey,
                              DeletePendingIconDataCallback callback);
+
+  using AppIconsCopySuccessCallback = base::OnceCallback<void(bool success)>;
+  // Set up the icon data stored on disk such that to_app_id's directory
+  // structure mimics from_app_id, essentially causing to_app_id's icons to
+  // become the same as from_app_id's icons.
+  // This is potentially destructive because it "updates" the app's identity
+  // under the hood, which is why this has been PassKeyed to only be used for
+  // migration purposes.
+  void CopyIconsFromOneAppToAnother(
+      const webapps::AppId& from_app_id,
+      const webapps::AppId& to_app_id,
+      base::PassKey<ApplyManifestMigrationCommand>,
+      AppIconsCopySuccessCallback callback);
 
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.

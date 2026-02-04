@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -67,10 +68,12 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
  protected:
   ApplyManifestMigrationResult RunMigrationAndGetResult(
       const webapps::AppId& from_app_id,
-      const webapps::AppId& to_app_id) {
+      const webapps::AppId& to_app_id,
+      const proto::WebAppMigrationBehavior migration_behavior =
+          proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST) {
     base::test::TestFuture<ApplyManifestMigrationResult> result_future;
     fake_provider().scheduler().ApplyManifestMigration(
-        from_app_id, to_app_id, /*keep_alive=*/nullptr,
+        from_app_id, to_app_id, migration_behavior, /*keep_alive=*/nullptr,
         /*profile_keep_alive=*/nullptr, result_future.GetCallback());
     EXPECT_TRUE(result_future.Wait());
     return result_future.Get();
@@ -83,8 +86,8 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
     return bitmap;
   }
 
-  // TODO(crbug.com/465762477): Maybe have a struct of parameters instead of
-  // multiple function parameters like this.
+  // TODO(crbug.com/465762477): Create a struct of parameters to create the app
+  // instead of passing them into the function one by one.
   webapps::AppId InstallAppWithInstallState(
       const GURL app_url,
       std::u16string name,
@@ -151,6 +154,41 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
 #else
     return true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  SkColor GetShortcutColor(const webapps::AppId& app_id,
+                           const std::string& app_name) {
+    if (!IsOsIntegrationSupported()) {
+      return SK_ColorTRANSPARENT;
+    }
+
+#if BUILDFLAG(IS_WIN)
+    std::optional<SkColor> desktop_color =
+        fake_os_integration().GetShortcutIconTopLeftColor(
+            profile(), fake_os_integration().desktop(), app_id, app_name);
+    std::optional<SkColor> application_menu_icon_color =
+        fake_os_integration().GetShortcutIconTopLeftColor(
+            profile(), fake_os_integration().application_menu(), app_id,
+            app_name);
+    EXPECT_EQ(desktop_color.value(), application_menu_icon_color.value());
+    return desktop_color.value();
+#elif BUILDFLAG(IS_MAC)
+    std::optional<SkColor> icon_color =
+        fake_os_integration().GetShortcutIconTopLeftColor(
+            profile(), fake_os_integration().chrome_apps_folder(), app_id,
+            app_name);
+    EXPECT_TRUE(icon_color.has_value());
+    return icon_color.value();
+#elif BUILDFLAG(IS_LINUX)
+    std::optional<SkColor> icon_color =
+        fake_os_integration().GetShortcutIconTopLeftColor(
+            profile(), fake_os_integration().desktop(), app_id, app_name,
+            kLauncherIconSize);
+    EXPECT_TRUE(icon_color.has_value());
+    return icon_color.value();
+#else
+    NOTREACHED() << "Shortcuts not supported for other OS";
+#endif
   }
 
   FakeWebAppOriginAssociationManager& origin_association_manager() {
@@ -241,6 +279,184 @@ TEST_F(ApplyManifestMigrationCommandTest,
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
         profile(), destination_app_id,
         base::UTF16ToUTF8(destination_app_name)));
+  }
+}
+
+TEST_F(ApplyManifestMigrationCommandTest,
+       SuccessForcedMigrationFullyInstalled) {
+  base::HistogramTester histogram_tester;
+  const SkColor source_color = SK_ColorGREEN;
+  const SkColor dest_color = SK_ColorRED;
+  // Install the source app first with complete OS integration.
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  std::u16string source_app_name = u"Source app";
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, source_color);
+  const webapps::AppId& source_app_id = InstallAppWithInstallState(
+      GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  const webapps::ManifestId& source_manifest_id =
+      fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
+
+  auto state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          source_app_id);
+  EXPECT_TRUE(state.has_value());
+  EXPECT_TRUE(state.value().has_shortcut());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Install the destination app as if it was suggested for migration.
+  std::map<SquareSizePx, SkBitmap> icon_map2;
+  std::u16string destination_app_name = u"Destination app";
+  icon_map2[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, dest_color);
+
+  origin_association_manager().SetMigrationSourcesData(
+      {webapps::ManifestId(GURL("https://app.source.com/"))});
+
+  const webapps::AppId& destination_app_id = InstallAppWithInstallState(
+      GURL("https://app.destination.com/"), destination_app_name,
+      std::move(icon_map2), proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+
+  auto destination_state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          destination_app_id);
+  EXPECT_TRUE(destination_state.has_value());
+  EXPECT_TRUE(destination_state.value().has_shortcut());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), destination_app_id,
+        base::UTF16ToUTF8(destination_app_name)));
+  }
+
+  // Trigger the command, and verify a successful migration.
+  ApplyManifestMigrationResult result = RunMigrationAndGetResult(
+      source_app_id, destination_app_id,
+      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
+  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+            result);
+
+  EXPECT_THAT(
+      GetApplyMigrationHistograms(),
+      BucketsAre(base::Bucket(
+          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+
+  // Source app is not in the registrar, and has no OS integration left over.
+  EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
+      source_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+  if (IsOsIntegrationSupported()) {
+    EXPECT_FALSE(fake_os_integration().IsShortcutCreated(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Destination app is in the registrar with full OS integration, and matching
+  // the name and icon of the source app.
+  ASSERT_TRUE(IsMigratedAppSetForSync(source_manifest_id, destination_app_id));
+  EXPECT_TRUE(fake_provider().registrar_unsafe().AppMatches(
+      destination_app_id,
+      WebAppFilter::InstalledInOperatingSystemForTesting()));
+  if (IsOsIntegrationSupported()) {
+// TODO(crbug.com/339024222): Windows does not update app icons on OS
+// integration. Needs fixing.
+#if !BUILDFLAG(IS_WIN)
+    EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), destination_app_id, base::UTF16ToUTF8(source_app_name)));
+    EXPECT_EQ(source_color,
+              GetShortcutColor(destination_app_id,
+                               base::UTF16ToUTF8(source_app_name)));
+#endif  // BUILDFLAG(IS_WIN)
+  }
+}
+
+TEST_F(ApplyManifestMigrationCommandTest,
+       SuccessForcedMigrationNotFullyInstalled) {
+  base::HistogramTester histogram_tester;
+  const SkColor source_color = SK_ColorGREEN;
+  const SkColor dest_color = SK_ColorRED;
+  // Install the source app first with complete OS integration.
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  std::u16string source_app_name = u"Source app";
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, source_color);
+  const webapps::AppId& source_app_id = InstallAppWithInstallState(
+      GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  const webapps::ManifestId& source_manifest_id =
+      fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
+
+  auto state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          source_app_id);
+  EXPECT_TRUE(state.has_value());
+  EXPECT_TRUE(state.value().has_shortcut());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Install the destination app as if it was suggested for migration.
+  std::map<SquareSizePx, SkBitmap> icon_map2;
+  std::u16string destination_app_name = u"Destination app";
+  icon_map2[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, dest_color);
+
+  origin_association_manager().SetMigrationSourcesData(
+      {webapps::ManifestId(GURL("https://app.source.com/"))});
+
+  const webapps::AppId& destination_app_id = InstallAppWithInstallState(
+      GURL("https://app.destination.com/"), destination_app_name,
+      std::move(icon_map2), proto::InstallState::SUGGESTED_FROM_MIGRATION);
+
+  auto destination_state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          destination_app_id);
+  EXPECT_TRUE(destination_state.has_value());
+  EXPECT_FALSE(destination_state.value().has_shortcut());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_FALSE(fake_os_integration().IsShortcutCreated(
+        profile(), destination_app_id,
+        base::UTF16ToUTF8(destination_app_name)));
+  }
+
+  // Trigger the command, and verify a successful migration.
+  ApplyManifestMigrationResult result = RunMigrationAndGetResult(
+      source_app_id, destination_app_id,
+      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
+  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+            result);
+
+  EXPECT_THAT(
+      GetApplyMigrationHistograms(),
+      BucketsAre(base::Bucket(
+          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+
+  // Source app is not in the registrar, and has no OS integration left over.
+  EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
+      source_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+  if (IsOsIntegrationSupported()) {
+    EXPECT_FALSE(fake_os_integration().IsShortcutCreated(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Destination app is in the registrar with full OS integration, and matching
+  // the name and icon of the source app.
+  ASSERT_TRUE(IsMigratedAppSetForSync(source_manifest_id, destination_app_id));
+  EXPECT_TRUE(fake_provider().registrar_unsafe().AppMatches(
+      destination_app_id,
+      WebAppFilter::InstalledInOperatingSystemForTesting()));
+  if (IsOsIntegrationSupported()) {
+    // TODO(crbug.com/339024222): Windows does not update app icons on OS
+    // integration. Needs fixing.
+#if !BUILDFLAG(IS_WIN)
+    EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), destination_app_id, base::UTF16ToUTF8(source_app_name)));
+    EXPECT_EQ(source_color,
+              GetShortcutColor(destination_app_id,
+                               base::UTF16ToUTF8(source_app_name)));
+#endif  // BUILDFLAG(IS_WIN)
   }
 }
 
