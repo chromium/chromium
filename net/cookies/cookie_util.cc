@@ -807,20 +807,22 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
                          bool http_only,
                          std::string_view domain,
                          std::string_view path) {
-  if (prefix == COOKIE_PREFIX_SECURE) {
-    return HasValidSecurePrefixAttributes(url, secure);
+  switch (prefix) {
+    case COOKIE_PREFIX_NONE:
+      return true;
+    case COOKIE_PREFIX_SECURE:
+      return HasValidSecurePrefixAttributes(url, secure);
+    case COOKIE_PREFIX_HOST:
+      return HasValidHostPrefixAttributes(url, secure, domain, path);
+    case COOKIE_PREFIX_HTTP:
+      return HasValidHttpPrefixAttributes(url, secure, http_only);
+    case COOKIE_PREFIX_HOSTHTTP:
+      return HasValidHttpPrefixAttributes(url, secure, http_only) &&
+             HasValidHostPrefixAttributes(url, secure, domain, path);
+    case COOKIE_PREFIX_LAST:
+      return true;
   }
-  if (prefix == COOKIE_PREFIX_HOST) {
-    return HasValidHostPrefixAttributes(url, secure, domain, path);
-  }
-  if (prefix == COOKIE_PREFIX_HTTP) {
-    return HasValidHttpPrefixAttributes(url, secure, http_only);
-  }
-  if (prefix == COOKIE_PREFIX_HOSTHTTP) {
-    return HasValidHttpPrefixAttributes(url, secure, http_only) &&
-           HasValidHostPrefixAttributes(url, secure, domain, path);
-  }
-  return true;
+  NOTREACHED();
 }
 
 bool IsCookiePartitionedValid(const GURL& url,
