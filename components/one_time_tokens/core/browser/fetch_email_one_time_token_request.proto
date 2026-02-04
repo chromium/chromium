@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package google.internal.chrome.passwords.onetimetoken.v1;
+
+option optimize_for = LITE_RUNTIME;
+
+// Request message for FetchEmailOneTimeToken.
+message FetchEmailOneTimeTokenRequest {
+  // Encrypted reference to the email that contains the OTP.
+  bytes encrypted_message_reference = 1;
+}
