@@ -6,6 +6,9 @@ tiborg@chromium.org
 
 file://components/lens/OWNERS
 
+per-file input_state_model*=ananyaseelam@google.com
+per-file input_state_model*=kiehl@google.com
+
 # Android only OWNERS.
 per-file *.java=file://components/omnibox/browser/android/OWNERS
 per-file BUILD.gn=file://components/omnibox/browser/android/OWNERS
