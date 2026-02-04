@@ -3043,6 +3043,24 @@ config("win_pdbaltpath") {
   }
 }
 
+config("split_dwarf") {
+  split_dwarf_flags = [ "-gsplit-dwarf" ]
+
+  # When building for ChromeOS, turn off split DWARF inlining.
+  # Breakpad does not correctly handle files generated with
+  # that feature (https://g-issues.chromium.org/issues/41312543).
+  if (is_chromeos) {
+    split_dwarf_flags += [ "-fno-split-dwarf-inlining" ]
+  }
+  cflags = split_dwarf_flags
+
+  # Split debug info with all thinlto builds except apple.
+  # thinlto requires -gsplit-dwarf in ldflags.
+  if (use_thin_lto && !is_apple) {
+    ldflags = split_dwarf_flags
+  }
+}
+
 # Full symbols.
 config("symbols") {
   rustflags = []
@@ -3083,6 +3101,9 @@ config("symbols") {
     cflags = [ "-gseparate-dwarf" ]
     ldflags = [ "-gseparate-dwarf" ]
   } else {
+    if (use_debug_fission) {
+      configs += [ ":split_dwarf" ]
+    }
     cflags = []
     if (is_apple && enable_dsyms) {
       # If generating dSYMs, specify -fno-standalone-debug. This was
@@ -3132,26 +3153,8 @@ config("symbols") {
       swiftflags = [ "-g" ]
     }
 
-    split_dwarf_flags = []
-    if (use_debug_fission) {
-      split_dwarf_flags += [ "-gsplit-dwarf" ]
-
-      # When building for ChromeOS, turn off split DWARF inlining.
-      # Breakpad does not correctly handle files generated with
-      # that feature (https://g-issues.chromium.org/issues/41312543).
-      if (is_chromeos) {
-        split_dwarf_flags += [ "-fno-split-dwarf-inlining" ]
-      }
-    }
-    cflags += split_dwarf_flags
     asmflags = cflags
     ldflags = []
-
-    # Split debug info with all thinlto builds except apple.
-    # thinlto requires -gsplit-dwarf in ldflags.
-    if (use_debug_fission && use_thin_lto && !is_apple) {
-      ldflags += split_dwarf_flags
-    }
 
     _enable_gdb_index = symbol_level == 2 && !is_apple && use_lld && !is_wasm
     if (_enable_gdb_index) {
@@ -3210,6 +3213,7 @@ config("symbols") {
 # This config guarantees to hold symbol for stack trace which are shown to user
 # when crash happens in unittests running on buildbot.
 config("minimal_symbols") {
+  configs = []
   rustflags = []
   if (is_win) {
     # Functions, files, and line tables only.
@@ -3239,6 +3243,9 @@ config("minimal_symbols") {
       cflags += [ "-gline-tables-only" ]
     }
   } else {
+    if (use_debug_fission) {
+      configs += [ ":split_dwarf" ]
+    }
     cflags = []
     if (is_mac && !use_dwarf5) {
       # clang defaults to DWARF2 on macOS unless mac_deployment_target is

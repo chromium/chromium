@@ -340,9 +340,6 @@ if (symbol_level == -1) {
   }
 }
 
-# Split dwarf works only for symbol_level == 2.
-use_debug_fission = use_debug_fission && symbol_level == 2
-
 # Non-component debug builds with symbol_level = 2 are an undesirable (very slow
 # build times, almost two-minute link times) combination. This is only checked
 # when current_toolchain == default_toolchain because the is_component_build
