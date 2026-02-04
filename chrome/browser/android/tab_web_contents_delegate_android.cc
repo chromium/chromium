@@ -64,6 +64,7 @@
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "content/public/browser/file_select_listener.h"
@@ -76,6 +77,7 @@
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -486,6 +488,27 @@ TabWebContentsDelegateAndroid::GetInstalledWebappGeolocationContext() {
         std::make_unique<InstalledWebappGeolocationContext>();
   }
   return installed_webapp_geolocation_context_.get();
+}
+
+void TabWebContentsDelegateAndroid::GetAIPageContent(
+    content::WebContents* web_contents,
+    bool include_actionable_elements,
+    base::OnceCallback<void(const std::string&)> callback) {
+  auto options = include_actionable_elements
+                     ? optimization_guide::ActionableAIPageContentOptions(
+                           /*on_critical_path=*/false)
+                     : optimization_guide::DefaultAIPageContentOptions(
+                           /*on_critical_path=*/false);
+
+  optimization_guide::GetAIPageContent(
+      web_contents, std::move(options),
+      base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
+                         -> std::string {
+        if (!result.has_value()) {
+          return "";
+        }
+        return result->proto.SerializeAsString();
+      }).Then(std::move(callback)));
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
