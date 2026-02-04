@@ -30,6 +30,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -79,6 +80,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/378544621")
 @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/378544621")
+@DisabledTest(message = "https://crbug.com/481769817")
 public class AddressEditorRenderTest {
     private static final String USER_EMAIL = "example@gmail.com";
     private static final List<AutofillAddressUiComponent> SUPPORTED_ADDRESS_FIELDS =
