@@ -332,13 +332,8 @@ void ThreadPoolImpl::SetSynchronousThreadStartForTesting(bool enabled) {
   g_synchronous_thread_start_for_testing = enabled;
 }
 
-size_t ThreadPoolImpl::GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-    const TaskTraits& traits) const {
-  // This method does not support getting the maximum number of BEST_EFFORT
-  // tasks that can run concurrently in a pool.
-  DCHECK_NE(traits.priority(), TaskPriority::BEST_EFFORT);
-  return GetThreadGroupForTraits(traits)
-      ->GetMaxConcurrentNonBlockedTasksDeprecated();
+size_t ThreadPoolImpl::GetMaxConcurrentForegroundTasks() const {
+  return foreground_thread_group_->GetMaxConcurrentNonBlockedTasksDeprecated();
 }
 
 void ThreadPoolImpl::Shutdown() {

@@ -260,13 +260,7 @@ int V8Platform::NumberOfWorkerThreads() {
   // V8Platform assumes the number of workers used by the scheduler for user
   // blocking tasks is an upper bound.
   const size_t num_foreground_workers =
-      base::ThreadPoolInstance::Get()
-          ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-              {base::TaskPriority::USER_BLOCKING});
-  DCHECK_GE(num_foreground_workers,
-            base::ThreadPoolInstance::Get()
-                ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                    {base::TaskPriority::USER_VISIBLE}));
+      base::ThreadPoolInstance::Get()->GetMaxConcurrentForegroundTasks();
   return std::max(1, static_cast<int>(num_foreground_workers));
 }
 

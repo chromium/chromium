@@ -813,40 +813,11 @@ TEST_P(ThreadPoolImplTest, MultipleTraitsExecutionModePair) {
   }
 }
 
-TEST_P(ThreadPoolImplTest,
-       GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated) {
+TEST_P(ThreadPoolImplTest, GetMaxConcurrentForegroundTasks) {
   StartThreadPool();
 
-  // GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated() does not support
-  // TaskPriority::BEST_EFFORT.
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DCHECK_DEATH({
-    thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-        {TaskPriority::BEST_EFFORT});
-  });
-  EXPECT_DCHECK_DEATH({
-    thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-        {MayBlock(), TaskPriority::BEST_EFFORT});
-  });
-
-  EXPECT_EQ(GetUseResourceEfficientThreadGroup() &&
-                    CanUseUtilityThreadTypeForWorkerThread()
-                ? kMaxNumUtilityThreads
-                : kMaxNumForegroundThreads,
-            thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                {TaskPriority::USER_VISIBLE}));
-  EXPECT_EQ(GetUseResourceEfficientThreadGroup() &&
-                    CanUseUtilityThreadTypeForWorkerThread()
-                ? kMaxNumUtilityThreads
-                : kMaxNumForegroundThreads,
-            thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                {MayBlock(), TaskPriority::USER_VISIBLE}));
   EXPECT_EQ(kMaxNumForegroundThreads,
-            thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                {TaskPriority::USER_BLOCKING}));
-  EXPECT_EQ(kMaxNumForegroundThreads,
-            thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                {MayBlock(), TaskPriority::USER_BLOCKING}));
+            thread_pool_->GetMaxConcurrentForegroundTasks());
 }
 
 // Verify that the RunsTasksInCurrentSequence() method of a SequencedTaskRunner

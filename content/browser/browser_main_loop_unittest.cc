@@ -69,9 +69,7 @@ TEST_F(BrowserMainLoopTest, CreateThreadsInSingleProcess) {
   browser_main_loop.Init();
   browser_main_loop.CreateMainMessageLoop();
   browser_main_loop.CreateThreads();
-  EXPECT_GE(base::ThreadPoolInstance::Get()
-                ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                    {base::TaskPriority::USER_VISIBLE}),
+  EXPECT_GE(base::ThreadPoolInstance::Get()->GetMaxConcurrentForegroundTasks(),
             static_cast<size_t>(base::SysInfo::NumberOfProcessors() - 1));
   browser_main_loop.ShutdownThreadsAndCleanUp();
   BrowserTaskExecutor::ResetForTesting();

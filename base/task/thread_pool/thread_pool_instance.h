@@ -26,7 +26,6 @@ class BrowserMainLoopTest_CreateThreadsInSingleProcess_Test;
 
 namespace base {
 
-class TaskTraits;
 class ThreadPoolTestHelpers;
 class WorkerThreadObserver;
 
@@ -238,18 +237,11 @@ class BASE_EXPORT ThreadPoolInstance {
   friend class gin::V8Platform;
   friend class content::BrowserMainLoopTest_CreateThreadsInSingleProcess_Test;
 
-  // Returns the maximum number of non-single-threaded non-blocked tasks posted
-  // with |traits| that can run concurrently in this thread pool. |traits|
-  // can't contain TaskPriority::BEST_EFFORT.
+  // Returns the maximum number of non-single-threaded tasks that can run
+  // concurrently in the foreground thread group.
   //
-  // Do not use this method. To process n items, post n tasks that each process
-  // 1 item rather than GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated()
-  // tasks that each process
-  // n/GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated() items.
-  //
-  // TODO(fdoray): Remove this method. https://crbug.com/687264
-  virtual size_t GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-      const TaskTraits& traits) const = 0;
+  // Do not use this method. To process n items, prefer using PostJob() API.
+  virtual size_t GetMaxConcurrentForegroundTasks() const = 0;
 
   // Starts/stops a fence that prevents scheduling of tasks of any / BEST_EFFORT
   // priority. Ongoing tasks will still be allowed to complete and not be
