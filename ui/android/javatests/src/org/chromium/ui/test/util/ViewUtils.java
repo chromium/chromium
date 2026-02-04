@@ -182,9 +182,7 @@ public class ViewUtils {
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
     public static void waitForView(ViewGroup root, Matcher<View> viewMatcher) {
-        ViewFinder.waitForView(
-                allOf(viewMatcher, isDescendantOfA(is(root))),
-                ViewElement.newOptions().allowDisabled().displayingAtLeast(1).build());
+        ViewFinder.waitForView(allOf(viewMatcher, isDescendantOfA(is(root))));
     }
 
     /**
