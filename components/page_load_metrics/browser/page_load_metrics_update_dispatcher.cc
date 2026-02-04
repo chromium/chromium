@@ -615,13 +615,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigation(
 
 void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
     const mojom::FrameRenderDataUpdate& render_data) {
-  for (const auto& entry : render_data.new_layout_shifts) {
-    soft_nav_interval_render_data_.layout_shift_score +=
-        entry->layout_shift_score;
-  }
   soft_nav_interval_layout_shift_normalization_.AddNewLayoutShifts(
-      render_data.new_layout_shifts, base::TimeTicks::Now(),
-      soft_nav_interval_render_data_.layout_shift_score);
+      render_data.new_layout_shifts, base::TimeTicks::Now());
 }
 
 void PageLoadMetricsUpdateDispatcher::
@@ -780,13 +775,10 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
   for (const auto& entry : render_data.new_layout_shifts) {
     page_render_data_.layout_shift_score += entry->layout_shift_score;
   }
-  layout_shift_normalization_.AddNewLayoutShifts(
-      render_data.new_layout_shifts, base::TimeTicks::Now(),
-      page_render_data_.layout_shift_score);
+  layout_shift_normalization_.AddNewLayoutShifts(render_data.new_layout_shifts,
+                                                 base::TimeTicks::Now());
   layout_shift_normalization_for_bfcache_.AddNewLayoutShifts(
-      render_data.new_layout_shifts, base::TimeTicks::Now(),
-      page_render_data_.layout_shift_score -
-          cumulative_layout_shift_score_for_bfcache_);
+      render_data.new_layout_shifts, base::TimeTicks::Now());
 
   // Stop accumulating page-wide layout_shift_score_before_input_or_scroll after
   // input or scroll in any frame. Note that we can't unconditionally accumulate

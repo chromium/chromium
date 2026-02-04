@@ -284,8 +284,7 @@ void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(
   }
 
   it->second.layout_shift_normalization.AddNewLayoutShifts(
-      render_data.new_layout_shifts, base::TimeTicks::Now(),
-      it->second.render_data.layout_shift_score);
+      render_data.new_layout_shifts, base::TimeTicks::Now());
 }
 
 void AMPPageLoadMetricsObserver::OnComplete(

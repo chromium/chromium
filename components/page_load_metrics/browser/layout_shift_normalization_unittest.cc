@@ -16,8 +16,7 @@ class LayoutShiftNormalizationTest : public testing::Test {
       const std::vector<page_load_metrics::mojom::LayoutShiftPtr>& new_shifts,
       base::TimeTicks current_time) {
     // Update layout shift normalization.
-    layout_shift_normalization_.AddNewLayoutShifts(
-        new_shifts, current_time, cumulative_layoutshift_score_);
+    layout_shift_normalization_.AddNewLayoutShifts(new_shifts, current_time);
   }
 
   const page_load_metrics::NormalizedCLSData& normalized_cls_data() const {
@@ -32,14 +31,11 @@ class LayoutShiftNormalizationTest : public testing::Test {
       new_shifts.emplace_back(page_load_metrics::mojom::LayoutShift::New(
           current_time - base::Milliseconds(std::get<0>(shift)),
           std::get<1>(shift), /*after_input_or_scroll*/ false));
-      // Update CLS.
-      cumulative_layoutshift_score_ += std::get<1>(shift);
     }
   }
 
  private:
   page_load_metrics::LayoutShiftNormalization layout_shift_normalization_;
-  float cumulative_layoutshift_score_ = 0.0;
 };
 
 TEST_F(LayoutShiftNormalizationTest, MultipleShifts) {

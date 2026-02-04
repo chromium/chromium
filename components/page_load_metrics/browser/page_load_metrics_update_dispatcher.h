@@ -257,15 +257,10 @@ class PageLoadMetricsUpdateDispatcher {
     responsiveness_metrics_normalization_.ClearAllUserInteractionLatencies();
   }
   void UpdateLayoutShiftNormalizationForBfcache() {
-    cumulative_layout_shift_score_for_bfcache_ =
-        page_render_data_.layout_shift_score;
     layout_shift_normalization_for_bfcache_.ClearAllLayoutShifts();
   }
 
   void ResetSoftNavigationIntervalLayoutShift() {
-    soft_nav_interval_render_data_.layout_shift_score = 0;
-    soft_nav_interval_render_data_.layout_shift_score_before_input_or_scroll =
-        0;
     soft_nav_interval_layout_shift_normalization_.ClearAllLayoutShifts();
   }
 
@@ -373,8 +368,6 @@ class PageLoadMetricsUpdateDispatcher {
   PageRenderData page_render_data_;
   PageRenderData main_frame_render_data_;
 
-  PageRenderData soft_nav_interval_render_data_;
-
   // The last main frame intersection rects dispatched to page load metrics
   // observers.
   std::map<content::FrameTreeNodeId, gfx::Rect> main_frame_intersection_rects_;
@@ -389,7 +382,6 @@ class PageLoadMetricsUpdateDispatcher {
   // Layout shift normalization data for bfcache which needs to be reset each
   // time the page enters the BackForward cache.
   LayoutShiftNormalization layout_shift_normalization_for_bfcache_;
-  float cumulative_layout_shift_score_for_bfcache_ = 0.0;
 
   // Navigation start offsets for the most recently committed document in each
   // frame.

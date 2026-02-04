@@ -29,10 +29,8 @@ class LayoutShiftNormalization {
     return normalized_cls_data_;
   }
 
-  void AddNewLayoutShifts(
-      base::span<const mojom::LayoutShiftPtr> new_shifts,
-      base::TimeTicks current_time,
-      /*Whole page CLS*/ float cumulative_layout_shift_score);
+  void AddNewLayoutShifts(base::span<const mojom::LayoutShiftPtr> new_shifts,
+                          base::TimeTicks current_time);
 
   void ClearAllLayoutShifts();
 
@@ -47,8 +45,7 @@ class LayoutShiftNormalization {
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator first,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator
           first_non_stale,
-      std::vector<std::pair<base::TimeTicks, double>>::const_iterator last,
-      float cumulative_layout_shift_score);
+      std::vector<std::pair<base::TimeTicks, double>>::const_iterator last);
 
   void UpdateSessionWindow(
       SessionWindow* session_window,
