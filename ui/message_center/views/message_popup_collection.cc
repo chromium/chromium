@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -607,15 +608,17 @@ std::vector<Notification*> MessagePopupCollection::GetPopupNotifications()
 }
 
 bool MessagePopupCollection::AddPopup() {
-  std::set<std::string> existing_ids;
+  std::vector<std::string> existing_ids_list;
+  existing_ids_list.reserve(popup_items_.size());
   for (const auto& item : popup_items_)
-    existing_ids.insert(item.id);
+    existing_ids_list.push_back(item.id);
+  base::flat_set<std::string> existing_ids(std::move(existing_ids_list));
 
   auto notifications = GetPopupNotifications();
   Notification* new_notification = nullptr;
   // Reverse iterating because notifications are in reverse chronological order.
   for (Notification* notification : base::Reversed(notifications)) {
-    if (!existing_ids.count(notification->id())) {
+    if (!existing_ids.contains(notification->id())) {
       new_notification = notification;
       break;
     }
@@ -670,13 +673,15 @@ bool MessagePopupCollection::AddPopup() {
 }
 
 void MessagePopupCollection::MarkRemovedPopup() {
-  std::set<std::string> existing_ids;
+  std::vector<std::string> existing_ids_list;
+  existing_ids_list.reserve(popup_items_.size());
   for (Notification* notification : GetPopupNotifications()) {
-    existing_ids.insert(notification->id());
+    existing_ids_list.push_back(notification->id());
   }
+  base::flat_set<std::string> existing_ids(std::move(existing_ids_list));
 
   for (auto& item : popup_items_) {
-    bool removing = !existing_ids.count(item.id);
+    bool removing = !existing_ids.contains(item.id);
     item.is_animating = removing;
     if (removing)
       NotifyPopupRemoved(item.id);
@@ -765,19 +770,22 @@ bool MessagePopupCollection::CollapseAllPopups() {
 }
 
 bool MessagePopupCollection::HasAddedPopup() const {
-  std::set<std::string> existing_ids;
-  for (const auto& item : popup_items_)
-    existing_ids.insert(item.id);
+  std::vector<std::string> existing_ids_list;
+  existing_ids_list.reserve(popup_items_.size());
+  for (const auto& item : popup_items_) {
+    existing_ids_list.push_back(item.id);
+  }
+  base::flat_set<std::string> existing_ids(std::move(existing_ids_list));
 
   for (Notification* notification : GetPopupNotifications()) {
-    if (!existing_ids.count(notification->id())) {
+    if (!existing_ids.contains(notification->id())) {
       // A new popup is not added for a group child if it's parent
       // notification has an existing popup.
       if (notification->group_child()) {
         auto* parent_notification =
             MessageCenter::Get()->FindParentNotification(notification);
 
-        return !existing_ids.count(parent_notification->id());
+        return !existing_ids.contains(parent_notification->id());
       }
       return true;
     }
@@ -786,14 +794,18 @@ bool MessagePopupCollection::HasAddedPopup() const {
 }
 
 bool MessagePopupCollection::HasRemovedPopup() const {
-  std::set<std::string> existing_ids;
+  auto notifications = GetPopupNotifications();
+  std::vector<std::string> existing_ids_list;
+  existing_ids_list.reserve(notifications.size());
   for (Notification* notification : GetPopupNotifications()) {
-    existing_ids.insert(notification->id());
+    existing_ids_list.push_back(notification->id());
   }
+  base::flat_set<std::string> existing_ids(std::move(existing_ids_list));
 
   for (const auto& item : popup_items_) {
-    if (!existing_ids.count(item.id))
+    if (!existing_ids.contains(item.id)) {
       return true;
+    }
   }
   return false;
 }
