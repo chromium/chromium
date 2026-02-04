@@ -287,11 +287,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
     }
 
-    /**
-     * @return An {@link NonNullObservableSupplier} that notifies observers when the autocomplete
-     *     request type changes.
-     */
-
     /** Returns the URL associated with the current AIM session. */
     public void getAimUrl(GURL url, Callback<GURL> callback) {
         if (mMediator == null) {
