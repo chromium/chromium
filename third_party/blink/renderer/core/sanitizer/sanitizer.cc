@@ -532,6 +532,11 @@ bool Sanitizer::ReplaceElement(const QualifiedName& name) {
   DCHECK(isValid());
   // Step 3: Set element to the result of canonicalize a sanitizer element
   // with element. (Done by caller.)
+  // https://github.com/WICG/sanitizer-api/issues/365:
+  // If name is "html", return false.
+  if (name == html_names::kHTMLTag) {
+    return false;
+  }
   // Step 4: If configuration["replaceWithChildrenElements"] contains element:
   // Step 4.1: Return false.
   bool contains_name = replace_elements_ && replace_elements_->Contains(name);
@@ -817,6 +822,10 @@ Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
       Element* element = To<Element>(node);
       if (replace_elements_ &&
           replace_elements_->Contains(element->TagQName())) {
+        // See: crbug.com/476333990.
+        CHECK_NE(element->TagQName(), html_names::kHTMLTag);
+        CHECK(!element->IsInDocumentTree() ||
+              !element->parentNode()->IsDocumentNode());
         // Step 5.2: If [...configuration["replaceWithChildrenElements"]...]
         return Action::kReplaceWithChildren;
       }
@@ -1151,6 +1160,11 @@ bool Sanitizer::isValid() const {
   //   config[removeElements] and config[replaceWithChildrenElements] is
   //   empty.
   if (Intersect(remove_elements_, replace_elements_)) {
+    return false;
+  }
+  // https://github.com/WICG/sanitizer-api/issues/365
+  // If config[replaceWithChildrenElements] contains "html"
+  if (replace_elements_ && replace_elements_->Contains(html_names::kHTMLTag)) {
     return false;
   }
   // Step 7: If config[attributes] exists:

@@ -2960,7 +2960,6 @@ crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_overri
 crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_override/global.py [ Failure ]
 crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_override/invalid.py [ Failure ]
 crbug.com/469618144 external/wpt/webdriver/tests/bidi/emulation/set_touch_override/user_contexts.py [ Failure ]
-crbug.com/469470570 external/wpt/sanitizer-api/sanitizer-parseHTML.tentative.html [ Crash ]
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-000.html [ Failure ]
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-001.html [ Failure ]
 crbug.com/469481151 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-002.html [ Failure ]
