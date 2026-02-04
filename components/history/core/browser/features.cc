@@ -132,6 +132,11 @@ BASE_FEATURE(kBrowsingHistoryActorIntegrationM2,
 BASE_FEATURE(kBrowsingHistoryActorIntegrationM3,
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables improved chrome://history de-duplication logic, this includes
+// grouping entries by hostname and title per day.
+BASE_FEATURE(kBrowsingHistorySimilarVisitsGrouping,
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether Browsing History Actor Integration M1 or any dependent feature is
 // enabled.
 bool IsBrowsingHistoryActorIntegrationM1Enabled() {

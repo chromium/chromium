@@ -4866,6 +4866,24 @@
             ]
         }
     ],
+    "BrowsingHistorySimilarVisitsGrouping": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowsingHistorySimilarVisitsGrouping"
+                    ]
+                }
+            ]
+        }
+    ],
     "BubbleMetricsApi": [
         {
             "platforms": [
