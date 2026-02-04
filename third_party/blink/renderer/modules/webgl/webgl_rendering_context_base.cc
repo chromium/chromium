@@ -1991,7 +1991,7 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
         RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
-    resource_provider_ = CanvasResourceProvider::CreateSharedImageProvider(
+    resource_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
         Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, Host());
