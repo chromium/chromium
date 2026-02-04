@@ -13,7 +13,7 @@
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-15"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -34,7 +34,7 @@
         "name": "cc_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-15"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -54,7 +54,7 @@
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-15"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -75,7 +75,7 @@
         "name": "viz_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-15"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -107,7 +107,7 @@
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
-            "cpu": "arm64",
+            "cpu": "x86-64",
             "os": "Mac-15"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
