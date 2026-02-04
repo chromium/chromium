@@ -1046,7 +1046,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
       ],
       "policies": [
         {
-          "policy_type": "google/chrome/machine-level-extension-install",
+          "policy_type": "google/extension-install-cloud-policy/chrome/machine",
           "entity_id": "abcdefghijklmnopqrstuvwxyzabcdef@67.67.67",
           "value": "CjAKIGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6YWJjZGVmEgg2Ny42Ny42NxgCIAE="
         }
@@ -1061,7 +1061,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
         "machine_name" : "fake_machine_name",
         "state_keys": [],
         "allowed_policy_types" : [
-          "google/chrome/machine-level-extension-install" ]
+          "google/extension-install-cloud-policy/chrome/machine" ]
       }
     }
   )"));
@@ -1072,7 +1072,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
     auto* policy_request =
         request_proto.mutable_policy_request()->add_requests();
     policy_request->set_policy_type(
-        "google/chrome/machine-level-extension-install");
+        "google/extension-install-cloud-policy/chrome/machine");
     policy_request->set_settings_entity_id(
         "abcdefghijklmnopqrstuvwxyzabcdef@67.67.67");
 
@@ -1089,7 +1089,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
     ASSERT_TRUE(policy_data.ParseFromString(
         response.proto().policy_response().responses(0).policy_data()));
     EXPECT_EQ(policy_data.policy_type(),
-              "google/chrome/machine-level-extension-install");
+              "google/extension-install-cloud-policy/chrome/machine");
 
     em::ExtensionInstallPolicies extension_install_policies;
     ASSERT_TRUE(
@@ -1114,7 +1114,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
     auto* policy_request =
         request_proto.mutable_policy_request()->add_requests();
     policy_request->set_policy_type(
-        "google/chrome/machine-level-extension-install");
+        "google/extension-install-cloud-policy/chrome/machine");
     auto* extension_ids_and_version =
         policy_request->add_extension_ids_and_version();
     extension_ids_and_version->set_extension_id(
@@ -1134,7 +1134,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
     ASSERT_TRUE(policy_data.ParseFromString(
         response.proto().policy_response().responses(0).policy_data()));
     EXPECT_EQ(policy_data.policy_type(),
-              "google/chrome/machine-level-extension-install");
+              "google/extension-install-cloud-policy/chrome/machine");
 
     em::ExtensionInstallPolicies extension_install_policies;
     ASSERT_TRUE(
@@ -1161,7 +1161,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
     auto* policy_request =
         request_proto.mutable_policy_request()->add_requests();
     policy_request->set_policy_type(
-        "google/chrome/machine-level-extension-install");
+        "google/extension-install-cloud-policy/chrome/machine");
     auto* extension_ids_and_version =
         policy_request->add_extension_ids_and_version();
     extension_ids_and_version->set_extension_id(
@@ -1186,7 +1186,7 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
     ASSERT_TRUE(policy_data.ParseFromString(
         response.proto().policy_response().responses(0).policy_data()));
     EXPECT_EQ(policy_data.policy_type(),
-              "google/chrome/machine-level-extension-install");
+              "google/extension-install-cloud-policy/chrome/machine");
 
     em::ExtensionInstallPolicies extension_install_policies;
     ASSERT_TRUE(

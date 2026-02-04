@@ -127,13 +127,13 @@ const char kChromeUserRemoteCommandType[] = "google/chrome/user/remotecommand";
 
 const char kChromeExtensionInstallUserCloudPolicyType[] =
 #if BUILDFLAG(IS_CHROMEOS)
-    "google/chromeos/user-level-extension-install";
+    "google/extension-install-cloud-policy/chromeos/user";
 #else
-    "google/chrome/user-level-extension-install";
+    "google/extension-install-cloud-policy/chrome/user";
 #endif
 
 const char kChromeExtensionInstallMachineLevelCloudPolicyType[] =
-    "google/chrome/machine-level-extension-install";
+    "google/extension-install-cloud-policy/chrome/machine";
 
 const char kChromeMachineLevelUserCloudPolicyTypeBase64[] =
     "Z29vZ2xlL2Nocm9tZS9tYWNoaW5lLWxldmVsLXVzZXI=";
