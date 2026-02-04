@@ -156,15 +156,16 @@ bool RecursivelyAppendReferencedFiles(
 struct SerializeObject {
   SerializeObject() = default;
 
-  explicit SerializeObject(base::span<const uint8_t> data)
-      : pickle(base::Pickle::WithUnownedBuffer(data)),
-        iter(base::PickleIterator(pickle)) {}
-
-  std::string GetAsString() {
-    return std::string(pickle.data_as_char(), pickle.size());
-  }
+  std::string GetAsString() { return std::string(pickle.AsStringView()); }
 
   base::Pickle pickle;
+  int version = 0;
+};
+
+struct DeserializeObject {
+  explicit DeserializeObject(base::span<const uint8_t> data)
+      : iter(base::PickleIterator::WithData(data)) {}
+
   base::PickleIterator iter;
   int version = 0;
   bool parse_error = false;
@@ -209,18 +210,19 @@ const int kMinVersion = 11;
 // instructions on how to generate the new test case.
 const int kCurrentVersion = 33;
 
-// A bunch of convenience functions to write to/read from SerializeObjects.  The
-// de-serializers assume the input data will be in the correct format and fall
-// back to returning safe defaults when not. These are mostly used by
-// legacy(pre-mojo) serialization methods. If you're making changes to the
-// PageState serialization format you almost certainly want to add/remove fields
-// in page_state.mojom rather than using these methods.
+// A bunch of convenience functions to write to/read from
+// SerializeObject/DeserializeObject instances. The de-serializers assume the
+// input data will be in the correct format and fall back to returning safe
+// defaults when not. These are mostly used by legacy(pre-mojo) serialization
+// methods. If you're making changes to the PageState serialization format you
+// almost certainly want to add/remove fields in page_state.mojom rather than
+// using these methods.
 
 void WriteData(base::span<const uint8_t> data, SerializeObject* obj) {
   obj->pickle.WriteData(data);
 }
 
-std::optional<base::span<const uint8_t>> ReadData(SerializeObject* obj) {
+std::optional<base::span<const uint8_t>> ReadData(DeserializeObject* obj) {
   std::optional<base::span<const uint8_t>> result = obj->iter.ReadData();
   if (!result) {
     obj->parse_error = true;
@@ -232,7 +234,7 @@ void WriteInteger(int data, SerializeObject* obj) {
   obj->pickle.WriteInt(data);
 }
 
-int ReadInteger(SerializeObject* obj) {
+int ReadInteger(DeserializeObject* obj) {
   int tmp;
   if (obj->iter.ReadInt(&tmp))
     return tmp;
@@ -244,7 +246,7 @@ void WriteInteger64(int64_t data, SerializeObject* obj) {
   obj->pickle.WriteInt64(data);
 }
 
-int64_t ReadInteger64(SerializeObject* obj) {
+int64_t ReadInteger64(DeserializeObject* obj) {
   int64_t tmp = 0;
   if (obj->iter.ReadInt64(&tmp))
     return tmp;
@@ -256,7 +258,7 @@ void WriteReal(double data, SerializeObject* obj) {
   WriteData(base::byte_span_from_ref(base::allow_nonunique_obj, data), obj);
 }
 
-double ReadReal(SerializeObject* obj) {
+double ReadReal(DeserializeObject* obj) {
   std::optional<base::span<const uint8_t>> data = ReadData(obj);
   if (data && data->size() == sizeof(double)) {
     double value;
@@ -273,7 +275,7 @@ void WriteBoolean(bool data, SerializeObject* obj) {
   obj->pickle.WriteInt(data ? 1 : 0);
 }
 
-bool ReadBoolean(SerializeObject* obj) {
+bool ReadBoolean(DeserializeObject* obj) {
   bool tmp;
   if (obj->iter.ReadBool(&tmp))
     return tmp;
@@ -281,7 +283,7 @@ bool ReadBoolean(SerializeObject* obj) {
   return false;
 }
 
-GURL ReadGURL(SerializeObject* obj) {
+GURL ReadGURL(DeserializeObject* obj) {
   std::string spec;
   if (obj->iter.ReadString(&spec))
     return GURL(spec);
@@ -289,7 +291,7 @@ GURL ReadGURL(SerializeObject* obj) {
   return GURL();
 }
 
-std::string ReadStdString(SerializeObject* obj) {
+std::string ReadStdString(DeserializeObject* obj) {
   std::string s;
   if (obj->iter.ReadString(&s))
     return s;
@@ -321,7 +323,7 @@ void WriteString(const std::optional<std::u16string>& str,
 
 // This reads a serialized std::optional<std::u16string> from obj. If a string
 // can't be read, nullptr is returned.
-const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
+const char16_t* ReadStringNoCopy(DeserializeObject* obj, int* num_chars) {
   int length_in_bytes;
   if (!obj->iter.ReadInt(&length_in_bytes)) {
     obj->parse_error = true;
@@ -342,7 +344,7 @@ const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   return reinterpret_cast<const char16_t*>(data);
 }
 
-std::optional<std::u16string> ReadString(SerializeObject* obj) {
+std::optional<std::u16string> ReadString(DeserializeObject* obj) {
   int num_chars;
   const char16_t* chars = ReadStringNoCopy(obj, &num_chars);
   std::optional<std::u16string> result;
@@ -357,7 +359,7 @@ void WriteAndValidateVectorSize(const std::vector<T>& v, SerializeObject* obj) {
   WriteInteger(static_cast<int>(v.size()), obj);
 }
 
-size_t ReadAndValidateVectorSize(SerializeObject* obj, size_t element_size) {
+size_t ReadAndValidateVectorSize(DeserializeObject* obj, size_t element_size) {
   size_t num_elements = static_cast<size_t>(ReadInteger(obj));
 
   // Ensure that resizing a vector to size num_elements makes sense.
@@ -367,8 +369,8 @@ size_t ReadAndValidateVectorSize(SerializeObject* obj, size_t element_size) {
   }
 
   // Ensure that it is plausible for the pickle to contain num_elements worth
-  // of data.
-  if (obj->pickle.payload_size() <= num_elements) {
+  // of data, accounting for at least one byte per element in serialized form.
+  if (obj->iter.RemainingBytes() < num_elements) {
     obj->parse_error = true;
     return 0;
   }
@@ -385,7 +387,7 @@ void WriteStringVector(const std::vector<std::optional<std::u16string>>& data,
   }
 }
 
-void ReadStringVector(SerializeObject* obj,
+void ReadStringVector(DeserializeObject* obj,
                       std::vector<std::optional<std::u16string>>* result) {
   size_t num_elements =
       ReadAndValidateVectorSize(obj, sizeof(std::optional<std::u16string>));
@@ -424,7 +426,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
 }
 
 void ReadResourceRequestBody(
-    SerializeObject* obj,
+    DeserializeObject* obj,
     const scoped_refptr<network::ResourceRequestBody>& request_body) {
   int num_elements = ReadInteger(obj);
   for (int i = 0; i < num_elements; ++i) {
@@ -455,7 +457,7 @@ void ReadResourceRequestBody(
   request_body->set_identifier(ReadInteger64(obj));
 }
 
-void ReadHttpBody(SerializeObject* obj, ExplodedHttpBody* http_body) {
+void ReadHttpBody(DeserializeObject* obj, ExplodedHttpBody* http_body) {
   // An initial boolean indicates if we have an HTTP body.
   if (!ReadBoolean(obj))
     return;
@@ -479,7 +481,7 @@ void WriteHttpBody(const ExplodedHttpBody& http_body, SerializeObject* obj) {
 
 // This is only used for versions < 26. Later versions use ReadMojoFrameState.
 void ReadLegacyFrameState(
-    SerializeObject* obj,
+    DeserializeObject* obj,
     bool is_top,
     std::vector<UniqueNameHelper::Replacement>* unique_name_replacements,
     ExplodedFrameState* state) {
@@ -863,7 +865,7 @@ void ReadMojoFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
     ReadMojoFrameState(child.get(), &state->children[i++]);
 }
 
-void ReadMojoPageState(SerializeObject* obj, ExplodedPageState* state) {
+void ReadMojoPageState(DeserializeObject* obj, ExplodedPageState* state) {
   std::optional<base::span<const uint8_t>> data = ReadData(obj);
   if (obj->parse_error) {
     return;
@@ -902,7 +904,7 @@ void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
   obj->pickle.WriteData(page_bytes);
 }
 
-void ReadPageState(SerializeObject* obj, ExplodedPageState* state) {
+void ReadPageState(DeserializeObject* obj, ExplodedPageState* state) {
   obj->version = ReadInteger(obj);
 
   if (obj->version == -1) {
@@ -995,7 +997,7 @@ int DecodePageStateInternal(const std::string& encoded,
   if (encoded.empty())
     return true;
 
-  SerializeObject obj(base::as_byte_span(encoded));
+  DeserializeObject obj(base::as_byte_span(encoded));
   ReadPageState(&obj, exploded);
 
   if (obj.version < kCurrentVersion) {
@@ -1048,7 +1050,7 @@ scoped_refptr<network::ResourceRequestBody> DecodeResourceRequestBody(
     base::span<const uint8_t> data) {
   scoped_refptr<network::ResourceRequestBody> result =
       new network::ResourceRequestBody();
-  SerializeObject obj(data);
+  DeserializeObject obj(data);
   ReadResourceRequestBody(&obj, result);
   // Please see the EncodeResourceRequestBody() function below for information
   // about why the contains_sensitive_info() field is being explicitly

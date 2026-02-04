@@ -39,8 +39,7 @@ bool LoadFromFile(base::FilePath file_path,
     }
   }
 
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(file_contents);
-  base::PickleIterator pickle_iterator(pickle);
+  base::PickleIterator pickle_iterator = base::PickleIterator::WithData(file_contents);
 
   uint32_t checksum = 0;
   if (!pickle_iterator.ReadUInt32(&checksum)) {

@@ -136,6 +136,8 @@ _CONFIG = [
             'base::OptionalToPtr',
             'base::PassKey',
             'base::PersistentHash',
+            'base::Pickle',
+            'base::PickleIterator',
             'base::PlatformThread',
             'base::PlatformThreadId',
             'base::PostJob',
