@@ -50,6 +50,14 @@ std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     const FetcherConfig& config = kClassifyUrlConfig,
     version_info::Channel channel = version_info::Channel::UNKNOWN);
 
+// Same as above, but does not require end-user credentials.
+std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const kidsmanagement::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback,
+    const FetcherConfig& config = kClassifyUrlConfigWithoutCredentials,
+    version_info::Channel channel = version_info::Channel::UNKNOWN);
+
 // Creates a disposable instance of an access token consumer that will create
 // a new permission request for a given url.
 // The fetcher does not need to use the `CreatePermissionRequestRequest`

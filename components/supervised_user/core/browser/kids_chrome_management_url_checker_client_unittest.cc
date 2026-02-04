@@ -71,7 +71,6 @@ class KidsChromeManagementURLCheckerClientTestBase
       case CredentialsMode::kNoCredentials:
         url_classifier_ =
             std::make_unique<KidsChromeManagementURLCheckerClient>(
-                identity_test_env_.identity_manager(),
                 test_url_loader_factory_.GetSafeWeakWrapper(), "us",
                 version_info::Channel::UNKNOWN);
         break;

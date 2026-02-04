@@ -47,8 +47,8 @@ namespace supervised_user {
 // If you want to create new fetcher factory method, then some
 // details must be provided in order to enable fetching for said Response. The
 // new fetcher factory should have at least the following arguments:
-// signin::IdentityManager, network::SharedURLLoaderFactory, consuming callback
-// and must reference a static configuration.
+// signin::IdentityManager (optional), network::SharedURLLoaderFactory,
+// consuming callback and must reference a static configuration.
 //
 // The static configuration should be placed in the fetcher_config.h module.
 
@@ -70,7 +70,7 @@ class FetchProcess {
 
   // Identity manager and fetcher_config must outlive this call.
   FetchProcess(
-      signin::IdentityManager& identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const Payload& payload,
       const FetcherConfig& fetcher_config,
@@ -109,7 +109,6 @@ class FetchProcess {
   virtual void OnResponse(std::optional<std::string> response_body) = 0;
   virtual void OnError(const ProtoFetcherStatus& status) = 0;
 
-  const raw_ref<signin::IdentityManager> identity_manager_;
   const Payload payload_;
   const raw_ref<const FetcherConfig> config_;
   const FetcherConfig::PathArgs args_;
@@ -148,7 +147,7 @@ class TypedFetchProcess : public FetchProcess {
                                            std::unique_ptr<Response>)>;
   TypedFetchProcess() = delete;
   TypedFetchProcess(
-      signin::IdentityManager& identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const Payload& payload,
       Callback callback,
@@ -201,7 +200,7 @@ class ProtoFetcher final {
 
   ProtoFetcher() = delete;
   ProtoFetcher(
-      signin::IdentityManager& identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const FetchProcess::Payload& payload,
       TypedFetchProcess<Response>::Callback callback,
@@ -211,7 +210,7 @@ class ProtoFetcher final {
       : callback_(std::move(callback)),
         factory_(base::BindRepeating(&ProtoFetcher<Response>::Factory,
                                      base::Unretained(this),
-                                     std::ref(identity_manager),
+                                     identity_manager,
                                      url_loader_factory,
                                      payload,
                                      fetcher_config,
@@ -228,7 +227,7 @@ class ProtoFetcher final {
 
  private:
   std::unique_ptr<TypedFetchProcess<Response>> Factory(
-      signin::IdentityManager& identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FetchProcess::Payload payload,
       const FetcherConfig& fetcher_config,
@@ -313,7 +312,7 @@ bool ConfiguresFetcherWithoutEndUserCredentials(
 // `CredentialsRequirement::kBestEffort`.
 template <typename Response>
 std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
-    signin::IdentityManager& identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const FetchProcess::Payload& payload,
     typename ProtoFetcher<Response>::Callback callback,
@@ -331,7 +330,7 @@ std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
 // Same as above, but payload is implicitly constructed from the request
 template <typename Response>
 std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
-    signin::IdentityManager& identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const google::protobuf::MessageLite& message,
     typename ProtoFetcher<Response>::Callback callback,

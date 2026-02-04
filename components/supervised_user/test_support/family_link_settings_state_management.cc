@@ -293,7 +293,7 @@ void FamilyLinkSettingsState::Seed(
   // Start fetching and wait for the response.
   base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   ProtoFetcher<std::string> fetcher(
-      caller_identity_manager, caller_url_loader_factory,
+      &caller_identity_manager, caller_url_loader_factory,
       {.request_body = intent_->GetRequest()},
       base::BindLambdaForTesting([&](const ProtoFetcherStatus& status,
                                      std::unique_ptr<std::string> response) {
@@ -318,7 +318,7 @@ void FamilyLinkSettingsState::StartSeeding(
 
   // Start fetching.
   fetcher_ = CreateFetcher<std::string>(
-      caller_identity_manager, caller_url_loader_factory,
+      &caller_identity_manager, caller_url_loader_factory,
       {.request_body = intent_->GetRequest()},
       base::BindOnce([](const ProtoFetcherStatus& status,
                         std::unique_ptr<std::string> response) {

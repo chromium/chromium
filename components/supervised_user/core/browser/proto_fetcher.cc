@@ -146,14 +146,13 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
 }  // namespace
 
 FetchProcess::FetchProcess(
-    signin::IdentityManager& identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const Payload& payload,
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args,
     std::optional<version_info::Channel> channel)
-    : identity_manager_(identity_manager),
-      payload_(payload),
+    : payload_(payload),
       config_(fetcher_config),
       args_(args),
       channel_(channel),
@@ -168,8 +167,10 @@ FetchProcess::FetchProcess(
     return;
   }
 
+  CHECK(identity_manager != nullptr)
+      << "Identity Manager is required for fetches with access token config.";
   fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
-      identity_manager, *fetcher_config.access_token_config);
+      *identity_manager, *fetcher_config.access_token_config);
   fetcher_->GetToken(
       base::BindOnce(&FetchProcess::OnAccessTokenFetchComplete,
                      base::Unretained(this),  // Unretained(.) is safe because
