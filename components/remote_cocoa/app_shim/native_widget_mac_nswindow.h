@@ -93,6 +93,10 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Returns headless window extra info or nullptr if this window is not headless.
 - (NativeWidgetMacNSWindowHeadlessInfo*)headlessInfo;
 
+// Returns actual platform window visibility state which in headless mode is
+// expected to be hidden.
+- (BOOL)invokeOriginalIsVisibleForTesting;
+
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.

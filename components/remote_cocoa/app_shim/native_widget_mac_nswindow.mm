@@ -256,6 +256,12 @@ struct NSEdgeAndCornerThicknesses {
   return _headless_info.get();
 }
 
+- (BOOL)invokeOriginalIsVisibleForTesting {
+  // In headless mode this is overridden and returns actual platform window
+  // visibility state which is expected to aways be hidden.
+  return [self isVisible];
+}
+
 // This is called by the "Move Window to {Left/Right} Side of Screen"
 // Window menu alternate items (must press Option to see).
 // Without this, selecting these items will move child windows like

@@ -531,10 +531,8 @@ void NativeWidgetNSWindowBridge::InitWindow(
   pending_restoration_data_ = params->state_restoration_data;
 
   if (display::Screen::Get()->IsHeadless()) {
-    headless_mode_window_ = std::make_optional<HeadlessModeWindow>();
+    [window_ setIsHeadless:YES];
   }
-
-  [window_ setIsHeadless:headless_mode_window_.has_value()];
 
   // Register for application hide notifications so that visibility can be
   // properly tracked. This is not done in the delegate so that the lifetime is
@@ -827,40 +825,6 @@ void NativeWidgetNSWindowBridge::CloseWindowNow() {
 
 void NativeWidgetNSWindowBridge::SetVisibilityState(
     WindowVisibilityState new_state) {
-  // In headless mode the platform window is always hidden, so instead of
-  // changing its visibility state just maintain a local flag to track the
-  // expected visibility state and lie to the upper layer pretending the
-  // window did change its visibility and activation state.
-  if (headless_mode_window_) {
-    const bool new_visibility_state =
-        new_state != WindowVisibilityState::kHideWindow;
-    if (headless_mode_window_->visibility_state != new_visibility_state) {
-      headless_mode_window_->visibility_state = new_visibility_state;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](const base::WeakPtr<NativeWidgetNSWindowBridge>& bridge,
-                 bool visibility_state) {
-                if (bridge && bridge->host_) {
-                  bridge->host_->OnVisibilityChanged(visibility_state);
-                }
-              },
-              factory_.GetWeakPtr(), new_visibility_state));
-    }
-
-    if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](const base::WeakPtr<NativeWidgetNSWindowBridge>& bridge) {
-                if (bridge) {
-                  bridge->OnWindowKeyStatusChangedTo(/*is_key=*/true);
-                }
-              },
-              factory_.GetWeakPtr()));
-    }
-    return;
-  }
 
   // During session restore this method gets called from RestoreTabsToBrowser()
   // with new_state = kShowAndActivateWindow. We consume restoration data on our
@@ -1550,23 +1514,6 @@ void NativeWidgetNSWindowBridge::FullscreenControllerSetFrame(
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
-  // AppKit implicitly makes the fullscreen window visible, so avoid going
-  // fullscreen in headless mode. Instead, toggle the expected fullscreen state
-  // and fake the relevant callbacks for the fullscreen controller to
-  // believe the fullscreen state was toggled.
-  if (headless_mode_window_) {
-    headless_mode_window_->fullscreen_state =
-        !headless_mode_window_->fullscreen_state;
-    if (headless_mode_window_->fullscreen_state) {
-      fullscreen_controller_.OnWindowWillEnterFullscreen();
-      fullscreen_controller_.OnWindowDidEnterFullscreen();
-    } else {
-      fullscreen_controller_.OnWindowWillExitFullscreen();
-      fullscreen_controller_.OnWindowDidExitFullscreen();
-    }
-    return;
-  }
-
   bool is_key_window = [window_ isKeyWindow];
   [window_ toggleFullScreen:nil];
   // Ensure the transitioning window maintains focus.
@@ -1716,15 +1663,6 @@ void NativeWidgetNSWindowBridge::SetCanAppearInExistingFullscreenSpaces(
 }
 
 void NativeWidgetNSWindowBridge::SetMiniaturized(bool miniaturized) {
-  // In headless mode the platform window is always hidden and WebKit
-  // will not deminiaturize hidden windows. So instead of changing the window
-  // miniaturization state just lie to the upper layer pretending the window did
-  // change its state. We don't need to keep track of the requested state here
-  // because the host will do this.
-  if (headless_mode_window_) {
-    host_->OnWindowMiniaturizedChanged(miniaturized);
-    return;
-  }
 
   if (miniaturized) {
     // Calling performMiniaturize: will momentarily highlight the button, but
@@ -2039,15 +1977,6 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
   } else {
     std::move(begin_sheet_closure).Run();
   }
-}
-
-bool NativeWidgetNSWindowBridge::window_visible() const {
-  // In headless mode the platform window is always hidden, so instead of
-  // returning the actual platform window visibility state tracked by
-  // OnVisibilityChanged() callback, return the expected visibility state
-  // maintained by SetVisibilityState() call.
-  return headless_mode_window_ ? headless_mode_window_->visibility_state
-                               : window_visible_;
 }
 
 }  // namespace remote_cocoa

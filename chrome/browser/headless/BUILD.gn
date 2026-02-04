@@ -143,6 +143,10 @@ if (!is_android) {
       ]
     }
 
+    if (is_mac) {
+      deps += [ "//components/remote_cocoa/app_shim" ]
+    }
+
     if (use_aura && is_win) {
       deps += [
         "//ui/aura",

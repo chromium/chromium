@@ -95,11 +95,23 @@ int GetSystemFrameThickness() {
 
 namespace {
 
-INSTANTIATE_TEST_SUITE_P(HeadlessModeBrowserTestWithStartWindowMode,
-                         HeadlessModeBrowserTestWithStartWindowMode,
-                         testing::Values(kStartWindowNormal,
-                                         kStartWindowMaximized,
-                                         kStartWindowFullscreen));
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    HeadlessModeBrowserTestWithStartWindowMode,
+    testing::Values(kStartWindowNormal,
+                    kStartWindowMaximized,
+                    kStartWindowFullscreen),
+    [](const testing::TestParamInfo<
+        HeadlessModeBrowserTestWithStartWindowMode::ParamType>& info) {
+      switch (info.param) {
+        case kStartWindowNormal:
+          return "Normal";
+        case kStartWindowMaximized:
+          return "Maximized";
+        case kStartWindowFullscreen:
+          return "Fullscreen";
+      }
+    });
 
 IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
                        BrowserDesktopWindowHidden) {

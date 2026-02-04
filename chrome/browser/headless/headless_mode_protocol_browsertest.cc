@@ -303,18 +303,16 @@ HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
 HEADLESS_MODE_PROTOCOL_TEST(MaximizeRestoreWindow,
                             "shared/maximize-restore-window.js")
 
-// These currently fail on Mac, see https://crbug.com/1488010
-#if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(MinimizeRestoreWindow,
                             "shared/minimize-restore-window.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "shared/fullscreen-restore-window.js")
-#endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
                             "shared/maximized-window-size.js")
 
-// These currently fail on Mac, see https://crbug.com/1500046
+// These currently fail on Mac, see https://crbug.com/40288046
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
                             "shared/fullscreen-window-size.js")
@@ -348,15 +346,7 @@ HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkAreaScaled,
 
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
-// TODO(crbug.com/429035133): Times out on macOS. Fix and re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RequestFullscreenOnSecondaryScreen \
-  DISABLED_RequestFullscreenOnSecondaryScreen
-#else
-#define MAYBE_RequestFullscreenOnSecondaryScreen \
-  RequestFullscreenOnSecondaryScreen
-#endif  // BUILDFLAG(IS_MAC)
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_RequestFullscreenOnSecondaryScreen,
+HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,
                             "shared/request-fullscreen-on-secondary-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
