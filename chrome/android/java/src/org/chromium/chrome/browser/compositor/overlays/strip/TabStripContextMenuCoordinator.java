@@ -68,6 +68,7 @@ public class TabStripContextMenuCoordinator {
             RectProvider anchorViewRectProvider, boolean isIncognito, Activity activity) {
         ModelList modelList = new ModelList();
         configureMenuItems(modelList, isIncognito);
+        if (modelList.isEmpty()) return;
 
         Drawable background = TabOverflowMenuCoordinator.getMenuBackground(mContext, isIncognito);
 

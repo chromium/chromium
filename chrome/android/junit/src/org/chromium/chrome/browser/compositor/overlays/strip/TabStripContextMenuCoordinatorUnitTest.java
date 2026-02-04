@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -66,6 +68,22 @@ public class TabStripContextMenuCoordinatorUnitTest {
         when(mRectProvider.getRect())
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
         when(mDelegate.getRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.TAB);
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
+        ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID
+    })
+    public void showMenu_emptyList_verifyMenuState() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify.
+        verifyMenuState(/* expectedNumItems= */ 0);
     }
 
     @Test
@@ -154,15 +172,15 @@ public class TabStripContextMenuCoordinatorUnitTest {
 
     private void verifyMenuState(int expectedNumItems) {
         mMenuWindow = mCoordinator.getPopupWindow();
-        assertNotNull(mMenuWindow);
         if (expectedNumItems > 0) {
+            assertNotNull(mMenuWindow);
             assertTrue(mMenuWindow.isShowing());
             mContentView = mMenuWindow.getContentView();
             mListView = mContentView.findViewById(R.id.tab_group_action_menu_list);
             var adapter = (ModelListAdapter) mListView.getAdapter();
             assertEquals(expectedNumItems, adapter.getCount());
         } else {
-            assertFalse(mMenuWindow.isShowing());
+            assertNull(mMenuWindow);
         }
     }
 
