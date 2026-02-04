@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
@@ -127,6 +128,13 @@ class HelpBubbleFactoryViewsSubregionAnchorTest
   }
 
  protected:
+  void FlushEvents() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   bool AnchorVisible() const {
     return ui::ElementTracker::GetElementTracker()->IsElementVisible(
         kTestAnchorId,
@@ -165,6 +173,8 @@ TEST_F(HelpBubbleFactoryViewsSubregionAnchorTest,
   contents_view_->SetVisible(false);
   EXPECT_FALSE(AnchorVisible());
   widget_->Hide();
+  // Make sure there's nothing left to process on the hide here.
+  FlushEvents();
   EXPECT_FALSE(AnchorVisible());
   contents_view_->SetVisible(true);
   EXPECT_FALSE(AnchorVisible());

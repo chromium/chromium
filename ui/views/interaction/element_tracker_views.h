@@ -16,6 +16,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/interaction/element_tracker_widget_state.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_export.h"
 
@@ -47,7 +48,8 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
 };
 
 // Manages TrackedElements associated with View objects.
-class VIEWS_EXPORT ElementTrackerViews {
+class VIEWS_EXPORT ElementTrackerViews
+    : public internal::ElementTrackerWidgetState::Delegate {
  public:
   using ViewList = std::vector<View*>;
 
@@ -174,7 +176,6 @@ class VIEWS_EXPORT ElementTrackerViews {
   friend class base::NoDestructor<ElementTrackerViews>;
   FRIEND_TEST_ALL_PREFIXES(ElementTrackerViewsTest, CleansUpWidgetTrackers);
   class ElementDataViews;
-  class WidgetTracker;
 
   ElementTrackerViews();
   ~ElementTrackerViews();
@@ -195,8 +196,12 @@ class VIEWS_EXPORT ElementTrackerViews {
   // Aura is not exactly synced with our event reporting.
   bool IsWidgetVisible(const Widget* widget) const;
 
+  // internal::ElementTrackerWidgetState::Delegate:
+  void OnWidgetVisibilityChanged(const Widget* widget, bool visible) override;
+  void OnWidgetDestroying(const Widget* widget) override;
+
   std::map<ui::ElementIdentifier, ElementDataViews> element_data_;
-  std::map<const Widget*, WidgetTracker> widget_trackers_;
+  std::map<const Widget*, internal::ElementTrackerWidgetState> widget_trackers_;
 };
 
 // Template implementations.

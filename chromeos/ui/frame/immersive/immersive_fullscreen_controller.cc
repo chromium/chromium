@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -290,14 +291,31 @@ bool ImmersiveFullscreenController::ShouldRevealTopChrome(views::View* view) {
   if (top_container_->Contains(view)) {
     return true;
   }
+
+  // Ensure that the window actually has a frame.
   auto* non_client_view = widget_->non_client_view();
-  auto* frame_view = non_client_view ? non_client_view->frame_view() : nullptr;
-  auto* caption_button_container =
-      frame_view ? views::ElementTrackerViews::GetInstance()->GetUniqueView(
-                       chromeos::FrameCaptionButtonContainerView::kElementId,
-                       views::ElementTrackerViews::GetContextForWidget(widget_))
-                 : nullptr;
-  return caption_button_container && caption_button_container->Contains(view);
+  if (!non_client_view || !non_client_view->frame_view()) {
+    return false;
+  }
+
+  // Find the caption button container for this window and check that too.
+  const auto views =
+      views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
+          chromeos::FrameCaptionButtonContainerView::kElementId,
+          views::ElementTrackerViews::GetContextForWidget(widget_));
+
+  // This can happen in an InteractiveAshTest where all contexts are collapsed
+  // for convenience. It should never happen in production code.
+  if (views.size() > 1) {
+    CHECK_IS_TEST();
+    LOG(WARNING) << R"(
+Note that due to use of InteractiveAshTest, it is not possible to differentiate
+between caption buttons in different windows. Unpredictable behavior may result.
+    ")";
+  }
+
+  // If a container was found, see if the view is there.
+  return !views.empty() && views.front()->Contains(view);
 }
 
 // static
