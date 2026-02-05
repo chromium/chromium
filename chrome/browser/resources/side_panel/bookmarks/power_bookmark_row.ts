@@ -147,6 +147,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
     this.shoppingListenerIds_.forEach(
         id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
   }

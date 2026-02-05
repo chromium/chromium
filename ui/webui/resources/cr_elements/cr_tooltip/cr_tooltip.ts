@@ -106,6 +106,8 @@ export class CrTooltipElement extends CrLitElement {
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (!this.manualMode) {
       this.removeListeners_();
     }

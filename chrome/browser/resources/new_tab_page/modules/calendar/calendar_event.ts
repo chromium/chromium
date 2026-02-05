@@ -88,6 +88,8 @@ export class CalendarEventElement extends CalendarEventElementBase {
   protected accessor timeStatus_: string = '';
 
   override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
     if ((changedProperties.has('event') || changedProperties.has('expanded')) &&
         (this.expanded && this.showAttachments_())) {
       const attachmentList = this.renderRoot.querySelector('#attachmentList');

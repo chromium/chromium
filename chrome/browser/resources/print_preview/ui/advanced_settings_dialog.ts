@@ -68,7 +68,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
   override updated(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
+    super.updated(changedProperties);
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
