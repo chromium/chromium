@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/tab_browser_controls_constraints_helper.h"
-
 #include "cc/input/android/offset_tag_android.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
@@ -17,21 +15,9 @@
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 
-TabBrowserControlsConstraintsHelper::TabBrowserControlsConstraintsHelper(
+static void JNI_TabBrowserControlsConstraintsHelper_UpdateState(
     JNIEnv* env,
-    const JavaRef<jobject>& obj)
-    : jobj_(env, obj) {}
-
-TabBrowserControlsConstraintsHelper::~TabBrowserControlsConstraintsHelper() =
-    default;
-
-void TabBrowserControlsConstraintsHelper::OnDestroyed(JNIEnv* env) {
-  delete this;
-}
-
-void TabBrowserControlsConstraintsHelper::UpdateState(
-    JNIEnv* env,
-    const JavaRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     int32_t constraints,
     int32_t current,
     bool animate,
@@ -41,7 +27,6 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
   cc::BrowserControlsState current_state =
       static_cast<cc::BrowserControlsState>(current);
 
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   if (web_contents == nullptr) {
     return;
   }
@@ -51,13 +36,6 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
           env, joffset_tag_modifications);
   web_contents->UpdateBrowserControlsState(constraints_state, current_state,
                                            animate, offset_tag_modifications);
-}
-
-static int64_t JNI_TabBrowserControlsConstraintsHelper_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(
-      new TabBrowserControlsConstraintsHelper(env, obj));
 }
 
 DEFINE_JNI(TabBrowserControlsConstraintsHelper)

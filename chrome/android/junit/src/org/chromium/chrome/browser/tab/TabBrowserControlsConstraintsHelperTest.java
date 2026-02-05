@@ -156,7 +156,6 @@ public class TabBrowserControlsConstraintsHelperTest {
         mVisibilityDelegate.set(BrowserControlsState.SHOWN);
         Mockito.verify(mJniMock, Mockito.never())
                 .updateState(
-                        Mockito.anyLong(),
                         Mockito.any(),
                         Mockito.anyInt(),
                         Mockito.anyInt(),
@@ -256,7 +255,6 @@ public class TabBrowserControlsConstraintsHelperTest {
             boolean animate) {
         Mockito.verify(mJniMock)
                 .updateState(
-                        Mockito.anyLong(),
                         Mockito.same(mWebContents),
                         Mockito.eq(constraints),
                         Mockito.eq(current),
@@ -270,7 +268,6 @@ public class TabBrowserControlsConstraintsHelperTest {
             ArgumentCaptor<BrowserControlsOffsetTagModifications> captor) {
         Mockito.verify(mJniMock)
                 .updateState(
-                        Mockito.anyLong(),
                         Mockito.same(mWebContents),
                         Mockito.eq(constraints),
                         Mockito.anyInt(),
