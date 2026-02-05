@@ -117,7 +117,8 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
   // Waits for the dialog to show, and verifies it's explicit-choice type.
   auto WaitForDialogToShow() {
     auto steps =
-        Steps(WaitForShow(kSettingsOverriddenDialogSaveButtonId),
+        Steps(WaitForShow(kSettingsOverriddenDialogId),
+              EnsurePresent(kSettingsOverriddenDialogSaveButtonId),
               EnsurePresent(kSettingsOverriddenDialogPreviousSettingButtonId),
               EnsurePresent(kSettingsOverriddenDialogNewSettingButtonId));
     AddDescriptionPrefix(steps, __func__);

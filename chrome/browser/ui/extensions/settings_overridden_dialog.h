@@ -13,6 +13,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 inline constexpr char kExtensionSettingsOverriddenDialogName[] =
     "ExtensionSettingsOverriddenDialog";
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kSettingsOverriddenDialogPreviousSettingButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogNewSettingButtonId);

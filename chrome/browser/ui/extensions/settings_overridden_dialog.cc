@@ -28,6 +28,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using DialogResult = SettingsOverriddenDialogController::DialogResult;
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kSettingsOverriddenDialogPreviousSettingButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsOverriddenDialogNewSettingButtonId);
@@ -137,7 +138,8 @@ void BuildExplicitChoiceDialog(
     SettingsOverriddenDialogDelegate* dialog_delegate) {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kSearchEngineExplicitChoiceDialog));
-  dialog_builder.SetTitle(show_params.dialog_title)
+  dialog_builder.SetElementIdentifier(kSettingsOverriddenDialogId)
+      .SetTitle(show_params.dialog_title)
       .AddParagraph(ui::DialogModelLabel(show_params.message), std::u16string())
       .AddOkButton(
           base::BindOnce(
