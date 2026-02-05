@@ -26,13 +26,13 @@ EntryWriteBuffer::~EntryWriteBuffer() = default;
 EntryWriteBuffer::EntryWriteBuffer(EntryWriteBuffer&& other)
     : buffers(std::move(other.buffers)),
       size(std::exchange(other.size, 0)),
-      offset(std::exchange(other.offset, -1)) {}
+      offset(std::exchange(other.offset, 0)) {}
 
 EntryWriteBuffer& EntryWriteBuffer::operator=(EntryWriteBuffer&& other) {
   if (this != &other) {
     buffers = std::move(other.buffers);
     size = std::exchange(other.size, 0);
-    offset = std::exchange(other.offset, -1);
+    offset = std::exchange(other.offset, 0);
   }
   return *this;
 }

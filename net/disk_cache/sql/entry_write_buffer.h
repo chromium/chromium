@@ -33,7 +33,7 @@ struct NET_EXPORT_PRIVATE EntryWriteBuffer {
 
   std::vector<scoped_refptr<net::IOBuffer>> buffers;
   int size = 0;
-  int64_t offset = -1;
+  int64_t offset = 0;
 };
 
 }  // namespace disk_cache

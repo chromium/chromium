@@ -17,7 +17,7 @@ TEST(EntryWriteBufferTest, DefaultConstructor) {
   EntryWriteBuffer buffer;
   EXPECT_TRUE(buffer.buffers.empty());
   EXPECT_EQ(buffer.size, 0);
-  EXPECT_EQ(buffer.offset, -1);
+  EXPECT_EQ(buffer.offset, 0);
 }
 
 TEST(EntryWriteBufferTest, SingleBufferConstructor) {
@@ -54,7 +54,7 @@ TEST(EntryWriteBufferTest, MoveConstructor) {
   // Moved-from object state.
   EXPECT_TRUE(buffer1.buffers.empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(buffer1.size, 0);            // NOLINT(bugprone-use-after-move)
-  EXPECT_EQ(buffer1.offset, -1);         // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(buffer1.offset, 0);          // NOLINT(bugprone-use-after-move)
 }
 
 TEST(EntryWriteBufferTest, MoveAssignment) {
@@ -73,7 +73,7 @@ TEST(EntryWriteBufferTest, MoveAssignment) {
   // Moved-from object state.
   EXPECT_TRUE(buffer1.buffers.empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(buffer1.size, 0);            // NOLINT(bugprone-use-after-move)
-  EXPECT_EQ(buffer1.offset, -1);         // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(buffer1.offset, 0);          // NOLINT(bugprone-use-after-move)
 }
 
 TEST(EntryWriteBufferTest, MultipleBuffers) {
@@ -104,7 +104,7 @@ TEST(EntryWriteBufferTest, MultipleBuffers) {
 
   EXPECT_TRUE(buffer.buffers.empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(buffer.size, 0);            // NOLINT(bugprone-use-after-move)
-  EXPECT_EQ(buffer.offset, -1);         // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(buffer.offset, 0);          // NOLINT(bugprone-use-after-move)
 
   // Test move assignment with multiple buffers
   EntryWriteBuffer buffer3;
@@ -117,7 +117,7 @@ TEST(EntryWriteBufferTest, MultipleBuffers) {
 
   EXPECT_TRUE(buffer2.buffers.empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(buffer2.size, 0);            // NOLINT(bugprone-use-after-move)
-  EXPECT_EQ(buffer2.offset, -1);         // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(buffer2.offset, 0);          // NOLINT(bugprone-use-after-move)
 }
 
 }  // namespace disk_cache
