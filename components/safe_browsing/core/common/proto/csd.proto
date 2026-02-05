@@ -374,6 +374,10 @@ message ClipboardExtractedData {
   repeated string suspicious_tokens = 1;
   optional bool is_first_token_suspicious = 2;
   optional bool is_last_token_suspicious = 3;
+  optional int32 payload_length = 4;
+  optional int32 total_parsed_tokens = 5;
+  repeated string urls = 6;
+  optional bool is_overall_suspicious = 7;
 }
 
 // Verdict based on IntelligentScanInfo included in ClientPhishingRequest

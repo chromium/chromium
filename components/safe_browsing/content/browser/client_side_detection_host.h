@@ -275,12 +275,10 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
       EventDoesNotTriggerPreclassificationChecksWhenESBDisabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostCreditCardFormTest,
-      DoesNotStartPreclassificationOnRepeatSiteVisit);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostCreditCardFormTest,
-      DoesNotStartPreclassificationOnServerHeuristic);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
+                           DoesNotStartPreclassificationOnRepeatSiteVisit);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
+                           DoesNotStartPreclassificationOnServerHeuristic);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormReferringAppTest,
       DoesNotStartPreclassificationBecauseOfReferringAppFilter);
@@ -302,8 +300,6 @@ class ClientSideDetectionHost
   // data extraction. UTF16 to UTF8 conversion is already done in the renderer,
   // and the payload parsing does not involve complex grammar.
   ClipboardExtractedData ExtractClipboardData(const std::u16string& payload);
-
-  std::vector<std::string_view> GetSuspiciousTokensListForTesting();
 
   // Helper function to create preclassification check once requirements are
   // met.

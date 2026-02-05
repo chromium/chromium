@@ -17,6 +17,7 @@ include_rules = [
   "+components/sessions/content",
   "+components/sessions/core/session_id.h",
   "+components/site_engagement/content",
+  "+components/url_formatter",
   "+components/version_info",
   "+components/zoom",
   "+content/public/browser",

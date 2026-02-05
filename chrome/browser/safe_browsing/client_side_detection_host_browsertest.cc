@@ -1248,7 +1248,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
     histogram_tester.ExpectTotalCount(
         "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 1);
     histogram_tester.ExpectUniqueSample(
-        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 4, 1);
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 3, 1);
     histogram_tester.ExpectUniqueSample(
         "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
         "SuspiciousTokenCount",

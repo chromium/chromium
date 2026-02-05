@@ -77,6 +77,19 @@ constexpr base::FeatureParam<int> kCsdClipboardCopyApiMinLength{
 const base::FeatureParam<bool> kCSDClipboardCopyApiProcessPayload{
     &kClientSideDetectionClipboardCopyApi, "ProcessPayload",
     /*default_value=*/false};
+const base::FeatureParam<std::string> kCsdClipboardCopyApiLoaders{
+    &kClientSideDetectionClipboardCopyApi, "Loaders",
+    /*default_value=*/"curl,wget,invoke-webrequest,iwr"};
+const base::FeatureParam<std::string> kCsdClipboardCopyApiRunners{
+    &kClientSideDetectionClipboardCopyApi, "Runners",
+    /*default_value=*/
+    "bash,cmd,conhost,iex,invoke-expression,zsh"};
+const base::FeatureParam<std::string> kCsdClipboardCopyApiRemoteRunners{
+    &kClientSideDetectionClipboardCopyApi, "RemoteRunners",
+    /*default_value=*/"mshta"};
+const base::FeatureParam<std::string> kCsdClipboardCopyApiDecoders{
+    &kClientSideDetectionClipboardCopyApi, "Decoders",
+    /*default_value=*/"base32,base64"};
 
 BASE_FEATURE(kClientSideDetectionCreditCardForm,
              base::FEATURE_DISABLED_BY_DEFAULT);
