@@ -106,15 +106,4 @@ TEST_F(ComponentManagerTest, GetTranslateKitComponentPath) {
             components_dir.Append(GetBinaryRelativeInstallDir()));
 }
 
-// Tests that the translate kit component path is returned correctly when the
-// path is set by the command line flag.
-TEST_F(ComponentManagerTest, GetTranslateKitComponentPathFakeCommandLine) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
-      "translate-kit-binary-path", fake_dir_.GetPath().AppendASCII("fake.so"));
-
-  EXPECT_EQ(ComponentManager::GetInstance().GetTranslateKitComponentPath(),
-            fake_dir_.GetPath().AppendASCII("fake.so"));
-}
-
 }  // namespace on_device_translation

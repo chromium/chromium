@@ -64,20 +64,6 @@ class ComponentManager {
   // returned path in the sandboxed process on macOS.
   base::FilePath GetTranslateKitComponentPath();
 
-  // Get the language pack info. If the language pack info is set by the
-  // command line `--translate-kit-packages`, returns the language pack info
-  // from the command line. Otherwise, returns the language pack info from the
-  // global prefs.
-  void GetLanguagePackInfo(
-      std::vector<mojom::OnDeviceTranslationLanguagePackagePtr>& packages,
-      std::vector<base::FilePath>& package_pathes);
-
-  // Returns true if the language pack information is from the command line
-  // `--translate-kit-packages`.
-  bool HasLanguagePackInfoFromCommandLine() const {
-    return !!language_packs_from_command_line_;
-  }
-
  protected:
   // This is called when RegisterTranslateKitComponent() is called for the first
   // time.
@@ -88,25 +74,8 @@ class ComponentManager {
   virtual base::FilePath GetTranslateKitComponentPathImpl() = 0;
 
  private:
-  // The information of a language pack.
-  struct LanguagePackInfo {
-    std::string language1;
-    std::string language2;
-    base::FilePath package_path;
-  };
-
-  // Get a list of LanguagePackInfo from the command line flag
-  // `--translate-kit-packages`.
-  static std::optional<std::vector<LanguagePackInfo>>
-  GetLanguagePackInfoFromCommandLine();
-
   // Whether RegisterTranslateKitComponent() was called.
   bool translate_kit_component_registered_ = false;
-
-  // The LanguagePackInfo from the command line. This is nullopt if the command
-  // line flag `--translate-kit-packages` is not set.
-  const std::optional<std::vector<LanguagePackInfo>>
-      language_packs_from_command_line_;
 
   // The singleton instance of ComponentManager for testing.
   static ComponentManager* component_manager_for_test_;

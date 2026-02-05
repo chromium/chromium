@@ -70,6 +70,8 @@ class OnDeviceTranslationServiceController
 
   // Returns true if the service is running.
   bool IsServiceRunning() const { return !!service_remote_; }
+  // The information of a language pack.
+  struct LanguagePackInfo;
 
  private:
   friend base::RefCounted<OnDeviceTranslationServiceController>;
@@ -143,6 +145,10 @@ class OnDeviceTranslationServiceController
       file_operation_proxy_;
   // The pending tasks that are waiting for the language packs to be installed.
   std::vector<PendingTask> pending_tasks_;
+  // The LanguagePackInfo from the command line. This is nullopt if the command
+  // line flag `--translate-kit-packages` is not set.
+  const std::optional<std::vector<LanguagePackInfo>>
+      language_packs_from_command_line_;
 };
 
 }  // namespace on_device_translation
