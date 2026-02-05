@@ -344,4 +344,11 @@ TEST_F(OSCryptCacheEncryptionDelegateTest,
   EXPECT_EQ(nullptr, delegate_.GetEncryptionFileOperationsFactory(nullptr));
 }
 
+TEST_F(OSCryptCacheEncryptionDelegateTest,
+       GetCacheEntryHasher_FailsWhenKeyIsInvalid) {
+  InitDelegate();
+  // The default mock provider returns a key that cannot be decrypted.
+  EXPECT_EQ(nullptr, delegate_.GetCacheEntryHasher());
+}
+
 }  // namespace network::enterprise_encryption

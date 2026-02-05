@@ -34,6 +34,7 @@
 #include "net/disk_cache/simple/simple_backend_impl.h"
 #include "net/disk_cache/simple/simple_file_enumerator.h"
 #include "net/disk_cache/simple/simple_util.h"
+#include "net/disk_cache/trivial_cache_entry_hasher.h"
 
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 #include "net/disk_cache/sql/sql_backend_impl.h"
@@ -166,9 +167,21 @@ void CacheCreator::Run() {
   if (backend_type_ == net::CACHE_BACKEND_SIMPLE ||
       (backend_type_ == net::CACHE_BACKEND_DEFAULT &&
        kSimpleBackendIsDefault)) {
+    std::unique_ptr<disk_cache::CacheEntryHasher> cache_entry_hasher;
+    if (cache_encryption_delegate_) {
+      cache_entry_hasher = cache_encryption_delegate_->GetCacheEntryHasher();
+      if (!cache_entry_hasher) {
+        FailAttempt();
+        return;
+      }
+    } else {
+      cache_entry_hasher =
+          std::make_unique<disk_cache::TrivialCacheEntryHasher>();
+    }
     auto cache = std::make_unique<disk_cache::SimpleBackendImpl>(
         file_operations_factory_, path_, cleanup_tracker_.get(),
-        /* file_tracker = */ nullptr, max_bytes_, type_, net_log_);
+        /* file_tracker = */ nullptr, max_bytes_, type_,
+        std::move(cache_entry_hasher), net_log_);
     disk_cache::SimpleBackendImpl* simple_cache = cache.get();
     created_cache_ = std::move(cache);
 #if BUILDFLAG(IS_ANDROID)

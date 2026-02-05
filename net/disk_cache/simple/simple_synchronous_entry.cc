@@ -209,7 +209,6 @@ class SimpleSynchronousEntry::ScopedFileOperationsBinding final {
   std::unique_ptr<BackendFileOperations> file_operations_;
 };
 
-using simple_util::GetEntryHashKey;
 using simple_util::GetFilenameFromEntryFileKeyAndFileIndex;
 using simple_util::GetSparseFilenameFromEntryFileKey;
 using simple_util::GetHeaderSize;
@@ -384,7 +383,6 @@ void SimpleSynchronousEntry::CreateEntry(
     SimpleFileTracker* file_tracker,
     std::unique_ptr<UnboundBackendFileOperations> file_operations,
     SimpleEntryCreationResults* out_results) {
-  DCHECK_EQ(entry_hash, GetEntryHashKey(key));
   base::TimeTicks start_sync_create_entry = base::TimeTicks::Now();
 
   auto sync_entry = std::make_unique<SimpleSynchronousEntry>(

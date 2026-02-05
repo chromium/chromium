@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_ENTERPRISE_ENCRYPTION_OS_CRYPT_CACHE_ENCRYPTION_DELEGATE_H_
 
 #include <cstdint>
-#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -68,6 +67,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
   disk_cache::BackendFileOperationsFactory* GetEncryptionFileOperationsFactory(
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory) override;
+
+  // Returns a cache entry hasher that uses the primary cache key for salting.
+  // Returns nullptr on failure.
+  std::unique_ptr<disk_cache::CacheEntryHasher> GetCacheEntryHasher() override;
 
  private:
   // Callbacks for initialization

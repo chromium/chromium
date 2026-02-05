@@ -6,12 +6,15 @@
 #define NET_DISK_CACHE_CACHE_ENCRYPTION_DELEGATE_H_
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/cache_entry_hasher.h"
 #include "net/disk_cache/disk_cache.h"
 
 namespace net {
@@ -43,6 +46,12 @@ class NET_EXPORT CacheEncryptionDelegate {
   GetEncryptionFileOperationsFactory(
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory) = 0;
+
+  // Returns a CacheEntryHasher that uses the encryption key to get the salted
+  // hash for the entry. Can fail and return nullptr if the encryption key is
+  // not available.
+  virtual std::unique_ptr<disk_cache::CacheEntryHasher>
+  GetCacheEntryHasher() = 0;
 };
 
 }  // namespace net

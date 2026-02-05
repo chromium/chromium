@@ -4022,7 +4022,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOverBlockfileCache) {
   // Check that the |SimpleBackendImpl| does not favor this structure.
   auto simple_cache = std::make_unique<disk_cache::SimpleBackendImpl>(
       /*file_operations_factory=*/nullptr, cache_path_, nullptr, nullptr, 0,
-      net::DISK_CACHE, nullptr);
+      net::DISK_CACHE, /*cache_entry_hasher=*/nullptr, /*net_log=*/nullptr);
   net::TestCompletionCallback cb;
   simple_cache->Init(cb.callback());
   EXPECT_NE(net::OK, cb.WaitForResult());
@@ -4366,6 +4366,46 @@ TEST_F(DiskCacheBackendTest, MAYBE_SimpleCacheNegMaxSize) {
     EXPECT_GE(max_file_size_scaled, max_file_size_without_scaling);
     EXPECT_LE(max_file_size_scaled, 2 * max_file_size_without_scaling);
   }
+}
+
+class MockCacheEncryptionDelegate : public net::CacheEncryptionDelegate {
+ public:
+  MockCacheEncryptionDelegate() = default;
+  ~MockCacheEncryptionDelegate() override = default;
+
+  void Init(base::OnceCallback<void(net::Error)> callback) override {
+    std::move(callback).Run(net::OK);
+  }
+
+  bool EncryptData(base::span<const uint8_t> plaintext,
+                   std::vector<uint8_t>* ciphertext) override {
+    return false;
+  }
+  bool DecryptData(base::span<const uint8_t> ciphertext,
+                   std::vector<uint8_t>* plaintext) override {
+    return false;
+  }
+  disk_cache::BackendFileOperationsFactory* GetEncryptionFileOperationsFactory(
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>
+          file_operations_factory) override {
+    return nullptr;
+  }
+  std::unique_ptr<disk_cache::CacheEntryHasher> GetCacheEntryHasher() override {
+    return nullptr;
+  }
+};
+
+TEST_F(DiskCacheTest, SimpleBackendNullHasher) {
+  TestBackendResultCompletionCallback cb;
+  MockCacheEncryptionDelegate delegate;
+  disk_cache::BackendResult rv =
+      disk_cache::CreateCacheBackend(net::DISK_CACHE, net::CACHE_BACKEND_SIMPLE,
+                                     /*file_operations=*/nullptr, cache_path_,
+                                     0, disk_cache::ResetHandling::kNeverReset,
+                                     nullptr, &delegate, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  ASSERT_NE(net::OK, rv.net_error);
+  ASSERT_FALSE(rv.backend);
 }
 
 TEST_F(DiskCacheBackendTest, SimpleFdLimit) {

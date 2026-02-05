@@ -218,7 +218,6 @@ EntryResult SimpleEntryImpl::OpenEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_CREATE_CALL);
 
@@ -259,7 +258,6 @@ EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::OpenOrCreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(
       net::NetLogEventType::SIMPLE_CACHE_ENTRY_OPEN_OR_CREATE_CALL);

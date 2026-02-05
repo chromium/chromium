@@ -30,6 +30,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/prioritized_task_runner.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
+#include "net/disk_cache/cache_entry_hasher.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_entry_impl.h"
@@ -40,6 +41,7 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/simple/simple_version_upgrade.h"
+#include "net/disk_cache/trivial_cache_entry_hasher.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/resource.h>
@@ -213,8 +215,11 @@ SimpleBackendImpl::SimpleBackendImpl(
     SimpleFileTracker* file_tracker,
     int64_t max_bytes,
     net::CacheType cache_type,
+    std::unique_ptr<CacheEntryHasher> entry_hasher,
     net::NetLog* net_log)
     : Backend(cache_type),
+      entry_hasher_(entry_hasher ? std::move(entry_hasher)
+                                 : std::make_unique<TrivialCacheEntryHasher>()),
       file_operations_factory_(
           file_operations_factory
               ? std::move(file_operations_factory)
@@ -367,7 +372,7 @@ base::expected<int32_t, net::Error> SimpleBackendImpl::GetEntryCount(
 EntryResult SimpleBackendImpl::OpenEntry(const std::string& key,
                                          net::RequestPriority request_priority,
                                          EntryResultCallback callback) {
-  const uint64_t entry_hash = simple_util::GetEntryHashKey(key);
+  const uint64_t entry_hash = entry_hasher_->GetEntryHashKey(key);
 
   std::vector<base::OnceClosure>* post_operation = nullptr;
   PostOperationQueue post_operation_queue = PostOperationQueue::kNone;
@@ -404,7 +409,7 @@ EntryResult SimpleBackendImpl::CreateEntry(
     net::RequestPriority request_priority,
     EntryResultCallback callback) {
   DCHECK_LT(0u, key.size());
-  const uint64_t entry_hash = simple_util::GetEntryHashKey(key);
+  const uint64_t entry_hash = entry_hasher_->GetEntryHashKey(key);
 
   std::vector<base::OnceClosure>* post_operation = nullptr;
   PostOperationQueue post_operation_queue = PostOperationQueue::kNone;
@@ -437,7 +442,7 @@ EntryResult SimpleBackendImpl::OpenOrCreateEntry(
     net::RequestPriority request_priority,
     EntryResultCallback callback) {
   DCHECK_LT(0u, key.size());
-  const uint64_t entry_hash = simple_util::GetEntryHashKey(key);
+  const uint64_t entry_hash = entry_hasher_->GetEntryHashKey(key);
 
   std::vector<base::OnceClosure>* post_operation = nullptr;
   PostOperationQueue post_operation_queue = PostOperationQueue::kNone;
@@ -502,7 +507,7 @@ SimpleBackendImpl::MaybeOptimisticCreateForPostDoom(
 net::Error SimpleBackendImpl::DoomEntry(const std::string& key,
                                         net::RequestPriority priority,
                                         CompletionOnceCallback callback) {
-  const uint64_t entry_hash = simple_util::GetEntryHashKey(key);
+  const uint64_t entry_hash = entry_hasher_->GetEntryHashKey(key);
 
   std::vector<base::OnceClosure>* post_operation = nullptr;
   PostOperationQueue post_operation_queue = PostOperationQueue::kNone;
@@ -647,11 +652,11 @@ void SimpleBackendImpl::GetStats(base::StringPairs* stats) {
 }
 
 void SimpleBackendImpl::OnExternalCacheHit(const std::string& key) {
-  index_->UseIfExists(simple_util::GetEntryHashKey(key));
+  index_->UseIfExists(entry_hasher_->GetEntryHashKey(key));
 }
 
 uint8_t SimpleBackendImpl::GetEntryInMemoryData(const std::string& key) {
-  const uint64_t entry_hash = simple_util::GetEntryHashKey(key);
+  const uint64_t entry_hash = entry_hasher_->GetEntryHashKey(key);
   return index_->GetEntryInMemoryData(entry_hash);
 }
 
@@ -777,7 +782,7 @@ SimpleBackendImpl::CreateOrFindActiveOrDoomedEntry(
     net::RequestPriority request_priority,
     std::vector<base::OnceClosure>*& post_operation,
     PostOperationQueue& post_operation_queue) {
-  DCHECK_EQ(entry_hash, simple_util::GetEntryHashKey(key));
+  DCHECK_EQ(entry_hash, entry_hasher_->GetEntryHashKey(key));
 
   // If there is a doom pending, we would want to serialize after it.
   std::vector<base::OnceClosure>* post_doom =

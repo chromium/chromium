@@ -63,6 +63,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory_entry_data_hints.h"
+#include "net/disk_cache/trivial_cache_entry_hasher.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_request_headers.h"
@@ -15025,6 +15026,10 @@ class MockCacheEncryptionDelegate : public net::CacheEncryptionDelegate {
           file_operations_factory) override {
     factory_ = base::MakeRefCounted<disk_cache::TrivialFileOperationsFactory>();
     return factory_.get();
+  }
+
+  std::unique_ptr<disk_cache::CacheEntryHasher> GetCacheEntryHasher() override {
+    return std::make_unique<disk_cache::TrivialCacheEntryHasher>();
   }
 
   void SetInitResult(net::Error result) { init_result_ = result; }

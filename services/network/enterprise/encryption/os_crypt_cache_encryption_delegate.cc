@@ -4,6 +4,7 @@
 
 #include "services/network/enterprise/encryption/os_crypt_cache_encryption_delegate.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/enterprise/encryption/chunked_encryptor.h"
 #include "services/network/enterprise/encryption/encrypted_backend_file_operations_factory.h"
+#include "services/network/enterprise/encryption/encrypted_cache_entry_hasher.h"
 
 namespace network::enterprise_encryption {
 
@@ -83,6 +85,20 @@ OSCryptCacheEncryptionDelegate::GetEncryptionFileOperationsFactory(
           file_operations_factory, std::move(primary_key));
 
   return encrypted_file_operations_factory_.get();
+}
+
+std::unique_ptr<disk_cache::CacheEntryHasher>
+OSCryptCacheEncryptionDelegate::GetCacheEntryHasher() {
+  CHECK(instance_.has_value());
+  std::vector<uint8_t> decrypted_primary_key;
+  if (!DecryptData(encrypted_primary_key_, &decrypted_primary_key)) {
+    LOG(ERROR) << "Failed to decrypt the primary key.";
+    return nullptr;
+  }
+  crypto::ProcessBoundString primary_key(
+      std::string(decrypted_primary_key.begin(), decrypted_primary_key.end()));
+
+  return std::make_unique<EncryptedCacheEntryHasher>(std::move(primary_key));
 }
 
 void OSCryptCacheEncryptionDelegate::OnDisconnect() {
