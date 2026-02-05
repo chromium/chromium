@@ -137,7 +137,7 @@
 
 :host(:not([show-simplified-ui_])) .action-chip:hover,
 :host(:not([show-simplified-ui_])) .action-chip:focus {
-  max-height: 88px;
+  max-height: 74px;
 }
 
 :host(:not([show-simplified-ui_])) .action-chip {
@@ -241,6 +241,7 @@
   align-self: flex-start;
   margin-bottom: auto;
   margin-top: auto;
+  padding-top: 2px;
 }
 
 :host(:not([show-simplified-ui_])) .deep-dive-chip .action-chip-text-container {
@@ -302,12 +303,24 @@
     );
 }
 
-.deep-dive-chip .chip-body {
+:host(:not([show-simplified-ui_])) .chip-body {
   display: -webkit-box;
   overflow: hidden;
   word-break: break-word;
   white-space: normal;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+:host(:not([show-simplified-ui_])) .deep-dive-chip .chip-body {
+  -webkit-line-clamp: 2;
+}
+
+:host(:not([show-simplified-ui_])) .action-chip:hover .chip-body,
+:host(:not([show-simplified-ui_])) .action-chip:focus .chip-body {
+  max-height: 88px;
+  overflow: hidden;
+  white-space: normal;
   -webkit-line-clamp: 2;
 }
 
@@ -316,7 +329,7 @@
   word-break: break-word;
   white-space: normal;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: unset;
+  -webkit-line-clamp: 3;
 }
 
 .chip-remove-button {
