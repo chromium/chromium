@@ -12632,6 +12632,23 @@
             ]
         }
     ],
+    "GlicTrustFirstOnboardingShortcutSnoozePromo": [
+        {
+            "platforms": [
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicUseMainPartitionForUnifiedFre": [
         {
             "platforms": [
