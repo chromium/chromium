@@ -302,9 +302,10 @@ void InputStateModel::UpdateDisabledTools() {
     }
 
     bool incompatible_with_model =
-        state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED &&
-        (!active_model_rule ||
-         !IsItemAllowed(tool, active_model_rule->allowed_tools()));
+            state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED &&
+            active_model_rule &&
+            !active_model_rule->allow_all_tools() &&
+            !IsItemAllowed(tool, active_model_rule->allowed_tools());
 
     const omnibox::ToolRule* tool_rule = GetToolRule(rule_set_, tool);
     bool incompatible_with_inputs =
@@ -403,6 +404,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
     bool incompatible_with_model =
         state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED &&
         active_model_rule &&
+        !active_model_rule->allow_all_input_types() &&
         !IsItemAllowed(input_type, active_model_rule->allowed_input_types());
 
     bool incompatible_with_tool =

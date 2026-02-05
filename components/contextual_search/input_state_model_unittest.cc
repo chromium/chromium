@@ -111,6 +111,53 @@ TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
   EXPECT_TRUE(state.disabled_models.empty());
 }
 
+TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
+  omnibox::SearchboxConfig config;
+  auto* rule_set = config.mutable_rule_set();
+
+  // 1. Prepare data: Add some Tools and Inputs to the global allowed list.
+  rule_set->add_allowed_models(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+
+  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+
+  auto* deep_search_rule = rule_set->add_tool_rules();
+  deep_search_rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  deep_search_rule->set_allow_all_input_types(true);
+
+  auto* image_gen_rule = rule_set->add_tool_rules();
+  image_gen_rule->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  image_gen_rule->set_allow_all_input_types(true);
+
+  // 2.Configure rules for the Regular model.
+  // We set `allow_all_*` to true, but intentionally keep the `allowed_tools`
+  // and `allowed_input_types` lists empty.
+  auto* model_rule = rule_set->add_model_rules();
+  model_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  model_rule->set_allow_all_tools(true);
+  model_rule->set_allow_all_input_types(true);
+
+  // 3. Initialize the model.
+  input_state_model_ =
+      std::make_unique<InputStateModel>(session_handle_, config);
+  input_state_model_->SetPrefService(
+      &pref_service_);
+
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  // 4. Verify the Active Model is Regular.
+  EXPECT_EQ(state.active_model, omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  // 5. Verify core logic: Even though the specific allowed list for Regular is
+  // empty, no Tools or Inputs should be disabled due to the presence of the
+  // `allow_all_*` flags.
+  EXPECT_TRUE(state.disabled_tools.empty());
+  EXPECT_TRUE(state.disabled_input_types.empty());
+}
+
 class InputStateModelCompatibilityTest : public InputStateModelTest {
  public:
   void SetUp() override {
