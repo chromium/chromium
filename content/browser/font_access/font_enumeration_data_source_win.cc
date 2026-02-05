@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "ui/gfx/win/direct_write.h"
 
@@ -194,7 +195,7 @@ blink::FontEnumerationTable FontEnumerationDataSourceWin::GetFonts(
   }
 
   // Used to filter duplicates.
-  std::set<std::string> fonts_seen;
+  absl::flat_hash_set<std::string> fonts_seen;
 
   for (uint32_t family_index = 0; family_index < family_count; ++family_index) {
     Microsoft::WRL::ComPtr<IDWriteFontFamily> family;
@@ -225,8 +226,8 @@ blink::FontEnumerationTable FontEnumerationDataSourceWin::GetFonts(
       if (!postscript_name)
         continue;
 
-      auto it_and_success = fonts_seen.emplace(postscript_name.value());
-      if (!it_and_success.second) {
+      bool success = fonts_seen.emplace(*postscript_name).second;
+      if (!success) {
         // Skip duplicates.
         continue;
       }
@@ -242,11 +243,10 @@ blink::FontEnumerationTable FontEnumerationDataSourceWin::GetFonts(
 
       blink::FontEnumerationTable_FontData* data =
           font_enumeration_table.add_fonts();
-      data->set_postscript_name(std::move(postscript_name).value());
-      data->set_full_name(std::move(localized_full_name).value());
-      data->set_family(family_name.value());
-      data->set_style(style_name ? std::move(style_name.value())
-                                 : std::string());
+      data->set_postscript_name(*std::move(postscript_name));
+      data->set_full_name(*std::move(localized_full_name));
+      data->set_family(*family_name);
+      data->set_style(*std::move(style_name));
     }
   }
 
