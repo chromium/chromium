@@ -321,7 +321,11 @@ OnDeviceModelServiceController::GetSolution(mojom::OnDeviceFeature feature) {
   // Checks usage for feature before checking (eligible) model status, so that
   // kPendingUsage is returned if the feature is not requested but the model was
   // available for a different feature.
-  if (!usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(feature)) {
+  bool is_background_download_enabled_for_feature =
+      features::IsOnDeviceModelBackgroundDownloadEnabledForFeature(feature);
+
+  if (!usage_tracker_->WasOnDeviceEligibleFeatureRecentlyUsed(feature) &&
+      !is_background_download_enabled_for_feature) {
     return base::unexpected(
         OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed);
   }

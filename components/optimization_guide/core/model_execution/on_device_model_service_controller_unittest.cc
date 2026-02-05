@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -3807,5 +3808,114 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
   std::vector<uint32_t> expected_ranks{1, 32, 2};
   EXPECT_EQ(get_current_ranks(), expected_ranks);
 }
+
+// Test fixtures for background download experiments.
+struct BackgroundDownloadTestParams {
+  std::string test_name;
+  std::string allowed_features;
+  bool clear_usage_history = true;
+  std::optional<proto::ModelExecutionFeature> initialized_feature;
+  std::vector<std::pair<mojom::OnDeviceFeature, OnDeviceModelEligibilityReason>>
+      expectations;
+};
+
+class OnDeviceModelServiceControllerBackgroundDownloadTest
+    : public OnDeviceModelServiceControllerTest,
+      public testing::WithParamInterface<BackgroundDownloadTestParams> {};
+
+TEST_P(OnDeviceModelServiceControllerBackgroundDownloadTest, Run) {
+  const auto& params = GetParam();
+
+  if (params.clear_usage_history) {
+    broker_.local_state().ClearPref(
+        model_execution::prefs::localstate::kLastUsageByFeature);
+  }
+
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+  // Set to external power so that `RegisterInstaller` is called and
+  // `GetOnDeviceModelState` returns kSuccess.
+  power_monitor_source.GeneratePowerStateEvent(
+      base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
+
+  base::test::ScopedFeatureList feature_list;
+  if (!params.allowed_features.empty()) {
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kOnDeviceModelBackgroundDownload,
+        {{"allowed_features", params.allowed_features}});
+  } else {
+    feature_list.InitAndDisableFeature(
+        features::kOnDeviceModelBackgroundDownload);
+  }
+
+  if (params.initialized_feature) {
+    FakeAdaptationAsset fake_asset({.config = [&] {
+      auto config = SimpleComposeConfig();
+      config.set_feature(*params.initialized_feature);
+      config.set_can_skip_text_safety(true);
+      return config;
+    }()});
+    Initialize({
+        .base_model_content = standard_assets_.base_model_content,
+        .safety = nullptr,
+        .language = nullptr,
+        .adaptations = {&fake_asset},
+    });
+  }
+
+  for (const auto& [feature, expected] : params.expectations) {
+    EXPECT_EQ(
+        broker_.GetOrCreateBrokerState().GetOnDeviceModelEligibility(feature),
+        expected)
+        << "for feature: " << feature;
+  }
+  task_environment_.RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OnDeviceModelServiceControllerBackgroundDownloadTest,
+    testing::Values(
+        BackgroundDownloadTestParams{
+            .test_name = "EligibleIfBackgroundDownloadEnabled",
+            .allowed_features = "PromptApi,Summarize",
+            .initialized_feature = proto::MODEL_EXECUTION_FEATURE_PROMPT_API,
+            .expectations = {{mojom::OnDeviceFeature::kPromptApi,
+                              OnDeviceModelEligibilityReason::kSuccess},
+                             {mojom::OnDeviceFeature::kSummarize,
+                              OnDeviceModelEligibilityReason::
+                                  kConfigNotAvailableForFeature}}},
+        BackgroundDownloadTestParams{
+            .test_name =
+                "EligibilityReturnsPendingUsageIfFeatureDisabledInParam",
+            .allowed_features = "PromptApi",
+            .initialized_feature = proto::MODEL_EXECUTION_FEATURE_PROMPT_API,
+            .expectations =
+                {{mojom::OnDeviceFeature::kSummarize,
+                  OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed},
+                 {mojom::OnDeviceFeature::kPromptApi,
+                  OnDeviceModelEligibilityReason::kSuccess}}},
+        BackgroundDownloadTestParams{
+            .test_name =
+                "EligibilityReturnsPendingUsageIfModelInstalledForOtherFeature",
+            .allowed_features = "PromptApi",
+            .clear_usage_history = false,
+            .initialized_feature = proto::MODEL_EXECUTION_FEATURE_COMPOSE,
+            .expectations =
+                {{mojom::OnDeviceFeature::kCompose,
+                  OnDeviceModelEligibilityReason::kSuccess},
+                 {mojom::OnDeviceFeature::kPromptApi,
+                  OnDeviceModelEligibilityReason::
+                      kConfigNotAvailableForFeature},
+                 {mojom::OnDeviceFeature::kSummarize,
+                  OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed}}},
+        BackgroundDownloadTestParams{
+            .test_name =
+                "EligibilityReturnsNoFeatureUsedIfBackgroundDownloadDisabled",
+            .expectations =
+                {{mojom::OnDeviceFeature::kPromptApi,
+                  OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed}}}),
+    [](const testing::TestParamInfo<BackgroundDownloadTestParams>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace optimization_guide

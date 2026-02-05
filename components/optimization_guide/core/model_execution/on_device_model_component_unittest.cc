@@ -188,6 +188,10 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.All",
       true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "InitialInstall.IsBackground",
+      false, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
@@ -749,6 +753,10 @@ TEST_F(OnDeviceModelComponentTest,
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
   EXPECT_FALSE(broker_.component_state().request_update_called());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "InitialInstall.IsBackground",
+      true, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, BackgroundDownloadBlockedOnExperimentFlag) {

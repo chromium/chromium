@@ -1183,17 +1183,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.AtRegistration.InstallMode"
-    enum="OptimizationGuideOnDeviceModelInstallMode" expires_after="2026-07-05">
-  <owner>holte@chromium.org</owner>
-  <owner>jingyun@google.com</owner>
-  <summary>
-    Records the mode in which the on-device model was first registered. Recorded
-    shortly after startup, if the on-device model installation is initiated.
-  </summary>
-</histogram>
-
-<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.{Event}.{Criteria}"
     enum="Boolean" expires_after="2026-07-05">
   <owner>holte@chromium.org</owner>
@@ -1217,6 +1206,8 @@ chromium-metrics-reviews@google.com.
     <variant name="FeatureUse"
         summary="There has been recent feature use that could benefit from an
                  on-device model"/>
+    <variant name="IsBackground"
+        summary="The install mode is background (as opposed to on-demand)"/>
   </token>
   <token key="Event">
     <variant name="AtAttemptedUse"
@@ -1225,6 +1216,10 @@ chromium-metrics-reviews@google.com.
     <variant name="AtRegistration"
         summary="Recorded once shortly after startup, regardless of whether
                  the on-device model is currently installed."/>
+    <variant name="InitialInstall"
+        summary="Recorded when the model is first eligible for install. This
+                 is not recorded for users who have already installed the
+                 model."/>
   </token>
 </histogram>
 

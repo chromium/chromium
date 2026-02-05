@@ -45,13 +45,6 @@ namespace {
 // Delay to give consumers time to unload the model before it's deleted.
 constexpr base::TimeDelta kUninstallDelay = base::Seconds(1);
 
-void LogInstallInitiated(ModelInstallMode mode) {
-  base::UmaHistogramEnumeration(
-      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
-      "AtRegistration.InstallMode",
-      mode);
-}
-
 void LogInstallCriteria(std::string_view event_name,
                         std::string_view criteria_name,
                         bool criteria_value) {
@@ -86,6 +79,12 @@ void LogInstallCriteria(
                      criteria.enabled_by_user_setting);
   LogInstallCriteria(event_name, "All",
                      criteria.get_install_mode().has_value());
+  if (criteria.get_install_mode().has_value() &&
+      !criteria.is_already_installing) {
+    LogInstallCriteria(
+        "InitialInstall", "IsBackground",
+        criteria.get_install_mode() == ModelInstallMode::kBackground);
+  }
 }
 
 // Returns the best performance hint for this device based on the supported
@@ -498,9 +497,6 @@ void OnDeviceModelComponentStateManager::UpdateRegistrationCriteria(
   if (first_registration_attempt) {
     LogInstallCriteria(criteria, "AtRegistration",
                        disk_space_free.value_or(base::ByteCount(-1)).InGiB());
-    if (criteria.get_install_mode()) {
-      LogInstallInitiated(*criteria.get_install_mode());
-    }
   }
 
   UpdateRegistration();
