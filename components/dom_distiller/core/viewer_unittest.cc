@@ -185,7 +185,7 @@ TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinZoom_Default) {
 #endif
   std::string output = viewer::GetJavaScript();
   EXPECT_THAT(output, testing::ContainsRegex(
-                          "this\\.clampedScale\\s*=\\s*Math\\.max\\(0\\.5,"));
+                          "/\\* PINCH_SCALE \\*/ Math.max\\(0\\.5,"));
 }
 
 TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinMaxZoom_DistillInApp) {
@@ -193,10 +193,9 @@ TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinMaxZoom_DistillInApp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kReaderModeDistillInApp);
   std::string output = viewer::GetJavaScript();
-  EXPECT_THAT(
-      output,
-      testing::ContainsRegex(
-          "this\\.clampedScale\\s*=\\s*Math\\.max\\(1, Math\\.min\\(2.5"));
+  EXPECT_THAT(output,
+              testing::ContainsRegex(
+                  "/\\* PINCH_SCALE \\*/ Math\\.max\\(1, Math\\.min\\(2\\.5,"));
 #else
   SUCCEED();
 #endif
@@ -208,10 +207,9 @@ TEST_F(DomDistillerViewerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kReaderModeDistillInApp);
   std::string output = viewer::GetJavaScript();
-  EXPECT_THAT(
-      output,
-      testing::ContainsRegex(
-          "this\\.clampedScale\\s*=\\s*Math\\.max\\(0.5, Math\\.min\\(2"));
+  EXPECT_THAT(output,
+              testing::ContainsRegex(
+                  "/\\* PINCH_SCALE \\*/ Math\\.max\\(0\\.5, Math\\.min\\(2,"));
 #else
   SUCCEED();
 #endif

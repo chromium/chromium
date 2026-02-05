@@ -26,6 +26,22 @@ component("dom_distiller_features") {
   }
 }
 
+action("dom_distiller_viewer_js") {
+  script = "//mojo/public/tools/bindings/concatenate-files.py"
+  sources = [
+    "javascript/content_processing.js",
+    "javascript/dom_distiller_viewer_main.js",
+    "javascript/font_size_slider.js",
+    "javascript/image_classifier.js",
+    "javascript/list_classifier.js",
+    "javascript/pinch_handler.js",
+    "javascript/settings_dialog.js",
+  ]
+  outputs = [ "$target_gen_dir/javascript/dom_distiller_viewer.js" ]
+  args = rebase_path(sources, root_build_dir) +
+         rebase_path(outputs, root_build_dir)
+}
+
 static_library("core") {
   sources = [
     "article_distillation_update.cc",
@@ -74,6 +90,7 @@ static_library("core") {
     "//third_party/dom_distiller_js:proto",
   ]
   deps = [
+    ":dom_distiller_viewer_js",
     "//base",
     "//build:blink_buildflags",
     "//components/dom_distiller/core/mojom",

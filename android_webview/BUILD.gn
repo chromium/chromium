@@ -1144,6 +1144,7 @@ if (_is_default_toolchain) {
 
     deps = [
       ":concatenate_resources_allowlists",
+      "//components/dom_distiller/core:dom_distiller_viewer_js",
       "//components/neterror/resources:bundle_js",
       "//components/resources:about_credits",
       "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf",

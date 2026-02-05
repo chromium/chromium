@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview Test suite for the font size slider.
+ */
+
 suite('FontSizeSlider', function() {
   suiteSetup(function() {
     // The UI components are normally lazily initialized. We need to initialize
