@@ -2903,6 +2903,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Theme.ThemePrefMigration.PrefRegistered" enum="Boolean"
+    expires_after="2026-07-05">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records whether the pref, that saves whether or not the theme prefs have
+    already been migrated, is registered. This histogram has been added to
+    investigate crbug.com/476288050. Recorded once per browser startup for all
+    users.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

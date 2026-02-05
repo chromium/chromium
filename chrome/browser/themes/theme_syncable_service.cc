@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -182,6 +183,16 @@ const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
 const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
 void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
+  const bool pref_registered =
+      prefs->FindPreference(prefs::kSyncingThemePrefsMigratedToNonSyncing);
+  base::UmaHistogramBoolean("Theme.ThemePrefMigration.PrefRegistered",
+                            pref_registered);
+  // TODO(crbug.com/476288050): Investigate why the pref can not be registered
+  // at this point.
+  if (!pref_registered) {
+    base::debug::DumpWithoutCrashing(FROM_HERE);
+    return;
+  }
   const bool already_migrated =
       prefs->GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing);
   base::UmaHistogramBoolean("Theme.ThemePrefMigration.AlreadyMigrated",
