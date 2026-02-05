@@ -9,7 +9,9 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -21,6 +23,31 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+class MockScriptToolHost : public mojom::blink::ScriptToolHost {
+ public:
+  explicit MockScriptToolHost() = default;
+
+  void Bind(mojo::ScopedMessagePipeHandle pipe) {
+    receiver_.Bind(
+        mojo::PendingReceiver<mojom::blink::ScriptToolHost>(std::move(pipe)));
+  }
+
+  void PauseExecution() override {
+    pause_called_ = true;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  bool pause_called() const { return pause_called_; }
+  void set_run_loop(base::RunLoop* run_loop) { run_loop_ = run_loop; }
+
+ private:
+  mojo::Receiver<mojom::blink::ScriptToolHost> receiver_{this};
+  bool pause_called_ = false;
+  base::RunLoop* run_loop_ = nullptr;
+};
 
 class ModelContextTest : public SimTest {
  public:
@@ -576,6 +603,52 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FormPopulatedAtEvent) {
 
   EXPECT_TRUE(EvalJsBoolean("window.event_fired"));
   EXPECT_EQ(EvalJsString("window.input_value_at_event"), "testing");
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PauseExecution) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(
+    <form toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type="text" name="query">
+      <button type="submit">Submit</button>
+    </form>
+  )");
+
+  MockScriptToolHost mock_host;
+  GetDocument()
+      .GetExecutionContext()
+      ->GetBrowserInterfaceBroker()
+      .SetBinderForTesting(mojom::blink::ScriptToolHost::Name_,
+                           base::BindRepeating(&MockScriptToolHost::Bind,
+                                               base::Unretained(&mock_host)));
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  mock_host.set_run_loop(&run_loop);
+
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            ADD_FAILURE() << "Callback should not be called";
+          }));
+
+  // Run until PauseExecution is called.
+  run_loop.Run();
+
+  EXPECT_TRUE(mock_host.pause_called());
+
+  // Clean up the binder.
+  GetDocument()
+      .GetExecutionContext()
+      ->GetBrowserInterfaceBroker()
+      .SetBinderForTesting(mojom::blink::ScriptToolHost::Name_,
+                           base::NullCallback());
 }
 
 TEST_F(ModelContextTest, CancelTool) {

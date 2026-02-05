@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/web_mcp_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -149,7 +151,9 @@ class ModelContext::ToolFunctionFinishedCallback
 ModelContext::ModelContext(
     Document& document,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : document_(document), task_runner_(std::move(task_runner)) {}
+    : document_(document),
+      task_runner_(std::move(task_runner)),
+      script_tool_host_remote_(document.GetExecutionContext()) {}
 
 void ModelContext::ForEachScriptTool(
     base::FunctionRef<void(const mojom::blink::ScriptTool&)> func) const {
@@ -452,10 +456,19 @@ void ModelContext::OnToolsChanged() {
   }
 }
 
+void ModelContext::PauseExecution() {
+  if (!script_tool_host_remote_.is_bound()) {
+    document_->GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+        script_tool_host_remote_.BindNewPipeAndPassReceiver(task_runner_));
+  }
+  script_tool_host_remote_->PauseExecution();
+}
+
 void ModelContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(tool_map_);
   visitor->Trace(document_);
+  visitor->Trace(script_tool_host_remote_);
 }
 
 void ModelContext::ToolData::Trace(Visitor* visitor) const {

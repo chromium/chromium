@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
+#include "chrome/browser/actor/actor_script_tool_receiver.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
@@ -437,6 +438,9 @@ void PopulateChromeFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
   map->Add<image_annotation::mojom::Annotator>(&BindImageAnnotator);
+
+  map->Add<blink::mojom::ScriptToolHost>(
+      &actor::ActorScriptToolReceiver::Create);
 
   map->Add<blink::mojom::AnchorElementMetricsHost>(
       &NavigationPredictor::Create);

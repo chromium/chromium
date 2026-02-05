@@ -19,3 +19,10 @@ struct ScriptTool {
   string? input_schema;
   ScriptToolAnnotations? annotations;
 };
+
+// Interface for the renderer to request actions from the browser related to
+// script tools.
+interface ScriptToolHost {
+  // Pauses the execution of the agent.
+  PauseExecution();
+};

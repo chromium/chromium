@@ -96,6 +96,8 @@ source_set("impl") {
     "actor_metrics.cc",
     "actor_navigation_throttle.cc",
     "actor_proto_conversion.cc",
+    "actor_script_tool_receiver.cc",
+    "actor_script_tool_receiver.h",
     "actor_switches.cc",
     "actor_tab_data.cc",
     "actor_task.cc",

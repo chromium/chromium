@@ -191,7 +191,13 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     // Without `toolautosubmit`, we focus the submit button, tell the agent to
     // allow user input, and wait for the user to submit it.
     submit_button->Focus();
-    // TODO(khushal) Let the agent know we need to unblock input here.
+    if (auto* window = form_->GetDocument().domWindow();
+        window && window->navigator()) {
+      if (auto* context =
+              ModelContextSupplement::modelContext(*window->navigator())) {
+        context->PauseExecution();
+      }
+    }
   } else {
     // With the `toolautosubmit` attribute, we immediately submit the form.
     form_->PrepareForSubmission(/*event*/ nullptr, submit_button);
