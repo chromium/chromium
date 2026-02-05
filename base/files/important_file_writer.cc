@@ -255,18 +255,17 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
   // Don't write all of the data at once because this can lead to kernel
   // address-space exhaustion on 32-bit Windows (see https://crbug.com/1001022
   // for details).
-  constexpr ptrdiff_t kMaxWriteAmount = 8 * 1024 * 1024;
-  int bytes_written = 0;
-  for (const char *scan = data.data(), *const end =
-                                           UNSAFE_TODO(scan + data.length());
-       scan < end; UNSAFE_TODO(scan += bytes_written)) {
-    const int write_amount =
-        static_cast<int>(std::min(kMaxWriteAmount, end - scan));
-    bytes_written = UNSAFE_TODO(tmp_file.WriteAtCurrentPos(scan, write_amount));
-    if (bytes_written != write_amount) {
-      DPLOG(WARNING) << "Failed to write " << write_amount << " bytes to temp "
-                     << "file to update " << path
-                     << " (bytes_written=" << bytes_written << ")";
+  constexpr size_t kMaxWriteAmount = 8 * 1024 * 1024;
+  base::span<const uint8_t> remaining = base::as_byte_span(data);
+  while (!remaining.empty()) {
+    const size_t to_write_size = std::min(kMaxWriteAmount, remaining.size());
+    const base::span<const uint8_t> to_write =
+        remaining.take_first(to_write_size);
+    const std::optional<size_t> result = tmp_file.WriteAtCurrentPos(to_write);
+    if (!result || *result != to_write_size) {
+      DPLOG(WARNING) << "Failed to write " << to_write_size << " bytes to temp "
+                     << "file to update " << path << " (bytes_written="
+                     << (result ? static_cast<int64_t>(*result) : -1) << ")";
       DeleteTmpFileWithRetry(std::move(tmp_file), tmp_file_path);
       return false;
     }

@@ -1356,18 +1356,17 @@ std::string TestLaunchProcess(const CommandLine& cmdline,
   EXPECT_TRUE(LaunchProcess(cmdline, options).IsValid());
   write_pipe.Close();
 
-  char buf[512];
-  int n = UNSAFE_TODO(read_pipe.ReadAtCurrentPos(buf, sizeof(buf)));
+  uint8_t buf[512];
+  std::optional<size_t> n_opt = read_pipe.ReadAtCurrentPos(buf);
 #if BUILDFLAG(IS_WIN)
   // Closed pipes fail with ERROR_BROKEN_PIPE on Windows, rather than
   // successfully reporting EOF.
-  if (n < 0 && GetLastError() == ERROR_BROKEN_PIPE) {
-    n = 0;
+  if (!n_opt.has_value() && GetLastError() == ERROR_BROKEN_PIPE) {
+    n_opt = 0;
   }
 #endif  // BUILDFLAG(IS_WIN)
-  PCHECK(n >= 0);
-
-  return std::string(buf, n);
+  PCHECK(n_opt.has_value());
+  return std::string(as_string_view(span(buf).first(n_opt.value())));
 }
 
 const char kLargeString[] =

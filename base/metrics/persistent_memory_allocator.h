@@ -402,6 +402,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   size_t size() const { return mem_size_; }
   size_t page_size() const { return mem_page_; }
   size_t used() const;
+  span<const uint8_t> bytes() const;
 
   // Returns the object referenced by a `ref`. For safety reasons, the `type_id`
   // code and size-of(`T`) are compared to ensure the reference is valid

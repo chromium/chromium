@@ -506,6 +506,10 @@ void PersistentMemoryAllocator::Flush(bool sync) {
   FlushPartial(used(), sync);
 }
 
+span<const uint8_t> PersistentMemoryAllocator::bytes() const {
+  return UNSAFE_TODO({static_cast<const uint8_t*>(data()), size()});
+}
+
 void PersistentMemoryAllocator::SetMemoryState(uint8_t memory_state) {
   shared_meta()->memory_state.store(memory_state, std::memory_order_relaxed);
   FlushPartial(sizeof(SharedMetadata), false);
