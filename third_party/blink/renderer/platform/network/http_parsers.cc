@@ -60,7 +60,6 @@
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -451,11 +450,11 @@ inline bool IsASCIILowerAlphaOrDigitOrHyphen(CharType c) {
 
 // Parse a number with ignoring trailing [0-9.].
 // Returns false if the source contains invalid characters.
-bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
+bool ParseRefreshTime(const StringView& source, base::TimeDelta& delay) {
   int full_stop_count = 0;
-  unsigned number_end = source.length();
-  for (unsigned i = 0; i < source.length(); ++i) {
-    UChar ch = source[i];
+  wtf_size_t number_end = source.length();
+  for (wtf_size_t i = 0; i < source.length(); ++i) {
+    const UChar ch = source[i];
     if (ch == uchar::kFullStop) {
       if (++full_stop_count == 2)
         number_end = i;
@@ -463,7 +462,7 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
       return false;
     }
   }
-  auto time = StringToDouble(source.Left(number_end));
+  auto time = StringToDouble(source.substr(0, number_end));
   if (!time) {
     return false;
   }
@@ -514,53 +513,58 @@ bool ParseHTTPRefresh(const String& refresh,
          !matcher(refresh[pos]))
     ++pos;
 
+  StringView refresh_time(refresh, 0, pos);
+  if (!ParseRefreshTime(refresh_time.StripWhiteSpace(), delay)) {
+    return false;
+  }
+
   if (pos == len) {  // no URL
     url = String();
-    return ParseRefreshTime(refresh.StripWhiteSpace(), delay);
-  } else {
-    if (!ParseRefreshTime(refresh.Left(pos).StripWhiteSpace(), delay))
-      return false;
-
-    SkipWhiteSpace(refresh, pos, matcher);
-    if (pos < len && (refresh[pos] == ',' || refresh[pos] == ';'))
-      ++pos;
-    SkipWhiteSpace(refresh, pos, matcher);
-    unsigned url_start_pos = pos;
-    if (refresh.FindIgnoringASCIICase("url", url_start_pos) == url_start_pos) {
-      url_start_pos += 3;
-      SkipWhiteSpace(refresh, url_start_pos, matcher);
-      if (refresh[url_start_pos] == '=') {
-        ++url_start_pos;
-        SkipWhiteSpace(refresh, url_start_pos, matcher);
-      } else {
-        url_start_pos = pos;  // e.g. "Refresh: 0; url.html"
-      }
-    }
-
-    unsigned url_end_pos = len;
-
-    if (refresh[url_start_pos] == '"' || refresh[url_start_pos] == '\'') {
-      UChar quotation_mark = refresh[url_start_pos];
-      url_start_pos++;
-      while (url_end_pos > url_start_pos) {
-        url_end_pos--;
-        if (refresh[url_end_pos] == quotation_mark)
-          break;
-      }
-
-      // https://bugs.webkit.org/show_bug.cgi?id=27868
-      // Sometimes there is no closing quote for the end of the URL even though
-      // there was an opening quote.  If we looped over the entire alleged URL
-      // string back to the opening quote, just go ahead and use everything
-      // after the opening quote instead.
-      if (url_end_pos == url_start_pos)
-        url_end_pos = len;
-    }
-
-    url = refresh.Substring(url_start_pos, url_end_pos - url_start_pos)
-              .StripWhiteSpace();
     return true;
   }
+
+  SkipWhiteSpace(refresh, pos, matcher);
+  if (pos < len && (refresh[pos] == ',' || refresh[pos] == ';')) {
+    ++pos;
+  }
+  SkipWhiteSpace(refresh, pos, matcher);
+  unsigned url_start_pos = pos;
+  if (refresh.FindIgnoringASCIICase("url", url_start_pos) == url_start_pos) {
+    url_start_pos += 3;
+    SkipWhiteSpace(refresh, url_start_pos, matcher);
+    if (refresh[url_start_pos] == '=') {
+      ++url_start_pos;
+      SkipWhiteSpace(refresh, url_start_pos, matcher);
+    } else {
+      url_start_pos = pos;  // e.g. "Refresh: 0; url.html"
+    }
+  }
+
+  unsigned url_end_pos = len;
+
+  if (refresh[url_start_pos] == '"' || refresh[url_start_pos] == '\'') {
+    UChar quotation_mark = refresh[url_start_pos];
+    url_start_pos++;
+    while (url_end_pos > url_start_pos) {
+      url_end_pos--;
+      if (refresh[url_end_pos] == quotation_mark) {
+        break;
+      }
+    }
+
+    // https://bugs.webkit.org/show_bug.cgi?id=27868
+    // Sometimes there is no closing quote for the end of the URL even though
+    // there was an opening quote.  If we looped over the entire alleged URL
+    // string back to the opening quote, just go ahead and use everything
+    // after the opening quote instead.
+    if (url_end_pos == url_start_pos) {
+      url_end_pos = len;
+    }
+  }
+
+  url = refresh.Substring(url_start_pos, url_end_pos - url_start_pos)
+            .StripWhiteSpace();
+  return true;
 }
 
 std::optional<base::Time> ParseDate(const String& value) {
