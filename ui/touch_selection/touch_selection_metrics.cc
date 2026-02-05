@@ -13,15 +13,15 @@ namespace {
 
 TouchSelectionMenuAction MapCommandIdToMenuAction(int command_id) {
   switch (command_id) {
-    case TouchEditable::kCut:
+    case std::to_underlying(TouchEditable::MenuCommands::kCut):
       return TouchSelectionMenuAction::kCut;
-    case TouchEditable::kCopy:
+    case std::to_underlying(TouchEditable::MenuCommands::kCopy):
       return TouchSelectionMenuAction::kCopy;
-    case TouchEditable::kPaste:
+    case std::to_underlying(TouchEditable::MenuCommands::kPaste):
       return TouchSelectionMenuAction::kPaste;
-    case TouchEditable::kSelectAll:
+    case std::to_underlying(TouchEditable::MenuCommands::kSelectAll):
       return TouchSelectionMenuAction::kSelectAll;
-    case TouchEditable::kSelectWord:
+    case std::to_underlying(TouchEditable::MenuCommands::kSelectWord):
       return TouchSelectionMenuAction::kSelectWord;
     default:
       NOTREACHED() << "Invalid command id: " << command_id;

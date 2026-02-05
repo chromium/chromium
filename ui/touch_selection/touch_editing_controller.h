@@ -22,8 +22,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchEditable
     : public ui::SimpleMenuModel::Delegate {
  public:
   // Commands that all TouchEditables support:
-  // TODO(b/263419885): Rewrite MenuCommands as an enum class.
-  enum MenuCommands {
+  enum class MenuCommands {
     // Don't use command ID 0 - a lot of tests use 0 for "no command".
     kCut = 1,
     kCopy,

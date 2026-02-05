@@ -34,7 +34,7 @@ void TouchSelectionControllerClientManagerAndroid::OnClientHitTestRegionUpdated(
     ui::TouchSelectionControllerClient* client) {
   if (client != active_client_ || !GetTouchSelectionController() ||
       GetTouchSelectionController()->active_status() ==
-          ui::TouchSelectionController::INACTIVE) {
+          ui::TouchSelectionController::ActiveStatus::kInactive) {
     return;
   }
 

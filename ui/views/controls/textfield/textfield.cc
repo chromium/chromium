@@ -139,11 +139,11 @@ ui::TextEditCommand GetTextEditCommandFromMenuCommand(int command_id,
   switch (command_id) {
     case Textfield::kUndo:
       return ui::TextEditCommand::UNDO;
-    case Textfield::kCut:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
       return ui::TextEditCommand::CUT;
-    case Textfield::kCopy:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       return ui::TextEditCommand::COPY;
-    case Textfield::kPaste:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
       return ui::TextEditCommand::PASTE;
     case Textfield::kDelete:
       // The DELETE menu action only works in case of an active selection.
@@ -151,9 +151,9 @@ ui::TextEditCommand GetTextEditCommandFromMenuCommand(int command_id,
         return ui::TextEditCommand::DELETE_FORWARD;
       }
       break;
-    case Textfield::kSelectAll:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll):
       return ui::TextEditCommand::SELECT_ALL;
-    case Textfield::kSelectWord:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectWord):
       return ui::TextEditCommand::SELECT_WORD;
   }
   return ui::TextEditCommand::INVALID_COMMAND;
@@ -1592,19 +1592,19 @@ bool Textfield::GetAcceleratorForCommandId(int command_id,
       *accelerator = ui::Accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
       return true;
 
-    case kCut:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
       *accelerator = ui::Accelerator(ui::VKEY_X, ui::EF_PLATFORM_ACCELERATOR);
       return true;
 
-    case kCopy:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       *accelerator = ui::Accelerator(ui::VKEY_C, ui::EF_PLATFORM_ACCELERATOR);
       return true;
 
-    case kPaste:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
       *accelerator = ui::Accelerator(ui::VKEY_V, ui::EF_PLATFORM_ACCELERATOR);
       return true;
 
-    case kSelectAll:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll):
       *accelerator = ui::Accelerator(ui::VKEY_A, ui::EF_PLATFORM_ACCELERATOR);
       return true;
 
@@ -1626,8 +1626,10 @@ void Textfield::ExecuteCommand(int command_id, int event_flags) {
 
   if (::features::IsTouchTextEditingRedesignEnabled() &&
       (event_flags & ui::EF_FROM_TOUCH) &&
-      (command_id == Textfield::kSelectAll ||
-       command_id == Textfield::kSelectWord)) {
+      (command_id ==
+           std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll) ||
+       command_id ==
+           std::to_underlying(ui::TouchEditable::MenuCommands::kSelectWord))) {
     CreateTouchSelectionControllerAndNotifyIt();
   }
 }
@@ -3049,12 +3051,18 @@ void Textfield::UpdateContextMenu() {
   context_menu_contents_ = std::make_unique<ui::SimpleMenuModel>(this);
   context_menu_contents_->AddItemWithStringId(kUndo, IDS_APP_UNDO);
   context_menu_contents_->AddSeparator(ui::NORMAL_SEPARATOR);
-  context_menu_contents_->AddItemWithStringId(kCut, IDS_APP_CUT);
-  context_menu_contents_->AddItemWithStringId(kCopy, IDS_APP_COPY);
-  context_menu_contents_->AddItemWithStringId(kPaste, IDS_APP_PASTE);
+  context_menu_contents_->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut), IDS_APP_CUT);
+  context_menu_contents_->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), IDS_APP_COPY);
+  context_menu_contents_->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste),
+      IDS_APP_PASTE);
   context_menu_contents_->AddItemWithStringId(kDelete, IDS_APP_DELETE);
   context_menu_contents_->AddSeparator(ui::NORMAL_SEPARATOR);
-  context_menu_contents_->AddItemWithStringId(kSelectAll, IDS_APP_SELECT_ALL);
+  context_menu_contents_->AddItemWithStringId(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll),
+      IDS_APP_SELECT_ALL);
 
   // If the controller adds menu commands, also override ExecuteCommand() and
   // IsCommandIdEnabled() as appropriate, for the commands added.

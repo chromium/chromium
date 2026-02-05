@@ -112,9 +112,11 @@ TEST_F(TextareaTest, PasteNewlineTest) {
   const std::u16string kText = u"abc\n   \n";
   textarea_->SetText(kText);
   textarea_->SelectAll(false);
-  textarea_->ExecuteCommand(Textfield::kCopy, 0);
+  textarea_->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), 0);
   textarea_->SetText(std::u16string());
-  textarea_->ExecuteCommand(Textfield::kPaste, 0);
+  textarea_->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), 0);
   EXPECT_EQ(kText, textarea_->GetText());
 }
 

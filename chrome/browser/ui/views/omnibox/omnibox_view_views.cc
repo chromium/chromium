@@ -742,7 +742,7 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
       return;
 
     // These commands do invoke the popup.
-    case Textfield::kPaste:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
       ExecuteTextEditCommand(ui::TextEditCommand::PASTE);
       return;
     default:
@@ -1766,7 +1766,8 @@ void OmniboxViewViews::OnBlur() {
 }
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
-  if (command_id == Textfield::kPaste) {
+  if (command_id ==
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
     return !GetReadOnly() && CanGetClipboardText();
   }
   if (command_id == IDC_PASTE_AND_GO) {
@@ -2308,7 +2309,8 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   MaybeAddSendTabToSelfItem(menu_contents);
 
   const std::optional<size_t> paste_position =
-      menu_contents->GetIndexOfCommandId(Textfield::kPaste);
+      menu_contents->GetIndexOfCommandId(
+          std::to_underlying(ui::TouchEditable::MenuCommands::kPaste));
   DCHECK(paste_position.has_value());
   menu_contents->InsertItemWithStringIdAt(paste_position.value() + 1,
                                           IDC_PASTE_AND_GO, IDS_PASTE_AND_GO);

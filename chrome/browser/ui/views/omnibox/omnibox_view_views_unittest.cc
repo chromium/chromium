@@ -955,13 +955,15 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 
 TEST_F(OmniboxViewViewsTest, SelectAllCommand) {
   omnibox_view()->SetUserText(u"user text");
-  EXPECT_TRUE(omnibox_view()->IsCommandIdEnabled(views::Textfield::kSelectAll));
+  EXPECT_TRUE(omnibox_view()->IsCommandIdEnabled(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll)));
 
-  omnibox_view()->ExecuteCommand(views::Textfield::kSelectAll, 0);
+  omnibox_view()->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll), 0);
   EXPECT_TRUE(omnibox_view()->IsSelectAll());
   // Test command is disabled if text is already all selected.
-  EXPECT_FALSE(
-      omnibox_view()->IsCommandIdEnabled(views::Textfield::kSelectAll));
+  EXPECT_FALSE(omnibox_view()->IsCommandIdEnabled(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll)));
 }
 
 // Verifies |OmniboxEditModel::State::needs_revert_and_select_all|, and verifies

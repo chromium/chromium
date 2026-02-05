@@ -318,7 +318,7 @@ bool PDFDocumentHelper::IsCommandIdEnabled(int command_id) const {
   bool readable = true;
 
   switch (command_id) {
-    case ui::TouchEditable::kCopy:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       return readable && has_selection_;
       // TODO(wjmaclean): add logic for cut/paste as the information required
       // from PDFium becomes available.
@@ -330,7 +330,7 @@ void PDFDocumentHelper::ExecuteCommand(int command_id, int event_flags) {
   // TODO(wjmaclean, dsinclair): Need to communicate to PDFium to accept
   // cut/paste commands.
   switch (command_id) {
-    case ui::TouchEditable::kCopy:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       GetWebContents().Copy();
       break;
   }

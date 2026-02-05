@@ -54,10 +54,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
     : public TouchHandleClient,
       public LongPressDragSelectorClient {
  public:
-  enum ActiveStatus {
-    INACTIVE,
-    INSERTION_ACTIVE,
-    SELECTION_ACTIVE,
+  enum class ActiveStatus {
+    kInactive,
+    kInsertionActive,
+    kSelectionActive,
   };
 
   struct UI_TOUCH_SELECTION_EXPORT Config {
@@ -188,7 +188,12 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
  private:
   friend class TouchSelectionControllerTestApi;
 
-  enum InputEventType { TAP, REPEATED_TAP, LONG_PRESS, INPUT_EVENT_TYPE_NONE };
+  enum class InputEventType {
+    kTap,
+    kRepeatedTap,
+    kLongPress,
+    kNone,
+  };
 
   enum class DragSelectorInitiatingGesture { kNone, kLongPress, kDoublePress };
 

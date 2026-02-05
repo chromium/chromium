@@ -3265,7 +3265,8 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
   //
 
   normal->SelectAll(false);
-  normal->ExecuteCommand(Textfield::kCut, 0);
+  normal->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut), 0);
   std::u16string result;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
@@ -3273,7 +3274,8 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
   normal->SetText(kNormalText);  // Let's revert to the original content.
 
   read_only->SelectAll(false);
-  read_only->ExecuteCommand(Textfield::kCut, 0);
+  read_only->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut), 0);
   result.clear();
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
@@ -3281,7 +3283,8 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
   EXPECT_EQ(kNormalText, result);
 
   password->SelectAll(false);
-  password->ExecuteCommand(Textfield::kCut, 0);
+  password->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut), 0);
   result.clear();
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
@@ -3294,21 +3297,24 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
 
   // Start with |read_only| to observe a change in clipboard text.
   read_only->SelectAll(false);
-  read_only->ExecuteCommand(Textfield::kCopy, 0);
+  read_only->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), 0);
   result.clear();
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
   EXPECT_EQ(kReadOnlyText, result);
 
   normal->SelectAll(false);
-  normal->ExecuteCommand(Textfield::kCopy, 0);
+  normal->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), 0);
   result.clear();
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
   EXPECT_EQ(kNormalText, result);
 
   password->SelectAll(false);
-  password->ExecuteCommand(Textfield::kCopy, 0);
+  password->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), 0);
   result.clear();
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
@@ -3321,18 +3327,22 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
 
   // Attempting to paste kNormalText in a read-only text-field should fail.
   read_only->SelectAll(false);
-  read_only->ExecuteCommand(Textfield::kPaste, 0);
+  read_only->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), 0);
   EXPECT_EQ(kReadOnlyText, read_only->GetText());
 
   password->SelectAll(false);
-  password->ExecuteCommand(Textfield::kPaste, 0);
+  password->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), 0);
   EXPECT_EQ(kNormalText, password->GetText());
 
   // Copy from |read_only| to observe a change in the normal textfield text.
   read_only->SelectAll(false);
-  read_only->ExecuteCommand(Textfield::kCopy, 0);
+  read_only->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), 0);
   normal->SelectAll(false);
-  normal->ExecuteCommand(Textfield::kPaste, 0);
+  normal->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste), 0);
   EXPECT_EQ(kReadOnlyText, normal->GetText());
   widget->CloseNow();
 }

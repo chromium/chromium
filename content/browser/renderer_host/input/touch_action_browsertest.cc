@@ -1040,10 +1040,10 @@ class ScrollBeginObserver : public RenderWidgetHost::InputEventObserver {
     // Insertion handles were active due to first scroll and should become
     // inactive after view is removed from hierarchy.
     EXPECT_EQ(rwhv_android_->touch_selection_controller()->active_status(),
-              ui::TouchSelectionController::ActiveStatus::INSERTION_ACTIVE);
+              ui::TouchSelectionController::ActiveStatus::kInsertionActive);
     rwhv_android_->UpdateNativeViewTree(nullptr, nullptr);
     EXPECT_EQ(rwhv_android_->touch_selection_controller()->active_status(),
-              ui::TouchSelectionController::ActiveStatus::INACTIVE);
+              ui::TouchSelectionController::ActiveStatus::kInactive);
   }
 
   void OnInputEventAck(const RenderWidgetHost&,
@@ -1087,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
       static_cast<RenderWidgetHostViewAndroid*>(GetWidgetHost()->GetView());
   ASSERT_TRUE(rwhv_android);
   EXPECT_EQ(rwhv_android->touch_selection_controller()->active_status(),
-            ui::TouchSelectionController::ActiveStatus::INSERTION_ACTIVE);
+            ui::TouchSelectionController::ActiveStatus::kInsertionActive);
 
   base::RunLoop run_loop;
   ScrollBeginObserver observer(*GetWidgetHost(), *rwhv_android,

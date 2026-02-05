@@ -172,11 +172,11 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
   bool readable = rwhv_->GetTextInputType() != ui::TEXT_INPUT_TYPE_PASSWORD;
   bool has_selection = !rwhv_->GetSelectedText().empty();
   switch (command_id) {
-    case ui::TouchEditable::kCut:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
       return editable && readable && has_selection;
-    case ui::TouchEditable::kCopy:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       return readable && has_selection;
-    case ui::TouchEditable::kPaste: {
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste): {
       std::u16string result;
       ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
           ui::EndpointType::kDefault, {.notify_if_restricted = false});
@@ -184,14 +184,14 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
-    case ui::TouchEditable::kSelectAll: {
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll): {
       gfx::Range text_range;
       if (rwhv_->GetTextRange(&text_range)) {
         return text_range.length() > rwhv_->GetSelectedText().length();
       }
       return true;
     }
-    case ui::TouchEditable::kSelectWord: {
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectWord): {
       gfx::Range text_range;
       if (rwhv_->GetTextRange(&text_range)) {
         return readable && !has_selection && !text_range.is_empty();
@@ -205,8 +205,10 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
 
 void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
                                                               int event_flags) {
-  if (command_id != ui::TouchEditable::kSelectAll &&
-      command_id != ui::TouchEditable::kSelectWord) {
+  if (command_id !=
+          std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll) &&
+      command_id !=
+          std::to_underlying(ui::TouchEditable::MenuCommands::kSelectWord)) {
     manager_->GetTouchSelectionController()
         ->HideAndDisallowShowingAutomatically();
   }
@@ -215,19 +217,19 @@ void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
     return;
 
   switch (command_id) {
-    case ui::TouchEditable::kCut:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCut):
       host_delegate->Cut();
       break;
-    case ui::TouchEditable::kCopy:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       host_delegate->Copy();
       break;
-    case ui::TouchEditable::kPaste:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste):
       host_delegate->Paste();
       break;
-    case ui::TouchEditable::kSelectAll:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll):
       host_delegate->SelectAll();
       break;
-    case ui::TouchEditable::kSelectWord:
+    case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectWord):
       host_delegate->SelectAroundCaret(
           blink::mojom::SelectionGranularity::kWord,
           /*should_show_handle=*/true,

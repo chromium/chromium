@@ -21,37 +21,47 @@ bool TouchSelectionControllerTestApi::GetEndVisible() const {
 }
 
 float TouchSelectionControllerTestApi::GetStartAlpha() const {
-  if (controller_->active_status_ == TouchSelectionController::SELECTION_ACTIVE)
+  if (controller_->active_status_ ==
+      TouchSelectionController::ActiveStatus::kSelectionActive) {
     return controller_->start_selection_handle_->alpha();
+  }
 
   return 0.f;
 }
 
 float TouchSelectionControllerTestApi::GetEndAlpha() const {
-  if (controller_->active_status_ == TouchSelectionController::SELECTION_ACTIVE)
+  if (controller_->active_status_ ==
+      TouchSelectionController::ActiveStatus::kSelectionActive) {
     return controller_->end_selection_handle_->alpha();
+  }
 
   return 0.f;
 }
 
 float TouchSelectionControllerTestApi::GetInsertionHandleAlpha() const {
-  if (controller_->active_status_ == TouchSelectionController::INSERTION_ACTIVE)
+  if (controller_->active_status_ ==
+      TouchSelectionController::ActiveStatus::kInsertionActive) {
     return controller_->insertion_handle_->alpha();
+  }
 
   return 0.f;
 }
 
 TouchHandleOrientation
 TouchSelectionControllerTestApi::GetStartHandleOrientation() const {
-  if (controller_->active_status_ != TouchSelectionController::SELECTION_ACTIVE)
+  if (controller_->active_status_ !=
+      TouchSelectionController::ActiveStatus::kSelectionActive) {
     return TouchHandleOrientation::UNDEFINED;
+  }
   return controller_->start_selection_handle_->orientation();
 }
 
 TouchHandleOrientation
 TouchSelectionControllerTestApi::GetEndHandleOrientation() const {
-  if (controller_->active_status_ != TouchSelectionController::SELECTION_ACTIVE)
+  if (controller_->active_status_ !=
+      TouchSelectionController::ActiveStatus::kSelectionActive) {
     return TouchHandleOrientation::UNDEFINED;
+  }
   return controller_->end_selection_handle_->orientation();
 }
 

@@ -10004,7 +10004,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   // Load test URL with cross-process child.
   SetupTest();
 
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kInactive,
             root_rwhv()->touch_selection_controller()->active_status());
   // Find the location of some text to select.
   gfx::PointF point_f = GetPointInChild();
@@ -10019,7 +10019,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   selection_controller_client()->Wait();
 
   // Check that selection is active and the quick menu is showing.
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kSelectionActive,
             root_rwhv()->touch_selection_controller()->active_status());
 
   // Make sure handles are correctly positioned.
@@ -10036,7 +10036,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   SimpleTap(gfx::Point(point_inside_iframe.x(), point_inside_iframe.y()));
   selection_controller_client()->Wait();
 
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kInactive,
             root_rwhv()->touch_selection_controller()->active_status());
 
   // Let's wait for the previous events to clear the round-trip to the renders
@@ -10054,7 +10054,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   selection_controller_client()->Wait();
 
   // Check that selection is active and the quick menu is showing.
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kSelectionActive,
             root_rwhv()->touch_selection_controller()->active_status());
 
   // Tap inside/outside the iframe and make sure the selection handles go away.
@@ -10068,7 +10068,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   SimpleTap(gfx::Point(point_outside_iframe.x(), point_outside_iframe.y()));
   selection_controller_client()->Wait();
 
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kInactive,
             root_rwhv()->touch_selection_controller()->active_status());
 
   // Cleanup before shutting down.
@@ -10087,7 +10087,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   // Load test URL with cross-process child.
   SetupTest();
 
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kInactive,
             root_rwhv()->touch_selection_controller()->active_status());
   // Find the location of some text to select.
   gfx::PointF point_f = GetPointInChild();
@@ -10102,7 +10102,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAndroidSiteIsolationTest,
   selection_controller_client()->Wait();
 
   // Check that selection is active and the quick menu is showing.
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
+  EXPECT_EQ(ui::TouchSelectionController::ActiveStatus::kSelectionActive,
             root_rwhv()->touch_selection_controller()->active_status());
 
   // Make sure handles are correctly positioned.

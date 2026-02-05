@@ -53,12 +53,12 @@ class UI_TOUCH_SELECTION_EXPORT LongPressDragSelector
   void OnSelectionDeactivated();
 
  private:
-  enum SelectionState {
-    INACTIVE,
-    INITIATING_GESTURE_PENDING,
-    SELECTION_PENDING,
-    DRAG_PENDING,
-    DRAGGING
+  enum class SelectionState {
+    kInactive,
+    kInitiatingGesturePending,
+    kSelectionPending,
+    kDragPending,
+    kDragging,
   };
 
   void SetState(SelectionState state);

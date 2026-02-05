@@ -18,9 +18,8 @@ gfx::Vector2dF SafeNormalize(const gfx::Vector2dF& v) {
 LongPressDragSelector::LongPressDragSelector(
     LongPressDragSelectorClient* client)
     : client_(client),
-      state_(INACTIVE),
-      has_longpress_drag_start_anchor_(false) {
-}
+      state_(SelectionState::kInactive),
+      has_longpress_drag_start_anchor_(false) {}
 
 LongPressDragSelector::~LongPressDragSelector() {
 }
@@ -31,12 +30,12 @@ bool LongPressDragSelector::WillHandleTouchEvent(const MotionEvent& event) {
       touch_down_position_.SetPoint(event.GetX(), event.GetY());
       touch_down_time_ = event.GetEventTime();
       has_longpress_drag_start_anchor_ = false;
-      SetState(INITIATING_GESTURE_PENDING);
+      SetState(SelectionState::kInitiatingGesturePending);
       return false;
 
     case MotionEvent::Action::UP:
     case MotionEvent::Action::CANCEL:
-      SetState(INACTIVE);
+      SetState(SelectionState::kInactive);
       return false;
 
     case MotionEvent::Action::MOVE:
@@ -46,11 +45,13 @@ bool LongPressDragSelector::WillHandleTouchEvent(const MotionEvent& event) {
       return false;
   }
 
-  if (state_ != DRAG_PENDING && state_ != DRAGGING)
+  if (state_ != SelectionState::kDragPending &&
+      state_ != SelectionState::kDragging) {
     return false;
+  }
 
   gfx::PointF position(event.GetX(), event.GetY());
-  if (state_ == DRAGGING) {
+  if (state_ == SelectionState::kDragging) {
     gfx::PointF drag_position = position + longpress_drag_selection_offset_;
     client_->OnDragUpdate(*this, drag_position);
     return true;
@@ -102,12 +103,13 @@ bool LongPressDragSelector::WillHandleTouchEvent(const MotionEvent& event) {
   gfx::PointF extent = extend_selection_start ? selection_start : selection_end;
   longpress_drag_selection_offset_ = extent - position;
   client_->OnDragBegin(*this, extent);
-  SetState(DRAGGING);
+  SetState(SelectionState::kDragging);
   return true;
 }
 
 bool LongPressDragSelector::IsActive() const {
-  return state_ == DRAG_PENDING || state_ == DRAGGING;
+  return state_ == SelectionState::kDragPending ||
+         state_ == SelectionState::kDragging;
 }
 
 void LongPressDragSelector::OnLongPressEvent(base::TimeTicks event_time,
@@ -116,47 +118,48 @@ void LongPressDragSelector::OnLongPressEvent(base::TimeTicks event_time,
   // observed touch stream. We only know that the gesture sequence is downstream
   // from the touch sequence. Using a time/distance heuristic helps ensure that
   // the observed longpress corresponds to the active touch sequence.
-  if (state_ == INITIATING_GESTURE_PENDING &&
+  if (state_ == SelectionState::kInitiatingGesturePending &&
       // Ensure the down event occurs *before* the longpress event. Use a
       // small time epsilon to account for floating point time conversion.
       (touch_down_time_ < event_time + base::Microseconds(10)) &&
       client_->IsWithinTapSlop(touch_down_position_ - position)) {
-    SetState(SELECTION_PENDING);
+    SetState(SelectionState::kSelectionPending);
   }
 }
 
 void LongPressDragSelector::OnDoublePressEvent(base::TimeTicks event_time,
                                                const gfx::PointF& position) {
   // Handle a double press the same way as a long press.
-  if (state_ == INITIATING_GESTURE_PENDING &&
+  if (state_ == SelectionState::kInitiatingGesturePending &&
       // Check event time and position to ensure that the observed double
       // press corresponds to the active touch sequence. It should be ok to
       // check the exact times and positions here, since a tap down gesture
       // event is created directly from the corresponding down motion event when
       // the gesture is initially detected.
       touch_down_time_ == event_time && touch_down_position_ == position) {
-    SetState(SELECTION_PENDING);
+    SetState(SelectionState::kSelectionPending);
   }
 }
 
 void LongPressDragSelector::OnScrollBeginEvent() {
-  SetState(INACTIVE);
+  SetState(SelectionState::kInactive);
 }
 
 void LongPressDragSelector::OnSelectionActivated() {
-  if (state_ == SELECTION_PENDING)
-    SetState(DRAG_PENDING);
+  if (state_ == SelectionState::kSelectionPending) {
+    SetState(SelectionState::kDragPending);
+  }
 }
 
 void LongPressDragSelector::OnSelectionDeactivated() {
-  SetState(INACTIVE);
+  SetState(SelectionState::kInactive);
 }
 
 void LongPressDragSelector::SetState(SelectionState state) {
   if (state_ == state)
     return;
 
-  const bool was_dragging = state_ == DRAGGING;
+  const bool was_dragging = state_ == SelectionState::kDragging;
   const bool was_active = IsActive();
   state_ = state;
 

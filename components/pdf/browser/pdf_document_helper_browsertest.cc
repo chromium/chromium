@@ -227,10 +227,10 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, SelectionChanged) {
 
 // When selecting something, only the copy command id should be enabled.
 IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, IsCommandIdEnabledCopyEnabled) {
-  EXPECT_FALSE(
-      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
-  EXPECT_FALSE(
-      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+  EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut)));
+  EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy)));
 
   constexpr gfx::PointF kLeft(1.0f, 1.0f);
   constexpr gfx::PointF kRight(5.0f, 5.0f);
@@ -238,17 +238,17 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, IsCommandIdEnabledCopyEnabled) {
   constexpr int32_t kRightHeight = 2;
   SelectionChanged(kLeft, kLeftHeight, kRight, kRightHeight);
 
-  EXPECT_FALSE(
-      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
+  EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut)));
 
 #if BUILDFLAG(IS_MAC)
   // Since macOS does not support Touch Selection Editing, the copy command is
   // not enabled.
-  EXPECT_FALSE(
-      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+  EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy)));
 #else
-  EXPECT_TRUE(
-      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+  EXPECT_TRUE(pdf_document_helper()->IsCommandIdEnabled(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy)));
 #endif  // BUILDFLAG(IS_MAC)
 }
 
@@ -257,7 +257,8 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, ExecuteCommandCopy) {
   base::UserActionTester action_tester;
   EXPECT_EQ(0, action_tester.GetActionCount("Copy"));
 
-  pdf_document_helper()->ExecuteCommand(ui::TouchEditable::kCopy, 0);
+  pdf_document_helper()->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), 0);
 
   EXPECT_EQ(1, action_tester.GetActionCount("Copy"));
 }

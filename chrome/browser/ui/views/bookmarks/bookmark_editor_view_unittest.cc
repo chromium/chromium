@@ -986,7 +986,9 @@ TEST_P(BookmarkEditorViewTest, UrlTextfiledPasteTruncates) {
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 
   // Paste via the standard command path.
-  url_textfield()->ExecuteCommand(views::Textfield::kPaste, /*event_flags=*/0);
+  url_textfield()->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste),
+      /*event_flags=*/0);
 
   // Verify the text was truncated.
   EXPECT_EQ(size_t(500 * 1024), url_textfield()->GetText().size());
@@ -1006,7 +1008,9 @@ TEST_P(BookmarkEditorViewTest, UrlTextfiledPasteNotTruncated) {
 
   // Start from empty, then paste via the standard command path.
   url_textfield()->SetText(std::u16string());
-  url_textfield()->ExecuteCommand(views::Textfield::kPaste, /*event_flags=*/0);
+  url_textfield()->ExecuteCommand(
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste),
+      /*event_flags=*/0);
 
   ApplyEdits(local_bookmark_bar_editor_node());
 

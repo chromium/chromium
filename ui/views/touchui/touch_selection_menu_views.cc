@@ -39,14 +39,17 @@ struct MenuCommand {
 };
 
 MenuCommand kMenuCommands[] = {
-    {ui::TouchEditable::kCut, IDS_APP_CUT},
-    {ui::TouchEditable::kCopy, IDS_APP_COPY},
-    {ui::TouchEditable::kPaste, IDS_APP_PASTE},
+    {std::to_underlying(ui::TouchEditable::MenuCommands::kCut), IDS_APP_CUT},
+    {std::to_underlying(ui::TouchEditable::MenuCommands::kCopy), IDS_APP_COPY},
+    {std::to_underlying(ui::TouchEditable::MenuCommands::kPaste),
+     IDS_APP_PASTE},
 };
 
 MenuCommand kMenuSelectCommands[] = {
-    {ui::TouchEditable::kSelectWord, IDS_APP_SELECT},
-    {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
+    {std::to_underlying(ui::TouchEditable::MenuCommands::kSelectWord),
+     IDS_APP_SELECT},
+    {std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll),
+     IDS_APP_SELECT_ALL},
 };
 
 constexpr int kMenuCornerRadius = 8;
