@@ -2228,6 +2228,9 @@ void LayoutObject::DumpForBug478682594() const {
     value_builder.AppendNumber(needs_layout_flags);
     value_builder.Append(" ");
     value_builder.Append(obj->DecoratedName());
+    if (obj->IsRelayoutBoundary()) {
+      value_builder.Append("(RELAYOUT-BOUNDARY)");
+    }
     value_builder.Append("; ");
   }
 
