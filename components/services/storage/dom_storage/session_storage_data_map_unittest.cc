@@ -17,9 +17,11 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,9 +81,11 @@ blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
   return base::BindOnce(&GetAllDataCallback, std::move(callback), data_out);
 }
 
-class SessionStorageDataMapTest : public testing::Test {
+class SessionStorageDataMapTest : public base::test::WithFeatureOverride,
+                                  public testing::Test {
  public:
-  SessionStorageDataMapTest() {
+  SessionStorageDataMapTest()
+      : base::test::WithFeatureOverride(kDomStorageSqlite) {
     // Create an in-memory database.
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
@@ -149,9 +153,17 @@ class SessionStorageDataMapTest : public testing::Test {
   std::unique_ptr<AsyncDomStorageDatabase> database_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    SessionStorageDataMapTest,
+    testing::Bool(),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<SessionStorageDataMapTest::ParamType>&
+           info) { return info.param ? "SQLite" : "LevelDB"; });
+
 }  // namespace
 
-TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
+TEST_P(SessionStorageDataMapTest, BasicEmptyCreation) {
   EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map =
@@ -182,7 +194,7 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
       ExpectMapEquals(*other_map_locator_, {{kKey1, kValue3}}));
 }
 
-TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
+TEST_P(SessionStorageDataMapTest, ExplicitlyEmpty) {
   EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map = SessionStorageDataMap::CreateEmpty(
@@ -210,7 +222,7 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
       ExpectMapEquals(*other_map_locator_, {{kKey1, kValue3}}));
 }
 
-TEST_F(SessionStorageDataMapTest, Clone) {
+TEST_P(SessionStorageDataMapTest, Clone) {
   EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map1 =

@@ -17,10 +17,12 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,9 +36,11 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-class SessionStorageMetadataTest : public testing::Test {
+class SessionStorageMetadataTest : public base::test::WithFeatureOverride,
+                                   public testing::Test {
  public:
-  SessionStorageMetadataTest() {
+  SessionStorageMetadataTest()
+      : base::test::WithFeatureOverride(kDomStorageSqlite) {
     // Create an in-memory database.
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
@@ -125,7 +129,15 @@ class SessionStorageMetadataTest : public testing::Test {
   std::unique_ptr<AsyncDomStorageDatabase> database_;
 };
 
-TEST_F(SessionStorageMetadataTest, LoadingData) {
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    SessionStorageMetadataTest,
+    testing::Bool(),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<SessionStorageMetadataTest::ParamType>&
+           info) { return info.param ? "SQLite" : "LevelDB"; });
+
+TEST_P(SessionStorageMetadataTest, LoadingData) {
   SetupTestData();
   SessionStorageMetadata metadata;
   ReadMetadataFromDatabase(&metadata);
@@ -153,7 +165,7 @@ TEST_F(SessionStorageMetadataTest, LoadingData) {
   EXPECT_EQ(1u, entry->second[test_storage_key2_]->session_ids().size());
 }
 
-TEST_F(SessionStorageMetadataTest, ShallowCopies) {
+TEST_P(SessionStorageMetadataTest, ShallowCopies) {
   SetupTestData();
   SessionStorageMetadata metadata;
   ReadMetadataFromDatabase(&metadata);
@@ -195,7 +207,7 @@ TEST_F(SessionStorageMetadataTest, ShallowCopies) {
   ExpectEqualsMapMetadataSpan(all_metadata.map_metadata, expected_metadata);
 }
 
-TEST_F(SessionStorageMetadataTest, TakeNamespace) {
+TEST_P(SessionStorageMetadataTest, TakeNamespace) {
   SetupTestData();
   SessionStorageMetadata metadata;
   ReadMetadataFromDatabase(&metadata);
@@ -242,7 +254,7 @@ TEST_F(SessionStorageMetadataTest, TakeNamespace) {
   ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map4_locator_, {{kKey1, kValue4}}));
 }
 
-TEST_F(SessionStorageMetadataTest, DeleteArea) {
+TEST_P(SessionStorageMetadataTest, DeleteArea) {
   SetupTestData();
   SessionStorageMetadata metadata;
   ReadMetadataFromDatabase(&metadata);
@@ -318,7 +330,7 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map4_locator_, {}));
 }
 
-TEST_F(SessionStorageMetadataTest, InitializesNamespacesEmpty) {
+TEST_P(SessionStorageMetadataTest, InitializesNamespacesEmpty) {
   DomStorageDatabase::Metadata source;
   source.next_map_id = 0;
 
@@ -327,7 +339,7 @@ TEST_F(SessionStorageMetadataTest, InitializesNamespacesEmpty) {
   EXPECT_EQ(metadata.namespace_storage_key_map().size(), 0u);
 }
 
-TEST_F(SessionStorageMetadataTest, InitializeNamespaces) {
+TEST_P(SessionStorageMetadataTest, InitializeNamespaces) {
   DomStorageDatabase::Metadata source;
   source.map_metadata.push_back({
       .map_locator{test_namespace3_id_, test_storage_key1_, /*map_id=*/1},
