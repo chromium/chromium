@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
@@ -60,13 +61,13 @@ CredentialManagerDialogControllerImpl::
 }
 
 void CredentialManagerDialogControllerImpl::ShowAccountChooser(
-    AccountChooserPrompt* dialog,
+    std::unique_ptr<AccountChooserPrompt> dialog,
     std::vector<std::unique_ptr<password_manager::PasswordForm>> locals) {
   DCHECK(!account_chooser_dialog_);
   DCHECK(!autosignin_dialog_);
   DCHECK(dialog);
   local_credentials_.swap(locals);
-  account_chooser_dialog_ = dialog;
+  account_chooser_dialog_ = std::move(dialog);
   account_chooser_dialog_->ShowAccountChooser();
 }
 
@@ -181,7 +182,8 @@ void CredentialManagerDialogControllerImpl::OnAutoSigninTurnOff() {
 
 void CredentialManagerDialogControllerImpl::OnCloseDialog() {
   if (account_chooser_dialog_) {
-    account_chooser_dialog_ = nullptr;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(account_chooser_dialog_));
   }
   if (autosignin_dialog_) {
     password_manager::metrics_util::LogAutoSigninPromoUserAction(
@@ -194,7 +196,7 @@ void CredentialManagerDialogControllerImpl::OnCloseDialog() {
 void CredentialManagerDialogControllerImpl::ResetDialog() {
   if (account_chooser_dialog_) {
     account_chooser_dialog_->ControllerGone();
-    account_chooser_dialog_ = nullptr;
+    account_chooser_dialog_.reset();
   }
   if (autosignin_dialog_) {
     autosignin_dialog_->ControllerGone();

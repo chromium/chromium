@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,7 +41,9 @@
 AccountChooserDialogView::AccountChooserDialogView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
+    : views::BubbleDialogDelegate(nullptr, views::BubbleBorder::NONE),
+      controller_(controller),
+      web_contents_(web_contents) {
   DCHECK(controller);
   DCHECK(web_contents);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
@@ -63,6 +66,19 @@ AccountChooserDialogView::AccountChooserDialogView(
 
 AccountChooserDialogView::~AccountChooserDialogView() = default;
 
+void AccountChooserDialogView::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  if (web_contents_) {
+    views::Widget* top_level_widget =
+        views::Widget::GetTopLevelWidgetForNativeView(
+            web_contents_->GetNativeView());
+    if (top_level_widget) {
+      params->parent = top_level_widget->GetNativeView();
+    }
+  }
+}
+
 void AccountChooserDialogView::ShowAccountChooser() {
   // It isn't known until after the creation of this dialog whether the sign-in
   // button should be shown, so always reset the button state here.
@@ -72,7 +88,14 @@ void AccountChooserDialogView::ShowAccountChooser() {
                  : static_cast<int>(ui::mojom::DialogButton::kCancel));
   DialogModelChanged();
   InitWindow();
-  constrained_window::ShowWebModalDialogViews(this, web_contents_);
+
+  DCHECK(!widget_);
+  widget_ = base::WrapUnique(views::BubbleDialogDelegate::CreateBubble(
+      this, views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+
+  constrained_window::ShowModalDialog(widget_->GetNativeWindow(),
+                                      web_contents_);
+  widget_->Show();
 }
 
 void AccountChooserDialogView::ControllerGone() {
@@ -104,10 +127,11 @@ bool AccountChooserDialogView::Accept() {
 }
 
 void AccountChooserDialogView::InitWindow() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto contents_view = std::make_unique<views::View>();
+  contents_view->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   views::ScrollView* scroll_view =
-      AddChildView(std::make_unique<views::ScrollView>());
+      contents_view->AddChildView(std::make_unique<views::ScrollView>());
   auto* list_view = scroll_view->SetContents(std::make_unique<views::View>());
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -133,6 +157,7 @@ void AccountChooserDialogView::InitWindow() {
   }
   constexpr float kMaxVisibleItems = 3.5;
   scroll_view->ClipHeightTo(0, kMaxVisibleItems * item_height);
+  SetContentsView(std::move(contents_view));
 }
 
 void AccountChooserDialogView::CredentialsItemPressed(
@@ -145,11 +170,8 @@ void AccountChooserDialogView::CredentialsItemPressed(
   }
 }
 
-BEGIN_METADATA(AccountChooserDialogView)
-END_METADATA
-
-AccountChooserPrompt* CreateAccountChooserPromptView(
+std::unique_ptr<AccountChooserPrompt> CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents) {
-  return new AccountChooserDialogView(controller, web_contents);
+  return std::make_unique<AccountChooserDialogView>(controller, web_contents);
 }
