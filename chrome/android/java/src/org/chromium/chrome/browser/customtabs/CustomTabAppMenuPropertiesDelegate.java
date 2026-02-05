@@ -326,7 +326,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
                         SHOW_OPEN_IN_BROWSER_MENU_TOP_PARAM,
-                        false);
+                        true);
         if (openInChromeItemVisible && showOpenInBrowserAtTop) {
             addOpenInChrome(modelList, /* showIcon= */ true);
         }

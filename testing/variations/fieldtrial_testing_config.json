@@ -4957,60 +4957,6 @@
             ]
         }
     ],
-    "CCTAdaptiveButton": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledModelVariantD_20250825",
-                    "params": {
-                        "show_open_in_browser_menu_top": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledCPA+OIB",
-                    "params": {
-                        "contextual_only": "true",
-                        "default_variant": "15"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledCPA+OIB+ReaderModeFallbackMenu",
-                    "params": {
-                        "contextual_only": "true",
-                        "default_variant": "15",
-                        "reader_mode_fallback_menu": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledOIBMenu",
-                    "params": {
-                        "show_open_in_browser_menu_top": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "CCTEphemeralMediaViewerExperiment": [
         {
             "platforms": [

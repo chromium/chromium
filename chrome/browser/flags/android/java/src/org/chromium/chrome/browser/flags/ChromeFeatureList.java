@@ -807,9 +807,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CACHE_IS_MULTI_INSTANCE_API_31_ENABLED, true);
     public static final CachedFlag sCctAdaptiveButton =
             newCachedFlag(
-                    CCT_ADAPTIVE_BUTTON,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    CCT_ADAPTIVE_BUTTON, /* defaultValue= */ true, /* defaultValueInTests= */ true);
     public static final CachedFlag sCctAuthTab = newCachedFlag(CCT_AUTH_TAB, true);
     public static final CachedFlag sCctAuthTabDisableAllExternalIntents =
             newCachedFlag(CCT_AUTH_TAB_DISABLE_ALL_EXTERNAL_INTENTS, false);
