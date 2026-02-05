@@ -54,14 +54,11 @@ SkillsDialogHandler::~SkillsDialogHandler() = default;
 void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
   if (auto* skills_service =
           SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
-    const Skill* response =
-        skill.id.empty()
-            ? skills_service->AddSkill(skill.name, skill.icon, skill.prompt)
-            : skills_service->UpdateSkill(skill.id, skill.name, skill.icon,
-                                          skill.prompt);
-    if (response && delegate_) {
-      // Triggers toast
-      delegate_->OnSkillSaved(response->id);
+    const Skill* skill_added =
+        skills_service->AddSkill(skill.name, skill.icon, skill.prompt);
+    // TODO(marissashen): Add support for UpdateSkill
+    if (skill_added && delegate_) {
+      delegate_->OnSkillSaved(skill_added->id);
       delegate_->CloseDialog();
     }
   } else {

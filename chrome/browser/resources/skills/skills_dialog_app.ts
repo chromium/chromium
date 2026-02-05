@@ -4,10 +4,10 @@
 
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
 import './error_page.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -38,7 +38,6 @@ export class SkillsDialogAppElement extends CrLitElement {
   static override get properties() {
     return {
       skill_: {type: Object},
-      dialogTitle_: {type: String},
       canUndoRefine_: {type: Boolean},
       canRedoRefine_: {type: Boolean},
       shouldShowErrorPage_: {type: Boolean},
@@ -59,7 +58,6 @@ export class SkillsDialogAppElement extends CrLitElement {
     lastUpdateTime: {internalValue: 0n},
   };
 
-  protected accessor dialogTitle_: string = '';
   protected accessor canUndoRefine_: boolean = false;
   protected accessor canRedoRefine_: boolean = false;
   protected accessor shouldShowErrorPage_: boolean =
@@ -84,14 +82,6 @@ export class SkillsDialogAppElement extends CrLitElement {
     if (initialSkill) {
       this.skill_ = initialSkill;
       this.skill_.icon = initialSkill.icon || DEFAULT_EMOJI;
-      // TODO(marissashen): Update to passing in dialogType from dialog creation
-      if (!initialSkill.id || initialSkill.source === SkillSource.kFirstParty) {
-        // Creating a new skill or remixing a first party skill.
-        this.dialogTitle_ = 'Add skill';
-      } else {
-        // Editing a user created skill.
-        this.dialogTitle_ = 'Edit skill';
-      }
     }
     SkillsDialogBrowserProxy.getInstance().handler.getSignedInEmail().then(
         ({email}) => {
@@ -198,18 +188,9 @@ export class SkillsDialogAppElement extends CrLitElement {
         });
   }
 
-  /** Submits skill and closes the dialog. */
   protected submitSkill_(): void {
-    // Remixing a first party skill, so clear the ID
-    if (this.skill_.source === SkillSource.kFirstParty) {
-      this.skill_ = {...this.skill_, id: ''};
-    }
-
-    SkillsDialogBrowserProxy.getInstance().handler.submitSkill({
-      ...this.skill_,
-      prompt: this.skill_.prompt.substring(0, MAX_PROMPT_CHAR_COUNT),
-      source: SkillSource.kUserCreated,
-    });
+    this.skill_.prompt = this.skill_.prompt.slice(0, MAX_PROMPT_CHAR_COUNT);
+    SkillsDialogBrowserProxy.getInstance().handler.submitSkill(this.skill_);
   }
 
   /** Click listener for the cancel button. */

@@ -25,49 +25,17 @@ suite('SkillsDialogAppPage', function() {
         {handler: dialogHandler} as SkillsDialogBrowserProxy);
     dialogHandler.setResultFor(
         'refineSkill', Promise.resolve({refinedSkill: {}}));
+    dialogHandler.setResultFor('getInitialSkill', Promise.resolve({skill: {}}));
     dialogHandler.setResultFor(
         'getSignedInEmail', Promise.resolve({email: ''}));
-    const emptySkill: Skill = {
-      id: '',
-      name: '',
-      icon: '',
-      prompt: '',
-      source: SkillSource.kUnknown,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    await setupDialogWithSkill(emptySkill);
-  });
-
-  async function setupDialogWithSkill(initialSkill: Skill) {
-    dialogHandler.setResultFor(
-        'getInitialSkill', Promise.resolve({skill: initialSkill}));
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     skillsDialogApp = document.createElement('skills-dialog-app');
     document.body.appendChild(skillsDialogApp);
     await skillsDialogApp.updateComplete;
-  }
-
-  async function updateName(name: string) {
-    const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
-
-    nameInput.value = name;
-    nameInput.dispatchEvent(
-        new CustomEvent('value-changed', {detail: {value: nameInput.value}}));
-    await skillsDialogApp.updateComplete;
-  }
-
-  async function updateInstructions(prompt: string) {
-    const instructionsInput =
-        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
-
-    instructionsInput.value = prompt;
-    instructionsInput.dispatchEvent(new Event('input'));
-    await skillsDialogApp.updateComplete;
-  }
+  });
 
   test('SkillsDialogAppLoads', function() {
-    assertEquals('Add skill', skillsDialogApp.$['header']!.textContent);
+    assertEquals('Add Skill', skillsDialogApp.$['header']!.textContent);
   });
 
   test('SkillsDialogPrepopulatesInitialSkill', async function() {
@@ -81,7 +49,13 @@ suite('SkillsDialogAppPage', function() {
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},
     };
-    await setupDialogWithSkill(testSkill);
+    dialogHandler.setResultFor(
+        'getInitialSkill', Promise.resolve({skill: testSkill}));
+    // Re-create the element to pick up the new dialog arguments.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    skillsDialogApp = document.createElement('skills-dialog-app');
+    document.body.appendChild(skillsDialogApp);
+    await skillsDialogApp.updateComplete;
 
     assertEquals(
         '⚡',
@@ -95,123 +69,58 @@ suite('SkillsDialogAppPage', function() {
         (skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement).value);
   });
 
-  test('AddingFirstPartySkill', async function() {
-    const testSkill: Skill = {
-      id: 'first-party-skill',
-      name: 'test skill',
-      icon: '',
-      prompt: 'test prompt',
-      source: SkillSource.kFirstParty,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    await setupDialogWithSkill(testSkill);
-
-    assertEquals('Add skill', skillsDialogApp.$['header']!.textContent);
-  });
-
-  test('EditingUserCreatedSkill', async function() {
-    const testSkill: Skill = {
-      id: '123',
-      name: 'test skill',
-      icon: '',
-      prompt: 'test prompt',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    await setupDialogWithSkill(testSkill);
-
-    assertEquals('Edit skill', skillsDialogApp.$['header']!.textContent);
-  });
-
   test('SaveButtonDisabledStates', async function() {
     const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
+    const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
+    const instructionsInput =
+        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
 
     // 1. Initial state: disabled.
     assertEquals(true, saveButton.disabled);
 
     // 2. Name filled, instructions empty: disabled.
-    await updateName('test skill');
+    nameInput.value = 'test skill';
+    nameInput.dispatchEvent(
+        new CustomEvent('value-changed', {detail: {value: nameInput.value}}));
+    await skillsDialogApp.updateComplete;
     assertEquals(true, saveButton.disabled);
 
     // 3. Name and instructions filled: enabled.
-    await updateInstructions('test prompt');
+    instructionsInput.value = 'test prompt';
+    instructionsInput.dispatchEvent(new Event('input'));
+    await skillsDialogApp.updateComplete;
     assertEquals(false, saveButton.disabled);
 
     // 4. Name empty, instructions filled: disabled.
-    await updateName('');
+    nameInput.value = '';
+    nameInput.dispatchEvent(
+        new CustomEvent('value-changed', {detail: {value: nameInput.value}}));
+    await skillsDialogApp.updateComplete;
     assertEquals(true, saveButton.disabled);
   });
 
   test('SaveButtonSubmitsSkill', async function() {
+    const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
+    const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
+    const instructionsInput =
+        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
+
     // Populate the fields to enable the save button.
     const testName = 'test skill';
     const testPrompt = 'test prompt';
-    await updateName(testName);
-    await updateInstructions(testPrompt);
+    nameInput.value = testName;
+    nameInput.dispatchEvent(
+        new CustomEvent('value-changed', {detail: {value: nameInput.value}}));
+    instructionsInput.value = testPrompt;
+    instructionsInput.dispatchEvent(new Event('input'));
+    await skillsDialogApp.updateComplete;
+    assertEquals(false, saveButton.disabled);
 
     // Click the save button and verify the proxy call.
-    (skillsDialogApp.$['saveButton'] as CrButtonElement).click();
+    saveButton.click();
     const submittedSkill = await dialogHandler.whenCalled('submitSkill');
-    assertEquals('', submittedSkill.id);
     assertEquals(testName, submittedSkill.name);
     assertEquals(testPrompt, submittedSkill.prompt);
-    assertEquals(SkillSource.kUserCreated, submittedSkill.source);
-  });
-
-  test('SubmitsRemixedSkill', async function() {
-    const firstPartySkill: Skill = {
-      id: 'first-party-skill',
-      name: 'test skill',
-      icon: '',
-      prompt: 'test prompt',
-      source: SkillSource.kFirstParty,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    await setupDialogWithSkill(firstPartySkill);
-
-    // Remix the fields.
-    const remixedName = 'remixed skill';
-    const remixedPrompt = 'remixed prompt';
-    await updateName(remixedName);
-    await updateInstructions(remixedPrompt);
-
-    // Click the save button and verify the proxy call.
-    (skillsDialogApp.$['saveButton'] as CrButtonElement).click();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
-    assertEquals('', submittedSkill.id);
-    assertEquals(remixedName, submittedSkill.name);
-    assertEquals(remixedPrompt, submittedSkill.prompt);
-    assertEquals(SkillSource.kUserCreated, submittedSkill.source);
-  });
-
-  test('SubmitsEditedSkill', async function() {
-    const userCreatedSkill: Skill = {
-      id: 'user-created-skill',
-      name: 'test skill',
-      icon: '',
-      prompt: 'test prompt',
-      source: SkillSource.kUserCreated,
-      creationTime: {internalValue: 0n},
-      lastUpdateTime: {internalValue: 0n},
-    };
-    await setupDialogWithSkill(userCreatedSkill);
-
-    // Edit the fields.
-    const editedName = 'edited skill';
-    const editedPrompt = 'edited prompt';
-    await updateName(editedName);
-    await updateInstructions(editedPrompt);
-
-    // Click the save button and verify the proxy call.
-    (skillsDialogApp.$['saveButton'] as CrButtonElement).click();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
-    assertEquals(userCreatedSkill.id, submittedSkill.id);
-    assertEquals(editedName, submittedSkill.name);
-    assertEquals(editedPrompt, submittedSkill.prompt);
-    assertEquals(SkillSource.kUserCreated, submittedSkill.source);
   });
 
   test('EmojiTriggerOpensPicker', async function() {
@@ -236,10 +145,21 @@ suite('SkillsDialogAppPage', function() {
 
     assertEquals('🐶', emojiTrigger.value);
 
-    await updateName('name');
-    await updateInstructions('prompt');
+    const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
 
-    (skillsDialogApp.$['saveButton'] as CrButtonElement).click();
+    const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
+    const instructionsInput =
+        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
+
+    nameInput.value = 'name';
+    nameInput.dispatchEvent(
+        new CustomEvent('value-changed', {detail: {value: 'name'}}));
+    instructionsInput.value = 'prompt';
+    instructionsInput.dispatchEvent(new Event('input'));
+
+    await skillsDialogApp.updateComplete;
+
+    saveButton.click();
     const submittedSkill = await dialogHandler.whenCalled('submitSkill');
     assertEquals('🐶', submittedSkill.icon);
   });
@@ -292,7 +212,9 @@ suite('SkillsDialogAppPage', function() {
 
     // 2. Type something
     const originalText = 'Original Prompt';
-    await updateInstructions(originalText);
+    instructionsInput.value = originalText;
+    instructionsInput.dispatchEvent(new Event('input'));
+    await skillsDialogApp.updateComplete;
 
     assertFalse(refineBtn.disabled, 'Refine should be enabled after typing');
     assertTrue(undoBtn.disabled);
@@ -343,7 +265,9 @@ suite('SkillsDialogAppPage', function() {
     assertTrue(redoBtn.disabled, 'Redo should be disabled after redoing');
 
     // 6. Manual edit clears history
-    await updateInstructions('New manual edit');
+    instructionsInput.value = 'New manual edit';
+    instructionsInput.dispatchEvent(new Event('input'));
+    await skillsDialogApp.updateComplete;
 
     assertTrue(undoBtn.disabled, 'Manual edit should clear undo state');
     assertTrue(redoBtn.disabled, 'Manual edit should clear redo state');
