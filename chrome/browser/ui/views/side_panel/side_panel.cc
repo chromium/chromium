@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -165,7 +165,7 @@ class SidePanelBorder : public views::Border {
       canvas->ClipPath(rounded_border_path, /*do_anti_alias=*/true);
 
       // Draw the top-container background.
-      TopContainerBackground::PaintBackground(canvas, &view, browser_view_);
+      ThemedBackground::PaintBackground(canvas, &view, browser_view_);
     }
 
     // Paint the inner border around SidePanel content. Since half the stroke
@@ -187,7 +187,7 @@ class SidePanelBorder : public views::Border {
       // can't remove this rectangle, or we get some visual artifacts, so
       // instead just draw it in the background color.
       std::optional<SkColor> bg_color =
-          TopContainerBackground::GetBackgroundColor(&view, browser_view_);
+          ThemedBackground::GetBackgroundColor(&view, browser_view_);
       if (bg_color) {
         flags.setColor(*bg_color);
       }

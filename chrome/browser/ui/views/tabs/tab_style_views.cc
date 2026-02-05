@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -961,7 +961,7 @@ void TabStyleViewsImpl::PaintTabBackgroundFill(
     canvas->sk_canvas()->scale(scale, scale);
     gfx::ImageSkia* image =
         tab_->GetThemeProvider()->GetImageSkiaNamed(fill_id.value());
-    TopContainerBackground::PaintThemeAlignedImage(
+    ThemedBackground::PaintThemeAlignedImage(
         canvas, tab_,
         BrowserView::GetBrowserViewForBrowser(tab_->controller()->GetBrowser()),
         image);

@@ -452,7 +452,7 @@ void BrowserFrameViewMac::Layout(PassKey) {
 void BrowserFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
   // On macOS the origin of the BrowserFrameViewMac is (0,0) so no
   // further modification is necessary. See
-  // TopContainerBackground::PaintThemeCustomImage for details.
+  // ThemedBackground::PaintThemeCustomImage for details.
   gfx::Point theme_image_offset =
       GetBrowserView()->GetThemeOffsetFromBrowserView();
 

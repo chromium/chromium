@@ -71,7 +71,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -421,7 +421,7 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
 
   // May be null for tests.
   if (browser_view) {
-    SetBackground(std::make_unique<TopContainerBackground>(browser_view));
+    SetBackground(std::make_unique<ThemedBackground>(browser_view));
   }
 
   views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,

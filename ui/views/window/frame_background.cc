@@ -125,7 +125,7 @@ void FrameBackground::PaintMaximized(gfx::Canvas* canvas,
 #endif
 
   // Draw the theme frame and overlay, if available.
-  // See TopContainerBackground::PaintThemeCustomImage for details on the
+  // See ThemedBackground::PaintThemeCustomImage for details on the
   // positioning logic.
   if (!theme_image_.isNull()) {
     int x_offset = theme_image_inset_.x() + x;

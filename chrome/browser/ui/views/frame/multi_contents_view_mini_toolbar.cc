@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
@@ -220,7 +220,7 @@ void MultiContentsViewMiniToolbar::OnTabChangedAt(tabs::TabInterface* tab,
 
 void MultiContentsViewMiniToolbar::OnPaint(gfx::Canvas* canvas) {
   // Paint the mini toolbar background to match the toolbar.
-  TopContainerBackground::PaintBackground(canvas, this, browser_view_);
+  ThemedBackground::PaintBackground(canvas, this, browser_view_);
 }
 
 void MultiContentsViewMiniToolbar::OnThemeChanged() {

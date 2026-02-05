@@ -846,7 +846,7 @@ class BrowserView : public BrowserWindow,
   // This value is used in a common calculation in FrameView
   // subclasses. This must be added to the origin of the first painted pixel of
   // FrameView to get the correct offset. See
-  // TopContainerBackground::PaintThemeCustomImage for details.
+  // ThemedBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
 
   void UpdateAccessibleNameForAllTabs();

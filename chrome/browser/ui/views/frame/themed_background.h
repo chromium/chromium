@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_THEMED_BACKGROUND_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_THEMED_BACKGROUND_H_
 
 #include <optional>
 
@@ -17,17 +17,15 @@ class BrowserView;
 // Background which renders the appropriate toolbar/bookmarks/etc. background
 // on a view which must be a descendant of the browser view in the hierarchy. If
 // there is a background image, it will be painted or tiled appropriately.
-// TODO(crbug.com/473064096): Refactor to be More Extensible.
-class TopContainerBackground : public views::Background {
+class ThemedBackground : public views::Background {
  public:
-  enum ColorChoice { kToolbarColor, kFrameColor };
+  enum ThemeChoice { kToolbarTheme, kFrameTheme };
   // Construct a themed background for the specified browser.
-  explicit TopContainerBackground(BrowserView* browser_view,
-                                  ColorChoice color_choice = kToolbarColor);
+  explicit ThemedBackground(BrowserView* browser_view,
+                            ThemeChoice theme_choice = kToolbarTheme);
 
-  TopContainerBackground(const TopContainerBackground& other) = delete;
-  TopContainerBackground& operator=(const TopContainerBackground& other) =
-      delete;
+  ThemedBackground(const ThemedBackground& other) = delete;
+  ThemedBackground& operator=(const ThemedBackground& other) = delete;
 
   // We need a mechanism to consistently paint theme custom images across
   // multiple views. Specifically, IDR_THEME_TOOLBAR and IDR_THEME_FRAME*, and
@@ -61,7 +59,7 @@ class TopContainerBackground : public views::Background {
   static bool PaintThemeCustomImage(gfx::Canvas* canvas,
                                     const views::View* view,
                                     const BrowserView* browser_view,
-                                    ColorChoice color_choice = kToolbarColor);
+                                    ThemeChoice theme_choice = kToolbarTheme);
 
   // Similar to PaintThemeCustomImage but the image is supplied.
   static void PaintThemeAlignedImage(gfx::Canvas* canvas,
@@ -75,23 +73,23 @@ class TopContainerBackground : public views::Background {
   static void PaintBackground(gfx::Canvas* canvas,
                               const views::View* view,
                               const BrowserView* browser_view,
-                              ColorChoice color_choice = kToolbarColor);
+                              ThemeChoice theme_choice = kToolbarTheme);
 
   // Returns the theme-aware solid background color painted when
   // IDR_THEME_TOOLBAR does not exist; otherwise returns a nullptr.
   static std::optional<SkColor> GetBackgroundColor(
       const views::View* view,
       const BrowserView* browser_view,
-      ColorChoice color_choice = kToolbarColor);
+      ThemeChoice theme_choice = kToolbarTheme);
 
-  ColorChoice GetColorChoice() { return color_choice_; }
+  ThemeChoice GetThemeChoice() { return theme_choice_; }
 
  private:
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
 
   const raw_ptr<BrowserView> browser_view_;
-  ColorChoice color_choice_;
+  ThemeChoice theme_choice_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_THEMED_BACKGROUND_H_

@@ -8,7 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -24,7 +24,7 @@ ContentsRoundedCorner::ContentsRoundedCorner(
     base::RepeatingCallback<bool()> is_right_aligned_callback)
     : corner_radius_token_(corner_radius_token),
       is_right_aligned_callback_(std::move(is_right_aligned_callback)) {
-  SetBackground(std::make_unique<TopContainerBackground>(browser_view));
+  SetBackground(std::make_unique<ThemedBackground>(browser_view));
   SetPaintToLayer();
 }
 

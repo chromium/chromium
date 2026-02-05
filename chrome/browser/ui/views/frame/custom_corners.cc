@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "ui/gfx/scoped_canvas.h"
 
 CustomCorners::CustomCorners(BrowserView& browser_view)
@@ -41,8 +41,7 @@ void CustomCorners::PaintPath(gfx::Canvas* canvas,
   if (std::holds_alternative<TopContainerTheme>(color_choice)) {
     gfx::ScopedCanvas scoped(canvas);
     canvas->ClipPath(path, anti_alias);
-    TopContainerBackground::PaintBackground(canvas, &GetView(),
-                                            &browser_view());
+    ThemedBackground::PaintBackground(canvas, &GetView(), &browser_view());
     return;
   }
 

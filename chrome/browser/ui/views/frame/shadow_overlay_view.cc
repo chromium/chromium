@@ -8,7 +8,7 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
@@ -43,7 +43,7 @@ class ShadowOverlayView::CornerView : public views::View {
   static constexpr int kCornerOutset = 1;
 
   CornerView(Corner corner, BrowserView& browser_view) : corner_(corner) {
-    SetBackground(std::make_unique<TopContainerBackground>(&browser_view));
+    SetBackground(std::make_unique<ThemedBackground>(&browser_view));
   }
   ~CornerView() override = default;
 
@@ -61,7 +61,7 @@ class ShadowOverlayView::CornerView : public views::View {
  private:
   // Returns the clip path for the corner.
   //
-  // The contents need to be drawn by `TopContainerBackground` to ensure that
+  // The contents need to be drawn by `ThemedBackground` to ensure that
   // the correct content is drawn in all themes (including themes that e.g. use
   // an image background). However, the corner shape still needs to be drawn; in
   // order to ensure that only the opaque portion of the corner is painted a

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"

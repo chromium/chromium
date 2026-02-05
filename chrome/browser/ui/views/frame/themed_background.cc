@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/frame/themed_background.h"
 
 #include <optional>
 
@@ -27,13 +27,13 @@ bool IsFrameActive(const views::View* view) {
   return view->GetWidget() ? view->GetWidget()->ShouldPaintAsActive() : true;
 }
 
-std::pair<int, ui::ColorId> GetColorChoiceInfo(
-    TopContainerBackground::ColorChoice color_choice,
+std::pair<int, ui::ColorId> GetThemeChoiceInfo(
+    ThemedBackground::ThemeChoice theme_choice,
     const views::View* view) {
-  switch (color_choice) {
-    case TopContainerBackground::ColorChoice::kToolbarColor:
+  switch (theme_choice) {
+    case ThemedBackground::ThemeChoice::kToolbarTheme:
       return {IDR_THEME_TOOLBAR, kColorToolbar};
-    case TopContainerBackground::ColorChoice::kFrameColor:
+    case ThemedBackground::ThemeChoice::kFrameTheme:
       if (IsFrameActive(view)) {
         return {IDR_THEME_FRAME, ui::kColorFrameActive};
       } else {
@@ -46,21 +46,19 @@ std::pair<int, ui::ColorId> GetColorChoiceInfo(
 
 }  // namespace
 
-TopContainerBackground::TopContainerBackground(BrowserView* browser_view,
-                                               ColorChoice color_choice)
-    : browser_view_(browser_view), color_choice_(color_choice) {}
+ThemedBackground::ThemedBackground(BrowserView* browser_view,
+                                   ThemeChoice theme_choice)
+    : browser_view_(browser_view), theme_choice_(theme_choice) {}
 
-void TopContainerBackground::Paint(gfx::Canvas* canvas,
-                                   views::View* view) const {
-  PaintBackground(canvas, view, browser_view_, color_choice_);
+void ThemedBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
+  PaintBackground(canvas, view, browser_view_, theme_choice_);
 }
 
-bool TopContainerBackground::PaintThemeCustomImage(
-    gfx::Canvas* canvas,
-    const views::View* view,
-    const BrowserView* browser_view,
-    ColorChoice color_choice) {
-  int theme_resource_id = GetColorChoiceInfo(color_choice, view).first;
+bool ThemedBackground::PaintThemeCustomImage(gfx::Canvas* canvas,
+                                             const views::View* view,
+                                             const BrowserView* browser_view,
+                                             ThemeChoice theme_choice) {
+  int theme_resource_id = GetThemeChoiceInfo(theme_choice, view).first;
 
   if (!WillPaintCustomImage(view, theme_resource_id)) {
     return false;
@@ -73,11 +71,10 @@ bool TopContainerBackground::PaintThemeCustomImage(
   return true;
 }
 
-void TopContainerBackground::PaintThemeAlignedImage(
-    gfx::Canvas* canvas,
-    const views::View* view,
-    const BrowserView* browser_view,
-    gfx::ImageSkia* image) {
+void ThemedBackground::PaintThemeAlignedImage(gfx::Canvas* canvas,
+                                              const views::View* view,
+                                              const BrowserView* browser_view,
+                                              gfx::ImageSkia* image) {
   // Get the origin of this view and translate it to coordinate system of the
   // BrowserView.
   gfx::Point pos;
@@ -101,28 +98,28 @@ void TopContainerBackground::PaintThemeAlignedImage(
                        SkTileMode::kRepeat, SkTileMode::kMirror);
 }
 
-void TopContainerBackground::PaintBackground(gfx::Canvas* canvas,
-                                             const views::View* view,
-                                             const BrowserView* browser_view,
-                                             ColorChoice color_choice) {
+void ThemedBackground::PaintBackground(gfx::Canvas* canvas,
+                                       const views::View* view,
+                                       const BrowserView* browser_view,
+                                       ThemeChoice theme_choice) {
   bool painted =
-      PaintThemeCustomImage(canvas, view, browser_view, color_choice);
+      PaintThemeCustomImage(canvas, view, browser_view, theme_choice);
   if (!painted) {
     canvas->DrawColor(view->GetColorProvider()->GetColor(
-        GetColorChoiceInfo(color_choice, view).second));
+        GetThemeChoiceInfo(theme_choice, view).second));
   }
 }
 
-std::optional<SkColor> TopContainerBackground::GetBackgroundColor(
+std::optional<SkColor> ThemedBackground::GetBackgroundColor(
     const views::View* view,
     const BrowserView* browser_view,
-    ColorChoice color_choice) {
-  std::pair<int, ui::ColorId> color_choice_info =
-      GetColorChoiceInfo(color_choice, view);
+    ThemeChoice theme_choice) {
+  std::pair<int, ui::ColorId> theme_choice_info =
+      GetThemeChoiceInfo(theme_choice, view);
   const bool will_be_painted =
-      WillPaintCustomImage(view, color_choice_info.first);
+      WillPaintCustomImage(view, theme_choice_info.first);
   if (!will_be_painted) {
-    return view->GetColorProvider()->GetColor(color_choice_info.second);
+    return view->GetColorProvider()->GetColor(theme_choice_info.second);
   }
 
   return std::nullopt;
