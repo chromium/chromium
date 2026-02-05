@@ -666,8 +666,9 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
 
   // TODO(crbug.com/458291386): Launch protocol handlers for all PWAs (and not
   // just IWAs) on ChromeOS -- this requires some additional UX work.
-  if (provider.registrar_unsafe().AppMatches(app.app_id(),
-                                             WebAppFilter::IsIsolatedApp())) {
+  if (provider.registrar_unsafe().AppMatches(
+          app.app_id(),
+          WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp())) {
     // Includes all protocol handlers except for the ones that the user has
     // explicitly disallowed.
     const std::vector<custom_handlers::ProtocolHandler> protocol_handlers =
@@ -755,7 +756,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
   // Isolated web apps can only be opened in window.
   app->allow_window_mode_selection = !provider_->registrar_unsafe().AppMatches(
-      web_app->app_id(), WebAppFilter::IsIsolatedApp());
+      web_app->app_id(),
+      WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp());
 
   SetWebAppShowInFields(web_app, *app);
 

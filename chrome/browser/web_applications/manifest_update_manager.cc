@@ -238,7 +238,7 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
 
   if (provider_->registrar_unsafe().AppMatches(
           GenerateAppIdFromManifest(*manifest),
-          WebAppFilter::IsIsolatedApp())) {
+          WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp())) {
     return;
   }
   if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&

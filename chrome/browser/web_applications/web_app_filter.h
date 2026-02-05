@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_FILTER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_FILTER_H_
 
+#include <memory>
 #include <optional>
+#include <variant>
+
+#include "build/build_config.h"
 
 namespace web_app {
 
@@ -19,8 +23,6 @@ class WebAppFilter {
   // Only consider web apps whose effective display mode is a dedicated window
   // (essentially any display mode other than a browser tab).
   static WebAppFilter OpensInDedicatedWindow();
-  // Only consider web apps that capture links in scope.
-  static WebAppFilter CapturesLinksInScope();
   // Only consider isolated web apps, that are not scheduled for uninstallation,
   // like stub ones. To also consider stub apps, use
   // `IsIsolatedWebAppIncludingUninstalling()` instead.
@@ -96,13 +98,15 @@ class WebAppFilter {
   static WebAppFilter IsAppEligibleForManifestUpdate();
 
   WebAppFilter(const WebAppFilter&);
-  WebAppFilter& operator=(const WebAppFilter&) = default;
-  ~WebAppFilter() = default;
+  WebAppFilter(WebAppFilter&&) noexcept;
+  WebAppFilter& operator=(WebAppFilter&&) noexcept;
+  ~WebAppFilter();
+
+  friend WebAppFilter operator&(WebAppFilter lhs, WebAppFilter rhs);
+  friend WebAppFilter operator|(WebAppFilter lhs, WebAppFilter rhs);
 
  private:
   friend class WebAppRegistrar;
-
-  WebAppFilter();
 
   struct IsolatedWebAppFilter {
     bool must_be_in_dev_mode = false;
@@ -112,34 +116,52 @@ class WebAppFilter {
     bool is_sub_app = false;
   };
 
-  bool opens_in_browser_tab_ = false;
-  bool opens_in_dedicated_window_ = false;
+  struct LeafFilter {
+    LeafFilter();
+    ~LeafFilter();
+    LeafFilter(const LeafFilter&);
+    LeafFilter(LeafFilter&&) noexcept;
+    LeafFilter& operator=(LeafFilter&&) noexcept;
 
-// ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not here.
-#if !defined(IS_CHROMEOS)
-  bool captures_links_in_scope_ = false;
-#endif
+    bool opens_in_browser_tab = false;
+    bool opens_in_dedicated_window = false;
+    std::optional<IsolatedWebAppFilter> isolated_app_filter;
+    bool is_crafted_app = false;
+    bool is_suggested_app = false;
+    bool displays_badge_on_os = false;
+    bool supports_os_notifications = false;
+    bool installed_in_chrome = false;
+    bool installed_in_os = false;
+    bool is_diy_with_os_shortcut = false;
+    bool launchable_from_install_api = false;
+    bool is_crafted_app_and_opens_in_dedicated_window = false;
+    bool is_app_trusted = false;
+    bool is_isolated_apps_including_uninstalling = false;
+    bool is_app_suggested_from_migration = false;
+    bool is_app_surfaceable_to_user = false;
+    bool is_valid_migration_source = false;
+    bool is_app_eligible_for_manifest_update = false;
+  };
 
-  std::optional<IsolatedWebAppFilter> isolated_app_filter_;
-  bool is_crafted_app_ = false;
-  bool is_suggested_app_ = false;
-  bool displays_badge_on_os_ = false;
-  bool supports_os_notifications_ = false;
-  bool installed_in_chrome_ = false;
-  bool installed_in_os_ = false;
-  bool is_diy_with_os_shortcut_ = false;
-  bool launchable_from_install_api_ = false;
-  // Having is_crafted_app_ and opens_in_dedicated_window_ set to true
-  // separately would result in matching any app for which either filter is
-  // true. So use a separate field for the combination of the two. In the
-  // future we might want to have a more generic "and" mechanism for filters.
-  bool is_crafted_app_and_opens_in_dedicated_window_ = false;
-  bool is_app_trusted_ = false;
-  bool is_isolated_apps_including_uninstalling_ = false;
-  bool is_app_suggested_from_migration_ = false;
-  bool is_app_surfaceable_to_user_ = false;
-  bool is_valid_migration_source_ = false;
-  bool is_app_eligible_for_manifest_update_ = false;
+  struct BinaryOp {
+    enum class Op { kAnd, kOr };
+    BinaryOp(std::unique_ptr<WebAppFilter> left,
+             std::unique_ptr<WebAppFilter> right,
+             Op op);
+    ~BinaryOp();
+    BinaryOp(const BinaryOp&);
+    BinaryOp(BinaryOp&&) noexcept;
+    BinaryOp& operator=(BinaryOp&&) noexcept;
+
+    std::unique_ptr<WebAppFilter> left;
+    std::unique_ptr<WebAppFilter> right;
+    Op op;
+  };
+
+  explicit WebAppFilter(LeafFilter leaf);
+  WebAppFilter(WebAppFilter left, WebAppFilter right, BinaryOp::Op op);
+
+  std::variant<LeafFilter, BinaryOp> data_;
 };
 
 }  // namespace web_app

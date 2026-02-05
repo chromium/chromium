@@ -60,6 +60,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "url/gurl.h"
@@ -261,6 +262,11 @@ bool WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
       return true;
   }
 }
+
+FindBestAppInScopeOptions::FindBestAppInScopeOptions(WebAppFilter filter)
+    : filter(std::move(filter)) {}
+
+FindBestAppInScopeOptions::~FindBestAppInScopeOptions() = default;
 
 WebAppRegistrar::WebAppRegistrar(Profile* profile) : profile_(profile) {}
 
@@ -990,7 +996,26 @@ bool WebAppRegistrar::IsInstallState(
 
 bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
                                  const WebAppFilter& filter) const {
-  if (filter.is_isolated_apps_including_uninstalling_) {
+  return std::visit(
+      absl::Overload{[&](const WebAppFilter::LeafFilter& leaf) {
+                       return AppMatches(app_id, leaf);
+                     },
+                     [&](const WebAppFilter::BinaryOp& bin_op) {
+                       switch (bin_op.op) {
+                         case WebAppFilter::BinaryOp::Op::kAnd:
+                           return AppMatches(app_id, *bin_op.left) &&
+                                  AppMatches(app_id, *bin_op.right);
+                         case WebAppFilter::BinaryOp::Op::kOr:
+                           return AppMatches(app_id, *bin_op.left) ||
+                                  AppMatches(app_id, *bin_op.right);
+                       }
+                     }},
+      filter.data_);
+}
+
+bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
+                                 const WebAppFilter::LeafFilter& filter) const {
+  if (filter.is_isolated_apps_including_uninstalling) {
     return IsIsolatedApp(app_id);
   }
 
@@ -1001,20 +1026,20 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return false;
   }
 
-  if (filter.is_app_eligible_for_manifest_update_) {
+  if (filter.is_app_eligible_for_manifest_update) {
     return true;
   }
 
-  if (filter.is_app_surfaceable_to_user_) {
+  if (filter.is_app_surfaceable_to_user) {
     return install_state != proto::SUGGESTED_FROM_MIGRATION;
   }
 
   if (install_state == proto::SUGGESTED_FROM_MIGRATION) {
-    return filter.is_app_suggested_from_migration_;
+    return filter.is_app_suggested_from_migration;
   }
 
   if (install_state == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
-    return filter.is_suggested_app_;
+    return filter.is_suggested_app;
   }
 
   // If the `DisplayMode` of a web app is undefined for whatever reason, it
@@ -1022,21 +1047,15 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
   DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
   bool opens_in_browser_tab = display_mode == DisplayMode::kBrowser ||
                               display_mode == DisplayMode::kUndefined;
-  if (filter.opens_in_browser_tab_) {
+  if (filter.opens_in_browser_tab) {
     return opens_in_browser_tab;
   }
 
-  if (filter.opens_in_dedicated_window_) {
+  if (filter.opens_in_dedicated_window) {
     return !opens_in_browser_tab;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (filter.captures_links_in_scope_) {
-    return CapturesLinksInScope(app_id);
-  }
-#endif
-
-  if (const auto& iwa_filter = filter.isolated_app_filter_) {
+  if (const auto& iwa_filter = filter.isolated_app_filter) {
     webapps::AppId iwa_app_id;
     if (IsIsolatedApp(app_id) && !iwa_filter->is_sub_app) {
       iwa_app_id = app_id;
@@ -1069,46 +1088,46 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return matches;
   }
 
-  if (filter.is_crafted_app_) {
+  if (filter.is_crafted_app) {
     return !IsDiyApp(app_id);
   }
 
-  if (filter.is_crafted_app_and_opens_in_dedicated_window_) {
+  if (filter.is_crafted_app_and_opens_in_dedicated_window) {
     return !IsDiyApp(app_id) &&
            GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
   }
 
-  if (filter.is_diy_with_os_shortcut_) {
+  if (filter.is_diy_with_os_shortcut) {
     const WebApp* app = GetAppById(app_id);
     return app && app->is_diy_app() &&
            install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
   }
 
-  if (filter.displays_badge_on_os_ || filter.supports_os_notifications_) {
+  if (filter.displays_badge_on_os || filter.supports_os_notifications) {
     return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
   }
 
-  if (filter.installed_in_chrome_) {
+  if (filter.installed_in_chrome) {
     return install_state == proto::INSTALLED_WITH_OS_INTEGRATION ||
            install_state == proto::INSTALLED_WITHOUT_OS_INTEGRATION;
   }
 
-  if (filter.installed_in_os_) {
+  if (filter.installed_in_os) {
     return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
   }
 
-  if (filter.launchable_from_install_api_) {
+  if (filter.launchable_from_install_api) {
     const WebApp* app = GetAppById(app_id);
     return (app && app->WasInstalledByUser()) ||
            GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
   }
 
-  if (filter.is_app_trusted_) {
+  if (filter.is_app_trusted) {
     const WebApp* app = GetAppById(app_id);
     return (app && app->WasInstalledByTrustedSources());
   }
 
-  if (filter.is_valid_migration_source_) {
+  if (filter.is_valid_migration_source) {
     return install_state == proto::INSTALLED_WITH_OS_INTEGRATION &&
            !IsInstalledByPolicy(app_id);
   }
@@ -1120,6 +1139,14 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     const GURL& url,
     const WebAppFilter& filter,
     WebAppScopeScoreOptions scope_score_options) const {
+  FindBestAppInScopeOptions options(filter);
+  options.scope_score_options = std::move(scope_score_options);
+  return FindBestAppWithUrlInScope(url, options);
+}
+
+std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
+    const GURL& url,
+    const FindBestAppInScopeOptions& options) const {
   if (!url.is_valid()) {
     return std::nullopt;
   }
@@ -1129,29 +1156,24 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
 
   for (const webapps::AppId& app_id :
        GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    if (!AppMatches(app_id, options.eligibility_filter)) {
+      continue;
+    }
+
     std::optional<WebAppScope> scope = GetEffectiveScope(app_id);
     if (!scope.has_value()) {
       continue;
     }
 
-    if (GetInstallState(app_id) == proto::SUGGESTED_FROM_MIGRATION &&
-        !filter.is_app_suggested_from_migration_) {
-      continue;
-    }
-
-    if (GetInstallState(app_id) == proto::SUGGESTED_FROM_ANOTHER_DEVICE &&
-        !filter.is_suggested_app_) {
-      continue;
-    }
-
-    int score = scope->GetScopeScore(url, scope_score_options);
+    int score = scope->GetScopeScore(url, options.scope_score_options);
     if (score > 0 && score > best_score) {
       best_app_id = app_id;
       best_score = score;
     }
   }
 
-  if (best_app_id.has_value() && AppMatches(best_app_id.value(), filter)) {
+  if (best_app_id.has_value() &&
+      AppMatches(best_app_id.value(), options.filter)) {
     return best_app_id;
   }
 
