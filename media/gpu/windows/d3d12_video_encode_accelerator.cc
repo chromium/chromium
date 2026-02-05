@@ -7,6 +7,7 @@
 #include <d3d11.h>
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
@@ -15,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -140,11 +140,8 @@ struct D3D12VideoEncodeAccelerator::InputFrameRef {
   bool resolve_shared_image_requested = false;
   bool resolving_shared_image = false;
   gpu::Mailbox shared_image_token;
-  Microsoft::WRL::ComPtr<ID3D12Resource> resolved_resource;
+  D3D12PictureBuffer resolved_picture;
   base::TimeTicks frame_encode_start_time = base::TimeTicks::Now();
-  // Fence value for GPU-side synchronization of the source texture when
-  // encoding shared images.
-  std::optional<uint64_t> source_texture_fence_value;
 };
 
 void GenerateResourceOnSynTokenReleased(
@@ -647,7 +644,7 @@ void D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   }
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource>
+D3D12PictureBuffer
 D3D12VideoEncodeAccelerator::CreateResourceForDXGIHandleBackedVideoFrame(
     const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
@@ -680,7 +677,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForDXGIHandleBackedVideoFrame(
   if (FAILED(hr)) {
     NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                  "Failed to OpenSharedHandle for input_texture"});
-    return nullptr;
+    return {};
   }
 
   if (caching_enabled) {
@@ -689,14 +686,14 @@ D3D12VideoEncodeAccelerator::CreateResourceForDXGIHandleBackedVideoFrame(
   return input_texture;
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource>
+D3D12PictureBuffer
 D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (frame.storage_type() != VideoFrame::STORAGE_SHMEM &&
       frame.storage_type() != VideoFrame::STORAGE_UNOWNED_MEMORY) {
     LOG(ERROR) << "Unsupported frame storage type for mapping";
-    return nullptr;
+    return {};
   }
   CHECK(frame.IsMappable());
 
@@ -712,7 +709,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
         IID_PPV_ARGS(&input_texture_));
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
-      return nullptr;
+      return {};
     }
     std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
         "D3D12VEA input_texture_ %dx%d", config_.input_visible_size.width(),
@@ -736,7 +733,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
         IID_PPV_ARGS(&upload_buffer_));
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
-      return nullptr;
+      return {};
     }
     std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
         "D3D12VEA upload_buffer_ %dx%d", config_.input_visible_size.width(),
@@ -748,7 +745,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     ScopedD3D12ResourceMap map;
     if (!map.Map(upload_buffer_.Get())) {
       LOG(ERROR) << "Failed to map upload_buffer";
-      return nullptr;
+      return {};
     }
     scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
         PIXEL_FORMAT_NV12, config_.input_visible_size,
@@ -759,21 +756,24 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
         frame_converter_.ConvertAndScale(frame, *upload_frame);
     if (!result.is_ok()) {
       LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
-      return nullptr;
+      return {};
     }
   }
 
-  copy_command_queue_->CopyBufferToNV12Texture(
-      input_texture_.Get(), upload_buffer_.Get(), 0, y_size.width(), uv_offset,
-      uv_size.width());
-
-  // TODO(crbug.com/382316466): Let command queue wait on the GPU
-  if (!copy_command_queue_->ExecuteAndWait()) {
-    LOG(ERROR) << "Failed to ExecuteAndWait copy_command_list";
-    return nullptr;
+  if (!copy_command_queue_->CopyBufferToNV12Texture(
+          input_texture_.Get(), upload_buffer_.Get(), 0, y_size.width(),
+          uv_offset, uv_size.width())) {
+    LOG(ERROR) << "Failed to CopyBufferToNV12Texture";
+    return {};
   }
 
-  return input_texture_;
+  auto fence_and_value = copy_command_queue_->Execute();
+  if (!fence_and_value.first) {
+    LOG(ERROR) << "Failed to Execute on copy_command_list";
+    return {};
+  }
+
+  return {input_texture_, 0, fence_and_value};
 }
 
 void D3D12VideoEncodeAccelerator::EncodeTask(
@@ -819,7 +819,8 @@ void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
     auto& next_input = input_frames_queue_.front();
     if (next_input.resolving_shared_image ||
         (!next_input.frame->HasMappableSharedImage() &&
-         next_input.frame->HasSharedImage() && !next_input.resolved_resource)) {
+         next_input.frame->HasSharedImage() &&
+         !next_input.resolved_picture.resource)) {
       // D3D12 VEA encodes frames one-by-one, so we will not try following
       // frames.
       break;
@@ -844,10 +845,10 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
   scoped_refptr<VideoFrame> frame = input_frame.frame;
-  Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
+  D3D12PictureBuffer picture_buffer;
   if (frame->HasMappableSharedImage()) {
     if (frame->HasNativeMappableSharedImage()) {
-      input_texture = CreateResourceForDXGIHandleBackedVideoFrame(*frame);
+      picture_buffer = CreateResourceForDXGIHandleBackedVideoFrame(*frame);
     } else {
       frame = ConvertToMemoryMappedFrame(std::move(frame));
       if (!frame) {
@@ -855,37 +856,23 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
             {EncoderStatus::Codes::kInvalidInputFrame,
              "Failed to convert shared memory mappable SI for encoding"});
       }
-      input_texture = CreateResourceForSharedMemoryVideoFrame(*frame);
+      picture_buffer = CreateResourceForSharedMemoryVideoFrame(*frame);
     }
   } else if (frame->storage_type() == VideoFrame::STORAGE_SHMEM) {
-    input_texture = CreateResourceForSharedMemoryVideoFrame(*frame);
+    picture_buffer = CreateResourceForSharedMemoryVideoFrame(*frame);
   } else if (frame->HasSharedImage()) {
-    input_texture = input_frame.resolved_resource;
-
-    // TODO(crbug.com/382316466): This CPU-side wait is a temporary solution.
-    // The plan is to replace this with proper GPU-side synchronization (for
-    // example, making the D3D12 VP/encoder command queue wait on the shared
-    // fence).
-    CHECK(source_texture_fence_);
-    CHECK(input_frame.source_texture_fence_value.has_value());
-    auto fence = base::MakeRefCounted<D3D12Fence>(
-        source_texture_fence_->GetD3D12Fence());
-    if (fence->WaitCPU(*input_frame.source_texture_fence_value) !=
-        D3D11StatusCode::kOk) {
-      return NotifyError({EncoderStatus::Codes::kSystemAPICallError,
-                          "Failed to wait shared fence on CPU side"});
-    }
+    picture_buffer = input_frame.resolved_picture;
   } else {
     return NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                         "Unsupported frame storage type for encoding"});
   }
-  if (!input_texture) {
+  if (!picture_buffer.resource) {
     return NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                         "Failed to create input_texture"});
   }
 
   auto result_or_error =
-      encoder_->Encode(input_texture, 0, frame->ColorSpace(), bitstream_buffer,
+      encoder_->Encode(picture_buffer, frame->ColorSpace(), bitstream_buffer,
                        input_frame.options);
   if (!result_or_error.has_value()) {
     return NotifyError(std::move(result_or_error).error());
@@ -1050,12 +1037,12 @@ void D3D12VideoEncodeAccelerator::OnSharedImageResolved(
   }
 
   // Find the matching frame in the queue and update it.
-  auto it = std::find_if(input_frames_queue_.begin(), input_frames_queue_.end(),
-                         [&](InputFrameRef& input_frame) {
-                           return input_frame.resolving_shared_image &&
-                                  input_frame.shared_image_token ==
-                                      frame->shared_image()->mailbox();
-                         });
+  auto it = std::ranges::find_if(input_frames_queue_,
+                                 [&](const InputFrameRef& input_frame) {
+                                   return input_frame.resolving_shared_image &&
+                                          input_frame.shared_image_token ==
+                                              frame->shared_image()->mailbox();
+                                 });
 
   if (it == input_frames_queue_.end()) {
     return NotifyError(
@@ -1063,8 +1050,11 @@ void D3D12VideoEncodeAccelerator::OnSharedImageResolved(
          "Failed to find input frame for resolved shared image"});
   }
   it->resolving_shared_image = false;
-  it->resolved_resource = std::move(input_texture);
-  it->source_texture_fence_value = source_texture_fence_value;
+  it->resolved_picture = {
+      std::move(input_texture),
+      0,
+      {source_texture_fence_->GetD3D12Fence(), source_texture_fence_value},
+  };
 
   // Check if we can encode the front frames now.
   TryEncodeFrames();

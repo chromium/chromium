@@ -4,8 +4,6 @@
 
 #include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 
-#include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_barriers.h"
-
 namespace media {
 
 // static
@@ -64,18 +62,22 @@ D3D12CopyCommandQueueWrapper::D3D12CopyCommandQueueWrapper(
 
 D3D12CopyCommandQueueWrapper::~D3D12CopyCommandQueueWrapper() = default;
 
-void D3D12CopyCommandQueueWrapper::CopyTextureRegion(
+bool D3D12CopyCommandQueueWrapper::CopyTextureRegion(
     const D3D12_TEXTURE_COPY_LOCATION& dst_location,
     uint32_t x,
     uint32_t y,
     uint32_t z,
     const D3D12_TEXTURE_COPY_LOCATION& src_location,
     const D3D12_BOX* src_box) {
+  if (!is_open_ && !Reset()) {
+    return false;
+  }
   command_list_->CopyTextureRegion(&dst_location, x, y, z, &src_location,
                                    src_box);
+  return true;
 }
 
-void D3D12CopyCommandQueueWrapper::CopyBufferToNV12Texture(
+bool D3D12CopyCommandQueueWrapper::CopyBufferToNV12Texture(
     ID3D12Resource* target_texture,
     ID3D12Resource* source_buffer,
     uint32_t y_offset,
@@ -88,64 +90,73 @@ void D3D12CopyCommandQueueWrapper::CopyBufferToNV12Texture(
   // The COPY_SOURCE/COPY_DEST states can be promote/decayed. So the resource
   // barriers are not necessary here. See
   // https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#common-state-promotion
-  CopyTextureRegion(
-      {.pResource = target_texture,
-       .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
-       .SubresourceIndex = 0},
-      0, 0, 0,
-      {.pResource = source_buffer,
-       .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
-       .PlacedFootprint = {
-           .Offset = y_offset,
-           .Footprint = {.Format = DXGI_FORMAT_R8_TYPELESS,
-                         .Width = static_cast<UINT>(target_texture_desc.Width),
-                         .Height = target_texture_desc.Height,
-                         .Depth = 1,
-                         .RowPitch = y_stride},
-       }});
-  CopyTextureRegion(
-      {.pResource = target_texture,
-       .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
-       .SubresourceIndex = 1},
-      0, 0, 0,
-      {.pResource = source_buffer,
-       .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
-       .PlacedFootprint = {
-           .Offset = uv_offset,
-           .Footprint = {.Format = DXGI_FORMAT_R8G8_TYPELESS,
-                         .Width =
-                             static_cast<UINT>(target_texture_desc.Width + 1) /
-                             2,
-                         .Height = (target_texture_desc.Height + 1) / 2,
-                         .Depth = 1,
-                         .RowPitch = uv_stride},
-       }});
+  return CopyTextureRegion(
+             {.pResource = target_texture,
+              .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+              .SubresourceIndex = 0},
+             0, 0, 0,
+             {.pResource = source_buffer,
+              .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+              .PlacedFootprint =
+                  {
+                      .Offset = y_offset,
+                      .Footprint = {.Format = DXGI_FORMAT_R8_TYPELESS,
+                                    .Width = static_cast<UINT>(
+                                        target_texture_desc.Width),
+                                    .Height = target_texture_desc.Height,
+                                    .Depth = 1,
+                                    .RowPitch = y_stride},
+                  }}) &&
+         CopyTextureRegion(
+             {.pResource = target_texture,
+              .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+              .SubresourceIndex = 1},
+             0, 0, 0,
+             {.pResource = source_buffer,
+              .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+              .PlacedFootprint = {
+                  .Offset = uv_offset,
+                  .Footprint = {.Format = DXGI_FORMAT_R8G8_TYPELESS,
+                                .Width = static_cast<UINT>(
+                                             target_texture_desc.Width + 1) /
+                                         2,
+                                .Height = (target_texture_desc.Height + 1) / 2,
+                                .Depth = 1,
+                                .RowPitch = uv_stride},
+              }});
 }
 
-bool D3D12CopyCommandQueueWrapper::ExecuteAndWait() {
+D3D12FenceAndValue D3D12CopyCommandQueueWrapper::Execute() {
   HRESULT hr = command_list_->Close();
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to close d3d12 copy command list: "
                << logging::SystemErrorCodeToString(hr);
-    return false;
+    return {};
   }
+  is_open_ = false;
 
   ID3D12CommandList* command_lists[] = {command_list_.Get()};
   command_queue_->ExecuteCommandLists(1, command_lists);
-  D3D11Status status = fence_->SignalAndWaitCPU(*command_queue_.Get());
-  if (!status.is_ok()) {
-    LOG(ERROR) << "Failed to SignalAndWait: " << status.message();
-    return false;
+  auto value_or_error = fence_->Signal(*command_queue_.Get());
+  if (!value_or_error.has_value()) {
+    LOG(ERROR) << "Failed to call Signal: "
+               << std::move(value_or_error).error().message();
+    return {};
   }
-  return Reset();
+  return {fence_->Get(), std::move(value_or_error).value()};
 }
 
 bool D3D12CopyCommandQueueWrapper::Reset() {
-  HRESULT hr = command_allocator_->Reset();
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to reset d3d12 copy command allocator: "
-               << logging::SystemErrorCodeToString(hr);
-    return false;
+  HRESULT hr;
+  // Resetting command allocator is only valid after the GPU has finished
+  // executing all command lists that were recorded with it.
+  if (fence_->GetCompletedValue() >= fence_->Value()) {
+    hr = command_allocator_->Reset();
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to reset d3d12 copy command allocator: "
+                 << logging::SystemErrorCodeToString(hr);
+      return false;
+    }
   }
   hr = command_list_->Reset(command_allocator_.Get(), nullptr);
   if (FAILED(hr)) {
@@ -153,6 +164,7 @@ bool D3D12CopyCommandQueueWrapper::Reset() {
                << logging::SystemErrorCodeToString(hr);
     return false;
   }
+  is_open_ = true;
   return true;
 }
 

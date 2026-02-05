@@ -263,8 +263,7 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
         .WillRepeatedly(Return(kStreamSize));
 
     auto result = encoder_delegate_->Encode(
-        input_frame.Get(), 0 /*input_frame_subresource*/,
-        gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        {input_frame.Get()}, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
         VideoEncoder::EncodeOptions());
     EXPECT_EQ(result.has_value(), true);
     auto [bitstream_buffer_id, metadata] = std::move(result).value();
@@ -307,9 +306,9 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {
 
     VideoEncoder::EncodeOptions options;
     options.quantizer = quantizers[i];
-    auto result = encoder_delegate_->Encode(
-        input_frame.Get(), 0 /*input_frame_subresource*/,
-        gfx::ColorSpace::CreateSRGB(), bitstream_buffer, options);
+    auto result = encoder_delegate_->Encode({input_frame.Get()},
+                                            gfx::ColorSpace::CreateSRGB(),
+                                            bitstream_buffer, options);
     EXPECT_EQ(result.has_value(), true);
     auto [bitstream_buffer_id, metadata] = std::move(result).value();
     EXPECT_EQ(metadata.qp, quantizers[i]);

@@ -15,4 +15,7 @@ D3D12ResourceMock::~D3D12ResourceMock() = default;
 D3D12GraphicsCommandListMock::D3D12GraphicsCommandListMock() = default;
 D3D12GraphicsCommandListMock::~D3D12GraphicsCommandListMock() = default;
 
+D3D12FenceMock::D3D12FenceMock() = default;
+D3D12FenceMock::~D3D12FenceMock() = default;
+
 }  // namespace media

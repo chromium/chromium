@@ -14,6 +14,25 @@
 
 namespace media {
 
+D3D12PictureBuffer::D3D12PictureBuffer(
+    const Microsoft::WRL::ComPtr<ID3D12Resource>& resource,
+    UINT subresource,
+    const D3D12FenceAndValue& fence_and_value)
+    : resource(resource),
+      subresource(subresource),
+      fence_and_value(fence_and_value) {}
+
+D3D12PictureBuffer::~D3D12PictureBuffer() = default;
+
+D3D12PictureBuffer::D3D12PictureBuffer(const D3D12PictureBuffer& other) =
+    default;
+D3D12PictureBuffer::D3D12PictureBuffer(D3D12PictureBuffer&& other) noexcept =
+    default;
+D3D12PictureBuffer& D3D12PictureBuffer::operator=(
+    const D3D12PictureBuffer& other) = default;
+D3D12PictureBuffer& D3D12PictureBuffer::operator=(
+    D3D12PictureBuffer&& other) noexcept = default;
+
 D3D12ReferenceFrameList::D3D12ReferenceFrameList(ComD3D12VideoDecoderHeap heap)
     : heap_(std::move(heap)) {
   std::fill(heaps_.begin(), heaps_.end(), heap_.Get());

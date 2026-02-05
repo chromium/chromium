@@ -10,13 +10,15 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 
 namespace media {
 
 // D3D12Fence wraps a ID3D12Fence pointer and its last signaled fence value.
-class D3D12Fence : public base::RefCountedThreadSafe<D3D12Fence> {
+class MEDIA_GPU_EXPORT D3D12Fence
+    : public base::RefCountedThreadSafe<D3D12Fence> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
@@ -25,6 +27,9 @@ class D3D12Fence : public base::RefCountedThreadSafe<D3D12Fence> {
   static scoped_refptr<D3D12Fence> Create(
       ID3D12Device* device,
       D3D12_FENCE_FLAGS flags = D3D12_FENCE_FLAG_NONE);
+
+  // Get the underlying ID3D12Fence pointer.
+  ID3D12Fence* Get() const;
 
   // Get the last signaled fence value.
   uint64_t Value() const;

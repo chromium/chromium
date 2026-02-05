@@ -64,8 +64,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   // Do video processing if the input frame format or resolution is not
   // expected and then call |EncodeImpl()|.
   virtual EncoderStatus::Or<EncodeResult> Encode(
-      Microsoft::WRL::ComPtr<ID3D12Resource> input_frame,
-      UINT input_frame_subresource,
+      D3D12PictureBuffer picture_buffer,
       const gfx::ColorSpace& input_frame_color_space,
       const BitstreamBuffer& bitstream_buffer,
       const VideoEncoder::EncodeOptions& options);

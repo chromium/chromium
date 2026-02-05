@@ -9,6 +9,7 @@
 
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d12_fence.h"
+#include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -27,16 +28,21 @@ class MEDIA_GPU_EXPORT D3D12VideoProcessorWrapper {
   // initialization was successful.
   virtual bool Init();
 
+  // Wait until the GPU has finished processing the previous frames. The fence
+  // must not be null. Returns whether the wait was successful.
+  virtual bool Wait(D3D12FenceAndValue fence_and_value);
+
   // Processes the |input_texture| and writes the result to |output_texture|.
-  // Returns whether the processing was successful.
-  virtual bool ProcessFrames(ID3D12Resource* input_texture,
-                             UINT input_subresource,
-                             const gfx::ColorSpace& input_color_space,
-                             const gfx::Rect& input_rectangle,
-                             ID3D12Resource* output_texture,
-                             UINT output_subresource,
-                             const gfx::ColorSpace& output_color_space,
-                             const gfx::Rect& output_rectangle);
+  // Returns {nullptr, 0} on failure, otherwise returns a valid fence and value.
+  virtual D3D12FenceAndValue ProcessFrames(
+      ID3D12Resource* input_texture,
+      UINT input_subresource,
+      const gfx::ColorSpace& input_color_space,
+      const gfx::Rect& input_rectangle,
+      ID3D12Resource* output_texture,
+      UINT output_subresource,
+      const gfx::ColorSpace& output_color_space,
+      const gfx::Rect& output_rectangle);
 
  private:
   ComD3D12Device device_;

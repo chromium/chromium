@@ -113,11 +113,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
       uint32_t framerate,
       const std::optional<gfx::Size>& size);
 
-  Microsoft::WRL::ComPtr<ID3D12Resource>
-  CreateResourceForDXGIHandleBackedVideoFrame(const VideoFrame& frame);
+  D3D12PictureBuffer CreateResourceForDXGIHandleBackedVideoFrame(
+      const VideoFrame& frame);
 
-  Microsoft::WRL::ComPtr<ID3D12Resource>
-  CreateResourceForSharedMemoryVideoFrame(const VideoFrame& frame);
+  D3D12PictureBuffer CreateResourceForSharedMemoryVideoFrame(
+      const VideoFrame& frame);
 
   void EncodeTask(scoped_refptr<VideoFrame> frame,
                   const VideoEncoder::EncodeOptions& options);

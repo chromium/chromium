@@ -417,6 +417,33 @@ class D3D12GraphicsCommandListMock
                             UINT64 CountBufferOffset));
 };
 
+class D3D12FenceMock
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ID3D12Fence> {
+ public:
+  D3D12FenceMock();
+  ~D3D12FenceMock() override;
+
+  // Interfaces of ID3D12Object
+
+  MOCK_STDCALL_METHOD3(GetPrivateData, HRESULT(REFGUID, UINT*, void*));
+  MOCK_STDCALL_METHOD3(SetPrivateData, HRESULT(REFGUID, UINT, const void*));
+  MOCK_STDCALL_METHOD2(SetPrivateDataInterface,
+                       HRESULT(REFGUID, const IUnknown*));
+  MOCK_STDCALL_METHOD1(SetName, HRESULT(LPCWSTR));
+
+  // Interface of ID3D12DeviceChild
+
+  MOCK_STDCALL_METHOD2(GetDevice, HRESULT(REFIID riid, void** ppvDevice));
+
+  // Interfaces of ID3D12Fence
+
+  MOCK_STDCALL_METHOD0(GetCompletedValue, UINT64(void));
+  MOCK_STDCALL_METHOD2(SetEventOnCompletion, HRESULT(UINT64, HANDLE));
+  MOCK_STDCALL_METHOD1(Signal, HRESULT(UINT64));
+};
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_D3D12_MOCKS_H_

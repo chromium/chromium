@@ -172,6 +172,15 @@ bool D3D12VideoEncoderWrapper::Initialize(uint32_t max_subregions_number) {
   return true;
 }
 
+bool D3D12VideoEncoderWrapper::Wait(D3D12FenceAndValue fence_and_value) {
+  auto [fence, value] = fence_and_value;
+  CHECK(fence);
+  HRESULT hr = command_queue_->Wait(fence.Get(), value);
+  RETURN_ON_HR_FAILURE(hr, "Failed to wait on video encoder command queue",
+                       false);
+  return true;
+}
+
 EncoderStatus D3D12VideoEncoderWrapper::Encode(
     const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS& input_arguments,
     const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE& reconstructed_picture) {

@@ -64,7 +64,19 @@ bool D3D12VideoProcessorWrapper::Init() {
   return true;
 }
 
-bool D3D12VideoProcessorWrapper::ProcessFrames(
+bool D3D12VideoProcessorWrapper::Wait(D3D12FenceAndValue fence_and_value) {
+  auto [fence, value] = fence_and_value;
+  CHECK(fence);
+  HRESULT hr = command_queue_->Wait(fence.Get(), value);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "D3D12 video process command queue wait failed: "
+                << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  return true;
+}
+
+D3D12FenceAndValue D3D12VideoProcessorWrapper::ProcessFrames(
     ID3D12Resource* input_texture,
     UINT input_subresource,
     const gfx::ColorSpace& input_color_space,
@@ -120,7 +132,7 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
     }
     if (support.SupportFlags != D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED) {
       DLOG(ERROR) << "D3D12 cannot support video processing.";
-      return false;
+      return {};
     }
 
     hr = video_device_->CreateVideoProcessor(0, &output_stream_desc, 1,
@@ -129,7 +141,7 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
     if (FAILED(hr)) {
       DLOG(ERROR) << "Create video processor failed: "
                   << logging::SystemErrorCodeToString(hr);
-      return false;
+      return {};
     }
     input_stream_desc_ = input_stream_desc;
     output_stream_desc_ = output_stream_desc;
@@ -139,14 +151,14 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Reset video process command allocator failed:"
                 << logging::SystemErrorCodeToString(hr);
-    return false;
+    return {};
   }
 
   hr = command_list_->Reset(command_allocator_.Get());
   if (FAILED(hr)) {
     DLOG(ERROR) << "Reset video process command list failed:"
                 << logging::SystemErrorCodeToString(hr);
-    return false;
+    return {};
   }
 
   std::vector<D3D12_RESOURCE_BARRIER> resource_barriers;
@@ -185,14 +197,19 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Close video process command list failed:"
                 << logging::SystemErrorCodeToString(hr);
-    return false;
+    return {};
   }
 
   ID3D12CommandList* command_list = command_list_.Get();
   command_queue_->ExecuteCommandLists(1, &command_list);
 
-  return fence_->SignalAndWaitCPU(*command_queue_.Get()) ==
-         D3D11StatusCode::kOk;
+  auto value_or_error = fence_->Signal(*command_queue_.Get());
+  if (!value_or_error.has_value()) {
+    DLOG(ERROR) << "Failed to call Signal: "
+                << std::move(value_or_error).error().message();
+    return {};
+  }
+  return {fence_->Get(), std::move(value_or_error).value()};
 }
 
 }  // namespace media

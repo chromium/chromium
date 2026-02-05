@@ -34,6 +34,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncoderWrapper {
   // should be 1.
   virtual bool Initialize(uint32_t max_subregions_number);
 
+  // Wait for the fence to reach the value before executing further commands.
+  // The fence must not be null. Returns whether the wait is successful.
+  virtual bool Wait(D3D12FenceAndValue fence_and_value);
+
   // Do the encode and wait for the completion of the encoding.
   virtual EncoderStatus Encode(
       const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS& input_arguments,
