@@ -529,7 +529,7 @@ TEST_F(RemoteSuggestionsServiceTest, CrOSOverridenOrAppendedQueryParams) {
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
-       AimToolModeQueryParamsAppendedIfAvailable) {
+       AimInputStateQueryParamsAppendedIfAvailable) {
   // Set up a Google search provider.
   TemplateURLData google_template_url_data;
   google_template_url_data.SetURL(
@@ -542,14 +542,16 @@ TEST_F(RemoteSuggestionsServiceTest,
   TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
   search_terms_args.input_state.active_tool =
       omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+  search_terms_args.input_state.active_model =
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
   GURL url = RemoteSuggestionsService::EndpointUrl(
       google_template_url, search_terms_args, SearchTermsData());
 
-  // `azm` param should be getting attached as a URL param and the
+  // `azm` and 'sam' should be getting attached as URL params and the
   // chrome-compose param should not be getting overridden.
-  ASSERT_EQ(
-      url.spec(),
-      "https://www.google.com/suggest?q=query&client=chrome-compose&azm=1");
+  ASSERT_EQ(url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-compose&azm=1&sam=1");
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
