@@ -433,6 +433,18 @@
       + var(--composebox-last-icon-inline-end));
 }
 
+/* When Deep Search is active lens buttion is hidden so we move the voice icon to the far right. */
+:host([is-side-panel][active-tool-mode_='1']) #composebox::part(voice-icon) {
+  inset-inline-end: 14px;
+}
+
+/* When Deep Search is active, lens button is hidden, and submit is enabled */
+:host([is-side-panel][active-tool-mode_='1']) #composebox[submit-enabled_]::part(voice-icon) {
+  inset-inline-end: calc(var(--composebox-submit-container-size)
+      + var(--icon-menu-spacing)
+      + var(--composebox-submit-container-inline-end));
+}
+
 #composebox::part(voice-close-button) {
  --cr-icon-button-size: var(--composebox-cancel-button-size);
  inset-inline-end: var(--cancel-button-inline-end);

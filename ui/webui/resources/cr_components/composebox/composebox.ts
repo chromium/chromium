@@ -142,6 +142,7 @@ export class ComposeboxElement extends I18nMixinLit
       },
       activeToolMode_: {
         type: Number,
+        reflect: true,
       },
       /**
        * Feature flag for New Tab Page Realbox Next.
@@ -922,6 +923,10 @@ export class ComposeboxElement extends I18nMixinLit
   protected async onSetToolMode_(
       e: CustomEvent<{tool: ToolMode, enabled: boolean}>) {
     await this.handleToolMode_(e.detail.tool, e.detail.enabled);
+    }
+
+  get activeToolMode(): ToolMode {
+    return this.activeToolMode_;
   }
 
   private async handleToolMode_(tool: ToolMode, enabled: boolean) {
@@ -936,6 +941,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (tool !== ToolMode.kCanvas) {
       this.updateInputPlaceholder_();
     }
+    this.fire('active-tool-mode-changed', {value: this.activeToolMode_});
 
     await this.updateComplete;
     this.focusInput();
