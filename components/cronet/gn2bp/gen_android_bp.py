@@ -2674,6 +2674,14 @@ def _is_cflag_allowed(cflag):
       '-DUNSAFE_BUFFERS_BUILD',
       '-Wunsafe-buffer-usage',
       '-Wno-error=unsafe-buffer-usage',
+      # Causes Soong to fail with:
+      #   "Bad flag: `-gsplit-dwarf`, soong cannot track dependencies to split dwarf debuginfo"
+      # See https://crbug.com/481594099
+      '-gsplit-dwarf',
+      # Causes the build to fail with:
+      #   clang++-real: error: unknown argument: '-fsanitize-ignore-for-ubsan-feature=array-bounds'
+      # See https://crbug.com/481594099
+      '-fsanitize-ignore-for-ubsan-feature=array-bounds',
   ])
 
 def _get_cflags(cflags, defines):
