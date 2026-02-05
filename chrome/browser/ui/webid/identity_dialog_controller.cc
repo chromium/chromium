@@ -184,13 +184,13 @@ bool IdentityDialogController::ShowAccountsDialog(
         // explicitly requested an account to be automatically selected. This
         // could happen if the account was revoked between being shown to the
         // user and the actor login request being sent.
-        std::move(actor_login_request->on_federated_token_received_callback())
-            .Run(/*token_received=*/false);
+        actor_login_request->on_federated_result_received_callback().Run(
+            FederatedLoginResult::kFailure);
         return false;
       }
     }
-    std::move(actor_login_request->on_federated_token_received_callback())
-        .Run(/*token_received=*/false);
+    actor_login_request->on_federated_result_received_callback().Run(
+        FederatedLoginResult::kFailure);
     return false;
   }
 
@@ -343,8 +343,9 @@ void IdentityDialogController::OnFlowCompleted(bool success) {
   FederatedActorLoginRequest* actor_login_request =
       FederatedActorLoginRequest::Get(rp_web_contents_);
   if (actor_login_request) {
-    std::move(actor_login_request->on_federated_token_received_callback())
-        .Run(success);
+    actor_login_request->on_federated_result_received_callback().Run(
+        success ? FederatedLoginResult::kSuccess
+                : FederatedLoginResult::kFailure);
   }
 }
 
@@ -433,6 +434,12 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
 
   did_invoke_show_ui_ = true;
   did_show_ui_ = true;
+  FederatedActorLoginRequest* actor_login_request =
+      FederatedActorLoginRequest::Get(rp_web_contents_);
+  if (actor_login_request) {
+    actor_login_request->on_federated_result_received_callback().Run(
+        FederatedLoginResult::kContinuation);
+  }
   // Show the modal dialog even if FedCM UI is not being shown.
   return account_view_->ShowModalDialog(url, rp_mode);
 }

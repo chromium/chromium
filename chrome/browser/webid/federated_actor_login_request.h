@@ -15,7 +15,14 @@ namespace content {
 class WebContents;
 }
 
-using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
+enum class FederatedLoginResult {
+  kSuccess = 0,
+  kFailure,
+  kContinuation,
+};
+
+using OnFederatedResultReceivedCallback =
+    base::RepeatingCallback<void(FederatedLoginResult)>;
 
 // Represents an actor login request. The actor may choose to request
 // a federated token from a specific account, and request to be notified when
@@ -26,7 +33,7 @@ class FederatedActorLoginRequest
   FederatedActorLoginRequest(content::WebContents* web_contents,
                              const url::Origin& idp_origin,
                              const std::string& account_id,
-                             OnFederatedTokenReceivedCallback callback);
+                             OnFederatedResultReceivedCallback callback);
   FederatedActorLoginRequest(const FederatedActorLoginRequest&) = delete;
   FederatedActorLoginRequest& operator=(const FederatedActorLoginRequest&) =
       delete;
@@ -34,8 +41,9 @@ class FederatedActorLoginRequest
 
   const url::Origin& idp_origin() const { return idp_origin_; }
   const std::string& account_id() const { return account_id_; }
-  OnFederatedTokenReceivedCallback on_federated_token_received_callback() {
-    return std::move(on_federated_token_received_callback_);
+  OnFederatedResultReceivedCallback on_federated_result_received_callback()
+      const {
+    return on_federated_result_received_callback_;
   }
 
   // Sets the actor login request information. This is used to know whether a
@@ -44,7 +52,7 @@ class FederatedActorLoginRequest
   static void Set(content::WebContents* web_contents,
                   const url::Origin& idp_origin,
                   const std::string& account_id,
-                  OnFederatedTokenReceivedCallback callback);
+                  OnFederatedResultReceivedCallback callback);
   static void Unset(content::WebContents* web_contents);
   static FederatedActorLoginRequest* Get(content::WebContents* web_contents);
 
@@ -53,7 +61,7 @@ class FederatedActorLoginRequest
  private:
   url::Origin idp_origin_;
   std::string account_id_;
-  OnFederatedTokenReceivedCallback on_federated_token_received_callback_;
+  OnFederatedResultReceivedCallback on_federated_result_received_callback_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_ACTOR_LOGIN_REQUEST_H_

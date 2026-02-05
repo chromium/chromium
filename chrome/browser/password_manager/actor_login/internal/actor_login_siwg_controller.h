@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/actor_login/internal/siwg_button_finder.h"
+#include "chrome/browser/webid/federated_actor_login_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
@@ -87,7 +88,7 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
 
   void OnClickFinished(actor::mojom::ActionResultPtr result);
 
-  void OnFederatedLoginCompleted(bool success);
+  void OnFederatedLoginResultReceived(FederatedLoginResult result);
 
   GetPageContentProvider get_page_content_provider_;
   std::unique_ptr<SiwgButtonFinder> siwg_finder_;

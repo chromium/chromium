@@ -14,11 +14,11 @@ FederatedActorLoginRequest::FederatedActorLoginRequest(
     content::WebContents* web_contents,
     const url::Origin& idp_origin,
     const std::string& account_id,
-    OnFederatedTokenReceivedCallback callback)
+    OnFederatedResultReceivedCallback callback)
     : content::WebContentsUserData<FederatedActorLoginRequest>(*web_contents),
       idp_origin_(idp_origin),
       account_id_(account_id),
-      on_federated_token_received_callback_(std::move(callback)) {}
+      on_federated_result_received_callback_(callback) {}
 
 FederatedActorLoginRequest::~FederatedActorLoginRequest() = default;
 
@@ -27,7 +27,7 @@ void FederatedActorLoginRequest::Set(
     content::WebContents* web_contents,
     const url::Origin& idp_origin,
     const std::string& account_id,
-    OnFederatedTokenReceivedCallback callback) {
+    OnFederatedResultReceivedCallback callback) {
   web_contents->SetUserData(
       FederatedActorLoginRequest::UserDataKey(),
       std::make_unique<FederatedActorLoginRequest>(

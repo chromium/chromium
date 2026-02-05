@@ -64,8 +64,9 @@ void ActorLoginSiwgController::StartFederatedLogin(
   FederatedActorLoginRequest::Set(
       web_contents(), credential.federation_detail->idp_origin,
       credential.federation_detail->account_id,
-      base::BindOnce(&ActorLoginSiwgController::OnFederatedLoginCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &ActorLoginSiwgController::OnFederatedLoginResultReceived,
+          weak_ptr_factory_.GetWeakPtr()));
 
   ClickSiwgButton();
 }
@@ -79,14 +80,17 @@ void ActorLoginSiwgController::ClickSiwgButton() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ActorLoginSiwgController::OnFederatedLoginCompleted(bool success) {
+void ActorLoginSiwgController::OnFederatedLoginResultReceived(
+    FederatedLoginResult result) {
   if (!on_finished_callback_) {
     return;
   }
-  if (success) {
+  if (result == FederatedLoginResult::kSuccess) {
     std::move(on_finished_callback_)
         // TODO(crbug.com/478799141): add new status for SiwG success.
         .Run(LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  } else if (result == FederatedLoginResult::kContinuation) {
+    // TODO(crbug.com/481685277): handle the continuation case.
   } else {
     std::move(on_finished_callback_)
         // TODO(crbug.com/478799141): add new status for SiwG failure.
