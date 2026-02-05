@@ -28,9 +28,12 @@ class XRSwapChain : public GarbageCollected<XRSwapChain<Texture>> {
   virtual ~XRSwapChain() = default;
 
   Texture* GetCurrentTexture() {
-    texture_queried_ = true;
     if (!current_texture_) {
       current_texture_ = ProduceTexture();
+    }
+    if (!texture_queried_) {
+      texture_queried_ = true;
+      OnTextureQueried();
     }
     return current_texture_;
   }
@@ -53,6 +56,7 @@ class XRSwapChain : public GarbageCollected<XRSwapChain<Texture>> {
   // Produces a new Texture for the swap chain. Will not be called again unless
   // the current texture is reset.
   virtual Texture* ProduceTexture() = 0;
+  virtual void OnTextureQueried() {}
 
   // Resets the cached texture so that next GetCurrentTexture call will trigger
   // a ProduceTexture call.

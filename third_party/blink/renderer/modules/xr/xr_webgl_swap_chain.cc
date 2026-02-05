@@ -20,6 +20,12 @@ XRWebGLSwapChain::XRWebGLSwapChain(
   CHECK(context);
 }
 
+void XRWebGLSwapChain::OnTextureQueried() {
+  if (descriptor().clear_on_access) {
+    ClearCurrentTexture();
+  }
+}
+
 // Clears the contents of the current texture to transparent black or 0 (for
 // depth/stencil textures).
 void XRWebGLSwapChain::ClearCurrentTexture() {
@@ -153,8 +159,6 @@ WebGLUnownedTexture* XRWebGLStaticSwapChain::ProduceTexture() {
 }
 
 void XRWebGLStaticSwapChain::OnFrameEnd() {
-  ClearCurrentTexture();
-
   // Intentionally not calling ResetCurrentTexture() here to keep the previously
   // produced texture for the next frame.
 }

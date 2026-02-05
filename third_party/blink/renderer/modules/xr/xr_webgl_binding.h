@@ -119,7 +119,8 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   XRWebGLSwapChain* CreateColorSwapchain(GLenum layer_format,
                                          gfx::Size layer_size,
                                          V8XRTextureType texture_type,
-                                         V8XRLayerLayout::Enum final_layout);
+                                         V8XRLayerLayout::Enum final_layout,
+                                         bool clear_on_access);
   XRWebGLSwapChain* GetSwapchainForLayer(XRCompositionLayer* layer);
 
   Member<WebGLRenderingContextBase> webgl_context_;

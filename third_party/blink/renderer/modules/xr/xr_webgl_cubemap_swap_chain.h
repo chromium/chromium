@@ -18,7 +18,8 @@ namespace blink {
 // crbug.com/459811463.
 class XRWebGLCubemapSwapChain final : public XRWebGLSwapChain {
  public:
-  explicit XRWebGLCubemapSwapChain(XRWebGLSwapChain* wrapped_swapchain);
+  explicit XRWebGLCubemapSwapChain(XRWebGLSwapChain* wrapped_swapchain,
+                                   bool clear_on_access);
   ~XRWebGLCubemapSwapChain() override;
 
   bool IsCube() const override { return true; }

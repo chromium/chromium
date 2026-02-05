@@ -19,7 +19,8 @@ namespace blink {
 class XRWebGLTextureArraySwapChain final : public XRWebGLSwapChain {
  public:
   XRWebGLTextureArraySwapChain(XRWebGLSwapChain* wrapped_swap_chain,
-                               uint32_t layers);
+                               uint32_t layers,
+                               bool clear_on_access);
   ~XRWebGLTextureArraySwapChain() override;
 
   WebGLUnownedTexture* ProduceTexture() override;

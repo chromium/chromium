@@ -111,12 +111,21 @@ void AttachShader(gpu::gles2::GLES2Interface* gl,
   gl->DeleteShader(shader);
 }
 
+XRWebGLSwapChain::Descriptor MakeLayerDescriptor(
+    XRWebGLSwapChain* wrapped_swapchain,
+    bool clear_on_access) {
+  XRWebGLSwapChain::Descriptor descriptor = wrapped_swapchain->descriptor();
+  descriptor.clear_on_access = clear_on_access;
+  return descriptor;
+}
+
 }  // namespace
 
 XRWebGLCubemapSwapChain::XRWebGLCubemapSwapChain(
-    XRWebGLSwapChain* wrapped_swapchain)
+    XRWebGLSwapChain* wrapped_swapchain,
+    bool clear_on_access)
     : XRWebGLSwapChain(wrapped_swapchain->context(),
-                       wrapped_swapchain->descriptor(),
+                       MakeLayerDescriptor(wrapped_swapchain, clear_on_access),
                        wrapped_swapchain->webgl2()),
       wrapped_swapchain_(wrapped_swapchain) {}
 
@@ -281,10 +290,6 @@ void XRWebGLCubemapSwapChain::OnFrameEnd() {
   gl->BindBuffer(GL_ARRAY_BUFFER, 0);
   gl->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  // ClearCurrentTexture resets the framebuffer binding and mask/clear values
-  // prior to returning.
-  ClearCurrentTexture();
-
   // Restore the saved old state
   gl->Viewport(curr_viewport[0], curr_viewport[1], curr_viewport[2],
                curr_viewport[3]);
@@ -310,6 +315,8 @@ void XRWebGLCubemapSwapChain::OnFrameEnd() {
       static_cast<DrawingBuffer::Client*>(context());
   client->DrawingBufferClientRestoreTextureCubeMapBinding();
   client->DrawingBufferClientRestoreScissorTest();
+  client->DrawingBufferClientRestoreMaskAndClearValues();
+  client->DrawingBufferClientRestoreFramebufferBinding();
 
   context()->RestoreVertexArrayObjectBinding();
   context()->RestoreProgram();

@@ -117,7 +117,8 @@ XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(
     GLenum layer_format,
     gfx::Size texture_size,
     V8XRTextureType texture_type,
-    V8XRLayerLayout::Enum final_layout) {
+    V8XRLayerLayout::Enum final_layout,
+    bool clear_on_access) {
   XRWebGLSwapChain::Descriptor color_desc = {};
   color_desc.format = FormatForLayerFormat(layer_format);
   color_desc.internal_format = InternalFormatForLayerFormat(layer_format);
@@ -127,6 +128,13 @@ XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(
   color_desc.height = static_cast<uint32_t>(texture_size.height());
   color_desc.layers = 1;
   color_desc.is_texture_array = false;
+  // If we use XRWebGLTextureArraySwapChain as a wrapper, we don't need to
+  // clear the old buffer of the wrapped swapchain because the wrapper
+  // will always overwrite the entire texture. The value of "clear_on_access"
+  // will be passed and used by the wrapper.
+  color_desc.clear_on_access =
+      clear_on_access &&
+      texture_type.AsEnum() != V8XRTextureType::Enum::kTextureArray;
 
   XRWebGLSwapChain* color_swap_chain;
   if (session()->xr()->frameProvider()->DrawingIntoSharedBuffer()) {
@@ -145,7 +153,7 @@ XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(
                               ? session()->array_texture_layers()
                               : 1;
     color_swap_chain = MakeGarbageCollected<XRWebGLTextureArraySwapChain>(
-        color_swap_chain, layers);
+        color_swap_chain, layers, clear_on_access);
   }
 
   return color_swap_chain;
@@ -213,7 +221,8 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
   gfx::Size texture_size = gfx::ToFlooredSize(scaled_size);
 
   XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
-      init->colorFormat(), texture_size, init->textureType(), final_layout);
+      init->colorFormat(), texture_size, init->textureType(), final_layout,
+      init->clearOnAccess());
 
   CHECK_EQ(color_swap_chain->descriptor().is_texture_array, is_texture_array);
   CHECK_EQ(color_swap_chain->descriptor().layers, layers);
@@ -227,6 +236,7 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
     depth_stencil_desc.type = TypeForLayerFormat(init->depthFormat());
     depth_stencil_desc.attachment_target = GL_DEPTH_ATTACHMENT;
     depth_stencil_desc.is_texture_array = is_texture_array;
+    depth_stencil_desc.clear_on_access = init->clearOnAccess();
 
     if (is_texture_array) {
       texture_size.set_width(texture_size.width() / layers);
@@ -283,7 +293,7 @@ XRQuadLayer* XRWebGLBinding::createQuadLayer(const XRQuadLayerInit* init,
 
   XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
       init->colorFormat(), GetTextureSizeForLayer(init, final_layout),
-      init->textureType(), final_layout);
+      init->textureType(), final_layout, init->clearOnAccess());
 
   auto* drawing_context =
       MakeGarbageCollected<XRWebGLDrawingContext>(this, color_swap_chain);
@@ -335,7 +345,7 @@ XRCylinderLayer* XRWebGLBinding::createCylinderLayer(
 
   XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
       init->colorFormat(), GetTextureSizeForLayer(init, final_layout),
-      init->textureType(), final_layout);
+      init->textureType(), final_layout, init->clearOnAccess());
 
   auto* drawing_context =
       MakeGarbageCollected<XRWebGLDrawingContext>(this, color_swap_chain);
@@ -379,7 +389,7 @@ XREquirectLayer* XRWebGLBinding::createEquirectLayer(
 
   XRWebGLSwapChain* color_swap_chain = CreateColorSwapchain(
       init->colorFormat(), GetTextureSizeForLayer(init, final_layout),
-      init->textureType(), final_layout);
+      init->textureType(), final_layout, init->clearOnAccess());
 
   auto* drawing_context =
       MakeGarbageCollected<XRWebGLDrawingContext>(this, color_swap_chain);
@@ -426,14 +436,17 @@ XRCubeLayer* XRWebGLBinding::createCubeLayer(const XRCubeLayerInit* init,
     return nullptr;
   }
 
+  // We don't need to clear the buffer anyway because the wrapper
+  // XRWebGLCubemapSwapChain will do it.
   XRWebGLSwapChain* texture_2d_swapchain = CreateColorSwapchain(
       init->colorFormat(),
       gfx::Size(init->viewPixelWidth(), init->viewPixelHeight()),
       V8XRTextureType(V8XRTextureType::Enum::kTexture),
-      V8XRLayerLayout::Enum::kMono);
+      V8XRLayerLayout::Enum::kMono, false /*clear_on_access*/);
 
   XRWebGLSwapChain* cubemap_swap_chain =
-      MakeGarbageCollected<XRWebGLCubemapSwapChain>(texture_2d_swapchain);
+      MakeGarbageCollected<XRWebGLCubemapSwapChain>(texture_2d_swapchain,
+                                                    init->clearOnAccess());
 
   auto* drawing_context =
       MakeGarbageCollected<XRWebGLDrawingContext>(this, cubemap_swap_chain);

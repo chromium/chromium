@@ -29,6 +29,7 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
     uint16_t height;
     uint16_t layers;
     bool is_texture_array;
+    bool clear_on_access;
   };
 
   XRWebGLSwapChain(WebGLRenderingContextBase*,
@@ -50,6 +51,7 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
   virtual bool IsCube() const { return false; }
 
  protected:
+  void OnTextureQueried() override;
   WebGLFramebuffer* GetFramebuffer();
 
  private:
