@@ -9,8 +9,6 @@ include_rules = [
   "+components/embedder_support/android",
   "+components/omnibox/browser/android",
   "+components/security_state/content/android",
-  "+components/thin_webview",
   "+content/public/android",
-  "+extensions/android",
   "+ui/edge_to_edge",
 ]

@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/thin_webview",
+  "+extensions/common",
+]

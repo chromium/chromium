@@ -1,0 +1,133 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(
+    enable_extensions_core,
+    "Extensions toolbar should only be built when enable_extensions_core is true")
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/browser/ui/android/toolbar:*",
+  ]
+  resources_package = "org.chromium.chrome.browser.toolbar"
+  sources = [
+    "ExtensionActionButtonProperties.java",
+    "ExtensionActionButtonViewBinder.java",
+    "ExtensionActionContextMenuUtils.java",
+    "ExtensionActionDragHelper.java",
+    "ExtensionActionIconUtil.java",
+    "ExtensionActionListCoordinator.java",
+    "ExtensionActionListMediator.java",
+    "ExtensionActionListRecyclerView.java",
+    "ExtensionActionPopup.java",
+    "ExtensionActionsUpdateHelper.java",
+    "ExtensionToolbarCoordinatorImpl.java",
+    "ExtensionsMenuCoordinator.java",
+    "ExtensionsMenuItemProperties.java",
+    "ExtensionsMenuItemViewBinder.java",
+    "ExtensionsMenuMediator.java",
+    "ExtensionsMenuProperties.java",
+    "ExtensionsMenuViewBinder.java",
+    "ExtensionsToolbarDragTouchHandler.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base/version_info/android:version_constants_java",
+    "//build/android:build_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/extensions:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:core_java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/thin_webview:factory_java",
+    "//components/thin_webview:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_utils_java",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.toolbar"
+  sources = [
+    "ExtensionActionDragHelperTest.java",
+    "ExtensionActionListMediatorTest.java",
+    "ExtensionActionsUpdateHelperTest.java",
+    "ExtensionsMenuCoordinatorTest.java",
+    "ExtensionsMenuMediatorTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/extensions:java",
+    "//chrome/browser/ui/android/extensions:test_support_java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:core_java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/util/android:test_support_java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.toolbar"
+  sources = [ "ExtensionToolbarTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/extensions:java",
+    "//chrome/browser/ui/android/extensions:test_support_java",
+    "//chrome/browser/ui/android/toolbar:core_java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+  ]
+}
