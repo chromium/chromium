@@ -8,11 +8,18 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory
+        android:key="glic_preference_section"
+        android:title="@string/settings_glic_preferences_section" />
+
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
             android:key="preference_category"
             android:title="@string/settings_glic_button_toggle"
             android:summary="@string/settings_glic_button_toggle_sublabel"
             android:defaultValue="false" />
 
+    <PreferenceCategory
+        android:key="glic_permissions_section"
+        android:title="@string/settings_glic_permissions_section" />
 
 </PreferenceScreen>
