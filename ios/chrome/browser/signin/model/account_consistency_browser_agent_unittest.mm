@@ -6,6 +6,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/signin/ios/browser/fake_signin_enabled_datasource.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -64,7 +66,8 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     AccountConsistencyBrowserAgent::CreateForBrowser(
-        browser_.get(), base_view_controller_mock_);
+        browser_.get(), base_view_controller_mock_,
+        &signin_enabled_data_source_);
     agent_ = AccountConsistencyBrowserAgent::FromBrowser(browser_.get());
 
     WebStateList* web_state_list = browser_.get()->GetWebStateList();
@@ -101,6 +104,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   raw_ptr<AccountConsistencyBrowserAgent> agent_;
   id<SceneCommands> mock_scene_handler_;
+  signin::FakeSigninEnabledDataSource signin_enabled_data_source_;
   id<SettingsCommands> settings_commands_mock_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_mock_;
   UIViewController* base_view_controller_mock_;

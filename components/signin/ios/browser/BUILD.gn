@@ -32,6 +32,20 @@ source_set("browser") {
   ]
 }
 
+source_set("signin_enabled_datasource") {
+  sources = [ "signin_enabled_datasource.h" ]
+  deps = []
+}
+
+source_set("fake_signin_enabled_datasource") {
+  testonly = true
+  sources = [
+    "fake_signin_enabled_datasource.cc",
+    "fake_signin_enabled_datasource.h",
+  ]
+  deps = [ ":signin_enabled_datasource" ]
+}
+
 source_set("features") {
   sources = [
     "features.cc",

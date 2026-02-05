@@ -256,6 +256,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/side_swipe/ui_bundled",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/snapshots/model:model_swift",

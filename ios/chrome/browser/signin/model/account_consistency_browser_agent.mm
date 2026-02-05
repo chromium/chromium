@@ -37,8 +37,11 @@
 
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
-    UIViewController* base_view_controller)
-    : BrowserUserData(browser), base_view_controller_(base_view_controller) {
+    UIViewController* base_view_controller,
+    signin::SigninEnabledDataSource* signin_enabled_data_source)
+    : BrowserUserData(browser),
+      base_view_controller_(base_view_controller),
+      signin_enabled_data_source_(signin_enabled_data_source) {
   StartObserving(browser);
   application_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
@@ -60,9 +63,9 @@ void AccountConsistencyBrowserAgent::StopSigninCoordinator(
 
 void AccountConsistencyBrowserAgent::OnWebStateInserted(
     web::WebState* web_state) {
+  ProfileIOS* profile = browser_->GetProfile();
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForProfile(
-              browser_->GetProfile())) {
+          ios::AccountConsistencyServiceFactory::GetForProfile(profile)) {
     accountConsistencyService->SetWebStateHandler(web_state, this);
   }
 }
@@ -227,6 +230,10 @@ void AccountConsistencyBrowserAgent::OnGoIncognito(const GURL& url) {
       inBackground:NO
           appendTo:OpenPosition::kLastTab];
   [application_handler_ openURLInNewTab:command];
+}
+
+bool AccountConsistencyBrowserAgent::SigninEnabled() const {
+  return signin_enabled_data_source_->SigninEnabled();
 }
 
 bool AccountConsistencyBrowserAgent::CanShowAccountMenu() const {

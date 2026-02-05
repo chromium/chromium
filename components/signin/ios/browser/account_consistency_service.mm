@@ -2,37 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/signin/ios/browser/account_consistency_service.h"
+#import "components/signin/ios/browser/account_consistency_service.h"
 
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
-#include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/logging.h"
+#import "base/command_line.h"
+#import "base/functional/bind.h"
+#import "base/logging.h"
 #import "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/google/core/common/google_util.h"
-#include "components/signin/core/browser/account_reconcilor.h"
-#include "components/signin/core/browser/chrome_connected_header_helper.h"
-#include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/ios/browser/features.h"
-#include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/gaia_urls.h"
-#include "ios/web/common/web_view_creation_util.h"
-#include "ios/web/public/browser_state.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/google/core/common/google_util.h"
+#import "components/signin/core/browser/account_reconcilor.h"
+#import "components/signin/core/browser/chrome_connected_header_helper.h"
+#import "components/signin/core/browser/signin_header_helper.h"
+#import "components/signin/ios/browser/features.h"
+#import "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#import "google_apis/gaia/gaia_constants.h"
+#import "google_apis/gaia/gaia_urls.h"
+#import "ios/web/common/web_view_creation_util.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
-#include "net/base/apple/url_conversions.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/cookies/canonical_cookie.h"
-#include "url/gurl.h"
+#import "ios/web/public/web_state_observer.h"
+#import "net/base/apple/url_conversions.h"
+#import "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#import "net/cookies/canonical_cookie.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -313,14 +313,12 @@ void AccountConsistencyService::AccountConsistencyHandler::
     HandleAddAccountRequest(GURL url,
                             const std::string& email,
                             BOOL has_cookie_changed) {
-  if (!has_cookie_changed) {
+  if (!has_cookie_changed && delegate_ && delegate_->SigninEnabled()) {
     // If the cookies on the device did not need to be updated then the user
     // is not in an inconsistent state (where the identities on the device
     // are different than those on the web). Fallback to asking the user to
     // add an account.
-    if (delegate_) {
-      delegate_->OnAddAccount(url, email);
-    }
+    delegate_->OnAddAccount(url, email);
     return;
   }
   web_state_->OpenURL(web::WebState::OpenURLParams(

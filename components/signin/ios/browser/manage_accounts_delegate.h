@@ -48,6 +48,9 @@ class ManageAccountsDelegate {
   // If it is not valid, then this delegate should open a new incognito tab.
   virtual void OnGoIncognito(const GURL& url) = 0;
 
+  // Whether the sign-in is not disabled.
+  virtual bool SigninEnabled() const = 0;
+
  protected:
   ManageAccountsDelegate() = default;
 };

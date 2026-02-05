@@ -300,6 +300,8 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
@@ -3723,8 +3725,9 @@ const char kChromeAppStoreUrl[] =
     _urlLoadingBrowserAgent->SetDelegate(self);
   }
 
-  AccountConsistencyBrowserAgent::CreateForBrowser(self.browser,
-                                                   self.viewController);
+  AccountConsistencyBrowserAgent::CreateForBrowser(
+      self.browser, self.viewController,
+      AuthenticationServiceFactory::GetForProfile(self.profile));
 
   ReaderModeBrowserAgent* readerModeBrowserAgent =
       ReaderModeBrowserAgent::FromBrowser(self.browser);

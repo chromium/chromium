@@ -15,6 +15,8 @@
 #import "base/scoped_observation.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/ios/browser/account_consistency_service.h"
+#import "components/signin/ios/browser/signin_enabled_datasource.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -37,7 +39,8 @@ class PrefService;
 // policies.
 class AuthenticationService : public KeyedService,
                               public signin::IdentityManager::Observer,
-                              public ChromeAccountManagerService::Observer {
+                              public ChromeAccountManagerService::Observer,
+                              public signin::SigninEnabledDataSource {
  public:
   // The service status for AuthenticationService.
   enum class ServiceStatus {
@@ -148,8 +151,7 @@ class AuthenticationService : public KeyedService,
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
 
-  // Whether the sign-in is not disabled.
-  bool SigninEnabled() const;
+  bool SigninEnabled() const override;
 
  private:
   friend class AuthenticationServiceTest;

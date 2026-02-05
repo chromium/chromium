@@ -115,6 +115,7 @@ class FakeManageAccountsDelegate : public ManageAccountsDelegate {
     show_promo_call_count_++;
   }
   void OnGoIncognito(const GURL& url) override { go_incognito_call_count_++; }
+  bool SigninEnabled() const override { return true; }
 
   int total_call_count() {
     return restore_cookies_call_count_ + manage_accounts_call_count_ +

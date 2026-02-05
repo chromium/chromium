@@ -7,17 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/timer/timer.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "ios/chrome/browser/prerender/model/prerender_pref.h"
-#include "ios/chrome/browser/prerender/model/prerender_tab_helper_delegate.h"
-#include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#include "ios/web/public/navigation/referrer.h"
-#include "net/base/network_change_notifier.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "base/memory/weak_ptr.h"
+#import "base/sequence_checker.h"
+#import "base/timer/timer.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/signin/ios/browser/signin_enabled_datasource.h"
+#import "ios/chrome/browser/prerender/model/prerender_pref.h"
+#import "ios/chrome/browser/prerender/model/prerender_tab_helper_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "net/base/network_change_notifier.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 class ManageAccountsDelegate;
 @protocol PrerenderBrowserAgentDelegate;
@@ -94,7 +95,9 @@ class PrerenderBrowserAgent final
   friend class ManageAccountsDelegate;
   friend class BrowserUserData<PrerenderBrowserAgent>;
 
-  PrerenderBrowserAgent(Browser* browser);
+  PrerenderBrowserAgent(
+      Browser* browser,
+      signin::SigninEnabledDataSource* signin_enabled_data_source);
 
   // Returns whether pre-render is enabled or not.
   bool Enabled() const;
@@ -155,6 +158,8 @@ class PrerenderBrowserAgent final
 
   // Is the pre-render tab being converted to a real tab?
   bool loading_prerender_ = false;
+
+  raw_ptr<signin::SigninEnabledDataSource> signin_enabled_data_source_;
 
   base::WeakPtrFactory<PrerenderBrowserAgent> weak_ptr_factory_{this};
 };

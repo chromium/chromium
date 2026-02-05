@@ -41,6 +41,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
@@ -209,7 +211,9 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   }
 
   if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record) {
-    PrerenderBrowserAgent::CreateForBrowser(browser);
+    PrerenderBrowserAgent::CreateForBrowser(
+        browser,
+        AuthenticationServiceFactory::GetForProfile(browser->GetProfile()));
   }
 
   if (IsCleanupPersistedTabContextsEnabled() && !browser_is_off_record &&

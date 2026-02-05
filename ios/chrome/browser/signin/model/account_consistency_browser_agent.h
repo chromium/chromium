@@ -7,6 +7,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
+#import "components/signin/ios/browser/signin_enabled_datasource.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
@@ -45,6 +46,7 @@ class AccountConsistencyBrowserAgent
   void OnShowConsistencyPromo(const GURL& url,
                               web::WebState* webState) override;
   void OnGoIncognito(const GURL& url) override;
+  bool SigninEnabled() const override;
 
  private:
   friend class BrowserUserData<AccountConsistencyBrowserAgent>;
@@ -62,8 +64,10 @@ class AccountConsistencyBrowserAgent
 
   // `base_view_controller` is the view controller which UI will be presented
   // from.
-  AccountConsistencyBrowserAgent(Browser* browser,
-                                 UIViewController* base_view_controller);
+  AccountConsistencyBrowserAgent(
+      Browser* browser,
+      UIViewController* base_view_controller,
+      signin::SigninEnabledDataSource* signin_enabled_data_source);
 
   // Returns whether it is is possible to show the browser's account menu.
   bool CanShowAccountMenu() const;
@@ -76,6 +80,8 @@ class AccountConsistencyBrowserAgent
   id<SceneCommands> application_handler_;
   id<SettingsCommands> settings_handler_;
   SigninCoordinator* add_account_coordinator_;
+
+  raw_ptr<signin::SigninEnabledDataSource> signin_enabled_data_source_;
 
   // Bridge object to act as the delegate.
   ManageAccountsDelegateBridge* bridge_;

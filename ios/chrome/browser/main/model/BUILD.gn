@@ -55,6 +55,8 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/start_surface/ui_bundled",
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",
