@@ -12213,6 +12213,7 @@
     "GlicButtonAltLabel": [
         {
             "platforms": [
+                "chromeos",
                 "linux",
                 "mac",
                 "windows"
