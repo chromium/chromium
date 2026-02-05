@@ -1597,9 +1597,7 @@ class AutocompleteMediator
             // triggering recalculation of refine arrow icon. TODO(http://crbug.com/446058347):
             // refactor to enable updates to the icon property of the model once the list is already
             // built.
-            onTextChanged(
-                    mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                    /* isOnFocusContext= */ false);
+            onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
         }
     }
 

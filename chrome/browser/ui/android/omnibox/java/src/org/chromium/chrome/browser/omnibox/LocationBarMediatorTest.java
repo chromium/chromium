@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
@@ -32,7 +31,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.text.TextUtils;
 import android.util.Property;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -46,7 +44,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -477,7 +474,7 @@ public class LocationBarMediatorTest {
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText", null);
 
         var state = FuseboxSessionState.from(mLocationBarDataProvider);
-        state.autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch);
         verify(mStatusCoordinator, times(2)).onDefaultMatchClassified(true);
     }
@@ -734,15 +731,12 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mMediator.setSearchQuery(query);
 
-        ShadowLooper.idleMainLooper();
-
         verify(mUrlCoordinator).requestFocus();
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        argThat(matchesUrlBarDataForQuery(query)),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(SelectionState.SELECT_ALL));
-        verify(mAutocompleteCoordinator).onTextChanged(query);
+        mMediator.onUrlFocusChange(true);
+
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteCoordinator).beginInput(captor.capture());
+        assertEquals(query, captor.getValue().getUserText());
         verify(mUrlCoordinator).setKeyboardVisibility(true, false);
     }
 
@@ -759,25 +753,6 @@ public class LocationBarMediatorTest {
         mMediator.setSearchQuery("");
         verify(mUrlCoordinator, never()).requestFocus();
         verify(mLocationBarLayout, never()).post(any());
-    }
-
-    @Test
-    public void testSetSearchQuery_preNative() {
-        String query = "example search";
-        mMediator.onFinishNativeInitialization();
-        mProfileSupplier.set(mProfile);
-        mMediator.setSearchQuery(query);
-
-        ShadowLooper.idleMainLooper();
-
-        verify(mUrlCoordinator).requestFocus();
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        argThat(matchesUrlBarDataForQuery(query)),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(SelectionState.SELECT_ALL));
-        verify(mAutocompleteCoordinator).onTextChanged(query);
-        verify(mUrlCoordinator).setKeyboardVisibility(true, false);
     }
 
     @Test
@@ -1019,6 +994,7 @@ public class LocationBarMediatorTest {
     public void testSetUrlBarFocus_NtpAIMode() {
         mMediator.onFinishNativeInitialization();
         mMediator.setProfile(mProfile);
+
         mMediator.setUrlBarFocus(
                 /* shouldBeFocused= */ true,
                 null,
@@ -1026,8 +1002,8 @@ public class LocationBarMediatorTest {
                 OmniboxFocusReason.NTP_AI_MODE,
                 AutocompleteRequestType.AI_MODE);
         verify(mUrlCoordinator).requestFocus();
+        mMediator.onUrlFocusChange(true);
 
-        mMediator.beginOrResumeInput(/* activateNewSession= */ true);
         ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
         verify(mFuseboxCoordinator).beginInput(captor.capture());
 
@@ -1037,19 +1013,21 @@ public class LocationBarMediatorTest {
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testSetUrlBarFocus_pastedText() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
         mMediator.setUrlBarFocus(
                 /* shouldBeFocused= */ true,
                 "pastedText",
                 /* selectText= */ false,
                 OmniboxFocusReason.OMNIBOX_TAP,
                 AutocompleteRequestType.SEARCH);
-        ShadowLooper.runUiThreadTasks();
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        argThat(matchesUrlBarDataForQuery("pastedText")),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(UrlBarCoordinator.SelectionState.SELECT_END));
-        verify(mAutocompleteCoordinator).onTextChanged("pastedText");
+        verify(mUrlCoordinator).requestFocus();
+        mMediator.onUrlFocusChange(true);
+
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteCoordinator).beginInput(captor.capture());
+        assertEquals("pastedText", captor.getValue().getUserText());
     }
 
     @Test
@@ -1246,16 +1224,17 @@ public class LocationBarMediatorTest {
     public void testSetUrlFocusChangeInProgress() {
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
         mMediator.setUrlFocusChangeInProgress(true);
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
         mMediator.setUrlBarFocus(
                 /* shouldBeFocused= */ true,
-                null,
+                "text",
                 /* selectText= */ false,
                 OmniboxFocusReason.FAKE_BOX_TAP,
                 AutocompleteRequestType.SEARCH);
         mMediator.onUrlFocusChange(true);
-        doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
 
         mMediator.setUrlFocusChangeInProgress(false);
 
@@ -1264,11 +1243,10 @@ public class LocationBarMediatorTest {
         // The first invocation of requestFocus() is from setUrlBarFocus, which we use above to set
         // mUrlFocusedFromFakebox to true.
         verify(mUrlCoordinator, times(2)).requestFocus();
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        argThat(matchesUrlBarDataForQuery("text")),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(UrlBarCoordinator.SelectionState.SELECT_END));
+
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(captor.capture());
+        assertEquals("text", captor.getValue().getUserText());
     }
 
     @Test
@@ -1649,26 +1627,34 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
 
         var state = FuseboxSessionState.from(mLocationBarDataProvider);
-        state.autocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
+        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mNavigateButtonIsVisible);
 
         doReturn(false).when(mUrlCoordinator).isTextWrapped();
-        state.autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         assertTrue(mNavigateButtonIsVisible);
 
         doReturn(false).when(mUrlCoordinator).isTextWrapped();
-        state.autocompleteInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         assertTrue(mNavigateButtonIsVisible);
     }
 
     @Test
     public void testDeleteButtonClicked() {
         mMediator.onFinishNativeInitialization();
-        mMediator.deleteButtonClicked(null);
+        mProfileSupplier.set(mProfile);
 
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        mMediator.setSearchQuery("test query");
+        mMediator.onUrlFocusChange(true);
+
+        verify(mAutocompleteCoordinator).beginInput(captor.capture());
+        assertEquals("test query", captor.getValue().getUserText());
+        clearInvocations(mAutocompleteCoordinator);
+
+        mMediator.deleteButtonClicked(null);
+        verify(mAutocompleteCoordinator).beginInput(captor.capture());
+        assertEquals("", captor.getValue().getUserText());
         verify(mUrlCoordinator).requestAccessibilityFocus();
     }
 
@@ -1753,13 +1739,6 @@ public class LocationBarMediatorTest {
         verify(mAddToHomescreenCoordinator).showForAppMenu(AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
     }
 
-    private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {
-        return actual -> {
-            UrlBarData expected = UrlBarData.forNonUrlText(query);
-            return TextUtils.equals(actual.displayText, expected.displayText);
-        };
-    }
-
     private void enableBothVoiceAndLensButtons() {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
@@ -1794,7 +1773,7 @@ public class LocationBarMediatorTest {
         // Prepare a state to be restored for mTab.
         String newText = "new text";
         var newState = FuseboxSessionState.from(mLocationBarDataProvider);
-        newState.autocompleteInput.setUserText(newText);
+        newState.getAutocompleteInput().setUserText(newText);
         newState.setSessionActive(true);
 
         Tab previousTab = Mockito.mock(Tab.class);
@@ -1808,24 +1787,19 @@ public class LocationBarMediatorTest {
         String previousText = "previous text";
         // Note: input state is tracked by autocomplete.
         var previousState = FuseboxSessionState.from(mLocationBarDataProvider);
-        previousState.autocompleteInput.setUserText(previousText);
+        previousState.getAutocompleteInput().setUserText(previousText);
 
         // Emulate a tab switch from previousTab to mTab.
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onTabChanged(previousTab);
         mTabletMediator.onUrlChanged(true);
 
-        looper.idle();
-
-        // The state for mTab was restored.
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        argThat(matchesUrlBarDataForQuery(newText)),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(SelectionState.SELECT_END));
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(captor.capture());
+        assertEquals(newText, captor.getValue().getUserText());
 
         assertTrue(previousState.isSessionActive());
-        assertEquals(previousText, previousState.autocompleteInput.getUserText());
+        assertEquals(previousText, previousState.getAutocompleteInput().getUserText());
     }
 
     @Test
@@ -1849,8 +1823,8 @@ public class LocationBarMediatorTest {
         final int newSelectionStart = 2;
         final int newSelectionEnd = 6;
         var newState = FuseboxSessionState.from(mLocationBarDataProvider);
-        newState.autocompleteInput.setUserText(newText);
-        newState.autocompleteInput.setSelection(newSelectionStart, newSelectionEnd);
+        newState.getAutocompleteInput().setUserText(newText);
+        newState.getAutocompleteInput().setSelection(newSelectionStart, newSelectionEnd);
         newState.setSessionActive(true);
 
         Tab previousTab = Mockito.mock(Tab.class);
@@ -1867,7 +1841,7 @@ public class LocationBarMediatorTest {
 
         // Note: input state is tracked by autocomplete.
         var previousState = FuseboxSessionState.from(mLocationBarDataProvider);
-        previousState.autocompleteInput.setUserText(previousText);
+        previousState.getAutocompleteInput().setUserText(previousText);
         doReturn(previousSelectionStart).when(mUrlCoordinator).getSelectionStart();
         doReturn(previousSelectionEnd).when(mUrlCoordinator).getSelectionEnd();
 
@@ -1876,24 +1850,16 @@ public class LocationBarMediatorTest {
         mTabletMediator.onTabChanged(previousTab);
         mTabletMediator.onUrlChanged(true);
 
-        looper.idle();
-
-        // The state for mTab was restored.
-        ArgumentCaptor<UrlBarData> captor = ArgumentCaptor.forClass(UrlBarData.class);
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        captor.capture(),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(SelectionState.SELECT_END));
-
-        assertEquals(newText, captor.getValue().displayText);
-        verify(mUrlCoordinator).setSelection(eq(newSelectionStart), eq(newSelectionEnd));
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(captor.capture());
+        assertEquals(newText, captor.getValue().getUserText());
 
         // The state for previousTab was saved.
         assertTrue(previousState.isSessionActive());
-        assertEquals(previousText, previousState.autocompleteInput.getUserText());
-        assertEquals(previousSelectionStart, previousState.autocompleteInput.getSelectionStart());
-        assertEquals(previousSelectionEnd, previousState.autocompleteInput.getSelectionEnd());
+        assertEquals(previousText, previousState.getAutocompleteInput().getUserText());
+        assertEquals(
+                previousSelectionStart, previousState.getAutocompleteInput().getSelectionStart());
+        assertEquals(previousSelectionEnd, previousState.getAutocompleteInput().getSelectionEnd());
     }
 
     @Test

@@ -9,7 +9,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 
 /**
  * Fusebox / Omnibox session state object. Captures controllers and state details needed to fulfill
@@ -24,7 +23,7 @@ public class FuseboxSessionState implements UserData {
      * Details about the user input in the Omnibox. Retained to allow session reconstruction, for
      * example when the user switches tabs.
      */
-    public final AutocompleteInput autocompleteInput = new AutocompleteInput();
+    private AutocompleteInput mAutocompleteInput = new AutocompleteInput();
 
     private boolean mIsActive;
 
@@ -41,9 +40,9 @@ public class FuseboxSessionState implements UserData {
 
         var state = getSessionForTab(userDataHost);
         // Re-apply page metadata in case of ephemeral session, background reload etc.
-        state.autocompleteInput.setPageClassification(dataProvider.getPageClassification(false));
-        state.autocompleteInput.setPageUrl(dataProvider.getCurrentGurl());
-        state.autocompleteInput.setPageTitle(dataProvider.getTitle());
+        state.mAutocompleteInput.setPageClassification(dataProvider.getPageClassification(false));
+        state.mAutocompleteInput.setPageUrl(dataProvider.getCurrentGurl());
+        state.mAutocompleteInput.setPageTitle(dataProvider.getTitle());
         return state;
     }
 
@@ -73,10 +72,9 @@ public class FuseboxSessionState implements UserData {
 
         mIsActive = isActive;
         if (isActive) {
-            autocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
-            autocompleteInput.setUrlFocusTime(System.currentTimeMillis());
+            mAutocompleteInput.setUrlFocusTime(System.currentTimeMillis());
         } else {
-            autocompleteInput.reset();
+            mAutocompleteInput.reset();
         }
     }
 
@@ -85,5 +83,17 @@ public class FuseboxSessionState implements UserData {
      */
     public boolean isSessionActive() {
         return mIsActive;
+    }
+
+    /** Applies the new AutocompleteInput to the current Session object. */
+    public void setAutocompleteInput(AutocompleteInput newInput) {
+        mAutocompleteInput = newInput;
+    }
+
+    /**
+     * @return The current AutocompleteInput.
+     */
+    public AutocompleteInput getAutocompleteInput() {
+        return mAutocompleteInput;
     }
 }

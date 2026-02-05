@@ -99,7 +99,7 @@ public class AutocompleteInputUnitTest {
         assertEquals("", mInput.getUserText());
 
         mInput.setUserText(null);
-        assertEquals(null, mInput.getUserText());
+        assertEquals("", mInput.getUserText());
     }
 
     @Test
