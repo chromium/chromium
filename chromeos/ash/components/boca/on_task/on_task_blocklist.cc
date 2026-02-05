@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
@@ -24,10 +24,7 @@ using ::boca::LockedNavigationOptions;
 
 constexpr char kAllTrafficWildcard[] = "*";
 
-const std::string& GetCommonUrlPrefix() {
-  static const base::NoDestructor<std::string> prefix("www.");
-  return *prefix;  // provides pointer-like access
-}
+constexpr std::string_view kCommonUrlPrefix = "www.";
 
 // Returns a URL filter that covers all URL navigations.
 base::ListValue GetAllTrafficFilter() {
@@ -36,7 +33,7 @@ base::ListValue GetAllTrafficFilter() {
   return all_traffic;
 }
 
-void RemovePrefix(std::string& url_str, const std::string& prefix) {
+void RemovePrefix(std::string& url_str, std::string_view prefix) {
   if (base::StartsWith(url_str, prefix)) {
     std::string::size_type iter = url_str.find(prefix);
     if (iter != std::string::npos) {
@@ -50,7 +47,7 @@ base::ListValue GetDomainLevelTrafficFilter(const GURL& url) {
 
   std::string domain_traffic_filter = url.GetWithEmptyPath().GetContent();
 
-  RemovePrefix(domain_traffic_filter, GetCommonUrlPrefix());
+  RemovePrefix(domain_traffic_filter, kCommonUrlPrefix);
   allowed_traffic.Append(domain_traffic_filter);
   return allowed_traffic;
 }
