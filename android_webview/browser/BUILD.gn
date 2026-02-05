@@ -259,6 +259,7 @@ source_set("browser") {
     "//components/content_capture/browser",
     "//components/content_relationship_verification",
     "//components/input",
+    "//components/stylus_handwriting/android",
 
     # Called via JNI in CrashpadMain
     "//components/crash/android:crashpad_main",

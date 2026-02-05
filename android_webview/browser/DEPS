@@ -55,6 +55,7 @@ include_rules = [
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
   "+components/strings",
+  "+components/stylus_handwriting/android/stylus_handwriting_feature_map.h",
   "+components/tracing/common",
   "+components/url_formatter",
   "+components/url_matcher",
