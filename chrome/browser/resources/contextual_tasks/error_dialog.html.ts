@@ -9,7 +9,7 @@ import type {ContextualTasksErrorDialogElement} from './error_dialog.js';
 // clang-format off
 export function getHtml(this: ContextualTasksErrorDialogElement) {
   return html`<!--_html_template_start_-->
-  <cr-dialog id="dialog" no-cancel>
+  <cr-dialog id="dialog" no-cancel show-on-attach>
     <div slot="title">$i18n{oauthErrorDialogTitle}</div>
     <div slot="body">$i18n{oauthErrorDialogBody}</div>
     <div slot="button-container">

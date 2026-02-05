@@ -29,17 +29,9 @@ export class ContextualTasksErrorDialogElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  override firstUpdated() {
-    this.$.dialog.showModal();
-  }
-
   protected onReloadClick_() {
     window.location.reload();
     this.$.dialog.close();
-  }
-
-  showDialog() {
-    this.$.dialog.showModal();
   }
 }
 

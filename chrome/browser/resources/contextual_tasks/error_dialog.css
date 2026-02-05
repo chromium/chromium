@@ -18,10 +18,10 @@
 
   --cr-dialog-body-padding-horizontal: 24px;
 
---cr-dialog-button-container-padding-bottom: 24px;
---cr-dialog-button-container-padding-end: 24px;
---cr-dialog-button-container-padding-top: 24px;
---cr-dialog-button-container-padding-horizontal: 24px;
+  --cr-dialog-button-container-padding-bottom: 24px;
+  --cr-dialog-button-container-padding-end: 24px;
+  --cr-dialog-button-container-padding-top: 24px;
+  --cr-dialog-button-container-padding-horizontal: 24px;
 }
 
 cr-dialog::backdrop {
