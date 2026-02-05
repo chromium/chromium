@@ -135,6 +135,8 @@ public class NtpSingleThemeCollectionCoordinator {
         mSingleThemeCollectionBottomSheetRecyclerView =
                 mNtpSingleThemeCollectionBottomSheetView.findViewById(
                         R.id.single_theme_collection_recycler_view);
+        // Disable the animation to prevent a crash when clicking the images rapidly.
+        mSingleThemeCollectionBottomSheetRecyclerView.setItemAnimator(null);
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(context, RECYCLE_VIEW_SPAN_COUNT);
         mSingleThemeCollectionBottomSheetRecyclerView.setLayoutManager(gridLayoutManager);
