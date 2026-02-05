@@ -574,7 +574,7 @@
   </message>
 
   <!-- DeviceAuthentication titles-->
-  <if expr="is_macosx or is_chromeos">
+  <if expr="is_macosx">
     <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth, and it will add a period at the end.">
       verify it's you so it can fill in your payment info
     </message>
@@ -583,6 +583,17 @@
     </message>
     <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was successful, we would then show the edit card dialog. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth, and it will add a period at the end.">
       edit payment methods
+    </message>
+  </if>
+  <if expr="is_chromeos">
+    <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling.">
+      Verify it’s you to fill in your payment info
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details.">
+      Verify it’s you to change your payments settings
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was successful, we would then show the edit card dialog.">
+      Verify it’s you to edit payments methods
     </message>
   </if>
   <if expr="is_win">
