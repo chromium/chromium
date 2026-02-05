@@ -365,7 +365,11 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
       store_(std::make_unique<SqlPersistentStore>(path,
                                                   max_bytes > 0 ? max_bytes : 0,
                                                   GetCacheType(),
-                                                  background_task_runners_)) {
+                                                  background_task_runners_)),
+      optimistic_write_buffer_monitor_(
+          net::features::kSqlDiskCacheOptimisticWriteBufferSize.Get()),
+      write_buffer_monitor_(
+          net::features::kSqlDiskCacheMaxWriteBufferTotalSize.Get()) {
   DVLOG(1) << "SqlBackendImpl::SqlBackendImpl " << path;
 }
 
@@ -1055,15 +1059,16 @@ int SqlBackendImpl::WriteEntryData(
 
   const int buf_len = buffer.size;
 
-  // Perform optimistic writes as long as `optimistic_write_buffer_total_size_`
-  // does not exceed `kSqlDiskCacheOptimisticWriteBufferSize`.
+  SqlWriteBufferMemoryMonitor::ScopedReservation optimistic_buffer_reservation;
+  // Perform optimistic writes as long as `optimistic_write_buffer_monitor_`
+  // allows it.
   const bool can_execute_optimistic_write =
-      optimistic_write_buffer_total_size_ + buf_len <=
-      net::features::kSqlDiskCacheOptimisticWriteBufferSize.Get();
+      optimistic_write_buffer_monitor_.Allocate(buf_len,
+                                                optimistic_buffer_reservation);
+
   base::UmaHistogramBoolean("Net.SqlDiskCache.Write.IsOptimistic",
                             can_execute_optimistic_write);
   if (can_execute_optimistic_write) {
-    optimistic_write_buffer_total_size_ += buf_len;
     if (copy_buffer_for_optimistic_write) {
       CHECK_LE(buffer.buffers.size(), 1u);
       if (buffer.buffers.size() == 1) {
@@ -1074,25 +1079,25 @@ int SqlBackendImpl::WriteEntryData(
     }
     // Callback to set an error on `db_handle` when an error occurs or
     // the backend is deleted.
-    auto maybe_update_db_handle_callback =
-        WrapCallbackWithAbortError<SqlPersistentStore::Error>(
-            base::BindOnce(
-                [](const scoped_refptr<EntryDbHandle>& db_handle,
-                   SqlPersistentStore::Error result) {
-                  base::UmaHistogramEnumeration(
-                      "Net.SqlDiskCache.OptimisticWrite.Result", result);
-                  if (result != SqlPersistentStore::Error::kOk) {
-                    db_handle->SetError(result);
-                  }
-                },
-                db_handle),
-            SqlPersistentStore::Error::kAborted);
+    auto new_callback = WrapCallbackWithAbortError<SqlPersistentStore::Error>(
+        base::BindOnce(
+            [](const scoped_refptr<EntryDbHandle>& db_handle,
+               SqlWriteBufferMemoryMonitor::ScopedReservation
+                   optimistic_buffer_reservation,
+               SqlPersistentStore::Error result) {
+              base::UmaHistogramEnumeration(
+                  "Net.SqlDiskCache.OptimisticWrite.Result", result);
+              if (result != SqlPersistentStore::Error::kOk) {
+                db_handle->SetError(result);
+              }
+            },
+            db_handle, std::move(optimistic_buffer_reservation)),
+        SqlPersistentStore::Error::kAborted);
     exclusive_operation_coordinator_.PostOrRunNormalOperation(
         key, base::BindOnce(
                  &SqlBackendImpl::HandleOptimisticWriteEntryDataOperation,
                  weak_factory_.GetWeakPtr(), key, db_handle, old_body_end,
-                 std::move(buffer), truncate,
-                 std::move(maybe_update_db_handle_callback),
+                 std::move(buffer), truncate, std::move(new_callback),
                  PushInFlightEntryModification(
                      key, InFlightEntryModification(db_handle, body_end))));
     return buf_len;
@@ -1151,27 +1156,23 @@ void SqlBackendImpl::HandleOptimisticWriteEntryDataOperation(
     int64_t old_body_end,
     EntryWriteBuffer buffer,
     bool truncate,
-    SqlPersistentStore::ErrorCallback maybe_update_db_handle_callback,
+    SqlPersistentStore::ErrorCallback callback,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
-  const int buf_len = buffer.size;
   CHECK(db_handle->IsFinished());
   if (db_handle->GetError().has_value()) {
-    // Decrement the total size.
-    optimistic_write_buffer_total_size_ -= buf_len;
-    CHECK_GE(optimistic_write_buffer_total_size_, 0);
     // Fail the operation for entries that previously failed a speculative
     // creation or optimistic write.
-    // Need to call `maybe_update_db_handle_callback` here, otherwise
-    // `db_handle` will be set to SqlPersistentStore::Error::kAborted.
-    std::move(maybe_update_db_handle_callback).Run(*db_handle->GetError());
+    // Need to call `callback` here, otherwise `db_handle` will be set to
+    // SqlPersistentStore::Error::kAborted.
+    std::move(callback).Run(*db_handle->GetError());
     return;
   }
   store_->WriteEntryData(
       key, *db_handle->GetResId(), old_body_end, std::move(buffer), truncate,
       base::BindOnce(&SqlBackendImpl::OnOptimisticWriteFinished,
                      weak_factory_.GetWeakPtr(), key, *db_handle->GetResId(),
-                     buf_len, std::move(maybe_update_db_handle_callback),
+                     std::move(callback),
                      std::move(pop_in_flight_entry_modification),
                      std::move(handle)));
 }
@@ -1179,14 +1180,11 @@ void SqlBackendImpl::HandleOptimisticWriteEntryDataOperation(
 void SqlBackendImpl::OnOptimisticWriteFinished(
     const CacheEntryKey& key,
     SqlPersistentStore::ResId res_id,
-    int buf_len,
-    SqlPersistentStore::ErrorCallback maybe_update_db_handle_callback,
+    SqlPersistentStore::ErrorCallback callback,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
     SqlPersistentStore::Error result) {
-  optimistic_write_buffer_total_size_ -= buf_len;
-  CHECK_GE(optimistic_write_buffer_total_size_, 0);
-  std::move(maybe_update_db_handle_callback).Run(result);
+  std::move(callback).Run(result);
 
   if (result == SqlPersistentStore::Error::kOk) {
     return;
@@ -1428,11 +1426,6 @@ void SqlBackendImpl::HandleTriggerEvictionOperation(
 
 void SqlBackendImpl::EnableStrictCorruptionCheckForTesting() {
   store_->EnableStrictCorruptionCheckForTesting();  // IN-TEST
-}
-
-void SqlBackendImpl::ReportWriteBufferChange(int delta) {
-  write_buffer_total_size_ += delta;
-  CHECK_GE(write_buffer_total_size_, 0);
 }
 
 base::WeakPtr<SqlBackendImpl> SqlBackendImpl::GetWeakPtr() {

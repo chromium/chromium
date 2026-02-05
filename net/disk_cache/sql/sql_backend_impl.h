@@ -29,6 +29,7 @@
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/exclusive_operation_coordinator.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/sql_write_buffer_memory_monitor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 // This backend is experimental and only available when the build flag is set.
@@ -189,6 +190,11 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                          const scoped_refptr<EntryDbHandle>& db_handle,
                          MemoryEntryDataHints hints);
 
+  // Returns the memory monitor for write buffers.
+  SqlWriteBufferMemoryMonitor& write_buffer_monitor() {
+    return write_buffer_monitor_;
+  }
+
   // Sends a dummy operation through the background task runner via the
   // operation coordinator, for unit tests.
   int FlushQueueForTest(CompletionOnceCallback callback);
@@ -207,11 +213,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // silently recovering.
   void EnableStrictCorruptionCheckForTesting();
 
-  // Reports a change in the total size of write buffers.
-  void ReportWriteBufferChange(int delta);
-
-  int64_t GetWriteBufferTotalSize() const { return write_buffer_total_size_; }
-
   // Returns the current size of the `in_flight_entry_modifications_` map.
   // This is for testing purposes only.
   size_t GetSizeOfInFlightEntryModificationsMapForTesting() {
@@ -219,7 +220,11 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   }
 
   int64_t GetOptimisticWriteBufferTotalSizeForTesting() {
-    return optimistic_write_buffer_total_size_;
+    return optimistic_write_buffer_monitor_.CurrentSize();
+  }
+
+  int64_t GetWriteBufferTotalSizeForTesting() {
+    return write_buffer_monitor_.CurrentSize();
   }
 
   base::WeakPtr<SqlBackendImpl> GetWeakPtr();
@@ -405,7 +410,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
-      SqlPersistentStore::ErrorCallback maybe_update_res_id_or_error_callback,
+      SqlPersistentStore::ErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
@@ -414,8 +419,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   void OnOptimisticWriteFinished(
       const CacheEntryKey& key,
       SqlPersistentStore::ResId res_id,
-      int buf_len,
-      SqlPersistentStore::ErrorCallback maybe_update_res_id_or_error_callback,
+      SqlPersistentStore::ErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
       SqlPersistentStore::Error result);
@@ -527,13 +531,23 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // task is pending, only one will be in the queue at any time.
   bool eviction_operation_queued_ = false;
 
-  // The memory usage consumed for optimistic writes. Optimistic writes are
-  // performed as long as this value does not exceed
+  // Monitors and limits the memory usage for optimistic writes to stream 1.
+  // Optimistic writes allow the backend to complete write operations
+  // immediately by posting the operation to a background sequence and returning
+  // the result synchronously, assuming success. This monitor ensures that the
+  // total size of data pending in these operations does not exceed
   // `kSqlDiskCacheOptimisticWriteBufferSize`.
-  int64_t optimistic_write_buffer_total_size_ = 0;
+  SqlWriteBufferMemoryMonitor optimistic_write_buffer_monitor_;
 
-  // The total size of write buffers across all entries.
-  int64_t write_buffer_total_size_ = 0;
+  // Monitors and limits the total memory usage of write buffers across all
+  // open entries. Entries buffer sequential writes to stream 1 up to
+  // `kSqlDiskCacheMaxWriteBufferSizePerEntry` before flushing to the backend.
+  // This monitor limits the aggregate size of these buffers to
+  // `kSqlDiskCacheMaxWriteBufferTotalSize`. When a buffer is flushed, the
+  // reservation is released. If the flush is handled as an optimistic write,
+  // the reservation is effectively transferred to
+  // `optimistic_write_buffer_monitor_`.
+  SqlWriteBufferMemoryMonitor write_buffer_monitor_;
 
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};

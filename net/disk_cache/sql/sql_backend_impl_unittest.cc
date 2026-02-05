@@ -2335,7 +2335,7 @@ TEST_F(SqlBackendImplTest, WriteBuffering) {
   EXPECT_EQ(entry->WriteData(1, 0, buffer1.get(), buffer1->size(),
                              base::DoNothing(), false),
             buffer1->size());
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), buffer1->size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), buffer1->size());
 
   // Write another small chunk, should be buffered.
   auto buffer2 =
@@ -2343,8 +2343,9 @@ TEST_F(SqlBackendImplTest, WriteBuffering) {
   EXPECT_EQ(entry->WriteData(1, 100, buffer2.get(), buffer2->size(),
                              base::DoNothing(), false),
             buffer2->size());
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(),
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(),
             buffer1->size() + buffer2->size());
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
 
   // Write exceeding per-entry limit, should trigger flush of previous buffer.
   // The new data is too large to buffer, so it should be written directly.
@@ -2354,14 +2355,15 @@ TEST_F(SqlBackendImplTest, WriteBuffering) {
   int rv = entry->WriteData(1, 200, buffer3.get(), buffer3->size(),
                             cb_write.callback(), false);
   EXPECT_EQ(rv, net::ERR_IO_PENDING);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
-
-  EXPECT_EQ(cb_write.WaitForResult(), static_cast<int>(buffer3->size()));
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(),
+            buffer1->size() + buffer2->size());
 
   entry->Close();
 
   FlushQueue(*backend);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
@@ -2384,7 +2386,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
   auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
   entry->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
                    false);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), data.size());
 
   // Read it back.
   auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
@@ -2396,12 +2398,12 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
   EXPECT_EQ(std::string_view(read_buffer->data(), data.size()), data);
 
   // Buffer should still be there.
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), data.size());
 
   entry->Close();
 
   FlushQueue(*backend);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingReadOverlapFlush) {
@@ -2425,7 +2427,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadOverlapFlush) {
   // Write at 0 to ensure buffering (sequential).
   entry->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
                    false);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), data.size());
 
   // Read range that overlaps but is larger than buffer (e.g. from 0 to 20)
   // This should force flush.
@@ -2438,7 +2440,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadOverlapFlush) {
   EXPECT_EQ(std::string_view(read_buffer->data(), data.size()), data);
 
   // Buffer should be flushed.
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
 
   entry->Close();
 }
@@ -2471,7 +2473,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingGlobalLimit) {
       base::MakeRefCounted<net::StringIOBuffer>(std::string(60, 'a'));
   entry1->WriteData(1, 0, buffer1.get(), buffer1->size(), base::DoNothing(),
                     false);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 60);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 60);
 
   // Write 60 bytes to entry 2. Should flush entry 2 immediately because global
   // limit (100) would be exceeded (60+60=120).
@@ -2482,14 +2484,15 @@ TEST_F(SqlBackendImplTest, WriteBufferingGlobalLimit) {
                              cb_write.callback(), false);
   EXPECT_EQ(cb_write.GetResult(rv), 60);
 
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 60);  // Entry 1 still buffered.
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(),
+            60);  // Entry 1 still buffered.
 
   entry1->Close();
   entry2->Close();
 
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 60);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 60);
   FlushQueue(*backend);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingFlushOnClose) {
@@ -2512,14 +2515,14 @@ TEST_F(SqlBackendImplTest, WriteBufferingFlushOnClose) {
   auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data);
   entry->WriteData(1, 0, buffer.get(), buffer->size(), base::DoNothing(),
                    false);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), data.size());
 
   entry->Close();
 
   // Closing should asynchronously flush buffer.
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), data.size());
   FlushQueue(*backend);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
 
   // Verify data on disk by opening again.
   TestEntryResultCompletionCallback cb_open;
@@ -2560,7 +2563,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
   EXPECT_EQ(entry->WriteData(1, 0, buffer1.get(), buffer1->size(),
                              base::DoNothing(), false),
             buffer1->size());
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 500);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 500);
   // Optimistic buffer usage: 0 (buffered in entry, not sent to backend)
   EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
 
@@ -2572,7 +2575,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
   EXPECT_EQ(entry->WriteData(1, 500, buffer2.get(), buffer2->size(),
                              base::DoNothing(), false),
             buffer2->size());
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 600);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 600);
   EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 500);
 
   // 3. Write 2000 bytes. 2000 > 1000.
@@ -2585,7 +2588,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
   EXPECT_EQ(entry->WriteData(1, 1100, buffer3.get(), buffer3->size(),
                              cb_write3.callback(), false),
             net::ERR_IO_PENDING);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
   EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 1100);
   EXPECT_EQ(cb_write3.WaitForResult(), 2000);
   EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
@@ -2603,7 +2606,7 @@ TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
                              cb_write4.callback(), false),
             net::ERR_IO_PENDING);
   EXPECT_EQ(cb_write4.WaitForResult(), static_cast<int>(buffer4->size()));
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
   EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
 
   entry->Close();
@@ -2636,7 +2639,8 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadAcrossChunks) {
   entry->WriteData(1, 5, buffer2.get(), buffer2->size(), base::DoNothing(),
                    false);
 
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data1.size() + data2.size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(),
+            data1.size() + data2.size());
 
   // Read across chunks: Offset 3, Length 4. Should get "AABB".
   auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(4);
@@ -2647,12 +2651,13 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadAcrossChunks) {
   EXPECT_EQ(std::string_view(read_buffer->data(), 4), "AABB");
 
   // Buffer should still be there.
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data1.size() + data2.size());
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(),
+            data1.size() + data2.size());
 
   entry->Close();
 
   FlushQueue(*backend);
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), 0);
 }
 
 TEST_F(SqlBackendImplTest, CombinedWriteAndMetadataUpdate) {
