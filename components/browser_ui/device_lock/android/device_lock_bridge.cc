@@ -6,6 +6,7 @@
 
 #include "base/android/device_info.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_callback.h"
 #include "base/android/scoped_java_ref.h"
 #include "ui/android/window_android.h"
 
@@ -14,15 +15,9 @@
 
 using base::android::JavaRef;
 
-DeviceLockBridge::DeviceLockBridge() {
-  java_object_ = Java_DeviceLockBridge_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
-}
+DeviceLockBridge::DeviceLockBridge() = default;
 
-DeviceLockBridge::~DeviceLockBridge() {
-  Java_DeviceLockBridge_clearNativePointer(base::android::AttachCurrentThread(),
-                                           java_object_);
-}
+DeviceLockBridge::~DeviceLockBridge() = default;
 
 void DeviceLockBridge::LaunchDeviceLockUiIfNeededBeforeRunningCallback(
     ui::WindowAndroid* window_android,
@@ -38,16 +33,10 @@ void DeviceLockBridge::LaunchDeviceLockUiIfNeededBeforeRunningCallback(
   }
 
   CHECK(callback);
-  device_lock_confirmed_callback_ = std::move(callback);
+  auto* env = base::android::AttachCurrentThread();
   Java_DeviceLockBridge_launchDeviceLockUiBeforeRunningCallback(
-      base::android::AttachCurrentThread(), java_object_,
-      window_android->GetJavaObject());
-}
-
-void DeviceLockBridge::OnDeviceLockUiFinished(JNIEnv* env,
-                                              bool is_device_lock_set) {
-  std::move(device_lock_confirmed_callback_)
-      .Run(/*device_lock_requirement_met=*/is_device_lock_set);
+      env, window_android->GetJavaObject(),
+      base::android::ToJniCallback(env, std::move(callback)));
 }
 
 bool DeviceLockBridge::ShouldShowDeviceLockUi() {

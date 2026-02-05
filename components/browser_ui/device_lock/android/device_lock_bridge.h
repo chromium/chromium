@@ -27,10 +27,6 @@ class DeviceLockBridge {
       ui::WindowAndroid* window_android,
       DeviceLockRequirementMetCallback callback);
 
-  // Invokes a callback to save a pending password (if device lock was set up)
-  // and clean up pointers and other data.
-  void OnDeviceLockUiFinished(JNIEnv* env, bool is_device_lock_set);
-
   // Returns true iff the device requires a device lock (ex: pin/password) and
   // does not have one set or requires a device lock but hasn't seen the
   // explainer dialog before.
@@ -48,15 +44,6 @@ class DeviceLockBridge {
   // device lock page has been shown to and affirmatively acknowledged by the
   // user).
   bool DeviceLockPageHasBeenPassed();
-
-  // This object is an instance of DeviceLockBridge.java (the Java counterpart
-  // to this class).
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  // The callback to run after either Chrome determines that the device lock UI
-  // does not need to be shown or the user successfully finishes the device lock
-  // UI.
-  DeviceLockRequirementMetCallback device_lock_confirmed_callback_;
 };
 
 #endif  // COMPONENTS_BROWSER_UI_DEVICE_LOCK_ANDROID_DEVICE_LOCK_BRIDGE_H_

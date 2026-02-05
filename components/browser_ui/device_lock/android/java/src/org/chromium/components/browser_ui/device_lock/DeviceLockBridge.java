@@ -11,9 +11,9 @@ import android.app.KeyguardManager;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -28,15 +28,17 @@ public class DeviceLockBridge {
     public static final String DEVICE_LOCK_PAGE_HAS_BEEN_PASSED =
             "Chrome.DeviceLockPage.HasBeenPassed";
 
-    private long mNativeDeviceLockBridge;
+    // Do not instantiate this class; all methods are static.
+    private DeviceLockBridge() {}
 
-    private DeviceLockBridge(long nativeDeviceLockBridge) {
-        mNativeDeviceLockBridge = nativeDeviceLockBridge;
-    }
-
+    /**
+     * Returns true iff the device lock page has already been passed (i.e. the device lock page has
+     * been shown to and affirmatively acknowledged by the user).
+     */
     @CalledByNative
-    static DeviceLockBridge create(long nativeDeviceLockBridge) {
-        return new DeviceLockBridge(nativeDeviceLockBridge);
+    public static boolean deviceLockPageHasBeenPassed() {
+        return ContextUtils.getAppSharedPreferences()
+                .getBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
     }
 
     /**
@@ -47,10 +49,8 @@ public class DeviceLockBridge {
      * flow.
      */
     @CalledByNative
-    private void launchDeviceLockUiBeforeRunningCallback(WindowAndroid windowAndroid) {
-        if (mNativeDeviceLockBridge == 0) {
-            return;
-        }
+    private static void launchDeviceLockUiBeforeRunningCallback(
+            WindowAndroid windowAndroid, JniOnceCallback<Boolean> callback) {
         final Context context = windowAndroid.getContext().get();
         if (context != null) {
             DeviceLockActivityLauncher deviceLockActivityLauncher =
@@ -62,20 +62,11 @@ public class DeviceLockBridge {
                     null,
                     false,
                     windowAndroid,
-                    (resultCode, unused) ->
-                            DeviceLockBridgeJni.get()
-                                    .onDeviceLockUiFinished(
-                                            mNativeDeviceLockBridge,
-                                            resultCode == Activity.RESULT_OK),
+                    (resultCode, unused) -> callback.onResult(resultCode == Activity.RESULT_OK),
                     DeviceLockActivityLauncher.Source.AUTOFILL);
         } else {
-            DeviceLockBridgeJni.get().onDeviceLockUiFinished(mNativeDeviceLockBridge, false);
+            callback.onResult(false);
         }
-    }
-
-    @CalledByNative
-    private void clearNativePointer() {
-        mNativeDeviceLockBridge = 0;
     }
 
     @CalledByNative
@@ -84,17 +75,5 @@ public class DeviceLockBridge {
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.KEYGUARD_SERVICE))
                 .isDeviceSecure();
-    }
-
-    @CalledByNative
-    public static boolean deviceLockPageHasBeenPassed() {
-        return ContextUtils.getAppSharedPreferences()
-                .getBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
-    }
-
-    /** C++ method signatures. */
-    @NativeMethods
-    interface Natives {
-        void onDeviceLockUiFinished(long nativeDeviceLockBridge, boolean isDeviceLockSet);
     }
 }
