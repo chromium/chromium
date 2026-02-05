@@ -5138,25 +5138,6 @@
             ]
         }
     ],
-    "Canvas2DHibernationNoSmallCanvas": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "Canvas2DHibernationNoSmallCanvas"
-                    ]
-                }
-            ]
-        }
-    ],
     "Canvas2DReclaimUnusedResources": [
         {
             "platforms": [
@@ -5178,7 +5159,7 @@
             ]
         }
     ],
-    "CanvasHibernationExperiments": [
+    "CanvasHibernationExperimentsV2": [
         {
             "platforms": [
                 "android",
@@ -5189,9 +5170,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20260205",
                     "enable_features": [
                         "Canvas2DHibernation",
+                        "Canvas2DHibernationDefer",
+                        "Canvas2DHibernationNoSmallCanvas",
                         "Canvas2DHibernationReleaseTransferMemory",
                         "CanvasHibernationSnapshotZstd",
                         "ClearCanvasResourcesInBackground",
