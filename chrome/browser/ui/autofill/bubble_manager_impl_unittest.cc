@@ -948,6 +948,31 @@ TEST_F(BubbleManagerImplTest,
   EXPECT_FALSE(confirmation_controller->IsShowingBubble());
 }
 
+// Test that a queued bubble is discarded if it becomes invalid while waiting in
+// the queue.
+TEST_F(BubbleManagerImplTest, ProcessPendingBubbles_DiscardInvalidBubble) {
+  std::unique_ptr<MockBubbleController> active_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+  std::unique_ptr<MockBubbleController> queued_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+
+  EXPECT_CALL(*active_controller, ShowBubble());
+  bubble_manager().RequestShowController(*active_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(active_controller->IsShowingBubble());
+  EXPECT_CALL(*queued_controller, ShowBubble()).Times(0);
+  bubble_manager().RequestShowController(*queued_controller,
+                                         /*force_show=*/false);
+
+  // The queued bubble becomes invalid.
+  EXPECT_CALL(*queued_controller, CanBeReshown()).WillRepeatedly(Return(false));
+
+  EXPECT_CALL(*queued_controller, ShowBubble()).Times(0);
+  EXPECT_CALL(*queued_controller, OnBubbleDiscarded());
+  bubble_manager().OnBubbleHiddenByController(*active_controller,
+                                              /*show_next_bubble=*/true);
+}
+
 // Tests that if the web contents is deactivated, the show bubble request leads
 // to bubble getting added to the queue.
 TEST_F(BubbleManagerImplTest, TabDeactivated_ShowAddsToQueue) {

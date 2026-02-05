@@ -521,7 +521,8 @@ void IbanBubbleControllerImpl::DoShowBubble() {
 }
 
 bool IbanBubbleControllerImpl::CanBeReshown() const {
-  return current_bubble_type_ != IbanBubbleType::kUploadCompleted;
+  return current_bubble_type_ != IbanBubbleType::kUploadCompleted &&
+         current_bubble_type_ != IbanBubbleType::kInactive;
 }
 
 BubbleType IbanBubbleControllerImpl::GetBubbleType() const {
