@@ -6125,6 +6125,7 @@
     },
     {
       name: "WebMCP",
+      implied_by: ["WebMCPTesting"],
       status: "experimental",
     },
     {

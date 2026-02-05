@@ -1930,7 +1930,8 @@ TEST_P(LangParsingFlagDependentTest, ExtendedLangRangesParsing) {
 }
 
 TEST(CSSSelectorParserTest, ToolFormSubmitActive_Disabled) {
-  ScopedWebMCPForTest scoped_feature(false);
+  ScopedWebMCPForTest scoped_webmcp_feature(false);
+  ScopedWebMCPTestingForTest scoped_webmcp_testing_feature(false);
   test::TaskEnvironment task_environment;
 
   // Test that these pseudo classes are not valid with the WebMCP flag disabled

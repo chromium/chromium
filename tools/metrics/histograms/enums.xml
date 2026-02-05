@@ -8576,6 +8576,7 @@ from previous Chrome versions.
   <int value="-1998927516" label="enable-md-settings"/>
   <int value="-1998811299" label="VcSegmentationInferenceBackend:enabled"/>
   <int value="-1998724434" label="EnableCrossDevicePrefTracker:disabled"/>
+  <int value="-1998060131" label="WebMCPTesting:disabled"/>
   <int value="-1996887988" label="WaylandLinuxDrmSyncobj:disabled"/>
   <int value="-1996592771" label="FedCmAccountAutoSelectedFlag:enabled"/>
   <int value="-1996233283"
@@ -18458,6 +18459,7 @@ from previous Chrome versions.
   <int value="1393970632" label="DevToolsCssValueTracing:disabled"/>
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>
   <int value="1395175083" label="PrivacyGuide:enabled"/>
+  <int value="1396445782" label="enable-webgpu-testing:disabled"/>
   <int value="1397053154" label="ContextualSearchLiteralSearchTap:enabled"/>
   <int value="1397069250" label="NetworkService:disabled"/>
   <int value="1397169840" label="EnableMultiMonitorsInCrd:enabled"/>
@@ -19243,6 +19245,7 @@ from previous Chrome versions.
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1665430464" label="force-control-face-ae"/>
   <int value="1665999627" label="GameDashboard:disabled"/>
+  <int value="1666209442" label="WebMCPTesting:enabled"/>
   <int value="1666226008" label="CrOSLegacyMediaFormats:disabled"/>
   <int value="1666643895" label="BrowsingDataModel:enabled"/>
   <int value="1666933104" label="TabStripStartupRefactoring:enabled"/>
@@ -19565,6 +19568,7 @@ from previous Chrome versions.
   <int value="1776136073" label="ExtensionsMenuAccessControl:enabled"/>
   <int value="1776221137" label="TangibleSync:enabled"/>
   <int value="1776475705" label="show-composited-layer-borders"/>
+  <int value="1776527118" label="enable-webgpu-testing:enabled"/>
   <int value="1777059507" label="trust-autofill-server-name-types"/>
   <int value="1777241671" label="EnableAriaElementReflection:disabled"/>
   <int value="1777695562" label="SendTabToSelfShowSendingUI:disabled"/>

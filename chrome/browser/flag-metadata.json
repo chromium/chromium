@@ -4294,6 +4294,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-webmcp-testing",
+    "owners": [ "webmcp-team@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "enable-webrtc-allow-input-volume-adjustment",
     "owners": [ "peah@chromium.org", "silen@chromium.org" ],
     "expiry_milestone": 156
