@@ -8,6 +8,8 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -40,6 +42,7 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   const SessionID& GetSessionID() const override;
   bool IsDeleteScheduled() const override;
   Type GetType() const override;
+  base::WeakPtr<BrowserWindowInterface> GetWeakPtr() override;
 
   // Implements |content::PageNavigator|, which is inherited by
   // |BrowserWindowInterface|.
@@ -59,6 +62,8 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   const BrowserWindowInterface::Type type_;
   const raw_ref<Profile> profile_;
   const SessionID session_id_;
+
+  base::WeakPtrFactory<AndroidBrowserWindow> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_H_

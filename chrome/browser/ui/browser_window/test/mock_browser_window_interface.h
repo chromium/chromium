@@ -36,6 +36,10 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
                base::OnceCallback<void(content::NavigationHandle&)>
                    navigation_handle_callback),
               (override));
+  MOCK_METHOD(base::WeakPtr<BrowserWindowInterface>,
+              GetWeakPtr,
+              (),
+              (override));
 
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
@@ -53,10 +57,6 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterBrowserCloseCancelled,
               (BrowserCloseCancelledCallback callback),
-              (override));
-  MOCK_METHOD(base::WeakPtr<BrowserWindowInterface>,
-              GetWeakPtr,
-              (),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterActiveTabDidChange,

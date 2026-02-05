@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_deref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -107,6 +108,10 @@ bool AndroidBrowserWindow::IsDeleteScheduled() const {
 
 BrowserWindowInterface::Type AndroidBrowserWindow::GetType() const {
   return type_;
+}
+
+base::WeakPtr<BrowserWindowInterface> AndroidBrowserWindow::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 content::WebContents* AndroidBrowserWindow::OpenURL(

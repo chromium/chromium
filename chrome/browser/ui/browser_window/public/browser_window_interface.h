@@ -187,6 +187,26 @@ class BrowserWindowInterface : public content::PageNavigator {
 #endif
   };
 
+  // WARNING: Many uses of base::WeakPtr are inappropriate and lead to bugs.
+  // An appropriate use case is as a variable passed to an asynchronously
+  // invoked PostTask.
+  // An inappropriate use case is to store as a member of an object that can
+  // outlive BrowserWindowInterface. This leads to inconsistent state machines.
+  // For example (don't do this):
+  // class FooOutlivesBrowser {
+  //   base::WeakPtr<BrowserWindowInterface> bwi_;
+  //   // Conceptually, this member should only be set if bwi_ is set.
+  //   std::optional<SkColor> color_of_browser_;
+  // };
+  // For example (do this):
+  // class FooOutlivesBrowser {
+  //   // Use RegisterBrowserDidClose() to clear both bwi_ and
+  //   // color_of_browser_ prior to bwi_ destruction.
+  //   raw_ptr<BrowserWindowInterface> bwi_;
+  //   std::optional<SkColor> color_of_browser_;
+  // };
+  virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
+
   // S T O P
   // Please do not add new features here without consulting desktop leads
   // (erikchen@) and Clank leads (twellington@, dtrainor@). See comment at the
@@ -233,26 +253,6 @@ class BrowserWindowInterface : public content::PageNavigator {
       base::RepeatingCallback<void(BrowserWindowInterface*, ClosingStatus)>;
   virtual base::CallbackListSubscription RegisterBrowserCloseCancelled(
       BrowserCloseCancelledCallback callback) = 0;
-
-  // WARNING: Many uses of base::WeakPtr are inappropriate and lead to bugs.
-  // An appropriate use case is as a variable passed to an asynchronously
-  // invoked PostTask.
-  // An inappropriate use case is to store as a member of an object that can
-  // outlive BrowserWindowInterface. This leads to inconsistent state machines.
-  // For example (don't do this):
-  // class FooOutlivesBrowser {
-  //   base::WeakPtr<BrowserWindowInterface> bwi_;
-  //   // Conceptually, this member should only be set if bwi_ is set.
-  //   std::optional<SkColor> color_of_browser_;
-  // };
-  // For example (do this):
-  // class FooOutlivesBrowser {
-  //   // Use RegisterBrowserDidClose() to clear both bwi_ and
-  //   // color_of_browser_ prior to bwi_ destruction.
-  //   raw_ptr<BrowserWindowInterface> bwi_;
-  //   std::optional<SkColor> color_of_browser_;
-  // };
-  virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
 
   using ActiveTabChangeCallback =
       base::RepeatingCallback<void(BrowserWindowInterface*)>;
