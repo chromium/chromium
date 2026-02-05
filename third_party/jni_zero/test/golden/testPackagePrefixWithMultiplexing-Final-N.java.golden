@@ -32,7 +32,7 @@ public class N {
       Object p13,
       short p14,
       boolean p15);
-  public static native void VOOOOOOOOOOOOOOOOOO(
+  public static native void VOOOOOOOOOOOOOOOOOOO(
       Object p0,
       Object p1,
       Object p2,
@@ -50,5 +50,6 @@ public class N {
       Object p14,
       Object p15,
       Object p16,
-      Object p17);
+      Object p17,
+      Object p18);
 }

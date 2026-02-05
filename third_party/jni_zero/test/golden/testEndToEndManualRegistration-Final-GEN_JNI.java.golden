@@ -80,6 +80,7 @@ public class GEN_JNI {
       Object convertedString,
       Object convertedStrings,
       Object optionalString,
+      Object funcType,
       Object tStruct,
       Object structs,
       Object obj,

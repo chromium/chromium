@@ -12,6 +12,7 @@ import org.stubs.MyClass.SecondNestedInterface;
 import org.stubs.MyInterface;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  * Sample class that uses the JNI annotation processor for static methods.
@@ -67,6 +68,10 @@ class SampleForAnnotationProcessor {
                 @JniType("std::string") String convertedString,
                 @JniType("std::vector<std::string>") String[] convertedStrings,
                 @JniType("std::optional<std::string>") String optionalString,
+
+                // Test ()s within the type.
+                @JniType("std::optional<void(*)(const std::vector<bool>&)>")
+                        Consumer<Boolean> funcType,
                 TestStruct tStruct,
                 TestStruct[] structs,
                 Object obj,

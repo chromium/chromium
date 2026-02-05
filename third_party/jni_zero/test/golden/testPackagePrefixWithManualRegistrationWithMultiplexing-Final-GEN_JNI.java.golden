@@ -115,6 +115,7 @@ public class GEN_JNI {
       Object convertedString,
       Object convertedStrings,
       Object optionalString,
+      Object funcType,
       Object tStruct,
       Object structs,
       Object obj,
@@ -124,7 +125,7 @@ public class GEN_JNI {
       Object view,
       Object context,
       Object convertedObjects) {
-    this.is.a.package.prefix.J.N.VOOOOOOOOOOOOOOOOOO(
+    this.is.a.package.prefix.J.N.VOOOOOOOOOOOOOOOOOOO(
         clazz,
         classes,
         throwable,
@@ -134,6 +135,7 @@ public class GEN_JNI {
         convertedString,
         convertedStrings,
         optionalString,
+        funcType,
         tStruct,
         structs,
         obj,

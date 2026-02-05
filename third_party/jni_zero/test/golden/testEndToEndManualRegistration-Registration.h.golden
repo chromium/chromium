@@ -108,6 +108,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     jobject convertedString,
     jobject convertedStrings,
     jobject optionalString,
+    jobject funcType,
     jobject tStruct,
     jobject structs,
     jobject obj,
@@ -187,7 +188,7 @@ bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
          "(ILjava/lang/Object;JLjava/lang/Object;SLjava/lang/Object;CLjava/lang/Object;BLjava/lang/Object;DLjava/lang/Object;FLjava/lang/Object;ZLjava/lang/Object;)Ljava/lang/Object;",
          reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives)},
          {"org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes",
-         "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
+         "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
          reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes)},
 
   };

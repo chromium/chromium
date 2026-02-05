@@ -5,6 +5,7 @@ package org.jni_zero;
 
 import android.content.Context;
 import android.view.View;
+import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniTestInstanceHolder;
@@ -176,10 +177,10 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
         zbool,
         bools);
   }
-  private static native void nativeTestSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
+  private static native void nativeTestSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object funcType, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
 
   @Override
-  public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, SampleForAnnotationProcessor.TestStruct tStruct, SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, MyClass.SecondNestedInterface nestedInterface, View view, Context context, Object[] convertedObjects) {
+  public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Consumer funcType, SampleForAnnotationProcessor.TestStruct tStruct, SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, MyClass.SecondNestedInterface nestedInterface, View view, Context context, Object[] convertedObjects) {
     nativeTestSpecialTypes(
         clazz,
         classes,
@@ -190,6 +191,7 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
         convertedString,
         convertedStrings,
         optionalString,
+        funcType,
         tStruct,
         structs,
         obj,

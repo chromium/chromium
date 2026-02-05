@@ -72,6 +72,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     jobject convertedString,
     jobject convertedStrings,
     jobject optionalString,
+    jobject funcType,
     jobject tStruct,
     jobject structs,
     jobject obj,

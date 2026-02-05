@@ -102,6 +102,7 @@
 //     const std::string& convertedString,
 //     const std::vector<std::string>& convertedStrings,
 //     const std::optional<std::string>& optionalString,
+//     const std::optional<void(*)(const std::vector<bool>&)>& funcType,
 //     const jni_zero::JavaRef<jobject>& tStruct,
 //     const jni_zero::JavaRef<jobjectArray>& structs,
 //     const jni_zero::JavaRef<jobject>& obj,
@@ -708,6 +709,7 @@
       jobject convertedString,                                                                     \
       jobject convertedStrings,                                                                    \
       jobject optionalString,                                                                      \
+      jobject funcType,                                                                            \
       jobject tStruct,                                                                             \
       jobject structs,                                                                             \
       jobject obj,                                                                                 \
@@ -732,6 +734,9 @@
     std::optional<std::string> optionalString_converted = jni_zero::FromJniType<std::optional<std::string>>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, optionalString));                             \
+    std::optional<void(*)(const std::vector<bool>&)> funcType_converted = jni_zero::FromJniType<std::optional<void(*)(const std::vector<bool>&)>>( \
+        env,                                                                                       \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, funcType));                                   \
     jni_zero::JavaRef<jobject> tStruct_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, tStruct); \
     jni_zero::JavaRef<jobjectArray> structs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(structs)); \
     jni_zero::JavaRef<jobject> obj_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, obj);        \
@@ -763,6 +768,7 @@
           convertedString_converted,                                                               \
           convertedStrings_converted,                                                              \
           optionalString_converted,                                                                \
+          funcType_converted,                                                                      \
           tStruct_ref,                                                                             \
           structs_ref,                                                                             \
           obj_ref,                                                                                 \
@@ -783,6 +789,7 @@
             convertedString_converted,                                                             \
             convertedStrings_converted,                                                            \
             optionalString_converted,                                                              \
+            funcType_converted,                                                                    \
             tStruct_ref,                                                                           \
             structs_ref,                                                                           \
             obj_ref,                                                                               \
@@ -802,6 +809,7 @@
           convertedString_converted,                                                               \
           convertedStrings_converted,                                                              \
           optionalString_converted,                                                                \
+          funcType_converted,                                                                      \
           tStruct_ref,                                                                             \
           structs_ref,                                                                             \
           obj_ref,                                                                                 \
@@ -821,6 +829,7 @@
             convertedString_converted,                                                             \
             convertedStrings_converted,                                                            \
             optionalString_converted,                                                              \
+            funcType_converted,                                                                    \
             tStruct_ref,                                                                           \
             structs_ref,                                                                           \
             obj_ref,                                                                               \
@@ -831,7 +840,7 @@
             context_ref,                                                                           \
             convertedObjects_converted);                                                           \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, std::vector<jni_zero::tests::CPPClass>)"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, std::vector<jni_zero::tests::CPPClass>)"); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

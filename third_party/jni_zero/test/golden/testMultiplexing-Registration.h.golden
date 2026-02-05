@@ -88,6 +88,7 @@ JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_
     jobject convertedString,
     jobject convertedStrings,
     jobject optionalString,
+    jobject funcType,
     jobject tStruct,
     jobject structs,
     jobject obj,
@@ -180,7 +181,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OBCDFIJOOOOOOOOSZ(
     bool p15) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
 }
-JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOOOOOOOOOOOOOOOOOO(
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOOOOOOOOOOOOOOOOOOO(
     JNIEnv* env,
     jclass jcaller,
     jobject p0,
@@ -200,8 +201,9 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOOOOOOOOOOOOOOOOOO(
     jobject p14,
     jobject p15,
     jobject p16,
-    jobject p17) {
-  return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
+    jobject p17,
+    jobject p18) {
+  return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18);
 }
 
 // Helper Methods.
@@ -224,9 +226,9 @@ bool RegisterNative_J_N(JNIEnv* env) {
          {"OBCDFIJOOOOOOOOSZ",
          "(BCDFIJLjava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;SZ)Ljava/lang/Object;",
          reinterpret_cast<void*>(Java_J_N_OBCDFIJOOOOOOOOSZ)},
-         {"VOOOOOOOOOOOOOOOOOO",
-         "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
-         reinterpret_cast<void*>(Java_J_N_VOOOOOOOOOOOOOOOOOO)},
+         {"VOOOOOOOOOOOOOOOOOOO",
+         "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
+         reinterpret_cast<void*>(Java_J_N_VOOOOOOOOOOOOOOOOOOO)},
 
   };
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =

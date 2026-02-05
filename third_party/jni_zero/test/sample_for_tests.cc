@@ -29,6 +29,15 @@ static_assert(IsObjectContainer<std::vector<std::string*>>);
 using jni_zero::AttachCurrentThread;
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
+using FuncType = void (*)(const std::vector<bool>&);
+
+namespace jni_zero {
+
+template <>
+FuncType FromJniType<FuncType>(JNIEnv* env, const JavaRef<jobject>& j_object) {
+  return nullptr;
+}
+}  // namespace jni_zero
 
 namespace jni_zero::tests {
 
@@ -235,6 +244,7 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     std::string& convertedString,
     std::vector<std::string>& convertedStrings,
     std::optional<std::string>& optionalString,
+    std::optional<FuncType> optionalFunc,
     const JavaRef<jobject>& tStruct,
     const JavaRef<jobjectArray>& structs,
     const JavaRef<jobject>& obj,

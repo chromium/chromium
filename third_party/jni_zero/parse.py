@@ -97,16 +97,15 @@ def _remove_comments(contents):
   return _COMMENT_REMOVER_REGEX.sub(replacer, contents)
 
 
-# Remove everything between and including <> except at the end of a string, e.g.
-# @JniType("std::vector<int>")
-# This will also break lines with comparison operators, but we don't care.
-_GENERICS_REGEX = re.compile(r'<[^<>\n]*>(?!>*")')
+# Remove <...> while maintaining "...".
+_GENERICS_REGEX = re.compile(r'("(?:\\.|[^\\"\n])*")|(<[^<>\n]*>)')
 
 
 def _remove_generics(value):
   """Strips Java generics from a string."""
   while True:
-    ret = _GENERICS_REGEX.sub(' ', value)
+    # Replace "..." with itself, and <...> with " ".
+    ret = _GENERICS_REGEX.sub(lambda m: m.group(1) or ' ', value)
     if len(ret) == len(value):
       return ret
     value = ret
@@ -156,21 +155,23 @@ def _parse_java_classes(contents, package_prefix, package_prefix_filter):
 
   return outer_class, sorted(nested_classes), null_marked
 
-
+# Complicated example:
+# @JniType("std::optional<void(*)(const std::vector<bool>&)>") Callback<Boolean> funcType,
+# Eager search for quotes to skip over )s within quotes.
 _ANNOTATION_REGEX = re.compile(
-    r'@(?P<annotation_name>[\w.]+)(?P<annotation_args>\([^)]+\))?\s*')
+    r'@(?P<name>[\w.]+)(?P<args>\((?:\".*?\")*[^)]*\))?\s*')
 # Only supports ("foo")
-_ANNOTATION_ARGS_REGEX = re.compile(
-    r'\(\s*"(?P<annotation_value>[^"]*?)"\s*\)\s*')
+_ANNOTATION_ARGS_REGEX = re.compile(r'\(\s*"(?P<value>[^"]*?)"\s*\)\s*',
+                                    flags=re.DOTALL)
 
 def _parse_annotations(value):
   annotations = {}
   for m in _ANNOTATION_REGEX.finditer(value):
     string_value = ''
-    if match_args := m.group('annotation_args'):
+    if match_args := m.group('args'):
       if match_arg_value := _ANNOTATION_ARGS_REGEX.match(match_args):
-        string_value = match_arg_value.group('annotation_value')
-    annotations[m.group('annotation_name')] = string_value
+        string_value = match_arg_value.group('value')
+    annotations[m.group('name')] = string_value
 
   # Use replace rather than tracking end index to handle:
   # "OuterClass.@Nullable InnerClass"
