@@ -684,6 +684,24 @@
   E_CPONLY(kColorReadAnythingAudioPlayerIconLowContrast) \
   E_CPONLY(kColorReadAnythingAudioPlayerIconSepiaLight) \
   E_CPONLY(kColorReadAnythingAudioPlayerIconSepiaDark) \
+  E_CPONLY(kColorReadAnythingToolbarIcon) \
+  E_CPONLY(kColorReadAnythingToolbarIconBlue) \
+  E_CPONLY(kColorReadAnythingToolbarIconDark) \
+  E_CPONLY(kColorReadAnythingToolbarIconLight) \
+  E_CPONLY(kColorReadAnythingToolbarIconYellow) \
+  E_CPONLY(kColorReadAnythingToolbarIconHighContrast) \
+  E_CPONLY(kColorReadAnythingToolbarIconLowContrast) \
+  E_CPONLY(kColorReadAnythingToolbarIconSepiaLight) \
+  E_CPONLY(kColorReadAnythingToolbarIconSepiaDark) \
+  E_CPONLY(kColorReadAnythingAudioControlsIcon) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconBlue) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconDark) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconLight) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconYellow) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconHighContrast) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconLowContrast) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconSepiaLight) \
+  E_CPONLY(kColorReadAnythingAudioControlsIconSepiaDark) \
   /* Realbox colors. */ \
   E_CPONLY(kColorSearchboxAnswerIconBackground) \
   E_CPONLY(kColorSearchboxAnswerIconForeground) \

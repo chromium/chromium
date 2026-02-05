@@ -11,7 +11,7 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#play-pause {
+#audio-controls #play-pause {
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-fill-color: var(--play-pause-icon-color);
   --cr-icon-button-size: 28px;
@@ -35,9 +35,15 @@
 }
 
 .audio-background-active {
-  --audio-controls-background: var(--audio-player-background-color);
+  --audio-controls-background: var(--color-sys-tonal-container);
   --audio-controls-right-margin: 6px;
   --audio-controls-right-padding: 4px;
+}
+
+.audio-background-immersive-enabled {
+  --audio-controls-background: var(--audio-player-background-color);
+    --audio-controls-right-margin: 6px;
+      --audio-controls-right-padding: 4px;
 }
 
 #audio-controls {
@@ -55,6 +61,9 @@
   margin: 0px;
 }
 
+#audio-controls cr-icon-button {
+  --cr-icon-button-fill-color: var(--audio-controls-icon-color-internal);
+}
 /* Separate CSS classes are needed instead of setting the style directly so
  * that when forced colors are active, the color menu isn't reshown through
  * the code used to manage toolbar overflows. */
@@ -98,6 +107,7 @@
   --cr-icon-button-fill-color-default: var(--color-sys-on-surface-subtle);
   --play-pause-icon-color: var(--color-sys-primary);
   --rate-button-text-color: var(--color-sys-on-surface-subtle);
+  --audio-controls-icon-color-internal: var(--color-sys-on-surface-subtle);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -107,9 +117,10 @@
 }
 
 .immersive-toolbar-container {
-  --cr-icon-button-fill-color-default: var(--foreground-color);
+  --cr-icon-button-fill-color-default: var(--toolbar-icon-color);
   --play-pause-icon-color: var(--audio-player-icon-color);
-  --rate-button-text-color: var(--foreground-color);
+  --rate-button-text-color: var(--audio-controls-icon-color);
+  --audio-controls-icon-color-internal: var(--audio-controls-icon-color);
   background-color: var(--background-color);
   display: flex;
   flex-direction: row;

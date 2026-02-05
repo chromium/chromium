@@ -40,6 +40,9 @@ const LINK_VISITED = 'var(--color-read-anything-link-visited';
 const AUDIO_PLAYER_BACKGROUND =
     'var(--color-read-anything-audio-player-background';
 const AUDIO_PLAYER_ICON = 'var(--color-read-anything-audio-player-icon';
+// Immersive mode specific colors.
+const TOOLBAR_ICON = 'var(--color-read-anything-toolbar-icon';
+const AUDIO_CONTROLS_ICON = 'var(--color-read-anything-audio-controls-icon';
 // Line focus styles.
 // Determined by experimentation to balance visibility without risking
 // obstructing any text.
@@ -207,6 +210,11 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--audio-player-icon-color',
         this.getAudioPlayerIconColor_(colorSuffix));
+    this.setStyle_(
+        '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
+    this.setStyle_(
+        '--audio-controls-icon-color',
+        this.getAudioControlsIconColor_(colorSuffix));
     const lineFocusBg = this.app_.style.getPropertyValue('--line-focus-bg');
     if (lineFocusBg !== LINE_FOCUS_BG_WINDOW) {
       this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
@@ -314,5 +322,17 @@ export class AppStyleUpdater {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
         AUDIO_PLAYER_ICON :
         (AUDIO_PLAYER_ICON + `${colorSuffix})`);
+  }
+
+  private getToolbarIconColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        TOOLBAR_ICON :
+        (TOOLBAR_ICON + `${colorSuffix})`);
+  }
+
+  private getAudioControlsIconColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        AUDIO_CONTROLS_ICON :
+        (AUDIO_CONTROLS_ICON + `${colorSuffix})`);
   }
 }

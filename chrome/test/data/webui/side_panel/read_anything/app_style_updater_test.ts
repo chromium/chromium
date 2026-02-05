@@ -626,6 +626,15 @@ suite('AppStyleUpdater', () => {
     const expectedSepiaLightIcon = 'rgb(16, 16, 16)';
     const expectedSepiaDarkBg = 'rgb(17, 17, 17)';
     const expectedSepiaDarkIcon = 'rgb(18, 18, 18)';
+    const expectedDefaultControlsIcon = 'rgb(19, 19, 19)';
+    const expectedLightControlsIcon = 'rgb(20, 20, 20)';
+    const expectedDarkControlsIcon = 'rgb(21, 21, 21)';
+    const expectedYellowControlsIcon = 'rgb(22, 22, 22)';
+    const expectedBlueControlsIcon = 'rgb(23, 23, 23)';
+    const expectedHighContrastControlsIcon = 'rgb(24, 24, 24)';
+    const expectedLowContrastControlsIcon = 'rgb(25, 25, 25)';
+    const expectedSepiaLightControlsIcon = 'rgb(26, 26, 26)';
+    const expectedSepiaDarkControlsIcon = 'rgb(27, 27, 27)';
     updateStyles({
       '--color-read-anything-audio-player-background': expectedDefaultBg,
       '--color-read-anything-audio-player-icon': expectedDefaultIcon,
@@ -653,6 +662,23 @@ suite('AppStyleUpdater', () => {
           expectedSepiaDarkBg,
       '--color-read-anything-audio-player-icon-sepia-dark':
           expectedSepiaDarkIcon,
+      '--color-read-anything-audio-controls-icon': expectedDefaultControlsIcon,
+      '--color-read-anything-audio-controls-icon-light':
+          expectedLightControlsIcon,
+      '--color-read-anything-audio-controls-icon-dark':
+          expectedDarkControlsIcon,
+      '--color-read-anything-audio-controls-icon-yellow':
+          expectedYellowControlsIcon,
+      '--color-read-anything-audio-controls-icon-blue':
+          expectedBlueControlsIcon,
+      '--color-read-anything-audio-controls-icon-high-contrast':
+          expectedHighContrastControlsIcon,
+      '--color-read-anything-audio-controls-icon-low-contrast':
+          expectedLowContrastControlsIcon,
+      '--color-read-anything-audio-controls-icon-sepia-light':
+          expectedSepiaLightControlsIcon,
+      '--color-read-anything-audio-controls-icon-sepia-dark':
+          expectedSepiaDarkControlsIcon,
     });
 
     // Default theme
@@ -662,6 +688,9 @@ suite('AppStyleUpdater', () => {
         expectedDefaultBg, computeStyle('--audio-player-background-color'));
     assertEquals(
         expectedDefaultIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedDefaultControlsIcon,
+        computeStyle('--audio-controls-icon-color'));
 
     // Light theme
     chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
@@ -669,6 +698,8 @@ suite('AppStyleUpdater', () => {
     assertEquals(
         expectedLightBg, computeStyle('--audio-player-background-color'));
     assertEquals(expectedLightIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedLightControlsIcon, computeStyle('--audio-controls-icon-color'));
 
     // Dark theme
     chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
@@ -676,6 +707,8 @@ suite('AppStyleUpdater', () => {
     assertEquals(
         expectedDarkBg, computeStyle('--audio-player-background-color'));
     assertEquals(expectedDarkIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedDarkControlsIcon, computeStyle('--audio-controls-icon-color'));
 
     // Yellow theme
     chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
@@ -683,6 +716,9 @@ suite('AppStyleUpdater', () => {
     assertEquals(
         expectedYellowBg, computeStyle('--audio-player-background-color'));
     assertEquals(expectedYellowIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedYellowControlsIcon,
+        computeStyle('--audio-controls-icon-color'));
 
     // Blue theme
     chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
@@ -690,6 +726,8 @@ suite('AppStyleUpdater', () => {
     assertEquals(
         expectedBlueBg, computeStyle('--audio-player-background-color'));
     assertEquals(expectedBlueIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedBlueControlsIcon, computeStyle('--audio-controls-icon-color'));
 
     // High contrast theme
     chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
@@ -699,6 +737,9 @@ suite('AppStyleUpdater', () => {
         computeStyle('--audio-player-background-color'));
     assertEquals(
         expectedHighContrastIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedHighContrastControlsIcon,
+        computeStyle('--audio-controls-icon-color'));
 
     // Low contrast theme
     chrome.readingMode.colorTheme = chrome.readingMode.lowContrastTheme;
@@ -707,6 +748,9 @@ suite('AppStyleUpdater', () => {
         expectedLowContrastBg, computeStyle('--audio-player-background-color'));
     assertEquals(
         expectedLowContrastIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedLowContrastControlsIcon,
+        computeStyle('--audio-controls-icon-color'));
 
     // Sepia light theme
     chrome.readingMode.colorTheme = chrome.readingMode.sepiaLightTheme;
@@ -715,6 +759,9 @@ suite('AppStyleUpdater', () => {
         expectedSepiaLightBg, computeStyle('--audio-player-background-color'));
     assertEquals(
         expectedSepiaLightIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedSepiaLightControlsIcon,
+        computeStyle('--audio-controls-icon-color'));
 
     // Sepia dark theme
     chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
@@ -723,6 +770,88 @@ suite('AppStyleUpdater', () => {
         expectedSepiaDarkBg, computeStyle('--audio-player-background-color'));
     assertEquals(
         expectedSepiaDarkIcon, computeStyle('--audio-player-icon-color'));
+    assertEquals(
+        expectedSepiaDarkControlsIcon,
+        computeStyle('--audio-controls-icon-color'));
+  });
+
+  test('toolbar icon colors change with theme', () => {
+    const expectedDefaultToolbarIcon = 'rgb(1, 1, 1)';
+    const expectedLightToolbarIcon = 'rgb(2, 2, 2)';
+    const expectedDarkToolbarIcon = 'rgb(3, 3, 3)';
+    const expectedYellowToolbarIcon = 'rgb(4, 4, 4)';
+    const expectedBlueToolbarIcon = 'rgb(5, 5, 5)';
+    const expectedHighContrastToolbarIcon = 'rgb(6, 6, 6)';
+    const expectedLowContrastToolbarIcon = 'rgb(7, 7, 7)';
+    const expectedSepiaLightToolbarIcon = 'rgb(8, 8, 8)';
+    const expectedSepiaDarkToolbarIcon = 'rgb(9, 9, 9)';
+    updateStyles({
+      '--color-read-anything-toolbar-icon': expectedDefaultToolbarIcon,
+      '--color-read-anything-toolbar-icon-light': expectedLightToolbarIcon,
+      '--color-read-anything-toolbar-icon-dark': expectedDarkToolbarIcon,
+      '--color-read-anything-toolbar-icon-yellow': expectedYellowToolbarIcon,
+      '--color-read-anything-toolbar-icon-blue': expectedBlueToolbarIcon,
+      '--color-read-anything-toolbar-icon-high-contrast':
+          expectedHighContrastToolbarIcon,
+      '--color-read-anything-toolbar-icon-low-contrast':
+          expectedLowContrastToolbarIcon,
+      '--color-read-anything-toolbar-icon-sepia-light':
+          expectedSepiaLightToolbarIcon,
+      '--color-read-anything-toolbar-icon-sepia-dark':
+          expectedSepiaDarkToolbarIcon,
+    });
+
+    // Default theme
+    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDefaultToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // Light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLightToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // Dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    updater.setTheme();
+    assertEquals(expectedDarkToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // Yellow theme
+    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedYellowToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // Blue theme
+    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    updater.setTheme();
+    assertEquals(expectedBlueToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // High contrast theme
+    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedHighContrastToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // Low contrast theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // Sepia light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.sepiaLightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedSepiaLightToolbarIcon, computeStyle('--toolbar-icon-color'));
+
+    // Sepia dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedSepiaDarkToolbarIcon, computeStyle('--toolbar-icon-color'));
   });
 
   test('setTheme with line focus window does not update color', () => {

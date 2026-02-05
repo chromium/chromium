@@ -33,8 +33,13 @@ function getCloseButton(this: ReadAnythingToolbarElement) {
 }
 
 function getToolbarAudioControlsHtml(this: ReadAnythingToolbarElement) {
+  let audioState = 'inactive';
+  if (this.isImmersiveEnabled_) {
+    audioState = 'immersive-enabled';
+  } else if (this.isSpeechActive) {
+    audioState = 'active';
+  }
   const shouldBeActive = this.isSpeechActive || this.isImmersiveEnabled_;
-  const audioState = shouldBeActive ? 'active' : 'inactive';
   const prevNextAreDisabled = !this.isReadAloudPlayable ||
       (this.isImmersiveEnabled_ && !this.isSpeechActive);
 
