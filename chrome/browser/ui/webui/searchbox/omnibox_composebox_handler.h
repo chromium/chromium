@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_OMNIBOX_COMPOSEBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_OMNIBOX_COMPOSEBOX_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 
 class Profile;
@@ -29,6 +30,13 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
 
   // composebox::mojom::PageHandler:
   void HandleFileUpload(bool is_image) override;
+
+ private:
+  void OnAimEligibilityChanged();
+
+  base::CallbackListSubscription aim_eligibility_subscription_;
+
+  base::WeakPtrFactory<OmniboxComposeboxHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_OMNIBOX_COMPOSEBOX_HANDLER_H_

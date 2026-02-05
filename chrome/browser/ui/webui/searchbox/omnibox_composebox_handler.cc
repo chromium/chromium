@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
@@ -93,6 +95,16 @@ OmniboxComposeboxHandler::OmniboxComposeboxHandler(
                                                              web_contents,
                                                              this)),
           std::move(get_session_callback)) {
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (aim_eligibility_service) {
+    aim_eligibility_subscription_ =
+        aim_eligibility_service->RegisterEligibilityChangedCallback(
+            base::BindRepeating(
+                &OmniboxComposeboxHandler::OnAimEligibilityChanged,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
@@ -104,3 +116,20 @@ OmniboxComposeboxHandler::OmniboxComposeboxHandler(
 OmniboxComposeboxHandler::~OmniboxComposeboxHandler() = default;
 
 void OmniboxComposeboxHandler::HandleFileUpload(bool is_image) {}
+
+void OmniboxComposeboxHandler::OnAimEligibilityChanged() {
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  if (!aim_eligibility_service) {
+    return;
+  }
+
+  // If the user has manually overridden the AIM eligibility response for
+  // debugging purposes (via chrome://omnibox/aim-eligibility), then force a
+  // refresh of the input state model to reflect any overrides specified by the
+  // user.
+  if (aim_eligibility_service->GetMostRecentResponseSource() ==
+      AimEligibilityService::EligibilityResponseSource::kUser) {
+    InitializeInputStateModelForDebugging();
+  }
+}

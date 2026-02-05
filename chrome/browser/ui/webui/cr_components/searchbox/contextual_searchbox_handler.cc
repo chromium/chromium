@@ -310,21 +310,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
                        web_contents,
                        std::move(controller)),
       get_session_callback_(std::move(get_session_callback)) {
-  // This implicitly also initializes the file upload status observer.
-  if (auto* session_handle = GetContextualSessionHandle()) {
-    auto* service = AimEligibilityServiceFactory::GetForProfile(profile);
-    const omnibox::SearchboxConfig* config_ptr =
-        service ? service->GetSearchboxConfig() : nullptr;
-    input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
-        *session_handle, config_ptr ? *config_ptr : omnibox::SearchboxConfig());
-    if (profile) {
-      input_state_model_->SetPrefService(profile->GetPrefs());
-    }
-    input_state_subscription_ = input_state_model_->subscribe(
-        base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-    input_state_model_->Initialize();
-  }
+  InitializeInputStateModel();
 
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
@@ -509,6 +495,10 @@ void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model) {
   input_state_model_->setActiveModel(model);
 }
 
+void ContextualSearchboxHandler::InitializeInputStateModelForDebugging() {
+  InitializeInputStateModel();
+}
+
 void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
   if (input_state_) {
     std::move(callback).Run(contextual_search::ToMojom(*input_state_));
@@ -524,6 +514,24 @@ void ContextualSearchboxHandler::OnInputStateChanged(
     return;
   }
   page_->OnInputStateChanged(contextual_search::ToMojom(state));
+}
+
+void ContextualSearchboxHandler::InitializeInputStateModel() {
+  // This implicitly also initializes the file upload status observer.
+  if (auto* session_handle = GetContextualSessionHandle()) {
+    auto* service = AimEligibilityServiceFactory::GetForProfile(profile_);
+    const omnibox::SearchboxConfig* config_ptr =
+        service ? service->GetSearchboxConfig() : nullptr;
+    input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
+        *session_handle, config_ptr ? *config_ptr : omnibox::SearchboxConfig());
+    if (profile_) {
+      input_state_model_->SetPrefService(profile_->GetPrefs());
+    }
+    input_state_subscription_ = input_state_model_->subscribe(
+        base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+    input_state_model_->Initialize();
+  }
 }
 
 void ContextualSearchboxHandler::UploadTabContextWithData(
