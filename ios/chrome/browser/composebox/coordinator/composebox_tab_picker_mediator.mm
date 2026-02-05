@@ -291,10 +291,10 @@
     }
   }
 
-  [_gridConsumer populateItems:items selectedItemIdentifier:nil];
+  [_gridConsumer populateItems:items
+        selectedItemIdentifier:[self activeIdentifier]];
 
-  // Defer scrolling until the next run loop to ensure the collection view
-  // layout is finalized.
+  // Defer scrolling to ensure the collection view layout is finalized.
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf bringActiveGridItemIntoView];

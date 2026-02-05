@@ -4,11 +4,21 @@
 
 #import <XCTest/XCTest.h>
 
+#import <vector>
+
+#import "base/i18n/message_formatter.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_app_interface.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -20,6 +30,11 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Web page. Used to create different tabs for the test.
+const char kPageURL[] = "/page%d.html";
+const char kPageTitle[] = "Title %d";
+const char kPageContent[] = "Content %d";
 
 // Matcher for the Composebox.
 id<GREYMatcher> ComposeboxMatcher() {
@@ -38,6 +53,31 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
 NSString* kLongText =
     @"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
     @"tempor incididunt ut labore et dolore magna aliqua.";
+
+// Creates a simple HTTP response for `request`.
+std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
+    const net::test_server::HttpRequest& request) {
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+
+  // Extract page number from URL path (e.g., /page1.html -> 1)
+  int page_number = 0;
+  std::string url_path = request.relative_url;
+  size_t start = url_path.find("page");
+  size_t end = url_path.find(".html");
+  if (start != std::string::npos && end != std::string::npos) {
+    start += strlen("page");
+    std::string number_str = url_path.substr(start, end - start);
+    base::StringToInt(number_str, &page_number);
+  }
+
+  http_response->set_content(base::StringPrintf(
+      "<html><head><title>Title "
+      "%d</title></head><body class='page-%d'>Content %d</body></html>",
+      page_number, page_number, page_number));
+  return http_response;
+}
 
 // Opens the tab picker from the composebox.
 void OpenTabPicker() {
@@ -60,10 +100,76 @@ void OpenTabPicker() {
 
   // Tap the select tabs button.
   id<GREYMatcher> selectTabsMatcher =
-      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION);
+      grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION),
+                 grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
       performAction:grey_tap()];
+}
+
+// Selects a tab in the tab picker with the given `title`.
+void SelectTabWithTitle(NSString* title) {
+  id<GREYMatcher> tabMatcher = TabWithTitle(title);
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:tabMatcher]
+      assertWithMatcher:grey_minimumVisiblePercent(0.8)
+                  error:&error];
+
+  // Attempt to make the item visible by scrolling.
+  if (error) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                kComposeboxTabPickerCollectionViewAccessibilityIdentifier)]
+        performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+    [[EarlGrey selectElementWithMatcher:tabMatcher]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  [[EarlGrey selectElementWithMatcher:tabMatcher] performAction:grey_tap()];
+}
+
+id<GREYMatcher> TabCellAttachmentMatcherWithTitle(NSString* title) {
+  std::u16string title_u16 = base::SysNSStringToUTF16(title);
+  std::u16string pattern = l10n_util::GetStringUTF16(
+      IDS_IOS_COMPOSEBOX_ATTACHMENT_TAB_ACCESSIBILITY_LABEL);
+  std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+      pattern, "title", title_u16);
+  return grey_allOf(grey_accessibilityLabel(base::SysUTF16ToNSString(message)),
+                    grey_hidden(NO), nil);
+}
+
+// Verifies that a tab with the given `title` is attached in the composebox
+// carousel. `firstTitle` is the title of the first element of the list, used
+// to avoid scrolling when we are already at the edge.
+void VerifyTabIsAttachedWithTitle(NSString* title) {
+  id<GREYMatcher> cellMatcher = TabCellAttachmentMatcherWithTitle(title);
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:cellMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+
+  // If not found, first try scrolling. Stop if the scroll failed.
+  while (error) {
+    NSError* scrollError = nil;
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(kComposeboxCarouselAccessibilityIdentifier)]
+        performAction:grey_scrollInDirection(kGREYDirectionLeft, 100)
+                error:&scrollError];
+    if (scrollError) {
+      break;
+    }
+
+    error = nil;
+    [[EarlGrey selectElementWithMatcher:cellMatcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+  }
+
+  // Final assertion to ensure the item is found.
+  [[EarlGrey selectElementWithMatcher:cellMatcher]
+      assertWithMatcher:grey_notNil()];
 }
 
 }  // namespace
@@ -85,6 +191,8 @@ void OpenTabPicker() {
 
 - (void)setUp {
   [super setUp];
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
@@ -435,6 +543,110 @@ void OpenTabPicker() {
                  grey_accessibilityID(
                      kComposeboxTabPickerCollectionViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that multiple tabs selected from the tab picker are displayed in the
+// carousel, the attachment limit is respected, and the AIM button is visible.
+- (void)testAttachMultipleTabsAndLimit {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  std::vector<GURL> URLS;
+  NSUInteger totalNumberOfTabs = kAttachmentLimit + 1;
+  [ChromeEarlGrey closeAllNormalTabs];
+  for (NSUInteger i = 0; i < totalNumberOfTabs; ++i) {
+    URLS.push_back(
+        self.testServer->GetURL(base::StringPrintf(kPageURL, i + 1)));
+    [ChromeEarlGrey openNewTab];
+    [ChromeEarlGrey loadURL:URLS[i]];
+    [ChromeEarlGrey
+        waitForWebStateContainingText:base::StringPrintf(kPageContent, i + 1)];
+    // Ensure title is also updated.
+    ConditionBlock titleCondition = ^{
+      return [[ChromeEarlGrey currentTabTitle]
+          containsString:base::SysUTF8ToNSString(
+                             base::StringPrintf(kPageTitle, i + 1))];
+    };
+    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                   base::test::ios::kWaitForPageLoadTimeout, titleCondition),
+               @"Page title failed to update.");
+  }
+  [ChromeEarlGrey waitForMainTabCount:totalNumberOfTabs];
+  OpenTabPicker();
+
+  // Ensure the current selected tab is visible as the tab picker requires to
+  // scroll to the bottom to see the current tab.
+  NSString* currentPageTitle = base::SysUTF8ToNSString(
+      base::StringPrintf(kPageTitle, totalNumberOfTabs));
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(currentPageTitle)]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (error) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                kComposeboxTabPickerCollectionViewAccessibilityIdentifier)]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+    [[EarlGrey selectElementWithMatcher:TabWithTitle(currentPageTitle)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Select all tabs up to the limit (aka from tab 11 to tab 2 included).
+  for (NSUInteger i = totalNumberOfTabs; i > 1; --i) {
+    NSString* pageTitle =
+        base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, i));
+    SelectTabWithTitle(pageTitle);
+    [[EarlGrey
+        selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                     IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE,
+                                     totalNumberOfTabs - i + 1))]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Attempt to select one more tab than the limit and verify the error snackbar
+  // is displayed.
+  NSString* firstPageTitle =
+      base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, 1));
+  SelectTabWithTitle(firstPageTitle);
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_COMPOSEBOX_MAXIMUM_ATTACHMENTS_REACHED,
+                     kAttachmentLimit))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that kAttachmentLimit tabs are selected.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                          IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE,
+                                          kAttachmentLimit))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Attach the selected tabs.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify the AIM button is visible in the composebox.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check all attachments.
+  for (NSUInteger i = totalNumberOfTabs; i > 1; --i) {
+    NSString* pageTitle =
+        base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, i));
+    VerifyTabIsAttachedWithTitle(pageTitle);
+  }
+
+  // Ensure there is not another item attached.
+  [[EarlGrey selectElementWithMatcher:TabCellAttachmentMatcherWithTitle(
+                                          firstPageTitle)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

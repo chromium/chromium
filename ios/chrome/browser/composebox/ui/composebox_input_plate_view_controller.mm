@@ -1665,6 +1665,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   layout.minimumLineSpacing = kCarouselItemSpacing;
   _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                      collectionViewLayout:layout];
+  _carouselView.accessibilityIdentifier =
+      kComposeboxCarouselAccessibilityIdentifier;
   _carouselView.translatesAutoresizingMaskIntoConstraints = NO;
   _carouselView.backgroundColor = UIColor.clearColor;
   [_carouselView registerClass:[ComposeboxInputItemCell class]
