@@ -31,6 +31,9 @@ struct Skill {
   // The source of the skill which can be 1P or user created.
   sync_pb::SkillSource source = sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
 
+  // The description of the skill.
+  std::string description;
+
   // The time when the skill was created.
   base::Time creation_time = base::Time::Now();
 
@@ -41,7 +44,8 @@ struct Skill {
   Skill(const std::string& id,
         const std::string& name,
         const std::string& icon,
-        const std::string& prompt);
+        const std::string& prompt,
+        const std::string& description = "");
   Skill(const Skill&);
   Skill& operator=(const Skill&);
   Skill(Skill&&);

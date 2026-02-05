@@ -15,6 +15,7 @@ bool StructTraits<skills::mojom::SkillDataView, skills::Skill>::Read(
   return data.ReadId(&out->id) && data.ReadName(&out->name) &&
          data.ReadIcon(&out->icon) && data.ReadPrompt(&out->prompt) &&
          data.ReadSource(&out->source) &&
+         data.ReadDescription(&out->description) &&
          data.ReadCreationTime(&out->creation_time) &&
          data.ReadLastUpdateTime(&out->last_update_time);
 }

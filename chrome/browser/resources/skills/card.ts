@@ -48,6 +48,7 @@ export class SkillCardElement extends CrLitElement {
     prompt: '',
     // Default to user created since these are added by the user via the UI.
     source: SkillSource.kUserCreated,
+    description: '',
     creationTime: {internalValue: 0n},
     lastUpdateTime: {internalValue: 0n},
   };

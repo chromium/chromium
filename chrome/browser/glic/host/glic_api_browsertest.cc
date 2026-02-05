@@ -3838,17 +3838,17 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills,
   std::vector<mojom::SkillPreviewPtr> skills_batch_1;
   skills_batch_1.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
-      mojom::SkillSource::kFirstParty));
+      mojom::SkillSource::kFirstParty, "contextual_skill_description_1"));
   skills_batch_1.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_2", "contextual_skill_2", "contextual_skill_icon_2",
-      mojom::SkillSource::kFirstParty));
+      mojom::SkillSource::kFirstParty, "contextual_skill_description_2"));
   GetHost()->NotifyContextualSkillsChanged(std::move(skills_batch_1));
   ContinueJsTest();
 
   std::vector<mojom::SkillPreviewPtr> skills_batch_2;
   skills_batch_2.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_3", "contextual_skill_3", "contextual_skill_icon_3",
-      mojom::SkillSource::kFirstParty));
+      mojom::SkillSource::kFirstParty, "contextual_skill_description_3"));
   GetHost()->NotifyContextualSkillsChanged(std::move(skills_batch_2));
   ContinueJsTest();
 }
