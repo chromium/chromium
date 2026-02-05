@@ -98,7 +98,11 @@ void BindOptionalByteSize(sql::Statement& statement,
 
 LocalStorageSqlite::LocalStorageSqlite(PassKey) {}
 
-LocalStorageSqlite::~LocalStorageSqlite() = default;
+LocalStorageSqlite::~LocalStorageSqlite() {
+  if (destruction_callback_for_testing_) {
+    std::move(destruction_callback_for_testing_).Run();
+  }
+}
 
 DbStatus LocalStorageSqlite::Open(
     PassKey,
@@ -156,25 +160,35 @@ DbStatus LocalStorageSqlite::UpdateMaps(
     const std::optional<MapBatchUpdate::Usage>& map_usage =
         map_update.map_usage;
 
-    // Insert or update the map's metadata.  This creates the map row if it
-    // doesn't exist, assigning a `map_id` (`row_id`) to new maps.
-    // `LocalStorageSqlite` expects a new map's first update to create its
-    // `map_id` through the function call below.
-    DB_RETURN_IF_ERROR(PutMapMetadata(
-        storage_key, map_usage ? map_usage->last_accessed() : std::nullopt,
-        map_usage ? map_usage->last_modified() : std::nullopt,
-        map_usage ? map_usage->total_size() : std::nullopt));
+    std::optional<int64_t> map_id;
 
-    // If requested, clear all usage metadata fields by setting them to `NULL`.
-    // The map row itself is preserved to keep the same `map_id` for the storage
-    // key.
+    // If requested, delete the map's metadata.
     if (map_usage && map_usage->should_delete_all_usage()) {
-      DB_RETURN_IF_ERROR(DeleteMapUsageMetadata(storage_key))
-    }
+      // A map with key/value pairs must provide usage metadata.
+      CHECK(map_update.entries_to_add.empty());
 
-    // Look up the `map_id` (`row_id`) for this storage key. The map row must
-    // exist since `PutMapMetadata()` creates it above when necessary.
-    ASSIGN_OR_RETURN(std::optional<int64_t> map_id, FindMapId(storage_key));
+      // Look up the `map_id` (`row_id`) for this storage key.  The `map_id`
+      // might not exist when clearing a map that is already empty.
+      ASSIGN_OR_RETURN(map_id, FindMapId(storage_key));
+      if (!map_id) {
+        continue;
+      }
+
+      DB_RETURN_IF_ERROR(DeleteMapMetadata({storage_key}));
+    } else {
+      // Insert or update the map's metadata.  This creates the map row if it
+      // doesn't exist, assigning a `map_id` (`row_id`) to new maps.
+      // `LocalStorageSqlite` expects a new map's first update to create its
+      // `map_id` through the function call below.
+      DB_RETURN_IF_ERROR(PutMapMetadata(
+          storage_key, map_usage ? map_usage->last_accessed() : std::nullopt,
+          map_usage ? map_usage->last_modified() : std::nullopt,
+          map_usage ? map_usage->total_size() : std::nullopt));
+
+      // Find the `map_id`, which must exist since `PutMapMetadata()` creates it
+      // above when necessary.
+      ASSIGN_OR_RETURN(map_id, FindMapId(storage_key));
+    }
 
     // Update `map_locator` with the assigned `map_id` so that
     // `MapEntriesTable::UpdateMap()` can use `map_id` to write key/value pairs.
@@ -184,6 +198,10 @@ DbStatus LocalStorageSqlite::UpdateMaps(
     // Apply the key/value pair changes (additions, modifications, deletions)
     // to the `map_entries` table.
     DB_RETURN_IF_ERROR(map_entries_table_->UpdateMap(std::move(map_update)));
+  }
+
+  if (should_fail_commits_for_testing_) {
+    return DbStatus::IOError("Simulated I/O Error");
   }
 
   RETURN_STATUS_ON_ERROR(transaction.Commit());
@@ -243,6 +261,10 @@ DbStatus LocalStorageSqlite::PutMetadata(Metadata metadata) {
         map_metadata.last_modified, map_metadata.total_size));
   }
 
+  if (should_fail_commits_for_testing_) {
+    return DbStatus::IOError("Simulated I/O Error");
+  }
+
   RETURN_STATUS_ON_ERROR(transaction.Commit());
   return DbStatus::OK();
 }
@@ -259,18 +281,7 @@ DbStatus LocalStorageSqlite::DeleteStorageKeysFromSession(
   sql::Transaction transaction(database_.get());
   RETURN_STATUS_ON_ERROR(transaction.Begin());
 
-  // Delete each storage key's metadata from the `maps` table.
-  constexpr const char kDeleteMapMetadata[] =
-      "DELETE FROM maps WHERE storage_key = ?";
-
-  sql::Statement delete_metadata_statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteMapMetadata));
-
-  for (const blink::StorageKey& storage_key : metadata_to_delete) {
-    delete_metadata_statement.BindBlob(0, storage_key.Serialize());
-    RETURN_STATUS_ON_ERROR(delete_metadata_statement.Run());
-    delete_metadata_statement.Reset(/*clear_bound_vars=*/true);
-  }
+  DB_RETURN_IF_ERROR(DeleteMapMetadata(metadata_to_delete));
 
   // Delete the key/value pairs in `maps_to_delete`.
   for (const MapLocator& map : maps_to_delete) {
@@ -309,16 +320,12 @@ DbStatus LocalStorageSqlite::RewriteDB() {
 }
 
 void LocalStorageSqlite::MakeAllCommitsFailForTesting() {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  NOTREACHED();
+  should_fail_commits_for_testing_ = true;
 }
 
 void LocalStorageSqlite::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  NOTREACHED();
+  destruction_callback_for_testing_ = std::move(callback);
 }
 
 DbStatus LocalStorageSqlite::PutVersionForTesting(int64_t version) {
@@ -397,24 +404,22 @@ DbStatus LocalStorageSqlite::PutMapMetadata(
   return DbStatus::OK();
 }
 
-DbStatus LocalStorageSqlite::DeleteMapUsageMetadata(
-    const blink::StorageKey& storage_key) {
+DbStatus LocalStorageSqlite::DeleteMapMetadata(
+    const std::vector<blink::StorageKey>& metadata_to_delete) {
   CHECK(database_->HasActiveTransactions());
 
-  // Delete the usage metadata by setting all fields to `NULL`.
-  constexpr const char kDeleteUsage[] =
-      // clang-format off
-      "UPDATE maps "
-      "SET "
-        "last_accessed = NULL,"
-        "last_modified = NULL,"
-        "total_size = NULL "
-      "WHERE storage_key = ?";
-  // clang-format on
+  // Delete each storage key's metadata from the `maps` table.
+  constexpr const char kDeleteMapMetadata[] =
+      "DELETE FROM maps WHERE storage_key = ?";
 
   sql::Statement delete_statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteUsage));
-  delete_statement.BindBlob(0, storage_key.Serialize());
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteMapMetadata));
+
+  for (const blink::StorageKey& storage_key : metadata_to_delete) {
+    delete_statement.BindBlob(0, storage_key.Serialize());
+    RETURN_STATUS_ON_ERROR(delete_statement.Run());
+    delete_statement.Reset(/*clear_bound_vars=*/true);
+  }
 
   RETURN_STATUS_ON_ERROR(delete_statement.Run());
   return DbStatus::OK();

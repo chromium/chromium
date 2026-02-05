@@ -88,15 +88,22 @@ class LocalStorageSqlite : public DomStorageDatabase {
                           std::optional<base::Time> last_modified,
                           std::optional<base::ByteSize> total_size);
 
-  // Clears the usage metadata (last accessed, last modified, and total size)
-  // for the map identified by `storage_key` by setting all fields to `NULL`.
-  // The row in the `maps` table is preserved so the `map_id` remains valid.
-  DbStatus DeleteMapUsageMetadata(const blink::StorageKey& storage_key);
+  // Deletes the metadata rows from the `maps` table for each storage key in
+  // `metadata_to_delete`. The caller must begin a database transaction before
+  // calling this function.
+  DbStatus DeleteMapMetadata(
+      const std::vector<blink::StorageKey>& metadata_to_delete);
 
   // `Open()` creates `database_`, `meta_table_` and `map_entries_table_`.
   std::unique_ptr<sql::Database> database_;
   std::unique_ptr<sql::MetaTable> meta_table_;
   std::unique_ptr<MapEntriesTable> map_entries_table_;
+
+  // Simulates I/O failure in `PutMetadata()` and `UpdateMaps()` by force
+  // returning an IOError. Set to true by `MakeAllCommitsFailForTesting()`.
+  bool should_fail_commits_for_testing_ = false;
+
+  base::OnceClosure destruction_callback_for_testing_;
 };
 
 }  // namespace storage

@@ -483,9 +483,9 @@ TEST_F(LocalStorageSqliteTest, UpdateMapsWithWriteMetadata) {
       UpdateMapWithMetadata(*database, kExpectedMapMetadata));
 }
 
-// Verifies that `UpdateMaps()` with `DeleteAllUsage()` clears all usage
-// metadata fields (`last_accessed`, `last_modified`, `total_size`) while
-// preserving the map row itself in the database.
+// Verifies that `UpdateMaps()` with `DeleteAllUsage()` removes the map row
+// from the database entirely, including all usage metadata fields
+// (`last_accessed`, `last_modified`, `total_size`).
 TEST_F(LocalStorageSqliteTest, UpdateMapsClearsMetadata) {
   std::unique_ptr<LocalStorageSqlite> database;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
@@ -499,7 +499,8 @@ TEST_F(LocalStorageSqliteTest, UpdateMapsClearsMetadata) {
   ASSERT_NO_FATAL_FAILURE(
       UpdateMapWithMetadata(*database, kInitialMapMetadata));
 
-  // Use `UpdateMaps()` to delete the map usage metadata from the database.
+  // Use `UpdateMaps()` with `DeleteAllUsage()` to delete the map row from the
+  // database.
   std::vector<DomStorageDatabase::MapBatchUpdate> delete_metadata_update;
   delete_metadata_update.emplace_back(kInitialMapMetadata.map_locator.Clone());
 
@@ -510,20 +511,12 @@ TEST_F(LocalStorageSqliteTest, UpdateMapsClearsMetadata) {
   DbStatus status = database->UpdateMaps(std::move(delete_metadata_update));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the map row still exists but all usage metadata is cleared.
+  // Verify the map row has been deleted from the database.
   ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata all_metadata,
                        database->ReadAllMetadata());
 
   EXPECT_EQ(all_metadata.next_map_id, std::nullopt);
-  ASSERT_EQ(all_metadata.map_metadata.size(), 1u);
-
-  const DomStorageDatabase::MapMetadata& cleared_metadata =
-      all_metadata.map_metadata[0];
-  ExpectEqualsMapLocator(cleared_metadata.map_locator,
-                         kInitialMapMetadata.map_locator);
-  EXPECT_EQ(cleared_metadata.last_accessed, std::nullopt);
-  EXPECT_EQ(cleared_metadata.last_modified, std::nullopt);
-  EXPECT_EQ(cleared_metadata.total_size, std::nullopt);
+  EXPECT_EQ(all_metadata.map_metadata.size(), 0u);
 }
 
 // Verifies that `DeleteStorageKeysFromSession()` correctly removes metadata
