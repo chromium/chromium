@@ -4180,6 +4180,9 @@ interface HTMLEmbedElement : HTMLElement
     setter src
     setter type
     setter width
+interface HTMLFederationElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLFencedFrameElement : HTMLElement
     static method canLoadOpaqueURL
     attribute @@toStringTag

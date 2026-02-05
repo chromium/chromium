@@ -444,6 +444,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/html_document.idl",
   "//third_party/blink/renderer/core/html/html_element.idl",
   "//third_party/blink/renderer/core/html/html_embed_element.idl",
+  "//third_party/blink/renderer/core/html/html_federation_element.idl",
   "//third_party/blink/renderer/core/html/html_font_element.idl",
   "//third_party/blink/renderer/core/html/html_frame_element.idl",
   "//third_party/blink/renderer/core/html/html_frame_set_element.idl",

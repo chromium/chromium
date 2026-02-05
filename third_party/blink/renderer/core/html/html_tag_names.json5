@@ -169,6 +169,11 @@
       constructorNeedsCreateElementFlags: true,
     },
     {
+      name: "federation",
+      interfaceName: "HTMLFederationElement",
+      runtimeEnabled: "FederationElement",
+    },
+    {
       name: "fencedframe",
       interfaceName: "HTMLFencedFrameElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/fenced_frame",

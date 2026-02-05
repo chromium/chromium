@@ -610,6 +610,7 @@ html element embed
     property src
     property type
     property width
+html element federation
 html element fencedframe
     property allow
     property config

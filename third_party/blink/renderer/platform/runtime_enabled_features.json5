@@ -2425,6 +2425,12 @@
       status: "stable",
     },
     {
+      name: "FederationElement",
+      depends_on: ["FedCm"],
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "FencedFrames",
       base_feature: "none",
       // This helps enable and expose the <fencedframe> element, but note that
