@@ -135,6 +135,8 @@ class CORE_EXPORT GapSegmentStateAggregator {
                    void>
   FinalizeGapSegmentStateRangesFor(T& gap, wtf_size_t gap_index) const;
 
+  wtf_size_t GetCellCount() const { return cell_count_; }
+
  private:
   // Updates the cell states for the track at `gap_index` along the primary
   // axis, for all cells covered by `secondary_span`.

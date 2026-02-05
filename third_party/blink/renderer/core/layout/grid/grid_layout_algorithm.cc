@@ -2094,13 +2094,8 @@ class GapAccumulator {
   }
 
   const GapGeometry* FinalizeGapGeometry() {
-    const bool has_main_gaps =
-        !main_gaps_.empty() && row_gutter_size_ > LayoutUnit();
-    const bool has_cross_gaps =
-        !cross_gaps_.empty() && col_gutter_size_ > LayoutUnit();
     // `GapGeometry` requires both row(main) and column(cross) gaps to be valid.
-
-    if (!has_cross_gaps && !has_main_gaps) {
+    if (main_gaps_.empty() && cross_gaps_.empty()) {
       return nullptr;
     }
 
@@ -2111,23 +2106,29 @@ class GapAccumulator {
     gap_geometry->SetBlockGapSize(row_gutter_size_);
 
     // Finalize the `GapSegmentStateRanges` for each gap using the aggregated
-    // cell states collected during `AggregateCellStates`.
-    for (wtf_size_t gap_index = 0; gap_index < main_gaps_.size(); ++gap_index) {
-      main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-          main_gaps_[gap_index], gap_index);
+    // cell states collected during `AggregateCellStates`. Only finalize if there
+    // were any cells for that axis.
+    if (main_gaps_aggregator_.GetCellCount() > 0) {
+      for (wtf_size_t gap_index = 0; gap_index < main_gaps_.size();
+           ++gap_index) {
+        main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+            main_gaps_[gap_index], gap_index);
+      }
     }
 
-    for (wtf_size_t gap_index = 0; gap_index < cross_gaps_.size();
-         ++gap_index) {
-      cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-          cross_gaps_[gap_index], gap_index);
+    if (cross_gaps_aggregator_.GetCellCount() > 0) {
+      for (wtf_size_t gap_index = 0; gap_index < cross_gaps_.size();
+           ++gap_index) {
+        cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+            cross_gaps_[gap_index], gap_index);
+      }
     }
 
-    if (row_gutter_size_ > LayoutUnit() && !main_gaps_.empty()) {
+    if (!main_gaps_.empty()) {
       gap_geometry->SetMainGaps(std::move(main_gaps_));
     }
 
-    if (col_gutter_size_ > LayoutUnit() && !cross_gaps_.empty()) {
+    if (!cross_gaps_.empty()) {
       gap_geometry->SetCrossGaps(std::move(cross_gaps_));
     }
 
