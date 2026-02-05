@@ -651,6 +651,14 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 @end
 
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testTappingInfoButtonForHiddenPasskey \
+  FLAKY_testTappingInfoButtonForHiddenPasskey
+#else
+#define MAYBE_testTappingInfoButtonForHiddenPasskey \
+  testTappingInfoButtonForHiddenPasskey
+#endif
+
 @implementation PasswordManagerTestCase {
   // A swizzler to observe fake auto-fill status instead of real one.
   std::unique_ptr<EarlGreyScopedBlockSwizzler> _passwordAutoFillStatusSwizzler;
@@ -741,7 +749,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
   }
 
-  if ([self isRunningTest:@selector(testTappingInfoButtonForHiddenPasskey)]) {
+  if ([self isRunningTest:@selector
+            (MAYBE_testTappingInfoButtonForHiddenPasskey)]) {
     config.features_enabled.push_back(kCredentialProviderSignalAPI);
   }
 
@@ -2416,7 +2425,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Checks interaction with an info button for a hidden passkey.
-- (void)testTappingInfoButtonForHiddenPasskey {
+// TODO(crbug.com/442428665): Test is flaky on physical phone devices.
+- (void)MAYBE_testTappingInfoButtonForHiddenPasskey {
   SaveHiddenPasskeyToStore();
 
   OpenPasswordManager();
