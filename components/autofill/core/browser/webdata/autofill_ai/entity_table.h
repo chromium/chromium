@@ -122,6 +122,10 @@ class EntityTable : public WebDatabaseTable {
   std::optional<EntityInstance::EntityMetadata> GetEntityMetadata(
       const EntityInstance::EntityId& guid) const;
 
+  // Returns the entity type name for the given `guid`.
+  std::optional<EntityTypeName> GetEntityTypeName(
+      const EntityInstance::EntityId& guid) const;
+
   // Returns the valid entity instances; ignores invalid instances.
   //
   // An instance is valid only if all the following is true:

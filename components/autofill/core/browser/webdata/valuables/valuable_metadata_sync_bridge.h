@@ -119,6 +119,10 @@ class ValuableMetadataSyncBridge
   // Returns a const `EntityTable` associated with the `web_data_backend_`.
   const EntityTable* GetEntityTable() const;
 
+  // Returns the `PassType` of the entity associated with the metadata.
+  std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
+  GetPassTypeForEntityId(const EntityInstance::EntityId& guid);
+
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Queries all valuable metadata from the database.

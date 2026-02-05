@@ -44,15 +44,15 @@ ValuableMetadata TestValuableMetadata(std::string_view id) {
 }
 
 sync_pb::AutofillValuableMetadataSpecifics TestValuableMetadataSpecifics(
-    std::string_view id) {
+    std::string_view id,
+    sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
   sync_pb::AutofillValuableMetadataSpecifics specifics =
       sync_pb::AutofillValuableMetadataSpecifics();
   specifics.set_valuable_id(std::string(id));
   specifics.set_use_count(1);
   specifics.set_last_used_date_unix_epoch_micros(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  specifics.set_pass_type(
-      sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
+  specifics.set_pass_type(pass_type);
   return specifics;
 }
 

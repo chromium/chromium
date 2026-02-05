@@ -168,7 +168,8 @@ TEST(EntityInstanceSyncUtilTest, CreateEntityDataFromEntityInstance) {
 TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
   ValuableMetadata metadata = TestValuableMetadata();
   std::unique_ptr<syncer::EntityData> entity_data =
-      CreateEntityDataFromValuableMetadata(metadata);
+      CreateEntityDataFromValuableMetadata(
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
 
   sync_pb::AutofillValuableMetadataSpecifics specifics =
       entity_data->specifics.autofill_valuable_metadata();
@@ -178,17 +179,22 @@ TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
   EXPECT_EQ(metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds(),
             specifics.last_used_date_unix_epoch_micros());
   EXPECT_EQ(metadata.use_count, specifics.use_count());
+  EXPECT_EQ(specifics.pass_type(),
+            sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
 }
 
 TEST(ValuableMetadataSyncUtilTest, CreateSpecificsFromValuableMetadata) {
   ValuableMetadata metadata = TestValuableMetadata();
   sync_pb::AutofillValuableMetadataSpecifics specifics =
-      CreateSpecificsFromValuableMetadata(metadata);
+      CreateSpecificsFromValuableMetadata(
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
 
   EXPECT_EQ(metadata.valuable_id.value(), specifics.valuable_id());
   EXPECT_EQ(metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds(),
             specifics.last_used_date_unix_epoch_micros());
   EXPECT_EQ(metadata.use_count, specifics.use_count());
+  EXPECT_EQ(specifics.pass_type(),
+            sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
 }
 
 TEST(ValuableMetadataSyncUtilTest,

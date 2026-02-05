@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/sync/protocol/entity_data.h"
 
 namespace sync_pb {
@@ -32,7 +33,8 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
 // For a given `EntityMetadata`, returns the corresponding
 // `sync_pb::AutofillValuableMetadataSpecifics`.
 sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
-    const EntityInstance::EntityMetadata& metadata);
+    const EntityInstance::EntityMetadata& metadata,
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type);
 
 // Converts the given valuable metadata `specifics` into an equivalent
 // EntityInstance::EntityMetadata.
@@ -41,7 +43,12 @@ EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
 
 // Converts the given `metadata` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
-    const EntityInstance::EntityMetadata& metadata);
+    const EntityInstance::EntityMetadata& metadata,
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type);
+
+// Converts the given `entity_type_name` to the corresponding `PassType`.
+std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
+EntityTypeNameToPassType(EntityTypeName entity_type_name);
 
 }  // namespace autofill
 

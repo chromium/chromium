@@ -17,14 +17,15 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
-#include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
-#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill {
 
 namespace {
+
+using sync_pb::AutofillValuableMetadataSpecifics;
+using sync_pb::AutofillValuableSpecifics;
 
 // Wraps a message `m` into an `Any`-typed message, essentially dropping the
 // actual type for serialization purposes.
@@ -372,7 +373,8 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
 }
 
 sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
-    const EntityInstance::EntityMetadata& metadata) {
+    const EntityInstance::EntityMetadata& metadata,
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
   sync_pb::AutofillValuableMetadataSpecifics specifics;
   specifics.set_valuable_id(*metadata.guid);
   specifics.set_use_count(metadata.use_count);
@@ -380,6 +382,7 @@ sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
       metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
   specifics.set_last_modified_date_unix_epoch_micros(
       metadata.date_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_pass_type(pass_type);
   return specifics;
 }
 
@@ -395,14 +398,33 @@ EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
-    const EntityInstance::EntityMetadata& metadata) {
+    const EntityInstance::EntityMetadata& metadata,
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
   sync_pb::AutofillValuableMetadataSpecifics metadata_specifics =
-      CreateSpecificsFromEntityMetadata(metadata);
+      CreateSpecificsFromEntityMetadata(metadata, pass_type);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   *entity_data->specifics.mutable_autofill_valuable_metadata() =
       std::move(metadata_specifics);
   return entity_data;
+}
+
+std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
+EntityTypeNameToPassType(EntityTypeName entity_type_name) {
+  switch (entity_type_name) {
+    case EntityTypeName::kFlightReservation:
+      return sync_pb::AutofillValuableMetadataSpecifics::FLIGHT_RESERVATION;
+    case EntityTypeName::kVehicle:
+      return sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION;
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      // Those entity types are not synced.
+      return std::nullopt;
+  }
+  NOTREACHED();
 }
 
 }  // namespace autofill

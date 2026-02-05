@@ -522,6 +522,21 @@ std::optional<EntityInstance::EntityMetadata> EntityTable::GetEntityMetadata(
                                         .use_date = use_date};
 }
 
+std::optional<EntityTypeName> EntityTable::GetEntityTypeName(
+    const EntityInstance::EntityId& guid) const {
+  sql::Statement s;
+  SelectBuilder(db(), s, entities::kTableName, {entities::kEntityType},
+                "WHERE guid = ?");
+  s.BindString(0, *guid);
+  if (!s.Step()) {
+    return std::nullopt;
+  }
+  if (std::optional<EntityType> type = StringToEntityType(s.ColumnString(0))) {
+    return type->name();
+  }
+  return std::nullopt;
+}
+
 std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
 EntityTable::GetSyncedMetadata() const {
   std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>

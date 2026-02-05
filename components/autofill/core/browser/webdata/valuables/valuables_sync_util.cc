@@ -71,9 +71,10 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
-    const ValuableMetadata& metadata) {
+    const ValuableMetadata& metadata,
+    const AutofillValuableMetadataSpecifics::PassType pass_type) {
   sync_pb::AutofillValuableMetadataSpecifics metadata_specifics =
-      CreateSpecificsFromValuableMetadata(metadata);
+      CreateSpecificsFromValuableMetadata(metadata, pass_type);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   *entity_data->specifics.mutable_autofill_valuable_metadata() =
@@ -82,12 +83,14 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
 }
 
 sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromValuableMetadata(
-    const ValuableMetadata& metadata) {
+    const ValuableMetadata& metadata,
+    const AutofillValuableMetadataSpecifics::PassType pass_type) {
   sync_pb::AutofillValuableMetadataSpecifics specifics;
   specifics.set_valuable_id(*metadata.valuable_id);
   specifics.set_use_count(metadata.use_count);
   specifics.set_last_used_date_unix_epoch_micros(
       metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_pass_type(pass_type);
   return specifics;
 }
 

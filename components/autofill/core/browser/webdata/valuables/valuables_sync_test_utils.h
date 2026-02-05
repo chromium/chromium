@@ -28,7 +28,9 @@ ValuableMetadata TestValuableMetadata(std::string_view id = "1");
 
 // Creates a test `AutofillValuableMetadataSpecifics`.
 sync_pb::AutofillValuableMetadataSpecifics TestValuableMetadataSpecifics(
-    std::string_view id = "1");
+    std::string_view id = "1",
+    sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type =
+        sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
 
 }  // namespace autofill
 

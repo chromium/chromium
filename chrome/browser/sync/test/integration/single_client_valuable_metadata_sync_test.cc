@@ -54,8 +54,9 @@ sync_pb::SyncEntity EntityInstanceToSyncEntity(
 }
 
 sync_pb::AutofillValuableMetadataSpecifics AsAutofillValuableMetadataSpecifics(
-    const EntityInstance::EntityMetadata& metadata) {
-  return autofill::CreateSpecificsFromEntityMetadata(metadata);
+    const EntityInstance::EntityMetadata& metadata,
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
+  return autofill::CreateSpecificsFromEntityMetadata(metadata, pass_type);
 }
 
 class FakeServerValuableMetadataChecker
@@ -122,9 +123,10 @@ class SingleClientValuableMetadataSyncTest : public SyncTest {
   }
 
   void InjectEntityMetadataToServer(
-      const EntityInstance::EntityMetadata& metadata) {
+      const EntityInstance::EntityMetadata& metadata,
+      const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
     sync_pb::AutofillValuableMetadataSpecifics specifics =
-        CreateSpecificsFromEntityMetadata(metadata);
+        CreateSpecificsFromEntityMetadata(metadata, pass_type);
     sync_pb::EntitySpecifics entity_specifics;
     *entity_specifics.mutable_autofill_valuable_metadata() = specifics;
     GetFakeServer()->InjectEntity(
@@ -160,7 +162,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest, InitialSync) {
       };
 
   InjectEntitiesToServer({server_vehicle});
-  InjectEntityMetadataToServer(server_metadata);
+  InjectEntityMetadataToServer(
+      server_metadata,
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
   ASSERT_TRUE(SetupSync());
   ASSERT_EQ(1u, GetEntityInstances().size());
@@ -185,7 +189,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
           .use_count = 5,
           .use_date = base::Time::FromSecondsSinceUnixEpoch(500),
       };
-  InjectEntityMetadataToServer(server_metadata);
+  InjectEntityMetadataToServer(
+      server_metadata,
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
   ASSERT_TRUE(SetupSync());
   InjectEntitiesToServer({server_vehicle});
 
@@ -214,10 +220,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
   EntityDataManager* edm = GetEntityDataManager();
   edm->AddOrUpdateEntityInstance(vehicle);
   WaitForNumberOfEntityInstances(1, edm);
-  EXPECT_TRUE(FakeServerValuableMetadataChecker(
-                  UnorderedElementsAre(EqualsProto(
-                      AsAutofillValuableMetadataSpecifics(vehicle.metadata()))))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerValuableMetadataChecker(
+          UnorderedElementsAre(EqualsProto(AsAutofillValuableMetadataSpecifics(
+              vehicle.metadata(), sync_pb::AutofillValuableMetadataSpecifics::
+                                      VEHICLE_REGISTRATION))))
+          .Wait());
 }
 
 // Ensures that when a user interacts with a valuable entity, the client updates
@@ -235,10 +243,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
   EntityDataManager* edm = GetEntityDataManager();
   edm->AddOrUpdateEntityInstance(vehicle);
   WaitForNumberOfEntityInstances(1, edm);
-  EXPECT_TRUE(FakeServerValuableMetadataChecker(
-                  UnorderedElementsAre(EqualsProto(
-                      AsAutofillValuableMetadataSpecifics(vehicle.metadata()))))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerValuableMetadataChecker(
+          UnorderedElementsAre(EqualsProto(AsAutofillValuableMetadataSpecifics(
+              vehicle.metadata(), sync_pb::AutofillValuableMetadataSpecifics::
+                                      VEHICLE_REGISTRATION))))
+          .Wait());
 
   base::Time last_used = base::Time::FromSecondsSinceUnixEpoch(500);
   edm->RecordEntityUsed(vehicle.guid(), last_used);
@@ -250,10 +260,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
           .use_date = last_used,
       };
   WaitForNumberOfEntityInstances(1, edm);
-  EXPECT_TRUE(FakeServerValuableMetadataChecker(
-                  UnorderedElementsAre(EqualsProto(
-                      AsAutofillValuableMetadataSpecifics(updated_metadata))))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerValuableMetadataChecker(
+          UnorderedElementsAre(EqualsProto(AsAutofillValuableMetadataSpecifics(
+              updated_metadata, sync_pb::AutofillValuableMetadataSpecifics::
+                                    VEHICLE_REGISTRATION))))
+          .Wait());
 }
 
 // Simulates the deletion of a valuable entity on the server and verifies that
@@ -277,8 +289,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
           .use_count = 7,
           .use_date = base::Time::FromSecondsSinceUnixEpoch(900)};
   InjectEntitiesToServer({vehicle1, vehicle2});
-  InjectEntityMetadataToServer(vehicle1_metadata);
-  InjectEntityMetadataToServer(vehicle2_metadata);
+  InjectEntityMetadataToServer(
+      vehicle1_metadata,
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
+  InjectEntityMetadataToServer(
+      vehicle2_metadata,
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager();
@@ -288,10 +304,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
   GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle2)});
   WaitForNumberOfEntityInstances(1, edm);
 
-  EXPECT_TRUE(FakeServerValuableMetadataChecker(
-                  UnorderedElementsAre(EqualsProto(
-                      AsAutofillValuableMetadataSpecifics(vehicle2_metadata))))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerValuableMetadataChecker(
+          UnorderedElementsAre(EqualsProto(AsAutofillValuableMetadataSpecifics(
+              vehicle2_metadata, sync_pb::AutofillValuableMetadataSpecifics::
+                                     VEHICLE_REGISTRATION))))
+          .Wait());
 }
 
 // Ensures that metadata for local-only entities (not synced from the server) is
@@ -359,7 +377,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
        .use_date = base::Time::FromSecondsSinceUnixEpoch(400),
        .use_count = 5});
   InjectEntitiesToServer({vehicle});
-  InjectEntityMetadataToServer(vehicle.metadata());
+  InjectEntityMetadataToServer(
+      vehicle.metadata(),
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager();
@@ -376,7 +396,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
       .date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
       .use_count = 10,
       .use_date = base::Time::FromSecondsSinceUnixEpoch(600)};
-  InjectEntityMetadataToServer(conflicting_metadata);
+  InjectEntityMetadataToServer(
+      conflicting_metadata,
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
   while (GetMetadataEntries().empty() ||
          GetMetadataEntries()[0].use_count != conflicting_metadata.use_count) {
@@ -395,7 +417,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
        .use_date = base::Time::FromSecondsSinceUnixEpoch(500),
        .use_count = 5});
   InjectEntitiesToServer({vehicle});
-  InjectEntityMetadataToServer(vehicle.metadata());
+  InjectEntityMetadataToServer(
+      vehicle.metadata(),
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager();
@@ -430,7 +454,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
           .use_count = 5,
           .use_date = base::Time::FromSecondsSinceUnixEpoch(500)};
   InjectEntitiesToServer({vehicle});
-  InjectEntityMetadataToServer(initial_metadata);
+  InjectEntityMetadataToServer(
+      initial_metadata,
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager();
@@ -443,7 +469,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
           .date_modified = base::Time::FromSecondsSinceUnixEpoch(600),
           .use_count = 10,
           .use_date = base::Time::FromSecondsSinceUnixEpoch(700)};
-  InjectEntityMetadataToServer(updated_metadata);
+  InjectEntityMetadataToServer(
+      updated_metadata,
+      sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
   // Wait for the client to receive and apply the metadata update.
   while (GetMetadataEntries().empty() ||
          GetMetadataEntries()[0].use_count != updated_metadata.use_count) {

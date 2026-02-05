@@ -419,13 +419,17 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityMetadata) {
       base::Microseconds(13347400000000000u));
 
   sync_pb::AutofillValuableMetadataSpecifics specifics =
-      CreateSpecificsFromEntityMetadata(metadata);
+      CreateSpecificsFromEntityMetadata(
+          metadata,
+          sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 
   EXPECT_EQ(specifics.valuable_id(), "test-valuable-id");
   EXPECT_EQ(specifics.last_modified_date_unix_epoch_micros(),
             13379000000000000ll);
   EXPECT_EQ(specifics.use_count(), 5u);
   EXPECT_EQ(specifics.last_used_date_unix_epoch_micros(), 13347400000000000ll);
+  EXPECT_EQ(specifics.pass_type(),
+            sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 }
 
 // Tests that the `CreateValuableMetadataFromSpecifics` function correctly
@@ -449,6 +453,16 @@ TEST(EntitySyncUtilTest, CreateValuableMetadataFromSpecifics) {
   EXPECT_EQ(metadata.use_count, 5u);
   EXPECT_EQ(metadata.use_date, base::Time::FromDeltaSinceWindowsEpoch(
                                    base::Microseconds(13347400000000000u)));
+}
+
+// Tests that the `EntityTypeNameToPassType` function correctly maps
+// EntityTypeName to AutofillValuableMetadataSpecifics::PassType.
+TEST(EntitySyncUtilTest, EntityTypeNameToPassType) {
+  EXPECT_EQ(EntityTypeNameToPassType(EntityTypeName::kFlightReservation),
+            sync_pb::AutofillValuableMetadataSpecifics::FLIGHT_RESERVATION);
+  EXPECT_EQ(EntityTypeNameToPassType(EntityTypeName::kVehicle),
+            sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
+  EXPECT_FALSE(EntityTypeNameToPassType(EntityTypeName::kPassport).has_value());
 }
 
 }  // namespace

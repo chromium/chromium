@@ -31,12 +31,14 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
 
 // Converts the given `ValuableMetadata` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
-    const ValuableMetadata& metadata);
+    const ValuableMetadata& metadata,
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type);
 
 // For a given `ValuableMetadata`, returns the corresponding
 // `sync_pb::AutofillValuableMetadataSpecifics`.
 sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromValuableMetadata(
-    const ValuableMetadata& metadata);
+    const ValuableMetadata& metadata,
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type);
 
 // Clears all supported fields from `specifics`. Supported
 // fields are all fields in the protobuf definition that have already been

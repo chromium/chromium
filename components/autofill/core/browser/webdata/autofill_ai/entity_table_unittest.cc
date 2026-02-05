@@ -407,5 +407,20 @@ TEST_F(EntityTableTest, GetEntityMetadata_NonExistentEntity) {
   EXPECT_EQ(metadata, std::nullopt);
 }
 
+// Tests the GetEntityTypeName method.
+TEST_F(EntityTableTest, GetEntityTypeName) {
+  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+
+  EXPECT_EQ(table().GetEntityTypeName(pp.guid()), std::nullopt);
+  EXPECT_EQ(table().GetEntityTypeName(dl.guid()), std::nullopt);
+
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
+  EXPECT_EQ(table().GetEntityTypeName(pp.guid()), pp.type().name());
+
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(dl));
+  EXPECT_EQ(table().GetEntityTypeName(dl.guid()), dl.type().name());
+}
+
 }  // namespace
 }  // namespace autofill
