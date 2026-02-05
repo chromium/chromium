@@ -304,6 +304,7 @@ public class ManualFillingIntegrationTest {
     @SmallTest
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
     @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
+    @DisabledTest(message = "https://crbug.com/420290639")
     public void testResumingTheAppDismissesAllInputMethods() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
