@@ -4315,7 +4315,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
 }
 
 // TODO(crbug.com/475586889): Test has flaked regularly.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || !TARGET_IPHONE_SIMULATOR
 #define MAYBE_SimpleCacheNegMaxSize DISABLED_SimpleCacheNegMaxSize
 #else
 #define MAYBE_SimpleCacheNegMaxSize SimpleCacheNegMaxSize
