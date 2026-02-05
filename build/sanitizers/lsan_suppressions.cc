@@ -48,10 +48,6 @@ char kLSanDefaultSuppressions[] =
     // xrandr leak. http://crbug.com/119677
     "leak:XRRFindDisplay\n"
 
-    // http://crbug.com/431213, http://crbug.com/416665
-    "leak:gin/object_template_builder.h\n"
-    "leak:gin/function_template.h\n"
-
     // Leaks in swrast_dri.so. http://crbug.com/540042
     "leak:swrast_dri.so\n"
 
