@@ -41,3 +41,26 @@ is a bad design.
    API and encourage its use when possible.
 1. _Internal_ use of `unsafe` is acceptable, so long it is not exposed to the
    user, and there isn’t an easy safe alternative.
+
+## Parameter and Return Types
+1. Prefer to pass flags via a type that makes their meaning clear at the call
+   site. For example:
+    ```
+    // Bad:
+    fn slide(left: bool); // Slide left if true, right if false
+
+    // Good:
+    enum Direction { Left, Right }
+    fn slide(direction: Direction);
+    ```
+1. When returning multiple values, prefer to give them names by defining a
+   one-off struct if there is any risk of confusion as to what they mean.
+   For example:
+   ```
+   // Bad:
+   fn make_connected_ports() -> (Port, Port);
+
+   // Good:
+   struct PortPair { input: Port, output: Port}
+   fn make_connected_ports() -> PortPair;
+   ```
