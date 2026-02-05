@@ -259,8 +259,7 @@ void Display::PresentationGroupTiming::OnDraw(
     HintSession::BoostType boost_type,
     int64_t choreographer_vsync_id,
     std::optional<PossibleDeadline> deadline,
-    std::optional<PossibleDeadline> preferred,
-    base::TimeTicks throttled_adjusted_frame_time) {
+    std::optional<PossibleDeadline> preferred) {
   frame_time_ = frame_time;
   interval_ = interval;
   draw_start_timestamp_ = draw_start_timestamp;
@@ -270,7 +269,6 @@ void Display::PresentationGroupTiming::OnDraw(
   choreographer_vsync_id_ = choreographer_vsync_id;
   deadline_ = std::move(deadline);
   preferred_ = std::move(preferred);
-  throttled_adjusted_frame_time_ = throttled_adjusted_frame_time;
 }
 
 void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
@@ -281,19 +279,6 @@ void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
     return;
 
   auto frame_latency = timings.swap_start - frame_time_;
-  if (throttled_adjusted_frame_time_ != base::TimeTicks() &&
-      base::FeatureList::IsEnabled(features::kEnableADPFIgnoreThrottledTime)) {
-    // Ignore the time spent between the swap throttled event and the next
-    // ScheduleBeginFrameDeadline.
-    // If frame rendering was throttled due to too many pending swaps,
-    // reporting a long frame duration (implying a heavy CPU workload) may
-    // mislead the system scheduler.
-    frame_latency = timings.swap_start - throttled_adjusted_frame_time_;
-    TRACE_EVENT_INSTANT(
-        "android.adpf", "AdjustFrameLatency", "delta_ms",
-        (throttled_adjusted_frame_time_ - frame_time_).InMillisecondsF(),
-        "latency_ms", frame_latency.InMillisecondsF());
-  }
   if (frame_latency < base::Seconds(0)) {
     LOG(ERROR) << "Frame latency is negative: "
                << frame_latency.InMillisecondsF() << " ms";
@@ -1082,7 +1067,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         std::move(renderer_main_thread_ids),
         /*boost_type=*/HintSession::BoostType::kDefault,
         params.choreographer_vsync_id.value_or(0), params.deadline,
-        params.preferred_deadline, params.throttled_adjusted_frame_time);
+        params.preferred_deadline);
 
     bool has_interactive_frame = false;
     bool has_animated_frame = false;
