@@ -198,8 +198,8 @@ void NativeTimer::OnExpiration() {
   DCHECK(expiration_fd_.is_valid());
   uint64_t timer_data;
   std::vector<base::ScopedFD> fds;
-  if (!base::UnixDomainSocket::RecvMsg(expiration_fd_.get(), &timer_data,
-                                       sizeof(timer_data), &fds)) {
+  if (!base::UnixDomainSocket::RecvMsg(
+          expiration_fd_.get(), base::byte_span_from_ref(timer_data), &fds)) {
     PLOG(ERROR) << "Bad data in expiration fd";
   }
 

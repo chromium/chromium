@@ -99,34 +99,31 @@ bool UnixDomainSocket::SendMsg(int fd,
 
 // static
 ssize_t UnixDomainSocket::RecvMsg(int fd,
-                                  void* buf,
-                                  size_t length,
+                                  span<uint8_t> msg,
                                   std::vector<ScopedFD>* fds) {
-  return UnixDomainSocket::RecvMsgWithPid(fd, buf, length, fds, nullptr);
+  return UnixDomainSocket::RecvMsgWithPid(fd, msg, fds, nullptr);
 }
 
 // static
 ssize_t UnixDomainSocket::RecvMsgWithPid(int fd,
-                                         void* buf,
-                                         size_t length,
+                                         span<uint8_t> msg,
                                          std::vector<ScopedFD>* fds,
                                          ProcessId* pid) {
-  return UnixDomainSocket::RecvMsgWithFlags(fd, buf, length, 0, fds, pid);
+  return UnixDomainSocket::RecvMsgWithFlags(fd, msg, 0, fds, pid);
 }
 
 // static
 ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
-                                           void* buf,
-                                           size_t length,
+                                           span<uint8_t> msg,
                                            int flags,
                                            std::vector<ScopedFD>* fds,
                                            ProcessId* out_pid) {
   fds->clear();
 
-  struct msghdr msg = {};
-  struct iovec iov = {buf, length};
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
+  struct msghdr msg_hdr = {};
+  struct iovec iov = {msg.data(), msg.size()};
+  msg_hdr.msg_iov = &iov;
+  msg_hdr.msg_iovlen = 1;
 
   const size_t kControlBufferSize =
       CMSG_SPACE(sizeof(int) * kMaxFileDescriptors)
@@ -137,10 +134,10 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
 #endif  // !BUILDFLAG(IS_APPLE)
       ;
   char control_buffer[kControlBufferSize];
-  msg.msg_control = control_buffer;
-  msg.msg_controllen = sizeof(control_buffer);
+  msg_hdr.msg_control = control_buffer;
+  msg_hdr.msg_controllen = sizeof(control_buffer);
 
-  const ssize_t r = HANDLE_EINTR(recvmsg(fd, &msg, flags));
+  const ssize_t r = HANDLE_EINTR(recvmsg(fd, &msg_hdr, flags));
   if (r == -1) {
     return -1;
   }
@@ -149,10 +146,10 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
   size_t wire_fds_len = 0;
   ProcessId pid = -1;
 
-  if (msg.msg_controllen > 0) {
+  if (msg_hdr.msg_controllen > 0) {
     struct cmsghdr* cmsg;
-    for (cmsg = CMSG_FIRSTHDR(&msg); cmsg;
-         cmsg = UNSAFE_TODO(CMSG_NXTHDR(&msg, cmsg))) {
+    for (cmsg = CMSG_FIRSTHDR(&msg_hdr); cmsg;
+         cmsg = UNSAFE_TODO(CMSG_NXTHDR(&msg_hdr, cmsg))) {
       const size_t payload_len = cmsg->cmsg_len - CMSG_LEN(0);
       if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
         DCHECK_EQ(payload_len % sizeof(int), 0u);
@@ -173,11 +170,11 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
     }
   }
 
-  if (msg.msg_flags & MSG_TRUNC || msg.msg_flags & MSG_CTRUNC) {
-    if (msg.msg_flags & MSG_CTRUNC) {
+  if (msg_hdr.msg_flags & MSG_TRUNC || msg_hdr.msg_flags & MSG_CTRUNC) {
+    if (msg_hdr.msg_flags & MSG_CTRUNC) {
       // Extraordinary case, not caller fixable. Log something.
       LOG(ERROR) << "recvmsg returned MSG_CTRUNC flag, buffer len is "
-                 << msg.msg_controllen;
+                 << msg_hdr.msg_controllen;
     }
     for (size_t i = 0; i < wire_fds_len; ++i) {
       close(UNSAFE_TODO(wire_fds[i]));
@@ -203,7 +200,7 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
     // actually received a message.  Unfortunately, Linux allows sending zero
     // length messages, which are indistinguishable from EOF, so this check
     // has false negatives.
-    if (r > 0 || msg.msg_controllen > 0) {
+    if (r > 0 || msg_hdr.msg_controllen > 0) {
       DCHECK_GE(pid, 0);
     }
 #endif
@@ -216,19 +213,17 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
 
 // static
 ssize_t UnixDomainSocket::SendRecvMsg(int fd,
-                                      uint8_t* reply,
-                                      unsigned max_reply_len,
+                                      span<uint8_t> reply,
                                       int* result_fd,
                                       const Pickle& request) {
-  return UnixDomainSocket::SendRecvMsgWithFlags(fd, reply, max_reply_len,
+  return UnixDomainSocket::SendRecvMsgWithFlags(fd, reply,
                                                 0, /* recvmsg_flags */
                                                 result_fd, request);
 }
 
 // static
 ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
-                                               uint8_t* reply,
-                                               unsigned max_reply_len,
+                                               span<uint8_t> reply,
                                                int recvmsg_flags,
                                                int* result_fd,
                                                const Pickle& request) {
@@ -253,8 +248,8 @@ ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
   send_sock.reset();
 
   std::vector<ScopedFD> recv_fds;
-  const ssize_t reply_len = RecvMsgWithFlags(
-      recv_sock.get(), reply, max_reply_len, recvmsg_flags, &recv_fds, nullptr);
+  const ssize_t reply_len = RecvMsgWithFlags(recv_sock.get(), reply,
+                                             recvmsg_flags, &recv_fds, nullptr);
   recv_sock.reset();
   if (reply_len == -1) {
     return -1;

@@ -46,11 +46,11 @@ bool ReceiveFixedMessage(int fd,
                          base::ProcessId* sender_pid) {
   // Allocate an extra byte of buffer space so we can check that we received
   // exactly |expect_len| bytes, and the message wasn't just truncated to fit.
-  base::FixedArray<char> buf(expect_len + 1);
+  base::FixedArray<uint8_t> buf(expect_len + 1);
   std::vector<base::ScopedFD> fds_vec;
 
-  const ssize_t len = base::UnixDomainSocket::RecvMsgWithPid(
-      fd, buf.data(), buf.memsize(), &fds_vec, sender_pid);
+  const ssize_t len =
+      base::UnixDomainSocket::RecvMsgWithPid(fd, buf, &fds_vec, sender_pid);
   if (static_cast<size_t>(len) != expect_len)
     return false;
   if (UNSAFE_TODO(memcmp(buf.data(), expect_msg, expect_len)) != 0) {

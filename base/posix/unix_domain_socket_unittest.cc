@@ -52,14 +52,13 @@ TEST(UnixDomainSocketTest, SendRecvMsgAbortOnReplyFDClose) {
   Pickle request;
   message_thread.task_runner()->PostTask(
       FROM_HERE, BindOnce(IgnoreResult(&UnixDomainSocket::SendRecvMsg), fds[1],
-                          nullptr, 0U, nullptr, request));
+                          span<uint8_t>(), nullptr, request));
 
   // Receive the message.
   std::vector<ScopedFD> message_fds;
   uint8_t buffer[16];
-  ASSERT_EQ(
-      static_cast<int>(request.size()),
-      UnixDomainSocket::RecvMsg(fds[0], buffer, sizeof(buffer), &message_fds));
+  ASSERT_EQ(static_cast<int>(request.size()),
+            UnixDomainSocket::RecvMsg(fds[0], buffer, &message_fds));
   ASSERT_EQ(1U, message_fds.size());
 
   // Close the reply FD.
@@ -86,8 +85,8 @@ TEST(UnixDomainSocketTest, SendRecvMsgAvoidsSIGPIPE) {
   // Have the thread send a synchronous message via the socket. Unless the
   // message is sent with MSG_NOSIGNAL, this shall result in SIGPIPE.
   Pickle request;
-  ASSERT_EQ(
-      -1, UnixDomainSocket::SendRecvMsg(fds[1], nullptr, 0U, nullptr, request));
+  ASSERT_EQ(-1, UnixDomainSocket::SendRecvMsg(fds[1], span<uint8_t>(), nullptr,
+                                              request));
   ASSERT_EQ(EPIPE, errno);
   // Restore the SIGPIPE handler.
   ASSERT_EQ(0, sigaction(SIGPIPE, &oldact, nullptr));
@@ -112,7 +111,7 @@ TEST(UnixDomainSocketTest, RecvPid) {
   ProcessId sender_pid;
   std::vector<ScopedFD> fd_vec;
   const ssize_t nread = UnixDomainSocket::RecvMsgWithPid(
-      recv_sock.get(), buf, sizeof(buf), &fd_vec, &sender_pid);
+      recv_sock.get(), base::as_writable_byte_span(buf), &fd_vec, &sender_pid);
   ASSERT_EQ(sizeof(kHello), static_cast<size_t>(nread));
   ASSERT_EQ(0, UNSAFE_TODO(memcmp(buf, kHello, sizeof(kHello))));
   ASSERT_EQ(0U, fd_vec.size());
@@ -141,7 +140,8 @@ TEST(UnixDomainSocketTest, RecvPidWithMaxDescriptors) {
   ProcessId sender_pid;
   std::vector<ScopedFD> recv_fds;
   const ssize_t nread = UnixDomainSocket::RecvMsgWithPid(
-      recv_sock.get(), buf, sizeof(buf), &recv_fds, &sender_pid);
+      recv_sock.get(), base::as_writable_byte_span(buf), &recv_fds,
+      &sender_pid);
   ASSERT_EQ(sizeof(kHello), static_cast<size_t>(nread));
   ASSERT_EQ(0, UNSAFE_TODO(memcmp(buf, kHello, sizeof(kHello))));
   ASSERT_EQ(UnixDomainSocket::kMaxFileDescriptors, recv_fds.size());
@@ -165,7 +165,7 @@ TEST(UnixDomianSocketTest, RecvPidDisconnectedSocket) {
   ProcessId sender_pid;
   std::vector<ScopedFD> recv_fds;
   const ssize_t nread = UnixDomainSocket::RecvMsgWithPid(
-      recv_sock.get(), &ch, sizeof(ch), &recv_fds, &sender_pid);
+      recv_sock.get(), base::byte_span_from_ref(ch), &recv_fds, &sender_pid);
   ASSERT_EQ(0, nread);
   ASSERT_EQ(-1, sender_pid);
   ASSERT_EQ(0U, recv_fds.size());

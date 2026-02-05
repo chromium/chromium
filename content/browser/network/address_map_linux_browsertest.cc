@@ -87,8 +87,11 @@ class NCNLinuxMockedNetlinkTestUtil {
     // Receive the RTM_GETADDR request.
     std::vector<base::ScopedFD> fds;
     ssize_t expected_size = NLMSG_LENGTH(sizeof(request.msg));
-    EXPECT_EQ(base::UnixDomainSocket::RecvMsg(fake_netlink_fd_.get(), &request,
-                                              expected_size, &fds),
+    EXPECT_EQ(base::UnixDomainSocket::RecvMsg(
+                  fake_netlink_fd_.get(),
+                  base::byte_span_from_ref(base::allow_nonunique_obj, request)
+                      .first(static_cast<size_t>(expected_size)),
+                  &fds),
               expected_size);
     EXPECT_TRUE(fds.empty());
     EXPECT_EQ(request.header.nlmsg_type, RTM_GETADDR);
@@ -101,8 +104,11 @@ class NCNLinuxMockedNetlinkTestUtil {
                                     base::as_byte_span(buffer), {});
 
     // Receive the RTM_GETLINK request.
-    EXPECT_EQ(base::UnixDomainSocket::RecvMsg(fake_netlink_fd_.get(), &request,
-                                              expected_size, &fds),
+    EXPECT_EQ(base::UnixDomainSocket::RecvMsg(
+                  fake_netlink_fd_.get(),
+                  base::byte_span_from_ref(base::allow_nonunique_obj, request)
+                      .first(static_cast<size_t>(expected_size)),
+                  &fds),
               expected_size);
     EXPECT_EQ(request.header.nlmsg_type, RTM_GETLINK);
 

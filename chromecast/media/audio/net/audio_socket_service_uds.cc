@@ -112,10 +112,9 @@ void AudioSocketService::OnAcceptSuccess() {
 void AudioSocketService::ReceiveFdFromSocket(int socket_fd) {
   fd_watcher_controllers_.erase(socket_fd);
 
-  char buffer[sizeof(kSocketMsg)];
+  uint8_t buffer[sizeof(kSocketMsg)];
   std::vector<base::ScopedFD> fds;
-  ssize_t res =
-      base::UnixDomainSocket::RecvMsg(socket_fd, buffer, sizeof(buffer), &fds);
+  ssize_t res = base::UnixDomainSocket::RecvMsg(socket_fd, buffer, &fds);
   CloseSocket(socket_fd);
   if (res != sizeof(kSocketMsg)) {
     LOG(ERROR) << "Failed to receive message from the descriptor " << socket_fd;

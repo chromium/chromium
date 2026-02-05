@@ -203,7 +203,7 @@ void ProxyLocaltimeCallToBrowser(time_t input,
 
   uint8_t reply_buf[512];
   const ssize_t r = base::UnixDomainSocket::SendRecvMsg(
-      g_backchannel_fd, reply_buf, sizeof(reply_buf), nullptr, request);
+      g_backchannel_fd, reply_buf, nullptr, request);
   if (r == -1)
     return;
 

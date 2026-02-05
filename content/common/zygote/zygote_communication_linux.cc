@@ -145,12 +145,12 @@ pid_t ZygoteCommunication::ForkRequest(
     peer_sock.reset();
 
     {
-      char buf[sizeof(kZygoteChildPingMessage) + 1];
+      uint8_t buf[sizeof(kZygoteChildPingMessage) + 1];
       std::vector<base::ScopedFD> recv_fds;
       base::ProcessId real_pid;
 
-      ssize_t n = base::UnixDomainSocket::RecvMsgWithPid(
-          my_sock.get(), buf, sizeof(buf), &recv_fds, &real_pid);
+      ssize_t n = base::UnixDomainSocket::RecvMsgWithPid(my_sock.get(), buf,
+                                                         &recv_fds, &real_pid);
       if (n != sizeof(kZygoteChildPingMessage) ||
           0 != UNSAFE_TODO(memcmp(buf, kZygoteChildPingMessage,
                                   sizeof(kZygoteChildPingMessage)))) {
@@ -171,11 +171,11 @@ pid_t ZygoteCommunication::ForkRequest(
 
     // Read the reply, which pickles the PID and an optional UMA enumeration.
     static const unsigned kMaxReplyLength = 2048;
-    char buf[kMaxReplyLength];
+    uint8_t buf[kMaxReplyLength];
     const ssize_t len = ReadReply(buf, sizeof(buf));
 
-    base::PickleIterator iter = base::PickleIterator::WithData(base::as_bytes(
-        UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len)))));
+    base::PickleIterator iter = base::PickleIterator::WithData(
+        UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
     if (len <= 0 || !iter.ReadInt(&pid))
       return base::kNullProcessHandle;
 
@@ -283,7 +283,7 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
   pickle.WriteInt(handle);
 
   static const unsigned kMaxMessageLength = 128;
-  char buf[kMaxMessageLength];
+  uint8_t buf[kMaxMessageLength];
   ssize_t len;
   {
     base::AutoLock lock(control_lock_);
@@ -302,8 +302,8 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
   } else if (len == 0) {
     LOG(WARNING) << "Socket closed prematurely.";
   } else {
-    base::PickleIterator iter = base::PickleIterator::WithData(base::as_bytes(
-        UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len)))));
+    base::PickleIterator iter = base::PickleIterator::WithData(
+        UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
     int tmp_status, tmp_exit_code;
     if (!iter.ReadInt(&tmp_status) || !iter.ReadInt(&tmp_exit_code)) {
       LOG(WARNING)

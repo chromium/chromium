@@ -98,10 +98,10 @@ void RecvHello(int fd,
                base::ScopedFD* write_pipe = NULL) {
   // Extra receiving buffer space to make sure we really received only
   // sizeof(kHello) bytes and it wasn't just truncated to fit the buffer.
-  char buf[sizeof(kHello) + 1];
+  uint8_t buf[sizeof(kHello) + 1];
   std::vector<base::ScopedFD> message_fds;
-  ssize_t n = base::UnixDomainSocket::RecvMsgWithPid(
-      fd, buf, sizeof(buf), &message_fds, sender_pid);
+  ssize_t n =
+      base::UnixDomainSocket::RecvMsgWithPid(fd, buf, &message_fds, sender_pid);
   CHECK_EQ(sizeof(kHello), static_cast<size_t>(n));
   UNSAFE_TODO(CHECK_EQ(0, memcmp(buf, kHello, sizeof(kHello))));
   CHECK_EQ(1U, message_fds.size());

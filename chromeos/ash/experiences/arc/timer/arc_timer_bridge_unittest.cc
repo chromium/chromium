@@ -255,7 +255,7 @@ bool ArcTimerTest::WaitForExpiration(clockid_t clock_id) {
   uint64_t num_expirations;
   std::vector<base::ScopedFD> fds;
   ssize_t bytes_read = base::UnixDomainSocket::RecvMsg(
-      timer_read_fd, &num_expirations, sizeof(num_expirations), &fds);
+      timer_read_fd, base::byte_span_from_ref(num_expirations), &fds);
   if (bytes_read < static_cast<ssize_t>(sizeof(num_expirations))) {
     LOG(ERROR) << "Incorrect timer wake up bytes_read=" << bytes_read;
     return false;

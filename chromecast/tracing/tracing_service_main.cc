@@ -185,7 +185,7 @@ class TraceCopyTask : public base::MessagePumpEpoll::FdWatcher {
 class TraceConnection : public base::MessagePumpEpoll::FdWatcher {
  public:
   TraceConnection(base::ScopedFD connection_fd, base::OnceClosure callback)
-      : recv_buffer_(base::HeapArray<char>::Uninit(kMessageSize)),
+      : recv_buffer_(base::HeapArray<uint8_t>::Uninit(kMessageSize)),
         connection_fd_(std::move(connection_fd)),
         connection_watcher_(FROM_HERE),
         callback_(std::move(callback)),
@@ -216,8 +216,8 @@ class TraceConnection : public base::MessagePumpEpoll::FdWatcher {
 
   void ReceiveClientMessage() {
     std::vector<base::ScopedFD> fds;
-    ssize_t bytes = base::UnixDomainSocket::RecvMsg(
-        connection_fd_.get(), recv_buffer_.data(), recv_buffer_.size(), &fds);
+    ssize_t bytes = base::UnixDomainSocket::RecvMsg(connection_fd_.get(),
+                                                    recv_buffer_, &fds);
     if (bytes < 0) {
       PLOG(ERROR) << "recvmsg";
       Finish();
@@ -314,7 +314,7 @@ class TraceConnection : public base::MessagePumpEpoll::FdWatcher {
       LOG(WARNING) << "Ending tracing without sending data";
     trace_copy_task_.reset();
     state_ = State::FINISHED;
-    recv_buffer_ = base::HeapArray<char>();
+    recv_buffer_ = base::HeapArray<uint8_t>();
     connection_watcher_.StopWatchingFileDescriptor();
     connection_fd_.reset();
     StopFtrace();
@@ -327,7 +327,7 @@ class TraceConnection : public base::MessagePumpEpoll::FdWatcher {
   State state_ = State::INITIAL;
 
   // Buffer for incoming messages.
-  base::HeapArray<char> recv_buffer_;
+  base::HeapArray<uint8_t> recv_buffer_;
 
   // Client connection.
   base::ScopedFD connection_fd_;

@@ -96,14 +96,14 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
 
   void OnAccept(int result) {
     EXPECT_EQ(result, net::OK);
-    char buffer[16];
+    uint8_t buffer[16];
     std::vector<base::ScopedFD> fds;
     const int flags = fcntl(accepted_descriptor_, F_GETFL);
     ASSERT_NE(
         HANDLE_EINTR(fcntl(accepted_descriptor_, F_SETFL, flags & ~O_NONBLOCK)),
         -1);
     EXPECT_EQ(static_cast<size_t>(base::UnixDomainSocket::RecvMsg(
-                  accepted_descriptor_, buffer, sizeof(buffer), &fds)),
+                  accepted_descriptor_, buffer, &fds)),
               sizeof(kSocketMsg));
     UNSAFE_TODO(EXPECT_EQ(memcmp(buffer, kSocketMsg, sizeof(kSocketMsg)), 0));
     EXPECT_THAT(fds, ::testing::SizeIs(1U));

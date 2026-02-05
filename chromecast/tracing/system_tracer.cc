@@ -50,7 +50,7 @@ base::ScopedFD CreateClientSocket() {
 
 class SystemTracerImpl : public SystemTracer {
  public:
-  SystemTracerImpl() : buffer_(base::HeapArray<char>::Uninit(kBufferSize)) {}
+  SystemTracerImpl() : buffer_(base::HeapArray<uint8_t>::Uninit(kBufferSize)) {}
   ~SystemTracerImpl() override { Cleanup(); }
 
   void StartTracing(std::string_view categories,
@@ -87,7 +87,7 @@ class SystemTracerImpl : public SystemTracer {
   std::unique_ptr<base::FileDescriptorWatcher::Controller> trace_pipe_watcher_;
 
   // Read buffer (of size kBufferSize).
-  base::HeapArray<char> buffer_;
+  base::HeapArray<uint8_t> buffer_;
 
   // Callbacks for StartTracing() and StopTracing().
   StartTracingCallback start_tracing_callback_;
@@ -159,8 +159,8 @@ void SystemTracerImpl::ReceiveStartAckAndTracePipe() {
   DCHECK_EQ(state_, State::STARTING);
 
   std::vector<base::ScopedFD> fds;
-  ssize_t received = base::UnixDomainSocket::RecvMsg(
-      connection_fd_.get(), buffer_.data(), buffer_.size(), &fds);
+  ssize_t received =
+      base::UnixDomainSocket::RecvMsg(connection_fd_.get(), buffer_, &fds);
   if (received == 0) {
     LOG(ERROR) << "EOF from server";
     FailStartTracing();
