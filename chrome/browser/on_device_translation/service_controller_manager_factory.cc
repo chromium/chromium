@@ -6,10 +6,11 @@
 
 #include "base/memory/singleton.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/on_device_translation/service_controller_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/on_device_translation/service_controller_manager.h"
 
 namespace on_device_translation {
 
@@ -39,6 +40,7 @@ std::unique_ptr<KeyedService>
 ServiceControllerManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<ServiceControllerManager>(
+      g_browser_process->local_state(),
       base::PassKey<ServiceControllerManagerFactory>());
 }
 

@@ -2,24 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/service_controller_manager.h"
+#include "components/on_device_translation/service_controller_manager.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/on_device_translation/service_controller.h"
-#include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/service_controller.h"
 
 namespace on_device_translation {
 
 ServiceControllerManager::ServiceControllerManager(
-    base::PassKey<ServiceControllerManagerFactory>) {}
-ServiceControllerManager::~ServiceControllerManager() = default;
+    PrefService* local_state,
+    base::PassKey<ServiceControllerManagerFactory>)
+    : local_state_(local_state) {}
 
-// static
-ServiceControllerManager* ServiceControllerManager::GetForBrowserContext(
-    content::BrowserContext* browser_context) {
-  return ServiceControllerManagerFactory::GetInstance()->Get(browser_context);
-}
+ServiceControllerManager::~ServiceControllerManager() = default;
 
 scoped_refptr<OnDeviceTranslationServiceController>
 ServiceControllerManager::GetServiceControllerForOrigin(
@@ -29,7 +25,8 @@ ServiceControllerManager::GetServiceControllerForOrigin(
     return it->second.get();
   }
   auto service_controller =
-      base::MakeRefCounted<OnDeviceTranslationServiceController>(this, origin);
+      base::MakeRefCounted<OnDeviceTranslationServiceController>(local_state_,
+                                                                 this, origin);
   service_controllers_[origin] = service_controller.get();
   return service_controller;
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
-#define CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
 
 #include <optional>
 #include <set>
@@ -22,6 +22,8 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 #include "url/origin.h"
 
+class PrefService;
+
 namespace on_device_translation {
 
 class FileOperationProxyImpl;
@@ -36,7 +38,8 @@ class ServiceControllerManager;
 class OnDeviceTranslationServiceController
     : public base::RefCounted<OnDeviceTranslationServiceController> {
  public:
-  OnDeviceTranslationServiceController(ServiceControllerManager* manager,
+  OnDeviceTranslationServiceController(PrefService* local_state,
+                                       ServiceControllerManager* manager,
                                        const url::Origin& origin);
 
   OnDeviceTranslationServiceController(
@@ -144,4 +147,4 @@ class OnDeviceTranslationServiceController
 
 }  // namespace on_device_translation
 
-#endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_

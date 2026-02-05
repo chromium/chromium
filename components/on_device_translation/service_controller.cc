@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/service_controller.h"
+#include "components/on_device_translation/service_controller.h"
 
 #include <algorithm>
 
@@ -20,8 +20,6 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/on_device_translation/component_manager.h"
 #include "components/on_device_translation/constants.h"
@@ -33,6 +31,7 @@
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/on_device_translation/public/pref_names.h"
+#include "components/on_device_translation/service_controller_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -129,6 +128,7 @@ OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
     default;
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
+    PrefService* local_state,
     ServiceControllerManager* manager,
     const url::Origin& origin)
     : manager_(manager),
@@ -136,7 +136,7 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
       service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
       file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   // Initialize the pref change registrar.
-  pref_change_registrar_.Init(g_browser_process->local_state());
+  pref_change_registrar_.Init(local_state);
   if (!ComponentManager::HasTranslateKitLibraryPathFromCommandLine()) {
     // Start listening to pref changes for TranslateKit binary path.
     pref_change_registrar_.Add(

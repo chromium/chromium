@@ -25,8 +25,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
-#include "chrome/browser/on_device_translation/service_controller.h"
-#include "chrome/browser/on_device_translation/service_controller_manager.h"
+#include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "chrome/browser/on_device_translation/test/test_util.h"
 #include "chrome/browser/on_device_translation/translation_manager_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,6 +45,8 @@
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/on_device_translation/service/test/test_util.h"
+#include "components/on_device_translation/service_controller.h"
+#include "components/on_device_translation/service_controller_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -1444,10 +1445,10 @@ IN_PROC_BROWSER_TEST_F(
 
   NavigateToEmptyPage();
 
-  auto service_controller =
-      ServiceControllerManager::GetForBrowserContext(browser()->profile())
-          ->GetServiceControllerForOrigin(
-              embedded_https_test_server().GetOrigin());
+  auto service_controller = ServiceControllerManagerFactory::GetInstance()
+                                ->Get(browser()->profile())
+                                ->GetServiceControllerForOrigin(
+                                    embedded_https_test_server().GetOrigin());
 
   // Set the idle timeout to be 100 microseconds.
   service_controller->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
@@ -1497,10 +1498,10 @@ IN_PROC_BROWSER_TEST_F(
 
   NavigateToEmptyPage();
 
-  auto service_controller =
-      ServiceControllerManager::GetForBrowserContext(browser()->profile())
-          ->GetServiceControllerForOrigin(
-              embedded_https_test_server().GetOrigin());
+  auto service_controller = ServiceControllerManagerFactory::GetInstance()
+                                ->Get(browser()->profile())
+                                ->GetServiceControllerForOrigin(
+                                    embedded_https_test_server().GetOrigin());
   // Set the idle timeout to be 100 microseconds.
   service_controller->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
 
@@ -1926,7 +1927,8 @@ class OnDeviceTranslationCrossOriginBrowserTest
   void RemoveIframeAndWaitForServiceDeletion(size_t index,
                                              Browser* target_browser) {
     base::RunLoop run_loop;
-    ServiceControllerManager::GetForBrowserContext(target_browser->profile())
+    ServiceControllerManagerFactory::GetInstance()
+        ->Get(target_browser->profile())
         ->set_service_controller_deleted_observer_for_testing(
             run_loop.QuitClosure());
     EXPECT_EQ(EvalJsCatchingError(JsReplace("return removeIframe($1);",

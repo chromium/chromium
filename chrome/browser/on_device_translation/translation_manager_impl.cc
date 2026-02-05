@@ -7,8 +7,7 @@
 #include <string_view>
 
 #include "base/feature_list.h"
-#include "chrome/browser/on_device_translation/service_controller.h"
-#include "chrome/browser/on_device_translation/service_controller_manager.h"
+#include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -21,6 +20,8 @@
 #include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/pref_names.h"
+#include "components/on_device_translation/service_controller.h"
+#include "components/on_device_translation/service_controller_manager.h"
 #include "components/on_device_translation/translation_manager_util.h"
 #include "components/on_device_translation/translator.h"
 #include "components/permissions/permissions_client.h"
@@ -361,7 +362,7 @@ OnDeviceTranslationServiceController&
 TranslationManagerImpl::GetServiceController() {
   if (!service_controller_) {
     ServiceControllerManager* manager =
-        ServiceControllerManager::GetForBrowserContext(browser_context());
+        ServiceControllerManagerFactory::GetInstance()->Get(browser_context());
     CHECK(manager);
     service_controller_ = manager->GetServiceControllerForOrigin(origin_);
   }

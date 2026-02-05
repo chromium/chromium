@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
-#define CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
 
 #include <map>
 
@@ -21,6 +21,8 @@ namespace url {
 class Origin;
 }  // namespace url
 
+class PrefService;
+
 namespace on_device_translation {
 
 class OnDeviceTranslationServiceController;
@@ -32,17 +34,12 @@ class ServiceControllerManagerFactory;
 class ServiceControllerManager : public KeyedService {
  public:
   explicit ServiceControllerManager(
+      PrefService* local_state,
       base::PassKey<ServiceControllerManagerFactory>);
   ~ServiceControllerManager() override;
 
   ServiceControllerManager(const ServiceControllerManager&) = delete;
   ServiceControllerManager& operator=(const ServiceControllerManager&) = delete;
-
-  // Returns the ServiceControllerManager for the specified BrowserContext. This
-  // function creates the ServiceControllerManager if it hasn't been created
-  // already.
-  static ServiceControllerManager* GetForBrowserContext(
-      content::BrowserContext* browser_context);
 
   scoped_refptr<OnDeviceTranslationServiceController>
   GetServiceControllerForOrigin(const url::Origin& origin);
@@ -65,7 +62,9 @@ class ServiceControllerManager : public KeyedService {
   std::map<url::Origin, raw_ptr<OnDeviceTranslationServiceController>>
       service_controllers_;
   base::OnceClosure service_controller_deleted_observer_for_testing_;
+  // Safe because BrowserProcess::local_state() outlives the Profile.
+  raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace on_device_translation
-#endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
