@@ -12,7 +12,7 @@
 // Native part of Trusted CDN publisher URL provider. Managed by Java layer.
 class TrustedCdn {
  public:
-  TrustedCdn(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
+  TrustedCdn();
   ~TrustedCdn();
 
   void SetWebContents(JNIEnv* env,
@@ -22,7 +22,6 @@ class TrustedCdn {
   base::android::ScopedJavaLocalRef<jobject> GetPublisherUrl(JNIEnv* env);
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> jobj_;
   raw_ptr<content::WebContents> web_contents_;
 };
 

@@ -23,8 +23,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
-TrustedCdn::TrustedCdn(JNIEnv* env, const JavaRef<jobject>& obj)
-    : jobj_(env, obj) {}
+TrustedCdn::TrustedCdn() = default;
 
 TrustedCdn::~TrustedCdn() = default;
 
@@ -57,8 +56,8 @@ base::android::ScopedJavaLocalRef<jobject> TrustedCdn::GetPublisherUrl(
       embedder_support::GetPublisherURL(web_contents_->GetPrimaryMainFrame()));
 }
 
-static int64_t JNI_TrustedCdn_Init(JNIEnv* env, const JavaRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(new TrustedCdn(env, obj));
+static int64_t JNI_TrustedCdn_Init(JNIEnv* env) {
+  return reinterpret_cast<intptr_t>(new TrustedCdn());
 }
 
 DEFINE_JNI(TrustedCdn)
