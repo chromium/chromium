@@ -14,7 +14,7 @@ export function getHtml(this: SkillsDialogAppElement) {
 ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
   <div class="dialog-container">
     <div class="header-container">
-      <h1 id="header">Add Skill</h1>
+      <h1 id="header">${this.dialogTitle_}</h1>
       <p class="description">Skills help simplify and automate repetitive tasks
       </p>
     </div>
@@ -38,10 +38,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
     <div class="textarea-wrapper">
       <textarea id="instructionsText" aria-label="Instructions"
           maxlength="${MAX_PROMPT_CHAR_COUNT}"
-          placeholder="Example: Simplify this concept for a child who is 8 years
-           old. Use simple language and an analogy they would understand.
-           Keep the total explanation concise, under ${MAX_PROMPT_CHAR_COUNT}
-           words."
+          placeholder="Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under ${MAX_PROMPT_CHAR_COUNT} words."
           .value="${this.skill_.prompt}"
           @input="${this.onInstructionsChanged_}">
       </textarea>
