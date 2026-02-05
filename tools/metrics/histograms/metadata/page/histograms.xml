@@ -4354,6 +4354,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.NavigationTiming.ActualNavigationStartToNavigationStart"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can start before the beforeunload handler runs to b) when the (existing
+    regular) navigation starts, excluding the time spent waiting for user
+    interaction in beforeunload dialogs. This includes the time spent running
+    beforeunload JavaScript handlers. This is recorded for each HTTP or HTTPS
+    page load.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.NavigationTiming.InteractionToNavigationStart"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the OS-level timestamp of the user input event
+    that started a navigation to b) when the navigation starts, excluding the
+    time spent waiting for user interaction in beforeunload dialogs. This
+    includes the time spent running beforeunload JavaScript handlers. This is
+    recorded for each HTTP or HTTPS page load.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.PageTiming.ForegroundDuration" units="ms"
     expires_after="2026-07-05">
   <owner>bmcquade@chromium.org</owner>

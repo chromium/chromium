@@ -12111,7 +12111,27 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
     timeline.did_commit_ipc_received = timeline.commit_ipc_sent;
   }
 
+  // Populates information in `navigation_handle_timing_` from the
+  // `NavigationTimeline` so that it can be accessed by PageLoadMetricsObservers
+  // via `NavigationRequest::GetNavigationHandleTiming()`.
+  UpdateNavigationHandleTimingsFromNavigationTimeline(timeline);
+
   return timeline;
+}
+
+void NavigationRequest::UpdateNavigationHandleTimingsFromNavigationTimeline(
+    const NavigationRequest::Timeline& timeline) {
+  navigation_handle_timing_.user_interaction = timeline.user_interaction;
+
+  navigation_handle_timing_.actual_navigation_start = timeline.start;
+
+  navigation_handle_timing_.before_unload_dialog_duration =
+      std::max(base::TimeDelta(),
+               timeline.beforeunload_phase1_dialog_closed -
+                   timeline.beforeunload_phase1_dialog_opened) +
+      std::max(base::TimeDelta(),
+               timeline.beforeunload_phase2_dialog_closed -
+                   timeline.beforeunload_phase2_dialog_opened);
 }
 
 void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {

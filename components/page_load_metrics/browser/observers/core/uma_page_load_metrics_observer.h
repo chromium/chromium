@@ -89,6 +89,9 @@ extern const char kHistogramInputCoverageWithoutUserGestureRendererInitiated[];
 
 extern const char kHistogramBackForwardCacheEvent[];
 
+extern const char kHistogramInteractionToNavigationStart[];
+extern const char kHistogramActualNavigationStartToNavigationStart[];
+
 // Navigation metrics from the navigation start.
 extern const char
     kHistogramNavigationTimingNavigationStartToFirstRequestStart[];

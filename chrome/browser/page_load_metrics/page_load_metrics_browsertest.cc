@@ -2914,6 +2914,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         "Navigation.Timeline.InteractionToNavigationFinished."
         "ExcludingBeforeUnload.MainFrameOnly.Duration",
         0);
+    // Navigation metrics for before-navigation phase.
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramInteractionToNavigationStart, 0);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramActualNavigationStartToNavigationStart, 1);
   }
 
   {
@@ -2976,6 +2981,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         "Navigation.Timeline.InteractionToNavigationFinished."
         "ExcludingBeforeUnload.MainFrameOnly.Duration",
         0);
+    // Navigation metrics for before-navigation phase.
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramInteractionToNavigationStart, 0);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramActualNavigationStartToNavigationStart, 1);
   }
 
   {
@@ -3057,6 +3067,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                   "Navigation.Timeline.InteractionToNavigationFinished."
                   "ExcludingBeforeUnload.MainFrameOnly.Duration"),
               total_duration);
+    // Navigation metrics for before-navigation phase.
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramInteractionToNavigationStart, 1);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramActualNavigationStartToNavigationStart, 1);
   }
 }
 

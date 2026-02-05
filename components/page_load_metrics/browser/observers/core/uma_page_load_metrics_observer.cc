@@ -254,6 +254,12 @@ const char kHistogramInputCoverageWithoutUserGestureRendererInitiated[] =
 const char kHistogramBackForwardCacheEvent[] =
     "PageLoad.BackForwardCache.Event";
 
+// Navigation metrics for before-navigation phase.
+const char kHistogramInteractionToNavigationStart[] =
+    "PageLoad.NavigationTiming.InteractionToNavigationStart";
+const char kHistogramActualNavigationStartToNavigationStart[] =
+    "PageLoad.NavigationTiming.ActualNavigationStartToNavigationStart";
+
 // Navigation metrics from the navigation start.
 const char kHistogramNavigationTimingNavigationStartToFirstRequestStart[] =
     "PageLoad.Experimental.NavigationTiming.NavigationStartToFirstRequestStart";
@@ -355,6 +361,36 @@ UmaPageLoadMetricsObserver::OnCommit(
         headers->HasHeaderValue("cache-control", "no-store");
   }
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
+
+  // Record metrics for before-navigation phase.
+  if (navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+    if (!navigation_handle_timing_.user_interaction.is_null() &&
+        (navigation_handle_timing_.user_interaction <=
+         GetDelegate().GetNavigationStart())) {
+      base::TimeDelta duration =
+          GetDelegate().GetNavigationStart() -
+          navigation_handle_timing_.user_interaction -
+          navigation_handle_timing_.before_unload_dialog_duration;
+      if (!duration.is_negative()) {
+        PAGE_LOAD_HISTOGRAM(internal::kHistogramInteractionToNavigationStart,
+                            duration);
+      }
+    }
+    if (!navigation_handle_timing_.actual_navigation_start.is_null() &&
+        (navigation_handle_timing_.actual_navigation_start <=
+         GetDelegate().GetNavigationStart())) {
+      base::TimeDelta duration =
+          GetDelegate().GetNavigationStart() -
+          navigation_handle_timing_.actual_navigation_start -
+          navigation_handle_timing_.before_unload_dialog_duration;
+      if (!duration.is_negative()) {
+        PAGE_LOAD_HISTOGRAM(
+            internal::kHistogramActualNavigationStartToNavigationStart,
+            duration);
+      }
+    }
+  }
+
   return CONTINUE_OBSERVING;
 }
 

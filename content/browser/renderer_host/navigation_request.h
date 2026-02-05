@@ -2182,6 +2182,12 @@ class CONTENT_EXPORT NavigationRequest
                                                        bool is_first_response);
   void UpdateNavigationHandleTimingsOnCommitSent();
 
+  // Populates information in `navigation_handle_timing_` from the
+  // `NavigationTimeline` so that it can be accessed by PageLoadMetricsObservers
+  // via `NavigationRequest::GetNavigationHandleTiming()`.
+  void UpdateNavigationHandleTimingsFromNavigationTimeline(
+      const Timeline& timeline);
+
   // Helper function that computes the SiteInfo for |common_params_.url|.
   // Note: |site_info_| should only be updated with the result of this function.
   SiteInfo GetSiteInfoForCommonParamsURL();

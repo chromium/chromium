@@ -170,6 +170,30 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // InitializeStream related delay information.
   base::TimeDelta initialize_stream_delay;
 
+  // The OS-level timestamp of the user input event leading to the navigation.
+  // This timestamp can be empty if the navigation is started without user
+  // input, or this might be null if the navigation started and synchronously
+  // committed in the renderer, such as for renderer-initiated same-document
+  // navigations or synchronous about:blank navigations.
+  base::TimeTicks user_interaction;
+
+  // The time at which the navigation starts, as accurately as we can
+  // determine. Note that for renderer-initiated navigations, this will be the
+  // time when the navigation starts in the renderer.
+  //
+  // Note that this may not be the start time used by many current navigation
+  // related metrics, such as FCP, since those often use `common_params_start`
+  // to avoid including beforeunload durations.
+  // TODO(crbug.com/385170155): Update these metrics to have a more consistent
+  // and representative start time and duration.
+  //
+  // (See: NavigationRequest::Timeline::start)
+  base::TimeTicks actual_navigation_start;
+
+  // The duration the beforeunload dialog was shown. This includes the time
+  // spent waiting for user interaction. This is zero if no dialog was shown.
+  base::TimeDelta before_unload_dialog_duration;
+
   // Details about the network session used for the navigation, if available.
   std::optional<SessionDetails> session_details;
 };
