@@ -660,6 +660,9 @@ class BrowserView::ExclusiveAccessContextImpl
 
   void UpdateUIForTabFullscreen() override {
     browser_view_->GetFrameView()->UpdateFullscreenTopUI();
+    // Layout can change in vertical tabstrip mode when going from fullscreen
+    // to tab fullscreen and vice-versa.
+    browser_view_->InvalidateLayout();
   }
 
   WebContents* GetWebContentsForExclusiveAccess() override {
