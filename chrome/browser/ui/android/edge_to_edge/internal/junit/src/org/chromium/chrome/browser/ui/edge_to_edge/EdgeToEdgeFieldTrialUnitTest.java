@@ -14,9 +14,12 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBuild;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @Config(shadows = ShadowBuild.class)
 public class EdgeToEdgeFieldTrialUnitTest {
 
@@ -35,8 +38,10 @@ public class EdgeToEdgeFieldTrialUnitTest {
                         .isEnabledForManufacturerVersion());
     }
 
-    @Test
+    // Pinned to SDK 29 because the test expects the feature to be
+    // disabled below SDK 30.
     @Config(sdk = 29)
+    @Test
     public void noOverrides_notMeetMinVersion() {
         assertFalse(
                 "Default manufacturer has min version override as 30.",
@@ -175,7 +180,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
                 everywhereOverrides.isEnabledForManufacturerVersion());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // Pinned to SDK 29 because the test expects the feature to be
+    // disabled below SDK 30.
     @Config(sdk = 29)
     @Test
     public void testInvalidInputs_unevenLength() {
@@ -188,7 +194,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
                         .isEnabledForManufacturerVersion());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // Pinned to SDK 29 because the test expects the feature to be
+    // disabled below SDK 30.
     @Config(sdk = 29)
     @Test
     public void testInvalidInputs_unevenLength_2() {
@@ -201,7 +208,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
                         .isEnabledForManufacturerVersion());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // Pinned to SDK 29 because the test expects the feature to be
+    // disabled below SDK 30.
     @Config(sdk = 29)
     @Test
     public void testInvalidInputs_versionInvalid() {

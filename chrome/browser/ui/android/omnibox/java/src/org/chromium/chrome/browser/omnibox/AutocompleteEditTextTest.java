@@ -1276,7 +1276,9 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/759876
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+
+    // TODO(crbug.com/481750046): Fix failure on SDK 30+ due to focus and selection behavior changes
+    // in Robolectric.
     @Config(sdk = 29)
     @Test
     public void testFocusInAndSelectAll() {
@@ -1328,7 +1330,9 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/768323
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+
+    // TODO(crbug.com/481750046): Fix failure on SDK 30+ due to focus and selection behavior changes
+    // in Robolectric.
     @Config(sdk = 29)
     @Test
     public void testFocusLossHidesCursor() {
@@ -1431,7 +1435,9 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/759876
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+
+    // TODO(crbug.com/481750046): Fix failure on SDK 30+ due to focus and selection behavior changes
+    // in Robolectric.
     @Config(sdk = 29)
     @Test
     public void testTextSelectionGetsAnnouncedAgainOnFocus() {

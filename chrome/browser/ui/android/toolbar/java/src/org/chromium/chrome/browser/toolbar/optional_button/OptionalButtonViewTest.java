@@ -519,7 +519,8 @@ public class OptionalButtonViewTest {
         assertEquals(actionChipLabel, mActionChipLabel.getText());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481750542): Fix failure on SDK 30+ due to animation/transition callback
+    // verification failures.
     @Config(sdk = 29)
     @Test
     public void testSetIconDrawableWithAnimation_expandAndCollapseActionChipFromHidden() {
@@ -583,7 +584,8 @@ public class OptionalButtonViewTest {
         assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481750542): Fix failure on SDK 30+ due to animation/transition callback
+    // verification failures.
     @Config(sdk = 29)
     @Test
     public void testUpdateButtonWithAnimation_actionChipWithAlternativeColor() {
@@ -643,7 +645,8 @@ public class OptionalButtonViewTest {
         assertEquals(View.GONE, mActionChipLabel.getVisibility());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481750542): Fix failure on SDK 30+ due to animation/transition callback
+    // verification failures.
     @Config(sdk = 29)
     @Test
     public void testTransitionCallbacks() {

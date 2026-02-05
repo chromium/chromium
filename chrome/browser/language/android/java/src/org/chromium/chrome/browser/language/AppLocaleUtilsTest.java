@@ -24,6 +24,8 @@ import java.util.List;
 /** Tests for the AppLocalUtils class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
+// Fails on SDK 33+ because AppLocaleUtils uses system-managed locales (Android 13+).
+@Config(sdk = {29, 32})
 public class AppLocaleUtilsTest {
     @Before
     public void setUp() {
@@ -51,8 +53,6 @@ public class AppLocaleUtilsTest {
     }
 
     // Test setAppLanguagePref.
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testSetAppLanguagePref() {

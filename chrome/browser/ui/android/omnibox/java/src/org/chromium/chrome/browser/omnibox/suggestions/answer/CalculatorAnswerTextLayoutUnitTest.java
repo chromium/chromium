@@ -41,7 +41,7 @@ public class CalculatorAnswerTextLayoutUnitTest {
                                 .TextAppearance_TextMedium_Secondary);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481749158): Fix failure on SDK 30+ due to layout/rendering differences.
     @Config(sdk = 29)
     @Test
     @SmallTest

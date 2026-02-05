@@ -113,7 +113,7 @@ public class TabGroupSuggestionProcessorUnitTest {
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481749357): Fix failure on SDK 30+ due to drawable comparison failures.
     @Config(sdk = 29)
     @Test
     @SmallTest

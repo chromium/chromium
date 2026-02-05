@@ -177,7 +177,7 @@ public class StandardNotificationBuilderTest {
                 notification.extras.getString(Notification.EXTRA_TEMPLATE));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481748850): Fix failure on SDK 30+ due to icon bitmap comparison differences.
     @Config(sdk = 29)
     @Test
     @Feature({"Browser", "Notifications"})

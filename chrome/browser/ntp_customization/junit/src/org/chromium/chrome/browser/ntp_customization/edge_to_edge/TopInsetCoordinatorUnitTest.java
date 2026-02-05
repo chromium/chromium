@@ -46,6 +46,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -60,10 +61,12 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TopInsetCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class TopInsetCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -127,7 +130,8 @@ public class TopInsetCoordinatorUnitTest {
         mTopInsetCoordinator.destroy();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481750031): Fix failure on SDK 30+ due to window inset consumption
+    // differences.
     @Config(sdk = 29)
     @Test
     @SuppressWarnings("DirectInvocationOnMock")

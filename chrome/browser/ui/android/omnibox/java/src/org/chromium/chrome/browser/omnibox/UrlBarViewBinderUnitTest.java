@@ -82,7 +82,8 @@ public class UrlBarViewBinderUnitTest {
         Assert.assertEquals(newExpectColor, mUrlBar.getHintTextColors().getDefaultColor());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481749859): Fix failure on SDK 30+ due to focus behavior changes in
+    // Robolectric.
     @Config(sdk = 29)
     @Test
     @SmallTest
@@ -94,7 +95,8 @@ public class UrlBarViewBinderUnitTest {
                 /* expectSelection= */ true);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481749859): Fix failure on SDK 30+ due to focus behavior changes in
+    // Robolectric.
     @Config(sdk = 29)
     @Test
     @SmallTest
@@ -105,7 +107,8 @@ public class UrlBarViewBinderUnitTest {
                 /* expectSelection= */ false);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481749859): Fix failure on SDK 30+ due to focus behavior changes in
+    // Robolectric.
     @Config(sdk = 29)
     @Test
     @SmallTest
@@ -116,7 +119,8 @@ public class UrlBarViewBinderUnitTest {
                 /* expectSelection= */ false);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // TODO(crbug.com/481749859): Fix failure on SDK 30+ due to focus behavior changes in
+    // Robolectric.
     @Config(sdk = 29)
     @Test
     @SmallTest
