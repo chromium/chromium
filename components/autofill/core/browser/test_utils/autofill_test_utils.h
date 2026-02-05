@@ -532,6 +532,11 @@ using EntityOptions = EntityOptionsT<>;
 EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
                                  EntityOptions options = {});
 
+// Returns a copy of `entity_instance` with all obfuscated attributes masked.
+// Note that the masking is a toy version of what the server might do - it
+// simply takes the last 4 characters of obfuscated attributes.
+EntityInstance MaskEntityInstance(const EntityInstance& entity_instance);
+
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types);

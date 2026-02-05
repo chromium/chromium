@@ -27,7 +27,7 @@ class AttributeInstanceTestApi {
 
 class EntityInstanceTestApi {
  public:
-  explicit EntityInstanceTestApi(EntityInstance* entity)
+  explicit EntityInstanceTestApi(const EntityInstance* entity)
       : entity_(CHECK_DEREF(entity)) {}
   ~EntityInstanceTestApi() = default;
 
@@ -36,14 +36,14 @@ class EntityInstanceTestApi {
   }
 
  private:
-  raw_ref<EntityInstance> entity_;
+  raw_ref<const EntityInstance> entity_;
 };
 
 inline AttributeInstanceTestApi test_api(AttributeInstance& attribute) {
   return AttributeInstanceTestApi(&attribute);
 }
 
-inline EntityInstanceTestApi test_api(EntityInstance& entity) {
+inline EntityInstanceTestApi test_api(const EntityInstance& entity) {
   return EntityInstanceTestApi(&entity);
 }
 

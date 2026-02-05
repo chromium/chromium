@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
@@ -1283,6 +1284,36 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
       base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
       base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
       options.are_attributes_read_only, std::string(options.frecency_override));
+}
+
+EntityInstance MaskEntityInstance(const EntityInstance& entity_instance) {
+  CHECK_EQ(entity_instance.record_type(),
+           EntityInstance::RecordType::kServerWallet)
+      << "Masking only makes sense for server Wallet entities.";
+  std::vector<AttributeInstance> attributes =
+      base::ToVector(entity_instance.attributes());
+  for (AttributeInstance& attribute : attributes) {
+    if (!attribute.type().is_obfuscated()) {
+      continue;
+    }
+    const FieldType field_type = attribute.type().field_type();
+    const std::u16string full_value =
+        attribute.GetInfo(field_type, "en-US", /*format_string=*/std::nullopt);
+    // Do some simple masking to simulate what the server might do.
+    const size_t masked_length = std::min<size_t>(full_value.size(), 4);
+    attribute.SetInfo(
+        attribute.type().field_type(),
+        /*value=*/full_value.substr(full_value.size() - masked_length),
+        /*app_locale=*/"en-US",
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+    test_api(attribute).mark_as_masked();
+  }
+  return EntityInstance(
+      entity_instance.type(), std::move(attributes), entity_instance.guid(),
+      entity_instance.nickname(), entity_instance.date_modified(),
+      entity_instance.use_count(), entity_instance.use_date(),
+      entity_instance.record_type(), entity_instance.are_attributes_read_only(),
+      test_api(entity_instance).frecency_override());
 }
 
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,

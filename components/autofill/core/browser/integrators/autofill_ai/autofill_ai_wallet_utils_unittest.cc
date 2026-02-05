@@ -14,27 +14,10 @@
 namespace autofill {
 namespace {
 
+using test::GetPassportEntityInstance;
+using test::MaskEntityInstance;
 using ::testing::InSequence;
 using ::testing::NiceMock;
-
-// Returns a masked passport entity with a full name and a passport number.
-EntityInstance CreateMaskedPassport() {
-  using enum AttributeTypeName;
-  AttributeInstance number((AttributeType(kPassportNumber)));
-  number.SetInfo(PASSPORT_NUMBER, u"5678", "en-US",
-                 /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
-  number.FinalizeInfo();
-  test_api(number).mark_as_masked();
-
-  AttributeInstance name((AttributeType(kPassportName)));
-  name.SetInfo(NAME_FULL, u"Jane Doe", "en-US",
-               /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
-  name.FinalizeInfo();
-
-  return test::GetEntityInstance(
-      {name, number},
-      {.record_type = EntityInstance::RecordType::kServerWallet});
-}
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -57,10 +40,12 @@ TEST_F(AutofillAiWalletUtilsTest,
        HandleWalletUpsertResponseSuccessClosesBubble) {
   EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
 
+  EntityInstance passport = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
   HandleWalletUpsertResponse(
       /*entity_manager=*/nullptr, autofill_client().GetWeakPtr(),
       AutofillClient::AutofillAiImportPromptType::kSave,
-      /*wallet_response=*/CreateMaskedPassport());
+      /*wallet_response=*/MaskEntityInstance(passport));
 }
 
 // Tests that the import data bubble is closed and a local save notification is
