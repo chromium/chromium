@@ -15085,7 +15085,8 @@ be describing additional metrics about the same event.
       a percentage from 0 to 100. 0 means that the element is not visible due to
       factors like being off-screen, clipped, occluded by other elements, or
       styled as invisible (e.g., opacity:0). 100 means that the element is fully
-      visible. This value can be unset if nothing is reported.
+      visible. This value is currently set for only encrypted media and if the
+      kEncryptedMediaOcclusionTracking flag is enabled.
     </summary>
   </metric>
 </event>

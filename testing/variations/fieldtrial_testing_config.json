@@ -10462,6 +10462,21 @@
             ]
         }
     ],
+    "EnableEncryptedMediaOcclusionTracking": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EncryptedMediaOcclusionTracking"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableExclusiveAccessManager": [
         {
             "platforms": [
