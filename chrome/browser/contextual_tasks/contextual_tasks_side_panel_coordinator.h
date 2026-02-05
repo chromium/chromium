@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
@@ -151,6 +152,8 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Get the task associated with the active tab.
   std::optional<ContextualTask> GetCurrentTask();
 
+  void SetSidePanelIdNotToOverrideForTesting(SidePanelEntry::Id side_panel_id);
+
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
 
@@ -261,6 +264,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // The tab scoped side panel open state map. Only used when FeatureParam
   // `kTaskScopedSidePanel` is set to false.
   std::map<SessionID, bool> tab_scoped_open_state_;
+
+  // If the side panel with this specific id is open, do not override it with
+  // the contextual tasks side panel when active tab is changed.
+  SidePanelEntry::Id side_panel_id_not_to_override_ = SidePanelEntry::Id::kGlic;
 
   ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
       scoped_unowned_user_data_;

@@ -816,6 +816,42 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       DoNotOpenSidePanelOnTabChanged) {
+  SetUpTasks();
+
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+
+  // Set Customize Chrome side panel not to override.
+  // Customize Chrome side panel is much easier to setup and always available.
+  coordinator->SetSidePanelIdNotToOverrideForTesting(
+      SidePanelEntry::Id::kCustomizeChrome);
+
+  // Show next side panel.
+  coordinator->Show();
+  EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+
+  // Show Customize Chrome side panel.
+  chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
+
+  // Verify next side panel is closed.
+  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
+
+  // Add a new foreground tab not associated with a task.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, true);
+
+  // Verify the side panel is closed.
+  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
+
+  // Activate the previous tab.
+  // Verify the next side panel is still closed because Customize Chrome side
+  // panel is open.
+  tab_list->ActivateTab(tab_list->GetTab(0)->GetHandle());
+  EXPECT_FALSE(coordinator->IsSidePanelOpenForContextualTask());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        NavigateToContextualTasksPageHidesSidePanel) {
   SetUpTasks();
 
