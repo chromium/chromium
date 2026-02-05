@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -28,6 +29,7 @@ HTMLInstallElement::HTMLInstallElement(Document& document)
   CHECK(RuntimeEnabledFeatures::InstallElementEnabled(
       document.GetExecutionContext()));
   setType(AtomicString("install"));
+  UseCounter::CountWebDXFeature(document, WebDXFeature::kDRAFT_InstallElement);
 }
 
 const String& HTMLInstallElement::InstallUrl() const {

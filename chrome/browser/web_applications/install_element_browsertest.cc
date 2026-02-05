@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -139,6 +140,10 @@ class InstallElementBrowserTest : public WebAppBrowserTestBase {
 // Test installing current document (no attributes).
 // <install></install>
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
+  // Setup histogram tester before navigation so it captures the WebDX feature
+  // counter recorded when the <install> element is parsed on page load.
+  base::HistogramTester histograms;
+
   // Navigate to a page with <install> elements.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
@@ -167,11 +172,19 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
       GenerateAppIdFromManifestId(https_server()->GetURL("/some_id"));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.WebDXFeatures",
+      blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
 }
 
 // Test installing from a background document (installurl only).
 // <install installurl="..."></install>
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
+  // Setup histogram tester before navigation so it captures the WebDX feature
+  // counter recorded when the <install> element is parsed on page load.
+  base::HistogramTester histograms;
+
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
@@ -204,11 +217,19 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
       https_server()->GetURL(kInstallElementPageId));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.WebDXFeatures",
+      blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
 }
 
 // Test installing from a background document (both installurl and manifestid).
 // <install installurl="..." manifestid="..."></install>
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
+  // Setup histogram tester before navigation so it captures the WebDX feature
+  // counter recorded when the <install> element is parsed on page load.
+  base::HistogramTester histograms;
+
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
@@ -241,6 +262,10 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
   webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  histograms.ExpectBucketCount(
+      "Blink.UseCounter.WebDXFeatures",
+      blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {

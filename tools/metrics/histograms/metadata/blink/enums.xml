@@ -8819,6 +8819,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="421" label="Proofreader"/>
   <int value="422" label="Rewriter"/>
   <int value="423" label="Writer"/>
+  <int value="424" label="DRAFT_InstallElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -483,6 +483,7 @@ enum WebDXFeature {
   kProofreader = 421,
   kRewriter = 422,
   kWriter = 423,
+  kDRAFT_InstallElement = 424,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
