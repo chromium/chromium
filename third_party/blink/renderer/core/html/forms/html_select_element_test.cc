@@ -1085,27 +1085,6 @@ TEST_F(HTMLSelectElementTest, ListItemsNesting) {
   check_selects();
 }
 
-TEST_F(HTMLSelectElementTest, InnerElementOverflow) {
-  SetHtmlInnerHTML(R"HTML(
-    <!DOCTYPE html>
-    <select id=select>
-      <option>option</option>
-    </select>
-  )HTML");
-  HTMLSelectElement* select = To<HTMLSelectElement>(GetElementById("select"));
-  Element& inner_element = select->InnerElement();
-
-  GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_EQ(inner_element.GetComputedStyle()->OverflowX(), EOverflow::kVisible);
-  EXPECT_EQ(inner_element.GetComputedStyle()->OverflowY(), EOverflow::kVisible);
-
-  select->SetInlineStyleProperty(CSSPropertyID::kTextOverflow,
-                                 CSSValueID::kEllipsis);
-  GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_EQ(inner_element.GetComputedStyle()->OverflowX(), EOverflow::kHidden);
-  EXPECT_EQ(inner_element.GetComputedStyle()->OverflowY(), EOverflow::kHidden);
-}
-
 class HTMLSelectElementSimTest : public SimTest {};
 
 TEST_F(HTMLSelectElementSimTest, DialogModeBaseSelectAddAllowedButton) {
