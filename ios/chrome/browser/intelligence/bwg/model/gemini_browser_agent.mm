@@ -55,15 +55,16 @@
 
 namespace {
 
-// Helper to convert PageContextWrapperError to BWGPageContextComputationState.
-ios::provider::BWGPageContextComputationState
-BWGPageContextComputationStateFromPageContextWrapperError(
+// Helper to convert PageContextWrapperError to
+// GeminiPageContextComputationState.
+ios::provider::GeminiPageContextComputationState
+GeminiPageContextComputationStateFromPageContextWrapperError(
     PageContextWrapperError error) {
   switch (error) {
     case PageContextWrapperError::kForceDetachError:
-      return ios::provider::BWGPageContextComputationState::kProtected;
+      return ios::provider::GeminiPageContextComputationState::kProtected;
     default:
-      return ios::provider::BWGPageContextComputationState::kError;
+      return ios::provider::GeminiPageContextComputationState::kError;
   }
 }
 
@@ -316,12 +317,13 @@ void GeminiBrowserAgent::PresentFloatyWithPageContext(
   if (expected_page_context.has_value()) {
     PresentFloatyWithState(
         base_view_controller, std::move(expected_page_context.value()),
-        ios::provider::BWGPageContextComputationState::kSuccess, entry_point);
+        ios::provider::GeminiPageContextComputationState::kSuccess,
+        entry_point);
   } else {
     PresentFloatyWithState(
         base_view_controller,
         /*page_context_proto=*/nullptr,
-        BWGPageContextComputationStateFromPageContextWrapperError(
+        GeminiPageContextComputationStateFromPageContextWrapperError(
             expected_page_context.error()),
         entry_point);
   }
@@ -362,16 +364,21 @@ void GeminiBrowserAgent::UpdateFloatyPageContext(
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                    PageContextWrapperError> expected_page_context) {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
-  gemini_page_context.BWGPageContextComputationState =
-      ios::provider::BWGPageContextComputationState::kSuccess;
+  // TODO(crbug.com/467341090): Remove the chain assignment after the migration.
+  gemini_page_context.geminiPageContextComputationState =
+      gemini_page_context.BWGPageContextComputationState =
+          ios::provider::BWGPageContextComputationState::kSuccess;
   std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto =
       nullptr;
   if (expected_page_context.has_value()) {
     page_context_proto = std::move(expected_page_context.value());
   } else {
-    gemini_page_context.BWGPageContextComputationState =
-        BWGPageContextComputationStateFromPageContextWrapperError(
-            expected_page_context.error());
+    // TODO(crbug.com/467341090): Remove the chain assignment after the
+    //  migration.
+    gemini_page_context.geminiPageContextComputationState =
+        gemini_page_context.BWGPageContextComputationState =
+            GeminiPageContextComputationStateFromPageContextWrapperError(
+                expected_page_context.error());
   }
   gemini_page_context.uniquePageContext = std::move(page_context_proto);
   gemini_page_context.favicon = FetchPageFavicon();
@@ -685,7 +692,7 @@ void GeminiBrowserAgent::FullscreenViewportInsetRangeChanged(
 void GeminiBrowserAgent::PresentFloatyWithState(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto,
-    ios::provider::BWGPageContextComputationState computation_state,
+    ios::provider::GeminiPageContextComputationState computation_state,
     gemini::EntryPoint entry_point,
     UIImage* image_attachment) {
   SetSessionCommandHandlers();
@@ -728,7 +735,9 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   // Set the page context itself and page context computation/attachment state
   // for the current web state.
   config.pageContext = [[GeminiPageContext alloc] init];
-  config.pageContext.BWGPageContextComputationState = computation_state;
+  // TODO(crbug.com/467341090): Remove the chain assignment after the migration.
+  config.pageContext.geminiPageContextComputationState =
+      config.pageContext.BWGPageContextComputationState = computation_state;
   config.pageContext.uniquePageContext = std::move(page_context_proto);
   config.pageContext.favicon = FetchPageFavicon();
   ApplyUserPrefsToPageContext(config.pageContext);
@@ -774,7 +783,7 @@ void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
     // If page context is not disabled by the user, page context is always
     // available and should be attached. Note page context is only partially
     // available (e.g. title, url, favicon) while
-    // `BWGPageContextComputationState` is pending.
+    // `GeminiPageContextComputationState` is pending.
     gemini_page_context.BWGPageContextAttachmentState =
         ios::provider::BWGPageContextAttachmentState::kAttached;
   }
@@ -790,12 +799,12 @@ void GeminiBrowserAgent::OnPageContextReady(
   if (response.has_value()) {
     PresentFloatyWithState(
         base_view_controller, std::move(response.value()),
-        ios::provider::BWGPageContextComputationState::kSuccess, entry_point,
+        ios::provider::GeminiPageContextComputationState::kSuccess, entry_point,
         image_attachment);
   } else {
     PresentFloatyWithState(
         base_view_controller, nullptr,
-        BWGPageContextComputationStateFromPageContextWrapperError(
+        GeminiPageContextComputationStateFromPageContextWrapperError(
             response.error()),
         entry_point, image_attachment);
   }

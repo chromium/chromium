@@ -152,7 +152,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       UIViewController* base_view_controller,
       std::unique_ptr<optimization_guide::proto::PageContext>
           page_context_proto,
-      ios::provider::BWGPageContextComputationState computation_state,
+      ios::provider::GeminiPageContextComputationState computation_state,
       gemini::EntryPoint entry_point,
       UIImage* image_attachment = nil);
 

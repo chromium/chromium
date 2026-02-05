@@ -11,7 +11,7 @@
 #import <memory>
 
 namespace ios::provider {
-enum class BWGPageContextComputationState;
+enum class GeminiPageContextComputationState;
 enum class BWGPageContextAttachmentState;
 }  // namespace ios::provider
 
@@ -27,8 +27,14 @@ class PageContext;
     std::unique_ptr<optimization_guide::proto::PageContext>
         uniquePageContext;
 
+// The state of the Gemini PageContext computation.
+@property(nonatomic, assign) ios::provider::GeminiPageContextComputationState
+    geminiPageContextComputationState;
+
 // The state of the BWG PageContext computation.
-@property(nonatomic, assign) ios::provider::BWGPageContextComputationState
+// TODO(crbug.com/467341090): Remove this property once all callers have
+// migrated.
+@property(nonatomic, assign) ios::provider::GeminiPageContextComputationState
     BWGPageContextComputationState;
 
 // The state of the BWG PageContext attachment.
