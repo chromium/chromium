@@ -65,7 +65,7 @@ component("clipboard_types") {
   }
 }
 
-if (is_linux) {
+if (is_linux && use_dbus) {
   source_set("clipboard_util_linux") {
     sources = [
       "clipboard_util_linux.cc",
@@ -308,7 +308,7 @@ source_set("clipboard_test") {
     "//url",
   ]
 
-  if (is_linux) {
+  if (is_linux && use_dbus) {
     deps += [ ":clipboard_util_linux" ]
   }
 

@@ -776,7 +776,6 @@ std::string GetDesktopFileContentsForUrlShortcut(
   return output_buffer;
 #else
   NOTREACHED();
-  return std::string();
 #endif
 }
 
