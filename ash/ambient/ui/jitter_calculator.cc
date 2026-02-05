@@ -14,7 +14,7 @@ namespace ash {
 
 JitterCalculator::JitterCalculator(AmbientJitterConfig config)
     : JitterCalculator(std::move(config),
-                       base::BindRepeating(&base::RandInt, 0, 1)) {}
+                       base::BindRepeating(&base::RandIntInclusive, 0, 1)) {}
 
 JitterCalculator::JitterCalculator(
     AmbientJitterConfig config,

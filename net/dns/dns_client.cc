@@ -386,8 +386,8 @@ class DnsClientImpl : public DnsClient {
 
 // static
 std::unique_ptr<DnsClient> DnsClient::CreateClient(NetLog* net_log) {
-  return std::make_unique<DnsClientImpl>(net_log,
-                                         base::BindRepeating(&base::RandInt));
+  return std::make_unique<DnsClientImpl>(
+      net_log, base::BindRepeating(&base::RandIntInclusive));
 }
 
 // static

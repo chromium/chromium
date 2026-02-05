@@ -15,7 +15,7 @@ namespace base {
 
 void ConstructByteSizeFromSigned() {
   // Any runtime signed value not allowed.
-  [[maybe_unused]] ByteSize bytes(RandInt(-10, 10));  // expected-error {{call to consteval function}}
+  [[maybe_unused]] ByteSize bytes(RandIntInclusive(-10, 10));  // expected-error {{call to consteval function}}
 
   // Negative constant not allowed.
   [[maybe_unused]] ByteSize bytes2(-1);  // expected-error {{call to consteval function}}
@@ -27,7 +27,7 @@ void ConstructByteSizeFromFloat() {
 
 void ConstructByteSizeFromOtherUnit() {
   // Any runtime signed value not allowed.
-  int i = RandInt(-10, 10);
+  int i = RandIntInclusive(-10, 10);
   [[maybe_unused]] ByteSize kib = KiBU(i);  // expected-error {{not a constant expression}}
   [[maybe_unused]] ByteSize mib = MiBU(i);  // expected-error {{not a constant expression}}
   [[maybe_unused]] ByteSize gib = GiBU(i);  // expected-error {{not a constant expression}}
@@ -55,7 +55,7 @@ void ConstructByteSizeFromOtherUnit() {
 
 void ConstructByteSizeDeltaFromUnsigned() {
   // Any runtime unsigned value not allowed (require explicit cast).
-  unsigned u = static_cast<unsigned>(RandInt(0, 10));
+  unsigned u = static_cast<unsigned>(RandIntInclusive(0, 10));
   [[maybe_unused]] ByteSizeDelta delta(u);  // expected-error {{call to consteval function}}
 
   // Out-of-range constant not allowed.
@@ -68,7 +68,7 @@ void ConstructByteSizeDeltaFromFloat() {
 
 void ConstructByteSizeDeltaFromOtherUnit() {
   // Any runtime unsigned value not allowed (require explicit cast).
-  unsigned u = static_cast<unsigned>(RandInt(0, 10));
+  unsigned u = static_cast<unsigned>(RandIntInclusive(0, 10));
   [[maybe_unused]] ByteSizeDelta kib = KiBS(u);  // expected-error {{not a constant expression}}
   [[maybe_unused]] ByteSizeDelta mib = MiBS(u);  // expected-error {{not a constant expression}}
   [[maybe_unused]] ByteSizeDelta gib = GiBS(u);  // expected-error {{not a constant expression}}

@@ -719,8 +719,8 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
     new_dir_name.assign(prefix);
     new_dir_name.append(AsWString(NumberToString16(GetCurrentProcId())));
     new_dir_name.push_back('_');
-    new_dir_name.append(AsWString(
-        NumberToString16(RandInt(0, std::numeric_limits<int32_t>::max()))));
+    new_dir_name.append(AsWString(NumberToString16(
+        RandIntInclusive(0, std::numeric_limits<int32_t>::max()))));
 
     path_to_create = base_dir.Append(new_dir_name);
     if (::CreateDirectory(path_to_create.value().c_str(), NULL)) {

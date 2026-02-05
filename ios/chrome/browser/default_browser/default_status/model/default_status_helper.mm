@@ -67,7 +67,7 @@ bool HasCohortAssigned(PrefService* local_state) {
 
 int GenerateRandomCohort() {
   // The arguments passed to RandInt are inclusive.
-  return base::RandInt(1, kCohortCount);
+  return base::RandIntInclusive(1, kCohortCount);
 }
 
 base::Time GetCohortNextStartDate(int cohort_number, bool after_current_month) {

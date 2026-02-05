@@ -34,8 +34,8 @@ constexpr ByteSizeDelta kByteSizeDeltaNegativeMax(kMaxNegativeByteSizeDelta);
 // Helper to generate a fixed number at runtime.
 template <typename T>
 T RunTimeNum(T num) {
-  // RandInt always returns 0, but the compiler doesn't know that!
-  return num + RandInt(0, 0);
+  // RandIntInclusive always returns 0, but the compiler doesn't know that!
+  return num + RandIntInclusive(0, 0);
 }
 
 TEST(ByteSizeTest, ConstructionDefault) {

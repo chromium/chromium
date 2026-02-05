@@ -322,15 +322,15 @@ class AllocatorThread : public SimpleThread {
 
   void Run() override {
     for (;;) {
-      uint32_t size = RandInt(1, 99);
-      uint32_t type = RandInt(100, 999);
+      uint32_t size = RandIntInclusive(1, 99);
+      uint32_t type = RandIntInclusive(100, 999);
       Reference block = allocator_.Allocate(size, type);
       if (!block) {
         break;
       }
 
       count_++;
-      if (RandInt(0, 1)) {
+      if (RandIntInclusive(0, 1)) {
         allocator_.MakeIterable(block);
         iterable_++;
       }
@@ -484,8 +484,8 @@ TEST_F(PersistentMemoryAllocatorTest, IteratorParallelismTest) {
   // Fill the memory segment with random allocations.
   unsigned iterable_count = 0;
   for (;;) {
-    uint32_t size = RandInt(1, 99);
-    uint32_t type = RandInt(100, 999);
+    uint32_t size = RandIntInclusive(1, 99);
+    uint32_t type = RandIntInclusive(100, 999);
     Reference block = allocator_->Allocate(size, type);
     if (!block) {
       break;
@@ -630,8 +630,8 @@ TEST_F(PersistentMemoryAllocatorTest, MAYBE_CorruptionTest) {
   t5.Start();
 
   do {
-    size_t offset = RandInt(0, TEST_MEMORY_SIZE - 1);
-    char value = RandInt(0, 255);
+    size_t offset = RandIntInclusive(0, TEST_MEMORY_SIZE - 1);
+    char value = RandIntInclusive(0, 255);
     UNSAFE_TODO(memory[offset]) = value;
   } while (!allocator_->IsCorrupt() && !allocator_->IsFull());
 

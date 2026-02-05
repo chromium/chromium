@@ -271,7 +271,7 @@ void CreateNSURLSession(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
   const int kIdentifierSuffix = 1000000;
   std::string identifier =
       base::StringPrintf("%s-%d", download::kBackgroundDownloadIdentifierPrefix,
-                         base::RandInt(0, kIdentifierSuffix));
+                         base::RandIntInclusive(0, kIdentifierSuffix));
   // TODO(crbug.com/40190949): Using a foreground rather than background session
   // is a temporary fix to circumvent issues with background downloads reported
   // as crashes.

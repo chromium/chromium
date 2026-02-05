@@ -28,16 +28,16 @@ constexpr int kIntMax = std::numeric_limits<int>::max();
 
 }  // namespace
 
-TEST(RandUtilTest, RandInt) {
-  EXPECT_EQ(RandInt(0, 0), 0);
-  EXPECT_EQ(RandInt(kIntMin, kIntMin), kIntMin);
-  EXPECT_EQ(RandInt(kIntMax, kIntMax), kIntMax);
+TEST(RandUtilTest, RandIntInclusive) {
+  EXPECT_EQ(RandIntInclusive(0, 0), 0);
+  EXPECT_EQ(RandIntInclusive(kIntMin, kIntMin), kIntMin);
+  EXPECT_EQ(RandIntInclusive(kIntMax, kIntMax), kIntMax);
 
-  // Check that the DCHECKS in RandInt() don't fire due to internal overflow.
-  // There was a 50% chance of that happening, so calling it 40 times means
-  // the chances of this passing by accident are tiny (9e-13).
+  // Check that the DCHECKS in RandIntInclusive() don't fire due to internal
+  // overflow. There was a 50% chance of that happening, so calling it 40 times
+  // means the chances of this passing by accident are tiny (9e-13).
   for (int i = 0; i < 40; ++i) {
-    RandInt(kIntMin, kIntMax);
+    RandIntInclusive(kIntMin, kIntMax);
   }
 }
 

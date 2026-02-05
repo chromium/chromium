@@ -142,7 +142,7 @@ TEST_F(UrlLoadingObserverBridgeTest, NewTabDidLoadUrl) {
 // Tests `WillSwitchToTabWithUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, WillSwitchToTabWithUrl) {
   const GURL url(kTestUrl);
-  int idx = base::RandInt(0, 1000);
+  int idx = base::RandIntInclusive(0, 1000);
   OCMExpect([observer() willSwitchToTabWithURL:url newWebStateIndex:idx]);
   url_loading_notifier()->WillSwitchToTabWithUrl(url, idx);
   EXPECT_OCMOCK_VERIFY(observer());
@@ -151,7 +151,7 @@ TEST_F(UrlLoadingObserverBridgeTest, WillSwitchToTabWithUrl) {
 // Tests `DidSwitchToTabWithUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, DidSwitchToTabWithUrl) {
   const GURL url(kTestUrl);
-  int idx = base::RandInt(0, 1000);
+  int idx = base::RandIntInclusive(0, 1000);
   OCMExpect([observer() didSwitchToTabWithURL:url newWebStateIndex:idx]);
   url_loading_notifier()->DidSwitchToTabWithUrl(url, idx);
   EXPECT_OCMOCK_VERIFY(observer());

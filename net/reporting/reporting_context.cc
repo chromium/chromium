@@ -38,7 +38,7 @@ class ReportingContextImpl : public ReportingContext {
       : ReportingContext(policy,
                          base::DefaultClock::GetInstance(),
                          base::DefaultTickClock::GetInstance(),
-                         base::BindRepeating(&base::RandInt),
+                         base::BindRepeating(&base::RandIntInclusive),
                          ReportingUploader::Create(request_context),
                          ReportingDelegate::Create(request_context),
                          store) {}
