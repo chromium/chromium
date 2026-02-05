@@ -789,8 +789,16 @@ bool OneTimeMessageHandler::DeliverReplyToOpener(ScriptContext* script_context,
   }
 
   v8::LocalVector<v8::Value> args(isolate, {v8_message});
+
+  // Keep a WeakPtr, since `CompleteRequest` may destroy the context / `this`.
+  base::WeakPtr<OneTimeMessageHandler> weak_this = weak_factory_.GetWeakPtr();
+
   bindings_system_->api_system()->request_handler()->CompleteRequest(
       port.request_id, args, error);
+
+  if (!weak_this) {
+    return handled;
+  }
 
   bindings_system_->messaging_service()->CloseMessagePort(
       script_context, target_port_id, /*close_channel=*/true);
