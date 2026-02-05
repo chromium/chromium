@@ -279,6 +279,36 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
+// Tests that the drop target is hidden when dragging a group.
+TEST_F(MultiContentsViewDropTargetControllerTest,
+       OnTabDragUpdated_HidesTargetWhenDraggingGroup) {
+  MockTabDragController mock_tab_drag_controller;
+  DragSessionData session_data;
+  MockTabSlotView tab1;
+  MockTabDragContext tab_drag_context;
+  session_data.tab_drag_data_ = {
+      TabDragData(&tab_drag_context, &tab1),
+  };
+  session_data.tab_drag_data_[0].attached_view = &tab1;
+  session_data.dragging_groups.insert(tab_groups::TabGroupId::GenerateNew());
+  EXPECT_CALL(tab1, GetTabSlotViewType)
+      .WillRepeatedly(testing::Return(TabSlotView::ViewType::kTab));
+
+  // Simulate showing the drop target first.
+  DragTabTo(kDragPointForStartDropTargetShow);
+  FastForward(
+      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
+  EXPECT_TRUE(drop_target_view().GetVisible());
+
+  // Dragging the group tabs should immediately hide it.
+  EXPECT_CALL(mock_tab_drag_controller, GetSessionData)
+      .WillRepeatedly(testing::ReturnRef(session_data));
+  controller().OnTabDragUpdated(mock_tab_drag_controller,
+                                kDragPointForStartDropTargetShow);
+  FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
+  EXPECT_FALSE(drop_target_view().GetVisible());
+}
+
 // Tests that the drag updated event is handled correctly for a single tab.
 TEST_F(MultiContentsViewDropTargetControllerTest,
        OnTabDragUpdated_ShowsAndHidesTargetWhenDraggingSingleTab) {

@@ -89,8 +89,13 @@ MultiContentsViewDropTargetController::DropTargetShowTimer::DropTargetShowTimer(
 TabDragContext* MultiContentsViewDropTargetController::OnTabDragUpdated(
     TabDragTarget::DragController& controller,
     const gfx::Point& point_in_screen) {
-  // Only allow creating split with a single dragged tab.
-  if (controller.GetSessionData().num_dragging_tabs() != 1) {
+  const auto& drag_data = controller.GetSessionData();
+  // Only allow creating split with a single dragged tab, that is not a tab
+  // group drag (i.e. the tab should not be the only member of its group).
+  // Allowing a group to turn into a split would circumvent the group deletion
+  // flow, such as requesting user confirmation.
+  if (drag_data.num_dragging_tabs() != 1 ||
+      !drag_data.dragging_groups.empty()) {
     ResetDropTargetTimers();
     HideDropTarget();
     return nullptr;
