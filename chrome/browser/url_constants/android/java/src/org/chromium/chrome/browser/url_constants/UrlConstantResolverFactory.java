@@ -12,6 +12,11 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpGurl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isBookmarksPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isHistoryPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isIncognitoBookmarksPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isIncognitoNtpOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isNtpOverrideEnabled;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -75,22 +80,13 @@ public class UrlConstantResolverFactory {
 
         resolver.registerOverride(
                 getOriginalNativeNtpUrl(),
-                () ->
-                        ExtensionsUrlOverrideRegistry.getNtpOverrideEnabled()
-                                ? getOriginalNonNativeNtpUrl()
-                                : null);
+                () -> isNtpOverrideEnabled() ? getOriginalNonNativeNtpUrl() : null);
         resolver.registerOverride(
                 getOriginalNativeBookmarksUrl(),
-                () ->
-                        ExtensionsUrlOverrideRegistry.getBookmarksPageOverrideEnabled()
-                                ? getOriginalNonNativeBookmarksUrl()
-                                : null);
+                () -> isBookmarksPageOverrideEnabled() ? getOriginalNonNativeBookmarksUrl() : null);
         resolver.registerOverride(
                 getOriginalNativeHistoryUrl(),
-                () ->
-                        ExtensionsUrlOverrideRegistry.getHistoryPageOverrideEnabled()
-                                ? getOriginalNonNativeHistoryUrl()
-                                : null);
+                () -> isHistoryPageOverrideEnabled() ? getOriginalNonNativeHistoryUrl() : null);
         return resolver;
     }
 
@@ -100,14 +96,11 @@ public class UrlConstantResolverFactory {
 
         resolver.registerOverride(
                 getOriginalNativeNtpUrl(),
-                () ->
-                        ExtensionsUrlOverrideRegistry.getIncognitoNtpOverrideEnabled()
-                                ? getOriginalNonNativeNtpUrl()
-                                : null);
+                () -> isIncognitoNtpOverrideEnabled() ? getOriginalNonNativeNtpUrl() : null);
         resolver.registerOverride(
                 getOriginalNativeBookmarksUrl(),
                 () ->
-                        ExtensionsUrlOverrideRegistry.getIncognitoBookmarksPageOverrideEnabled()
+                        isIncognitoBookmarksPageOverrideEnabled()
                                 ? getOriginalNonNativeBookmarksUrl()
                                 : null);
         return resolver;

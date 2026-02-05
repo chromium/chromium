@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.native_page;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getBookmarksPageOverrideEnabled;
-import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getHistoryPageOverrideEnabled;
-import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getIncognitoBookmarksPageOverrideEnabled;
-import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getIncognitoNtpOverrideEnabled;
-import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getNtpOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isBookmarksPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isHistoryPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isIncognitoBookmarksPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isIncognitoNtpOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isNtpOverrideEnabled;
 
 import android.app.Activity;
 import android.content.Context;
@@ -457,7 +457,7 @@ public class NativePageFactory {
         if (url == null) return null;
 
         GURL gurl = new GURL(url);
-        if (isChromePageUrlOverriddenByExtension(gurl, isIncognito)) {
+        if (isChromePageUrlOverridden(gurl, isIncognito)) {
             RecordUserAction.record("ChromeSchemePage.OverrideTriggered");
             return null;
         }
@@ -501,31 +501,29 @@ public class NativePageFactory {
     }
 
     /**
-     * Returns whether the given url is for a chrome:// scheme page that is being overridden by an
-     * extension.
+     * Returns whether the given url is for a chrome:// scheme page that is being overridden.
      *
      * <p>chrome-native:// scheme pages are not affected by this.
      *
      * @param url The url to be checked.
      * @param isIncognito Whether the page is to be displayed in incognito mode.
      */
-    private static boolean isChromePageUrlOverriddenByExtension(GURL url, boolean isIncognito) {
-        if (!ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()
-                || !UrlConstants.CHROME_SCHEME.equals(url.getScheme())) {
+    private static boolean isChromePageUrlOverridden(GURL url, boolean isIncognito) {
+        if (!UrlConstants.CHROME_SCHEME.equals(url.getScheme())) {
             return false;
         }
 
         String host = url.getHost();
-        if (UrlConstants.NTP_HOST.equals(host)) {
-            return isIncognito ? getIncognitoNtpOverrideEnabled() : getNtpOverrideEnabled();
-        } else if (UrlConstants.BOOKMARKS_HOST.equals(host)) {
-            return isIncognito
-                    ? getIncognitoBookmarksPageOverrideEnabled()
-                    : getBookmarksPageOverrideEnabled();
-        } else if (UrlConstants.HISTORY_HOST.equals(host)) {
-            return !isIncognito && getHistoryPageOverrideEnabled();
-        }
-        return false;
+        return switch (host) {
+            case UrlConstants.NTP_HOST ->
+                    isIncognito ? isIncognitoNtpOverrideEnabled() : isNtpOverrideEnabled();
+            case UrlConstants.BOOKMARKS_HOST ->
+                    isIncognito
+                            ? isIncognitoBookmarksPageOverrideEnabled()
+                            : isBookmarksPageOverrideEnabled();
+            case UrlConstants.HISTORY_HOST -> !isIncognito && isHistoryPageOverrideEnabled();
+            default -> false;
+        };
     }
 
     void setNativePageBuilderForTesting(NativePageBuilder builder) {

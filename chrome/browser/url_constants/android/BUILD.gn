@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/url_constants/ExtensionsUrlOverrideRegistry.java",
     "java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolver.java",
     "java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolverFactory.java",
+    "java/src/org/chromium/chrome/browser/url_constants/UrlOverrideUtils.java",
   ]
   deps = [
     "//base:base_shared_preferences_java",
