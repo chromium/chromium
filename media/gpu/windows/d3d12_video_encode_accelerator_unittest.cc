@@ -324,7 +324,7 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, RejectsUnsupportedConfig) {
 }
 
 TEST_F(D3D12VideoEncodeAcceleratorTest,
-       InputFramesQueueAndBitstreamBuffersAreEitherEmptyForGMBEncoding) {
+       InputFramesQueueAndBitstreamBuffersAreEitherEmptyForMappableSIEncoding) {
   auto* d3d12_video_encode_accelerator =
       static_cast<D3D12VideoEncodeAccelerator*>(
           video_encode_accelerator_.get());

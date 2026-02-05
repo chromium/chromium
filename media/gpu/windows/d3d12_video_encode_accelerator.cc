@@ -318,7 +318,7 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       encoder_factory_(
           std::make_unique<VideoEncodeDelegateFactory>(gpu_workarounds)),
-      // VCM on Windows allocates 10 slots for GMB frames. Typically 3 of
+      // VCM on Windows allocates 10 slots for MappableSI frames. Typically 3 of
       // them are being actively used. Set cache size to 5 to leave some room
       // for frames in the rendering and encoding pipelines.
       shared_handle_cache_(/*max_size=*/5) {
@@ -853,7 +853,7 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
       if (!frame) {
         return NotifyError(
             {EncoderStatus::Codes::kInvalidInputFrame,
-             "Failed to convert shared memory GMB for encoding"});
+             "Failed to convert shared memory mappable SI for encoding"});
       }
       input_texture = CreateResourceForSharedMemoryVideoFrame(*frame);
     }
