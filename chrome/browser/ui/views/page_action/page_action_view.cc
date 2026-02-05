@@ -234,12 +234,8 @@ void PageActionView::UpdateIconImage() {
                                  : views::GetCascadingAccentColor(this);
   // If image does not have a vector icon, set it directly.
   if (icon_image.IsVectorIcon()) {
-    const gfx::ImageSkia image = gfx::CreateVectorIcon(
-        *icon_image.GetVectorIcon().vector_icon(), icon_size_, icon_color);
-
-    if (!image.isNull()) {
-      SetImageModel(ui::ImageModel::FromImageSkia(image));
-    }
+    SetImageModel(ui::ImageModel::FromVectorIcon(
+        *icon_image.GetVectorIcon().vector_icon(), icon_color, icon_size_));
   } else {
     SetImageModel(icon_image);
     // For non-vector icons, the border needs to be updated to accommodate the

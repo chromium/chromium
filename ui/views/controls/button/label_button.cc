@@ -100,8 +100,31 @@ LabelButton::~LabelButton() {
 }
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState state) const {
-  state = ImageStateForState(state);
-  auto image_model = GetImageModel(state).value_or(ui::ImageModel());
+  const ButtonState for_state = ImageStateForState(state);
+  auto image_model = GetImageModel(for_state).value_or(ui::ImageModel());
+
+#if BUILDFLAG(IS_WIN)
+  // In Windows High Contrast mode, re-rasterize vector icons with the system
+  // highlight text color for hover/pressed states to ensure visibility against
+  // the highlight background.
+  const ui::NativeTheme* theme = GetNativeTheme();
+  if (theme &&
+      theme->forced_colors() != ui::ColorProviderKey::ForcedColors::kNone) {
+    const bool is_hover_or_pressed =
+        (state == STATE_HOVERED || state == STATE_PRESSED);
+
+    if (is_hover_or_pressed && image_model.IsVectorIcon()) {
+      const auto& vector_icon = image_model.GetVectorIcon();
+      if (const gfx::VectorIcon* icon = vector_icon.vector_icon()) {
+        return ui::ImageModel::FromVectorIcon(
+                   *icon, ui::kColorNativeHighlightText,
+                   vector_icon.icon_size(), vector_icon.badge_icon())
+            .Rasterize(GetColorProvider());
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   return image_model.Rasterize(GetColorProvider());
 }
 

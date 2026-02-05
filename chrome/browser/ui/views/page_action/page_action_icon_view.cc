@@ -299,11 +299,14 @@ void PageActionIconView::UpdateIconImage() {
   if (IconColorShouldMatchForeground()) {
     icon_color = GetForegroundColor();
   }
-  const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
-      GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());
-  if (!image.isNull()) {
-    SetImageModel(ui::ImageModel::FromImageSkia(image));
-  }
+
+  const gfx::VectorIcon& badge = GetVectorIconBadge();
+  // Bypass IconLabelBubbleView::SetImageModel to preserve the VectorIconModel
+  // for High Contrast correctness.
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(GetVectorIcon(), icon_color, icon_size,
+                                     badge.is_empty() ? nullptr : &badge));
 }
 
 void PageActionIconView::SetIsLoading(bool is_loading) {
