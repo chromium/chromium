@@ -4,6 +4,9 @@
 
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
@@ -12,9 +15,23 @@
 #include "components/supervised_user/test_support/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 namespace {
+
+class SupervisedUserUrlFilteringServiceTestBase : public testing::Test {
+ protected:
+  void TearDown() override { test_environment_.Shutdown(); }
+
+  SupervisedUserTestEnvironment& test_environment() {
+    return test_environment_;
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  SupervisedUserTestEnvironment test_environment_;
+};
 
 struct WebFilterTypeTestParams {
   std::string test_name;
@@ -29,21 +46,11 @@ struct WebFilterTypeTestParams {
 
 class SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest
     : public WithFeatureOverrideAndParamInterface<WebFilterTypeTestParams>,
-      public testing::Test {
+      public SupervisedUserUrlFilteringServiceTestBase {
  protected:
   SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest()
       : WithFeatureOverrideAndParamInterface(
             kSupervisedUserUseUrlFilteringService) {}
-
-  void TearDown() override { test_environment_.Shutdown(); }
-
-  SupervisedUserTestEnvironment& test_environment() {
-    return test_environment_;
-  }
-
- private:
-  base::test::TaskEnvironment task_environment_;
-  SupervisedUserTestEnvironment test_environment_;
 };
 
 TEST_P(SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest,
@@ -159,5 +166,49 @@ INSTANTIATE_TEST_SUITE_P(
              std::string(kSupervisedUserUseUrlFilteringService.name) + "_" +
              std::get<1>(info.param).test_name;
     });
+
+// This suite simply proves that the sync filtering behavior is not affected
+// by the device parental controls. To see comprehensive suite for family link
+// sync filtering behavior, see family link specific suites
+// (family_link*unittest.cc).
+class SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest
+    : public ::base::test::WithFeatureOverride,
+      public SupervisedUserUrlFilteringServiceTestBase {
+ protected:
+  SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest()
+      : ::base::test::WithFeatureOverride(
+            kSupervisedUserUseUrlFilteringService) {}
+  WebFilteringResult GetSyncFilteringBehavior(std::string_view url) {
+    return test_environment().url_filtering_service()->GetFilteringBehavior(
+        GURL(url));
+  }
+};
+
+TEST_P(SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest,
+       EnabledDeviceParentalControls_DontAffectSyncBehavior) {
+  EnableParentalControls(*test_environment().pref_service());
+  test_environment().SetWebFilterType(WebFilterType::kCertainSites);
+  test_environment().SetManualFilterForHost("http://google.com",
+                                            /*allowlist=*/true);
+
+  EXPECT_TRUE(GetSyncFilteringBehavior("http://google.com").IsAllowed());
+  EXPECT_FALSE(GetSyncFilteringBehavior("http://example.com").IsAllowed());
+
+  AndroidParentalControls& parental_controls =
+      test_environment().device_parental_controls();
+  // Set device parental controls to allow all sites.
+  parental_controls.SetSearchContentFiltersEnabledForTesting(true);
+  EXPECT_TRUE(GetSyncFilteringBehavior("http://google.com").IsAllowed());
+  EXPECT_FALSE(GetSyncFilteringBehavior("http://example.com").IsAllowed());
+
+  // Set device parental controls to use safe sites.
+  parental_controls.SetBrowserContentFiltersEnabledForTesting(true);
+  EXPECT_TRUE(GetSyncFilteringBehavior("http://google.com").IsAllowed());
+  EXPECT_FALSE(GetSyncFilteringBehavior("http://example.com").IsAllowed());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest);
+
 }  // namespace
 }  // namespace supervised_user

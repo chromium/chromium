@@ -102,6 +102,12 @@ WebFilterType SupervisedUserUrlFilteringService::GetWebFilterType() const {
 
 WebFilteringResult SupervisedUserUrlFilteringService::GetFilteringBehavior(
     const GURL& url) const {
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    WebFilteringResult device_filtering_result =
+        device_parental_controls_url_filter_->GetFilteringBehavior(url);
+    CHECK(device_filtering_result.IsAllowed())
+        << "Device filtering always passes synchronous checks.";
+  }
   return supervised_user_service_->GetURLFilter()->GetFilteringBehavior(url);
 }
 
