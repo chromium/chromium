@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -38,13 +42,16 @@ public class WebSigninBridgeTest {
 
     @Mock private Callback<@WebSigninTrackerResult Integer> mCallbackMock;
 
+    @Captor
+    private ArgumentCaptor<Callback<@WebSigninTrackerResult Integer>> mWebSigninCallbackCaptor;
+
     private final WebSigninBridge.Factory mFactory = new WebSigninBridge.Factory();
 
     @Before
     public void setUp() {
         WebSigninBridgeJni.setInstanceForTesting(mNativeMock);
         when(mNativeMock.createWithCoreAccountId(
-                        mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock))
+                        eq(mProfileMock), eq(CORE_ACCOUNT_INFO.getId()), any()))
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
     }
 
@@ -55,13 +62,21 @@ public class WebSigninBridgeTest {
                         mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
         Assert.assertNotNull("Factory#create should not return null!", webSigninBridge);
         verify(mNativeMock)
-                .createWithCoreAccountId(mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
+                .createWithCoreAccountId(eq(mProfileMock), eq(CORE_ACCOUNT_INFO.getId()), any());
     }
 
     @Test
     public void testDestroy() {
-        mFactory.createWithCoreAccountId(mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock)
-                .destroy();
+        mFactory.createWithCoreAccountId(mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
+
+        verify(mNativeMock)
+                .createWithCoreAccountId(
+                        eq(mProfileMock),
+                        eq(CORE_ACCOUNT_INFO.getId()),
+                        mWebSigninCallbackCaptor.capture());
+
+        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+
         verify(mNativeMock).destroy(NATIVE_WEB_SIGNIN_BRIDGE);
     }
 

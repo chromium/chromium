@@ -129,9 +129,6 @@ public class WebSigninAccountPickerDelegateTest {
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
                         SigninAccessPoint.WEB_SIGNIN);
-
-        // WebSigninBridge should be destroyed after the sign-in result is known.
-        verify(mWebSigninBridgeMock).destroy();
     }
 
     @Test
@@ -150,8 +147,5 @@ public class WebSigninAccountPickerDelegateTest {
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
                         SigninAccessPoint.WEB_SIGNIN);
-
-        // WebSigninBridge should be destroyed after the sign-in result is known.
-        verify(mWebSigninBridgeMock).destroy();
     }
 }

@@ -21,8 +21,9 @@ import java.util.Objects;
 
 /**
  * Used by the web sign-in flow to detect when the flow is completed or failed. Every instance of
- * this class should be explicitly destroyed using {@link #destroy()} to correctly release native
- * resources.
+ * this class will be destroyed once the callback is run correctly to release native resources but
+ * the case where where the callback was not invoked {@link #destroy()} must still be explicitly
+ * called.
  */
 @MainThread
 @NullMarked
@@ -61,7 +62,7 @@ public class WebSigninBridge {
     /**
      * Notifies the passed {@link Listener} when the sign-in process completes either successfully
      * or with an error. Successful completion means that the primary account is available in
-     * cookies. Should be explicitly destroyed using {@link #destroy()} to release native resources.
+     * cookies.
      *
      * @param account The primary account account used for the sign-in process.
      * @param callback The callback to be notified about sign-in result.
@@ -73,7 +74,10 @@ public class WebSigninBridge {
         Objects.requireNonNull(accountId);
         Objects.requireNonNull(callback);
         mNativeWebSigninBridge =
-                WebSigninBridgeJni.get().createWithCoreAccountId(profile, accountId, callback);
+                WebSigninBridgeJni.get()
+                        .createWithCoreAccountId(
+                                profile, accountId, createDestroyCallback(callback));
+
         assert mNativeWebSigninBridge != 0 : "Couldn't create native WebSigninBridge object!";
     }
 
@@ -90,15 +94,30 @@ public class WebSigninBridge {
         Objects.requireNonNull(email);
         Objects.requireNonNull(callback);
         mNativeWebSigninBridge =
-                org.chromium.chrome.browser.signin.services.WebSigninBridgeJni.get()
-                        .createWithEmail(profile, email, callback);
+                WebSigninBridgeJni.get()
+                        .createWithEmail(profile, email, createDestroyCallback(callback));
         assert mNativeWebSigninBridge != 0 : "Couldn't create native WebSigninBridge object!";
+    }
+
+    /**
+     * Creates a wrapped callback that releases the native class and allows it to be correctly
+     * destroyed when the native class returns the WebSigninTrackerResult.
+     */
+    private Callback<@WebSigninTrackerResult Integer> createDestroyCallback(
+            Callback<@WebSigninTrackerResult Integer> callback) {
+        return result -> {
+            callback.onResult(result);
+            destroy();
+        };
     }
 
     /** Releases native resources used by this class. */
     public void destroy() {
-        WebSigninBridgeJni.get().destroy(mNativeWebSigninBridge);
+        if (mNativeWebSigninBridge == 0) return;
+
+        long nativeWebSigninBridge = mNativeWebSigninBridge;
         mNativeWebSigninBridge = 0;
+        WebSigninBridgeJni.get().destroy(nativeWebSigninBridge);
     }
 
     @VisibleForTesting

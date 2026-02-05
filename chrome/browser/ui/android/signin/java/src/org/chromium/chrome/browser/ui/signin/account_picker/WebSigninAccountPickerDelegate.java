@@ -105,7 +105,6 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
                     controller.showGenericError();
                     break;
             }
-            destroyWebSigninBridge();
         };
     }
 
