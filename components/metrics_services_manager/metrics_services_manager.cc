@@ -84,23 +84,28 @@ metrics::ReportingService* MetricsServicesManager::GetReportingService(
   switch (service_type) {
     case metrics::MetricsLogUploader::MetricServiceType::UMA: {
       auto* service = GetMetricsService();
-      return service ? service->reporting_service() : nullptr;
+      CHECK(service);
+      return service->reporting_service();
     }
     case metrics::MetricsLogUploader::MetricServiceType::UKM: {
       auto* service = GetUkmService();
-      return service ? service->reporting_service() : nullptr;
+      CHECK(service);
+      return service->reporting_service();
     }
     case metrics::MetricsLogUploader::MetricServiceType::DWA: {
       auto* service = GetDwaService();
-      return service ? service->reporting_service() : nullptr;
+      CHECK(service);
+      return service->reporting_service();
     }
     case metrics::MetricsLogUploader::MetricServiceType::PRIVATE_METRICS: {
       auto* service = GetPumaService();
-      return service ? service->reporting_service() : nullptr;
+      CHECK(service);
+      return service->reporting_service();
     }
     case metrics::MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS: {
       auto* service = GetStructuredMetricsService();
-      return service ? service->reporting_service() : nullptr;
+      CHECK(service);
+      return service->reporting_service();
     }
   }
 }
