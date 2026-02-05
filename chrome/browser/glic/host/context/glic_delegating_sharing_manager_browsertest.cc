@@ -5,7 +5,12 @@
 #include "chrome/browser/glic/host/context/glic_delegating_sharing_manager.h"
 
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
+#include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_empty_pinned_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -534,6 +539,60 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
               testing::UnorderedElementsAre(handles[0].Get()->GetContents(),
                                             handles[1].Get()->GetContents()));
 }
+
+class GlicStablePinningDelegatingSharingManagerBrowserTest
+    : public NonInteractiveGlicTest {
+ public:
+  GlicStablePinningDelegatingSharingManagerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicMultiInstance,
+         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
+        {});
+  }
+
+  std::unique_ptr<GlicSharingManagerImpl> CreateSharingManager(
+      GlicPinnedTabManager* pinned_tab_manager) {
+    return std::make_unique<GlicSharingManagerImpl>(
+        std::make_unique<GlicEmptyFocusedTabManager>(),
+        std::make_unique<GlicEmptyFocusedBrowserManager>(), pinned_tab_manager,
+        browser()->profile(), /*metrics=*/nullptr);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(b:479854184): make this work on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicStablePinningDelegatingSharingManagerBrowserTest,
+                       StablePinningDelegateSwap) {
+  // Subclass to access protected members for verification.
+  class TestStableManager : public GlicStablePinningDelegatingSharingManager {
+   public:
+    using GlicDelegatingSharingManagerBase::GetDelegate;
+    using GlicStablePinningDelegatingSharingManager::
+        GlicStablePinningDelegatingSharingManager;
+  };
+
+  GlicEmptyPinnedTabManager pinned_mgr1;
+  GlicEmptyPinnedTabManager pinned_mgr2;
+
+  auto manager1 = CreateSharingManager(&pinned_mgr1);
+  auto manager3 = CreateSharingManager(&pinned_mgr1);
+
+  // Note: manager2 has a different pinned tab manager.
+  auto manager2 = CreateSharingManager(&pinned_mgr2);
+
+  TestStableManager stable_manager(manager1.get());
+
+  // Swapping to manager3 should succeed (same pinned manager).
+  stable_manager.SetDelegate(manager3.get());
+  EXPECT_EQ(stable_manager.GetDelegate(), manager3.get());
+
+  // Swapping to manager2 should crash (different pinned manager).
+  EXPECT_CHECK_DEATH(stable_manager.SetDelegate(manager2.get()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace glic
