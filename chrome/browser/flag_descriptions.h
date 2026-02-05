@@ -6070,11 +6070,6 @@ inline constexpr char kNtpRealboxCr23ThemingName[] =
 inline constexpr char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
 
-inline constexpr char kNtpRealboxMatchSearchboxThemeName[] =
-    "NTP Realbox Matches Searchbox Theme";
-inline constexpr char kNtpRealboxMatchSearchboxThemeDescription[] =
-    "Makes NTP Realbox drop shadow match that of the Searchbox when enabled.";
-
 inline constexpr char kNtpRealboxUseGoogleGIconName[] =
     "NTP Realbox Google G Icon";
 inline constexpr char kNtpRealboxUseGoogleGIconDescription[] =

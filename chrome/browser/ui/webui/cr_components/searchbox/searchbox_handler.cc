@@ -401,10 +401,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                  u"activitycontrols?settings=search&utm_source="
                                  u"aim&utm_campaign=aim_str"));
 
-  source->AddBoolean(
-      "searchboxMatchSearchboxTheme",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
-
   DefineChromeRefreshRealboxIcons();
   source->AddString(
       "searchboxDefaultIcon",

@@ -52,12 +52,6 @@ BASE_FEATURE(kRealboxCr23Theming,
              "NtpRealboxCr23Theming",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the NTP "realbox" will have same border/drop shadow in hover
-// state as searchbox.
-BASE_FEATURE(kRealboxMatchSearchboxTheme,
-             "NtpRealboxMatchSearchboxTheme",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the real search box ("realbox") on the New Tab page will show a
 // Google (g) icon instead of the typical magnifying glass (aka loupe).
 BASE_FEATURE(kRealboxUseGoogleGIcon,

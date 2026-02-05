@@ -7659,11 +7659,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
 
-    {"ntp-realbox-match-searchbox-theme",
-     flag_descriptions::kNtpRealboxMatchSearchboxThemeName,
-     flag_descriptions::kNtpRealboxMatchSearchboxThemeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxMatchSearchboxTheme)},
-
     {"ntp-realbox-use-google-g-icon",
      flag_descriptions::kNtpRealboxUseGoogleGIconName,
      flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,

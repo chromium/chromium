@@ -256,12 +256,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      /** Whether the searchbox should match the searchbox. */
-      matchSearchbox: {
-        type: Boolean,
-        reflect: true,
-      },
-
       multiLineEnabled: {
         type: Boolean,
         reflect: true,
@@ -427,8 +421,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor hadSecondarySide: boolean = false;
   accessor hasSecondarySide: boolean = false;
   accessor isDark: boolean = false;
-  accessor matchSearchbox: boolean =
-      loadTimeData.getBoolean('searchboxMatchSearchboxTheme');
   accessor multiLineEnabled: boolean = false;
   accessor searchboxAriaDescription: string = '';
   accessor searchboxLensSearchEnabled: boolean =
