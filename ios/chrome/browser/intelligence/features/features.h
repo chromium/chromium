@@ -328,4 +328,15 @@ bool IsActuationEnabled();
 // feature parameter of the `kActuationTools` feature.
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool);
 
+// Feature flag for Model based page classification experiment.
+BASE_DECLARE_FEATURE(kModelBasedPageClassification);
+
+// Returns true if Model based page classification is enabled.
+bool IsModelBasedPageClassificationEnabled();
+
+// Returns the execution rate (0-100) for the classification experiment.
+int GetModelBasedPageClassificationExecutionRate();
+
+extern const char kModelBasedPageClassificationExecutionRateParam[];
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

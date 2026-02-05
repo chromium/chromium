@@ -22396,6 +22396,17 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="NSInternalInconsistencyException"/>
 </enum>
 
+<enum name="PageClassificationCategory">
+  <int value="0" label="Hotel"/>
+  <int value="1" label="Restaurant"/>
+  <int value="2" label="Job"/>
+  <int value="3" label="Flight"/>
+  <int value="4" label="Car"/>
+  <int value="5" label="News"/>
+  <int value="6" label="Clothes"/>
+  <int value="7" label="None"/>
+</enum>
+
 <enum name="PageImageServiceBackend">
   <int value="0" label="No Valid Backend"/>
   <int value="1" label="Suggest"/>

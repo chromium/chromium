@@ -480,3 +480,37 @@ bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {
 
   return false;
 }
+
+BASE_FEATURE(kModelBasedPageClassification, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kModelBasedPageClassificationExecutionRateParam[] = "execution_rate";
+
+bool IsModelBasedPageClassificationEnabled() {
+  // Check strict eligibility similar to other AI features.
+  // Launched in en-US. Checks for the country (US) and locale (en-US).
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  bool is_launched_country =
+      variations_service &&
+      base::ToLowerASCII(variations_service->GetStoredPermanentCountry()) ==
+          "us";
+
+  ApplicationLocaleStorage* locale_storage =
+      GetApplicationContext()->GetApplicationLocaleStorage();
+  bool is_launched_locale =
+      locale_storage && base::ToLowerASCII(locale_storage->Get()) == "en-us";
+
+  if (!is_launched_country || !is_launched_locale) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kModelBasedPageClassification);
+}
+
+int GetModelBasedPageClassificationExecutionRate() {
+  // Finch parameter for execution rate, we will want to keep it low so it runs
+  // on a random small percentage of page loads.
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kModelBasedPageClassification,
+      kModelBasedPageClassificationExecutionRateParam, 0);
+}
