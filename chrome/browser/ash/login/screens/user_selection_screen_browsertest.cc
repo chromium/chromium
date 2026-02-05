@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
@@ -14,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -62,6 +64,12 @@ const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
                                                    "error-guest-signin-link"};
 const test::UIPath kErrorMessageOfflineSigninLink = {
     "error-message", "error-offline-login-link"};
+
+constexpr char kTokenHandlePref[] = "PasswordTokenHandle";
+constexpr char kTokenHandleStatusPref[] = "TokenHandleStatus";
+constexpr char kTokenHandleStatusStale[] = "stale";
+
+constexpr char kTestTokenHandle[] = "test-token-handle";
 
 class UserSelectionScreenTest : public LoginManagerTest {
  public:
@@ -186,6 +194,59 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenEnforceOnlineTest,
   EXPECT_TRUE(LoginScreenTestApi::FocusUser(users[0].account_id));
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+class UserSelectionScreenOldTokenHandlePathStaleTokenTest
+    : public LoginManagerTest {
+ public:
+  UserSelectionScreenOldTokenHandlePathStaleTokenTest() : LoginManagerTest() {
+    login_manager_mixin_.AppendManagedUsers(1);
+    // Disable the feature to test the old code path.
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kUseTokenHandleStore);
+  }
+
+  ~UserSelectionScreenOldTokenHandlePathStaleTokenTest() override = default;
+  UserSelectionScreenOldTokenHandlePathStaleTokenTest(
+      const UserSelectionScreenOldTokenHandlePathStaleTokenTest&) = delete;
+  UserSelectionScreenOldTokenHandlePathStaleTokenTest& operator=(
+      const UserSelectionScreenOldTokenHandlePathStaleTokenTest&) = delete;
+
+ protected:
+  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test to check online login is enforced with the feature disabled.
+IN_PROC_BROWSER_TEST_F(UserSelectionScreenOldTokenHandlePathStaleTokenTest,
+                       PRE_IsOnlineLoginEnforcedWhenTokenStale) {
+  const auto& users = login_manager_mixin_.users();
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+
+  known_user.SetStringPref(users[0].account_id, kTokenHandlePref,
+                           kTestTokenHandle);
+  known_user.SetStringPref(users[0].account_id, kTokenHandleStatusPref,
+                           kTokenHandleStatusStale);
+}
+
+// Test to check online login is enforced with the feature disabled.
+IN_PROC_BROWSER_TEST_F(UserSelectionScreenOldTokenHandlePathStaleTokenTest,
+                       IsOnlineLoginEnforcedWhenTokenStale) {
+  // kUseTokenHandleStore is DISABLED via the constructor.
+  const auto& users = login_manager_mixin_.users();
+
+  const AccountId user_id = users[0].account_id;
+
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(user_id));
+
+  // Now, check if the UI reflects that online signin is required.
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(user_id));
+
+  // Since reauth is required, clicking the pod or attempting to log in
+  // should navigate to the Gaia screen. OobeScreenWaiter will wait for this
+  // transition.
+  ash::OobeScreenWaiter(ash::GaiaView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,

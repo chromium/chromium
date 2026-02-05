@@ -17,6 +17,7 @@
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
@@ -65,6 +66,11 @@ constexpr GaiaId::Literal kGaiaID("111111");
 constexpr char kTokenHandle[] = "test_token_handle";
 constexpr char kTestingFileName[] = "testing-file.txt";
 constexpr char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
+constexpr char kTokenHandlePref[] = "PasswordTokenHandle";
+constexpr char kTokenHandleStatusPref[] = "TokenHandleStatus";
+constexpr char kTokenHandleStatusStale[] = "stale";
+
+constexpr char kTestTokenHandle[] = "test-token-handle";
 
 using AuthOp = FakeUserDataAuthClient::Operation;
 
@@ -377,6 +383,59 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenPasswordChange) {
   base::HistogramTester histogram_tester;
 
   SetGaiaScreenCredentials(user_with_invalid_token_, test::kNewPassword);
+
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+
+  histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
+                                     ReauthReason::kInvalidTokenHandle, 1);
+}
+
+class PasswordChangeTokenCheckStaleToken : public PasswordChangeTest {
+ public:
+  PasswordChangeTokenCheckStaleToken() {
+    // Disable feature to trigger old code path.
+    scoped_feature_list_.InitAndDisableFeature(features::kUseTokenHandleStore);
+    login_mixin_.AppendRegularUsers(1);
+    user_with_stale_token_ = login_mixin_.users().back().account_id;
+    ignore_sync_errors_for_test_ =
+        SigninErrorNotifier::IgnoreSyncErrorsForTesting();
+    UserDataAuthClient::InitializeFake();
+  }
+
+ protected:
+  // PasswordChangeTest:
+  void SetUpOnMainThread() override {
+    PasswordChangeTest::SetUpOnMainThread();
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+
+    known_user.SetStringPref(user_with_stale_token_, kTokenHandlePref,
+                             kTestTokenHandle);
+    known_user.SetStringPref(user_with_stale_token_, kTokenHandleStatusPref,
+                             kTokenHandleStatusStale);
+  }
+
+  void TearDownOnMainThread() override {
+    LoginManagerTest::TearDownOnMainThread();
+  }
+
+  AccountId user_with_stale_token_;
+  std::unique_ptr<base::AutoReset<bool>> ignore_sync_errors_for_test_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheckStaleToken,
+                       LoginScreenPasswordChange) {
+  EXPECT_FALSE(
+      LoginScreenTestApi::IsForcedOnlineSignin(user_with_stale_token_));
+  // Focus triggers token check.
+  LoginScreenTestApi::FocusUser(user_with_stale_token_);
+  EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(user_with_stale_token_));
+
+  OpenGaiaDialog(user_with_stale_token_);
+
+  base::HistogramTester histogram_tester;
+
+  SetGaiaScreenCredentials(user_with_stale_token_, test::kNewPassword);
 
   test::CreateOldPasswordEnterPageWaiter()->Wait();
 

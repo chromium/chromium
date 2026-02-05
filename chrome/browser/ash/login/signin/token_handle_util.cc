@@ -118,6 +118,15 @@ bool HasTokenStatusInvalid(const AccountId& account_id) {
   return status && *status == kHandleStatusInvalid;
 }
 
+// Checks if token handle is explicitly marked as `kStale` for `account_id`.
+bool HasTokenStatusStale(const AccountId& account_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* status =
+      known_user.FindStringPath(account_id, kTokenHandleStatusPref);
+
+  return status && *status == kHandleStatusStale;
+}
+
 // Callback used in `AuthFactorEditor::GetAuthFactorsConfiguration()`.
 std::optional<bool> DoesUserUseGaiaPassword(
     std::unique_ptr<UserContext> user_context,
@@ -205,9 +214,9 @@ void TokenHandleUtil::IsReauthRequired(
     return;
   }
 
-  // If token is explicitly marked as invalid, it does not make sense to check
-  // it again.
-  if (HasTokenStatusInvalid(account_id)) {
+  // If token is explicitly marked as invalid, or stale, it does not make sense
+  // to check it again.
+  if (HasTokenStatusInvalid(account_id) || HasTokenStatusStale(account_id)) {
     std::move(callback).Run(account_id, *token, /*reauth_required=*/true);
     return;
   }
