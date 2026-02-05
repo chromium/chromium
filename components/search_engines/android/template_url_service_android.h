@@ -64,6 +64,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   int GetSearchEngineTypeFromTemplateUrl(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jkeyword);
+  std::u16string GetFullNameFromTemplateUrl(JNIEnv* env,
+                                            const std::u16string& keyword);
 
   // Adds a search engine, set by Play API. Sets it as DSE if possible.
   // Returns true if search engine was successfully added, false if search

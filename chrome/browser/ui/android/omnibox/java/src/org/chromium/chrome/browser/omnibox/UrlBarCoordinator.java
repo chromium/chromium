@@ -188,8 +188,11 @@ public class UrlBarCoordinator
      * @see UrlBarMediator#setAutocompleteText(String, String, String)
      */
     public void setAutocompleteText(
-            String userText, @Nullable String autocompleteText, @Nullable String additionalText) {
-        mMediator.setAutocompleteText(userText, autocompleteText, additionalText);
+            String userText,
+            @Nullable String autocompleteText,
+            @Nullable String additionalText,
+            @Nullable String siteSearchLabel) {
+        mMediator.setAutocompleteText(userText, autocompleteText, additionalText, siteSearchLabel);
     }
 
     /**

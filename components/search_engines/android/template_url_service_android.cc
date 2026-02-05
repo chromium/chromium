@@ -385,6 +385,17 @@ int TemplateUrlServiceAndroid::GetSearchEngineTypeFromTemplateUrl(
   return template_url->GetEngineType(search_terms_data);
 }
 
+std::u16string TemplateUrlServiceAndroid::GetFullNameFromTemplateUrl(
+    JNIEnv* env,
+    const std::u16string& keyword) {
+  TemplateURL* template_url =
+      template_url_service_->GetTemplateURLForKeyword(keyword);
+  if (!template_url) {
+    return u"";
+  }
+  return template_url->GetFullName();
+}
+
 bool TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jname,

@@ -235,14 +235,17 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
      *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
     public void setAutocompleteText(
-            String userText, @Nullable String autocompleteText, @Nullable String additionalText) {
+            String userText,
+            @Nullable String autocompleteText,
+            @Nullable String additionalText,
+            @Nullable String siteSearchLabel) {
         if (!mHasFocus) {
             assert false : "Should not update autocomplete text when not focused";
             return;
         }
         mModel.set(
                 UrlBarProperties.AUTOCOMPLETE_TEXT,
-                new AutocompleteText(userText, autocompleteText, additionalText));
+                new AutocompleteText(userText, autocompleteText, additionalText, siteSearchLabel));
     }
 
     private void onUrlFocusChange(boolean focus) {

@@ -80,23 +80,31 @@ class UrlBarProperties {
          */
         public final @Nullable String additionalText;
 
+        /** The site search label. */
+        public final @Nullable String siteSearchLabel;
+
         public AutocompleteText(
                 String userText,
                 @Nullable String autocompleteText,
-                @Nullable String additionalText) {
+                @Nullable String additionalText,
+                @Nullable String siteSearchLabel) {
             this.userText = userText;
             this.autocompleteText = autocompleteText;
             this.additionalText = additionalText;
+            this.siteSearchLabel = siteSearchLabel;
         }
 
         @Override
         public String toString() {
             return String.format(
                     Locale.US,
-                    "%s: user text: %s; autocomplete text: %s",
+                    "%s: user text: %s; autocomplete text: %s; additional text: %s; site search"
+                            + " label: %s",
                     getClass().getSimpleName(),
                     userText,
-                    autocompleteText);
+                    autocompleteText,
+                    additionalText,
+                    siteSearchLabel);
         }
     }
 

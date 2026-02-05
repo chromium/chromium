@@ -663,11 +663,23 @@ class LocationBarMediator
                         // Otherwise, use the default match type (if possible), or assume Search (if
                         // not).
                         (defaultMatch != null ? defaultMatch.isSearchSuggestion() : true));
+
         if (mUrlCoordinator.shouldAutocomplete()) {
+            String siteSearchLabel = null;
+            if (defaultMatch != null && defaultMatch.getAssociatedKeyword() != null) {
+                TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+                if (templateUrlService != null) {
+                    siteSearchLabel =
+                            templateUrlService.getFullNameFromTemplateUrl(
+                                    defaultMatch.getAssociatedKeyword());
+                }
+            }
+
             mUrlCoordinator.setAutocompleteText(
                     userText,
                     defaultMatch != null ? defaultMatch.getInlineAutocompletion() : null,
-                    defaultMatch != null ? defaultMatch.getAdditionalText() : null);
+                    defaultMatch != null ? defaultMatch.getAdditionalText() : null,
+                    siteSearchLabel);
         }
 
         // Handle the case where suggestions (in particular zero suggest) are received without the

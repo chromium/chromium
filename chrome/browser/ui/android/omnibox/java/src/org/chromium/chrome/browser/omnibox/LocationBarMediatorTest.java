@@ -474,7 +474,7 @@ public class LocationBarMediatorTest {
                 .prerenderMaybe(123L, "text", JUnitTestGURLs.RED_1.getSpec(), 456L, mProfile, mTab);
         verify(mStatusCoordinator).onDefaultMatchClassified(false);
         verify(mUrlCoordinator)
-                .setAutocompleteText("text", "textWithAutocomplete", "additionalText");
+                .setAutocompleteText("text", "textWithAutocomplete", "additionalText", null);
 
         var state = FuseboxSessionState.from(mLocationBarDataProvider);
         state.autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
@@ -489,7 +489,7 @@ public class LocationBarMediatorTest {
 
         mMediator.onSuggestionsChanged(null);
         verify(mStatusCoordinator).onDefaultMatchClassified(true);
-        verify(mUrlCoordinator).setAutocompleteText("text", null, null);
+        verify(mUrlCoordinator).setAutocompleteText("text", null, null, null);
     }
 
     public void testLoadUrl_base() {
