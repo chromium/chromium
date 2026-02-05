@@ -262,7 +262,7 @@ void ExternalPopupMenu::DidAcceptIndices(const Vector<int32_t>& indices) {
     list_indices.reserve(list_count);
     for (wtf_size_t i = 0; i < list_count; ++i)
       list_indices.push_back(ToPopupMenuItemIndex(indices[i], *owner_element));
-    owner_element->SelectMultipleOptionsByPopup(list_indices);
+    owner_element->SelectMultipleOptions(list_indices);
   }
 
   if (RuntimeEnabledFeatures::ExternalPopupMenuClickEventEnabled()) {

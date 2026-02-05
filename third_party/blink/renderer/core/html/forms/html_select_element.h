@@ -219,7 +219,7 @@ class CORE_EXPORT HTMLSelectElement final
   LayoutUnit ClientPaddingRight() const;
   void SelectOptionByPopup(int list_index);
   void SelectOptionByPopup(HTMLOptionElement* option);
-  void SelectMultipleOptionsByPopup(const Vector<int>& list_indices);
+  void SelectMultipleOptions(const Vector<int>& list_indices);
   // SelectOptionFromPopoverPickerOrBaseListbox is called when an option element
   // is clicked in the following modes:
   // - When UsesPopoverPickerElement() returns true

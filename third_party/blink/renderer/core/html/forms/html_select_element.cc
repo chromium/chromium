@@ -172,9 +172,7 @@ String HTMLSelectElement::DefaultToolTip() const {
   return validationMessage();
 }
 
-void HTMLSelectElement::SelectMultipleOptionsByPopup(
-    const Vector<int>& list_indices) {
-  DCHECK(UsesMenuList());
+void HTMLSelectElement::SelectMultipleOptions(const Vector<int>& list_indices) {
   DCHECK(IsMultiple());
 
   HeapHashSet<Member<HTMLOptionElement>> old_selection;

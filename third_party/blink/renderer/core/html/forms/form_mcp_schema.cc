@@ -233,9 +233,40 @@ bool FormMCPSchema::ValidateRadioData(const ControlVector& controls_for_name,
 
 bool FormMCPSchema::ValidateSelectData(const ControlVector& controls_for_name,
                                        const JSONValue& value) {
-  // TODO(crbug.com/480888831): Check that it's one of the options.
-  String unused;
-  return controls_for_name.size() == 1u && value.AsString(&unused);
+  auto* element = DynamicTo<HTMLSelectElement>(controls_for_name.front().Get());
+  if (!element) {
+    return false;
+  }
+
+  HashSet<String> allowed_values;
+  for (HTMLOptionElement& option : element->GetOptionList()) {
+    allowed_values.insert(option.value());
+  }
+
+  if (!element->IsMultiple()) {
+    String s;
+    return value.AsString(&s) && allowed_values.Contains(s);
+  }
+
+  const JSONArray* array = JSONArray::Cast(&value);
+  if (!array) {
+    return false;
+  }
+
+  // Each value in the array must have a corresponding option.
+  for (const JSONValue& item : *array) {
+    String s;
+    if (!item.AsString(&s)) {
+      return false;
+    }
+    if (!allowed_values.Contains(s)) {
+      return false;
+    }
+    // Specified values must be unique.
+    allowed_values.erase(s);
+  }
+
+  return true;
 }
 
 bool FormMCPSchema::ValidateFileData(const ControlVector& controls_for_name,
@@ -452,7 +483,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
   }
 
   auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "string");
 
   auto one_of = std::make_unique<JSONArray>();
   auto enum_array = std::make_unique<JSONArray>();
@@ -463,8 +493,20 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     one_of->PushObject(std::move(option_object));
     enum_array->PushString(option.value());
   }
-  schema->SetArray("oneOf", std::move(one_of));
-  schema->SetArray("enum", std::move(enum_array));
+
+  if (element->IsMultiple()) {
+    schema->SetString("type", "array");
+    auto items_schema = std::make_unique<JSONObject>();
+    items_schema->SetString("type", "string");
+    items_schema->SetArray("oneOf", std::move(one_of));
+    items_schema->SetArray("enum", std::move(enum_array));
+    schema->SetObject("items", std::move(items_schema));
+    schema->SetBoolean("uniqueItems", true);
+  } else {
+    schema->SetString("type", "string");
+    schema->SetArray("oneOf", std::move(one_of));
+    schema->SetArray("enum", std::move(enum_array));
+  }
 
   AddTitle(*element, *schema);
   AddDescription(*element, *schema);
@@ -689,15 +731,36 @@ void FormMCPSchema::FillRadioData(const ControlVector& controls_for_name,
 
 void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
                                    const JSONValue& value) {
-  String selected_value;
-  if (!value.AsString(&selected_value)) {
+  HTMLSelectElement& select = To<HTMLSelectElement>(*controls_for_name.front());
+
+  if (!select.IsMultiple()) {
+    String selected_value;
+    CHECK(value.AsString(&selected_value));
+    select.SetValue(selected_value, /*send_events=*/true,
+                    WebAutofillState::kNotFilled);
     return;
   }
-  if (auto* select =
-          DynamicTo<HTMLSelectElement>(controls_for_name.front().Get())) {
-    select->SetValue(selected_value, /*send_events=*/true,
-                     WebAutofillState::kNotFilled);
+
+  const JSONArray* array = JSONArray::Cast(&value);
+  CHECK(array);
+
+  HashSet<String> selected_values;
+  for (const JSONValue& item : *array) {
+    String s;
+    CHECK(item.AsString(&s));
+    selected_values.insert(s);
   }
+
+  Vector<int> selected_indices;
+  int index = 0;
+  for (HTMLOptionElement& option : select.GetOptionList()) {
+    if (selected_values.Contains(option.value())) {
+      selected_indices.push_back(index);
+    }
+    ++index;
+  }
+
+  select.SelectMultipleOptions(selected_indices);
 }
 
 void FormMCPSchema::FillFileData(const ControlVector& controls_for_name,

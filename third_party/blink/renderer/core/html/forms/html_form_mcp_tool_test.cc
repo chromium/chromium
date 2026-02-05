@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -836,6 +838,144 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Title) {
   )JSON");
   ASSERT_TRUE(expected_json);
   EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Multiple) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <select name="select" multiple required>
+        <option value="Option 1">This is option 1</option>
+        <option value="Option 2">This is option 2</option>
+        <option value="Option 3">This is option 3</option>
+      </select>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "select": {
+           "type": "array",
+           "items": {
+             "type": "string",
+             "oneOf": [
+               { "const": "Option 1", "title": "This is option 1" },
+               { "const": "Option 2", "title": "This is option 2" },
+               { "const": "Option 3", "title": "This is option 3" }
+             ],
+             "enum": ["Option 1", "Option 2", "Option 3"]
+           },
+           "uniqueItems": true
+         }
+      },
+      "required": ["select"]
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_Select_Multiple) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <select id="select1" name="select1" multiple>
+        <option id="o1" value="v1">Option 1</option>
+        <option id="o2" value="v2">Option 2</option>
+        <option id="o3" value="v3">Option 3</option>
+      </select>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  HTMLOptionElement* o1 = DynamicTo<HTMLOptionElement>(
+      GetDocument().getElementById(AtomicString("o1")));
+  HTMLOptionElement* o2 = DynamicTo<HTMLOptionElement>(
+      GetDocument().getElementById(AtomicString("o2")));
+  HTMLOptionElement* o3 = DynamicTo<HTMLOptionElement>(
+      GetDocument().getElementById(AtomicString("o3")));
+  ASSERT_TRUE(o1);
+  ASSERT_TRUE(o2);
+  ASSERT_TRUE(o3);
+
+  EXPECT_FALSE(o1->Selected());
+  EXPECT_FALSE(o2->Selected());
+  EXPECT_FALSE(o3->Selected());
+
+  EXPECT_TRUE(
+      FillFormControls(*form_element, R"JSON({"select1": ["v1", "v3"]})JSON"));
+  EXPECT_TRUE(o1->Selected());
+  EXPECT_FALSE(o2->Selected());
+  EXPECT_TRUE(o3->Selected());
+
+  EXPECT_TRUE(
+      FillFormControls(*form_element, R"JSON({"select1": ["v2"]})JSON"));
+  EXPECT_FALSE(o1->Selected());
+  EXPECT_TRUE(o2->Selected());
+  EXPECT_FALSE(o3->Selected());
+
+  EXPECT_TRUE(FillFormControls(*form_element, R"JSON({"select1": []})JSON"));
+  EXPECT_FALSE(o1->Selected());
+  EXPECT_FALSE(o2->Selected());
+  EXPECT_FALSE(o3->Selected());
+}
+
+// The same as the previous test, but size=1 makes the <select> use MenuList.
+TEST_F(HTMLFormMcpToolTest, FillFormControls_Select_Multiple_MenuList) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <select id="select1" name="select1" size=1 multiple>
+        <option id="o1" value="v1">Option 1</option>
+        <option id="o2" value="v2">Option 2</option>
+        <option id="o3" value="v3">Option 3</option>
+      </select>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  HTMLOptionElement* o1 = DynamicTo<HTMLOptionElement>(
+      GetDocument().getElementById(AtomicString("o1")));
+  HTMLOptionElement* o2 = DynamicTo<HTMLOptionElement>(
+      GetDocument().getElementById(AtomicString("o2")));
+  HTMLOptionElement* o3 = DynamicTo<HTMLOptionElement>(
+      GetDocument().getElementById(AtomicString("o3")));
+  ASSERT_TRUE(o1);
+  ASSERT_TRUE(o2);
+  ASSERT_TRUE(o3);
+
+  EXPECT_FALSE(o1->Selected());
+  EXPECT_FALSE(o2->Selected());
+  EXPECT_FALSE(o3->Selected());
+
+  EXPECT_TRUE(
+      FillFormControls(*form_element, R"JSON({"select1": ["v1", "v3"]})JSON"));
+  EXPECT_TRUE(o1->Selected());
+  EXPECT_FALSE(o2->Selected());
+  EXPECT_TRUE(o3->Selected());
+
+  EXPECT_TRUE(
+      FillFormControls(*form_element, R"JSON({"select1": ["v2"]})JSON"));
+  EXPECT_FALSE(o1->Selected());
+  EXPECT_TRUE(o2->Selected());
+  EXPECT_FALSE(o3->Selected());
+
+  EXPECT_TRUE(FillFormControls(*form_element, R"JSON({"select1": []})JSON"));
+  EXPECT_FALSE(o1->Selected());
+  EXPECT_FALSE(o2->Selected());
+  EXPECT_FALSE(o3->Selected());
 }
 
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput) {
@@ -1958,6 +2098,10 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
       <input id=date name=date type=date>
       <input id=number name=number type=number>
       <input id=time name=time type=time>
+      <select id=select-multi name=select-multi multiple>
+        <option value=v1>Option 1</option>
+        <option value=v2>Option 2</option>
+      </select>
     </form>
   )HTML");
 
@@ -1970,6 +2114,11 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
       R"JSON({ "number": "error" })JSON",
       R"JSON({ "time": "25:00:00" })JSON",
       R"JSON({ "time": "20:20:39+00:00" })JSON",
+      R"JSON({ "select-multi": ["unknown"] })JSON",
+      R"JSON({ "select-multi": ["unknown", "v1"] })JSON",
+      R"JSON({ "select-multi": ["v1", "unknown"] })JSON",
+      R"JSON({ "select-multi": "v1" })JSON",
+      R"JSON({ "select-multi": ["v1", "v1"] })JSON",
   };
   for (auto json : inputs) {
     EXPECT_FALSE(FillFormControls(*form_element, json)) << json;
