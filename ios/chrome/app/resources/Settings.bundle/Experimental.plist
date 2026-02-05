@@ -97,11 +97,13 @@
 			<integer>0</integer>
 			<key>Values</key>
 			<array>
+				<integer>-1</integer>
 				<integer>10</integer>
 				<integer>3600</integer>
 			</array>
 			<key>Titles</key>
 			<array>
+				<string>Instant Trigger</string>
 				<string>10 Seconds</string>
 				<string>1 Hour</string>
 			</array>

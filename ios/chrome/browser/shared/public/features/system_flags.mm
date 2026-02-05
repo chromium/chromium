@@ -217,6 +217,10 @@ base::TimeDelta GetReturnToHomeSurfaceDuration() {
   if (duration == 0) {
     return base::Hours(4);
   }
+  if (duration == -1) {
+    // if set to -1 the duration will be instant.
+    return base::Seconds(0);
+  }
   return base::Seconds(duration);
 }
 

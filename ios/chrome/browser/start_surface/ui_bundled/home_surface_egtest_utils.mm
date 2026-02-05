@@ -12,7 +12,7 @@ NSString* const kHomeSurfaceDuration = @"HomeSurfaceDuration";
 }  // namespace
 
 void MakeHomeSurfaceOpenImmediately() {
-  [ChromeEarlGrey setUserDefaultsObject:@1 forKey:kHomeSurfaceDuration];
+  [ChromeEarlGrey setUserDefaultsObject:@-1 forKey:kHomeSurfaceDuration];
 }
 
 void ResetMakeHomeSurfaceOpenImmediately() {

@@ -72,7 +72,7 @@ const char kZeroSecondsThreshold[] = "0";
 
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
 
-  if ([self isRunningTest:@selector(FLAKY_testShowTabGroupInGridOnStart)] ||
+  if ([self isRunningTest:@selector(testShowTabGroupInGridOnStart)] ||
       [self isRunningTest:@selector
             (testDoNotShowTabGroupInGridOnStartInIncognitoMode)]) {
     config.features_enabled_and_params.push_back(
@@ -199,11 +199,16 @@ const char kZeroSecondsThreshold[] = "0";
 
 // Tests that the tab group in grid view is opened if Chrome is activated in the
 // right time interval.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testShowTabGroupInGridOnStart {
+- (void)testShowTabGroupInGridOnStart {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Disabled on iPad, due to stage manager the app is not backgrounded
+    // properly.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+  // This test needs to be in the interval between the
+  // ShowTabGroupInGridInactiveDurationInSeconds and the HomeSurfaceDuration.
+  ResetMakeHomeSurfaceOpenImmediately();
+
   [ChromeEarlGreyUI openTabGrid];
 
   // Create a tab group with an item at 0.
@@ -228,6 +233,11 @@ const char kZeroSecondsThreshold[] = "0";
 // Tests that the tab group in grid view is not opened if Chrome is not
 // activated in the right time interval.
 - (void)testDoNotShowTabGroupInGridOnStart {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Disabled on iPad, due to stage manager the app is not backgrounded
+    // properly.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
   [ChromeEarlGreyUI openTabGrid];
 
   // Create a tab group with an item at 0.
@@ -252,6 +262,15 @@ const char kZeroSecondsThreshold[] = "0";
 // Tests that the tab group in grid view is not opened if Chrome is activated in
 // the right time interval but in Incognito mode.
 - (void)testDoNotShowTabGroupInGridOnStartInIncognitoMode {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Disabled on iPad, due to stage manager the app is not backgrounded
+    // properly.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+  // This test needs to be in the interval between the
+  // ShowTabGroupInGridInactiveDurationInSeconds and the HomeSurfaceDuration.
+  ResetMakeHomeSurfaceOpenImmediately();
+
   [ChromeEarlGrey openNewIncognitoTab];
 
   [ChromeEarlGreyUI openTabGrid];
@@ -278,6 +297,11 @@ const char kZeroSecondsThreshold[] = "0";
 // Tests that the created NTP is ungrouped, even if a group was active when
 // backgrounded.
 - (void)testOpenNTPOutsideTheActiveGroupAfterFourHoursInBackground {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Disabled on iPad, due to stage manager the app is not backgrounded
+    // properly.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
   [self loadFirstTabURL];
 
   [ChromeEarlGreyUI openTabGrid];
