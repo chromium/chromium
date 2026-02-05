@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/metrics.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/pinned_site_action.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
@@ -105,13 +106,11 @@ NSAttributedString* GetDisclaimerForModificationForm() {
   switch (_action) {
     case PinnedSiteAction::kCreate:
       titleId = IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_TITLE;
-      doneButtonTextId =
-          IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_APPLY_BUTTON;
+      doneButtonTextId = IDS_ADD;
       break;
     case PinnedSiteAction::kModify:
       titleId = IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_TITLE;
-      doneButtonTextId =
-          IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_APPLY_BUTTON;
+      doneButtonTextId = IDS_SAVE;
       break;
   }
   self.navigationItem.title = l10n_util::GetNSString(titleId);

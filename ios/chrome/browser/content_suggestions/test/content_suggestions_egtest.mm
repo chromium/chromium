@@ -38,6 +38,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
@@ -48,6 +49,8 @@
 #import "ui/strings/grit/ui_strings.h"
 
 namespace {
+
+using ::chrome_test_util::ButtonWithAccessibilityLabel;
 
 const char kPageLoadedString[] = "Page loaded!";
 const char kPageURL[] = "/test-page.html";
@@ -104,6 +107,20 @@ void TapMagicStackEditButton() {
       onElementWithMatcher:magicStackScrollView] performAction:grey_tap()];
 }
 
+// Scrolls the most visited tiles all the way to the right.
+void ScrollMostVisitedToRightEdge() {
+  id<GREYMatcher> mostVisitedCollectionView = grey_allOf(
+      grey_kindOfClassName(@"MostVisitedTilesCollectionView"),
+      grey_ancestor(
+          grey_accessibilityID(kContentSuggestionsCollectionIdentifier)),
+      nil);
+  // Avoid that the user starts scrolling from the rightmost 16px of the
+  // collection view.
+  [[EarlGrey selectElementWithMatcher:mostVisitedCollectionView]
+      performAction:grey_scrollToContentEdgeWithStartPoint(
+                        kGREYContentEdgeRight, 0.95, 0.5)];
+}
+
 }  // namespace
 
 #pragma mark - TestCase
@@ -120,6 +137,7 @@ void TapMagicStackEditButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
+  config.features_enabled.push_back(kMostVisitedTilesCustomizationIOS);
   config.features_disabled.push_back(kIOSExpandedSetupList);
   config.additional_args.push_back("--test-ios-module-ranker=mvt");
   if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
@@ -222,10 +240,6 @@ void TapMagicStackEditButton() {
 // Tests the "Remove" action of the Most Visited context menu, and the "Undo"
 // action.
 - (void)testMostVisitedRemoveUndo {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kMostVisitedTilesCustomizationIOS);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   [self setupMostVisitedTileLongPress];
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);
@@ -440,6 +454,171 @@ void TapMagicStackEditButton() {
                                             set_up_list::kSetUpListContainerID)]
         assertWithMatcher:grey_notVisible()];
   }
+}
+
+// Tests pinning and unpinning a Most Visited tile using the context menu.
+- (void)testMostVisitedPinUnpinWithContextMenu {
+  [self setupMostVisitedTileLongPress];
+  // Pin the site.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE)]
+      performAction:grey_tap()];
+  // Verify it is pinned (check accessibility label,) snackbar is displayed, and
+  // dismiss the snackbar.
+  NSString* pinnedLabel = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
+      base::UTF8ToUTF16(std::string_view(kPageTitle)));
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      performAction:grey_tap()];
+  // Long press again.
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabel)]
+      performAction:grey_longPress()];
+  // Tap on unpin.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_CONTENT_SUGGESTIONS_UNPIN_SITE)]
+      performAction:grey_tap()];
+  // Verify it is unpinned (accessibility label is just the title) and the
+  // snackbar is visible.
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
+                                          base::SysUTF8ToNSString(kPageTitle))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the user could use the "Add site" button to pin a site.
+- (void)testMostVisitedPinWithAddSiteButton {
+  NSString* placeholderTextName =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME);
+  NSString* placeholderTextURL = @"https://example.com";
+  NSString* firstTitle = @"First Site";
+  NSString* firstUrl = @"https://first_url.com";
+  ScrollMostVisitedToRightEdge();
+  id<GREYMatcher> addSiteButton = grey_accessibilityID([NSString
+      stringWithFormat:
+          @"%@-1",
+          kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix]);
+  [[EarlGrey selectElementWithMatcher:addSiteButton] performAction:grey_tap()];
+  // Verify form elements.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::HeaderWithAccessibilityLabelId(
+              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Fill the "Name" field.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(placeholderTextName),
+                                   grey_kindOfClassName(@"UITextField"), nil)]
+      performAction:grey_replaceText(firstTitle)];
+  // Fill the "URL" field.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(placeholderTextURL),
+                                   grey_kindOfClassName(@"UITextField"), nil)]
+      performAction:grey_replaceText(firstUrl)];
+  // Tap "Add".
+  id<GREYMatcher> saveButton = grey_allOf(
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+      grey_accessibilityLabel(l10n_util::GetNSString(IDS_ADD)),
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+  // Verify that the site is pinned and snackbar is displayed. Dismiss the
+  // snackbar.
+  NSString* pinnedLabel = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(firstTitle));
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      performAction:grey_tap()];
+  // Verify that an error message is displayed for invalid input.
+  NSString* secondTitle = @"Second Site";
+  NSString* secondUrl = @"https://second_url.com";
+  ScrollMostVisitedToRightEdge();
+  [[EarlGrey selectElementWithMatcher:addSiteButton] performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(placeholderTextName),
+                                   grey_kindOfClassName(@"UITextField"), nil)]
+      performAction:grey_replaceText(secondTitle)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(placeholderTextURL),
+                                   grey_kindOfClassName(@"UITextField"), nil)]
+      performAction:grey_replaceText(firstUrl)];
+  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:saveButton] assertWithMatcher:grey_nil()];
+  // Verify that the message disappears and the "Add" button is interactable
+  // again after input is changed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityValue(firstUrl),
+                                          grey_kindOfClassName(@"UITextField"),
+                                          nil)]
+      performAction:grey_replaceText(secondUrl)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED))]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+}
+
+// Tests the "Edit" action of the Most Visited context menu.
+- (void)testMostVisitedEditPinnedSite {
+  [self setupMostVisitedTileLongPress];
+  // Pin the site and dismiss the snackbar.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      performAction:grey_tap()];
+  // Long press again and tap on "Edit Site".
+  NSString* pinnedLabel = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
+      base::UTF8ToUTF16(std::string_view(kPageTitle)));
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(pinnedLabel)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_EDIT_PINNED_SITE)]
+      performAction:grey_tap()];
+  // Check the form is displayed with the correct title and footer.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::HeaderWithAccessibilityLabelId(
+              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Check the "Name" field and type a new value.
+  NSString* newTitle = @"New Title";
+  [[EarlGrey selectElementWithMatcher:grey_textFieldValue(
+                                          base::SysUTF8ToNSString(kPageTitle))]
+      performAction:grey_replaceText(newTitle)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarSaveButton()]
+      performAction:grey_tap()];
+  // Verify that the title has changed.
+  NSString* newPinnedTitle = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(newTitle));
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabel(newPinnedTitle)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Test utils

@@ -27,6 +27,7 @@ source_set("ui") {
   ]
   deps = [
     "//components/favicon_base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/magic_stack/public:utils",
