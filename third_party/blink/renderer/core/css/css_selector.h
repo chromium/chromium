@@ -622,8 +622,13 @@ class CORE_EXPORT CSSSelector {
     bits_.set<IsLastInComplexSelectorField>(is_last);
   }
 
-  // https://drafts.csswg.org/selectors/#compound
-  bool IsCompound() const;
+  // This checks a little bit more than the definition in
+  // https://www.w3.org/TR/selectors-4/#compound .  It checks that:
+  // (a) the selector is compound, that is, that it doesn't have
+  //     combinators or pseudo-elements, and
+  // (b) any pseudo-classes that contain selectors as arguments are also
+  //     compound.
+  bool IsFullyCompound() const;
 
   enum LinkMatchMask {
     kMatchLink = 1,

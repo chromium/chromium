@@ -62,8 +62,9 @@ WebString CanonicalizeSelector(WebString web_selector,
   if (restriction == kWebSelectorTypeCompound) {
     for (const CSSSelector* selector = selector_list->First(); selector;
          selector = selector_list->Next(*selector)) {
-      if (!selector->IsCompound())
+      if (!selector->IsFullyCompound()) {
         return {};
+      }
     }
   }
   return selector_list->SelectorsText();

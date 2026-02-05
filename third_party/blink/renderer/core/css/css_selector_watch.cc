@@ -145,7 +145,7 @@ void CSSSelectorWatch::UpdateSelectorMatches(
 static bool AllCompound(const StyleRule* style_rule) {
   for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    if (!selector->IsCompound()) {
+    if (!selector->IsFullyCompound()) {
       return false;
     }
   }
