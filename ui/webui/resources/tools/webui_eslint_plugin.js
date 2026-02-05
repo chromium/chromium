@@ -33,6 +33,8 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
       recommended: 'error',
     },
     messages: {
+      missingSuperCalls:
+          'Missing superclass calls for lifecycle method(s) {{lifecycleMethods}} in class {{className}}.',
       missingStaticIsGetter:
           'Missing \'static get is() {...}\' for web component class {{className}}',
       missingTagNameRegistration:
@@ -72,6 +74,13 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
 
         // The DOM name of the corresponding custom element.
         this.domName = '';
+
+        // Set of defined lifecycle methods that require a call to the same
+        // method of the super class.
+        this.superCallRequired = new Set();
+
+        // Set of calls to superclass lifecycle methods.
+        this.superCallCalled = new Set();
       }
 
       visitClassDeclaration(node) {
@@ -179,7 +188,36 @@ interface HTMLElementTagNameMap {
           },
         });
       }
+
+      runMissingSuperCallsCheck() {
+        if (!this.isLitElement || !this.node) {
+          return;
+        }
+
+        const missing = this.superCallRequired.difference(this.superCallCalled);
+        if (missing.size === 0) {
+          return;
+        }
+
+        context.report({
+          node: this.node,
+          messageId: 'missingSuperCalls',
+          data: {
+            className: this.node.id.name,
+            lifecycleMethods: Array.from(missing).join(', '),
+          },
+        });
+      }
     }
+
+    const SUPER_CALL_REQUIRED_REGEX =
+        '^connectedCallback|disconnectedCallback|willUpdate|updated$';
+    const LIFECYCLE_METHOD_DEFINITION_SELECTOR =
+        `ClassDeclaration > ClassBody > MethodDefinition[key.name=/${
+            SUPER_CALL_REQUIRED_REGEX}/]`;
+    const LIFECYCLE_METHOD_SUPER_CALL_SELECTOR = `${
+        LIFECYCLE_METHOD_DEFINITION_SELECTOR} > FunctionExpression > BlockStatement > ExpressionStatement > CallExpression > MemberExpression[object.type="Super"][property.name=/${
+        SUPER_CALL_REQUIRED_REGEX}/]`;
 
     // Info about all the class definitions encountered in this file.
     const classInfos = new Map();  // Map<string, ClassInfo>
@@ -209,12 +247,27 @@ interface HTMLElementTagNameMap {
 
         currentClassInfo.visitStaticGetIs(node);
       },
+      [LIFECYCLE_METHOD_DEFINITION_SELECTOR](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.superCallRequired.add(node.key.name);
+      },
+      [LIFECYCLE_METHOD_SUPER_CALL_SELECTOR](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.superCallCalled.add(node.property.name);
+      },
       'ClassDeclaration:exit'(node) {
         if (!hasLitImport) {
           return;
         }
 
         currentClassInfo.runMissingStaticIsGetterCheck();
+        currentClassInfo.runMissingSuperCallsCheck();
       },
       ['Program > TSModuleDeclaration[kind=global] > TSModuleBlock > TSInterfaceDeclaration[id.name="HTMLElementTagNameMap"] > TSInterfaceBody > TSPropertySignature'](
           node) {
