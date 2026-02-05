@@ -21,7 +21,7 @@ extensions_api_schema_files_ = [
   "management.json",
   "metrics_private.json",
   "offscreen.webidl",
-  "power.idl",
+  "power.webidl",
   "protocol_handlers.webidl",
   "runtime.json",
   "storage.json",
