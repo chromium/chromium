@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,6 +65,14 @@ public class StorageCollectionSynchronizer implements Destroyable {
         StorageCollectionSynchronizerJni.get().saveTab(mNativePtr, tab);
     }
 
+    /**
+     * Saves a tab group payload to storage through the observer associated with the synchronizer.
+     */
+    public void saveTabGroupPayload(Token groupId) {
+        assert mNativePtr != 0;
+        StorageCollectionSynchronizerJni.get().saveTabGroupPayload(mNativePtr, groupId);
+    }
+
     @NativeMethods
     interface Natives {
         long init(
@@ -75,6 +84,10 @@ public class StorageCollectionSynchronizer implements Destroyable {
 
         void saveTab(
                 long nativeStorageCollectionSynchronizerAndroid, @JniType("TabAndroid*") Tab tab);
+
+        void saveTabGroupPayload(
+                long nativeStorageCollectionSynchronizerAndroid,
+                @JniType("base::Token") Token groupId);
 
         void destroy(long nativeStorageCollectionSynchronizerAndroid);
 

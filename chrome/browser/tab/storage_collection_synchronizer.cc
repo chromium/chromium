@@ -12,6 +12,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
@@ -54,6 +55,15 @@ void StorageCollectionSynchronizer::FullSave() {
 void StorageCollectionSynchronizer::SaveTab(TabInterface* tab) {
   TabHandle tab_handle = tab->GetHandle();
   observer_->SaveChildNodeOnly(tab_handle);
+}
+
+void StorageCollectionSynchronizer::SaveTabGroupPayload(
+    tab_groups::TabGroupId group_id) {
+  TabCollection* group_collection =
+      collection_->GetTabGroupCollection(group_id);
+  if (group_collection) {
+    observer_->SaveChildNodeOnly(group_collection->GetHandle());
+  }
 }
 
 void StorageCollectionSynchronizer::SetCollectionObserver(

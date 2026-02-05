@@ -102,7 +102,7 @@ public class ModelTrackingOrchestrator {
 
     private final String mWindowTag;
     private final TabModelSelector mTabModelSelector;
-    private final Map<Token, CollectionSaveForwarder> mGroupForwarderMap = new HashMap<>();
+    private final Map<Token, Boolean> mGroupIncognitoStatus = new HashMap<>();
     private final IncognitoTabModelObserver mIncognitoTabModelObserver =
             new IncognitoTabModelObserver() {
                 @Override
@@ -137,22 +137,14 @@ public class ModelTrackingOrchestrator {
                 public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                     Token groupId = destinationTab.getTabGroupId();
                     assert groupId != null;
-
-                    TabStripCollection collection = filter.getTabModel().getTabStripCollection();
-                    if (collection == null) return;
-
-                    CollectionSaveForwarder forwarder =
-                            CollectionSaveForwarder.createForTabGroup(
-                                    destinationTab.getProfile(), groupId, collection);
-                    mGroupForwarderMap.put(groupId, forwarder);
+                    mGroupIncognitoStatus.put(groupId, filter.getTabModel().isOffTheRecord());
                 }
 
                 @Override
                 public void didRemoveTabGroup(
                         int oldRootId, @Nullable Token oldTabGroupId, int removalReason) {
                     if (oldTabGroupId == null) return;
-                    CollectionSaveForwarder forwarder = mGroupForwarderMap.remove(oldTabGroupId);
-                    if (forwarder != null) forwarder.destroy();
+                    mGroupIncognitoStatus.remove(oldTabGroupId);
                 }
 
                 @Override
@@ -258,10 +250,7 @@ public class ModelTrackingOrchestrator {
             itm.removeIncognitoObserver(mIncognitoTabModelObserver);
         }
 
-        for (CollectionSaveForwarder forwarder : mGroupForwarderMap.values()) {
-            forwarder.destroy();
-        }
-        mGroupForwarderMap.clear();
+        mGroupIncognitoStatus.clear();
 
         for (boolean incognito : new boolean[] {false, true}) {
             TabGroupModelFilter filter = getFilter(incognito);
@@ -340,9 +329,15 @@ public class ModelTrackingOrchestrator {
     }
 
     private void saveTabGroupPayload(Token tabGroupId) {
-        CollectionSaveForwarder forwarder = mGroupForwarderMap.get(tabGroupId);
-        if (forwarder == null) return;
-        forwarder.savePayload();
+        Boolean isIncognito = mGroupIncognitoStatus.get(tabGroupId);
+        if (isIncognito == null) return;
+
+        StorageCollectionSynchronizer synchronizer =
+                isIncognito ? mIncognitoSynchronizer : mRegularSynchronizer;
+
+        if (synchronizer != null) {
+            synchronizer.saveTabGroupPayload(tabGroupId);
+        }
     }
 
     private void initActiveTabTracking(boolean incognito) {
@@ -362,16 +357,12 @@ public class ModelTrackingOrchestrator {
     }
 
     private void initVisualDataTracking(boolean incognito) {
-        var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
         TabGroupModelFilter filter = getFilter(incognito);
         assert filter != null;
 
         // Add forwarders for untracked groups.
         for (Token groupId : filter.getAllTabGroupIds()) {
-            CollectionSaveForwarder forwarder =
-                    CollectionSaveForwarder.createForTabGroup(
-                            profileAndCollection.profile, groupId, profileAndCollection.collection);
-            mGroupForwarderMap.put(groupId, forwarder);
+            mGroupIncognitoStatus.put(groupId, incognito);
         }
 
         filter.addTabGroupObserver(mVisualDataUpdateObserver);

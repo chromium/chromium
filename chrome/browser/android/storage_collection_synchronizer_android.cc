@@ -8,6 +8,7 @@
 #include "chrome/browser/android/collection_storage_observer_factory_android.h"
 #include "chrome/browser/android/storage_restore_orchestrator_factory_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/android/jni_conversion.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -33,6 +34,13 @@ void StorageCollectionSynchronizerAndroid::FullSave(JNIEnv* env) {
 void StorageCollectionSynchronizerAndroid::SaveTab(JNIEnv* env,
                                                    TabAndroid* tab) {
   synchronizer_.SaveTab(tab);
+}
+
+void StorageCollectionSynchronizerAndroid::SaveTabGroupPayload(
+    JNIEnv* env,
+    base::Token group_id) {
+  synchronizer_.SaveTabGroupPayload(
+      tab_groups::TabGroupId::FromRawToken(group_id));
 }
 
 void StorageCollectionSynchronizerAndroid::ConsumeRestoreOrchestratorFactory(

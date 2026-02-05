@@ -29,6 +29,7 @@ class StorageCollectionSynchronizerAndroid {
 
   void FullSave(JNIEnv* env);
   void SaveTab(JNIEnv* env, TabAndroid* tab);
+  void SaveTabGroupPayload(JNIEnv* env, base::Token group_id);
 
   void ConsumeRestoreOrchestratorFactory(
       JNIEnv* env,
