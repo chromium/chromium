@@ -56,8 +56,7 @@ suite('TopToolbarTest', () => {
   });
 
   test('handles new thread button click', async () => {
-    const newThreadButton = topToolbar.shadowRoot.querySelector<HTMLElement>(
-        'cr-icon-button[title="New Thread"]');
+    const newThreadButton = topToolbar.$.newThreadButton;
     assertTrue(!!newThreadButton);
     const newThreadEvent = eventToPromise('new-thread-click', topToolbar);
     newThreadButton.click();
@@ -65,16 +64,14 @@ suite('TopToolbarTest', () => {
   });
 
   test('handles thread history button click', async () => {
-    const historyButton = topToolbar.shadowRoot.querySelector<HTMLElement>(
-        'cr-icon-button[title="Thread History"]');
+    const historyButton = topToolbar.$.threadHistoryButton;
     assertTrue(!!historyButton);
     historyButton.click();
     await proxy.handler.whenCalled('showThreadHistory');
   });
 
   test('handles close button click', async () => {
-    const closeButton = topToolbar.shadowRoot.querySelector<HTMLElement>(
-        'cr-icon-button[title="Close"]');
+    const closeButton = topToolbar.$.closeButton;
     assertTrue(!!closeButton);
     closeButton.click();
     await proxy.handler.whenCalled('closeSidePanel');
