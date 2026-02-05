@@ -206,13 +206,13 @@ size_t TriggerThrottler::GetDailyQuotaForTrigger(
   size_t quota = 0;
   switch (trigger_type) {
     case TriggerType::SECURITY_INTERSTITIAL:
-    case TriggerType::GAIA_PASSWORD_REUSE:
     case TriggerType::APK_DOWNLOAD:
     case TriggerType::PHISHY_SITE_INTERACTION:
       return kUnlimitedTriggerQuota;
 
     case TriggerType::DEPRECATED_AD_POPUP:
     case TriggerType::DEPRECATED_AD_REDIRECT:
+    case TriggerType::GAIA_PASSWORD_REUSE:  // Will be deprecated.
       return 0;
 
     case TriggerType::AD_SAMPLE:
