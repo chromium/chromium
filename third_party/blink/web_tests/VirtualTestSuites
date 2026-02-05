@@ -4611,10 +4611,10 @@
     "args": [
       "--disable-features=ThirdPartyStoragePartitioning"
     ],
-    "expires": "Feb 4, 2026",
+    "expires": "Feb 4, 2027",
     "owners": [
       "arichiv@chromium.org",
-      "bingler@chromium.org"
+      "katabolism-finch@google.com"
     ]
   },
   "The threaded virtual suite tests with threaded compositing, which is the",
