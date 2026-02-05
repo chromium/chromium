@@ -29,6 +29,8 @@ struct DISPLAY_EXPORT VSyncParamsMac {
   bool display_times_valid = false;
   base::TimeTicks display_timebase;
   base::TimeDelta display_interval;
+
+  int64_t drawable_id;
 };
 
 // Object used to control the lifetime of callbacks from DisplayLinkMac.
@@ -46,10 +48,13 @@ class DISPLAY_EXPORT VSyncCallbackMac {
 
  private:
   friend class CADisplayLinkMac;
+  friend class CAMetalDisplayLinkMac;
   friend class CVDisplayLinkMac;
-  friend class ExternalDisplayLinkMac;
-  friend struct ObjCState;
   friend class DisplayLinkMacSharedState;
+  friend class ExternalDisplayLinkMac;
+  friend struct MetalObjCState;
+  friend struct ObjCState;
+
   friend class gpu::ImageTransportSurfaceOverlayMacTest;
 
   using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;
@@ -64,6 +69,31 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   Callback callback_for_displaylink_thread_;
 
   base::WeakPtrFactory<VSyncCallbackMac> weak_factory_{this};
+};
+
+class DISPLAY_EXPORT PresentionCallbackMac {
+ public:
+  using Callback = base::RepeatingCallback<void(int64_t, base::TimeTicks)>;
+  ~PresentionCallbackMac();
+
+  base::WeakPtr<PresentionCallbackMac> GetWeakPtr();
+
+ private:
+  friend class CAMetalDisplayLinkMac;
+  friend struct MetalObjCState;
+
+  using UnregisterCallback = base::OnceCallback<void(PresentionCallbackMac*)>;
+
+  explicit PresentionCallbackMac(UnregisterCallback unregister_callback,
+                                 Callback callback,
+                                 bool do_callback_on_ctor_thread);
+
+  // The callback to unregister `this` with its DisplayLinkMac.
+  UnregisterCallback unregister_callback_;
+
+  Callback callback_for_displaylink_thread_;
+
+  base::WeakPtrFactory<PresentionCallbackMac> weak_factory_{this};
 };
 
 class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
@@ -88,6 +118,9 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   virtual std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) = 0;
 
+  virtual std::unique_ptr<PresentionCallbackMac> RegisterPresentionCallback(
+      PresentionCallbackMac::Callback callback);
+
   // Get the panel/monitor refresh interval
   virtual base::TimeDelta GetRefreshInterval() const = 0;
   virtual void GetRefreshIntervalRange(base::TimeDelta& min_interval,
@@ -104,6 +137,7 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   friend class base::RefCounted<DisplayLinkMac>;
   friend class CVDisplayLinkMac;
   friend class CADisplayLinkMac;
+  friend class CAMetalDisplayLinkMac;
 
   virtual ~DisplayLinkMac() = default;
 
