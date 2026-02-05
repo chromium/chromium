@@ -227,7 +227,7 @@ function createRoutes(): SettingsRoutes {
   if (loadTimeData.getBoolean('enableYourSavedInfoSettingsPage')) {
     if (visibility.yourSavedInfo !== false) {
       r.YOUR_SAVED_INFO = r.BASIC.createSection(
-          '/yourSavedInfo', 'yourSavedInfo',
+          '/autofill', 'yourSavedInfo',
           loadTimeData.getString('autofillPageTitle'));
 
       r.PAYMENTS = r.YOUR_SAVED_INFO.createChild('/payments');

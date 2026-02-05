@@ -202,18 +202,6 @@ suite('SettingsMenu', function() {
     assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
   });
 
-  test('yourSavedInfoHiddenWhenFeatureDisabled', async function() {
-    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
-    resetRouterForTesting();
-    createSettingsMenu();
-    await flushTasks();
-
-    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-        'a[href=\'/yourSavedInfo\']');
-    assertTrue(!!entry);
-    assertFalse(isVisible(entry));
-  });
-
   test('yourSavedInfoMenuItemClick', async function() {
     loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
     resetRouterForTesting();
@@ -221,7 +209,7 @@ suite('SettingsMenu', function() {
     await flushTasks();
 
     const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-        'a[href=\'/yourSavedInfo\']');
+        'a[href=\'/autofill\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
@@ -235,7 +223,7 @@ suite('SettingsMenu', function() {
 
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
-    assertEquals('/yourSavedInfo', selector.selected.toString());
+    assertEquals('/autofill', selector.selected.toString());
     assertEquals(
         routes.YOUR_SAVED_INFO, Router.getInstance().getCurrentRoute());
   });

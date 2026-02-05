@@ -56,6 +56,6 @@ suite('SettingsMenuInteractiveUITest', () => {
     createMenu();
     settingsMenu.focusFirstItem();
     assertEquals(
-        settingsMenu.$.yourSavedInfo, settingsMenu.shadowRoot!.activeElement);
+        settingsMenu.$.autofill, settingsMenu.shadowRoot!.activeElement);
   });
 });

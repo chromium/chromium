@@ -90,18 +90,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         (!this.pageVisibility_ || this.pageVisibility_.ai !== false);
   }
 
-  private showYourSavedInfoPageMenuItem_(): boolean {
-    return this.enableYourSavedInfoSettingsPage_ &&
-        (!this.pageVisibility_ ||
-          this.pageVisibility_.yourSavedInfo !== false);
-  }
-
-  private showAutofillPageMenuItem_(): boolean {
-    return !this.enableYourSavedInfoSettingsPage_ &&
-        (!this.pageVisibility_ ||
-          this.pageVisibility_.autofill !== false);
-  }
-
   override currentRouteChanged(newRoute: Route) {
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
@@ -161,9 +149,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private onAutofillClick_() {
+    const metricName = this.enableYourSavedInfoSettingsPage_ ?
+        'Autofill.YourSavedInfoSettingsPage.VisitReferrer' :
+        'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer';
     this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
-        'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer',
-        AutofillSettingsReferrer.SETTINGS_MENU);
+        metricName, AutofillSettingsReferrer.SETTINGS_MENU);
   }
 
   private onYourSavedInfoClick_() {

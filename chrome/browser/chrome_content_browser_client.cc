@@ -7052,16 +7052,14 @@ bool ChromeContentBrowserClient::HandleWebUI(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 
-  // Rewrite chrome://settings/autofill and chrome://settings/enhancedAutofill
-  // to chrome://settings/yourSavedInfo.
+  // Rewrite chrome://settings/enhancedAutofill to chrome://settings/autofill.
   if (url->SchemeIs(content::kChromeUIScheme) &&
       url->GetHost() == chrome::kChromeUISettingsHost &&
-      (url->GetPath() == chrome::kChromeUIAutofillPath ||
-       url->GetPath() == chrome::kChromeUIAutofillAiPath) &&
+       url->GetPath() == chrome::kChromeUIAutofillAiPath &&
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPage)) {
     GURL::Replacements replacements;
-    replacements.SetPathStr(chrome::kChromeUIYourSavedInfoPath);
+    replacements.SetPathStr(chrome::kChromeUIAutofillPath);
     *url = url->ReplaceComponents(replacements);
   }
 
