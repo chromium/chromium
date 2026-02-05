@@ -2538,6 +2538,10 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        retry_invalid_shards = True,
+    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -2609,6 +2613,10 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        retry_invalid_shards = True,
     ),
     gn_args = gn_args.config(
         configs = [
@@ -2691,6 +2699,10 @@ ci.builder(
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        retry_invalid_shards = True,
+    ),
     gn_args = gn_args.config(
         configs = [
             "chromeos_with_codecs",
@@ -2766,6 +2778,10 @@ ci.builder(
             config = "base_config",
         ),
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        retry_invalid_shards = True,
+    ),
     gn_args = gn_args.config(
         configs = [
             "android_builder",
@@ -2840,6 +2856,10 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        retry_invalid_shards = True,
     ),
     gn_args = gn_args.config(
         configs = [

@@ -51,6 +51,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "infra/config/generated/builders/ci/android-x64-treesinviz-enabled-rel/targets"
     }
   },

@@ -44,6 +44,8 @@
           "group": "tryserver.chromium.win"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "infra/config/generated/builders/ci/win-treesinviz-enabled-rel/targets"
     }
   },
