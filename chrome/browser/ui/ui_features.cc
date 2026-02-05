@@ -97,7 +97,6 @@ BASE_FEATURE(kShowTabGroupsMacSystemMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, base::FEATURE_ENABLED_BY_DEFAULT);
 
-
 BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -335,7 +334,13 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationIntentPicker,
                    &kPageActionsMigration,
                    "intent_picker",
-                   true);
+// TODOD(crbug.com/480035938): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+                   false
+#else
+                   true
+#endif
+);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationZoom,
