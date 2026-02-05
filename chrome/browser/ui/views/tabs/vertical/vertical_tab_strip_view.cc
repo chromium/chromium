@@ -143,7 +143,11 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
                                      pinned_container_bounds);
 
   if (pinned_container_bounds.height()) {
-    y += pinned_container_bounds.height() + region_vertical_padding;
+    y += pinned_container_bounds.height();
+    // Add padding only if there are pinned and unpinned tabs.
+    if (unpinned_preferred_height != 0) {
+      y += region_vertical_padding;
+    }
   }
 
   // Place the tabs separator if visible.
