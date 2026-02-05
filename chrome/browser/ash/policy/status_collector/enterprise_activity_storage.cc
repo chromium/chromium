@@ -57,12 +57,12 @@ EnterpriseActivityStorage::GetRedactedActivityPeriods(
     if (user_email.empty() || !reporting_users_set.contains(user_email)) {
       for (const auto& activity : activity_periods) {
         const auto& day_key = activity.start_timestamp();
-        if (unreported_activities.count(day_key) == 0) {
-          unreported_activities[day_key] = activity;
+        if (auto [it, inserted] = unreported_activities.try_emplace(day_key);
+            inserted) {
+          it->second = activity;
         } else {
           long duration = activity.end_timestamp() - activity.start_timestamp();
-          unreported_activities[day_key].set_end_timestamp(
-              unreported_activities[day_key].end_timestamp() + duration);
+          it->second.set_end_timestamp(it->second.end_timestamp() + duration);
         }
       }
     } else {
