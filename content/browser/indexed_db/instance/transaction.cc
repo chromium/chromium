@@ -236,17 +236,7 @@ Status Transaction::Abort(const DatabaseError& error) {
   preemptive_task_queue_ = {};
   pending_preemptive_events_ = 0;
   task_queue_ = {};
-
-  // Backing store resources (held via cursors) must be released
-  // before script callbacks are fired, as the script callbacks may
-  // release references and allow the backing store itself to be
-  // released, and order is critical.
-  CloseOpenCursors();
   backing_store_transaction_.reset();
-
-  // Transactions must also be marked as completed before the
-  // front-end is notified, as the transaction completion unblocks
-  // operations like closing connections.
   locks_receiver_.locks.clear();
   locks_receiver_.CancelLockRequest();
 
@@ -1279,6 +1269,9 @@ void Transaction::SetState(State state) {
         connection_->scheduling_priority();
   } else {
     scheduling_priority_at_last_state_change_ = std::nullopt;
+  }
+  if (!IsAcceptingRequests()) {
+    CloseOpenCursors();
   }
   NotifyOfIdbInternalsRelevantChange();
 }

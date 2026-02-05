@@ -109,6 +109,8 @@ void Cursor::Advance(uint32_t count,
 
   if (!transaction_) {
     Close();
+  } else {
+    CHECK(transaction_->IsAcceptingRequests());
   }
   if (closed_) {
     const DatabaseError error(CreateCursorClosedError());
@@ -195,6 +197,8 @@ void Cursor::Continue(IndexedDBKey key,
 
   if (!transaction_) {
     Close();
+  } else {
+    CHECK(transaction_->IsAcceptingRequests());
   }
   if (closed_) {
     const DatabaseError error(CreateCursorClosedError());
@@ -272,6 +276,8 @@ void Cursor::Prefetch(int number_to_fetch,
 
   if (!transaction_) {
     Close();
+  } else {
+    CHECK(transaction_->IsAcceptingRequests());
   }
   if (closed_) {
     const DatabaseError error(CreateCursorClosedError());
@@ -432,6 +438,7 @@ void Cursor::Close() {
   TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
   TRACE_EVENT0("IndexedDB", "Cursor::Close");
   closed_ = true;
+  ptr_factory_.InvalidateWeakPtrs();
   cursor_.reset();
   if (transaction_) {
     transaction_->UnregisterOpenCursor(this);
