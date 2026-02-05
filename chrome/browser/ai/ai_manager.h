@@ -150,11 +150,20 @@ class AIManager : public base::SupportsUserData::Data,
             typename ClientRemoteInterface,
             typename CreateOptionsPtrType>
   void OnSessionCreated(
-      AIContextBoundObjectSet& context_bound_object_set,
       CreateOptionsPtrType options,
       std::optional<optimization_guide::MultimodalMessage> initial_request,
       mojo::PendingRemote<ClientRemoteInterface> client,
       std::unique_ptr<optimization_guide::OnDeviceSession> session);
+
+  template <typename ContextBoundObjectType,
+            typename ContextBoundObjectReceiverInterface,
+            typename ClientRemoteInterface,
+            typename CreateOptionsPtrType>
+  void OnGotExecutionInputSizeInTokens(
+      CreateOptionsPtrType options,
+      mojo::Remote<ClientRemoteInterface> client_remote,
+      std::unique_ptr<optimization_guide::OnDeviceSession> session,
+      std::optional<uint32_t> result);
 
   // Eagerly initializes a broad set of features.
   void MaybeTryEagerInit();
