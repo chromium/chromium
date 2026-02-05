@@ -91,6 +91,11 @@ class AutofillProfileSyncPerfTest : public SyncTest {
   AutofillProfileSyncPerfTest& operator=(const AutofillProfileSyncPerfTest&) =
       delete;
 
+  SetupSyncMode GetSetupSyncMode() const override {
+    // The AUTOFILL_PROFILE data type is not supported in transport mode.
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   // Adds |num_profiles| new autofill profiles to the sync profile |profile|.
   void AddProfiles(int profile, int num_profiles);
 
@@ -198,6 +203,11 @@ class AutocompleteSyncPerfTest : public SyncTest {
 
   AutocompleteSyncPerfTest(const AutocompleteSyncPerfTest&) = delete;
   AutocompleteSyncPerfTest& operator=(const AutocompleteSyncPerfTest&) = delete;
+
+  SetupSyncMode GetSetupSyncMode() const override {
+    // The AUTOFILL_PROFILE data type is not supported in transport mode.
+    return SetupSyncMode::kSyncTheFeature;
+  }
 
   // Adds |num_keys| new autocomplete keys to the sync profile |profile|.
   void AddKeys(int profile, int num_keys);
