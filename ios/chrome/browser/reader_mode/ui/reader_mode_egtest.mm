@@ -147,6 +147,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
 
+  // The user should be signed out at the beginning of Reading Mode tests.
+  [SigninEarlGrey verifySignedOut];
+
   self.fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:self.fakeIdentity
                  withCapabilities:@{
@@ -175,12 +178,16 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)] ||
       [self isRunningTest:@selector
             (FLAKY_testSampleContextualChipVisibleInReaderMode)] ||
-      [self isRunningTest:@selector
-            (FLAKY_testReaderModeChipHiddenInReaderMode)]) {
+      [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
     config.features_enabled_and_params.push_back({kPageActionMenu, {}});
     config.features_enabled_and_params.push_back(
         {kProactiveSuggestionsFramework, {}});
   } else {
+    // Force an app restart before any tests that require the Gemini kill
+    // switch. This is required to ensure that
+    // BWGServiceFactory::BuildBwgService is re-evaluated for the new flag
+    // configuration, otherwise a cached BWGService instance may be used.
+    config.relaunch_policy = ForceRelaunchByCleanShutdown;
     config.features_disabled.push_back(kPageActionMenu);
     config.features_enabled_and_params.push_back({kGeminiKillSwitch, {}});
   }
@@ -205,8 +212,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   }
   if ([self isRunningTest:@selector
             (FLAKY_testSampleContextualChipVisibleInReaderMode)] ||
-      [self isRunningTest:@selector
-            (FLAKY_testReaderModeChipHiddenInReaderMode)]) {
+      [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
     config.features_enabled_and_params.push_back(
         {kProactiveSuggestionsFramework, {}});
     config.features_enabled_and_params.push_back({kAskGeminiChip, {}});
@@ -592,8 +598,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 }
 
 // Tests that font family can be changed from the options view.
-// TODO(crbug.com/481633359): Deflake this test.
-- (void)FLAKY_testChangeReaderModeFontFamilyFromOptionsView {
+- (void)testChangeReaderModeFontFamilyFromOptionsView {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
   // Open Reader Mode UI.
@@ -960,8 +965,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
 // Tests that the Reader mode contextual chip is hidden inside Reader mode if
 // kAskGeminiChip is enabled.
-// TODO(crbug.com/481633359): Deflake this test.
-- (void)FLAKY_testReaderModeChipHiddenInReaderMode {
+- (void)testReaderModeChipHiddenInReaderMode {
   [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
