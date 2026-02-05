@@ -15,6 +15,7 @@ AddNewAddressProfileTest.*
 AppInfoDialogBrowserTest.*
 AppMenuBrowserTest*.InvokeUi_*
 AskGoogleForSuggestionsDialogTest.*
+*AutofillAiImportDataBubbleViewBrowsertest.*
 BatchUploadDialogViewPixelTest.*
 BookmarkAccountStorageMoveDialogPixelTest*
 BookmarkBubbleViewBrowserTest.*
@@ -139,7 +140,6 @@ RelaunchRequiredDialogViewDialogTest.*
 ReloadButtonWebViewPixelBrowserTest.*
 ReopenTabPromoControllerDialogBrowserTest.*
 SafetyTipPageInfoBubbleViewDialogTest.*
-*SaveOrUpdateAutofillAiDataBubbleViewBrowsertest*
 ScreenCaptureNotificationUiBrowserTest.*
 SearchEngineChoiceUIPixelTest.*
 SecurePaymentConfirmationDialogViewTest.InvokeUi_*
