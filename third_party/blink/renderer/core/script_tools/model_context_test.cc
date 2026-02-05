@@ -51,7 +51,7 @@ TEST_F(ModelContextTest, ExecuteTool) {
   LoadURL("https://example.com/");
 
   main_resource.Complete(R"(
-<body>
+    <body>
     <script>
     async function echo(obj) {
       return obj.text;
@@ -72,9 +72,8 @@ TEST_F(ModelContextTest, ExecuteTool) {
           required: ["text"]
       },
     });
-  </script>
-  </body>
-)");
+    </script>
+  )");
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -102,12 +101,11 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
   LoadURL("https://example.com/");
 
   main_resource.Complete(R"(
-<body>
+    <body>
     <script>
     async function echo(obj) {
       return obj;
     }
-
     navigator.modelContext.registerTool({
       execute: echo,
       name: "echo",
@@ -126,9 +124,8 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
         readOnlyHint: "true"
       },
     });
-  </script>
-</body>
-)");
+    </script>
+  )");
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -157,11 +154,9 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Navigation) {
                              "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(R"(
-    <body>
-      <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type="text" name="query">
-      </form>
-    </body>
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type="text" name="query">
+    </form>
   )");
 
   auto* model_context =
@@ -185,11 +180,9 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(R"(
-    <body>
-      <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type="text" name="query">
-      </form>
-    </body>
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type="text" name="query">
+    </form>
   )");
 
   auto* model_context =
@@ -217,20 +210,18 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
   ScriptState::Scope script_scope(
       ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
-    <body>
-      <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type=text name=query>
-        <button type=submit>Submit</button>
-      </form>
-      <script>
-        document.querySelector('form').addEventListener('submit', e => {
-          window.submit_event_fired = true;
-          window.input_value = document.querySelector('input').value;
-          e.preventDefault();
-          e.respondWith(Promise.resolve("result value"));
-        });
-      </script>
-    </body>
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      document.querySelector('form').addEventListener('submit', e => {
+        window.submit_event_fired = true;
+        window.input_value = document.querySelector('input').value;
+        e.preventDefault();
+        e.respondWith(Promise.resolve("result value"));
+      });
+    </script>
   )");
 
   auto* model_context =
@@ -262,19 +253,17 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
   ScriptState::Scope script_scope(
       ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
-    <body>
-      <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type=text name=query>
-        <button type=submit>Submit</button>
-      </form>
-      <script>
-        document.querySelector('form').addEventListener('submit', e => {
-          window.submit_event_fired = true;
-          e.preventDefault();
-          e.respondWith(Promise.reject("rejection"));
-        });
-      </script>
-    </body>
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      document.querySelector('form').addEventListener('submit', e => {
+        window.submit_event_fired = true;
+        e.preventDefault();
+        e.respondWith(Promise.reject("rejection"));
+      });
+    </script>
   )");
 
   auto* model_context =
@@ -308,22 +297,20 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoPreventDefault) {
   ScriptState::Scope script_scope(
       ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
-    <body>
-      <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type=text name=query>
-        <button type=submit>Submit</button>
-      </form>
-      <script>
-        window.respond_with_error = "";
-        document.querySelector('form').addEventListener('submit', e => {
-          try {
-            e.respondWith(Promise.resolve("result"));
-          } catch (err) {
-            window.respond_with_error = err.name;
-          }
-        });
-      </script>
-    </body>
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      window.respond_with_error = "";
+      document.querySelector('form').addEventListener('submit', e => {
+        try {
+          e.respondWith(Promise.resolve("result"));
+        } catch (err) {
+          window.respond_with_error = err.name;
+        }
+      });
+    </script>
   )");
 
   auto* model_context =
@@ -355,24 +342,22 @@ TEST_F(ModelContextTest, ManualSubmit_RespondWithThrows) {
   ScriptState::Scope script_scope(
       ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
-    <body>
-      <form>
-        <input type=text name=query>
-      </form>
-      <script>
-        window.agent_invoked = undefined;
-        window.error_name = "";
-        document.querySelector('form').addEventListener('submit', e => {
-          window.agent_invoked = e.agentInvoked;
-          try {
-            e.respondWith(Promise.resolve("result"));
-          } catch (err) {
-            window.error_name = err.name;
-          }
-          e.preventDefault();
-        });
-      </script>
-    </body>
+    <form>
+      <input type=text name=query>
+    </form>
+    <script>
+      window.agent_invoked = undefined;
+      window.error_name = "";
+      document.querySelector('form').addEventListener('submit', e => {
+        window.agent_invoked = e.agentInvoked;
+        try {
+          e.respondWith(Promise.resolve("result"));
+        } catch (err) {
+          window.error_name = err.name;
+        }
+        e.preventDefault();
+      });
+    </script>
   )");
 
   MainFrame().ExecuteScript(
@@ -389,19 +374,17 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_LateRespondWithThrows) {
   ScriptState::Scope script_scope(
       ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
-    <body>
-      <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type=text name=query>
-      </form>
-      <script>
-        window.saved_event = null;
-        document.querySelector('form').addEventListener('submit', e => {
-          window.saved_event = e;
-          e.preventDefault();
-          e.respondWith(Promise.resolve("result"));
-        });
-      </script>
-    </body>
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+    </form>
+    <script>
+      window.saved_event = null;
+      document.querySelector('form').addEventListener('submit', e => {
+        window.saved_event = e;
+        e.preventDefault();
+        e.respondWith(Promise.resolve("result"));
+      });
+    </script>
   )");
 
   auto* model_context =
@@ -437,32 +420,30 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PseudoClasses) {
   ScriptState::Scope script_scope(
       ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
-    <body>
-      <style>
-        form:tool-form-active { background-color: rgb(0, 255, 0); }
-        button:tool-submit-active { color: rgb(255, 0, 0); }
-      </style>
-      <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type=text name=query>
-        <button type=submit>Submit</button>
-      </form>
-      <script>
-        document.querySelector('form').addEventListener('submit', e => {
-          const form = document.querySelector('form');
-          const button = document.querySelector('button');
-          const input = document.querySelector('input');
-          window.form_active = form.matches(':tool-form-active');
-          window.form_submit_active = form.matches(':tool-submit-active');
-          window.button_active = button.matches(':tool-submit-active');
-          window.input_form_active = input.matches(':tool-form-active');
-          window.input_submit_active = input.matches(':tool-submit-active');
-          window.form_bg = getComputedStyle(form).backgroundColor;
-          window.button_color = getComputedStyle(button).color;
-          e.preventDefault();
-          e.respondWith(Promise.resolve("result"));
-        });
-      </script>
-    </body>
+    <style>
+      form:tool-form-active { background-color: rgb(0, 255, 0); }
+      button:tool-submit-active { color: rgb(255, 0, 0); }
+    </style>
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      document.querySelector('form').addEventListener('submit', e => {
+        const form = document.querySelector('form');
+        const button = document.querySelector('button');
+        const input = document.querySelector('input');
+        window.form_active = form.matches(':tool-form-active');
+        window.form_submit_active = form.matches(':tool-submit-active');
+        window.button_active = button.matches(':tool-submit-active');
+        window.input_form_active = input.matches(':tool-form-active');
+        window.input_submit_active = input.matches(':tool-submit-active');
+        window.form_bg = getComputedStyle(form).backgroundColor;
+        window.button_color = getComputedStyle(button).color;
+        e.preventDefault();
+        e.respondWith(Promise.resolve("result"));
+      });
+    </script>
   )");
 
   auto* model_context =
@@ -498,20 +479,18 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoAutoSubmit) {
   ScriptState::Scope script_scope(
       ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
-    <body>
-      <form toolname="search_tool" tooldescription="Search the web" action="/search">
-        <input type=text name=query>
-        <button type=submit>Submit</button>
-      </form>
-      <script>
-        window.submit_event_fired = false;
-        document.querySelector('form').addEventListener('submit', e => {
-          window.submit_event_fired = true;
-          e.preventDefault();
-          e.respondWith(Promise.resolve("result value"));
-        });
-      </script>
-    </body>
+    <form toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      window.submit_event_fired = false;
+      document.querySelector('form').addEventListener('submit', e => {
+        window.submit_event_fired = true;
+        e.preventDefault();
+        e.respondWith(Promise.resolve("result value"));
+      });
+    </script>
   )");
 
   auto* model_context =
@@ -555,12 +534,56 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoAutoSubmit) {
       "document.querySelector('form').matches(':tool-form-active')"));
 }
 
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FormPopulatedAtEvent) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query value="initial">
+    </form>
+    <script>
+      window.event_fired = false;
+      window.input_value_at_event = "";
+      window.addEventListener('toolactivated', e => {
+        if (e.toolName === 'search_tool') {
+          window.event_fired = true;
+          window.input_value_at_event = document.querySelector('input').value;
+        }
+      });
+      document.querySelector('form').addEventListener('submit', e => {
+        e.preventDefault();
+        e.respondWith(Promise.resolve("done"));
+      });
+    </script>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            EXPECT_TRUE(res.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(EvalJsBoolean("window.event_fired"));
+  EXPECT_EQ(EvalJsString("window.input_value_at_event"), "testing");
+}
+
 TEST_F(ModelContextTest, CancelTool) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
   main_resource.Complete(R"(
-<body>
+    <body>
     <script>
     async function echo(obj) {
       return obj.text;
@@ -582,7 +605,6 @@ TEST_F(ModelContextTest, CancelTool) {
       },
     });
   </script>
-  </body>
 )");
 
   auto* model_context =
@@ -612,7 +634,7 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
       ToScriptStateForMainWorld(Window().GetFrame()));
 
   main_resource.Complete(R"(
-<body>
+    <body>
     <script>
     async function longRunning(obj) {
       await new Promise(r => setTimeout(r, 10000));
@@ -629,7 +651,6 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
     window.addEventListener('toolactivated', e => window.events.push('activated:' + e.toolName));
     window.addEventListener('toolcancel', e => window.events.push('cancel:' + e.toolName));
   </script>
-  </body>
 )");
 
   auto* model_context =

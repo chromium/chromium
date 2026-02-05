@@ -218,22 +218,29 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
     return std::nullopt;
   }
 
-  if (LocalDOMWindow* window = document_->domWindow()) {
-    // This is a synchronous, non-cancelable event.
-    window->DispatchEvent(
-        *WebMCPEvent::Create(event_type_names::kToolactivated, name));
-  }
-
+  std::optional<uint32_t> execution_id;
   if (it->value->v8_tool_function) {
-    return ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
-                         std::move(tool_executed_cb));
+    execution_id = ExecuteV8Tool(it->value->v8_tool_function, name,
+                                 input_arguments, std::move(tool_executed_cb));
   } else {
     // TODO: crbug.com/479598776 - Add support for tracking execution of
     // declarative tools, so that they can be cancelled.
     ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
                            std::move(tool_executed_cb));
   }
-  return std::nullopt;
+
+  // Fire the `toolactivate` event *after* activating the tool, but potentially
+  // *before* the tool call finishes. Importantly, if the tool is a declarative
+  // WebMCP tool, the form will be filled out synchronously above in
+  // ExecuteDeclarativeTool(), so by the time the event is fired, the form will
+  // be populated.
+  if (LocalDOMWindow* window = document_->domWindow()) {
+    // This is a synchronous, non-cancelable event.
+    window->DispatchEvent(
+        *WebMCPEvent::Create(event_type_names::kToolactivated, name));
+  }
+
+  return execution_id;
 }
 
 void ModelContext::CancelTool(uint32_t execution_id) {
