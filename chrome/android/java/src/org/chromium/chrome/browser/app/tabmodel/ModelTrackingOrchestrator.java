@@ -274,6 +274,14 @@ public class ModelTrackingOrchestrator {
         if (mIncognitoSynchronizerManager != null) mIncognitoSynchronizerManager.reset();
     }
 
+    /** Saves the tab through an associated synchronizer. */
+    public void saveTab(Tab tab) {
+        StorageCollectionSynchronizer synchronizer =
+                tab.isOffTheRecord() ? mIncognitoSynchronizer : mRegularSynchronizer;
+        if (synchronizer == null) return;
+        synchronizer.saveTab(tab);
+    }
+
     private StorageCollectionSynchronizer getSynchronizer(
             ProfileAndCollection profileAndCollection, boolean incognito) {
         if (incognito) {

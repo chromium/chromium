@@ -58,6 +58,12 @@ public class StorageCollectionSynchronizer implements Destroyable {
         StorageCollectionSynchronizerJni.get().fullSave(mNativePtr);
     }
 
+    /** Saves a tab to storage through the observer associated with the synchronizer. */
+    public void saveTab(Tab tab) {
+        assert mNativePtr != 0;
+        StorageCollectionSynchronizerJni.get().saveTab(mNativePtr, tab);
+    }
+
     @NativeMethods
     interface Natives {
         long init(
@@ -66,6 +72,9 @@ public class StorageCollectionSynchronizer implements Destroyable {
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection);
 
         void fullSave(long nativeStorageCollectionSynchronizerAndroid);
+
+        void saveTab(
+                long nativeStorageCollectionSynchronizerAndroid, @JniType("TabAndroid*") Tab tab);
 
         void destroy(long nativeStorageCollectionSynchronizerAndroid);
 

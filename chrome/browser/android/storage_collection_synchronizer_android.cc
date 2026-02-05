@@ -30,6 +30,11 @@ void StorageCollectionSynchronizerAndroid::FullSave(JNIEnv* env) {
   synchronizer_.FullSave();
 }
 
+void StorageCollectionSynchronizerAndroid::SaveTab(JNIEnv* env,
+                                                   TabAndroid* tab) {
+  synchronizer_.SaveTab(tab);
+}
+
 void StorageCollectionSynchronizerAndroid::ConsumeRestoreOrchestratorFactory(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_object) {

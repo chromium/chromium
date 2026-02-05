@@ -12,6 +12,7 @@
 #include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
+#include "chrome/browser/tab/tab_state_storage_service.h"
 #include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
@@ -59,13 +60,14 @@ void StorageRestoreOrchestrator::OnSaveChildTab(
   if (!std::holds_alternative<TabHandle>(handle)) {
     return;
   }
-
-  TabHandle tab_handle = std::get<TabHandle>(handle);
-  const TabInterface* tab = tab_handle.Get();
+  const TabInterface* tab = std::get<TabHandle>(handle).Get();
   const TabCollection* parent = tab->GetParentCollection();
   if (!parent) {
     return;
   }
+
+  TabCanonicalizer canonicalizer = service_->GetCanonicalizer();
+  TabHandle tab_handle = canonicalizer.Run(tab)->GetHandle();
 
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
   bool was_tab_on_disk = tracker->AssociateTabAndAncestors(tab);
@@ -76,11 +78,12 @@ void StorageRestoreOrchestrator::OnSaveChildTab(
 
   if (!was_inserted) {
     service_->Save(tab);
-  } else if (!was_tab_on_disk || restored_nodes_.contains(handle)) {
+    return;
+  } else if (!was_tab_on_disk || restored_nodes_.contains(tab_handle)) {
     service_->Save(tab);
     MaybeAddModifiedParent(parent_id, parent_handle);
   } else if (was_tab_on_disk) {
-    restored_nodes_.insert(handle);
+    restored_nodes_.insert(tab_handle);
   }
 
   if (modified_parents_.contains(parent_id)) {

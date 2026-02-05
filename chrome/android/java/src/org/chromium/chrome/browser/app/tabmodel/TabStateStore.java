@@ -413,7 +413,7 @@ public class TabStateStore implements TabPersistentStore {
         // not attached to a parent collection will not be restored at startup and shouldn't be
         // saved. If the tab becomes attached to a collection later it will be saved then.
         if (tab.isDestroyed() || tab.isClosing() || !tab.hasParentCollection()) return;
-        mTabStateStorageService.saveTabData(tab);
+        mModelTrackingManager.saveTab(tab);
     }
 
     private void assertOtrOperationSafe(boolean isOtrOperation) {

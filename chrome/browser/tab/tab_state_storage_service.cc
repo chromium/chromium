@@ -249,6 +249,10 @@ std::vector<uint8_t> TabStateStorageService::GenerateKey(
   return key;
 }
 
+TabCanonicalizer TabStateStorageService::GetCanonicalizer() const {
+  return tab_canonicalizer_;
+}
+
 #if defined(NDEBUG)
 void TabStateStorageService::PrintAll() {
   tab_backend_.PrintAll();

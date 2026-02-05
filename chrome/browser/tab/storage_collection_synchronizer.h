@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tabs/public/tab_collection_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
 namespace tabs {
 
@@ -34,6 +35,9 @@ class StorageCollectionSynchronizer {
 
   // Saves the entire collection and its descendants to the service.
   void FullSave();
+
+  // Used to manually save a tab.
+  void SaveTab(TabInterface* tab);
 
   // Sets the TabCollectionObserver. If an observer is already set, it will be
   // unregistered before the new one is registered.

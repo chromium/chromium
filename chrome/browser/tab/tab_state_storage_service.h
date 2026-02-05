@@ -114,6 +114,8 @@ class TabStateStorageService : public KeyedService,
   // Generates a new key for encryption.
   std::vector<uint8_t> GenerateKey(std::string_view window_tag);
 
+  TabCanonicalizer GetCanonicalizer() const;
+
 #if defined(NDEBUG)
   void PrintAll();
 #endif
