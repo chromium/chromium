@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_user_installability_checker.h"
 
 #include <memory>
 #include <optional>
@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -72,7 +72,7 @@ void InstallabilityChecker::OnLoadedMetadata(
     std::move(callback_).Run(BundleInvalid{metadata.error()});
     return;
   }
-  web_app_provider_->scheduler().CheckIsolatedWebAppBundleInstallability(
+  web_app_provider_->scheduler().CheckIsolatedWebAppBundleUserInstallability(
       metadata.value(),
       base::BindOnce(&InstallabilityChecker::OnInstallabilityChecked,
                      weak_ptr_factory_.GetWeakPtr(), metadata.value()));
@@ -96,6 +96,10 @@ void InstallabilityChecker::OnInstallabilityChecked(
       return;
     case IsolatedInstallabilityCheckResult::kShutdown:
       std::move(callback_).Run(ProfileShutdown{});
+      return;
+    case IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist:
+      std::move(callback_).Run(
+          BundleNotAllowlistedForUserInstallation(metadata));
       return;
   }
 }

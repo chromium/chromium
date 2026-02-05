@@ -58,7 +58,7 @@
 #include "chrome/browser/web_applications/commands/web_app_install_from_migrate_from_field_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_isolated_web_app_browsing_data_command.h"
@@ -388,13 +388,13 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
 
 // Given the |bundle_metadata| of a Signed Web Bundle, schedules a command to
 // check the installability of the bundle.
-void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
+void WebAppCommandScheduler::CheckIsolatedWebAppBundleUserInstallability(
     const SignedWebBundleMetadata& bundle_metadata,
     base::OnceCallback<void(IsolatedInstallabilityCheckResult,
                             std::optional<IwaVersion>)> callback,
     const base::Location& call_location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<CheckIsolatedWebAppBundleInstallabilityCommand>(
+      std::make_unique<CheckIsolatedWebAppBundleUserInstallabilityCommand>(
           &profile_.get(), bundle_metadata, std::move(callback)),
       call_location);
 }

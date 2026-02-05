@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_INSTALLABILITY_CHECKER_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_INSTALLABILITY_CHECKER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_USER_INSTALLABILITY_CHECKER_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_USER_INSTALLABILITY_CHECKER_H_
 
 #include <memory>
 #include <optional>
@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 class Profile;
@@ -42,11 +42,16 @@ class InstallabilityChecker {
     SignedWebBundleMetadata metadata;
     IwaVersion installed_version;
   };
+
+  struct BundleNotAllowlistedForUserInstallation {
+    SignedWebBundleMetadata metadata;
+  };
   using Result = std::variant<ProfileShutdown,
                               BundleInvalid,
                               BundleInstallable,
                               BundleUpdatable,
-                              BundleOutdated>;
+                              BundleOutdated,
+                              BundleNotAllowlistedForUserInstallation>;
 
   static std::unique_ptr<InstallabilityChecker> CreateAndStart(
       Profile* profile,
@@ -80,4 +85,4 @@ class InstallabilityChecker {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_INSTALLABILITY_CHECKER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_USER_INSTALLABILITY_CHECKER_H_

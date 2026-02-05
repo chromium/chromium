@@ -50,11 +50,15 @@ class IsolatedWebAppInstallerModel {
     base::RepeatingClosure learn_more_callback;
   };
   struct InstallationFailedDialog {};
+  struct BundleNotAllowlistedForUserInstallationDialog {
+    std::u16string bundle_name;
+  };
 
   using Dialog = std::variant<BundleInvalidDialog,
                               BundleAlreadyInstalledDialog,
                               ConfirmInstallationDialog,
-                              InstallationFailedDialog>;
+                              InstallationFailedDialog,
+                              BundleNotAllowlistedForUserInstallationDialog>;
 
   explicit IsolatedWebAppInstallerModel(const IwaSourceBundleWithMode& source);
   ~IsolatedWebAppInstallerModel();

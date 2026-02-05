@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_user_installability_checker.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
@@ -148,6 +149,14 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
 
   void operator()(const InstallabilityChecker::ProfileShutdown&) {
     controller_->Close();
+  }
+
+  void operator()(
+      const InstallabilityChecker::BundleNotAllowlistedForUserInstallation&
+          not_allowlisted) {
+    model_->SetDialog(IsolatedWebAppInstallerModel::
+                          BundleNotAllowlistedForUserInstallationDialog(
+                              not_allowlisted.metadata.app_name()));
   }
 
  private:

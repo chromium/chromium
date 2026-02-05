@@ -11,16 +11,18 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_user_installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -66,6 +68,9 @@ class IsolatedWebAppInstallerBrowserTest : public WebAppBrowserTestBase {
     WebAppBrowserTestBase::SetUp();
   }
 
+ protected:
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -78,6 +83,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   webapps::AppId app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(app->web_bundle_id())
           .app_id();
+
+  data_provider_->Update([&](auto& update) {
+    update.AddToUserInstallAllowlist(
+        app->web_bundle_id(),
+        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+            /*enterprise_name=*/"fancy comp"));
+  });
 
   base::test::TestFuture<void> on_closed_future;
 

@@ -110,7 +110,7 @@ The refactoring will be done on a per-command basis. For each command:
 
 ### Phase 2: Refactor `isolated_web_apps/commands` directory
 
-*   [ ] **Task 2.1:** Refactor `CheckIsolatedWebAppBundleInstallabilityCommand`
+*   [ ] **Task 2.1:** Refactor `CheckIsolatedWebAppBundleUserInstallabilityCommand`
     *   Target: `chrome/browser/web_applications/isolated_web_apps/scheduler/check_isolated_web_app_bundle_installability_result.h`
 *   [ ] **Task 2.2:** Refactor `CleanupBundleCacheCommand`
     *   Target: `chrome/browser/web_applications/isolated_web_apps/scheduler/cleanup_bundle_cache_result.h`

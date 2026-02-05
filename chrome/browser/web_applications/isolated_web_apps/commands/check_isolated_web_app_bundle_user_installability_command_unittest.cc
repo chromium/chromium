@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 
 #include <memory>
 #include <optional>
@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -33,9 +34,12 @@ namespace {
 
 using base::test::HasValue;
 
-class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
+class CheckIsolatedWebAppBundleUserInstallabilityCommandTest
+    : public WebAppTest {
  protected:
   void SetUp() override {
+    resetter_ =
+        ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&data_provider_);
     WebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -51,6 +55,14 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
             .BuildBundle(bundle_path, key_pair_);
     app->TrustSigningKey();
     app->FakeInstallPageState(profile());
+
+    data_provider_.Update([&](auto& update) {
+      update.AddToUserInstallAllowlist(
+          app->web_bundle_id(),
+          ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+              /*enterprise_name=*/"fancy comp"));
+    });
+
     return app;
   }
 
@@ -71,7 +83,7 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
       const SignedWebBundleMetadata& bundle_metadata,
       base::OnceCallback<void(IsolatedInstallabilityCheckResult,
                               std::optional<IwaVersion>)> callback) {
-    fake_provider().scheduler().CheckIsolatedWebAppBundleInstallability(
+    fake_provider().scheduler().CheckIsolatedWebAppBundleUserInstallability(
         bundle_metadata, std::move(callback));
   }
 
@@ -81,9 +93,11 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   web_package::test::KeyPair key_pair_ =
       web_package::test::Ed25519KeyPair::CreateRandom();
+  FakeIwaRuntimeDataProvider data_provider_;
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
-TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandTest,
        SucceedsWhenAppNotInRegistrar) {
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
   ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
@@ -100,7 +114,7 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   EXPECT_FALSE(installed_version.has_value());
 }
 
-TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandTest,
        SucceedsWhenInstalledAppLowerVersion) {
   std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.6");
   ASSERT_THAT(current_app->Install(profile()), HasValue());
@@ -120,7 +134,7 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.6"));
 }
 
-TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandTest,
        FailsWhenInstalledAppSameVersion) {
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
   ASSERT_THAT(app->Install(profile()), HasValue());
@@ -138,7 +152,7 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.7"));
 }
 
-TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandTest,
        FailsWhenInstalledAppHigherVersion) {
   std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.8");
   ASSERT_THAT(current_app->Install(profile()), HasValue());
@@ -158,14 +172,14 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,
   EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.8"));
 }
 
-class CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest
-    : public CheckIsolatedWebAppBundleInstallabilityCommandTest {
+class CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest
+    : public CheckIsolatedWebAppBundleUserInstallabilityCommandTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kIsolatedWebAppDevMode};
 };
 
-TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest,
        SucceedsWhenInstalledAppLowerVersion) {
   std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.6");
   ASSERT_THAT(current_app->Install(profile()), HasValue());
@@ -185,7 +199,7 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
   EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.6"));
 }
 
-TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest,
        SucceedsWhenInstalledAppSameVersion) {
   std::unique_ptr<BundledIsolatedWebApp> app = CreateApp("7.7.7");
   ASSERT_THAT(app->Install(profile()), HasValue());
@@ -203,7 +217,7 @@ TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
   EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.7"));
 }
 
-TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandDevModeTest,
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest,
        FailsWhenInstalledAppHigherVersion) {
   std::unique_ptr<BundledIsolatedWebApp> current_app = CreateApp("7.7.8");
   ASSERT_THAT(current_app->Install(profile()), HasValue());

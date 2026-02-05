@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 
 #include <utility>
 
@@ -11,21 +11,22 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
-CheckIsolatedWebAppBundleInstallabilityCommand::
-    CheckIsolatedWebAppBundleInstallabilityCommand(
+CheckIsolatedWebAppBundleUserInstallabilityCommand::
+    CheckIsolatedWebAppBundleUserInstallabilityCommand(
         Profile* profile,
         const SignedWebBundleMetadata& bundle_metadata,
         BundleInstallabilityCallback callback)
     : WebAppCommand<AppLock,
                     IsolatedInstallabilityCheckResult,
                     std::optional<IwaVersion>>(
-          "CheckIsolatedWebAppBundleInstallabilityCommand",
+          "CheckIsolatedWebAppBundleUserInstallabilityCommand",
           AppLockDescription(bundle_metadata.app_id()),
           std::move(callback),
           /*args_for_shutdown=*/
@@ -39,12 +40,20 @@ CheckIsolatedWebAppBundleInstallabilityCommand::
                              bundle_metadata.version().GetString());
 }
 
-CheckIsolatedWebAppBundleInstallabilityCommand::
-    ~CheckIsolatedWebAppBundleInstallabilityCommand() = default;
+CheckIsolatedWebAppBundleUserInstallabilityCommand::
+    ~CheckIsolatedWebAppBundleUserInstallabilityCommand() = default;
 
-void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
+void CheckIsolatedWebAppBundleUserInstallabilityCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
+
+  const auto& bundle_id = bundle_metadata_.url_info().web_bundle_id();
+  if (!ChromeIwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
+          bundle_id.id())) {
+    ReportResult(IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist,
+                 std::nullopt);
+    return;
+  }
 
   const WebApp* app = lock_->registrar().GetAppById(
       bundle_metadata_.app_id(), WebAppFilter::IsIsolatedApp());
@@ -78,7 +87,7 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
                std::move(installed_version));
 }
 
-void CheckIsolatedWebAppBundleInstallabilityCommand::ReportResult(
+void CheckIsolatedWebAppBundleUserInstallabilityCommand::ReportResult(
     IsolatedInstallabilityCheckResult status,
     std::optional<IwaVersion> installed_version) {
   std::string message;
@@ -103,6 +112,9 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::ReportResult(
            bundle_metadata_.version().GetString(),
            "\nVersion of the app already installed: ",
            installed_version.value().GetString()});
+      break;
+    case IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist:
+      message = "Failure: Bundle is not on the user install allowlist";
       break;
     case IsolatedInstallabilityCheckResult::kShutdown:
       NOTREACHED();

@@ -19537,6 +19537,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE" desc="Subtitle of the error dialog that is shown when an Isolated Web App failed to install">
       The installation could not be completed. Please try again or close this window
     </message>
+    <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_NOT_ON_USER_INSTALL_ALLOWLIST_SUBTITLE" desc="Subtitle of the error dialog that is shown when an Isolated Web App failed to install because it's not on the user install allowlist">
+      This application can't be installed by the user. Please contact the developer
+    </message>
     <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY" desc="Label of the retry button in the error dialog that is shown when an Isolated Web App failed to install">
       Retry
     </message>

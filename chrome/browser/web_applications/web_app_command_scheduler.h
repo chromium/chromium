@@ -345,11 +345,12 @@ class WebAppCommandScheduler {
       base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback,
       const base::Location& call_location = FROM_HERE);
 
-  // Checks if a Signed Web Bundle is a valid and installable Isolated Web App.
-  // It compares the version from the bundle's metadata with an already
-  // installed app (if one exists) to determine if the bundle is a new install,
-  // an update, or outdated.
-  virtual void CheckIsolatedWebAppBundleInstallability(
+  // Checks if a Signed Web Bundle is a valid and an Isolated Web App that can
+  // be installed by the user. It compares the version from the bundle's
+  // metadata with an already installed app (if one exists) to determine if the
+  // bundle is a new install, an update, or outdated. It also checks if the app
+  // is allowlisted to be installed by the user.
+  virtual void CheckIsolatedWebAppBundleUserInstallability(
       const SignedWebBundleMetadata& bundle_metadata,
       base::OnceCallback<void(IsolatedInstallabilityCheckResult,
                               std::optional<IwaVersion>)> callback,

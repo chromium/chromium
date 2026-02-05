@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -85,18 +86,6 @@ MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
             Property("version", &SignedWebBundleMetadata::version,
                      *IwaVersion::Create(version))),
       arg, result_listener);
-}
-
-IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
-    const base::FilePath& bundle_path,
-    const std::string& version) {
-  const std::unique_ptr<web_app::BundledIsolatedWebApp> bundle =
-      IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
-          .BuildBundle(bundle_path, test::GetDefaultEd25519KeyPair());
-  bundle->TrustSigningKey();
-
-  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      bundle->web_bundle_id());
 }
 
 SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
@@ -172,6 +161,9 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         {});
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
+    resetter_ =
+        ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&data_provider_);
+
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
 
@@ -232,6 +224,25 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         CreateDefaultManifest(iwa_url, *IwaVersion::Create(version));
   }
 
+  IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
+      const base::FilePath& bundle_path,
+      const std::string& version) {
+    const std::unique_ptr<web_app::BundledIsolatedWebApp> bundle =
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
+            .BuildBundle(bundle_path, test::GetDefaultEd25519KeyPair());
+    bundle->TrustSigningKey();
+
+    data_provider_.Update([&](auto& update) {
+      update.AddToUserInstallAllowlist(
+          bundle->web_bundle_id(),
+          ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+              /*enterprise_name=*/"fancy comp"));
+    });
+
+    return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+        bundle->web_bundle_id());
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -240,6 +251,8 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestingProfile> profile_;
+  FakeIwaRuntimeDataProvider data_provider_;
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,

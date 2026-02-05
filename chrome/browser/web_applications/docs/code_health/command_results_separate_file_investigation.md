@@ -93,7 +93,7 @@ Following the same methodology as before, I analyzed the header files in the `ch
 
 **Findings:**
 This directory contains several commands that also define their own result types locally and would benefit from the same refactoring. I identified nine new candidates:
--   `check_isolated_web_app_bundle_installability_command.h`
+-   `check_isolated_web_app_bundle_user_installability_command.h`
 -   `cleanup_bundle_cache_command.h`
 -   `cleanup_orphaned_isolated_web_apps_command.h`
 -   `copy_bundle_to_cache_command.h`
@@ -125,7 +125,7 @@ The commands identified for refactoring are:
 7.  `RewriteDiyIconsCommand`
 8.  `RunOnOsLoginCommand`
 9.  `WebAppIconDiagnosticCommand`
-10. `CheckIsolatedWebAppBundleInstallabilityCommand`
+10. `CheckIsolatedWebAppBundleUserInstallabilityCommand`
 11. `CleanupBundleCacheCommand`
 12. `CleanupOrphanedIsolatedWebAppsCommand`
 13. `CopyBundleToCacheCommand`
@@ -170,7 +170,7 @@ This solution is low-risk, as it is a straightforward code organization task tha
     *   `rewrite_diy_icons_command.h`
     *   `run_on_os_login_command.h`
     *   `web_app_icon_diagnostic_command.h`
-    *   `chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h`
+    *   `chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h`
     *   `chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h`
     *   `chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h`
     *   `chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h`
@@ -204,8 +204,8 @@ This solution is low-risk, as it is a straightforward code organization task tha
     *   `//chrome/browser/extensions/api/management/chrome_management_api_delegate_nonandroid.cc`
     *   `//chrome/browser/extensions/api/tabs/tabs_test.cc`
     *   `//chrome/browser/ui/ash/system_web_apps/system_web_app_icon_checker_impl.cc`
-    *   `//chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.cc`
-    *   `//chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h`
+    *   `//chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_user_installability_checker.cc`
+    *   `//chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_user_installability_checker.h`
     *   `//chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_browsertest.cc`
     *   `//chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.cc`
     *   `//chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h`

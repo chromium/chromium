@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CHECK_ISOLATED_WEB_APP_BUNDLE_INSTALLABILITY_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CHECK_ISOLATED_WEB_APP_BUNDLE_INSTALLABILITY_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CHECK_ISOLATED_WEB_APP_BUNDLE_USER_INSTALLABILITY_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CHECK_ISOLATED_WEB_APP_BUNDLE_USER_INSTALLABILITY_COMMAND_H_
 
 #include <memory>
 #include <string>
@@ -32,13 +32,15 @@ enum class IsolatedInstallabilityCheckResult {
   kOutdated,
   // The system was shut down before the command could complete.
   kShutdown,
+  // The bundle id is not on the user install allowlist.
+  kNotOnUserInstallAllowlist,
 };
 
 // Checks if a Signed Web Bundle is installable as an Isolated Web App. It
 // compares the version from the bundle's metadata with the version of an
 // already installed app (if one exists) to determine if the bundle is a new
 // install, an update, or outdated.
-class CheckIsolatedWebAppBundleInstallabilityCommand
+class CheckIsolatedWebAppBundleUserInstallabilityCommand
     : public WebAppCommand<AppLock,
                            IsolatedInstallabilityCheckResult,
                            std::optional<IwaVersion>> {
@@ -50,11 +52,11 @@ class CheckIsolatedWebAppBundleInstallabilityCommand
       base::OnceCallback<void(IsolatedInstallabilityCheckResult result,
                               std::optional<IwaVersion> installed_version)>;
 
-  CheckIsolatedWebAppBundleInstallabilityCommand(
+  CheckIsolatedWebAppBundleUserInstallabilityCommand(
       Profile* profile,
       const SignedWebBundleMetadata& bundle_metadata,
       BundleInstallabilityCallback callback);
-  ~CheckIsolatedWebAppBundleInstallabilityCommand() override;
+  ~CheckIsolatedWebAppBundleUserInstallabilityCommand() override;
 
  protected:
   // WebAppCommand:
@@ -72,4 +74,4 @@ class CheckIsolatedWebAppBundleInstallabilityCommand
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CHECK_ISOLATED_WEB_APP_BUNDLE_INSTALLABILITY_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_CHECK_ISOLATED_WEB_APP_BUNDLE_USER_INSTALLABILITY_COMMAND_H_
