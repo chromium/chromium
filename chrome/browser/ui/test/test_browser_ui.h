@@ -159,6 +159,11 @@ class TestBrowserUi {
   // This is useful for some SetUp() calls that may be interested in that state.
   bool IsInteractiveUi() const;
 
+  // Extracts the |name| argument for ShowUi() from the current test case name.
+  // E.g. for InvokeUi_name, DISABLED_InvokeUi_name, or parameterized test
+  // InvokeUi_name/value all return "name".
+  static std::string NameFromTestCase();
+
  private:
   std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm_;
 };
