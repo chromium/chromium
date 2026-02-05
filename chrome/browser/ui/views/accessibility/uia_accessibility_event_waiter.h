@@ -29,6 +29,9 @@ struct UiaAccessibilityWaiterInfo {
   std::wstring role;
   std::wstring name;
   ax::mojom::Event event;
+  // Optional: specify a direct UIA event ID. If set to a non-zero value,
+  // this takes precedence over the ax::mojom::Event mapping.
+  EVENTID uia_event_id = 0;
 };
 
 class UiaAccessibilityEventWaiter {
@@ -38,6 +41,12 @@ class UiaAccessibilityEventWaiter {
 
   void Wait();
   void WaitWithTimeout(base::TimeDelta timeout);
+
+  // Returns the notification string captured from the last notification event.
+  // Only valid after Wait() returns when waiting for UIA_NotificationEventId.
+  const std::wstring& GetNotificationString() const {
+    return notification_string_;
+  }
 
  private:
   // All UIA calls need to be made on a secondary MTA thread to avoid sporadic
@@ -53,6 +62,7 @@ class UiaAccessibilityEventWaiter {
               base::OnceClosure shutdown_loop);
 
     void SendShutdownSignal();
+    void SetNotificationString(const std::wstring& str);
 
     void ThreadMain() override;
 
@@ -62,7 +72,7 @@ class UiaAccessibilityEventWaiter {
    private:
     raw_ptr<UiaAccessibilityEventWaiter> owner_ = nullptr;
 
-    Microsoft::WRL::ComPtr<IUIAutomation> uia_;
+    Microsoft::WRL::ComPtr<IUIAutomation5> uia_;
     Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
     Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request_;
 
@@ -77,7 +87,8 @@ class UiaAccessibilityEventWaiter {
                          public IUIAutomationFocusChangedEventHandler,
                          public IUIAutomationPropertyChangedEventHandler,
                          public IUIAutomationStructureChangedEventHandler,
-                         public IUIAutomationEventHandler {
+                         public IUIAutomationEventHandler,
+                         public IUIAutomationNotificationEventHandler {
      public:
       EventHandler();
 
@@ -95,6 +106,7 @@ class UiaAccessibilityEventWaiter {
       COM_INTERFACE_ENTRY(IUIAutomationPropertyChangedEventHandler)
       COM_INTERFACE_ENTRY(IUIAutomationStructureChangedEventHandler)
       COM_INTERFACE_ENTRY(IUIAutomationEventHandler)
+      COM_INTERFACE_ENTRY(IUIAutomationNotificationEventHandler)
       END_COM_MAP()
 
       // IUIAutomationFocusChangedEventHandler interface.
@@ -116,6 +128,14 @@ class UiaAccessibilityEventWaiter {
       IFACEMETHODIMP HandleAutomationEvent(IUIAutomationElement* sender,
                                            EVENTID event_id) override;
 
+      // IUIAutomationNotificationEventHandler interface.
+      IFACEMETHODIMP HandleNotificationEvent(
+          IUIAutomationElement* sender,
+          NotificationKind notification_kind,
+          NotificationProcessing notification_processing,
+          BSTR display_string,
+          BSTR activity_id) override;
+
       // Points to the waiter to receive notifications.
       raw_ptr<UiaAccessibilityEventWaiter::Thread> owner_ = nullptr;
 
@@ -130,6 +150,7 @@ class UiaAccessibilityEventWaiter {
   Thread thread_;
   base::RunLoop shutdown_loop_;
   base::PlatformThreadHandle thread_handle_;
+  std::wstring notification_string_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_UIA_ACCESSIBILITY_EVENT_WAITER_H_

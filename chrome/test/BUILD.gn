@@ -12304,7 +12304,10 @@ if (!is_android && !is_chromeos_device) {
       ]
 
       if (use_aura) {
-        sources += [ "../browser/ui/views/autofill/autofill_accessibility_win_browsertest.cc" ]
+        sources += [
+          "../browser/accessibility/aria_notify_uia_browsertest_win.cc",
+          "../browser/ui/views/autofill/autofill_accessibility_win_browsertest.cc",
+        ]
       }
 
       deps += [
