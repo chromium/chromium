@@ -359,6 +359,7 @@ blink_core_tests_svg = [
   "animation/smil_time_container_test.cc",
   "animation/svg_smil_element_test.cc",
   "graphics/svg_image_test.cc",
+  "svg_a_element_test.cc",
   "svg_element_test.cc",
   "svg_filter_element_test.cc",
   "svg_foreign_object_element_test.cc",
