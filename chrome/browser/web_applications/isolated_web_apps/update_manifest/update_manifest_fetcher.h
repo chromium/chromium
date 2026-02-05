@@ -36,10 +36,11 @@ class UpdateManifestFetcher {
   using FetchCallback =
       base::OnceCallback<void(base::expected<UpdateManifest, Error>)>;
 
-  explicit UpdateManifestFetcher(
+  UpdateManifestFetcher(
       GURL url,
       net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool report_histogram_manifest_result = false);
 
   ~UpdateManifestFetcher();
 
@@ -57,6 +58,7 @@ class UpdateManifestFetcher {
   GURL url_;
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  bool report_histogram_manifest_result_;
 
   FetchCallback fetch_callback_;
 

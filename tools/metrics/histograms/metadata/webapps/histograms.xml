@@ -1811,6 +1811,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.UpdateManifest.HttpResponseOrErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-03">
+  <owner>bhaskarsharma@google.com</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
+  <summary>
+    Records the outcome of the update manifest download for IWA updates. Values
+    are either the HTTP status code from the server's response or the network
+    error code if the request failed to elicit an HTTP response.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.UpdateSuccess" enum="BooleanSuccess"
     expires_after="2026-05-31">
   <owner>giovax@chromium.org</owner>

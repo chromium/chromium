@@ -49,6 +49,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -71,6 +72,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
+#include "content/public/test/url_loader_interceptor.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,6 +86,9 @@ namespace {
 using base::test::ErrorIs;
 using base::test::HasValue;
 using base::test::ValueIs;
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::HasSubstr;
@@ -328,6 +335,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
                                      /*sample=*/false, /*expected_count=*/0);
   histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
                                     /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Isolated.UpdateManifest.HttpResponseOrErrorCode",
+      /*sample=*/net::HTTP_OK,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
@@ -1233,6 +1244,161 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                                      /*sample=*/false, /*expected_count=*/0);
   histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
                                     /*expected_count=*/0);
+}
+
+class IsolatedWebAppUpdateManifestBrowserTest
+    : public IsolatedWebAppUpdateManagerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppUpdateManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  void InstallIwaAndSetMockUpdateUrl(const GURL& update_manifest_url) {
+    web_package::SignedWebBundleId web_bundle_id = GetWebBundleId();
+
+    profile()->GetPrefs()->SetList(
+        prefs::kIsolatedWebAppInstallForceList,
+        base::ListValue().Append(
+            iwa_test_update_server_.CreateForceInstallPolicyEntry(
+                web_bundle_id)));
+
+    web_app::WebAppTestInstallObserver(browser()->profile())
+        .BeginListeningAndWait({GetAppId()});
+
+    base::DictValue new_policy_entry =
+        iwa_test_update_server_.CreateForceInstallPolicyEntry(web_bundle_id);
+
+    // Update the update manifest URL key to the new URL.
+    new_policy_entry.Set(web_app::kPolicyUpdateManifestUrlKey,
+                         update_manifest_url.spec());
+
+    // Edit the policy in the PrefService.
+    web_app::test::EditForceInstalledIwaPolicy(
+        profile()->GetPrefs(), web_bundle_id, std::move(new_policy_entry));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManifestBrowserTest,
+                       ManifestDownloadFailedHttpResponseCode) {
+  base::HistogramTester histogram_tester;
+
+  // Configure embedded_test_server to return 404
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+        if (request.relative_url == "/update_manifest.json") {
+          auto response = std::make_unique<BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL update_manifest_url =
+      embedded_test_server()->GetURL("/update_manifest.json");
+
+  InstallIwaAndSetMockUpdateUrl(update_manifest_url);
+
+  // Use base::test::TestFuture to get the result from the callback.
+  base::test::TestFuture<
+      web_app::IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>
+      future;
+  // Correctly initialize UpdateDiscoveryTaskResultWaiter.
+  web_app::UpdateDiscoveryTaskResultWaiter waiter(provider(), GetAppId(),
+                                                  future.GetCallback());
+
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              ::testing::Eq(1ul));
+
+  // Wait for the update discovery task to complete via the future.
+  web_app::IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status =
+      future.Get();
+
+  // Check that the task failed as expected.
+  ASSERT_FALSE(status.has_value());
+  EXPECT_EQ(status.error(), web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
+                                kUpdateManifestDownloadFailed);
+
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Isolated.UpdateError",
+      IsolatedWebAppUpdateError::kUpdateManifestDownloadFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      "WebApp.Isolated.UpdateManifest.HttpResponseOrErrorCode",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Isolated.UpdateManifest.HttpResponseOrErrorCode",
+      /*sample=*/net::HTTP_NOT_FOUND,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManifestBrowserTest,
+                       ManifestDownloadFailedNetworkError) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL update_manifest_url =
+      embedded_test_server()->GetURL("/update_manifest.json");
+
+  // This captures the request for the manifest and kills it with
+  // ERR_CONNECTION_RESET
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url == update_manifest_url) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code =
+              net::ERR_CONNECTION_RESET;  // Simulate connection drop
+          params->client->OnComplete(status);
+          return true;  // Request handled
+        }
+        return false;  // Pass through other requests
+      }));
+
+  InstallIwaAndSetMockUpdateUrl(update_manifest_url);
+
+  // Use base::test::TestFuture to get the result from the callback.
+  base::test::TestFuture<
+      web_app::IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>
+      future;
+  // Correctly initialize UpdateDiscoveryTaskResultWaiter.
+  web_app::UpdateDiscoveryTaskResultWaiter waiter(provider(), GetAppId(),
+                                                  future.GetCallback());
+
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              ::testing::Eq(1ul));
+
+  // Wait for the update discovery task to complete via the future.
+  web_app::IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status =
+      future.Get();
+
+  // Check that the task failed as expected.
+  ASSERT_FALSE(status.has_value());
+  EXPECT_EQ(status.error(), web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
+                                kUpdateManifestDownloadFailed);
+
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Isolated.UpdateError",
+      IsolatedWebAppUpdateError::kUpdateManifestDownloadFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      "WebApp.Isolated.UpdateManifest.HttpResponseOrErrorCode",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Isolated.UpdateManifest.HttpResponseOrErrorCode",
+      /*sample=*/net::ERR_CONNECTION_RESET,
+      /*expected_count=*/1);
 }
 
 // TODO(b/402650079) flaky on mac

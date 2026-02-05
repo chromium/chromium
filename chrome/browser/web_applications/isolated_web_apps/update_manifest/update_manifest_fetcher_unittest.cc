@@ -145,7 +145,7 @@ TEST_F(UpdateManifestFetcherTest, FailsWhenManifestIsInvalid) {
   auto update_manifest = future.Take();
 
   EXPECT_THAT(update_manifest,
-              ErrorIs(Eq(UpdateManifestFetcher::Error::kInvalidManifest)));
+              ErrorIs(UpdateManifestFetcher::Error::kInvalidManifest));
 }
 
 TEST_F(UpdateManifestFetcherTest, FailsWhenJsonIsInvalid) {
@@ -160,7 +160,7 @@ TEST_F(UpdateManifestFetcherTest, FailsWhenJsonIsInvalid) {
   auto update_manifest = future.Take();
 
   EXPECT_THAT(update_manifest,
-              ErrorIs(Eq(UpdateManifestFetcher::Error::kInvalidJson)));
+              ErrorIs(UpdateManifestFetcher::Error::kInvalidJson));
 }
 
 TEST_F(UpdateManifestFetcherTest, FailedDownload) {
@@ -175,7 +175,7 @@ TEST_F(UpdateManifestFetcherTest, FailedDownload) {
   auto update_manifest = future.Take();
 
   EXPECT_THAT(update_manifest,
-              ErrorIs(Eq(UpdateManifestFetcher::Error::kDownloadFailed)));
+              ErrorIs(UpdateManifestFetcher::Error::kDownloadFailed));
 }
 
 }  // namespace

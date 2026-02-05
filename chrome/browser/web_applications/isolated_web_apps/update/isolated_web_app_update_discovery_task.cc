@@ -229,7 +229,7 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
 
   update_manifest_fetcher_ = std::make_unique<UpdateManifestFetcher>(
       task_params_.update_manifest_url(), kUpdateManifestFetchTrafficAnnotation,
-      url_loader_factory_);
+      url_loader_factory_, /*report_histogram_manifest_result=*/true);
   update_manifest_fetcher_->FetchUpdateManifest(base::BindOnce(
       &IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched,
       weak_factory_.GetWeakPtr()));
