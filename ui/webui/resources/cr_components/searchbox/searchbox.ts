@@ -45,6 +45,9 @@ import type {SearchboxIconElement} from './searchbox_icon.js';
 // LINT.IfChange(GhostLoaderTagName)
 const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
 // LINT.ThenChange(/chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderTagName)
+// The NTP Realbox entry point is always part of the Next experience, so log
+// the source value with the "crn" component.
+const DESKTOP_CHROME_NTP_REALBOX_ENTRY_SOURCE_VALUE = 'chrome.crn.rb';
 const DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE = '42';
 const MULTILINE_INPUT_HEIGHT_THRESHOLD = 50;
 
@@ -1223,6 +1226,8 @@ export class SearchboxElement extends SearchboxElementBase implements
       searchParams.append('sourceid', 'chrome');
       searchParams.append('udm', '50');
       searchParams.append('aep', DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE);
+      searchParams.append(
+          'source', DESKTOP_CHROME_NTP_REALBOX_ENTRY_SOURCE_VALUE);
 
       if (this.$.input.value.trim()) {
         searchParams.append('q', this.$.input.value.trim());
