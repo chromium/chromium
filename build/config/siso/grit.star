@@ -19,6 +19,7 @@ def __step_config(ctx, step_config):
             # Only runs on Linux workers.
             "remote_command": "python3",
             "platform_ref": "large",
+            "canonicalize_dir": True,
         },
     ])
     return step_config
