@@ -42,14 +42,6 @@ constexpr std::string_view kObsoleteProfilesHistogramPrefix =
 constexpr std::string_view kDestroyedProfilesHistogramPrefix =
     "Crypto.UnexportableKeys.GarbageCollection.DestroyedProfiles.";
 
-std::string GetApplicationTag(crypto::UnexportableKeyProvider::Config config) {
-#if BUILDFLAG(IS_MAC)
-  return std::move(config.application_tag);
-#else
-  return std::string();
-#endif  // BUILDFLAG(IS_MAC)
-}
-
 }  // namespace
 
 UnexportableKeyObsoleteProfileGarbageCollector::
@@ -133,20 +125,12 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
 
   // Filter `key_ids`, removing ids where we can't obtain the key's tag, or the
   // tag is known to be active.
-  std::erase_if(key_ids, [&](UnexportableKeyId key_id) -> bool {
-    ASSIGN_OR_RETURN(std::string key_tag,
-                     user_data_dir_service_->GetKeyTag(key_id),
-                     [](auto) { return true; });
-    // Since `active_application_tag_prefixes` is sorted, a possible prefix of
-    // `key_tag` must come right before `key_tag` if it was in the set.
-    auto it = active_application_tag_prefixes.upper_bound(key_tag);
-    return it != active_application_tag_prefixes.begin() &&
-           key_tag.starts_with(*std::prev(it));
-  });
+  size_t used_key_count = FilterUnexportableKeysByActiveApplicationTags(
+      key_ids, *user_data_dir_service_, active_application_tag_prefixes);
 
   base::UmaHistogramCounts100(
       base::StrCat({kObsoleteProfilesHistogramPrefix, "UsedKeyCount"}),
-      key_count - key_ids.size());
+      used_key_count);
 
   base::UmaHistogramCounts100(
       base::StrCat({kObsoleteProfilesHistogramPrefix, "ObsoleteKeyCount"}),

@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_UNEXPORTABLE_KEY_PROVIDER_CONFIG_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_UNEXPORTABLE_KEY_PROVIDER_CONFIG_H_
 
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_set.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/unexportable_key.h"
 
 class Profile;
@@ -14,6 +19,8 @@ class FilePath;
 }  // namespace base
 
 namespace unexportable_keys {
+
+class UnexportableKeyService;
 
 // An enum to define the intended use of the unexportable key.
 enum class KeyPurpose {
@@ -94,6 +101,19 @@ GetConfigForStoragePartitionPathAndPurpose(
     const Profile& profile,
     const base::FilePath& relative_partition_path,
     KeyPurpose purpose);
+
+// Returns the application tag for the given `config`.
+// Returns an empty string if the platform does not support application tags or
+// if the config does not have one.
+std::string GetApplicationTag(crypto::UnexportableKeyProvider::Config config);
+
+// Filters `key_ids`, removing ids where the key's tag cannot be obtained, or
+// where the tag is prefixed by one of the `active_application_tag_prefixes`.
+// Returns the number of keys removed.
+size_t FilterUnexportableKeysByActiveApplicationTags(
+    std::vector<UnexportableKeyId>& key_ids,
+    UnexportableKeyService& key_service,
+    const base::flat_set<std::string>& active_application_tag_prefixes);
 
 }  // namespace unexportable_keys
 

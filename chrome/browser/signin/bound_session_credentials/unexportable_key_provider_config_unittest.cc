@@ -4,21 +4,35 @@
 
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 
+#include <string>
 #include <string_view>
+#include <vector>
 
-#include "base/files/file_path.h"
-#include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "chrome/common/chrome_version.h"
-#include "chrome/test/base/testing_profile.h"
+#include "base/containers/flat_set.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
+#include "components/unexportable_keys/mock_unexportable_key_service.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace unexportable_keys {
+#if BUILDFLAG(IS_MAC)
+#include "base/strings/string_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_version.h"
+#include "chrome/test/base/testing_profile.h"
+#endif  // BUILDFLAG(IS_MAC)
 
+namespace unexportable_keys {
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::Return;
+using ::testing::StrictMock;
+
+#if BUILDFLAG(IS_MAC)
 using ::testing::Not;
 using ::testing::StartsWith;
 
@@ -41,6 +55,7 @@ constexpr std::string_view kUnixEpochHash = "af5570f5a1810b7a";
 // Hex hash of u64{1} (Unix Epoch + 1ms)
 constexpr std::string_view kOneMillisecondAfterUnixEpochHash =
     "7c9fa136d4413fa6";
+#endif  // BUILDFLAG(IS_MAC)
 
 class UnexportableKeyProviderConfigTest : public testing::Test {
  public:
@@ -50,6 +65,50 @@ class UnexportableKeyProviderConfigTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
+TEST_F(UnexportableKeyProviderConfigTest,
+       FilterUnexportableKeysByActiveApplicationTags) {
+  StrictMock<MockUnexportableKeyService> service;
+  UnexportableKeyId key_with_error;
+  UnexportableKeyId key_with_active_tag_1;
+  UnexportableKeyId key_with_active_tag_2;
+  UnexportableKeyId key_with_inactive_tag;
+  UnexportableKeyId key_with_partial_match_tag;
+
+  std::vector<UnexportableKeyId> key_ids = {
+      key_with_error,        key_with_active_tag_1,      key_with_active_tag_2,
+      key_with_inactive_tag, key_with_partial_match_tag,
+  };
+  base::flat_set<std::string> active_tags = {"active1", "active2"};
+
+  // 1. Error fetching tag -> Removed
+  EXPECT_CALL(service, GetKeyTag(key_with_error))
+      .WillOnce(Return(base::unexpected(ServiceError::kKeyNotFound)));
+
+  // 2. Active tag 1 -> Kept
+  EXPECT_CALL(service, GetKeyTag(key_with_active_tag_1))
+      .WillOnce(Return("active1.something"));
+
+  // 3. Active tag 2 -> Kept
+  EXPECT_CALL(service, GetKeyTag(key_with_active_tag_2))
+      .WillOnce(Return("active2"));
+
+  // 4. Inactive tag -> Removed
+  EXPECT_CALL(service, GetKeyTag(key_with_inactive_tag))
+      .WillOnce(Return("inactive"));
+
+  // 5. Prefix of active tag but not full match -> Removed
+  EXPECT_CALL(service, GetKeyTag(key_with_partial_match_tag))
+      .WillOnce(Return("active"));
+
+  size_t removed = FilterUnexportableKeysByActiveApplicationTags(
+      key_ids, service, active_tags);
+
+  EXPECT_EQ(removed, 3u);
+  EXPECT_THAT(key_ids,
+              ElementsAre(key_with_inactive_tag, key_with_partial_match_tag));
+}
+
+#if BUILDFLAG(IS_MAC)
 TEST_F(UnexportableKeyProviderConfigTest, ForUserDataDir) {
   base::FilePath user_data_dir("/user/data/dir");
   const crypto::UnexportableKeyProvider::Config config =
@@ -269,7 +328,7 @@ TEST_F(UnexportableKeyProviderConfigTest,
   EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_prototype_tag)));
   EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_standard_tag)));
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
-
 }  // namespace unexportable_keys
