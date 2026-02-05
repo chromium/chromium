@@ -751,18 +751,6 @@ uint64_t StringImpl::ToUInt64(NumberParsingOptions options, bool* ok) const {
   return CharactersToUInt64(Span16(), options, ok);
 }
 
-double StringImpl::ToDouble(bool* ok) {
-  if (Is8Bit())
-    return CharactersToDouble(Span8(), ok);
-  return CharactersToDouble(Span16(), ok);
-}
-
-float StringImpl::ToFloat(bool* ok) {
-  if (Is8Bit())
-    return CharactersToFloat(Span8(), ok);
-  return CharactersToFloat(Span16(), ok);
-}
-
 // Table is based on ftp://ftp.unicode.org/Public/UNIDATA/CaseFolding.txt
 const std::array<UChar, 256> StringImpl::kLatin1CaseFoldTable = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008,
