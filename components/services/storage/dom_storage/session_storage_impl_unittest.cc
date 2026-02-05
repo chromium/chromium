@@ -16,23 +16,18 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/uuid.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "components/services/storage/dom_storage/test_support/storage_area_test_util.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
@@ -43,15 +38,21 @@ std::vector<uint8_t> StringViewToUint8Vector(std::string_view s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-class SessionStorageImplTest : public testing::Test {
+class SessionStorageImplTest : public base::test::WithFeatureOverride,
+                               public testing::Test {
  public:
-  SessionStorageImplTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
+  SessionStorageImplTest()
+      : base::test::WithFeatureOverride(kDomStorageSqlite) {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+  }
 
   SessionStorageImplTest(const SessionStorageImplTest&) = delete;
   SessionStorageImplTest& operator=(const SessionStorageImplTest&) = delete;
 
   ~SessionStorageImplTest() override {
-    EXPECT_TRUE(base::test::RunUntil([this]() { return temp_dir_.Delete(); }));
+    // Flush all tasks to make sure the database is fully closed.
+    RunUntilIdle();
+    EXPECT_TRUE(temp_dir_.Delete());
   }
 
   void SetUp() override {
@@ -64,6 +65,8 @@ class SessionStorageImplTest : public testing::Test {
       ShutDownSessionStorage();
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
+
+  bool IsSqliteEnabled() const { return GetParam(); }
 
   void OnBadMessage(const std::string& reason) { bad_message_called_ = true; }
 
@@ -148,7 +151,16 @@ class SessionStorageImplTest : public testing::Test {
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
 };
 
-TEST_F(SessionStorageImplTest, StartupShutdownSave) {
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    SessionStorageImplTest,
+    testing::Bool(),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<SessionStorageImplTest::ParamType>& info) {
+      return info.param ? "SQLite" : "LevelDB";
+    });
+
+TEST_P(SessionStorageImplTest, StartupShutdownSave) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key1 =
@@ -204,7 +216,7 @@ TEST_F(SessionStorageImplTest, StartupShutdownSave) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, CloneBeforeBrowserClone) {
+TEST_P(SessionStorageImplTest, CloneBeforeBrowserClone) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -243,7 +255,7 @@ TEST_F(SessionStorageImplTest, CloneBeforeBrowserClone) {
   EXPECT_EQ(1ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, Cloning) {
+TEST_P(SessionStorageImplTest, Cloning) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -306,7 +318,7 @@ TEST_F(SessionStorageImplTest, Cloning) {
   EXPECT_EQ(1ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, ImmediateCloning) {
+TEST_P(SessionStorageImplTest, ImmediateCloning) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -373,7 +385,7 @@ TEST_F(SessionStorageImplTest, ImmediateCloning) {
   EXPECT_TRUE(bad_message_called_);
 }
 
-TEST_F(SessionStorageImplTest, Scavenging) {
+TEST_P(SessionStorageImplTest, Scavenging) {
   // Create our namespace, shut down Session Storage, and leave that namespace
   // on disk; then verify that it is scavenged if we re-initialize Session
   // Storage without calling CreateNamespace.
@@ -501,15 +513,15 @@ void SessionStorageImplTest::TestInvalidVersionOnDisk(
   ShutDownSessionStorage();
 }
 
-TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
+TEST_P(SessionStorageImplTest, InvalidVersionOnDisk) {
   ASSERT_NO_FATAL_FAILURE(TestInvalidVersionOnDisk("argh"));
 }
 
-TEST_F(SessionStorageImplTest, WrongVersionOnDisk) {
+TEST_P(SessionStorageImplTest, WrongVersionOnDisk) {
   ASSERT_NO_FATAL_FAILURE(TestInvalidVersionOnDisk("2"));
 }
 
-TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
+TEST_P(SessionStorageImplTest, CorruptionOnDisk) {
   std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -522,18 +534,25 @@ TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
   EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
 
   ShutDownSessionStorage();
+
   // Also flush Task Scheduler tasks to make sure the database is fully closed.
   RunUntilIdle();
 
-  // Delete manifest files to mess up opening DB.
   base::FilePath db_path =
-      temp_path().Append(FILE_PATH_LITERAL("Session Storage"));
-  base::FileEnumerator file_enum(db_path, true, base::FileEnumerator::FILES,
-                                 FILE_PATH_LITERAL("MANIFEST*"));
-  for (base::FilePath name = file_enum.Next(); !name.empty();
-       name = file_enum.Next()) {
-    base::DeleteFile(name);
+      DomStorageDatabase::GetPath(StorageType::kSessionStorage, temp_path());
+  if (IsSqliteEnabled()) {
+    // Replace the SQLite database file with plain text.
+    ASSERT_TRUE(base::WriteFile(db_path, "Corrupt database"));
+  } else {
+    // Delete manifest files to mess up opening DB.
+    base::FileEnumerator file_enum(db_path, true, base::FileEnumerator::FILES,
+                                   FILE_PATH_LITERAL("MANIFEST*"));
+    for (base::FilePath name = file_enum.Next(); !name.empty();
+         name = file_enum.Next()) {
+      base::DeleteFile(name);
+    }
   }
+
   opt_value = DoTestGet(namespace_id, storage_key, "key");
   EXPECT_FALSE(opt_value);
 
@@ -549,7 +568,7 @@ TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
   ShutDownSessionStorage();
 }
 
-TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
+TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {
   std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -675,7 +694,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   }
 }
 
-TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
+TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -782,7 +801,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   ShutDownSessionStorage();
 }
 
-TEST_F(SessionStorageImplTest, GetUsage) {
+TEST_P(SessionStorageImplTest, GetUsage) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key1 =
@@ -807,7 +826,7 @@ TEST_F(SessionStorageImplTest, GetUsage) {
   loop.Run();
 }
 
-TEST_F(SessionStorageImplTest, DeleteStorage) {
+TEST_P(SessionStorageImplTest, DeleteStorage) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key1 =
@@ -855,7 +874,7 @@ TEST_F(SessionStorageImplTest, DeleteStorage) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
+TEST_P(SessionStorageImplTest, PurgeInactiveWrappers) {
   DomStorageDatabase::Key key = StringViewToUint8Vector("key1");
   DomStorageDatabase::Key value = StringViewToUint8Vector("value1");
 
@@ -930,7 +949,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
 }
 
 // TODO(crbug.com/40650136): Flakes when verifying no data found.
-TEST_F(SessionStorageImplTest, ClearDiskState) {
+TEST_P(SessionStorageImplTest, ClearDiskState) {
   SetBackingMode(SessionStorageImpl::BackingMode::kClearDiskStateOnOpen);
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -970,7 +989,7 @@ TEST_F(SessionStorageImplTest, ClearDiskState) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, InterruptedCloneWithDelete) {
+TEST_P(SessionStorageImplTest, InterruptedCloneWithDelete) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -997,7 +1016,7 @@ TEST_F(SessionStorageImplTest, InterruptedCloneWithDelete) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, InterruptedCloneChainWithDelete) {
+TEST_P(SessionStorageImplTest, InterruptedCloneChainWithDelete) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -1028,7 +1047,7 @@ TEST_F(SessionStorageImplTest, InterruptedCloneChainWithDelete) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, InterruptedTripleCloneChain) {
+TEST_P(SessionStorageImplTest, InterruptedTripleCloneChain) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -1068,7 +1087,7 @@ TEST_F(SessionStorageImplTest, InterruptedTripleCloneChain) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, TotalCloneChainDeletion) {
+TEST_P(SessionStorageImplTest, TotalCloneChainDeletion) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -1101,7 +1120,7 @@ TEST_F(SessionStorageImplTest, TotalCloneChainDeletion) {
 
 }  // namespace
 
-TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
+TEST_P(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -1155,7 +1174,7 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   EXPECT_EQ(StringViewToUint8Vector("value2"), opt_value2.value());
 }
 
-TEST_F(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
+TEST_P(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -1191,7 +1210,7 @@ TEST_F(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
   EXPECT_EQ(1ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
+TEST_P(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -1227,7 +1246,7 @@ TEST_F(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
+TEST_P(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =
@@ -1265,7 +1284,7 @@ TEST_F(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
 }
 
 // Regression test for https://crbug.com/1128318
-TEST_F(SessionStorageImplTest, Bug1128318) {
+TEST_P(SessionStorageImplTest, Bug1128318) {
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string namespace_id2 =

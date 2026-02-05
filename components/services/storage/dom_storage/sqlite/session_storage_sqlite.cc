@@ -65,7 +65,11 @@ StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
 
 SessionStorageSqlite::SessionStorageSqlite(PassKey) {}
 
-SessionStorageSqlite::~SessionStorageSqlite() = default;
+SessionStorageSqlite::~SessionStorageSqlite() {
+  if (destruction_callback_for_testing_) {
+    std::move(destruction_callback_for_testing_).Run();
+  }
+}
 
 DbStatus SessionStorageSqlite::Open(
     PassKey,
@@ -103,6 +107,10 @@ DbStatus SessionStorageSqlite::UpdateMaps(
     CHECK(!map_update.map_usage.has_value());
 
     DB_RETURN_IF_ERROR(map_entries_table_->UpdateMap(std::move(map_update)));
+  }
+
+  if (should_fail_commits_for_testing_) {
+    return DbStatus::IOError("Simulated I/O Error");
   }
 
   RETURN_STATUS_ON_ERROR(transaction.Commit());
@@ -162,6 +170,10 @@ DbStatus SessionStorageSqlite::PutMetadata(Metadata metadata) {
       RETURN_STATUS_ON_ERROR(statement.Run());
       statement.Reset(/*clear_bound_vars=*/false);
     }
+  }
+
+  if (should_fail_commits_for_testing_) {
+    return DbStatus::IOError("Simulated I/O Error");
   }
 
   RETURN_STATUS_ON_ERROR(transaction.Commit());
@@ -250,16 +262,12 @@ DbStatus SessionStorageSqlite::RewriteDB() {
 }
 
 void SessionStorageSqlite::MakeAllCommitsFailForTesting() {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  NOTREACHED();
+  should_fail_commits_for_testing_ = true;
 }
 
 void SessionStorageSqlite::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  NOTREACHED();
+  destruction_callback_for_testing_ = std::move(callback);
 }
 
 DbStatus SessionStorageSqlite::PutVersionForTesting(int64_t version) {

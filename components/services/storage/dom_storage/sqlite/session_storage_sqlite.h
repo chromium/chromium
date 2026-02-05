@@ -98,6 +98,12 @@ class SessionStorageSqlite : public DomStorageDatabase {
   std::unique_ptr<sql::Database> database_;
   std::unique_ptr<sql::MetaTable> meta_table_;
   std::unique_ptr<MapEntriesTable> map_entries_table_;
+
+  // Simulates I/O failure in `PutMetadata()` and `UpdateMaps()` by force
+  // returning an IOError. Set to true by `MakeAllCommitsFailForTesting()`.
+  bool should_fail_commits_for_testing_ = false;
+
+  base::OnceClosure destruction_callback_for_testing_;
 };
 
 }  // namespace storage
