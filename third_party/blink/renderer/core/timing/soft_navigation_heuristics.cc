@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
@@ -213,11 +214,20 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::CreateIfNeeded(
     LocalDOMWindow* window) {
-  CHECK(window);
   if (!base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     return nullptr;
   }
+  // We expect the window to be valid and the frame to be attached.
+  CHECK(window && window->GetFrame() && window->GetFrame()->GetPage());
+
+  // Soft navigations in iframes are not supported.
   if (!window->GetFrame()->IsOutermostMainFrame()) {
+    return nullptr;
+  }
+  // Filter out non-ordinary pages, e.g. devtools overlays and internal pages
+  // used for SVG image rendering. Soft navigations are only intended to be
+  // measured on web developer-authored pages.
+  if (!window->GetFrame()->GetPage()->IsOrdinary()) {
     return nullptr;
   }
   if (Document* document = window->document()) {

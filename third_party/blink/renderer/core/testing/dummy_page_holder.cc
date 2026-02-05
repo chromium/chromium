@@ -100,8 +100,10 @@ DummyPageHolder::DummyPageHolder(
                                  ->CreateAgentGroupScheduler()) {
   if (!chrome_client)
     chrome_client = MakeGarbageCollected<EmptyChromeClient>();
-  page_ = Page::CreateNonOrdinary(*chrome_client, *agent_group_scheduler_,
-                                  /*color_provider_colors=*/nullptr);
+  page_ = Page::CreateOrdinary(*chrome_client, /*opener=*/nullptr,
+                               *agent_group_scheduler_,
+                               base::UnguessableToken::Create(),
+                               /*color_provider_colors=*/nullptr);
   Settings& settings = page_->GetSettings();
   if (setting_overrider)
     std::move(setting_overrider).Run(settings);

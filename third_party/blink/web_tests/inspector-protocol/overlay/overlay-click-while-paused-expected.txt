@@ -1,0 +1,4 @@
+Verifies that clicking on the overlay doesn't crash the renderer.
+Paused on "debugger" statement.
+Clicked on the overlay.
+
