@@ -42,14 +42,14 @@ class UrlBarViewBinder {
             view.setIsInCct(model.get(UrlBarProperties.IS_IN_CCT));
         } else if (UrlBarProperties.AUTOCOMPLETE_TEXT.equals(propertyKey)) {
             AutocompleteText autocomplete = model.get(UrlBarProperties.AUTOCOMPLETE_TEXT);
-            if (view.shouldAutocomplete()) {
-                view.setAutocompleteText(
-                        autocomplete.userText,
-                        autocomplete.autocompleteText,
-                        TextUtils.isEmpty(autocomplete.additionalText)
-                                ? null
-                                : autocomplete.additionalText);
-            }
+            boolean shouldAutocomplete = view.shouldAutocomplete();
+            view.setAutocompleteText(
+                    autocomplete.userText,
+                    shouldAutocomplete ? autocomplete.autocompleteText : null,
+                    shouldAutocomplete && !TextUtils.isEmpty(autocomplete.additionalText)
+                            ? autocomplete.additionalText
+                            : null,
+                    autocomplete.siteSearchLabel);
         } else if (UrlBarProperties.DELEGATE.equals(propertyKey)) {
             view.setDelegate(model.get(UrlBarProperties.DELEGATE));
         } else if (UrlBarProperties.FOCUS_CHANGE_CALLBACK.equals(propertyKey)) {

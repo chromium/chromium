@@ -417,7 +417,8 @@ public class SpannableAutocompleteEditTextModel
     public void setAutocompleteText(
             CharSequence userText,
             @Nullable CharSequence inlineAutocompleteText,
-            @Nullable String additionalText) {
+            @Nullable String additionalText,
+            @Nullable String siteSearchLabel) {
         // Note: this is invoked when the Autocomplete text is supplied by the Autocomplete
         // subsystem. These changes should be ignored for Autocomplete, specifically should not
         // be sent back to the Autocomplete subsystem to trigger suggestions fetch.
@@ -425,12 +426,16 @@ public class SpannableAutocompleteEditTextModel
         setAutocompleteTextInternal(
                 userText.toString(),
                 inlineAutocompleteText != null ? inlineAutocompleteText.toString() : null,
-                additionalText);
+                additionalText,
+                siteSearchLabel);
         setIgnoreTextChangeFromAutocomplete(false);
     }
 
     private void setAutocompleteTextInternal(
-            String userText, @Nullable String autocompleteText, @Nullable String additionalText) {
+            String userText,
+            @Nullable String autocompleteText,
+            @Nullable String additionalText,
+            @Nullable String siteSearchLabel) {
         if (DEBUG) Log.i(TAG, "setAutocompleteText: %s[%s]", userText, autocompleteText);
         mPreviouslySetState.set(
                 userText,
@@ -438,7 +443,7 @@ public class SpannableAutocompleteEditTextModel
                 additionalText,
                 userText.length(),
                 userText.length(),
-                null);
+                siteSearchLabel);
         // TODO(changwan): avoid any unnecessary removal and addition of autocomplete text when it
         // is not changed or when it is appended to the existing autocomplete text.
         if (mInputConnection != null) {

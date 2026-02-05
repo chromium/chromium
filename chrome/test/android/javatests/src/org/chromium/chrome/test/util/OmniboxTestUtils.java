@@ -411,7 +411,7 @@ public class OmniboxTestUtils {
                 () -> {
                     mUrlBar.setText(userText);
                     // Push this to the model as well.
-                    mUrlBar.setAutocompleteText(userText, "", null);
+                    mUrlBar.setAutocompleteText(userText, "", null, null);
                 });
         checkText(Matchers.equalTo(userText), null);
     }
@@ -450,7 +450,8 @@ public class OmniboxTestUtils {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     userText.set(mUrlBar.getTextWithoutAutocomplete());
-                    mUrlBar.setAutocompleteText(userText.get(), autocompleteText, additionalText);
+                    mUrlBar.setAutocompleteText(
+                            userText.get(), autocompleteText, additionalText, null);
                 });
         checkText(
                 Matchers.equalTo(userText.get()),

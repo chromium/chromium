@@ -235,15 +235,18 @@ public class AutocompleteEditText extends EditTextWithLeading
      * @param inlineAutocompleteText The suggested autocompletion for the user's text.
      * @param additionalText This string is displayed adjacent to the omnibox if this match is the
      *     default. Will usually be URL when autocompleting a title, and empty otherwise.
+     * @param siteSearchLabel The site search label to be shown.
      */
     public void setAutocompleteText(
             CharSequence userText,
             @Nullable CharSequence inlineAutocompleteText,
-            @Nullable String additionalText) {
+            @Nullable String additionalText,
+            @Nullable String siteSearchLabel) {
         boolean emptyAutocomplete = TextUtils.isEmpty(inlineAutocompleteText);
         if (!emptyAutocomplete) mDisableTextScrollingFromAutocomplete = true;
         if (mModel != null) {
-            mModel.setAutocompleteText(userText, inlineAutocompleteText, additionalText);
+            mModel.setAutocompleteText(
+                    userText, inlineAutocompleteText, additionalText, siteSearchLabel);
         }
     }
 
