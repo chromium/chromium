@@ -646,11 +646,6 @@
       status: "experimental",
     },
     {
-      // AudioContext.playbackStats interface.
-      name: "AudioContextPlaybackStats",
-      status: "experimental",
-    },
-    {
       // AudioContext.playoutStats interface.
       // https://chromestatus.com/feature/5172818344148992
       name: "AudioContextPlayoutStats",

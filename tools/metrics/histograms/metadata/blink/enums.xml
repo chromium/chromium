@@ -6422,7 +6422,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5785" label="AnchorCaseInsensitiveMatch"/>
   <int value="5786" label="PrerenderActivationByFormSubmission"/>
   <int value="5787" label="LinkRelModulePreloadStyle"/>
-  <int value="5788" label="AudioContextPlaybackStats"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
