@@ -425,8 +425,11 @@ void It2MeHost::ConnectOnNetworkThread(
                      << ConvertChromeOsEnterpriseAudioPlaybackToString(
                             chrome_os_enterprise_params_->audio_playback);
     }
+  } else {
+    // Audio remoting is disabled for non-enterprise ChromeOS connections.
+    options.set_audio_playback_mode(AudioPlaybackMode::kLocalOnly);
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
 
   // Create the host.
   host_ = std::make_unique<ChromotingHost>(

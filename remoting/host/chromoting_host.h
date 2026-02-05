@@ -183,6 +183,11 @@ class ChromotingHost : public ClientSession::EventHandler,
     return transport_context_;
   }
 
+  const DesktopEnvironmentOptions& desktop_environment_options_for_tests()
+      const {
+    return desktop_environment_options_;
+  }
+
  private:
   // Returns the currently connected client session, or nullptr if not found.
   ClientSession* GetConnectedClientSession() const;
