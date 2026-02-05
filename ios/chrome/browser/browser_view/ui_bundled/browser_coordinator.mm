@@ -3475,6 +3475,13 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showDefaultBrowserPromoAfterRemindMeLater {
+  if (self.defaultBrowserGenericPromoCoordinator) {
+    // Stop the existing default browser promo coordinator before starting a
+    // new one to ensure the promo is displayed with the correct configuration.
+    [self.defaultBrowserGenericPromoCoordinator stop];
+    self.defaultBrowserGenericPromoCoordinator = nil;
+  }
+
   self.defaultBrowserGenericPromoCoordinator =
       [[DefaultBrowserGenericPromoCoordinator alloc]
           initWithBaseViewController:self.viewController
