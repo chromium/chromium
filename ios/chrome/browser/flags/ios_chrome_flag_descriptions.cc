@@ -468,6 +468,11 @@ const char kDisableAutofillStrikeSystemDescription[] =
     "When enabled, the Autofill strike system will not block a feature from "
     "being offered.";
 
+const char kDisableComposeboxFromAIMNTPName[] = "DisableComposeboxFromAIMNTP";
+const char kDisableComposeboxFromAIMNTPDescription[] =
+    "When enabled, the NTP entrypoint will always lead to the AIM webpage even "
+    "when composebox is enabled.";
+
 const char kDisableKeyboardAccessoryName[] =
     "Disable Omnibox Keyboard Accessory";
 const char kDisableKeyboardAccessoryDescription[] =

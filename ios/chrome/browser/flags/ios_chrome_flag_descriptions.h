@@ -285,6 +285,9 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDisableAutofillStrikeSystemName[];
 extern const char kDisableAutofillStrikeSystemDescription[];
 
+extern const char kDisableComposeboxFromAIMNTPName[];
+extern const char kDisableComposeboxFromAIMNTPDescription[];
+
 extern const char kDisableKeyboardAccessoryName[];
 extern const char kDisableKeyboardAccessoryDescription[];
 

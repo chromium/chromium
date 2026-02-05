@@ -2277,6 +2277,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "disable-composebox-from-aimntp",
+    "owners": [ "christianxu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "disable-dns-proxy",
     "owners": [ "cros-networking@google.com" ],
     "expiry_milestone": 160

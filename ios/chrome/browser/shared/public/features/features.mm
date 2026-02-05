@@ -1069,3 +1069,9 @@ BASE_FEATURE(kUseSceneViewController, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsUseSceneViewControllerEnabled() {
   return base::FeatureList::IsEnabled(kUseSceneViewController);
 }
+
+BASE_FEATURE(kDisableComposeboxFromAIMNTP, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDisableComposeboxFromAIMNTPEnabled() {
+  return base::FeatureList::IsEnabled(kDisableComposeboxFromAIMNTP);
+}
