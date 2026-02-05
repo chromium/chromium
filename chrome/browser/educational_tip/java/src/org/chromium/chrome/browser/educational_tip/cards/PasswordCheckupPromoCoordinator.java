@@ -61,7 +61,8 @@ public class PasswordCheckupPromoCoordinator
 
     @Override
     public void onCardClicked() {
-        // TODO(crbug.com/469425754): Open password manager
+        mActionDelegate.showPasswordCheckup();
+
         // Considered complete if the user clicks on the promo
         SetupListModuleUtils.setModuleCompleted(ModuleType.PASSWORD_CHECKUP_PROMO);
 
