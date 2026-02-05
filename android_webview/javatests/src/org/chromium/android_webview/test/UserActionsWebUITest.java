@@ -19,8 +19,10 @@ import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactor
 import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
+@Batch(Batch.PER_CLASS)
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class UserActionsWebUITest extends AwParameterizedTest {

@@ -173,6 +173,12 @@
         </activity>
 
         <activity
+            android:name="org.chromium.webview_shell.InspectUserActionsActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+        </activity>
+
+        <activity
             android:name="org.chromium.webview_shell.FullscreenActivity"
             android:noHistory="true"
             android:exported="false">

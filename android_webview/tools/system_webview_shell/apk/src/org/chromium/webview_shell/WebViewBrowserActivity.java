@@ -254,6 +254,12 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (itemId == R.id.start_animation_activity) {
             startActivity(new Intent(this, WebViewAnimationTestActivity.class));
             return true;
+        } else if (itemId == R.id.start_inspect_user_actions_activity) {
+            Intent intent = new Intent(this, InspectUserActionsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+            return true;
         } else if (itemId == R.id.menu_fullscreen) {
             Intent intent = new Intent(this, FullscreenActivity.class);
             intent.putExtra(FullscreenActivity.URL_EXTRA, mWebView.getUrl());

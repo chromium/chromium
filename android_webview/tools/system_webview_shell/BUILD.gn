@@ -48,6 +48,7 @@ android_library("system_webview_shell_apk_java") {
   sources = [
     "apk/src/org/chromium/webview_shell/EdgeToEdgeUtil.java",
     "apk/src/org/chromium/webview_shell/FullscreenActivity.java",
+    "apk/src/org/chromium/webview_shell/InspectUserActionsActivity.java",
     "apk/src/org/chromium/webview_shell/JankActivity.java",
     "apk/src/org/chromium/webview_shell/MultiFileSelector.java",
     "apk/src/org/chromium/webview_shell/PageCyclerTestActivity.java",
@@ -106,6 +107,7 @@ android_resources("system_webview_shell_apk_resources") {
     "apk/res/drawable-mdpi/breadcrumb_arrow_black.png",
     "apk/res/drawable-mdpi/ic_launcher.png",
     "apk/res/layout/activity_empty.xml",
+    "apk/res/layout/activity_inspect_user_actions.xml",
     "apk/res/layout/activity_web_platform_tests.xml",
     "apk/res/layout/activity_web_platform_tests_child.xml",
     "apk/res/layout/activity_webview.xml",

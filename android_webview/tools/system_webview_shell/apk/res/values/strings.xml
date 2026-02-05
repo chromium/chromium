@@ -29,6 +29,7 @@
     <string name="menu_night_mode_on">Night Mode ON</string>
     <string name="menu_multi_profile_activity">Multi-Profile test</string>
     <string name="menu_start_animation_activity">Animation test</string>
+    <string name="menu_start_user_actions_activity">Inspect user actions</string>
     <string name="menu_fullscreen_activity">Go Fullscreen</string>
     <string name="menu_print">Print</string>
     <string name="menu_about">About WebView</string>
@@ -47,6 +48,12 @@
     <string name="scale_button">Scale</string>
     <string name="stencil_button">Rounded corner</string>
     <string name="translate_button">Translate</string>
+
+    <!-- activity_inspect_user_actions strings -->
+    <string name="record_action_button">Record User Actions</string>
+    <string name="stop_record_action_button">Stop Recording Actions</string>
+    <string name="re_record_action_button">Re-record User Actions</string>
+    <string name="close_activity_button">Close activity</string>
 
     <!--  activity_web_platform_tests strings -->
     <string name="close_button">close</string>
