@@ -98,6 +98,21 @@ ArrayBuffer::~ArrayBuffer() = default;
 
 ArrayBuffer& ArrayBuffer::operator=(const ArrayBuffer& other) = default;
 
+base::span<uint8_t> ArrayBuffer::span() {
+  if (!backing_store_) {
+    return {};
+  }
+
+  // SAFETY: Provided by `BackingStore`.
+  return UNSAFE_BUFFERS(
+      base::span<uint8_t>(static_cast<uint8_t*>(backing_store_->Data()),
+                          backing_store_->ByteLength()));
+}
+
+base::span<const uint8_t> ArrayBuffer::span() const {
+  return const_cast<ArrayBuffer*>(this)->span();
+}
+
 // Converter<ArrayBuffer> -----------------------------------------------------
 
 bool Converter<ArrayBuffer>::FromV8(v8::Isolate* isolate,
@@ -127,6 +142,14 @@ ArrayBufferView::~ArrayBufferView() = default;
 
 ArrayBufferView& ArrayBufferView::operator=(const ArrayBufferView& other) =
     default;
+
+base::span<uint8_t> ArrayBufferView::span() {
+  return array_buffer_.span().subspan(offset_, num_bytes_);
+}
+
+base::span<const uint8_t> ArrayBufferView::span() const {
+  return const_cast<ArrayBufferView*>(this)->span();
+}
 
 // Converter<ArrayBufferView> -------------------------------------------------
 

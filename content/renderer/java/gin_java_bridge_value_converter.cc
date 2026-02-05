@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_value.h"
@@ -65,7 +66,7 @@ class TypedArraySerializer {
   virtual ~TypedArraySerializer() {}
   static std::unique_ptr<TypedArraySerializer> Create(
       v8::Local<v8::TypedArray> typed_array);
-  virtual void serializeTo(char* data,
+  virtual void serializeTo(uint8_t* data,
                            size_t data_length,
                            base::ListValue* out) = 0;
 
@@ -85,7 +86,7 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
   TypedArraySerializerImpl(const TypedArraySerializerImpl&) = delete;
   TypedArraySerializerImpl& operator=(const TypedArraySerializerImpl&) = delete;
 
-  void serializeTo(char* data,
+  void serializeTo(uint8_t* data,
                    size_t data_length,
                    base::ListValue* out) override {
     DCHECK_EQ(data_length, typed_array_->Length() * sizeof(ElementType));
@@ -146,14 +147,12 @@ bool GinJavaBridgeValueConverter::FromV8ArrayBuffer(
     return true;
   }
 
-  char* data = nullptr;
-  size_t data_length = 0;
+  base::span<uint8_t> data;
   gin::ArrayBufferView view;
   if (ConvertFromV8(isolate, value.As<v8::ArrayBufferView>(), &view)) {
-    data = reinterpret_cast<char*>(view.bytes());
-    data_length = view.num_bytes();
+    data = view.span();
   }
-  if (!data) {
+  if (data.empty()) {
     *out = GinJavaBridgeValue::CreateUndefinedValue();
     return true;
   }
@@ -161,7 +160,7 @@ bool GinJavaBridgeValueConverter::FromV8ArrayBuffer(
   base::ListValue result;
   std::unique_ptr<TypedArraySerializer> serializer(
       TypedArraySerializer::Create(value.As<v8::TypedArray>()));
-  serializer->serializeTo(data, data_length, &result);
+  serializer->serializeTo(data.data(), data.size(), &result);
   *out = std::make_unique<base::Value>(std::move(result));
   return true;
 }

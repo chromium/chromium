@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <clocale>
 #include <limits>
 #include <string_view>
@@ -3562,9 +3561,9 @@ void TestRunner::DumpIconChanges(WebFrameTestProxy& source) {
 }
 
 void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
-  uint8_t* bytes = static_cast<uint8_t*>(view.bytes());
-  audio_data_.resize(view.num_bytes());
-  std::copy(bytes, UNSAFE_TODO(bytes + view.num_bytes()), audio_data_.begin());
+  base::span<const uint8_t> src = view.span();
+  audio_data_.resize(src.size());
+  base::span(audio_data_).copy_from_nonoverlapping(src);
   dump_as_audio_ = true;
 }
 

@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
@@ -53,12 +53,8 @@ class GIN_EXPORT ArrayBuffer {
   ~ArrayBuffer();
   ArrayBuffer& operator=(const ArrayBuffer& other);
 
-  void* bytes() const {
-    return backing_store_ ? backing_store_->Data() : nullptr;
-  }
-  size_t num_bytes() const {
-    return backing_store_ ? backing_store_->ByteLength() : 0;
-  }
+  base::span<uint8_t> span();
+  base::span<const uint8_t> span() const;
 
  private:
   std::shared_ptr<v8::BackingStore> backing_store_;
@@ -78,10 +74,8 @@ class GIN_EXPORT ArrayBufferView {
   ~ArrayBufferView();
   ArrayBufferView& operator=(const ArrayBufferView& other);
 
-  void* bytes() const {
-    return UNSAFE_TODO(static_cast<uint8_t*>(array_buffer_.bytes()) + offset_);
-  }
-  size_t num_bytes() const { return num_bytes_; }
+  base::span<uint8_t> span();
+  base::span<const uint8_t> span() const;
 
  private:
   ArrayBuffer array_buffer_;
