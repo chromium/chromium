@@ -7,3 +7,6 @@ per-file class_property*=kylixrd@chromium.org
 
 # If you're doing structural changes get a review from one of the ui/OWNERS.
 per-file BUILD.gn=*
+
+# For Windows-specific changes:
+per-file ..._win*=file://ui/base/win/OWNERS
