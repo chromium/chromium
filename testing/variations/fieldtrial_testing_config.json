@@ -8419,21 +8419,6 @@
             ]
         }
     ],
-    "CupsIppPrintingBackend": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CupsIppPrintingBackend"
-                    ]
-                }
-            ]
-        }
-    ],
     "CursiveManagedStylusPreinstall": [
         {
             "platforms": [
@@ -16416,6 +16401,21 @@
                     },
                     "enable_features": [
                         "LinkPreview"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LinuxCupsIppPrintingBackend": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CupsIppPrintingBackend"
                     ]
                 }
             ]
