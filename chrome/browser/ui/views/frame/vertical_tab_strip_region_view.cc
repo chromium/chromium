@@ -342,7 +342,8 @@ views::View* VerticalTabStripRegionView::GetTabGroupAnchorView(
 void VerticalTabStripRegionView::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {
-  // TODO(crbug.com/479232024): Implement this.
+  top_button_container_->GetUnfocusButton()->SetVisible(
+      new_focused_group_id.has_value());
 }
 
 TabDragContext* VerticalTabStripRegionView::GetDragContext() {

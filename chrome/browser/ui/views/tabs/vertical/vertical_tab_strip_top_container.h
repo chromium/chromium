@@ -57,6 +57,7 @@ class VerticalTabStripTopContainer : public views::View,
   TabStripComboButton* GetComboButton();
   TabStripFlatEdgeButton* GetTabSearchButton();
   views::LabelButton* GetCollapseButton() { return collapse_button_; }
+  views::LabelButton* GetUnfocusButton() { return unfocus_button_; }
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
@@ -81,6 +82,7 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
+  raw_ptr<views::LabelButton> unfocus_button_ = nullptr;
 
   raw_ptr<views::MenuButtonController> everything_menu_controller_ = nullptr;
 

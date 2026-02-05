@@ -420,4 +420,30 @@ IN_PROC_BROWSER_TEST_F(
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    VerticalTabStripControllerTabGroupFocusingInteractiveUiTest,
+    UnfocusButtonShowsWhenGroupFocused) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      // Create a second tab.
+      EnsurePresent(kNewTabButtonElementId),
+      PressButton(kNewTabButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      Do([this]() { browser()->tab_strip_model()->AddToNewGroup({0, 1}); }),
+      WaitForShow(kTabGroupHeaderElementId), Do([this]() {
+        std::optional<tab_groups::TabGroupId> group =
+            browser()->tab_strip_model()->GetActiveTabGroupId();
+        EXPECT_TRUE(group.has_value());
+
+        // Focus on the group, which should show the unfocus button.
+        browser()->tab_strip_model()->SetFocusedGroup(group.value());
+      }),
+      WaitForShow(kUnfocusTabGroupButtonElementId), Do([this]() {
+        // Unset focused group, which should hide the button.
+        browser()->tab_strip_model()->SetFocusedGroup(std::nullopt);
+      }),
+      WaitForHide(kUnfocusTabGroupButtonElementId));
+}
+
 }  // namespace

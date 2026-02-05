@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
@@ -44,6 +45,13 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
       AddTopContainerChildButtonFor(kActionToggleCollapseVertical);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
+
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    unfocus_button_ = AddTopContainerChildButtonFor(kActionUnfocusTabGroup);
+    unfocus_button_->SetProperty(views::kElementIdentifierKey,
+                                 kUnfocusTabGroupButtonElementId);
+    unfocus_button_->SetVisible(false);
+  }
 
   std::unique_ptr<TabStripFlatEdgeButton> tab_group_button;
   if (tabs::IsProjectsPanelFeatureEnabled()) {
@@ -96,11 +104,28 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   CHECK(collapse_button_);
   container_views.push_back(collapse_button_);
 
+  if (unfocus_button_ && unfocus_button_->GetVisible()) {
+    container_views.push_back(unfocus_button_);
+  }
+
   const int padding =
       GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
 
   if (state_controller_->IsCollapsed()) {
     int current_y = 0;
+
+    if (unfocus_button_ && unfocus_button_->GetVisible()) {
+      const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
+      gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
+                       current_y, pref_size.width(), pref_size.height());
+      layout.child_layouts.emplace_back(unfocus_button_.get(),
+                                        unfocus_button_->GetVisible(), bounds);
+      host_size.SetToMax(gfx::Size(bounds.right(), 0));
+
+      current_y +=
+          pref_size.height() +
+          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
+    }
 
     if (collapse_button_) {
       const gfx::Size pref_size = collapse_button_->GetPreferredSize();
@@ -178,10 +203,21 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                        2;
     }
 
-    if (collapse_button_) {
-      const gfx::Size pref_size = collapse_button_->GetPreferredSize();
+    if (unfocus_button_ && unfocus_button_->GetVisible()) {
+      const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
       gfx::Rect bounds(wrapped_due_to_overflow ? 0 : caption_button_width_,
                        std::max(0, y_baseline - pref_size.height() / 2),
+                       pref_size.width(), pref_size.height());
+      layout.child_layouts.emplace_back(unfocus_button_.get(),
+                                        unfocus_button_->GetVisible(), bounds);
+    }
+
+    if (collapse_button_) {
+      const gfx::Size pref_size = collapse_button_->GetPreferredSize();
+      const int x = layout.child_layouts.empty()
+                        ? (wrapped_due_to_overflow ? 0 : caption_button_width_)
+                        : layout.child_layouts.back().bounds.right() + padding;
+      gfx::Rect bounds(x, std::max(0, y_baseline - pref_size.height() / 2),
                        pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(collapse_button_.get(),
                                         collapse_button_->GetVisible(), bounds);
@@ -260,6 +296,10 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
   }
 
   if (collapse_button_ && IsHitInView(collapse_button_, point)) {
+    return false;
+  }
+
+  if (unfocus_button_ && IsHitInView(unfocus_button_, point)) {
     return false;
   }
 
