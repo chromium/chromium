@@ -6,7 +6,10 @@
 //!
 //! # Features
 //!
-//! - `traits`: Enables support for the `Digest` trait from the `digest` crate
+//! - `traits`: Enables support for the `Digest` trait from the `digest` crate (0.9.x, 0.10.x, and 0.11.x)
+//! - `traits09`: Enables support for `digest` crate version 0.9.x only
+//! - `traits010`: Enables support for `digest` crate version 0.10.x only
+//! - `traits011`: Enables support for `digest` crate version 0.11.x (release candidate)
 //! - `opt_size`: Enables size optimizations (reduces `.text` section size by ~75% with ~16% performance cost)
 //!
 //! # Examples
@@ -744,9 +747,10 @@ impl HKDF {
     }
 }
 
-/// Wrapped `Hash` type for the `Digest` trait.
+/// Wrapped `Hash` type for the `Digest` trait (digest 0.10.x).
 #[cfg(feature = "traits010")]
 pub type WrappedHash = digest010::core_api::CoreWrapper<Hash>;
+
 
 #[cfg(feature = "traits010")]
 mod digest_trait010 {
@@ -862,6 +866,55 @@ mod digest_trait09 {
     impl Reset for Hash {
         fn reset(&mut self) {
             *self = Self::new()
+        }
+    }
+}
+
+#[cfg(feature = "traits011")]
+mod digest_trait011 {
+    use digest011::{
+        const_oid::{AssociatedOid, ObjectIdentifier},
+        consts::U32,
+        FixedOutput, FixedOutputReset, HashMarker, Output, OutputSizeUser, Reset, Update,
+    };
+
+    use super::Hash;
+
+    impl AssociatedOid for Hash {
+        const OID: ObjectIdentifier = ObjectIdentifier::new_unwrap("2.16.840.1.101.3.4.2.1");
+    }
+
+    impl HashMarker for Hash {}
+
+    impl OutputSizeUser for Hash {
+        type OutputSize = U32;
+    }
+
+    impl Update for Hash {
+        #[inline]
+        fn update(&mut self, data: &[u8]) {
+            self._update(data);
+        }
+    }
+
+    impl FixedOutput for Hash {
+        fn finalize_into(self, out: &mut Output<Self>) {
+            let h = self.finalize();
+            out.copy_from_slice(&h);
+        }
+    }
+
+    impl Reset for Hash {
+        fn reset(&mut self) {
+            *self = Self::new()
+        }
+    }
+
+    impl FixedOutputReset for Hash {
+        fn finalize_into_reset(&mut self, out: &mut Output<Self>) {
+            let h = self.finalize();
+            out.copy_from_slice(&h);
+            self.reset();
         }
     }
 }
