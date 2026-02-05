@@ -69,6 +69,10 @@ constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kVisualSearchInteractionQueryParameterKey[] = "vsint";
+constexpr char kVisualInputTypeQueryParameter[] = "vit";
+constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
+constexpr char kVisualInputTypeQueryParameterImageValue[] = "img";
+constexpr char kVisualInputTypeQueryParameterWebpageValue[] = "wp";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
@@ -252,6 +256,21 @@ int64_t RandInt64() {
   return number;
 }
 
+std::string GetMimeTypeParamValue(lens::MimeType mime_type) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      return kVisualInputTypeQueryParameterPdfValue;
+    case lens::MimeType::kImage:
+      return kVisualInputTypeQueryParameterImageValue;
+    case lens::MimeType::kAnnotatedPageContent:
+      return kVisualInputTypeQueryParameterWebpageValue;
+    case lens::MimeType::kUnknown:
+      return kVisualInputTypeQueryParameterImageValue;
+    default:
+      NOTREACHED() << "File type not supported.";
+  }
+}
+
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -401,6 +420,17 @@ void ComposeboxQueryController::CreateSearchUrl(
       if (contextual_inputs->inputs_size() == 1) {
         // If there is only contextual input, create a search url using the
         // vsrid (single-context) parameter.
+        if (search_url_request_info->search_url_type ==
+                SearchUrlType::kStandard ||
+            base::FeatureList::IsEnabled(
+                lens::features::kLensSendVitForSingleContextNextQueries)) {
+          // Single-context queries should send the vit parameter if it is a
+          // standard (non-AIM) query, or if the flag to send the vit parameter
+          // for single context next queries is enabled.
+          search_url_request_info->additional_params.insert(
+              {kVisualInputTypeQueryParameter,
+               GetMimeTypeParamValue(last_active_file->mime_type)});
+        }
         std::move(callback).Run(GetUrlForMultimodalSearch(
             template_url_service_, is_aim_search,
             search_url_request_info->aim_entry_point,
