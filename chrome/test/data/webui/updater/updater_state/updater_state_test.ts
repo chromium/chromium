@@ -34,25 +34,17 @@ suite('UpdaterStateElement', () => {
     installationDirectory: {path: '/path/to/companion'} as unknown as FilePath,
   };
 
-  setup(() => {
+  setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
     BrowserProxyImpl.getInstance().handler = handler;
 
-    handler.setPromiseResolveFor('getEnterpriseCompanionState', {state: null});
-  });
-
-  test('renders nothing when no states', async () => {
-    handler.setPromiseResolveFor('getUpdaterStates', {
-      user: null,
-      system: null,
-    });
-
     element = document.createElement('updater-state');
     document.body.appendChild(element);
-
     await microtasksFinished();
+  });
 
+  test('renders nothing when no states', () => {
     const message = element.shadowRoot.querySelector('#no-updater-message');
     assertTrue(!!message);
     assertEquals(
@@ -66,14 +58,7 @@ suite('UpdaterStateElement', () => {
   });
 
   test('renders user state', async () => {
-    handler.setPromiseResolveFor('getUpdaterStates', {
-      user: updaterState,
-      system: null,
-    });
-
-    element = document.createElement('updater-state');
-    document.body.appendChild(element);
-
+    element.userUpdaterState = updaterState;
     await microtasksFinished();
 
     const message = element.shadowRoot.querySelector('#no-updater-message');
@@ -85,14 +70,7 @@ suite('UpdaterStateElement', () => {
   });
 
   test('renders system state', async () => {
-    handler.setPromiseResolveFor('getUpdaterStates', {
-      user: null,
-      system: updaterState,
-    });
-
-    element = document.createElement('updater-state');
-    document.body.appendChild(element);
-
+    element.systemUpdaterState = updaterState;
     await microtasksFinished();
 
     const message = element.shadowRoot.querySelector('#no-updater-message');
@@ -104,12 +82,8 @@ suite('UpdaterStateElement', () => {
   });
 
   test('renders both states', async () => {
-    handler.setPromiseResolveFor(
-        'getUpdaterStates', {user: updaterState, system: updaterState});
-
-    element = document.createElement('updater-state');
-    document.body.appendChild(element);
-
+    element.userUpdaterState = updaterState;
+    element.systemUpdaterState = updaterState;
     await microtasksFinished();
 
     const message = element.shadowRoot.querySelector('#no-updater-message');
@@ -122,16 +96,7 @@ suite('UpdaterStateElement', () => {
   });
 
   test('renders enterprise companion state', async () => {
-    handler.setPromiseResolveFor('getUpdaterStates', {
-      user: null,
-      system: null,
-    });
-    handler.setPromiseResolveFor(
-        'getEnterpriseCompanionState', {state: enterpriseCompanionState});
-
-    element = document.createElement('updater-state');
-    document.body.appendChild(element);
-
+    element.enterpriseCompanionState = enterpriseCompanionState;
     await microtasksFinished();
 
     assertFalse(!!element.shadowRoot.querySelector('#no-updater-message'));
@@ -143,12 +108,8 @@ suite('UpdaterStateElement', () => {
     assertEquals('/path/to/companion', card.installPath);
   });
 
-  test('renders error message when updater state query fails', async () => {
-    handler.setPromiseRejectFor('getUpdaterStates');
-
-    element = document.createElement('updater-state');
-    document.body.appendChild(element);
-
+  test('renders error message', async () => {
+    element.error = true;
     await microtasksFinished();
 
     const errorMessage = element.shadowRoot.querySelector('#error-message');
@@ -162,42 +123,9 @@ suite('UpdaterStateElement', () => {
         0, element.shadowRoot.querySelectorAll('updater-state-card').length);
   });
 
-  test(
-      'renders error message when enterprise companion state query fails',
-      async () => {
-        handler.setPromiseResolveFor('getUpdaterStates', {
-          user: null,
-          system: null,
-        });
-        handler.setPromiseRejectFor('getEnterpriseCompanionState');
-
-        element = document.createElement('updater-state');
-        document.body.appendChild(element);
-
-        await microtasksFinished();
-
-        const errorMessage = element.shadowRoot.querySelector('#error-message');
-        assertTrue(!!errorMessage);
-        assertEquals(
-            loadTimeData.getString('updaterStateQueryFailed'),
-            errorMessage.textContent.trim());
-
-        assertFalse(!!element.shadowRoot.querySelector('#no-updater-message'));
-        assertEquals(
-            0,
-            element.shadowRoot.querySelectorAll('updater-state-card').length);
-      });
-
   suite('provides installation directory', () => {
     test('from string', async () => {
-      handler.setPromiseResolveFor('getUpdaterStates', {
-        user: null,
-        system: updaterState,
-      });
-
-      element = document.createElement('updater-state');
-      document.body.appendChild(element);
-
+      element.systemUpdaterState = updaterState;
       await microtasksFinished();
 
       const cards = element.shadowRoot.querySelectorAll('updater-state-card');
@@ -206,17 +134,10 @@ suite('UpdaterStateElement', () => {
     });
 
     test('from UTF-16 byte array', async () => {
-      handler.setPromiseResolveFor('getUpdaterStates', {
-        user: null,
-        system: {
-          ...updaterState,
-          installationDirectory: {path: [55357, 56960]} as unknown as FilePath,
-        },
-      });
-
-      element = document.createElement('updater-state');
-      document.body.appendChild(element);
-
+      element.systemUpdaterState = {
+        ...updaterState,
+        installationDirectory: {path: [55357, 56960]} as unknown as FilePath,
+      };
       await microtasksFinished();
 
       const cards = element.shadowRoot.querySelectorAll('updater-state-card');

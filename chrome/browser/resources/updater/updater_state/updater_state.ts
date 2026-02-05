@@ -10,8 +10,7 @@ import '../icons.html.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FilePath} from '//resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
-import type {EnterpriseCompanionState, GetEnterpriseCompanionStateResponse, GetUpdaterStatesResponse, UpdaterState} from '../updater_ui.mojom-webui.js';
+import type {EnterpriseCompanionState, UpdaterState} from '../updater_ui.mojom-webui.js';
 
 import {getCss} from './updater_state.css.js';
 import {getHtml} from './updater_state.html.js';
@@ -34,45 +33,18 @@ export class UpdaterStateElement extends CrLitElement {
     };
   }
 
-  protected accessor userUpdaterState: UpdaterState|null = null;
-  protected accessor systemUpdaterState: UpdaterState|null = null;
-  protected accessor enterpriseCompanionState: EnterpriseCompanionState|null =
-      null;
-  protected accessor error: boolean = false;
+  accessor userUpdaterState: UpdaterState|null = null;
+  accessor systemUpdaterState: UpdaterState|null = null;
+  accessor enterpriseCompanionState: EnterpriseCompanionState|null = null;
+  accessor error: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.getUpdaterStates()
-        .then(response => {
-          this.userUpdaterState = response.user;
-          this.systemUpdaterState = response.system;
-        })
-        .catch(() => {
-          this.error = true;
-        });
-    this.getEnterpriseCompanionState()
-        .then(response => {
-          this.enterpriseCompanionState = response.state;
-        })
-        .catch(() => {
-          this.error = true;
-        });
   }
 
   override render() {
     return getHtml.bind(this)();
   }
-
-  private async getUpdaterStates(): Promise<GetUpdaterStatesResponse> {
-    return await BrowserProxyImpl.getInstance().handler.getUpdaterStates();
-  }
-
-  private async getEnterpriseCompanionState():
-      Promise<GetEnterpriseCompanionStateResponse> {
-    return await BrowserProxyImpl.getInstance()
-        .handler.getEnterpriseCompanionState();
-  }
-
 
   protected filePathToString(filePath: FilePath): string {
     if (typeof filePath.path === 'string') {
