@@ -12,8 +12,8 @@ class Value {
   Value(int value);
   ~Value();
 
-  bool IsValid();
-  int GetValue();
+  bool IsValid() const;
+  int GetValue() const;
 
  private:
   int value_;

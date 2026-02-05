@@ -12,10 +12,10 @@ Value::Value(int value) : value_(value) {}
 
 Value::~Value() {}
 
-bool Value::IsValid() {
+bool Value::IsValid() const {
   return true;
 }
 
-int Value::GetValue() {
+int Value::GetValue() const {
   return value_;
 }
