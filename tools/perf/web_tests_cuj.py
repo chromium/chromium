@@ -21,11 +21,12 @@ def main():
   env = os.environ.copy()
   env['PYTHONPATH'] = CROSSBENCH_DIR
 
-  command_line = [CUJ_RUNNER, '--platform=cros']
+  # TODO(b:435031130): For initial testing, only run a single benchmark.
+  command_line = [CUJ_RUNNER, '--platform=cros', '--tests=speeometer3.1']
   proc = subprocess.run(command_line, check=False, env=env)
   status = proc.returncode
 
-  # TODO(b/435031130): While this feature is still in development, we just log
+  # TODO(b:435031130): While this feature is still in development, we just log
   # the status code and then always return success. We will return the real
   # status code only after the code has been verified to be reliable.
   print('Web-tests CUJ runner returned status', status)
