@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "components/onc/onc_constants.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ash::onc {
 namespace {
@@ -139,7 +140,7 @@ class MergeListOfDictionaries {
   // paths. The resulting dictionary doesn't contain empty dictionaries.
   base::DictValue MergeDictionaries(const DictPointers& dicts) {
     base::DictValue result;
-    std::set<std::string> visited;
+    absl::flat_hash_set<std::string> visited;
     for (const base::DictValue* dict_outer : dicts) {
       if (!dict_outer) {
         continue;
