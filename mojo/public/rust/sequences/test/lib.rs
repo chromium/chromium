@@ -54,7 +54,7 @@ fn test_sequenced_task_runner() {
     let task_runner = SequencedTaskRunnerHandle::get_current_default()
         .expect("We just initialized an environment so there should be a default task runner");
 
-    let run_tasks = || test_cxx::ffi::RunAllCurrentTasks(task_runner.as_scoped_refptr().as_pin());
+    let run_tasks = SequencedTaskRunnerHandle::run_all_current_tasks_on_default_runner_for_testing;
 
     // FOR_RELEASE: It would be nice to make our own type that wraps Arc<RwLock>
     // to provide a nicer API to users (in particular, no blocking functions).

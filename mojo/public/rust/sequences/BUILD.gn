@@ -12,23 +12,24 @@ rust_static_library("sequences") {
     "callback.rs",
     "cxx.rs",
     "lib.rs",
+    "run_loop.rs",
     "scoped_refptr.rs",
     "sequenced_task_runner.rs",
   ]
   cxx_bindings = [ "cxx.rs" ]
 
   deps = [
-    ":sequences_shim",
+    ":cxx_shim",
     "//base",
   ]
 
-  allow_circular_includes_from = [ ":sequences_shim" ]
+  allow_circular_includes_from = [ ":cxx_shim" ]
 
   visibility = [ "../*" ]
 }
 
-source_set("sequences_shim") {
-  sources = [ "sequenced_task_runner_shim.h" ]
+source_set("cxx_shim") {
+  sources = [ "cxx_shim.h" ]
   deps = [ "//base" ]
 }
 
@@ -60,7 +61,7 @@ rust_static_library("test_cxx") {
     ":test_util",
     "//base",
   ]
-  visibility = [ ":*" ]
+  visibility = [ "../*" ]
 }
 
 rust_static_library("rust_sequences_unittests") {

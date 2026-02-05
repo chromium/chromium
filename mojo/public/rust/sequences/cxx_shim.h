@@ -5,10 +5,11 @@
 // This is the C++ side of the cxx bindings defined in cxx.rs. See that file
 // for documentation.
 
-#ifndef MOJO_PUBLIC_RUST_SEQUENCES_SEQUENCED_TASK_RUNNER_SHIM_H_
-#define MOJO_PUBLIC_RUST_SEQUENCES_SEQUENCED_TASK_RUNNER_SHIM_H_
+#ifndef MOJO_PUBLIC_RUST_SEQUENCES_CXX_SHIM_H_
+#define MOJO_PUBLIC_RUST_SEQUENCES_CXX_SHIM_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/rust/sequences/cxx.rs.h"
 
@@ -36,6 +37,21 @@ bool PostTaskFromRust(base::SequencedTaskRunner& runner,
       base::BindOnce(&rust_sequences::RustOnceClosure::run, std::move(task)));
 }
 
+// Create a new RunLoop on the heap so we can pass it over the cxx bridge
+std::unique_ptr<base::RunLoop> CreateRunLoop() {
+  return std::make_unique<base::RunLoop>();
+}
+
+// Run the run loop.
+void RunRunLoop(const std::unique_ptr<base::RunLoop>& run_loop) {
+  run_loop->Run();
+}
+
+// Quit the run loop.
+void QuitRunLoop(const std::unique_ptr<base::RunLoop>& run_loop) {
+  run_loop->Quit();
+}
+
 }  // namespace rust_sequences
 
-#endif  // MOJO_PUBLIC_RUST_SEQUENCES_SEQUENCED_TASK_RUNNER_SHIM_H_
+#endif  // MOJO_PUBLIC_RUST_SEQUENCES_CXX_SHIM_H_

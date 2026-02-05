@@ -36,11 +36,6 @@ TestRefCounted* CreateTestRefCounted(bool& destroyed_flag);
 std::unique_ptr<base::test::SingleThreadTaskEnvironment>
 CreateTaskEnvironment();
 
-// Run all the tasks queued up prior to this function call
-// If a task posts more tasks, those tasks will not be run until this function
-// is called again.
-void RunAllCurrentTasks(base::SequencedTaskRunner& runner);
-
 }  // namespace rust_sequences_test
 
 #endif  // MOJO_PUBLIC_RUST_SEQUENCES_TEST_TEST_UTIL_H_

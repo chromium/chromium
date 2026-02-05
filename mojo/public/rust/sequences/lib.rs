@@ -16,6 +16,7 @@
 
 pub mod callback;
 pub mod cxx;
+pub mod run_loop;
 pub mod scoped_refptr;
 pub mod sequenced_task_runner;
 

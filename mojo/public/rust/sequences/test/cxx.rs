@@ -35,8 +35,6 @@ pub mod ffi {
         type SequencedTaskRunner = sequences::cxx::ffi::SequencedTaskRunner;
 
         pub fn CreateTaskEnvironment() -> UniquePtr<SingleThreadTaskEnvironment>;
-
-        pub fn RunAllCurrentTasks(runner: Pin<&mut SequencedTaskRunner>);
     }
 }
 

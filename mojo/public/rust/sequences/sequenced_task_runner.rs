@@ -36,4 +36,17 @@ impl SequencedTaskRunnerHandle {
     pub fn as_scoped_refptr(&self) -> &ScopedRefPtr<ffi::SequencedTaskRunner> {
         &self.0
     }
+
+    /// Run all tasks which have been queued up so far
+    pub fn run_all_current_tasks_for_testing(&self) {
+        let run_loop = crate::run_loop::RunLoop::new();
+        self.post_task(run_loop.get_quit_closure());
+        run_loop.run();
+    }
+
+    pub fn run_all_current_tasks_on_default_runner_for_testing() {
+        Self::get_current_default()
+            .expect("Must be called in a context with a default task runner")
+            .run_all_current_tasks_for_testing();
+    }
 }

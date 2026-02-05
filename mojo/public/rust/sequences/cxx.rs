@@ -15,7 +15,7 @@ pub mod ffi {
     unsafe extern "C++" {
         include!("base/task/sequenced_task_runner.h");
         #[namespace = "base"]
-        pub type SequencedTaskRunner;
+        type SequencedTaskRunner;
 
         // Self is implicitly SequencedTaskRunner because it's the only type
         // in this extern block
@@ -33,7 +33,7 @@ pub mod ffi {
         unsafe fn Release(&self);
     }
 
-    // Allow C++ to use RustOnceClosure types to
+    // Allow C++ to use RustOnceClosure types
     extern "Rust" {
         type RustOnceClosure;
 
@@ -41,9 +41,16 @@ pub mod ffi {
         fn run(boxed: Box<RustOnceClosure>);
     }
 
+    // Bringing in an API for base::RunLoop
+    unsafe extern "C++" {
+        include!("base/run_loop.h");
+        #[namespace = "base"]
+        type RunLoop;
+    }
+
     // Bringing in helper functions from the C++ shim
     unsafe extern "C++" {
-        include!("mojo/public/rust/sequences/sequenced_task_runner_shim.h");
+        include!("mojo/public/rust/sequences/cxx_shim.h");
 
         // We need a shim here because the normal `GetCurrentDefault` function
         // returns a scoped_refptr, and we can't pass arbitrary generic/templated
@@ -55,6 +62,19 @@ pub mod ffi {
             runner: Pin<&mut SequencedTaskRunner>,
             task: Box<RustOnceClosure>,
         ) -> bool;
+
+        // We need a shim because cxx won't let us allocate on the stack.
+        fn CreateRunLoop() -> UniquePtr<RunLoop>;
+
+        // Call run_loop.Run(). We need a shim because cxx doesn't support
+        // functions with default arguments, and for the same reason as
+        // `QuitRunLoop` below.
+        fn RunRunLoop(run_loop: &UniquePtr<RunLoop>);
+
+        // Quit the given `RunLoop`. We need a shim because the function takes
+        // a mutable reference, but since it's thread safe we need to be able to
+        // call it with a shared reference.
+        fn QuitRunLoop(run_loop: &UniquePtr<RunLoop>);
     }
 }
 
@@ -78,3 +98,7 @@ unsafe impl CxxRefCounted for ffi::SequencedTaskRunner {
 unsafe impl CxxRefCountedThreadSafe for ffi::SequencedTaskRunner {}
 unsafe impl Send for ffi::SequencedTaskRunner {}
 unsafe impl Sync for ffi::SequencedTaskRunner {}
+
+// SAFETY: we only expose the thread-safe subset of RunLoop's functionality
+unsafe impl Send for ffi::RunLoop {}
+unsafe impl Sync for ffi::RunLoop {}

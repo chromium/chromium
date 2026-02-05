@@ -26,10 +26,4 @@ CreateTaskEnvironment() {
   return std::make_unique<base::test::SingleThreadTaskEnvironment>();
 }
 
-void RunAllCurrentTasks(base::SequencedTaskRunner& runner) {
-  base::RunLoop run_loop;
-  runner.PostTask(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-}
-
 }  // namespace rust_sequences_test
