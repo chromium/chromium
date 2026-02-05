@@ -69,6 +69,7 @@ source_set("ui") {
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/skills",
+    "//components/constrained_window",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/skills:features",
