@@ -373,6 +373,7 @@ class RenderViewContextMenu
   void ExecProtocolHandler(int event_flags, int handler_index);
   void ExecOpenLinkInProfile(int profile_index);
   void ExecInspectElement();
+  void ExecInspectElementWithGemini();
   void ExecInspectBackgroundPage();
   void ExecSaveLinkAs();
   void ExecSaveAs();
@@ -497,6 +498,9 @@ class RenderViewContextMenu
   // - Whether or not the registered protocols have changed since the menu was
   //   built.
   bool is_protocol_submenu_valid_ = false;
+
+  // Inspect sub-menu handling.
+  ui::SimpleMenuModel inspect_submenu_model_;
 
   // An observer that handles spelling suggestions, "Add to dictionary", and
   // "Use enhanced spell check" items.
