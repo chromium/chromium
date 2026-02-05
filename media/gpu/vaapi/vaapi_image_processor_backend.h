@@ -19,7 +19,7 @@ class VaapiWrapper;
 class ScopedVASurface;
 
 // ImageProcessor that is hardware accelerated with VA-API. This ImageProcessor
-// supports only dma-buf and GpuMemoryBuffer VideoFrames for both input and
+// supports only dma-buf and MappableSharedImage VideoFrames for both input and
 // output.
 class VaapiImageProcessorBackend : public ImageProcessorBackend {
  public:
