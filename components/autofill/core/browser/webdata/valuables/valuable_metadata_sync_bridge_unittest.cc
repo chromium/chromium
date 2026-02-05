@@ -69,7 +69,7 @@ ExtractEntitiesMetadataFromDataBatch(std::unique_ptr<syncer::DataBatch> batch) {
   std::vector<EntityInstance::EntityMetadata> entities;
   while (batch->HasNext()) {
     const syncer::KeyAndData& data_pair = batch->Next();
-    entities.push_back(CreateValuableMetadataFromSpecifics(
+    entities.push_back(CreateEntityMetadataFromSpecifics(
         data_pair.second->specifics.autofill_valuable_metadata()));
   }
   return entities;

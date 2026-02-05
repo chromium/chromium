@@ -38,7 +38,7 @@ sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
 
 // Converts the given valuable metadata `specifics` into an equivalent
 // EntityInstance::EntityMetadata.
-EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
+EntityInstance::EntityMetadata CreateEntityMetadataFromSpecifics(
     const sync_pb::AutofillValuableMetadataSpecifics& specifics);
 
 // Converts the given `metadata` into a `syncer::EntityData`.

@@ -336,7 +336,7 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
             EntityTable* table = GetEntityTable();
 
             EntityInstance::EntityMetadata remote =
-                CreateValuableMetadataFromSpecifics(specifics);
+                CreateEntityMetadataFromSpecifics(specifics);
             if (!table->AddOrUpdateEntityMetadata(remote)) {
               // TODO(crbug.com/436551488): Update to the correct error type.
               return syncer::ModelError(

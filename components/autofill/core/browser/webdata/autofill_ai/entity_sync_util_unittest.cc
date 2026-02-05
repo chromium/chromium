@@ -432,9 +432,9 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityMetadata) {
             sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 }
 
-// Tests that the `CreateValuableMetadataFromSpecifics` function correctly
+// Tests that the `CreateEntityMetadataFromSpecifics` function correctly
 // converts the proto to EntityTable::EntityMetadata.
-TEST(EntitySyncUtilTest, CreateValuableMetadataFromSpecifics) {
+TEST(EntitySyncUtilTest, CreateEntityMetadataFromSpecifics) {
   sync_pb::AutofillValuableMetadataSpecifics specifics;
   specifics.set_valuable_id("test-valuable-id");
   // Corresponds to Jan 1, 2025, 00:00:00 UTC
@@ -444,7 +444,7 @@ TEST(EntitySyncUtilTest, CreateValuableMetadataFromSpecifics) {
   specifics.set_last_used_date_unix_epoch_micros(13347400000000000u);
 
   EntityInstance::EntityMetadata metadata =
-      CreateValuableMetadataFromSpecifics(specifics);
+      CreateEntityMetadataFromSpecifics(specifics);
 
   EXPECT_EQ(metadata.guid.value(), "test-valuable-id");
   EXPECT_EQ(metadata.date_modified,

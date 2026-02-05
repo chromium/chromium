@@ -386,7 +386,7 @@ sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
   return specifics;
 }
 
-EntityInstance::EntityMetadata CreateValuableMetadataFromSpecifics(
+EntityInstance::EntityMetadata CreateEntityMetadataFromSpecifics(
     const sync_pb::AutofillValuableMetadataSpecifics& specifics) {
   return EntityInstance::EntityMetadata{
       .guid = EntityInstance::EntityId(specifics.valuable_id()),
