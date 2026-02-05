@@ -628,6 +628,16 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
 
+  static std::unique_ptr<Canvas2DResourceProviderSharedImage>
+  CreateForSoftwareCompositor(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      ShouldInitialize initialize_provider,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      Delegate* delegate = nullptr);
+
   Canvas2DResourceProviderSharedImage(
       gfx::Size,
       viz::SharedImageFormat,
@@ -637,6 +647,12 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate*);
+  Canvas2DResourceProviderSharedImage(gfx::Size,
+                                      viz::SharedImageFormat,
+                                      SkAlphaType,
+                                      const gfx::ColorSpace&,
+                                      WebGraphicsSharedImageInterfaceProvider*,
+                                      Delegate*);
   ~Canvas2DResourceProviderSharedImage() override = default;
 };
 
