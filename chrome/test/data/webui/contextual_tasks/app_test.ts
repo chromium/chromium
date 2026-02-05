@@ -258,4 +258,42 @@ suite('ContextualTasksAppTest', function() {
 
     assertTrue(appElement.hasAttribute('is-ai-page_'));
   });
+
+  test('copies source and aep params on new thread click', async () => {
+    const initialThreadUrl = new URL('http://example.com?q=initial');
+    initialThreadUrl.searchParams.set('source', 'some-source');
+    initialThreadUrl.searchParams.set('aep', 'some-aep');
+
+    const proxy = new TestContextualTasksBrowserProxy(initialThreadUrl.href);
+    BrowserProxyImpl.setInstance(proxy);
+    proxy.handler.setIsShownInTab(true);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Switch to side panel view, which should show the toolbar.
+    proxy.handler.setIsShownInTab(false);
+    proxy.callbackRouterRemote.onSidePanelStateChanged();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Make sure the initial URL is set.
+    assertEquals(initialThreadUrl.href, appElement.getThreadUrlForTesting());
+
+    const newThreadUrl = 'http://new-thread.com/';
+    proxy.handler.setThreadUrl(newThreadUrl);
+
+    // Simulate a new thread click from the toolbar.
+    const toolbar = appElement.shadowRoot.querySelector('top-toolbar');
+    assertTrue(!!toolbar, 'Toolbar should be visible');
+    toolbar.dispatchEvent(
+        new CustomEvent('new-thread-click', {bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    const finalUrl = new URL(appElement.getThreadUrlForTesting());
+    assertEquals(newThreadUrl, finalUrl.origin + finalUrl.pathname);
+    assertEquals('some-source', finalUrl.searchParams.get('source'));
+    assertEquals('some-aep', finalUrl.searchParams.get('aep'));
+  });
 });
