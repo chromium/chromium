@@ -463,6 +463,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void MaybeNotifyEarlyResponseToDevtools(const net::HttpResponseHeaders&);
   void SetRawRequestHeadersAndNotify(net::HttpRawRequestHeaders);
   bool IsSharedDictionaryReadAllowed();
+  // TODO(crbug.com/447039330): This is temporary for the SyntheticResponse
+  // experiment and will be removed after standardization.
+  void PerformSyntheticResponseFallback();
   void DispatchOnRawRequest(
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers);
   void DispatchOnRawResponse();
@@ -781,6 +784,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Permissions policy of the request.
   const std::optional<network::PermissionsPolicy> permissions_policy_;
+
+  const scoped_refptr<net::HttpResponseHeaders>
+      expected_response_headers_for_synthetic_response;
 
   // DevTools Durable Message instances, if enabled.
   std::unique_ptr<DevtoolsDurableMessageWriter> durable_message_writer_;

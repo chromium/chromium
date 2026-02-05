@@ -42,6 +42,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -133,6 +134,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     // explicit. But scoped_refptr was initially used for simplicity to share
     // ownership of the underlying Mojo handle.
     scoped_refptr<SharedDataPipeProducerHandle> response_body_stream;
+    scoped_refptr<net::HttpResponseHeaders>
+        expected_response_headers_for_synthetic_response;
   };
 
   // Typemapped to network.mojom.WebBundleTokenParams, see comments there

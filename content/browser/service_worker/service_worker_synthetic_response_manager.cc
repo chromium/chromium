@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/synthetic_response_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -61,36 +62,9 @@ enum class SyntheticResponseReloadReason {
 BASE_FEATURE(kServiceWorkerBypassSyntheticResponseHeaderCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string>
-    kServiceWorkerBypassSyntheticResponseIgnoredHeaders{
-        &kServiceWorkerBypassSyntheticResponseHeaderCheck,
-        "ignored_headers_for_bypass", ""};
-
 bool IsBypassSyntheticResponseHeaderCheckEnabled() {
   return base::FeatureList::IsEnabled(
       kServiceWorkerBypassSyntheticResponseHeaderCheck);
-}
-
-const std::string& GetIgnoredHeadersForBypass() {
-  static const base::NoDestructor<std::string> ignored_headers(
-      kServiceWorkerBypassSyntheticResponseIgnoredHeaders.Get());
-  return *ignored_headers;
-}
-
-const base::flat_set<std::string>& GetIgnoredHeadersForSyntheticResponse() {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      ignored_headers_set([]() {
-        const std::string ignored_headers_str(
-            blink::features::kServiceWorkerSyntheticResponseIgnoredHeaders
-                .Get());
-        const std::vector<std::string_view> ignored_headers_sv =
-            base::SplitStringPiece(ignored_headers_str, ",",
-                                   base::TRIM_WHITESPACE,
-                                   base::SPLIT_WANT_NONEMPTY);
-        return base::flat_set<std::string>(ignored_headers_sv.begin(),
-                                           ignored_headers_sv.end());
-      }());
-  return *ignored_headers_set;
 }
 
 void RecordReloadReason(SyntheticResponseReloadReason reason) {
@@ -98,62 +72,16 @@ void RecordReloadReason(SyntheticResponseReloadReason reason) {
                                 reason);
 }
 
-bool ShouldReportInconsistentHeader() {
-  static const bool report_inconsistent_header(
-      blink::features::kServiceWorkerSyntheticResponseReportInconsistentHeader
-          .Get());
-  return report_inconsistent_header;
-}
-
-void MaybeReportHeaderInconsistency(
-    const base::flat_map<std::string, std::multiset<std::string>>&
-        incoming_headers,
-    const base::flat_map<std::string, std::multiset<std::string>>&
-        stored_headers) {
-  if (!ShouldReportInconsistentHeader()) {
-    return;
-  }
-  auto to_string = [&](const std::multiset<std::string>& values) {
-    return std::accumulate(std::begin(values), std::end(values), std::string{},
-                           [](const std::string& a, const std::string& b) {
-                             return a.empty() ? b : a + ',' + b;
-                           });
-  };
-  for (const auto& item : stored_headers) {
-    if (!incoming_headers.contains(item.first)) {
-      // The header doesn't exist.
-      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "NoHeader", item.first);
-      base::debug::DumpWithoutCrashing();
-      continue;
-    }
-    if (incoming_headers.at(item.first) != item.second) {
-      // The header value is wrong.
-      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "WrongHeader",
-                                 item.first);
-      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "IncomingValue",
-                                 to_string(incoming_headers.at(item.first)));
-      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "StoredValue",
-                                 to_string(item.second));
-      base::debug::DumpWithoutCrashing();
-      continue;
-    }
-  }
-  for (const auto& item : incoming_headers) {
-    if (!stored_headers.contains(item.first)) {
-      // Unexpected header exists.
-      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "NotExpectedHeader",
-                                 item.first);
-      SCOPED_CRASH_KEY_STRING256("SyntheticResponse", "NotExpectedValue",
-                                 to_string(item.second));
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-}
-
 bool IsServiceWorkerSyntheticResponseOffMainThread() {
-  static const bool is_off_main_thread(
-      blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get());
-  return is_off_main_thread;
+  return blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get() ==
+         blink::features::ServiceWorkerSyntheticResponseProcessingMode::
+             kBackgroundThread;
+}
+
+bool IsServiceWorkerSyntheticResponseNetworkService() {
+  return blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get() ==
+         blink::features::ServiceWorkerSyntheticResponseProcessingMode::
+             kNetworkService;
 }
 
 bool IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering() {
@@ -292,7 +220,7 @@ ServiceWorkerSyntheticResponseManager::
 void ServiceWorkerSyntheticResponseManager::StartRequest(
     int request_id,
     uint32_t options,
-    const network::ResourceRequest& request,
+    network::ResourceRequest& request,
     OnReceiveResponseCallback receive_response_callback,
     OnReceiveRedirectCallback receive_redirect_callback,
     OnCompleteCallback complete_callback) {
@@ -316,6 +244,25 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
                      weak_factory_.GetWeakPtr()));
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
   client_->Bind(&client_to_pass);
+
+  if (status_ == SyntheticResponseStatus::kReady &&
+      IsServiceWorkerSyntheticResponseNetworkService()) {
+    if (!request.trusted_params) {
+      request.trusted_params = network::ResourceRequest::TrustedParams();
+    }
+    const auto& response_head = version_->GetResponseHeadForSyntheticResponse();
+    CHECK(response_head);
+    if (response_head->headers) {
+      // Set headers and body stream to let the network service use the
+      // synthetic response.
+      request.trusted_params->expected_response_headers_for_synthetic_response =
+          response_head->headers;
+      request.trusted_params->response_body_stream =
+          base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+              write_buffer_manager_->ReleaseProducerHandle());
+    }
+  }
+
   // TODO(crbug.com/352578800): Consider updating `request` with mode:
   // same-origin and redirect_mode: error to avoid concerns around origin
   // boundaries.
@@ -471,6 +418,23 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
   switch (status_) {
     case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());
+      if (IsServiceWorkerSyntheticResponseNetworkService()) {
+        CHECK(!body.is_valid());
+        // In the NetworkService mode, the fallback logic is executed in the
+        // network service. If the fallback is triggered, the network service
+        // provides a fake 200 OK response with the fallback body. This fake
+        // response does not have the opt-in header. We detect this to clear
+        // the stored response head so that the next navigation (reloading)
+        // won't trigger the synthetic response again.
+        if (!response_head->headers->HasHeader(kOptInHeaderName)) {
+          version_->ResetResponseHeadForSyntheticResponse();
+          // We don't need to call NotifyReloading() here because the response
+          // body (meta refresh) is already populated by the network service.
+          RecordReloadReason(
+              SyntheticResponseReloadReason::kHeaderInconsistent);
+        }
+        break;
+      }
       bool is_header_consistent = false;
       if (version_->GetResponseHeadForSyntheticResponse()) {
         is_header_consistent = CheckHeaderConsistency(response_head->headers);
@@ -513,6 +477,13 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   if (did_start_synthetic_response_) {
+    if (IsServiceWorkerSyntheticResponseNetworkService()) {
+      // In the NetworkService mode, the redirect response is managed in the
+      // network service. Instead of calling `OnReceiveRedirect()`, the network
+      // service sends a fallback trigger (e.g. <meta refresh>) with the
+      // non-redirect response.
+      NOTREACHED();
+    }
     // If the response is already returned from the stored data, that means the
     // renderer may already have received `OnReceiveResponse`. Sending
     // `OnReceiveRedirect` after `OnReceiveResponse` brings errors in that case.
@@ -552,38 +523,8 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   const auto& response_head = version_->GetResponseHeadForSyntheticResponse();
   CHECK(response_head);
-  base::flat_set<std::string> ignored_headers =
-      GetIgnoredHeadersForSyntheticResponse();
-  if (IsBypassSyntheticResponseHeaderCheckEnabled()) {
-    const std::string& ignored_headers_str = GetIgnoredHeadersForBypass();
-    std::vector<std::string_view> testing_ignored_headers =
-        base::SplitStringPiece(ignored_headers_str, ",", base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    for (const auto& header : testing_ignored_headers) {
-      ignored_headers.insert(base::ToLowerASCII(header));
-    }
-  }
-  auto collect_significant_headers =
-      [&](const net::HttpResponseHeaders& headers) {
-        base::flat_map<std::string, std::multiset<std::string>> collected;
-        size_t iter = 0;
-        std::string name;
-        std::string value;
-        while (headers.EnumerateHeaderLines(&iter, &name, &value)) {
-          if (!ignored_headers.contains(base::ToLowerASCII(name))) {
-            collected[name].insert(value);
-          }
-        }
-        return collected;
-      };
-  auto incoming_headers = collect_significant_headers(*headers);
-  auto stored_headers = collect_significant_headers(*response_head->headers);
-
-  bool result = incoming_headers == stored_headers;
-  if (!result) {
-    MaybeReportHeaderInconsistency(incoming_headers, stored_headers);
-  }
-
+  bool result = network::CheckHeaderConsistencyForSyntheticResponse(
+      *headers, *response_head->headers);
   TRACE_EVENT1("ServiceWorker",
                "ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency",
                "result", result);
@@ -594,12 +535,10 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
 void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::NotifyReloading");
-  auto body_for_reload = base::span_from_cstring<const char>(
-      "<meta http-equiv=\"refresh\" content=\"0;\" />");
-  auto [result, size] = write_buffer_manager_->WriteData(body_for_reload);
-  if (result != MOJO_RESULT_OK) {
-    return;
-  }
+  auto producer = write_buffer_manager_->ReleaseProducerHandle();
+  CHECK(producer.is_valid());
+  size_t written_bytes = network::WriteSyntheticResponseFallbackBody(producer);
+  CHECK_GE(written_bytes, 0u);
   OnCloneCompleted();
 }
 

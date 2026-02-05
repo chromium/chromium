@@ -94,6 +94,10 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
         base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
             std::move(response_body_stream));
   }
+  if (!data.ReadExpectedResponseHeadersForSyntheticResponse(
+          &out->expected_response_headers_for_synthetic_response)) {
+    return false;
+  }
   return true;
 }
 

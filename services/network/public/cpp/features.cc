@@ -637,4 +637,20 @@ BASE_FEATURE(kNetworkServicePerPriorityTaskQueues,
 BASE_FEATURE(kUseUnexportableKeyServiceInBrowserProcess,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kServiceWorkerSyntheticResponseHeaderCheck,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(
+    std::string,
+    kServiceWorkerSyntheticResponseIgnoredHeaders,
+    &kServiceWorkerSyntheticResponseHeaderCheck,
+    /*name=*/"ignored_headers",
+    /*default_value=*/"date,alt-svc,p3p,strict-transport-security");
+
+BASE_FEATURE_PARAM(bool,
+                   kServiceWorkerSyntheticResponseReportInconsistentHeader,
+                   &kServiceWorkerSyntheticResponseHeaderCheck,
+                   /*name=*/"report_inconsistent_header",
+                   /*default_value=*/false);
+
 }  // namespace network::features

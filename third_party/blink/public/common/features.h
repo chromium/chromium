@@ -1746,13 +1746,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kServiceWorkerSyntheticResponseIgnoredHeaders);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kServiceWorkerSyntheticResponseOffMainThread);
+enum class ServiceWorkerSyntheticResponseProcessingMode {
+  kDefault,
+  kBackgroundThread,
+  kNetworkService,
+};
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kServiceWorkerSyntheticResponseReportInconsistentHeader);
+    ServiceWorkerSyntheticResponseProcessingMode,
+    kServiceWorkerSyntheticResponseOffMainThread);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,

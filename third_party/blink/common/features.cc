@@ -2265,19 +2265,20 @@ BASE_FEATURE_PARAM(std::string,
                    "date,alt-svc,p3p,strict-transport-security");
 
 // If true, the response data processing is handled in the background thread.
-BASE_FEATURE_PARAM(bool,
-                   kServiceWorkerSyntheticResponseOffMainThread,
-                   &kServiceWorkerSyntheticResponse,
-                   "off_main_thread",
-                   false);
+const base::FeatureParam<ServiceWorkerSyntheticResponseProcessingMode>::Option
+    kServiceWorkerSyntheticResponseOffMainThreadOptions[] = {
+        {ServiceWorkerSyntheticResponseProcessingMode::kDefault, "default"},
+        {ServiceWorkerSyntheticResponseProcessingMode::kBackgroundThread,
+         "background_thread"},
+        {ServiceWorkerSyntheticResponseProcessingMode::kNetworkService,
+         "network_service"}};
 
-// If true, the browser reports crashes via `DumpWithoutCrashing()` when theare
-// was a header mismatch.
-BASE_FEATURE_PARAM(bool,
-                   kServiceWorkerSyntheticResponseReportInconsistentHeader,
-                   &kServiceWorkerSyntheticResponse,
-                   "report_inconsistent_header",
-                   false);
+BASE_FEATURE_ENUM_PARAM(ServiceWorkerSyntheticResponseProcessingMode,
+                        kServiceWorkerSyntheticResponseOffMainThread,
+                        &kServiceWorkerSyntheticResponse,
+                        "off_main_thread",
+                        ServiceWorkerSyntheticResponseProcessingMode::kDefault,
+                        &kServiceWorkerSyntheticResponseOffMainThreadOptions);
 
 // If true, the synthetic response uses the didcated data pipe reader which
 // skips unnecessary buffering on memory to transfer the response body.

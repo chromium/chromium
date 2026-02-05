@@ -43,6 +43,7 @@
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-forward.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-forward.h"
 #include "url/mojom/origin_mojom_traits.h"
@@ -195,6 +196,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       return mojo::ScopedDataPipeProducerHandle();
     }
     return std::move(trusted_params.response_body_stream->pipe);
+  }
+
+  static const scoped_refptr<net::HttpResponseHeaders>&
+  expected_response_headers_for_synthetic_response(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.expected_response_headers_for_synthetic_response;
   }
 
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,

@@ -107,6 +107,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/sri_message_signatures.h"
+#include "services/network/public/cpp/synthetic_response_util.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -429,6 +430,11 @@ URLLoader::URLLoader(
       provide_data_use_updates_(context.DataUseUpdatesEnabled()),
       partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff),
       permissions_policy_(request.permissions_policy),
+      expected_response_headers_for_synthetic_response(
+          request.trusted_params
+              ? request.trusted_params
+                    ->expected_response_headers_for_synthetic_response
+              : nullptr),
       durable_message_writer_(std::move(maybe_durable_message_writer)) {
   DCHECK(delete_callback_);
 
@@ -1027,6 +1033,14 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;
 
+  if (expected_response_headers_for_synthetic_response) {
+    // If `expected_response_headers_for_synthetic_response` is set, the client
+    // is expecting non-redirect response. So receiving `OnReceivedRedirect`
+    // indicates that the response is not as expected, and we should fallback.
+    PerformSyntheticResponseFallback();
+    return;
+  }
+
   ad_auction_event_record_request_helper_.HandleResponse(
       *url_request_, GetPermissionsPolicy());
 
@@ -1155,6 +1169,16 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
 
   response_ = BuildResponseHead();
   DispatchOnRawResponse();
+
+  if (expected_response_headers_for_synthetic_response &&
+      !CheckHeaderConsistencyForSyntheticResponse(
+          *response_->headers,
+          *expected_response_headers_for_synthetic_response)) {
+    // If `expected_response_headers_for_synthetic_response` is set, check the
+    // headers are expected ones. If not, returns a fallback response.
+    PerformSyntheticResponseFallback();
+    return;
+  }
 
   ad_auction_event_record_request_helper_.HandleResponse(
       *url_request_, GetPermissionsPolicy());
@@ -2656,6 +2680,33 @@ void URLLoader::MaybeCollectDurableMessage(size_t new_data_offset,
               .subspan(new_data_offset, static_cast<size_t>(num_bytes))),
       raw_bytes_delta);
   devtools_durable_message_raw_size_ = raw_bytes_cur_size;
+}
+
+void URLLoader::PerformSyntheticResponseFallback() {
+  TRACE_EVENT("loading", "URLLoader::PerformSyntheticResponseFallback");
+  if (url_request_) {
+    url_request_->Cancel();
+  }
+  if (upload_progress_tracker_) {
+    upload_progress_tracker_ = nullptr;
+  }
+
+  // Always use a synthetic response head for fallback. This ensures that the
+  // client receives consistent headers (HTTP/1.1 200 OK) and, crucially,
+  // that the `Service-Worker-Synthetic-Response` opt-in header is ABSENT.
+  // The absence of this header is used by the browser process to detect
+  // that a fallback has occurred and to clear its cache.
+  response_ = mojom::URLResponseHead::New();
+  response_->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n");
+
+  size_t written_bytes =
+      WriteSyntheticResponseFallbackBody(response_body_stream_);
+  CHECK_GT(written_bytes, 0u);
+  total_written_bytes_ += written_bytes;
+
+  SendResponseToClient();
+  NotifyCompleted(net::OK);
 }
 
 }  // namespace network

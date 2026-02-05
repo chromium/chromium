@@ -228,6 +228,8 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
       const_cast<mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>&>(
           other.shared_dictionary_observer));
   response_body_stream = other.response_body_stream;
+  expected_response_headers_for_synthetic_response =
+      other.expected_response_headers_for_synthetic_response;
   return *this;
 }
 
@@ -249,7 +251,9 @@ bool ResourceRequest::TrustedParams::EqualsForTesting(
          // which is moved during serialization. Therefore, we only check for
          // its presence (null or not null) for equality, rather than direct
          // comparison of the refptrs themselves.
-         (!!response_body_stream == !!other.response_body_stream);
+         (!!response_body_stream == !!other.response_body_stream) &&
+         expected_response_headers_for_synthetic_response ==
+             other.expected_response_headers_for_synthetic_response;
 }
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams() = default;

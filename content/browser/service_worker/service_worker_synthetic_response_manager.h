@@ -60,9 +60,20 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
       const ServiceWorkerSyntheticResponseManager&) = delete;
   ~ServiceWorkerSyntheticResponseManager();
 
+  // Starts the network request.
+  //
+  // If `IsServiceWorkerSyntheticResponseNetworkService()` is true and the
+  // manager is `kReady`, this method modifies the `request` object by
+  // populating its `trusted_params`. Specifically:
+  // 1. `expected_response_headers_for_synthetic_response` is set to the
+  //    cached synthetic response headers.
+  // 2. `response_body_stream` is set to a data pipe producer handle for
+  //    the synthetic response body.
+  // These changes allow the network service to serve the synthetic response
+  // without additional copies in the browser process.
   void StartRequest(int request_id,
                     uint32_t options,
-                    const network::ResourceRequest& request,
+                    network::ResourceRequest& request,
                     OnReceiveResponseCallback receive_response_callback,
                     OnReceiveRedirectCallback receive_redirect_callback,
                     OnCompleteCallback complete_callback);

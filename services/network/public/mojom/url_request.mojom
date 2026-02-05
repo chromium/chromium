@@ -174,6 +174,13 @@ struct TrustedUrlRequestParams {
   // OnReceiveResponse(). This handle remains unused until the response body is
   // ready to be written.
   handle<data_pipe_producer>? response_body_stream;
+
+  // The expected response headers for the request. If provided, the URLLoader
+  // will check if the received response headers are consistent with this. If
+  // not matched, the URLLoader will return a fallback response.
+  // TODO(crbug.com/447039330): This is temporary for the SyntheticResponse
+  // experiment and will be removed after standardization.
+  HttpResponseHeaders? expected_response_headers_for_synthetic_response;
 };
 
 // Options that may only be set on URLRequests which are related to WebBundle.
