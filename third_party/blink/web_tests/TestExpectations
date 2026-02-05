@@ -4328,7 +4328,6 @@ crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-repeating-conic-gradient.html [ Failure ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-repeating-linear-gradient.html [ Failure ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-function/filter-function-repeating-radial-gradient.html [ Failure ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/page-visibility/visibility-state-entry.tentative.html [ Failure Timeout ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-conic-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-linear-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-radial-gradient.html [ Failure ]
