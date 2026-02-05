@@ -14,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.DrawableRes;
@@ -40,10 +41,12 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -527,5 +530,74 @@ public class LocationBarModelUnitTest {
                         isOfflinePage,
                         isPaintPreview,
                         pageType));
+    }
+
+    @Test
+    public void getUrlBarData_InternalNativeUrlOnTablet() {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+
+        LocationBarModel model =
+                new LocationBarModel(
+                        context,
+                        NewTabPageDelegate.EMPTY,
+                        url -> url.getSpec(),
+                        OFFLINE_STATUS,
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+        model = Mockito.spy(model);
+        doReturn(true).when(model).isNonMultiDisplayContextOnTablet();
+        model.initializeWithNative();
+
+        try {
+            doReturn(true).when(mRegularTabMock).isInitialized();
+            GURL bookmarksGurl = new GURL(UrlConstants.BOOKMARKS_NATIVE_URL);
+            doReturn(bookmarksGurl)
+                    .when(mLocationBarModelJni)
+                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+
+            model.setTab(mRegularTabMock, mRegularProfileMock);
+            model.updateVisibleGurl();
+
+            UrlBarData data = model.getUrlBarData();
+            assertEquals(UrlConstants.BOOKMARKS_URL, data.displayText.toString());
+            assertEquals(bookmarksGurl, data.url);
+        } finally {
+            model.destroy();
+        }
+    }
+
+    @Test
+    public void getUrlBarData_InternalNativeUrlOnPhone() {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+
+        LocationBarModel model =
+                new LocationBarModel(
+                        context,
+                        NewTabPageDelegate.EMPTY,
+                        url -> url.getSpec(),
+                        OFFLINE_STATUS,
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+        model = Mockito.spy(model);
+        doReturn(false).when(model).isNonMultiDisplayContextOnTablet();
+        model.initializeWithNative();
+
+        try {
+            doReturn(true).when(mRegularTabMock).isInitialized();
+            GURL bookmarksGurl = new GURL(UrlConstants.BOOKMARKS_NATIVE_URL);
+            doReturn(bookmarksGurl)
+                    .when(mLocationBarModelJni)
+                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+
+            model.setTab(mRegularTabMock, mRegularProfileMock);
+            model.updateVisibleGurl();
+
+            UrlBarData data = model.getUrlBarData();
+            assertEquals(UrlBarData.EMPTY, data);
+        } finally {
+            model.destroy();
+        }
     }
 }

@@ -53,6 +53,7 @@ import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -427,6 +428,17 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
             GURL gurl = getCurrentGurl();
             if (!UrlBarData.shouldShowUrl(gurl, isOffTheRecord())) {
+                if (isNonMultiDisplayContextOnTablet()
+                        && gurl.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
+                        && !UrlUtilities.isNtpUrl(gurl)) {
+                    String url = gurl.getSpec();
+                    String displayUrl =
+                            url.replaceFirst(
+                                    UrlConstants.CHROME_NATIVE_URL_PREFIX,
+                                    UrlConstants.CHROME_URL_PREFIX);
+                    return UrlBarData.create(
+                            gurl, displayUrl, 0, displayUrl.length(), /* editingText= */ null);
+                }
                 return UrlBarData.EMPTY;
             }
 
@@ -934,6 +946,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         GURL getUrlOfVisibleNavigationEntry(long nativeLocationBarModelAndroid);
 
         int getPageClassification(long nativeLocationBarModelAndroid, boolean isPrefetch);
+    }
+
+    @VisibleForTesting
+    protected boolean isNonMultiDisplayContextOnTablet() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }
 
     public void onPageLoadStopped() {
