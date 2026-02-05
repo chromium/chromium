@@ -1528,6 +1528,16 @@
     "expiry_milestone": 140
   },
   {
+    "name": "chrome-finds",
+    "owners": [
+      "wylieb@google.com",
+      "bjfong@google.com",
+      "evanluo@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "chrome-item-picker-ui",
     "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
     "expiry_milestone": 150

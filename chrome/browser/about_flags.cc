@@ -10608,6 +10608,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kAndroidTipsNotificationsV2)},
 
+    {"chrome-finds", flag_descriptions::kChromeFindsName,
+     flag_descriptions::kChromeFindsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kChromeFinds)},
+
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHistoryPaneAndroid)},
