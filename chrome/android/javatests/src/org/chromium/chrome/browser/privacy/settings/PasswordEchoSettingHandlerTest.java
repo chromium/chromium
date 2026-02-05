@@ -117,7 +117,7 @@ public class PasswordEchoSettingHandlerTest {
         return Settings.System.getInt(
                         ContextUtils.getApplicationContext().getContentResolver(),
                         Settings.System.TEXT_SHOW_PASSWORD,
-                        0)
+                        1)
                 == 1;
     }
 
@@ -147,5 +147,26 @@ public class PasswordEchoSettingHandlerTest {
                     isPasswordEchoPhysicalEnabledInPrefService(),
                     isPasswordEchoEnabledInSystemSettings());
         }
+    }
+
+    // If the setting was never set by the user, the system should consider the setting as enabled.
+    @Test
+    @SmallTest
+    public void testSettingConsideredEnabledIfNeverSet() throws ExecutionException, IOException {
+        // Clear the setting from the device to test default behavior.
+        if (!mInitialShowPasswordValue.equals("null")) {
+            mDevice.executeShellCommand("settings delete system show_password");
+        }
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordEchoSettingState.getInstance()
+                            .getSettingObserver()
+                            .onChange(true, Settings.System.getUriFor("show_password"));
+                });
+
+        Assert.assertTrue(isPasswordEchoEnabledInSystemSettings());
+        Assert.assertTrue(isPasswordEchoPhysicalEnabledInPrefService());
+        Assert.assertTrue(isPasswordEchoTouchEnabledInPrefService());
     }
 }
