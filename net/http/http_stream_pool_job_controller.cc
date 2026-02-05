@@ -735,6 +735,11 @@ void HttpStreamPool::JobController::MaybeMarkAlternativeServiceBroken() {
     return;
   }
 
+  // Only mark broken if the error is actually a protocol failure.
+  if (!IsQuicErrorBrokenable(*alternative_job_result_)) {
+    return;
+  }
+
   CHECK(alternative_.has_value());
 
   pool_->http_network_session()

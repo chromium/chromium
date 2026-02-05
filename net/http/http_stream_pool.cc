@@ -155,6 +155,21 @@ bool HttpStreamPool::VerboseNetLog() {
   return kVerboseNetLog.Get();
 }
 
+// static
+bool HttpStreamPool::IsQuicErrorBrokenable(int net_error) {
+  switch (net_error) {
+    case OK:
+    case ERR_DNS_NO_MATCHING_SUPPORTED_ALPN:
+    case ERR_NETWORK_CHANGED:
+    case ERR_INTERNET_DISCONNECTED:
+    case ERR_ABORTED:
+      return false;
+
+    default:
+      return true;
+  }
+}
+
 HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
                                bool cleanup_on_ip_address_change)
     : http_network_session_(http_network_session),

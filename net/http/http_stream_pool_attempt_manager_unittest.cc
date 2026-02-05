@@ -5467,6 +5467,107 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicNetErrorDetails) {
             quic::QUIC_PACKET_READ_ERROR);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNonBrokenErrorsUnified) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({net::features::kAsyncQuicSession}, {});
+
+  // Verify that the AttemptManager continues to ignore connectivity-related
+  // errors that should not mark the protocol as broken.
+  const int kNonBrokenErrors[] = {ERR_NETWORK_CHANGED,
+                                  ERR_INTERNET_DISCONNECTED};
+
+  for (const int net_error : kNonBrokenErrors) {
+    SCOPED_TRACE(ErrorToString(net_error));
+
+    InitializeSession();
+
+    MockQuicData quic_data(quic_version());
+    quic_data.AddConnect(ASYNC, net_error);
+    quic_data.AddSocketDataToFactory(socket_factory());
+
+    SequencedSocketData tcp_data;
+    socket_factory()->AddSocketDataProvider(&tcp_data);
+    SSLSocketDataProvider ssl(ASYNC, OK);
+    socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+
+    StreamRequester requester;
+    requester.set_destination(kDefaultDestination)
+        .set_quic_version(quic_version())
+        .RequestStream(pool());
+    requester.WaitForResult();
+
+    // Verify TCP worked.
+    EXPECT_THAT(requester.result(), Optional(IsOk()));
+    EXPECT_NE(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+
+    // Verify QUIC is not broken despite the failure.
+    const AlternativeService alternative_service(
+        NextProto::kProtoQUIC, HostPortPair::FromSchemeHostPort(
+                                   requester.GetStreamKey().destination()));
+    EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+        alternative_service, NetworkAnonymizationKey()))
+        << ErrorToString(net_error);
+  }
+}
+
+// Test that QUIC alt-svc is not marked broken when QUIC fails with connectivity
+// errors (ERR_NETWORK_CHANGED) but origin succeeds. This test
+// JobController::MaybeMarkAlternativeServiceBroken.
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicFailNetworkChangedOriginOk) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  {
+    StreamRequester requester;
+    requester.set_destination(kOrigin).set_alternative_service_info(
+        AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+            alternative_service, expiration, DefaultSupportedQuicVersions()));
+
+    MockQuicData quic_data(quic_version());
+    quic_data.AddConnect(SYNCHRONOUS, ERR_NETWORK_CHANGED);
+    quic_data.AddSocketDataToFactory(socket_factory());
+
+    SequencedSocketData tcp_data;
+    socket_factory()->AddSocketDataProvider(&tcp_data);
+    SSLSocketDataProvider ssl(ASYNC, OK);
+    socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+    // For QUIC alt-svc.
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+
+    // For origin.
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+        .CompleteStartSynchronously(OK);
+
+    requester.RequestStream(pool());
+    requester.WaitForResult();
+
+    // Verify TCP worked.
+    EXPECT_THAT(requester.result(), Optional(IsOk()));
+    EXPECT_NE(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+  }  // Destructor triggers MaybeMarkAlternativeServiceBroken.
+
+  // Verify QUIC is not broken despite the failure.
+  EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()))
+      << ErrorToString(ERR_NETWORK_CHANGED);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicCanUseExistingSession) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
