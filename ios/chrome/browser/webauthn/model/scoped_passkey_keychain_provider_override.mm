@@ -7,35 +7,36 @@
 #import "base/check.h"
 
 namespace {
-ScopedPasskeyKeychainProviderOverride* g_instance = nullptr;
+ScopedPasskeyKeychainProviderBridgeOverride* g_instance = nullptr;
 }
 
 // static
-std::unique_ptr<ScopedPasskeyKeychainProviderOverride>
-ScopedPasskeyKeychainProviderOverride::MakeAndArmForTesting(  // IN-TEST
-    std::unique_ptr<PasskeyKeychainProvider> passkey_keychain_provider) {
+std::unique_ptr<ScopedPasskeyKeychainProviderBridgeOverride>
+ScopedPasskeyKeychainProviderBridgeOverride::MakeAndArmForTesting(  // IN-TEST
+    PasskeyKeychainProviderBridge* passkey_keychain_provider_bridge) {
   DCHECK(!g_instance);
   // Using new instead of make_unique to access private constructor.
-  std::unique_ptr<ScopedPasskeyKeychainProviderOverride> new_instance(
-      new ScopedPasskeyKeychainProviderOverride);
-  new_instance->passkey_keychain_provider =
-      std::move(passkey_keychain_provider);
+  std::unique_ptr<ScopedPasskeyKeychainProviderBridgeOverride> new_instance(
+      new ScopedPasskeyKeychainProviderBridgeOverride);
+  new_instance->passkey_keychain_provider_bridge =
+      passkey_keychain_provider_bridge;
   g_instance = new_instance.get();
   return new_instance;
 }
 
-ScopedPasskeyKeychainProviderOverride::ScopedPasskeyKeychainProviderOverride() =
-    default;
+ScopedPasskeyKeychainProviderBridgeOverride::
+    ScopedPasskeyKeychainProviderBridgeOverride() = default;
 
-ScopedPasskeyKeychainProviderOverride::
-    ~ScopedPasskeyKeychainProviderOverride() {
+ScopedPasskeyKeychainProviderBridgeOverride::
+    ~ScopedPasskeyKeychainProviderBridgeOverride() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
-PasskeyKeychainProvider* ScopedPasskeyKeychainProviderOverride::Get() {
+PasskeyKeychainProviderBridge*
+ScopedPasskeyKeychainProviderBridgeOverride::Get() {
   if (g_instance) {
-    return g_instance->passkey_keychain_provider.get();
+    return g_instance->passkey_keychain_provider_bridge;
   }
-  return nullptr;
+  return nil;
 }

@@ -8,6 +8,7 @@
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/webauthn/model/scoped_passkey_keychain_provider_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 
 namespace {
 
@@ -31,16 +32,28 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
   void FetchKeys(NSString* gaia,
                  webauthn::ReauthenticatePurpose purpose,
                  webauthn::KeysFetchedCallback callback) override {
-    DCHECK(!callback.is_null());
+    CHECK(!callback.is_null());
     std::move(callback).Run({GetTestKey()});
+  }
+
+  void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback) override {
+    CHECK(!callback.is_null());
+    std::move(callback).Run(YES, /*error=*/nil);
+  }
+
+  void CheckDegradedRecoverability(
+      NSString* gaia,
+      CheckDegradedRecoverabilityCallback callback) override {
+    CHECK(!callback.is_null());
+    std::move(callback).Run(NO, /*error=*/nil);
   }
 };
 
 }  // namespace
 
 @interface IOSChromePasskeyClientAppInterface () {
-  std::unique_ptr<ScopedPasskeyKeychainProviderOverride>
-      _scopedPasskeyKeychainProviderOverride;
+  std::unique_ptr<ScopedPasskeyKeychainProviderBridgeOverride>
+      _scopedPasskeyKeychainProviderBridgeOverride;
 }
 
 @end
@@ -56,16 +69,19 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
   return instance;
 }
 
-+ (std::unique_ptr<ScopedPasskeyKeychainProviderOverride>&)
-    scopedPasskeyKeychainProviderOverride {
++ (std::unique_ptr<ScopedPasskeyKeychainProviderBridgeOverride>&)
+    scopedPasskeyKeychainProviderBridgeOverride {
   return [IOSChromePasskeyClientAppInterface sharedInstance]
-      ->_scopedPasskeyKeychainProviderOverride;
+      ->_scopedPasskeyKeychainProviderBridgeOverride;
 }
 
-+ (void)setUpFakePasskeyKeychainProvider {
-  [IOSChromePasskeyClientAppInterface scopedPasskeyKeychainProviderOverride] =
-      ScopedPasskeyKeychainProviderOverride::MakeAndArmForTesting(
-          std::make_unique<FakePasskeyKeychainProvider>());
++ (void)setUpFakePasskeyKeychainProviderBridge {
+  PasskeyKeychainProviderBridge* bridge = [[PasskeyKeychainProviderBridge alloc]
+      initWithPasskeyKeychainProvider:std::make_unique<
+                                          FakePasskeyKeychainProvider>()];
+  [IOSChromePasskeyClientAppInterface
+      scopedPasskeyKeychainProviderBridgeOverride] =
+      ScopedPasskeyKeychainProviderBridgeOverride::MakeAndArmForTesting(bridge);
 }
 
 @end

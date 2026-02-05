@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/containers/span.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
@@ -15,6 +18,7 @@
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -23,12 +27,67 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webauthn/model/scoped_passkey_keychain_provider_override.h"
-#import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/web/public/web_state.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 #endif
+
+namespace {
+
+// Returns a list of shared keys from the trusted vault keys.
+// TODO(crbug.com/460485614): Clean up FetchTrustedVaultKeysCompletionBlock.
+webauthn::SharedKeyList SharedKeyListFromTrustedVaultKeys(
+    NSArray<NSData*>* trusted_vault_keys) {
+  webauthn::SharedKeyList key_list;
+  for (NSData* data in trusted_vault_keys) {
+    base::span<const uint8_t> data_span = base::apple::NSDataToSpan(data);
+    key_list.emplace_back(data_span.begin(), data_span.end());
+  }
+  return key_list;
+}
+
+}  // namespace
+
+// Helper class to act as a delegate for the PasskeyKeychainProviderBridge.
+@interface IOSChromePasskeyClientBridgeDelegate
+    : NSObject <PasskeyKeychainProviderBridgeDelegate>
+
+- (instancetype)initWithClient:(IOSChromePasskeyClient*)client;
+
+@end
+
+@implementation IOSChromePasskeyClientBridgeDelegate {
+  raw_ptr<IOSChromePasskeyClient> _client;
+}
+
+- (instancetype)initWithClient:(IOSChromePasskeyClient*)client {
+  self = [super init];
+  if (self) {
+    _client = client;
+  }
+  return self;
+}
+
+- (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
+  // TODO(crbug.com/460485614): Implement user verification.
+  completion();
+}
+
+- (void)showWelcomeScreenWithPurpose:
+            (webauthn::PasskeyWelcomeScreenPurpose)purpose
+                          completion:
+                              (webauthn::PasskeyWelcomeScreenAction)completion {
+  [_client->GetCommandHandler() showPasskeyWelcomeScreenForPurpose:purpose
+                                                        completion:completion];
+}
+
+- (void)providerDidCompleteReauthentication {
+  // TODO(crbug.com/460485614): Handle that.
+}
+
+@end
 
 IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
   CHECK(web_state);
@@ -36,30 +95,41 @@ IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
   profile_ = ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
 }
 
-IOSChromePasskeyClient::~IOSChromePasskeyClient() {}
+IOSChromePasskeyClient::~IOSChromePasskeyClient() = default;
 
-PasskeyKeychainProvider* IOSChromePasskeyClient::GetPasskeyKeychainProvider() {
-  // Returns the test provider if it's set, or the regular provider otherwise.
-  PasskeyKeychainProvider* test_provider =
-      ScopedPasskeyKeychainProviderOverride::Get();
-  if (test_provider) {
-    return test_provider;
+PasskeyKeychainProviderBridge*
+IOSChromePasskeyClient::GetPasskeyKeychainProviderBridge() {
+  if (passkey_keychain_provider_bridge_) {
+    return passkey_keychain_provider_bridge_;
   }
 
-  if (!passkey_keychain_provider_) {
+  PasskeyKeychainProviderBridge* test_bridge =
+      ScopedPasskeyKeychainProviderBridgeOverride::Get();
+  if (test_bridge) {
+    passkey_keychain_provider_bridge_ = test_bridge;
+  } else {
     bool metrics_reporting_enabled =
         GetApplicationContext()->GetLocalState()->GetBoolean(
             metrics::prefs::kMetricsReportingEnabled);
-    passkey_keychain_provider_ =
-        std::make_unique<PasskeyKeychainProvider>(metrics_reporting_enabled);
+    passkey_keychain_provider_bridge_ = [[PasskeyKeychainProviderBridge alloc]
+          initWithEnableLogging:metrics_reporting_enabled
+        navigationItemTitleView:nil];
   }
 
-  return passkey_keychain_provider_.get();
+  bridge_delegate_ =
+      [[IOSChromePasskeyClientBridgeDelegate alloc] initWithClient:this];
+  passkey_keychain_provider_bridge_.delegate = bridge_delegate_;
+
+  return passkey_keychain_provider_bridge_;
 }
 
 void IOSChromePasskeyClient::SetIOSPasskeyClientCommandsHandler(
     id<IOSPasskeyClientCommands> handler) {
   command_handler_ = handler;
+}
+
+id<IOSPasskeyClientCommands> IOSChromePasskeyClient::GetCommandHandler() const {
+  return command_handler_;
 }
 
 bool IOSChromePasskeyClient::PerformUserVerification() {
@@ -70,13 +140,22 @@ bool IOSChromePasskeyClient::PerformUserVerification() {
 
 void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
                                        webauthn::KeysFetchedCallback callback) {
-  // TODO(crbug.com/460485614): Allow onboarding, bootstrapping and reauth.
   CoreAccountInfo account =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
 
-  GetPasskeyKeychainProvider()->FetchKeys(account.gaia.ToNSString(), purpose,
-                                          std::move(callback));
+  auto completion_block = base::CallbackToBlock(base::BindOnce(
+      [](webauthn::KeysFetchedCallback inner_callback,
+         NSArray<NSData*>* trusted_vault_keys) {
+        std::move(inner_callback)
+            .Run(SharedKeyListFromTrustedVaultKeys(trusted_vault_keys));
+      },
+      std::move(callback)));
+  [GetPasskeyKeychainProviderBridge()
+      fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
+                        credential:nil
+                           purpose:purpose
+                        completion:completion_block];
 }
 
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet(

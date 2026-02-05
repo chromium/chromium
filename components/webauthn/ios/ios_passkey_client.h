@@ -25,6 +25,13 @@ class WebAuthnCredentialsDelegate;
 // Shows the passkey suggestion bottom sheet.
 - (void)showPasskeySuggestionBottomSheet:(const std::string&)requestId;
 
+// Shows the passkey welcome screen for the given `purpose`.
+- (void)showPasskeyWelcomeScreenForPurpose:
+            (webauthn::PasskeyWelcomeScreenPurpose)purpose
+                                completion:
+                                    (webauthn::PasskeyWelcomeScreenAction)
+                                        completion;
+
 @end
 
 namespace webauthn {

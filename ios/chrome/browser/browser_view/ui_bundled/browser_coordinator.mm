@@ -2416,6 +2416,14 @@ const char kChromeAppStoreUrl[] =
   [self.credentialSuggestionBottomSheetCoordinator start];
 }
 
+- (void)showPasskeyWelcomeScreenForPurpose:
+            (webauthn::PasskeyWelcomeScreenPurpose)purpose
+                                completion:
+                                    (webauthn::PasskeyWelcomeScreenAction)
+                                        completion {
+  // TODO(crbug.com/460485614): Implement.
+}
+
 #pragma mark - BrowserCoordinatorCommands
 
 - (void)printTabWithBaseViewController:(UIViewController*)baseViewController {

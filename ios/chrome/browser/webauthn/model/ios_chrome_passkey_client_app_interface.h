@@ -9,8 +9,8 @@
 
 @interface IOSChromePasskeyClientAppInterface : NSObject
 
-// Sets up a fake PasskeyKeychainProvider for testing.
-+ (void)setUpFakePasskeyKeychainProvider;
+// Sets up a fake PasskeyKeychainProviderBridge for testing.
++ (void)setUpFakePasskeyKeychainProviderBridge;
 
 @end
 

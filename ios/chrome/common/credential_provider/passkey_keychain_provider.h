@@ -37,7 +37,7 @@ class PasskeyKeychainProvider {
   // - "gaia" is used to identify the account.
   // - "callback" is called once the enrollment status is known and receives
   // the result and the potential error as input.
-  void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback);
+  virtual void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback);
 
   // Asynchronously enrolls the identity identified by `gaia` and invokes
   // `callback`.
@@ -96,7 +96,7 @@ class PasskeyKeychainProvider {
   // - "gaia" is used to identify the account.
   // - "callback" is called once the degraded recoverability status is known and
   // receives the result and the potential error as input.
-  void CheckDegradedRecoverability(
+  virtual void CheckDegradedRecoverability(
       NSString* gaia,
       CheckDegradedRecoverabilityCallback callback);
 

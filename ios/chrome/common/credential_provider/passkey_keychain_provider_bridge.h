@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
 #define IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
 
+#include <memory>
+
 #import "base/ios/block_types.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
@@ -40,6 +42,11 @@ typedef void (^FetchTrustedVaultKeysCompletionBlock)(
 // be enabled in the Credential Provider Extension.
 - (instancetype)initWithEnableLogging:(BOOL)enableLogging
               navigationItemTitleView:(UIView*)navigationItemTitleView
+    NS_DESIGNATED_INITIALIZER;
+
+// Initializer for testing that allows injecting a fake PasskeyKeychainProvider.
+- (instancetype)initWithPasskeyKeychainProvider:
+    (std::unique_ptr<PasskeyKeychainProvider>)passkeyKeychainProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

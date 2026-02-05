@@ -8,27 +8,29 @@
 #import <memory>
 
 #import "base/functional/callback.h"
-#import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 
-// Scoped class to override the PasskeyKeychainProvider in tests.
-class ScopedPasskeyKeychainProviderOverride {
+@class PasskeyKeychainProviderBridge;
+
+// Scoped class to override the PasskeyKeychainProviderBridge in tests.
+class ScopedPasskeyKeychainProviderBridgeOverride {
  public:
-  ~ScopedPasskeyKeychainProviderOverride();
+  ~ScopedPasskeyKeychainProviderBridgeOverride();
 
-  // Returns a provider if set, or nullptr.
-  static PasskeyKeychainProvider* Get();
+  // Returns a bridge if set, or nullptr.
+  static PasskeyKeychainProviderBridge* Get();
 
   // Creates a scoped override so that the provided fake passkey keychain
-  // provider will be used in place of the production implementation.
-  static std::unique_ptr<ScopedPasskeyKeychainProviderOverride>
+  // provider bridge will be used in place of the production implementation.
+  static std::unique_ptr<ScopedPasskeyKeychainProviderBridgeOverride>
   MakeAndArmForTesting(
-      std::unique_ptr<PasskeyKeychainProvider> passkey_keychain_provider);
+      PasskeyKeychainProviderBridge* passkey_keychain_provider_bridge);
 
-  // The passkey keychain provider to use for testing.
-  std::unique_ptr<PasskeyKeychainProvider> passkey_keychain_provider;
+  // The passkey keychain provider bridge to use for testing.
+  PasskeyKeychainProviderBridge* passkey_keychain_provider_bridge = nil;
 
  private:
-  ScopedPasskeyKeychainProviderOverride();
+  ScopedPasskeyKeychainProviderBridgeOverride();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBAUTHN_MODEL_SCOPED_PASSKEY_KEYCHAIN_PROVIDER_OVERRIDE_H_

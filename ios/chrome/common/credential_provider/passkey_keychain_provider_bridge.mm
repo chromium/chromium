@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/to_vector.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
@@ -62,6 +63,16 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
     _passkeyKeychainProvider =
         std::make_unique<PasskeyKeychainProvider>(enableLogging);
     _navigationItemTitleView = navigationItemTitleView;
+  }
+  return self;
+}
+
+- (instancetype)initWithPasskeyKeychainProvider:
+    (std::unique_ptr<PasskeyKeychainProvider>)passkeyKeychainProvider {
+  self = [super init];
+  if (self) {
+    _passkeyKeychainProvider = std::move(passkeyKeychainProvider);
+    _navigationItemTitleView = nil;  // Not needed for tests.
   }
   return self;
 }

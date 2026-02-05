@@ -39,8 +39,8 @@ id<GREYMatcher> CreatePasskeyButton() {
 - (void)setUp {
   [super setUp];
 
-  // Make sure the fake passkey keychain provider is set.
-  [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProvider];
+  // Make sure the fake passkey keychain provider bridge is set.
+  [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProviderBridge];
 
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
