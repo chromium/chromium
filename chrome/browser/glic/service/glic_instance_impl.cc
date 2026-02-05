@@ -102,6 +102,9 @@ const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
     &kGlicRemoveBlankInstancesOnClose, "delay", base::Seconds(1)};
 BASE_FEATURE(kGlicSuppressAnimationsOnDetach, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   CHECK(tab);
@@ -148,6 +151,14 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
     tabs::TabInterface* source_tab = tabs::TabInterface::GetFromContents(
         content::WebContents::FromRenderFrameHost(source_render_frame_host));
     auto* glic_embedder = instance_->GetEmbedderForTab(source_tab);
+
+    if (base::FeatureList::IsEnabled(kGlicRemoveDaisyChainingWhenFreShowing)) {
+      if (instance_->service()->IsFreShowing() ||
+          (IsTrustFirstOnboardingPending(instance_->profile()) &&
+           features::kGlicTrustFirstOnboardingArmParam.Get() != 1)) {
+        return;
+      }
+    }
 
     // Only bind if the previous instance was active.
     if (glic_embedder && glic_embedder->IsShowing()) {

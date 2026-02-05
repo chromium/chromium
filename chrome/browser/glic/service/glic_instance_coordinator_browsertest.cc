@@ -9,11 +9,14 @@
 
 #include "base/task/current_thread.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/glic_tab_observer.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_close_options.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
@@ -21,9 +24,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -305,6 +311,71 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     EXPECT_EQ(coordinator().GetInstanceForTab(tab1), tab4_instance);
     EXPECT_TRUE(tab4_instance->IsShowing());
     EXPECT_EQ(tab1->GetBrowserWindowInterface()->GetActiveTabInterface(), tab4);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       TabContentsDaisyChainingSuppressedWhenUnifiedFreShown) {
+  ToggleGlic();
+  RunTestSequence(WaitForGlicOpen());
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+
+  // Mock FRE opening
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
+  glic_service->fre_controller().SetIsShowingDialogForTesting(true);
+  EXPECT_TRUE(glic_service->IsFreShowing());
+
+  // Try to daisy chain via Page Contents
+  {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/false);
+    tabs::TabInterface* tab2 = waiter.Wait();
+
+    GlicInstance* tab2_instance = coordinator().GetInstanceForTab(tab2);
+
+    // Verify daisy chaining did not occur
+    EXPECT_EQ(nullptr, tab2_instance);
+  }
+}
+
+class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicTrustFirstOnboarding,
+          {{features::kGlicTrustFirstOnboardingArmParam.name, "1"}}},
+         {features::kGlicMultiInstance, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
+    TabContentsDaisyChainingNotSuppressedWhenTrustFirstArm1Shown) {
+  // Open FRE.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
+
+  ToggleGlic();
+  RunTestSequence(WaitForGlicOpen());
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+
+  // Try to daisy chain via Page Contents
+  {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/false);
+    tabs::TabInterface* tab2 = waiter.Wait();
+
+    GlicInstance* tab2_instance = coordinator().GetInstanceForTab(tab2);
+
+    // Verify daisy chaining occurred.
+    EXPECT_NE(nullptr, tab2_instance);
   }
 }
 

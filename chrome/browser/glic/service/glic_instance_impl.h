@@ -56,6 +56,8 @@ class EmptyEmbedderDelegate;
 class GlicTabContentsObserver;
 class GlicZeroStateSuggestionsManager;
 
+BASE_DECLARE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing);
+
 // A GlicInstance owns a single host keeping any state that must exist for the
 // lifetime of the host. When a host is showing, the GlicInstance creates a
 // GlicUiEmbedder to display the webcontents in. An instance (and host) exist
@@ -111,6 +113,7 @@ class GlicInstanceImpl : public GlicInstance,
   GlicInstanceImpl& operator=(const GlicInstanceImpl&) = delete;
 
   Profile* profile() { return profile_; }
+  GlicKeyedService* service() { return service_; }
 
   // Returns whether host's webcontents are focused.
   bool HasFocus();
