@@ -7,6 +7,7 @@
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./shared_style.css.js
+ * #import=./shared_vars.css.js
  * #scheme=relative
  * #include=cr-shared-style-lit shared-style
  * #css_wrapper_metadata_end */
@@ -16,6 +17,7 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  padding: 16px var(--page-right-padding) 0 0;
 }
 
 #emptyState {
@@ -48,7 +50,6 @@
   box-sizing: border-box;
 }
 
-/* TODO(b/479210761): Fix the cut-off issue when tabbed. */
 #addSkillButton {
   flex-shrink: 0;
 }

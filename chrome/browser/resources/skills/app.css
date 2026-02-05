@@ -21,7 +21,6 @@
 #content {
   display: flex;
   flex: 1;
-  overflow: overlay;
   position: relative;
 }
 
@@ -36,7 +35,6 @@
   max-height: 100%;
   width: 100%;
   overscroll-behavior: contain;
-  overflow: auto;
   padding-top: 8px;
 }
 
@@ -48,7 +46,8 @@ cr-page-selector {
   display: flex;
   flex-direction: column;
 
-  max-width: 850px;
+  /* The width is calculated using the width of 3 skill cards plus padding. */
+  max-width: calc(3 * var(--skills-card-width) + 2 * var(--skills-card-gap) + var(--page-right-padding));
   /* Align the left edge of the page selector with the left edge of
    * the search bar contained within cr-toolbar. If the window is too narrow
    * the searchbar disappears, max(0px,...) ensures the content is not being

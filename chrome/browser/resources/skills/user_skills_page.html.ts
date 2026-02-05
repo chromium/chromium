@@ -5,6 +5,7 @@ import '/strings.m.js';
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {CardType} from './card.js';
 import type {UserSkillsPageElement} from './user_skills_page.js';
 
 export function getHtml(this: UserSkillsPageElement) {
@@ -37,11 +38,11 @@ ${this.filteredSkills_.length === 0 ? html`
       $i18n{browseSkillsTitle}
     </cr-button>
   </div>` : html`
-  <ul>
-    ${this.filteredSkills_.map((skill) => html`
-    <!-- TODO(b/475605779): Replace this with cards -->
-    <li>${skill.name}</li>`)}
-  </ul>`}
+   <div class="skill-cards-container">
+    ${Array.from(this.filteredSkills_).map((skill) => html`
+      <skill-card .skill="${skill}" .cardType="${CardType.USER_SKILL_CARD}">
+      </skill-card>`)}
+  </div>`}
 <!--_html_template_end_-->`;
   // clang-format on
 }

@@ -6,28 +6,32 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./shared_vars.css.js
  * #scheme=relative
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
+  --more-menu-icon-container: 40px;
+  --skill-icon: 26px;
   display: flex;
   flex-direction: column;
-  height: 230px;
-  width: 270px;
+  height: var(--skills-card-height);
+  width: var(--skills-card-width);
 }
 
 .card {
   align-items: flex-start;
   background-color: var(--color-sys-surface1);
   border-radius: var(--cr-card-border-radius);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 198px;
+  height: 100%;
   margin: 0 auto;
-  padding: 16px;
-  width: 238px;
+  padding: var(--skills-card-gap);
+  width: 100%;
 }
 
 #cardHeader {
@@ -43,10 +47,20 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
+  width: 100%;
 }
 
 #icon {
-  margin-inline-end: 8px;
+  box-sizing: border-box;
+  padding-right: 8px;
+  width: var(--skill-icon);
+}
+
+#name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(var(--skills-card-width) - 2 * var(--skills-card-gap) - var(--skill-icon) - var(--more-menu-icon-container));
 }
 
 #cardBody {
@@ -59,12 +73,14 @@
   height: 110px;
   line-height: 20px;
   overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 #cardFooter {
   flex: 1;
 }
 
-#editButton {
+#editButton, #saveButton {
   --cr-button-border-color: transparent;
 }

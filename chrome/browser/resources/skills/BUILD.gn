@@ -47,6 +47,7 @@ build_webui("build") {
     "discover_skills_page.css",
     "error_page.css",
     "shared_style.css",
+    "shared_vars.css",
     "sidebar.css",
     "skills_dialog.css",
     "user_skills_page.css",

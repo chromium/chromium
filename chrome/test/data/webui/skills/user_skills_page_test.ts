@@ -71,10 +71,10 @@ suite('UserSkillsPage', function() {
     browserProxy.callbackRouterRemote.updateSkill(testSkill);
     await microtasksFinished();
 
-    const skillItems = page.shadowRoot.querySelectorAll('li');
+    const skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(1, skillItems.length);
     assertTrue(!!skillItems[0]);
-    assertEquals('Test Skill', skillItems[0].textContent.trim());
+    assertEquals('Test Skill', skillItems[0].skill.name);
   });
 
   test('RemoveSkillUpdatesPage', async function() {
@@ -91,14 +91,14 @@ suite('UserSkillsPage', function() {
     browserProxy.callbackRouterRemote.updateSkill(testSkill);
     await microtasksFinished();
 
-    let skillItems = page.shadowRoot.querySelectorAll('li');
+    let skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertTrue(!!skillItems[0]);
-    assertEquals('Test Skill', skillItems[0].textContent.trim());
+    assertEquals('Test Skill', skillItems[0].skill.name);
 
     browserProxy.callbackRouterRemote.removeSkill(testSkill.id);
     await microtasksFinished();
 
-    skillItems = page.shadowRoot.querySelectorAll('li');
+    skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(0, skillItems.length);
   });
 
@@ -130,10 +130,10 @@ suite('UserSkillsPage', function() {
 
     await microtasksFinished();
 
-    const skillItems = page.shadowRoot.querySelectorAll('li');
+    const skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(1, skillItems.length);
     assertTrue(!!skillItems[0]);
-    assertEquals('B', skillItems[0].textContent.trim());
+    assertEquals('B', skillItems[0].skill.name);
   });
 
   test('AddSkillDebouncesClicks', async function() {
@@ -194,24 +194,24 @@ suite('UserSkillsPage', function() {
     browserProxy.callbackRouterRemote.updateSkill(skillC);
     await microtasksFinished();
 
-    let skillItems = page.shadowRoot.querySelectorAll('li');
+    let skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(3, skillItems.length);
 
     // Search for apple
     page.onSearchChanged('Apple');
     await page.updateComplete;
-    skillItems = page.shadowRoot.querySelectorAll('li');
+    skillItems = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(1, skillItems.length);
-    assertEquals('Apple', skillItems[0]!.textContent.trim());
+    assertEquals('Apple', skillItems[0]!.skill.name);
 
     // Search for fruit
     page.onSearchChanged('fruit');
     await page.updateComplete;
-    assertEquals(2, page.shadowRoot.querySelectorAll('li').length);
+    assertEquals(2, page.shadowRoot.querySelectorAll('skill-card').length);
 
     // Clear search
     page.onSearchChanged('');
     await page.updateComplete;
-    assertEquals(3, page.shadowRoot.querySelectorAll('li').length);
+    assertEquals(3, page.shadowRoot.querySelectorAll('skill-card').length);
   });
 });

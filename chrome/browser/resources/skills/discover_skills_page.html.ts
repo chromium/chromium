@@ -5,6 +5,7 @@ import '/strings.m.js';
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {CardType} from './card.js';
 import type {DiscoverSkillsPageElement} from './discover_skills_page.js';
 
 export function getHtml(this: DiscoverSkillsPageElement) {
@@ -25,10 +26,10 @@ ${this.topSkills_().map(skill => html`<li>${skill.name}</li>`)}` : ''}
       ${category}
     </cr-chip>`)}
 </div>
-<div>
-  ${this.getSelectedSkills_().map(skill =>
-    /* TODO(b/475606460): Replace this with cards */
-    html`<li>${skill.name}</li>`)}
+<div class="skill-cards-container">
+  ${this.getSelectedSkills_().map(skill => html`
+    <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}">
+    </skill-card>`)}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

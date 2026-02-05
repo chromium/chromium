@@ -14,6 +14,11 @@ import {SkillSource} from './skill.mojom-webui.js';
 import {getCss} from './card.css.js';
 import {getHtml} from './card.html.js';
 
+export enum CardType {
+  USER_SKILL_CARD = 'user-skill-card',
+  DISCOVER_SKILL_CARD = 'discover-skill-card',
+}
+
 export interface SkillCardElement {
   $: {
     cardBody: HTMLElement,
@@ -38,6 +43,7 @@ export class SkillCardElement extends CrLitElement {
   static override get properties() {
     return {
       skill: {type: Object},
+      cardType: {type: String},
     };
   }
 
@@ -52,6 +58,11 @@ export class SkillCardElement extends CrLitElement {
     creationTime: {internalValue: 0n},
     lastUpdateTime: {internalValue: 0n},
   };
+  accessor cardType: CardType = CardType.USER_SKILL_CARD;
+
+  protected isDiscoverCard_(): boolean {
+    return this.cardType === CardType.DISCOVER_SKILL_CARD;
+  }
 }
 
 declare global {
