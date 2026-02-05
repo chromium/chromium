@@ -6236,33 +6236,24 @@ static_library("browser") {
 
   if (enable_glic) {
     deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:impl",
-    ]
-    allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
-  }
-
-  if (enable_glic) {
-    deps += [
       "//chrome/browser/background/glic",
       "//chrome/browser/background/glic:impl",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:impl",
       "//chrome/browser/glic/fre",
     ]
-
     allow_circular_includes_from += [
+      "//chrome/browser/glic:impl",
       "//chrome/browser/glic/fre",
       "//chrome/browser/background/glic:impl",
     ]
 
     if (!is_android) {
-      deps += [ "//chrome/browser/glic/media" ]
+      deps += [
+        "//chrome/browser/glic/media",
+        "//chrome/browser/skills",
+      ]
       allow_circular_includes_from += [ "//chrome/browser/glic/media" ]
-    }
-  }
-
-  if (enable_glic) {
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      deps += [ "//chrome/browser/skills" ]
     }
   }
 
