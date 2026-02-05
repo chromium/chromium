@@ -6111,6 +6111,16 @@ targets.bundle(
     ],
 )
 
+# Last MacOS supported on intel
+# Run select tests to ensure minimum coverage
+targets.bundle(
+    name = "mac26_x86_tests",
+    targets = [
+        "telemetry_gpu_unittests",
+        "gpu_unittests",
+    ],
+)
+
 # TODO(crbug.com/40223516): Remove this set of test suites when LSan can be
 # enabled Mac ASan bots. This list will be gradually filled with more tests
 # until the bot has parity with ASan bots, and the ASan bot can then enable

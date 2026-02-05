@@ -1188,38 +1188,12 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_mac_gtests_no_nacl",
-            "chromium_mac_osxbeta_rel_isolated_scripts",
+            "mac26_x86_tests",
         ],
         mixins = [
             "limited_capacity_bot",
             "mac_beta_x64",
         ],
-        per_test_modifications = {
-            "browser_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 35,
-                ),
-            ),
-            # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which
-            # breaks the tests. Run this experimentally on all the macOS bots
-            # >= 12 and remove this exception once fixed.
-            "crashpad_tests": targets.mixin(
-                experiment_percentage = 100,
-            ),
-            # TODO (crbug.com/1278617) Re-enable once fixed
-            "interactive_ui_tests": targets.mixin(
-                experiment_percentage = 100,
-                swarming = targets.swarming(
-                    shards = 7,
-                ),
-            ),
-            "unit_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-        },
     ),
     builderless = False,
     cores = None,
