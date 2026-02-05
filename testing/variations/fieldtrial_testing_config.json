@@ -17731,6 +17731,29 @@
             ]
         }
     ],
+    "NewOhttpGateway": [
+        {
+            "platforms": [
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledNew_20260127",
+                    "params": {
+                        "SafeBrowsingHashPrefixRealTimeLookupsKeyFetchUrl": "https://sbc.keys.ohttp.prod.via.google/.well-known/ohttp-gateway",
+                        "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl": "https://ohttp-relay-safebrowsing-chrome.google.fastly-edge.com/"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingHashPrefixRealTimeLookups"
+                    ]
+                }
+            ]
+        }
+    ],
     "NewTabPageCustomizationV2": [
         {
             "platforms": [
