@@ -20058,6 +20058,27 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_PERSISTED_DATA_SUMMARY" desc="Summary of an event indicating how many apps are registered.">
         <ph name="APP_COUNT">$1<ex>5</ex></ph> apps registered
       </message>
+      <message name="IDS_UPDATER_POLICY_CONFLICT_WARNING" desc="Tooltip for a warning icon in the enterprise policy table indicating that a policy has been configured differently from multiple sources.">
+        Policy configured with conflicting values from multiple sources.
+      </message>
+      <message name="IDS_UPDATER_POLICY_IGNORED" desc="Label for a value of an enterprise policy that is being ignored because another source has higher priority.">
+        Ignored:
+      </message>
+      <message name="IDS_UPDATER_POLICY_NAME" desc="Title of a column in the enterprise policy table which displays the name of the policy.">
+        Policy Name
+      </message>
+      <message name="IDS_UPDATER_POLICY_OK" desc="Tooltip for a checkmark icon in the enterprise policy table indicating that a policy has been configured.">
+        Policy configured.
+      </message>
+      <message name="IDS_UPDATER_POLICY_SOURCE" desc="Title of a column in the enterprise policy table which displays the source of the policy (e.g. 'Platform', 'Cloud').">
+        Source
+      </message>
+      <message name="IDS_UPDATER_POLICY_STATUS" desc="Title of a column in the enterprise policy table which displays the status of the policy.">
+        Status
+      </message>
+      <message name="IDS_UPDATER_POLICY_VALUE" desc="Title of a column in the enterprise policy table which displays the value of the policy.">
+        Policy Value
+      </message>
       <message name="IDS_UPDATER_PROCESS_SUMMARY" desc="Summary of an event that involved executing a command on the system, including the numeric exit code.">
         Process exited with code <ph name="EXIT_CODE">$1<ex>0</ex></ph>
       </message>

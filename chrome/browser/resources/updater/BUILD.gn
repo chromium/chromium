@@ -21,6 +21,8 @@ build_webui("build") {
     "app_list/app_list.html.ts",
     "app_list/app_list.ts",
     "browser_proxy.ts",
+    "enterprise_policy_table/enterprise_policy_table_section.html.ts",
+    "enterprise_policy_table/enterprise_policy_table_section.ts",
     "enterprise_policy_table/enterprise_policy_value.html.ts",
     "enterprise_policy_table/enterprise_policy_value.ts",
     "event_history.ts",
@@ -65,6 +67,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "app_list/app_list.css",
+    "enterprise_policy_table/enterprise_policy_table_section.css",
     "enterprise_policy_table/enterprise_policy_value.css",
     "event_list/event_list.css",
     "event_list/event_list_item.css",

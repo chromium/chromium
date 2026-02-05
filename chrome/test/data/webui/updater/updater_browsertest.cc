@@ -62,6 +62,12 @@ IN_PROC_BROWSER_TEST_F(UpdaterAppTest, EnterprisePolicyValueTest) {
           "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(UpdaterAppTest, EnterprisePolicyTableSectionTest) {
+  RunTest(
+      "updater/enterprise_policy_table/enterprise_policy_table_section_test.js",
+      "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(UpdaterAppTest, FilterDialogFooterTest) {
   RunTest("updater/event_list/filter_dialog/filter_dialog_footer_test.js",
           "mocha.run();");

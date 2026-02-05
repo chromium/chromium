@@ -1,0 +1,189 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=../updater_shared.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  --border-color: var(--google-grey-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --border-color: var(--google-grey-800);
+  }
+}
+
+.policy-table {
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+}
+
+.header-row {
+  display: flex;
+  background-color: var(--cr-hover-background-color);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: bold;
+  padding: 0 12px;
+}
+
+.header-content {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  min-height: 24px;
+}
+
+.header-spacer {
+  width: var(--cr-expand-button-size, 24px);
+  margin-left: 8px;
+}
+
+.policy-row {
+  --cr-expand-button-icon-size: 20px;
+  --cr-expand-button-size: 24px;
+  --cr-section-vertical-padding: 0;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 12px;
+}
+
+.policy-row[expanded] {
+  border-bottom-color: transparent;
+}
+
+.policy-row:last-of-type {
+  border-bottom: none;
+}
+
+.row-content {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  width: 100%;
+}
+
+.column-name,
+.column-value,
+.column-source,
+.column-warning {
+  align-items: center;
+  border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
+  display: flex;
+  min-height: 24px;
+  padding: 0 8px;
+}
+
+.row-content .column-name {
+  font-family: var(--cr-code-font-family, monospace);
+}
+
+.column-name {
+  flex-basis: 30%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.column-value {
+  flex-basis: 30%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.column-source {
+  flex-basis: 20%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.column-warning {
+  flex-basis: 20%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.warning-icon {
+  --iron-icon-fill-color: var(--warning-icon-color);
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  cursor: pointer;
+}
+
+.check-icon {
+  --iron-icon-fill-color: var(--success-icon-color);
+  --iron-icon-height: 18px;
+  --iron-icon-width: 18px;
+}
+
+.expanded-section {
+  border-bottom: 1px solid var(--border-color);
+  border-left: 3px solid var(--google-blue-300);
+  padding: 0 12px;
+}
+
+.expanded-section:last-of-type {
+  border-bottom: none;
+}
+
+.expanded-row {
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  /* A negative margin is used to ensure expanded rows have the same width as
+   * their parents despite the expanded-section having a border-left. */
+  margin-left: -3px;
+}
+
+.expanded-row:last-of-type {
+  border-bottom: none;
+}
+
+.expanded-row-content {
+  display: flex;
+  flex: 1;
+}
+
+.expanded-row-content .column-name,
+.expanded-row-content .column-source,
+.expanded-row-content .column-value {
+  color: var(--cr-secondary-text-color);
+}
+
+.expanded-row-content .column-name {
+  font-size: 0.9em;
+  font-weight: 500;
+  justify-content: flex-end;
+}
+
+.expanded-row-content .column-name,
+.expanded-row-content .column-value,
+.expanded-row-content .column-source,
+.expanded-row-content .column-warning {
+  align-items: center;
+  border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
+  display: flex;
+  min-height: 24px;
+  padding: 0 8px;
+}
+
+.expanded-row .column-source {
+  font-style: italic;
+}
