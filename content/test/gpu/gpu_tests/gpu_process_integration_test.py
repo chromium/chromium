@@ -54,6 +54,7 @@ def _GetBrowserBridgeProperty(tab: ct.Tab, path: str) -> dict:
 
 
 class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
+
   @classmethod
   def Name(cls) -> str:
     """The name by which this test is invoked on the command line."""
@@ -149,7 +150,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _WaitForTestCompletion(self, tab: ct.Tab) -> None:
     tab.action_runner.WaitForJavaScriptCondition(
-        'window.domAutomationController._finished', timeout=10)
+        'window.domAutomationController._finished',
+        timeout=(20 if self.browser.platform.GetOSName() == 'fuchsia' else 10))
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
       self.fail('Test reported that it failed')
 
@@ -727,8 +729,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('High-performance WebGL context did not activate the '
                 'high-performance GPU')
 
-  def _GpuProcess_mac_webgl_backgrounded_high_performance(self, test_path: str
-                                                          ) -> None:
+  def _GpuProcess_mac_webgl_backgrounded_high_performance(
+      self, test_path: str) -> None:
     # Ensures that high-performance WebGL content in a background tab releases
     # the hold on the discrete GPU after 10 seconds.
     if not self.IsDualGPUMacLaptop():
@@ -807,9 +809,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
-            'gpu_process_expectations.txt')
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     'test_expectations', 'gpu_process_expectations.txt')
     ]
 
 
