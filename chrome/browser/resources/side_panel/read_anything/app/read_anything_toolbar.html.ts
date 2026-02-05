@@ -21,7 +21,8 @@ function getRateButtonHtml(this: ReadAnythingToolbarElement) {
 function getCloseButton(this: ReadAnythingToolbarElement) {
   if (this.isImmersiveMode) {
     return html`
-  <cr-icon-button id="close" tabindex="0"
+  <cr-icon-button id="close" tabindex="-1"
+      class="toolbar-button"
       aria-label="$i18n{readingModeLanguageMenuClose}"
       title="$i18n{readingModeLanguageMenuClose}"
       iron-icon="cr:close"
