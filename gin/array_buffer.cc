@@ -91,7 +91,7 @@ void ArrayBufferAllocator::InitializePartition() {
 // ArrayBuffer ----------------------------------------------------------------
 ArrayBuffer::ArrayBuffer() = default;
 
-ArrayBuffer::ArrayBuffer(v8::Isolate* isolate, v8::Local<v8::ArrayBuffer> array)
+ArrayBuffer::ArrayBuffer(v8::Local<v8::ArrayBuffer> array)
     : backing_store_(array->GetBackingStore()) {}
 
 ArrayBuffer::~ArrayBuffer() = default;
@@ -115,12 +115,13 @@ base::span<const uint8_t> ArrayBuffer::span() const {
 
 // Converter<ArrayBuffer> -----------------------------------------------------
 
-bool Converter<ArrayBuffer>::FromV8(v8::Isolate* isolate,
+bool Converter<ArrayBuffer>::FromV8(v8::Isolate* /*isolate*/,
                                     v8::Local<v8::Value> val,
                                     ArrayBuffer* out) {
-  if (!val->IsArrayBuffer())
+  if (!val->IsArrayBuffer()) {
     return false;
-  *out = ArrayBuffer(isolate, v8::Local<v8::ArrayBuffer>::Cast(val));
+  }
+  *out = ArrayBuffer(v8::Local<v8::ArrayBuffer>::Cast(val));
   return true;
 }
 
@@ -131,12 +132,10 @@ ArrayBufferView::ArrayBufferView()
       num_bytes_(0) {
 }
 
-ArrayBufferView::ArrayBufferView(v8::Isolate* isolate,
-                                 v8::Local<v8::ArrayBufferView> view)
-    : array_buffer_(isolate, view->Buffer()),
+ArrayBufferView::ArrayBufferView(v8::Local<v8::ArrayBufferView> view)
+    : array_buffer_(view->Buffer()),
       offset_(view->ByteOffset()),
-      num_bytes_(view->ByteLength()) {
-}
+      num_bytes_(view->ByteLength()) {}
 
 ArrayBufferView::~ArrayBufferView() = default;
 
@@ -153,12 +152,13 @@ base::span<const uint8_t> ArrayBufferView::span() const {
 
 // Converter<ArrayBufferView> -------------------------------------------------
 
-bool Converter<ArrayBufferView>::FromV8(v8::Isolate* isolate,
+bool Converter<ArrayBufferView>::FromV8(v8::Isolate* /*isolate*/,
                                         v8::Local<v8::Value> val,
                                         ArrayBufferView* out) {
-  if (!val->IsArrayBufferView())
+  if (!val->IsArrayBufferView()) {
     return false;
-  *out = ArrayBufferView(isolate, v8::Local<v8::ArrayBufferView>::Cast(val));
+  }
+  *out = ArrayBufferView(v8::Local<v8::ArrayBufferView>::Cast(val));
   return true;
 }
 

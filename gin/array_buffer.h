@@ -48,7 +48,7 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 class GIN_EXPORT ArrayBuffer {
  public:
   ArrayBuffer();
-  ArrayBuffer(v8::Isolate* isolate, v8::Local<v8::ArrayBuffer> buffer);
+  explicit ArrayBuffer(v8::Local<v8::ArrayBuffer> buffer);
   ArrayBuffer(const ArrayBuffer&) = delete;
   ~ArrayBuffer();
   ArrayBuffer& operator=(const ArrayBuffer& other);
@@ -69,7 +69,7 @@ struct GIN_EXPORT Converter<ArrayBuffer> {
 class GIN_EXPORT ArrayBufferView {
  public:
   ArrayBufferView();
-  ArrayBufferView(v8::Isolate* isolate, v8::Local<v8::ArrayBufferView> view);
+  explicit ArrayBufferView(v8::Local<v8::ArrayBufferView> view);
   ArrayBufferView(const ArrayBufferView&) = delete;
   ~ArrayBufferView();
   ArrayBufferView& operator=(const ArrayBufferView& other);
