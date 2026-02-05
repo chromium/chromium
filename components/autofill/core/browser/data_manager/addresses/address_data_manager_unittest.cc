@@ -113,13 +113,16 @@ class AddressDataManagerTest : public testing::Test {
     run_loop.Run();
   }
 
-  void RecreateAddressDataManager() {
+  void RecreateAddressDataManager(
+      bool wait_for_on_address_data_changed = true) {
     address_data_manager_ = std::make_unique<AddressDataManager>(
         profile_database_service_, prefs_.get(), prefs_.get(), &sync_service_,
         identity_test_env_.identity_manager(), &strike_database_,
         GeoIpCountryCode("US"), "en-US");
     address_data_manager_->LoadProfiles();
-    WaitForOnAddressDataChanged();
+    if (wait_for_on_address_data_changed) {
+      WaitForOnAddressDataChanged();
+    }
   }
 
   void AddProfileToAddressDataManager(const AutofillProfile& profile) {
@@ -1245,6 +1248,30 @@ TEST_F(AddressDataManagerTest, RemoveAccountNameEmailProfileIfFeatureDisabled) {
   EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
                   AutofillProfile::RecordType::kAccountNameEmail),
               testing::IsEmpty());
+}
+
+// Tests the race condition where the user signs out while the profiles are
+// still loading from the database.
+TEST_F(AddressDataManagerTest, RemoveNameEmailProfileOnSignOutWhileLoading) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableSupportForNameAndEmail};
+
+  // Add `kAccountNameEmail` profile.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  AutofillProfile profile = test::AccountNameEmailProfile();
+  AddProfileToAddressDataManager(profile);
+  ASSERT_THAT(address_data_manager().GetProfiles(),
+              UnorderedElementsAre(Pointee(profile)));
+
+  // Restart AddressDataManager to reset the in-memory state.
+  RecreateAddressDataManager(/*wait_for_on_address_data_changed=*/false);
+
+  sync_service_.SetSignedOut();
+  sync_service_.FireStateChanged();
+  WaitForOnAddressDataChanged();
+
+  // Verify the profile is gone.
+  EXPECT_TRUE(address_data_manager().GetProfiles().empty());
 }
 
 }  // namespace

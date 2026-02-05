@@ -92,41 +92,12 @@ void AccountNameEmailStore::OnSyncShutdown(syncer::SyncService*) {
 }
 
 void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
-  // Only autofill syncing users are eligible for the kAccountNameEmail
-  // profile. Having all relevant data loaded is crucial for correct execution.
-  // If the user doesn't have the autofill sync toggle enabled, try to remove
-  // the kAccountNameEmail profile.
-  std::optional<ProfileUpdateBlockReason> reason =
-      GetBlockAccountNameEmailUpdateReason();
-  if (!reason.has_value()) {
-    MaybeUpdateOrCreateAccountNameEmail();
-    return;
-  }
-  switch (reason.value()) {
-    case ProfileUpdateBlockReason::kAutofillSyncToggleDisabled:
-    case ProfileUpdateBlockReason::kSyncDisabled:
-      RemoveAccountNameEmail(/*is_soft_removal=*/true);
-      return;
-    case ProfileUpdateBlockReason::kUserSignedOut:
-      // User signed out and prefs are no longer synced. Clear their local state
-      // to prevent them from leaking into a different account. It is important
-      // that this happens after PRIORITY_PREFERENCES stopped syncing, because
-      // the metadata should be redownloaded during the next sign-in.
-      RemoveAccountNameEmail(/*is_soft_removal=*/true);
-      pref_service_->ClearPref(prefs::kAutofillNameAndEmailProfileSignature);
-      pref_service_->ClearPref(
-          prefs::kAutofillNameAndEmailProfileNotSelectedCounter);
-      pref_service_->ClearPref(prefs::kAutofillWasNameAndEmailProfileUsed);
-      return;
-    case ProfileUpdateBlockReason::kDataNotLoaded:
-      // Defer call. When data is loaded, `OnStateChanged` will be called again,
-      // reattempting to create the profile.
-      return;
-  }
+  MaybeUpdateOrCreateAccountNameEmail();
 }
 
 void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail() {
-  if (!ShouldUpdateOrCreateAccountNameEmail()) {
+  if (!ReconcileProfileWithBlockReason() ||
+      !identity_manager_observer_.GetSource()) {
     return;
   }
 
@@ -134,6 +105,7 @@ void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail() {
       identity_manager_observer_.GetSource()->FindExtendedAccountInfo(
           identity_manager_observer_.GetSource()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin));
+
   if (!extended_info.has_value()) {
     return;
   }
@@ -145,7 +117,14 @@ void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail() {
 void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail(
     const std::string& account_name,
     const std::string& email) {
-  if (!ShouldUpdateOrCreateAccountNameEmail()) {
+  if (!ReconcileProfileWithBlockReason() ||
+      !identity_manager_observer_.GetSource()) {
+    return;
+  }
+
+  if (identity_manager_observer_.GetSource()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .IsEmpty()) {
     return;
   }
 
@@ -155,6 +134,42 @@ void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail(
   UpdateOrCreateAccountNameEmail(info);
 }
 #endif
+
+bool AccountNameEmailStore::ReconcileProfileWithBlockReason() {
+  std::optional<ProfileUpdateBlockReason> reason =
+      GetBlockAccountNameEmailUpdateReason();
+
+  if (!reason.has_value()) {
+    return true;
+  }
+
+  // Only autofill syncing users are eligible for the kAccountNameEmail
+  // profile. Having all relevant data loaded is crucial for correct execution.
+  // If the user doesn't have the autofill sync toggle enabled, try to remove
+  // the kAccountNameEmail profile.
+  switch (reason.value()) {
+    case ProfileUpdateBlockReason::kAutofillSyncToggleDisabled:
+    case ProfileUpdateBlockReason::kSyncDisabled:
+      RemoveAccountNameEmail(/*is_soft_removal=*/true);
+      return false;
+    case ProfileUpdateBlockReason::kUserSignedOut:
+      // User signed out and prefs are no longer synced. Clear their local state
+      // to prevent them from leaking into a different account. It is important
+      // that this happens after PRIORITY_PREFERENCES stopped syncing, because
+      // the metadata should be redownloaded during the next sign-in.
+      RemoveAccountNameEmail(/*is_soft_removal=*/true);
+      pref_service_->ClearPref(prefs::kAutofillNameAndEmailProfileSignature);
+      pref_service_->ClearPref(
+          prefs::kAutofillNameAndEmailProfileNotSelectedCounter);
+      pref_service_->ClearPref(prefs::kAutofillWasNameAndEmailProfileUsed);
+      return false;
+    case ProfileUpdateBlockReason::kDataNotLoaded:
+      // Defer call. When data is loaded, `OnStateChanged` will be called
+      // again, reattempting to create the profile.
+      return false;
+  }
+  return false;
+}
 
 void AccountNameEmailStore::ApplyChange(const AutofillProfileChange& change) {
   if (change.data_model().record_type() !=
@@ -271,6 +286,12 @@ std::string AccountNameEmailStore::HashAccountInfo(
 
 std::optional<AccountNameEmailStore::ProfileUpdateBlockReason>
 AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
+  // Should check before checking for SignOut otherwise, removing nameEmail
+  // profile does nothing as the data has not been loaded.
+  if (address_data_manager_->IsAwaitingPendingAddressChanges()) {
+    return ProfileUpdateBlockReason::kDataNotLoaded;
+  }
+
   if (!sync_service_observer_.GetSource()) {
     return ProfileUpdateBlockReason::kSyncDisabled;
   }
@@ -293,10 +314,6 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
     return ProfileUpdateBlockReason::kAutofillSyncToggleDisabled;
   }
 
-  if (address_data_manager_->IsAwaitingPendingAddressChanges()) {
-    return ProfileUpdateBlockReason::kDataNotLoaded;
-  }
-
   switch (sync_service_observer_.GetSource()->GetDownloadStatusFor(
       syncer::DataType::PRIORITY_PREFERENCES)) {
     case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates:
@@ -317,19 +334,6 @@ void AccountNameEmailStore::OnCounterPrefUpdated() {
   }
 
   RemoveAccountNameEmail(/*is_soft_removal=*/false);
-}
-
-bool AccountNameEmailStore::ShouldUpdateOrCreateAccountNameEmail() {
-  if (!identity_manager_observer_.GetSource() ||
-      GetBlockAccountNameEmailUpdateReason().has_value()) {
-    return false;
-  }
-
-  // Primary account has to exists for the AccountNameEmail profile to be
-  // created.
-  return !identity_manager_observer_.GetSource()
-              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .IsEmpty();
 }
 
 }  // namespace autofill
