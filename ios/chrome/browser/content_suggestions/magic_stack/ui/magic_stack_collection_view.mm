@@ -439,9 +439,16 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 // or right aligned depending on whether the module is first, in the middle, or
 // last.
 - (CGFloat)peekOffsetForMagicStackPage:(NSInteger)page {
-  if (page == [self.diffableDataSource.snapshot
-                  numberOfItemsInSection:kMagicStackSectionIdentifier] -
-                  1) {
+  NSInteger numberOfItems = [self.diffableDataSource.snapshot
+      numberOfItemsInSection:kMagicStackSectionIdentifier];
+
+  // If there's only one module, no peek offset is needed.
+  if (numberOfItems <= 1) {
+    return 0;
+  }
+
+  NSInteger lastPageIndex = numberOfItems - 1;
+  if (page == lastPageIndex) {
     // The last module should be trailing aligned so the previous module peeks.
     return [self magicStackPeekInset];
   }
