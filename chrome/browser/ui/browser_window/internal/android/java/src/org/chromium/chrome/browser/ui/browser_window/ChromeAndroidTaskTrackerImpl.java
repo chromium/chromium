@@ -230,6 +230,13 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         return getAllTasks().size();
     }
 
+    /** Returns all PENDING and ALIVE Tasks. */
+    /*package*/ List<ChromeAndroidTask> getAllTasks() {
+        List<ChromeAndroidTask> tasks = new ArrayList<>(mTasks.values());
+        tasks.addAll(mPendingTasks.values());
+        return tasks;
+    }
+
     /**
      * Removes all {@link ChromeAndroidTask}s.
      *
@@ -240,10 +247,18 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
      */
     void removeAllForTesting() {
         ThreadUtils.assertOnUiThread();
-        mTasks.forEach((taskId, task) -> task.destroy());
+        for (var task : mTasks.values()) {
+            task.destroy();
+        }
         mTasks.clear();
-        mPendingTasks.forEach((taskId, task) -> task.destroy());
+        for (var task : mPendingTasks.values()) {
+            task.destroy();
+        }
         mPendingTasks.clear();
+    }
+
+    boolean hasObserverForTesting(ChromeAndroidTaskTrackerObserver observer) {
+        return mObservers.hasObserver(observer);
     }
 
     @Nullable ChromeAndroidTask getPendingTaskForTesting(int pendingId) {
@@ -353,12 +368,5 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         ActivityOptions options = ActivityOptions.makeBasic();
         options.setLaunchBounds(initialBounds);
         context.startActivity(intent, options.toBundle());
-    }
-
-    /** Returns all PENDING and ALIVE Tasks. */
-    private List<ChromeAndroidTask> getAllTasks() {
-        List<ChromeAndroidTask> tasks = new ArrayList<>(mTasks.values());
-        tasks.addAll(mPendingTasks.values());
-        return tasks;
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -16,7 +18,8 @@ import org.chromium.build.annotations.NullMarked;
  * browsers sorted by creation and activation time.
  */
 @NullMarked
-final class GlobalBrowserCollectionPlatformDelegate implements ChromeAndroidTaskTrackerObserver {
+final class GlobalBrowserCollectionPlatformDelegate
+        implements AndroidBrowserWindowObserver, ChromeAndroidTaskTrackerObserver {
     /** Pointer to the native GlobalBrowserCollectionPlatformDelegate object. */
     private long mNativePointer;
 
@@ -36,33 +39,62 @@ final class GlobalBrowserCollectionPlatformDelegate implements ChromeAndroidTask
      *
      * @param nativePointer A pointer to the native GlobalBrowserCollectionPlatformDelegate object.
      */
-    private GlobalBrowserCollectionPlatformDelegate(long nativePointer) {
+    @VisibleForTesting
+    GlobalBrowserCollectionPlatformDelegate(long nativePointer) {
         mNativePointer = nativePointer;
-        ChromeAndroidTaskTrackerImpl.getInstance().addObserver(this);
+        var tracker = ChromeAndroidTaskTrackerImpl.getInstance();
+        // If there are any existing tasks, add observers to them now as the implementation of
+        // ChromeAndroidTaskTrackerObserver only receives signals on future events.
+        for (ChromeAndroidTask task : tracker.getAllTasks()) {
+            onTaskAdded(task);
+        }
+        tracker.addObserver(this);
     }
 
     /**
      * Cleans up this object and remove it from observing the ChromeAndroidTaskTrackerImpl instance.
      */
     @CalledByNative
-    private void destroy() {
+    @VisibleForTesting
+    void destroy() {
         ChromeAndroidTaskTrackerImpl.getInstance().removeObserver(this);
         mNativePointer = 0;
     }
 
     @Override
     public void onTaskAdded(ChromeAndroidTask task) {
-        if (mNativePointer != 0) {
-            GlobalBrowserCollectionPlatformDelegateJni.get()
-                    .onBrowserCreated(mNativePointer, task.getOrCreateNativeBrowserWindowPtr());
+        // If there are any existing windows in the task, count them now as the implementation of
+        // AndroidBrowserWindowObserver only receives signals on future events.
+        assert !task.hasAndroidBrowserWindowObserver(this);
+        for (long androidBrowserWindowPtr : task.getAllNativeBrowserWindowPtrs()) {
+            onBrowserWindowAdded(androidBrowserWindowPtr);
         }
+        task.addAndroidBrowserWindowObserver(this);
     }
 
     @Override
     public void onTaskRemoved(ChromeAndroidTask task) {
+        task.removeAndroidBrowserWindowObserver(this);
+        // In the event there were still windows in the task, remove them as the observer has been
+        // removed and will no longer receive signals.
+        for (long androidBrowserWindowPtr : task.getAllNativeBrowserWindowPtrs()) {
+            onBrowserWindowRemoved(androidBrowserWindowPtr);
+        }
+    }
+
+    @Override
+    public void onBrowserWindowAdded(long androidBrowserWindowPtr) {
         if (mNativePointer != 0) {
             GlobalBrowserCollectionPlatformDelegateJni.get()
-                    .onBrowserClosed(mNativePointer, task.getOrCreateNativeBrowserWindowPtr());
+                    .onBrowserCreated(mNativePointer, androidBrowserWindowPtr);
+        }
+    }
+
+    @Override
+    public void onBrowserWindowRemoved(long androidBrowserWindowPtr) {
+        if (mNativePointer != 0) {
+            GlobalBrowserCollectionPlatformDelegateJni.get()
+                    .onBrowserClosed(mNativePointer, androidBrowserWindowPtr);
         }
     }
 

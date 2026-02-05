@@ -269,6 +269,9 @@ public interface ChromeAndroidTask {
      */
     void removeAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer);
 
+    /** Returns whether observer is registered for {@code AndroidBrowserWindow} events. */
+    boolean hasAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer);
+
     /**
      * Destroys all objects owned by this {@link ChromeAndroidTask}, including all {@link
      * ChromeAndroidTaskFeature}s.

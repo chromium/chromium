@@ -1035,6 +1035,11 @@ final class ChromeAndroidTaskImpl
         mAndroidBrowserWindowObservers.removeObserver(observer);
     }
 
+    @Override
+    public boolean hasAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer) {
+        return mAndroidBrowserWindowObservers.hasObserver(observer);
+    }
+
     @VisibleForTesting
     @State
     int getState() {
