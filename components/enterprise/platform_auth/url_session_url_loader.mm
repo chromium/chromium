@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
+#import "components/enterprise/platform_auth/url_session_url_loader.h"
 
 #include <Foundation/Foundation.h>
 
@@ -16,8 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
-#include "chrome/browser/enterprise/platform_auth/url_session_helper.h"
+#include "components/enterprise/platform_auth/url_session_helper.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_version.h"
@@ -56,7 +55,7 @@ void URLSessionURLLoader::Start(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_info_remote,
     base::TimeDelta timeout) {
-  DCHECK(ProxyingURLLoaderFactory::IsOktaSSORequest(request))
+  DCHECK(url_session_helper::IsOktaSSORequest(request))
       << "URLSessionURLLoader is meant to be used only for Okta SSO.";
 
   VLOG_POLICY(2, EXTENSIBLE_SSO)

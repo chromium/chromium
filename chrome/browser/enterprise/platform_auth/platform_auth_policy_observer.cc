@@ -24,6 +24,7 @@
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #endif  //  BUILFLAG(IS_MAC)
 

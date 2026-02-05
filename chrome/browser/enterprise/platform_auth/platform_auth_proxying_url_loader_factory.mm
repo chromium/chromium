@@ -15,10 +15,12 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
-#include "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/enterprise/platform_auth/platform_auth_features.h"
+#include "components/enterprise/platform_auth/url_session_helper.h"
+#include "components/enterprise/platform_auth/url_session_url_loader.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,35 +30,6 @@
 #include "url/url_constants.h"
 
 namespace enterprise_auth {
-
-namespace {
-
-constexpr char kWildcardSegment[] = "*";
-
-// Splits both the pattern and the path into segments separated with |/|.
-// Compares corresponding segments. Wildcard |*| matches one whole segment.
-bool MatchOktaSSOUrlPattern(std::string_view path) {
-  static const base::NoDestructor<std::vector<std::string>> pattern_segments(
-      base::SplitString(kOktaSsoURLPattern.Get(), "/", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY));
-  const std::vector<std::string_view> path_segments = base::SplitStringPiece(
-      path, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  if (path_segments.size() != pattern_segments->size()) {
-    return false;
-  }
-
-  for (size_t i = 0; i < path_segments.size(); ++i) {
-    if (pattern_segments->at(i) != kWildcardSegment &&
-        path_segments.at(i) != pattern_segments->at(i)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-}  // namespace
 
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -117,7 +90,7 @@ void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (configured_hosts_.contains(request.url.host()) &&
-      IsOktaSSORequest(request)) {
+      url_session_helper::IsOktaSSORequest(request)) {
     if (intercepted_request_callback_for_testing_) {
       std::move(intercepted_request_callback_for_testing_).Run(request);
     } else {
@@ -150,29 +123,6 @@ ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() {
   if (destruction_callback_for_testing_) {
     std::move(destruction_callback_for_testing_).Run();
   }
-}
-
-// static
-bool ProxyingURLLoaderFactory::IsOktaSSORequest(
-    const network::ResourceRequest& request) {
-  // Only match POST requests.
-  if (request.method != "POST") {
-    return false;
-  }
-
-  const GURL& gurl = request.url;
-  // Only match HTTPS requests.
-  if (!gurl.SchemeIs(url::kHttpsScheme)) {
-    return false;
-  }
-
-  // Reject URLs with query parameters, fragments, or user credentials.
-  if (gurl.has_query() || gurl.has_ref() || gurl.has_username() ||
-      gurl.has_password()) {
-    return false;
-  }
-
-  return MatchOktaSSOUrlPattern(gurl.path());
 }
 
 }  // namespace enterprise_auth

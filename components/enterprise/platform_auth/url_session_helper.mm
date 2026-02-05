@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/enterprise/platform_auth/url_session_helper.h"
+#import "components/enterprise/platform_auth/url_session_helper.h"
 
 #include <Foundation/Foundation.h>
 
@@ -16,7 +16,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#include "components/enterprise/platform_auth/platform_auth_features.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -27,6 +28,31 @@
 namespace url_session_helper {
 
 namespace {
+
+constexpr char kWildcardSegment[] = "*";
+
+// Splits both the pattern and the path into segments separated with |/|.
+// Compares corresponding segments. Wildcard |*| matches one whole segment.
+bool MatchOktaSSOUrlPattern(std::string_view path) {
+  static const base::NoDestructor<std::vector<std::string>> pattern_segments(
+      base::SplitString(enterprise_auth::kOktaSsoURLPattern.Get(), "/",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  const std::vector<std::string_view> path_segments = base::SplitStringPiece(
+      path, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (path_segments.size() != pattern_segments->size()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < path_segments.size(); ++i) {
+    if (pattern_segments->at(i) != kWildcardSegment &&
+        path_segments.at(i) != pattern_segments->at(i)) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 constexpr NSString* kNsOrigin = @"Origin";
 
@@ -223,6 +249,27 @@ network::mojom::URLResponseHeadPtr ConvertNSURLResponse(
   }
 
   return response;
+}
+
+bool IsOktaSSORequest(const network::ResourceRequest& request) {
+  // Only match POST requests.
+  if (request.method != "POST") {
+    return false;
+  }
+
+  const GURL& gurl = request.url;
+  // Only match HTTPS requests.
+  if (!gurl.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+
+  // Reject URLs with query parameters, fragments, or user credentials.
+  if (gurl.has_query() || gurl.has_ref() || gurl.has_username() ||
+      gurl.has_password()) {
+    return false;
+  }
+
+  return MatchOktaSSOUrlPattern(gurl.path());
 }
 
 }  // namespace url_session_helper

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/enterprise/platform_auth/url_session_test_util.h"
+#import "components/enterprise/platform_auth/url_session_test_util.h"
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -23,7 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
+#include "components/enterprise/platform_auth/url_session_url_loader.h"
 #include "net/base/apple/url_conversions.h"
 
 namespace url_session_test_util {

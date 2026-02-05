@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac)
+
+component("enterprise_platform_auth") {
+  sources = [
+    "platform_auth_features.cc",
+    "platform_auth_features.h",
+    "url_session_helper.h",
+    "url_session_helper.mm",
+    "url_session_test_util.h",
+    "url_session_test_util.mm",
+    "url_session_url_loader.h",
+    "url_session_url_loader.mm",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+
+  deps = [
+    "//base",
+    "//components/policy/core/common",
+    "//services/network/public/mojom",
+  ]
+
+  defines = [ "IS_ENTERPRISE_PLATFORM_AUTH_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "url_session_helper_unittest.mm",
+    "url_session_url_loader_unittest.mm",
+  ]
+
+  deps = [
+    ":enterprise_platform_auth",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp_base",
+    "//testing/gtest",
+    "//url",
+  ]
+}

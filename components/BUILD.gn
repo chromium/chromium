@@ -920,6 +920,7 @@ test("components_unittests") {
 
   if (is_mac) {
     deps += [
+      "//components/enterprise/platform_auth:unit_tests",
       "//components/remote_cocoa/app_shim:unit_tests",
       "//components/remote_cocoa/common:unit_tests",
     ]

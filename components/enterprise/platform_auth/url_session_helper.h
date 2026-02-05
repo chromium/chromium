@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_HELPER_H_
-#define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_HELPER_H_
+#ifndef COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_HELPER_H_
+#define COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_HELPER_H_
 
 #include <Foundation/Foundation.h>
 
@@ -31,6 +31,7 @@ namespace url_session_helper {
 // details.
 // Only supports request body of type network::DataElementBytes, for
 // other types body will be set to nil.
+COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
 NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
                                      base::TimeDelta timeout);
 
@@ -39,9 +40,16 @@ NSURLRequest* ConvertResourceRequest(const network::ResourceRequest& request,
 // Headers are allowlisted, see kResponseHeadersAllowlist in the .mm file for
 // details. When converting HTTP headers will use hard-coded HTTP 1.1 for
 // simplicity. Assumes response is not nil.
+COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
 network::mojom::URLResponseHeadPtr ConvertNSURLResponse(
     NSURLResponse* response);
 
+// Checks if request matches pattern of Okta's SSO URL request, which is:
+// POST
+// https://<DOMAIN>/idp/idx/authenticators/sso_extension/transactions/<ID>/verify
+COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
+bool IsOktaSSORequest(const network::ResourceRequest& request);
+
 }  // namespace url_session_helper
 
-#endif  // CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_HELPER_H_
+#endif  // COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_HELPER_H_

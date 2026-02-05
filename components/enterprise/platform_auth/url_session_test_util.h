@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_TEST_UTIL_H_
-#define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_TEST_UTIL_H_
+#ifndef COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_TEST_UTIL_H_
+#define COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_TEST_UTIL_H_
 
 #include <Foundation/Foundation.h>
 
@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "url/gurl.h"
 
@@ -21,7 +22,7 @@ namespace url_session_test_util {
 // Out of |body|, |os_error| and |hang| only a single field should have a
 // non-default value. If all the fields keep the default values the response
 // will be 200 OK without a body.
-class ResponseConfig {
+class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) ResponseConfig {
  public:
   ResponseConfig();
   ~ResponseConfig();
@@ -63,13 +64,15 @@ class ResponseConfig {
 //   // reaching the actual network.
 //   NSURLSessionDataTask* task = [session dataTaskWithRequest:ns_request];
 //   [task resume];
+COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
 NSURLSession* GetTestURLSessionForConfig(ResponseConfig&& config);
 
 // A RAII helper that sets the global URLSession override upon construction
 // and clears it upon destruction. There should always be at most one instance
 // of this class. This ensures that the overrides don't leak between the unit
 // tests.
-class ScopedURLSessionOverrideForTesting {
+class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
+    ScopedURLSessionOverrideForTesting {
  public:
   explicit ScopedURLSessionOverrideForTesting(NSURLSession* session_override);
   ~ScopedURLSessionOverrideForTesting();
@@ -80,4 +83,4 @@ class ScopedURLSessionOverrideForTesting {
 
 }  // namespace url_session_test_util
 
-#endif  // CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_TEST_UTIL_H_
+#endif  // COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_TEST_UTIL_H_

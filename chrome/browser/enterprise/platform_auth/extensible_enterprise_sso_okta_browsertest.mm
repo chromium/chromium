@@ -25,14 +25,13 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
-#include "chrome/browser/enterprise/platform_auth/url_session_test_util.h"
-#include "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/platform_auth/platform_auth_features.h"
+#include "components/enterprise/platform_auth/url_session_test_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -58,28 +57,16 @@ constexpr char kLoginWebsiteDomain[] = "foo.bar.example";
 constexpr char kResponseBody[] = "response body";
 
 std::string CreateSsoRequest(std::string_view domain) {
-  std::string url = enterprise_auth::kOktaSsoURLPattern.Get();
+  std::string path = enterprise_auth::kOktaSsoURLPattern.Get();
 
-  // The pattern must contain a wildcard for the host.
-  size_t pos = url.find('*');
-  if (pos == std::string::npos) {
-    LOG(WARNING) << "enterprise_auth::kOktaSsoURLPattern must have a wildcard "
-                    "host but is: "
-                 << url;
-    return base::StrCat(
-        {"https://", kLoginWebsiteDomain,
-         "/idp/idx/authenticators/sso_extension/transactions/123/verify/"});
-  }
-  url.replace(pos, 1, domain);
-  pos += domain.length();
-
-  // The pattern might contain any number of wildcards in the path section.
-  while ((pos = url.find('*', pos)) != std::string::npos) {
-    url.replace(pos, 1, "123");
-    pos += 3;
+  // Replace all wildcard segments in the path.
+  size_t pos = path.find('*');
+  while (pos != std::string::npos) {
+    path.replace(pos, 1, "123");
+    pos = path.find('*', pos);
   }
 
-  return url;
+  return base::StrCat({"https://", domain, path});
 }
 
 ScopedPropList HostsToPropRef(const std::vector<std::string>& hosts) {

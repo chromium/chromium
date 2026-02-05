@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_URL_LOADER_H_
-#define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_URL_LOADER_H_
+#ifndef COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_URL_LOADER_H_
+#define COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_URL_LOADER_H_
 
 #include <Foundation/Foundation.h>
 
@@ -37,7 +37,8 @@ class URLSessionURLLoaderTest;
 //  - an error occurs with mojo or URLSession
 // WARNING! This is meant to be used only for the Okta SSO flow, this class
 // comes with multiple restrications and behaviour specific for this use case.
-class URLSessionURLLoader : public network::mojom::URLLoader {
+class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
+    : public network::mojom::URLLoader {
  public:
   URLSessionURLLoader(const URLSessionURLLoader&) = delete;
   URLSessionURLLoader& operator=(const URLSessionURLLoader&) = delete;
@@ -111,4 +112,4 @@ class URLSessionURLLoader : public network::mojom::URLLoader {
 
 }  // namespace enterprise_auth
 
-#endif  // CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_URL_LOADER_H_
+#endif  // COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_URL_LOADER_H_

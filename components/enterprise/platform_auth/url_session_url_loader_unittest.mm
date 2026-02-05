@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
+#import "components/enterprise/platform_auth/url_session_url_loader.h"
 
 #include <Foundation/Foundation.h>
 
@@ -19,14 +19,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_suite.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/platform_auth/url_session_test_util.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "components/enterprise/platform_auth/url_session_test_util.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -47,7 +45,6 @@ using url_session_test_util::ResponseConfig;
 namespace {
 
 constexpr char kBody[] = "payload";
-const std::string kTooBigPayload = std::string(1 << 21, 'a');
 constexpr std::string_view kOktaResultHistogram =
     "Enterprise.ExtensibleEnterpriseSSO.Okta.Result";
 constexpr std::string_view kOktaSuccessDurationHistogram =
@@ -57,7 +54,7 @@ constexpr std::string_view kOktaFailureDurationHistogram =
 constexpr std::string_view kOktaFailureReasonHistogram =
     "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason";
 
-const std::string kSsoRequestURL =
+constexpr char kSsoRequestURL[] =
     "https://foobar.example.com/idp/idx/authenticators/sso_extension/"
     "transactions/123/verify";
 
@@ -68,7 +65,8 @@ namespace enterprise_auth {
 class URLSessionURLLoaderTest : public testing::Test {
  protected:
   URLSessionURLLoaderTest()
-      : client_receiver_(&mock_client,
+      : kTooBigPayload(1 << 21, 'a'),
+        client_receiver_(&mock_client,
                          client_remote_.InitWithNewPipeAndPassReceiver()) {
     client_receiver_.set_disconnect_handler(
         client_disconnect_future_.GetCallback());
@@ -87,11 +85,6 @@ class URLSessionURLLoaderTest : public testing::Test {
     network::ResourceRequest request;
     request.url = GURL(url);
     request.method = "POST";
-
-    base::ListValue hosts;
-    hosts.Append(request.url.host());
-    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
-        prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));
 
     url_loader_->Start(request, loader_remote_.BindNewPipeAndPassReceiver(),
                        std::move(client_remote_), timeout);
@@ -115,6 +108,7 @@ class URLSessionURLLoaderTest : public testing::Test {
 
   mojo::Remote<network::mojom::URLLoader> loader_remote_;
   base::HistogramTester histogram_tester_;
+  const std::string kTooBigPayload;
 
   static constexpr URLSessionURLLoader::SSORequestFailReason
       kFailReasonTimeout = URLSessionURLLoader::SSORequestFailReason::kTimeout;
@@ -132,7 +126,7 @@ class URLSessionURLLoaderTest : public testing::Test {
     url_loader_ = instance->weak_ptr_factory_.GetWeakPtr();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::test::TestFuture<void> client_disconnect_future_;
   base::test::TestFuture<void> request_started_future_;
 
