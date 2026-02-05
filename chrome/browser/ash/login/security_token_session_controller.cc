@@ -162,12 +162,11 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
       continue;
 
     extension_ids->insert(challenge_response_key.extension_id);
-    if (!extension_to_spkis->contains(challenge_response_key.extension_id)) {
-      (*extension_to_spkis)[challenge_response_key.extension_id] = {};
-    }
-    if (!challenge_response_key.public_key_spki_der.empty()) {
-      (*extension_to_spkis)[challenge_response_key.extension_id].push_back(
-          challenge_response_key.public_key_spki_der);
+    if (auto it =
+            extension_to_spkis->try_emplace(challenge_response_key.extension_id)
+                .first;
+        !challenge_response_key.public_key_spki_der.empty()) {
+      it->second.push_back(challenge_response_key.public_key_spki_der);
     }
   }
 }
@@ -254,19 +253,20 @@ void SecurityTokenSessionController::OnCertificatesUpdated(
   if (!observed_extensions_.contains(extension_id))
     return;
 
-  if (extension_to_spkis_[extension_id].empty())
+  auto& expected_spkis = extension_to_spkis_[extension_id];
+  if (expected_spkis.empty()) {
     return;
+  }
 
   bool extension_provides_all_required_certificates = true;
 
   std::vector<std::string> provided_spki_vector;
+  provided_spki_vector.reserve(certificate_infos.size());
   for (auto certificate_info : certificate_infos) {
     provided_spki_vector.emplace_back(
         GetSubjectPublicKeyInfo(*certificate_info.certificate.get()));
   }
-  base::flat_set<std::string> provided_spkis(provided_spki_vector.begin(),
-                                             provided_spki_vector.end());
-  auto& expected_spkis = extension_to_spkis_[extension_id];
+  base::flat_set<std::string> provided_spkis(std::move(provided_spki_vector));
   for (const auto& expected_spki : expected_spkis) {
     if (!provided_spkis.contains(expected_spki)) {
       extension_provides_all_required_certificates = false;
