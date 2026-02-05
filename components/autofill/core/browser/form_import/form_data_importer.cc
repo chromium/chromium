@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/address_profile_save_manager.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -232,7 +233,8 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
       iban_save_manager_(std::make_unique<IbanSaveManager>(client)),
 #endif  // !BUILDFLAG(IS_IOS)
       multistep_importer_(client_->GetAppLocale(),
-                          client_->GetVariationConfigCountryCode()) {
+                          client_->GetVariationConfigCountryCode()),
+      payments_form_data_importer_(client) {
   address_data_manager_observation_.Observe(&address_data_manager());
   if (history_service) {
     history_service_observation_.Observe(history_service);
@@ -1234,6 +1236,11 @@ void FormDataImporter::
             payment_method_type_if_non_interactive_authentication_flow_completed) {
   payment_method_type_if_non_interactive_authentication_flow_completed_ =
       payment_method_type_if_non_interactive_authentication_flow_completed;
+}
+
+payments::PaymentsFormDataImporter&
+FormDataImporter::GetPaymentsFormDataImporter() {
+  return payments_form_data_importer_;
 }
 
 AddressDataManager& FormDataImporter::address_data_manager() {

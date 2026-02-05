@@ -304,6 +304,8 @@ static_library("browser") {
     "form_import/form_data_importer.h",
     "form_import/form_data_importer_utils.cc",
     "form_import/form_data_importer_utils.h",
+    "form_import/payments/payments_form_data_importer.cc",
+    "form_import/payments/payments_form_data_importer.h",
     "form_parsing/address_field_parser.cc",
     "form_parsing/address_field_parser.h",
     "form_parsing/address_field_parser_ng.cc",
