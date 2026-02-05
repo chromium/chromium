@@ -709,11 +709,8 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
     contextual_search::FileUploadStatus file_upload_status,
     const std::optional<contextual_search::FileUploadErrorType>& error_type) {
   if (IsRemoteBound()) {
-    page_->OnContextualInputStatusChanged(
-        file_token, contextual_search::ToMojom(file_upload_status),
-        error_type.has_value()
-            ? std::make_optional(contextual_search::ToMojom(error_type.value()))
-            : std::nullopt);
+    page_->OnContextualInputStatusChanged(file_token, file_upload_status,
+                                          error_type);
   }
 
   // Ensure `input_state_model_` is updated when file is uploaded.
@@ -823,9 +820,7 @@ void ContextualSearchboxHandler::SnapshotTabContext(
   tab_context_snapshot_.emplace(context_token, std::move(page_content_data));
 
   page_->OnContextualInputStatusChanged(
-      context_token,
-      contextual_search::ToMojom(
-          contextual_search::FileUploadStatus::kProcessing),
+      context_token, contextual_search::FileUploadStatus::kProcessing,
       std::nullopt);
 }
 

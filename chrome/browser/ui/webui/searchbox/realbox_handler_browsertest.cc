@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -78,8 +79,8 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
                     bool is_deletable) override {}
   void OnContextualInputStatusChanged(
       const base::UnguessableToken& token,
-      composebox_query::mojom::FileUploadStatus status,
-      std::optional<composebox_query::mojom::FileUploadErrorType> error_type)
+      contextual_search::FileUploadStatus status,
+      std::optional<contextual_search::FileUploadErrorType> error_type)
       override {}
   void OnInputStateChanged(const omnibox::InputState& input_state) override {}
   void OnTabStripChanged() override {}
