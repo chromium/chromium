@@ -41,7 +41,6 @@ scoped_refptr<gpu::ClientSharedImage> CameraBufferFactory::CreateSharedImage(
   // Note that we'll need to refine this if/when we want to send these
   // SharedImages over to the renderer process when feasible (i.e., for non-R8
   // and/or for R8 on devices where it's texturable).
-  CHECK(viz::HasEquivalentBufferFormat(format));
   auto shared_image = sii->CreateSharedImage(
       {format, size, color_space,
        gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE),
@@ -80,7 +79,6 @@ CameraBufferFactory::CreateSharedImageFromGmbHandle(
   // Note that we'll need to refine this if/when we want to send these
   // SharedImages over to the renderer process when feasible (i.e., for non-R8
   // and/or for R8 on devices where it's texturable).
-  CHECK(viz::HasEquivalentBufferFormat(format));
   auto shared_image = sii->CreateSharedImage(
       {format, size, color_space,
        gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE),

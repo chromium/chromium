@@ -166,8 +166,6 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage))
       << uint32_t(si_info.meta.usage);
-  DCHECK(viz::HasEquivalentBufferFormat(si_info.meta.format))
-      << si_info.meta.format.ToString();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(!si_info.meta.format.PrefersExternalSampler())
       << si_info.meta.format.ToString();
@@ -190,8 +188,6 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage))
       << uint32_t(si_info.meta.usage);
-  DCHECK(viz::HasEquivalentBufferFormat(si_info.meta.format))
-      << si_info.meta.format.ToString();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(!si_info.meta.format.PrefersExternalSampler())
       << si_info.meta.format.ToString();

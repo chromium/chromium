@@ -87,10 +87,6 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 bool CanCreateNativeBufferForFormat(SharedImageFormat format);
 
-// Checks if there is an equivalent BufferFormat.
-COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
-bool HasEquivalentBufferFormat(SharedImageFormat format);
-
 // Returns the shared memory offset for `plane_index` for a `format` of `size`.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 size_t SharedMemoryOffsetForSharedImageFormat(SharedImageFormat format,

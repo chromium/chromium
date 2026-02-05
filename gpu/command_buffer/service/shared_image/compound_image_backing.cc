@@ -658,9 +658,9 @@ class WrappedVulkanCompoundImageRepresentation
 bool CompoundImageBacking::IsValidSharedMemoryFormat(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
-  if (format.PrefersExternalSampler() ||
-      !viz::HasEquivalentBufferFormat(format)) {
-    DVLOG(1) << "Not a valid format: " << format.ToString();
+  if (format.PrefersExternalSampler()) {
+    DVLOG(1) << "Unsupported external sampler for format: "
+             << format.ToString();
     return false;
   }
 

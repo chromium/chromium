@@ -56,7 +56,6 @@ MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
                                              const gfx::Size& size,
                                              viz::SharedImageFormat format) {
   DCHECK(handle.region().IsValid());
-  CHECK(viz::HasEquivalentBufferFormat(format));
 
   std::optional<size_t> minimum_stride =
       viz::SharedMemoryRowSizeForSharedImageFormat(format, 0, size.width());

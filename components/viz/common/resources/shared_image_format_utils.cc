@@ -263,26 +263,6 @@ bool CanCreateNativeBufferForFormat(SharedImageFormat format) {
           format == SinglePlaneFormat::kRGBA_F16);
 }
 
-bool HasEquivalentBufferFormat(SharedImageFormat format) {
-  return format == SinglePlaneFormat::kBGRA_8888 ||
-         format == SinglePlaneFormat::kR_8 ||
-         format == SinglePlaneFormat::kR_16 ||
-         format == SinglePlaneFormat::kRG_1616 ||
-         format == SinglePlaneFormat::kRGBA_4444 ||
-         format == SinglePlaneFormat::kRGBA_8888 ||
-         format == SinglePlaneFormat::kRGBA_F16 ||
-         format == SinglePlaneFormat::kBGR_565 ||
-         format == SinglePlaneFormat::kRG_88 ||
-         format == SinglePlaneFormat::kRGBX_8888 ||
-         format == SinglePlaneFormat::kBGRX_8888 ||
-         format == SinglePlaneFormat::kRGBA_1010102 ||
-         format == SinglePlaneFormat::kBGRA_1010102 ||
-         format == MultiPlaneFormat::kYV12 ||
-         format == MultiPlaneFormat::kNV12 ||
-         format == MultiPlaneFormat::kNV12A ||
-         format == MultiPlaneFormat::kP010;
-}
-
 size_t SharedMemoryOffsetForSharedImageFormat(SharedImageFormat format,
                                               int plane_index,
                                               const gfx::Size& size) {

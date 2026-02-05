@@ -501,7 +501,6 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool use_zero_copy,
     bool is_overlay_candidate,
     bool y_invert) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
   UMA_HISTOGRAM_ENUMERATION("Graphics.Exo.Buffer.SharedImageFormat",
                             viz::GetSharedImageFormatUMA(format));
   // If format is true multiplanar format, we prefer external sampler on
@@ -523,7 +522,6 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event,
     bool is_overlay_candidate) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
   // If format is true multiplanar format, we prefer external sampler on
   // ChromeOS.
   if (format.is_multi_plane()) {

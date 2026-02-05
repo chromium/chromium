@@ -139,7 +139,6 @@ bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
                                  const gfx::Size& size,
                                  viz::SharedImageFormat format,
                                  bool assume_single_memory_object) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
   size_t expected_planes = format.NumberOfPlanes();
   if (expected_planes == 0 || handle.planes.size() != expected_planes)
     return false;

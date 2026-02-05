@@ -29,8 +29,6 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
       << uint32_t(si_info.meta.usage);
   DCHECK_EQ(si_info.meta.usage,
             gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY));
-  DCHECK(viz::HasEquivalentBufferFormat(si_info.meta.format))
-      << si_info.meta.format.ToString();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(!si_info.meta.format.PrefersExternalSampler())
       << si_info.meta.format.ToString();

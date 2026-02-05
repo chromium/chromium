@@ -71,7 +71,6 @@ DrmModifiersFilterVulkan::~DrmModifiersFilterVulkan() = default;
 std::vector<uint64_t> DrmModifiersFilterVulkan::Filter(
     viz::SharedImageFormat format,
     const std::vector<uint64_t>& modifiers) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
   VkFormat vulkan_format = ToTextureVkFormat(format);
   gpu::VulkanInstance* instance = vulkan_implementation_->GetVulkanInstance();
   CHECK(instance->vulkan_info().physical_devices.size() > 0);

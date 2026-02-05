@@ -56,7 +56,6 @@ gfx::GpuMemoryBufferHandle
 SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
   std::optional<size_t> buffer_size =
       viz::SharedMemorySizeForSharedImageFormat(format, size);
   if (!buffer_size) {

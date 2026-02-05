@@ -73,6 +73,26 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE |
     SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE | SHARED_IMAGE_USAGE_CPU_READ;
 
+bool HasEquivalentBufferFormat(viz::SharedImageFormat format) {
+  return format == viz::SinglePlaneFormat::kBGRA_8888 ||
+         format == viz::SinglePlaneFormat::kR_8 ||
+         format == viz::SinglePlaneFormat::kR_16 ||
+         format == viz::SinglePlaneFormat::kRG_1616 ||
+         format == viz::SinglePlaneFormat::kRGBA_4444 ||
+         format == viz::SinglePlaneFormat::kRGBA_8888 ||
+         format == viz::SinglePlaneFormat::kRGBA_F16 ||
+         format == viz::SinglePlaneFormat::kBGR_565 ||
+         format == viz::SinglePlaneFormat::kRG_88 ||
+         format == viz::SinglePlaneFormat::kRGBX_8888 ||
+         format == viz::SinglePlaneFormat::kBGRX_8888 ||
+         format == viz::SinglePlaneFormat::kRGBA_1010102 ||
+         format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+         format == viz::MultiPlaneFormat::kYV12 ||
+         format == viz::MultiPlaneFormat::kNV12 ||
+         format == viz::MultiPlaneFormat::kNV12A ||
+         format == viz::MultiPlaneFormat::kP010;
+}
+
 }  // namespace
 
 OzoneImageBackingFactory::OzoneImageBackingFactory(
@@ -91,7 +111,6 @@ OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
@@ -304,7 +323,7 @@ bool OzoneImageBackingFactory::IsSupported(
     return false;
   }
   auto* factory = ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  if (viz::HasEquivalentBufferFormat(format) &&
+  if (HasEquivalentBufferFormat(format) &&
       !factory->CanCreateNativePixmapForFormat(format)) {
     return false;
   }

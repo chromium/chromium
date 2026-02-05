@@ -427,14 +427,6 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     const viz::SharedImageFormat& format,
     gfx::BufferUsage buffer_usage,
     CreateGpuMemoryBufferCallback callback) {
-  if (!viz::HasEquivalentBufferFormat(format)) {
-    // Client GMB code still operates on BufferFormat so the SharedImageFormat
-    // received here must have an equivalent BufferFormat.
-    LOG(ERROR) << "Invalid format." << format.ToString();
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-    return;
-  }
-
   gfx::GpuMemoryBufferHandle handle;
   if (SharedImageFactory::IsNativeBufferSupported(format, buffer_usage,
                                                   gpu_extra_info_)) {

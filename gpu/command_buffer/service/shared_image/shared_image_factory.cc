@@ -493,13 +493,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SharedImageUsageSet usage,
                                            std::string debug_label,
                                            gfx::BufferUsage buffer_usage) {
-  if (!viz::HasEquivalentBufferFormat(format)) {
-    // Client GMB code still operates on BufferFormat so the SharedImageFormat
-    // received here must have an equivalent BufferFormat.
-    LOG(ERROR) << "Invalid format " << format.ToString();
-    return false;
-  }
-
   auto native_buffer_supported =
       IsNativeBufferSupported(format, buffer_usage, gpu_extra_info_);
   std::unique_ptr<SharedImageBacking> backing;

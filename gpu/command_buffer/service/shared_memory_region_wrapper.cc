@@ -16,7 +16,6 @@ namespace {
 
 size_t RowByteAlignmentForSharedImageFormatFirstPlane(
     viz::SharedImageFormat format) {
-  CHECK(viz::HasEquivalentBufferFormat(format));
   if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return 8;
   }
@@ -67,7 +66,6 @@ bool SharedMemoryRegionWrapper::Initialize(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
   DCHECK(!mapping_.IsValid());
-  CHECK(viz::HasEquivalentBufferFormat(format));
 
   if (!handle.region().IsValid()) {
     DLOG(ERROR) << "Invalid GMB shared memory region.";

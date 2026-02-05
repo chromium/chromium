@@ -38,7 +38,6 @@ std::unique_ptr<MappableBufferDXGI> MappableBufferDXGI::CreateFromHandle(
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle().IsValid());
-  CHECK(viz::HasEquivalentBufferFormat(format));
   return base::WrapUnique(new MappableBufferDXGI(
       size, format, std::move(handle).dxgi_handle(),
       std::move(copy_native_buffer_to_shmem_callback), std::move(pool)));
