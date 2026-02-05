@@ -88,6 +88,14 @@ class ReportingService {
   // manager (see `SendNextLogImpl()` below).
   void SendNextLogNow(base::PassKey<BackgroundUploadTask>,
                       base::OnceClosure done_callback);
+
+  bool background_upload_task_scheduled() const {
+    return background_upload_task_scheduled_;
+  }
+
+  background_task::TaskIds background_upload_task_id() const {
+    return background_upload_task_id_;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // True iff reporting is currently enabled.
@@ -210,10 +218,13 @@ class ReportingService {
   [[maybe_unused]] const background_task::TaskIds background_upload_task_id_;
 
 #if BUILDFLAG(IS_ANDROID)
+  // If there is a currently a scheduled JobScheduler upload task pending.
+  bool background_upload_task_scheduled_ = false;
+
   // The time a background upload task was scheduled/posted to the JobScheduler.
   // Used to track the time taken between the task being scheduled and the time
   // the task actually runs.
-  base::TimeTicks background_upload_task_scheduled_time_;
+  std::optional<base::TimeTicks> background_upload_task_scheduled_time_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);

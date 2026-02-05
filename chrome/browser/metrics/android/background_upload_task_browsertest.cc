@@ -11,10 +11,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/android/background_task_scheduler/chrome_background_task_factory.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/background_task_scheduler/background_task_scheduler.h"
+#include "components/background_task_scheduler/background_task_scheduler_factory.h"
+#include "components/background_task_scheduler/task_ids.h"
+#include "components/background_task_scheduler/task_info.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_features.h"
@@ -191,8 +196,7 @@ class BackgroundUploadTaskBrowserTest
 
   void TearDownOnMainThread() override {
     // Remove override for good measure.
-    BackgroundUploadTask::SetReportingServiceForTesting(service_type(),
-                                                        nullptr);
+    BackgroundUploadTask::UnsetReportingServiceForTesting(service_type());
     PlatformBrowserTest::TearDownOnMainThread();
   }
 
@@ -268,6 +272,77 @@ IN_PROC_BROWSER_TEST_P(BackgroundUploadTaskBrowserTest, BackgroundUploadTask) {
   ASSERT_FALSE(log_store()->has_staged_log());
   ASSERT_FALSE(log_store()->has_unsent_logs());
   ASSERT_FALSE(client()->uploader()->is_uploading());
+}
+
+// Verifies that if the ReportingService is not expecting an upload, the
+// background upload task is a no-op. This can happen an upload task for a
+// service was scheduled in a previous session/process, and then run in a newly
+// run session/process where the ReportingService is not expecting any uploads
+// (i.e. hasn't itself triggered the task).
+IN_PROC_BROWSER_TEST_P(BackgroundUploadTaskBrowserTest,
+                       ReportingServiceNotReady) {
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  BackgroundUploadTask::SetTaskDoneCallbackForTesting(run_loop.QuitClosure());
+
+  // Manually schedule an upload task here, outside of the typical uploading
+  // loop handled by MetricsUploadScheduler of ReportingService. This simulates
+  // an "external" task being run (e.g. one scheduled by a previous session).
+  background_task::OneOffInfo one_off;
+  background_task::TaskInfo task_info(
+      reporting_service()->background_upload_task_id(), one_off);
+  ASSERT_TRUE(
+      background_task::BackgroundTaskSchedulerFactory::GetScheduler()->Schedule(
+          task_info));
+  // Wait until the upload task runs and terminates.
+  run_loop.Run();
+
+  // Verify that we still have the two logs present (none were uploaded), and no
+  // timing histograms were emitted.
+  ASSERT_FALSE(client()->uploader());
+  ASSERT_FALSE(log_store()->has_staged_log());
+  ASSERT_TRUE(log_store()->has_unsent_logs());
+  log_store()->StageNextLog();
+  log_store()->DiscardStagedLog();
+  ASSERT_FALSE(log_store()->has_staged_log());
+  ASSERT_TRUE(log_store()->has_unsent_logs());
+  log_store()->StageNextLog();
+  log_store()->DiscardStagedLog();
+  EXPECT_FALSE(log_store()->has_unsent_logs());
+  histogram_tester.ExpectTotalCount(expected_histogram_name(), 0);
+}
+
+// Verifies that if the ReportingService does not exist, the background upload
+// task is a no-op. This can happen an upload task for a service was scheduled
+// in a previous session/process, and then run in a newly run session/process
+// where said service does not exist anymore (e.g. due to being disabled by a
+// feature).
+IN_PROC_BROWSER_TEST_P(BackgroundUploadTaskBrowserTest, ReportingServiceNull) {
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  BackgroundUploadTask::SetTaskDoneCallbackForTesting(run_loop.QuitClosure());
+  // Set the ReportingService to null.
+  BackgroundUploadTask::SetReportingServiceForTesting(service_type(), nullptr);
+
+  // Manually schedule an upload task here, outside of the typical uploading
+  // loop handled by MetricsUploadScheduler of ReportingService. This simulates
+  // an "external" task being run (e.g. one scheduled by a previous session).
+  background_task::OneOffInfo one_off;
+  background_task::TaskInfo task_info(
+      reporting_service()->background_upload_task_id(), one_off);
+  ASSERT_TRUE(
+      background_task::BackgroundTaskSchedulerFactory::GetScheduler()->Schedule(
+          task_info));
+  // Wait until the upload task runs and terminates.
+  run_loop.Run();
+
+  // We did not crash, which indicates that the upload task was properly
+  // ignored. Verify further that no timing histograms were emitted.
+  histogram_tester.ExpectTotalCount(expected_histogram_name(), 0);
+
+  // The ReportingService override is unset in TearDownOnMainThread().
 }
 
 INSTANTIATE_TEST_SUITE_P(
