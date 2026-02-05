@@ -57,7 +57,6 @@ using extensions::WebrtcLoggingPrivateStopFunction;
 using extensions::WebrtcLoggingPrivateStopRtpDumpFunction;
 using extensions::WebrtcLoggingPrivateStoreFunction;
 using extensions::WebrtcLoggingPrivateUploadFunction;
-using extensions::WebrtcLoggingPrivateUploadStoredFunction;
 using webrtc_event_logging::kMaxOutputPeriodMs;
 using webrtc_event_logging::kMaxRemoteLogFileSizeBytes;
 using webrtc_event_logging::kStartRemoteLoggingFailureAlreadyLogging;
@@ -308,24 +307,6 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     std::optional<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStoreFunction>(params);
     return value_expected == value.has_value();
-  }
-
-  // This function implicitly expects the function to succeed (test failure
-  // initiated otherwise).
-  // Returns whether the function that was run returned a value, or avoided
-  // returning a value, according to expectation.
-  bool UploadStoredLog(const std::string& log_id, std::string* report_id) {
-    base::ListValue params;
-    AppendTabIdAndUrl(params);
-    params.Append(log_id);
-    constexpr bool value_expected = true;
-    std::optional<base::Value> value =
-        RunFunction<WebrtcLoggingPrivateUploadStoredFunction>(params);
-    const bool value_returned = value.has_value();
-    if (value_returned) {
-      *report_id = *value->GetDict().FindString("reportId");
-    }
-    return value_expected == value_returned;
   }
 
   // This function implicitly expects the function to succeed (test failure
@@ -606,24 +587,16 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopStore) {
   EXPECT_TRUE(StoreLog("MyLogID"));
 }
 
-IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
-                       TestStartStopStoreAndUpload) {
+IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopAndStore) {
   ASSERT_TRUE(SetupTestServerLogUploading());
 
   static const char kLogId[] = "TestStartStopStoreAndUpload";
   ASSERT_TRUE(StartLogging());
   ASSERT_TRUE(StopLogging());
   ASSERT_TRUE(StoreLog(kLogId));
-
-  std::string report_id;
-  EXPECT_TRUE(UploadStoredLog(kLogId, &report_id));
-  EXPECT_NE(std::string::npos,
-            upload_request_content_.find("filename=\"webrtc_log.gz\""));
-  EXPECT_STREQ(kTestReportId, report_id.c_str());
 }
 
-IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
-                       TestStartStopStoreAndUploadWithRtp) {
+IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopStoreWithRtp) {
   ASSERT_TRUE(SetupTestServerLogUploading());
 
   static const char kLogId[] = "TestStartStopStoreAndUploadWithRtp";
@@ -632,16 +605,10 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
   ASSERT_TRUE(StopLogging());
   ASSERT_TRUE(StopRtpDump(true, true));
   ASSERT_TRUE(StoreLog(kLogId));
-
-  std::string report_id;
-  EXPECT_TRUE(UploadStoredLog(kLogId, &report_id));
-  EXPECT_NE(std::string::npos,
-            upload_request_content_.find("filename=\"webrtc_log.gz\""));
-  EXPECT_STREQ(kTestReportId, report_id.c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
-                       TestStartStopStoreAndUploadWithMetaData) {
+                       TestStartStopAndStoreWithMetaData) {
   ASSERT_TRUE(SetupTestServerLogUploading());
 
   static const char kLogId[] = "TestStartStopStoreAndUploadWithRtp";
@@ -654,13 +621,6 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
 
   ASSERT_TRUE(StopLogging());
   ASSERT_TRUE(StoreLog(kLogId));
-
-  std::string report_id;
-  EXPECT_TRUE(UploadStoredLog(kLogId, &report_id));
-  EXPECT_NE(std::string::npos,
-            upload_request_content_.find("filename=\"webrtc_log.gz\""));
-  EXPECT_NE(std::string::npos, upload_request_content_.find(kTestLoggingUrl));
-  EXPECT_STREQ(kTestReportId, report_id.c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,

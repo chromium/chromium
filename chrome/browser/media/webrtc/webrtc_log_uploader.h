@@ -42,7 +42,8 @@ typedef std::map<std::string, std::string> WebRtcLogMetaDataMap;
 struct WebRtcLogUploadFailureReason {
   enum {
     kInvalidState = 0,
-    kStoredLogNotFound = 1,
+    // Deprecated value.
+    // kStoredLogNotFound = 1,
     kNetworkError = 2,
   };
 };
@@ -121,9 +122,6 @@ class WebRtcLogUploader {
                         std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
                         UploadDoneData upload_done_data,
                         bool is_text_log_upload_allowed);
-
-  // Uploads a previously stored log (see LoggingStoppedDoStore()).
-  void UploadStoredLog(UploadDoneData upload_data);
 
   // Similarly to LoggingStoppedDoUpload(), we store the log in compressed
   // format on disk but add the option to specify a unique |log_id| for later

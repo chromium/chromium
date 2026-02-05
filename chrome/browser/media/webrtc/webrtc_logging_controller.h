@@ -85,17 +85,12 @@ class WebRtcLoggingController
   // be called after text logging has stopped. Must be called on the IO thread.
   void UploadLog(UploadDoneCallback callback);
 
-  // Uploads a log that was previously saved via a call to StoreLog().
-  // Otherwise operates in the same way as UploadLog.
-  void UploadStoredLog(const std::string& log_id, UploadDoneCallback callback);
-
   // Discards the log and the RTP dumps. May only be called after logging has
   // stopped. Must be called on the IO thread.
   void DiscardLog(GenericDoneCallback callback);
 
   // Stores the log locally using a hash of log_id + security origin.
   void StoreLog(const std::string& log_id, GenericDoneCallback callback);
-
   // May be called on any thread. |upload_log_on_render_close_| is used
   // for decision making and it's OK if it changes before the execution based
   // on that decision has finished.
@@ -164,7 +159,6 @@ class WebRtcLoggingController
   // Called after stopping RTP dumps.
   void StoreLogContinue(const std::string& log_id,
                         GenericDoneCallback callback);
-
   // Writes a formatted log |message| to the |circular_buffer_|.
   void LogToCircularBuffer(const std::string& message);
 
@@ -175,7 +169,6 @@ class WebRtcLoggingController
                            std::unique_ptr<WebRtcLogPaths> log_paths,
                            GenericDoneCallback done_callback,
                            const base::FilePath& directory);
-
   // A helper for TriggerUpload to do the real work.
   void DoUploadLogAndRtpDumps(const base::FilePath& log_directory,
                               UploadDoneCallback callback);

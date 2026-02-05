@@ -146,40 +146,6 @@ void WebRtcLoggingController::UploadLog(UploadDoneCallback callback) {
                      std::move(callback)));
 }
 
-void WebRtcLoggingController::UploadStoredLog(const std::string& log_id,
-                                              UploadDoneCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback.is_null());
-
-  base::UmaHistogramSparse("WebRtcTextLogging.UploadStoredStarted",
-                           web_app_id_);
-
-  // Make this a method call on log_uploader
-
-  WebRtcLogUploader::UploadDoneData upload_data;
-  upload_data.callback = std::move(callback);
-  upload_data.local_log_id = log_id;
-  upload_data.web_app_id = web_app_id_;
-
-  WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
-  if (!IsWebRtcTextLogAllowed(GetBrowserContext())) {
-    log_uploader->NotifyUploadDisabled(std::move(upload_data));
-    return;
-  }
-
-  log_uploader->background_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](WebRtcLogUploader::UploadDoneData upload_data,
-                        base::RepeatingCallback<base::FilePath(void)>
-                            log_directory_getter) {
-                       upload_data.paths.directory = log_directory_getter.Run();
-                       WebRtcLogUploader* uploader =
-                           WebRtcLogUploader::GetInstance();
-                       uploader->UploadStoredLog(std::move(upload_data));
-                     },
-                     std::move(upload_data), log_directory_getter_));
-}
-
 void WebRtcLoggingController::DiscardLog(GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());

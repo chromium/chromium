@@ -154,20 +154,6 @@ class WebrtcLoggingPrivateStoreFunction
   ResponseAction Run() override;
 };
 
-class WebrtcLoggingPrivateUploadStoredFunction
-    : public WebrtcLoggingPrivateFunctionWithUploadCallback {
- public:
-  DECLARE_EXTENSION_FUNCTION("webrtcLoggingPrivate.uploadStored",
-                             WEBRTCLOGGINGPRIVATE_UPLOADSTORED)
-  WebrtcLoggingPrivateUploadStoredFunction() = default;
-
- private:
-  ~WebrtcLoggingPrivateUploadStoredFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class WebrtcLoggingPrivateUploadFunction
     : public WebrtcLoggingPrivateFunctionWithUploadCallback {
  public:

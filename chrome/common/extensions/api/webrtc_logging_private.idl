@@ -103,14 +103,6 @@ namespace webrtcLoggingPrivate {
                       DOMString logId,
                       GenericDoneCallback callback);
 
-    // Uploads a previously kept log that was stored via a call to store().
-    // The caller needs to know the logId as was originally provided in the
-    // call to store().
-    static void uploadStored(RequestInfo request,
-                             DOMString securityOrigin,
-                             DOMString logId,
-                             UploadDoneCallback callback);
-
     // Uploads the log and the RTP dumps, if they exist. Logging and RTP dumping
     // must be stopped before this function is called.
     static void upload(RequestInfo request,

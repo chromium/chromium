@@ -244,58 +244,6 @@ void WebRtcLogUploader::PrepareMultipartPostData(
                      std::move(post_data)));
 }
 
-void WebRtcLogUploader::UploadStoredLog(
-    WebRtcLogUploader::UploadDoneData upload_data) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!upload_data.local_log_id.empty());
-  DCHECK(!upload_data.paths.directory.empty());
-
-  base::FilePath native_log_path =
-      upload_data.paths.directory.AppendASCII(upload_data.local_log_id)
-          .AddExtension(FILE_PATH_LITERAL(".gz"));
-
-  std::string compressed_log;
-  if (!base::ReadFileToString(native_log_path, &compressed_log)) {
-    DPLOG(WARNING) << "Could not read WebRTC log file.";
-    base::UmaHistogramSparse("WebRtcTextLogging.UploadFailed",
-                             upload_data.web_app_id);
-    base::UmaHistogramSparse("WebRtcTextLogging.UploadFailureReason",
-                             WebRtcLogUploadFailureReason::kStoredLogNotFound);
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(upload_data).callback, false, "",
-                                  "Log doesn't exist."));
-    return;
-  }
-
-  // Optimistically set the rtp paths to what they should be if they exist.
-  upload_data.paths.incoming_rtp_dump =
-      upload_data.paths.directory.AppendASCII(upload_data.local_log_id)
-          .AddExtension(FILE_PATH_LITERAL(".rtp_in"));
-
-  upload_data.paths.outgoing_rtp_dump =
-      upload_data.paths.directory.AppendASCII(upload_data.local_log_id)
-          .AddExtension(FILE_PATH_LITERAL(".rtp_out"));
-
-  std::unique_ptr<WebRtcLogMetaDataMap> meta_data(new WebRtcLogMetaDataMap());
-  {
-    std::string meta_data_contents;
-    base::FilePath meta_path =
-        upload_data.paths.directory.AppendASCII(upload_data.local_log_id)
-            .AddExtension(FILE_PATH_LITERAL(".meta"));
-    if (base::ReadFileToString(meta_path, &meta_data_contents) &&
-        !meta_data_contents.empty()) {
-      base::PickleIterator it = base::PickleIterator::WithData(
-          base::as_byte_span(meta_data_contents));
-      std::string key, value;
-      while (it.ReadString(&key) && it.ReadString(&value))
-        (*meta_data.get())[key] = value;
-    }
-  }
-
-  PrepareMultipartPostData(compressed_log, std::move(meta_data),
-                           std::move(upload_data));
-}
-
 void WebRtcLogUploader::LoggingStoppedDoStore(
     const WebRtcLogPaths& log_paths,
     const std::string& log_id,
