@@ -45,7 +45,7 @@ namespace views {
 namespace {
 
 constexpr float kGradientLeadingFadeStart = 0.0f;
-constexpr float kGradientPixelSize = 10.0f;
+constexpr float kGradientPixelSize = 16.0f;
 constexpr float kGradientTrailingFadeEnd = 1.0f;
 
 // Returns the combined scroll amount given separate x and y offsets. This is
@@ -614,13 +614,31 @@ void ScrollView::UpdateGradientMask() {
                              ? width()
                              : height();
 
+  // Skip setting up the gradient mask if there wont be any display of the view.
+  if (total_size == 0) {
+    return;
+  }
+
   gfx::LinearGradient gradient_mask;
   gradient_mask.set_angle(
       gradient_direction_ == GradientDirection::kVertical ? 270 : 0);
   gradient_mask.AddStep(kGradientLeadingFadeStart,
                         should_show_leading ? 0 : 255);
-  gradient_mask.AddStep(kGradientPixelSize / total_size, 255);
-  gradient_mask.AddStep((total_size - kGradientPixelSize) / total_size, 255);
+
+  // Get cutoffs for the gradient.
+  const float start_fade_end = kGradientPixelSize / total_size;
+  const float end_fade_start = (total_size - kGradientPixelSize) / total_size;
+
+  // If the cutoffs dont overlap, we can use the gradient mask.
+  if (start_fade_end < end_fade_start) {
+    gradient_mask.AddStep(start_fade_end, 255);
+    gradient_mask.AddStep(end_fade_start, 255);
+
+    // Otherwise provide a best effort gradient mask by placing 1 centered step.
+  } else {
+    gradient_mask.AddStep(0.5f, 255);
+  }
+
   gradient_mask.AddStep(kGradientTrailingFadeEnd,
                         should_show_trailing ? 0 : 255);
 

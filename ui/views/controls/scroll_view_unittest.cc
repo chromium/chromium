@@ -2535,9 +2535,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientVerticalBottom) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2583,9 +2583,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientVerticalTopAndBottom) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2632,9 +2632,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientVerticalTop) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 255);
@@ -2671,9 +2671,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientHorizontalEnd) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2720,9 +2720,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientHorizontalStartAndEnd) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 0);
@@ -2770,9 +2770,9 @@ TEST_F(ScrollViewTest, TestOpacityGradientHorizontalStart) {
 
   EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
   EXPECT_EQ(gradient.steps()[0].alpha, 0);
-  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
   EXPECT_EQ(gradient.steps()[1].alpha, 255);
-  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
   EXPECT_EQ(gradient.steps()[2].alpha, 255);
   EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
   EXPECT_EQ(gradient.steps()[3].alpha, 255);
@@ -2820,6 +2820,31 @@ TEST_F(ScrollViewTest, TestOpacityGradientRemovedWhenNotNeeded) {
 
   const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
   EXPECT_EQ(gradient, gfx::LinearGradient::GetEmpty());
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientSmallView) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVertical);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, 20);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  scroll_view_->SetSize(
+      gfx::Size(kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(), 20));
+
+  // Run layout to update gradient
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_GT(gradient.step_count(), 0u);
 }
 
 // Test scrolling behavior when clicking on the scroll track.
