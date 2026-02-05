@@ -7,7 +7,6 @@
 #include <fontconfig/fontconfig.h>
 
 #include <memory>
-#include <set>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -18,6 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
@@ -85,7 +85,7 @@ blink::FontEnumerationTable FontEnumerationDataSourceLinux::GetFonts(
       ListFonts(object_set.get()), FcFontSetDestroy);
 
   // Used to filter duplicates.
-  std::set<std::string> fonts_seen;
+  absl::flat_hash_set<std::string> fonts_seen;
 
   for (int i = 0; i < fontset->nfont; ++i) {
     char* postscript_name = nullptr;
@@ -120,8 +120,7 @@ blink::FontEnumerationTable FontEnumerationDataSourceLinux::GetFonts(
       continue;
     }
 
-    auto it_and_success = fonts_seen.emplace(postscript_name);
-    if (!it_and_success.second) {
+    if (auto [it, success] = fonts_seen.emplace(postscript_name); !success) {
       // Skip duplicate.
       continue;
     }
