@@ -113,6 +113,89 @@ message FlightReservation {
   optional int64 arrival_airport_utc_offset_seconds = 12;
 }
 
+// Represents a passport information from Google Wallet.
+message Passport {
+  // The masked passport number (typically only the last 4 digits are provided).
+  optional string masked_number = 1;
+
+  // The owner of the passport.
+  optional string owner_name = 2;
+
+  // The country that issued the passport, normalized to ISO 3166-1 alpha-2.
+  optional string country_code = 3;
+
+  // The issue date of the passport.
+  optional int64 issue_date_unix_epoch_micros = 4;
+
+  // The expiration date of the passport.
+  optional int64 expiration_date_unix_epoch_micros = 5;
+}
+
+// Represents a driver's license from Google Wallet.
+message DriverLicense {
+  // The masked driver's license number (typically only the last 4 digits are
+  // provided).
+  optional string masked_number = 1;
+
+  // The owner of the driver's license.
+  optional string owner_name = 2;
+
+  // The country that issued the driver's license, normalized to ISO 3166-1
+  // alpha-2.
+  optional string country_code = 3;
+
+  // The region that issued the driver's license.
+  optional string region = 4;
+
+  // The issue date of the driver's license.
+  optional int64 issue_date_unix_epoch_micros = 5;
+
+  // The expiration date of the driver's license.
+  optional int64 expiration_date_unix_epoch_micros = 6;
+}
+
+// Represents a national ID card from Google Wallet.
+message NationalIdCard {
+  // The masked national ID card number (typically only the last 4 digits are
+  // provided).
+  optional string masked_number = 1;
+
+  // The owner of the national ID card.
+  optional string owner_name = 2;
+
+  // The country that issued the national ID card, normalized to ISO 3166-1
+  // alpha-2.
+  optional string country_code = 3;
+
+  // The issue date of the national ID card.
+  optional int64 issue_date_unix_epoch_micros = 4;
+
+  // The expiration date of the national ID card.
+  optional int64 expiry_date_unix_epoch_micros = 5;
+}
+
+// Represents a redress number from Google Wallet.
+message RedressNumber {
+  // The masked redress number (typically only the last 4 digits are provided).
+  optional string masked_number = 1;
+
+  // The owner of the redress number.
+  optional string owner_name = 2;
+}
+
+// Represents a known traveler number from Google Wallet.
+message KnownTravelerNumber {
+  // The masked known traveler number (typically only the last 4 digits are
+  // provided).
+  optional string masked_number = 1;
+
+  // The owner of the known traveler number.
+  optional string owner_name = 2;
+
+  // The expiration date of the known traveler number.
+  optional int64 expiry_date_unix_epoch_micros = 3;
+}
+
 // Valuables coming from Google Wallet.
 message AutofillValuableSpecifics {
   // The valuable id.
@@ -125,6 +208,11 @@ message AutofillValuableSpecifics {
     LoyaltyCard loyalty_card = 2;
     VehicleRegistration vehicle_registration = 3;
     FlightReservation flight_reservation = 5;
+    Passport passport = 7;
+    DriverLicense driver_license = 8;
+    NationalIdCard national_id_card = 9;
+    RedressNumber redress_number = 10;
+    KnownTravelerNumber known_traveler_number = 11;
     // add other valuable types here.
   }
 

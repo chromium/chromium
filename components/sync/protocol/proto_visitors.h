@@ -2059,6 +2059,11 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(loyalty_card);
   VISIT(vehicle_registration);
   VISIT(flight_reservation);
+  VISIT(passport);
+  VISIT(driver_license);
+  VISIT(national_id_card);
+  VISIT(redress_number);
+  VISIT(known_traveler_number);
   VISIT(serialized_chrome_valuables_metadata);
 }
 
@@ -2099,6 +2104,42 @@ VISIT_PROTO_FIELDS(const sync_pb::FlightReservation& proto) {
   VISIT(carrier_code);
   VISIT(departure_airport_utc_offset_seconds);
   VISIT(arrival_airport_utc_offset_seconds);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::Passport& proto) {
+  VISIT(masked_number);
+  VISIT(owner_name);
+  VISIT(country_code);
+  VISIT(issue_date_unix_epoch_micros);
+  VISIT(expiration_date_unix_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::DriverLicense& proto) {
+  VISIT(masked_number);
+  VISIT(owner_name);
+  VISIT(country_code);
+  VISIT(region);
+  VISIT(issue_date_unix_epoch_micros);
+  VISIT(expiration_date_unix_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::NationalIdCard& proto) {
+  VISIT(masked_number);
+  VISIT(owner_name);
+  VISIT(country_code);
+  VISIT(issue_date_unix_epoch_micros);
+  VISIT(expiry_date_unix_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::RedressNumber& proto) {
+  VISIT(masked_number);
+  VISIT(owner_name);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::KnownTravelerNumber& proto) {
+  VISIT(masked_number);
+  VISIT(owner_name);
+  VISIT(expiry_date_unix_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableMetadataSpecifics& proto) {

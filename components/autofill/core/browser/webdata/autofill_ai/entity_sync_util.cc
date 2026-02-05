@@ -355,6 +355,13 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           frecency_override);
     }
+    case sync_pb::AutofillValuableSpecifics::kPassport:
+    case sync_pb::AutofillValuableSpecifics::kDriverLicense:
+    case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
+    case sync_pb::AutofillValuableSpecifics::kRedressNumber:
+    case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
+      // TODO(crbug.com/481650251): Implement
+      return std::nullopt;
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Such specifics shouldn't reach this function as they aren't supported

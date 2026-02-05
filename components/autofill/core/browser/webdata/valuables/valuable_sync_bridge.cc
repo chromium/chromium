@@ -265,6 +265,13 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
               }
             }
             break;
+          case sync_pb::AutofillValuableSpecifics::kPassport:
+          case sync_pb::AutofillValuableSpecifics::kDriverLicense:
+          case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
+          case sync_pb::AutofillValuableSpecifics::kRedressNumber:
+          case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
+            // TODO(crbug.com/481650251): Implement
+            break;
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             break;
         }
@@ -370,6 +377,13 @@ bool ValuableSyncBridge::IsEntityDataValid(
       return IsSyncWalletFlightReservationsEnabled();
     case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
       return IsSyncWalletVehicleRegistrationsEnabled();
+    case sync_pb::AutofillValuableSpecifics::kPassport:
+    case sync_pb::AutofillValuableSpecifics::kDriverLicense:
+    case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
+    case sync_pb::AutofillValuableSpecifics::kRedressNumber:
+    case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
+      // TODO(crbug.com/481650251): Implement
+      return false;
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Ignore new entry types that the client doesn't know about.
       return false;
@@ -539,6 +553,13 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
                         autofill_valuable, *GetEntityTable())) {
               entities.push_back(std::move(*entity));
             }
+            break;
+          case sync_pb::AutofillValuableSpecifics::kPassport:
+          case sync_pb::AutofillValuableSpecifics::kDriverLicense:
+          case sync_pb::AutofillValuableSpecifics::kNationalIdCard:
+          case sync_pb::AutofillValuableSpecifics::kRedressNumber:
+          case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
+            // TODO(crbug.com/481650251): Implement
             break;
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             // Ignore new entry types that the client doesn't know about.

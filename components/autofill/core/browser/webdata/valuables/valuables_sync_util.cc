@@ -156,6 +156,13 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
       }
       break;
     }
+    case AutofillValuableSpecifics::kPassport:
+    case AutofillValuableSpecifics::kDriverLicense:
+    case AutofillValuableSpecifics::kNationalIdCard:
+    case AutofillValuableSpecifics::kRedressNumber:
+    case AutofillValuableSpecifics::kKnownTravelerNumber:
+      // TODO(crbug.com/481650251): Implement
+      break;
     case AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       break;
   }
