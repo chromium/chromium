@@ -134,6 +134,9 @@ suite('YourSavedInfoPage', function() {
     const [category] = await metricsBrowserProxy.whenCalled(
         'recordYourSavedInfoCategoryClick');
     assertEquals(YourSavedInfoDataCategory.PASSWORD_MANAGER, category);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'Settings.YourSavedInfo.CategoryClick.PASSWORD_MANAGER', action);
   });
 
   // Do not use route constants (like `routes.PAYMENTS`) as expectedRoute
@@ -173,6 +176,11 @@ suite('YourSavedInfoPage', function() {
       const [category] = await metricsBrowserProxy.whenCalled(
           'recordYourSavedInfoCategoryClick');
       assertEquals(expectedCategory, category);
+      const action = await metricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          `Settings.YourSavedInfo.CategoryClick.${
+              YourSavedInfoDataCategory[expectedCategory]}`,
+          action);
     });
   });
 
@@ -228,6 +236,8 @@ suite('YourSavedInfoPage', function() {
     const [metricChip] = await metricsBrowserProxy.whenCalled(
         'recordYourSavedInfoDataChipClick');
     assertEquals(YourSavedInfoDataChip.ADDRESSES, metricChip);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('Settings.YourSavedInfo.ChipClick.ADDRESSES', action);
   });
 });
 
@@ -538,6 +548,10 @@ suite('RelatedServices', function() {
     const [service] = await metricsBrowserProxy.whenCalled(
         'recordYourSavedInfoRelatedServiceClick');
     assertEquals(YourSavedInfoRelatedService.GOOGLE_PASSWORD_MANAGER, service);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'Settings.YourSavedInfo.RelatedServiceClick.GOOGLE_PASSWORD_MANAGER',
+        action);
   });
 
   test('WalletRowOpensWallet', async function() {
@@ -545,6 +559,9 @@ suite('RelatedServices', function() {
     const [service] = await metricsBrowserProxy.whenCalled(
         'recordYourSavedInfoRelatedServiceClick');
     assertEquals(YourSavedInfoRelatedService.GOOGLE_WALLET, service);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'Settings.YourSavedInfo.RelatedServiceClick.GOOGLE_WALLET', action);
   });
 
   test('ProfileRowOpensProfile', async function() {
@@ -552,5 +569,8 @@ suite('RelatedServices', function() {
     const [service] = await metricsBrowserProxy.whenCalled(
         'recordYourSavedInfoRelatedServiceClick');
     assertEquals(YourSavedInfoRelatedService.GOOGLE_ACCOUNT, service);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'Settings.YourSavedInfo.RelatedServiceClick.GOOGLE_ACCOUNT', action);
   });
 });

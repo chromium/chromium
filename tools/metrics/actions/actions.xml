@@ -41789,6 +41789,160 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.YourSavedInfo.CategoryClick.CONTACT_INFO">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Contact info category link in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.CategoryClick.IDENTITY_DOCS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Identity docs category link in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.CategoryClick.PASSWORD_MANAGER">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Password Manager category link in the Your saved info
+    page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.CategoryClick.PAYMENTS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Payments category link in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.CategoryClick.TRAVEL">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <description>
+    User clicks on the Travel category link in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.ADDRESSES">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Addresses data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.CREDIT_CARDS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Credit cards data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.DRIVERS_LICENSES">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Drivers licenses data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.FLIGHT_RESERVATIONS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Flight reservations data chip in the Your saved info
+    page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.IBANS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the IBANs data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.LOYALTY_CARDS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Loyalty cards data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.NATIONAL_ID_CARDS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the National ID cards data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.PASSKEYS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Passkeys data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.PASSPORTS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Passports data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.PASSWORDS">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Passwords data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.PAY_OVER_TIME">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Pay over time data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.TRAVEL_INFO">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Travel info data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.ChipClick.VEHICLES">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Vehicles data chip in the Your saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.RelatedServiceClick.GOOGLE_ACCOUNT">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Google Account related service link in the Your saved
+    info page.
+  </description>
+</action>
+
+<action
+    name="Settings.YourSavedInfo.RelatedServiceClick.GOOGLE_PASSWORD_MANAGER">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Google Password Manager related service link in the Your
+    saved info page.
+  </description>
+</action>
+
+<action name="Settings.YourSavedInfo.RelatedServiceClick.GOOGLE_WALLET">
+  <owner>jsobiech@google.com</owner>
+  <description>
+    User clicks on the Google Wallet related service link in the Your saved info
+    page.
+  </description>
+</action>
+
 <action name="Settings_A11y_ShelfNavigationButtonsLearnMoreClicked">
   <owner>gzadina@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
