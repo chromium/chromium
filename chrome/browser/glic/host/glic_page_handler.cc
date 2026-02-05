@@ -1355,14 +1355,22 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
+    auto scoped_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
+
     if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       receiver_.ReportBadMessage(
           "UpdateSkill cannot be called without Skills enabled.");
       return;
     }
-    // TODO(crbug.com/471796872): Add the actual implementation.
-    NOTIMPLEMENTED();
-    std::move(callback).Run(true);
+    // Get skill by ID from the SkillsService.
+    skills::SkillsService* skills_service =
+        skills::SkillsServiceFactory::GetForProfile(profile_);
+    if (const skills::Skill* skill =
+            skills_service->GetSkillById(request->id)) {
+      host().skills_manager().LaunchSkillsDialog(profile_, *skill,
+                                                 std::move(scoped_callback));
+    }
 #else
     receiver_.ReportBadMessage("UpdateSkill isn't supported on Android.");
 #endif  //  !BUILDFLAG(IS_ANDROID)
