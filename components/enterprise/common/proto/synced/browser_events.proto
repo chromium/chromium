@@ -678,7 +678,7 @@ message SafeBrowsingInterstitialEvent {
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 38.
+// Next ID: 40.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -806,6 +806,27 @@ message DlpSensitiveDataEvent {
       // copybara:datapol_begin
       // [
       //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The Microsoft sensitivity (MIP) label for the file associated with the URL
+  // in the request. Only present for Microsoft M365 sites.
+  string microsoft_sensitivity_label_name = 38
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_UNSTRUCTURED_ADMIN_SETTING
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The Microsoft sensitivity (MIP) label for the file associated with the URL
+  // of the copied text in the request for paste event only. Only present for
+  // Microsoft M365 sites.
+  string source_microsoft_sensitivity_label_name = 39
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_UNSTRUCTURED_ADMIN_SETTING
       // ]
       // copybara:datapol_end
       ;
