@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -582,9 +583,9 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
   DCHECK(popup_);
   DCHECK(owner_element_);
   if (!string_value.empty()) {
-    bool success;
-    int list_index = string_value.ToInt(&success);
-    DCHECK(success);
+    auto result = StringToInt(string_value);
+    int list_index = result.value_or(0);
+    DCHECK(result.has_value());
 
     EventQueueScope scope;
     owner_element_->SelectOptionByPopup(list_index);
@@ -625,9 +626,9 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
 
 void InternalPopupMenu::SetValue(const String& value) {
   DCHECK(owner_element_);
-  bool success;
-  int list_index = value.ToInt(&success);
-  DCHECK(success);
+  auto result = StringToInt(value);
+  int list_index = result.value_or(0);
+  DCHECK(result.has_value());
   owner_element_->ProvisionalSelectionChanged(list_index);
 }
 

@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -454,7 +455,7 @@ void HTMLTableElement::ParseAttribute(
     if (!params.new_value.empty()) {
       padding_ =
           std::max(0, std::min((int32_t)std::numeric_limits<uint16_t>::max(),
-                               params.new_value.ToInt()));
+                               StringToInt(params.new_value).value_or(0)));
     } else {
       padding_ = 1;
     }

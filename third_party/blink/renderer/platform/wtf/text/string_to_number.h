@@ -142,6 +142,20 @@ WTF_EXPORT float CharactersToFloat(base::span<const LChar>,
 WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
                                    size_t& parsed_length);
 
+// The following StringToFoo() functions accept:
+//  - leading '+'
+//  - leading Unicode whitespace
+//  - trailing garbage
+//  - no "-0" (StringToUInt and StringToUInt64)
+//  - no out-of-range numbers which the resultant type can't represent
+//
+// If the input string is not acceptable, std::nullopt is returned.
+//
+// We can use these functions to implement a Web Platform feature only if the
+// input string is already valid according to the specification of the
+// feature.
+WTF_EXPORT std::optional<int32_t> StringToInt(const StringView& input);
+
 // StringToDouble() and StringToFloat() functions accept:
 //  - leading '+'
 //  - numbers without leading zeros such as ".5"

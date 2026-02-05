@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/platform/graphics/picture_snapshot.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -332,12 +333,12 @@ static const cc::Layer* FindLayerById(const cc::Layer* root, int layer_id) {
 protocol::Response InspectorLayerTreeAgent::LayerById(
     const String& layer_id,
     const cc::Layer*& result) {
-  bool ok;
-  int id = layer_id.ToInt(&ok);
-  if (!ok)
+  auto id = StringToInt(layer_id);
+  if (!id) {
     return protocol::Response::ServerError("Invalid layer id");
+  }
 
-  result = FindLayerById(RootLayer(), id);
+  result = FindLayerById(RootLayer(), *id);
   if (!result)
     return protocol::Response::ServerError("No layer matching given id found");
   return protocol::Response::Success();

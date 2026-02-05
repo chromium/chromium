@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -327,10 +328,10 @@ void DetectFrameworkVersions(Document& document,
               String(content).Substring(drupal_prefix_length);
           String trimmed =
               version_string.Substring(0, version_string.Find(" "));
-          bool ok = true;
-          int version = trimmed.ToInt(&ok);
+          std::optional<int> version = StringToInt(trimmed);
           result.detected_versions[JavaScriptFramework::kDrupal] =
-              ok ? ((version & 0xff) << 8) : kNoFrameworkVersionDetected;
+              version.has_value() ? ((*version & 0xff) << 8)
+                                  : kNoFrameworkVersionDetected;
         }
       }
     }

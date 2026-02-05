@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
@@ -109,10 +110,10 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
   }
 
   if (match_mode & kMatchIndex) {
-    bool ok = false;
-    int index = buffer_.ToString().ToInt(&ok);
-    if (index > 0 && index <= option_count)
+    int index = StringToInt(buffer_.ToString()).value_or(0);
+    if (index > 0 && index <= option_count) {
       return index - 1;
+    }
   }
   return -1;
 }

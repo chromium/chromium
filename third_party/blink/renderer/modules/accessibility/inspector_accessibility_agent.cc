@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/modules/accessibility/inspector_type_builder_helper.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -355,7 +356,7 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
 
   ScopedFreezeAXCache freeze(cache);
 
-  AXID ax_id = in_id.ToInt();
+  AXID ax_id = StringToInt(in_id).value_or(0);
   AXObject* ax_object = cache.ObjectFromAXID(ax_id);
 
   if (!ax_object || ax_object->IsDetached())
@@ -366,8 +367,9 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
 
   AddChildren(*ax_object, /* follow_ignored */ true, *out_nodes, cache);
 
-  for (const auto& child : **out_nodes)
-    nodes_requested_.insert(child->getNodeId().ToInt());
+  for (const auto& child : **out_nodes) {
+    nodes_requested_.insert(StringToInt(child->getNodeId()).value_or(0));
+  }
 
   return protocol::Response::Success();
 }

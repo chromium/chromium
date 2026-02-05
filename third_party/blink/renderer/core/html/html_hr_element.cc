@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -104,7 +105,7 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
                          dark_gray_value);
     }
   } else if (name == html_names::kSizeAttr) {
-    int size = value.ToInt();
+    int size = StringToInt(value).value_or(0);
     if (size <= 1) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kBorderBottomWidth, 0,

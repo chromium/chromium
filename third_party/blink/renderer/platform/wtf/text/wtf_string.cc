@@ -331,15 +331,6 @@ uint64_t String::ToUInt64Strict(bool* ok) const {
   return impl_->ToUInt64(NumberParsingOptions::Strict(), ok);
 }
 
-int String::ToInt(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0;
-  }
-  return impl_->ToInt(NumberParsingOptions::Loose(), ok);
-}
-
 unsigned String::ToUInt(bool* ok) const {
   if (!impl_) {
     if (ok)

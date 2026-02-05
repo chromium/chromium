@@ -14,7 +14,9 @@ namespace blink {
 
 template <typename T>
 struct FromString {
-  T operator()(const String& s) { return static_cast<T>(s.ToInt()); }
+  T operator()(const String& s) {
+    return static_cast<T>(StringToInt(s).value_or(0));
+  }
 };
 
 template <>
@@ -42,8 +44,9 @@ struct FromString<gfx::Size> {
   gfx::Size operator()(const String& s) {
     Vector<String> fields;
     s.Split(',', fields);
-    return gfx::Size(fields.size() > 0 ? fields[0].ToInt() : 0,
-                     fields.size() > 1 ? fields[1].ToInt() : 0);
+    return gfx::Size(
+        fields.size() > 0 ? StringToInt(fields[0]).value_or(0) : 0,
+        fields.size() > 1 ? StringToInt(fields[1]).value_or(0) : 0);
   }
 };
 

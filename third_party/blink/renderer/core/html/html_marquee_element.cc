@@ -170,11 +170,11 @@ void HTMLMarqueeElement::setScrollDelay(unsigned value) {
 }
 
 int HTMLMarqueeElement::loop() const {
-  bool ok;
-  int loop = FastGetAttribute(html_names::kLoopAttr).ToInt(&ok);
-  if (!ok || loop <= 0)
+  auto loop = StringToInt(FastGetAttribute(html_names::kLoopAttr));
+  if (!loop || *loop <= 0) {
     return kDefaultLoopLimit;
-  return loop;
+  }
+  return *loop;
 }
 
 void HTMLMarqueeElement::setLoop(int value, ExceptionState& exception_state) {

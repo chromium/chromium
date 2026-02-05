@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_frame.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -67,7 +68,7 @@ FrameEdgeInfo HTMLFrameElement::EdgeInfo() const {
 void HTMLFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kFrameborderAttr) {
-    frame_border_ = params.new_value.ToInt();
+    frame_border_ = StringToInt(params.new_value).value_or(0);
     frame_border_set_ = !params.new_value.IsNull();
     if (auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
       frame_set->DirtyEdgeInfoAndFullPaintInvalidation();

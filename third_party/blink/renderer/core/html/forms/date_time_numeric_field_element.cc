@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -216,8 +217,9 @@ int DateTimeNumericFieldElement::ValueAsInteger() const {
 }
 
 int DateTimeNumericFieldElement::TypeAheadValue() const {
-  if (type_ahead_buffer_.length())
-    return type_ahead_buffer_.ToString().ToInt();
+  if (type_ahead_buffer_.length()) {
+    return StringToInt(type_ahead_buffer_.ToString()).value_or(0);
+  }
   return -1;
 }
 

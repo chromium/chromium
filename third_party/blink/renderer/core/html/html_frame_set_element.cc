@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -138,7 +139,7 @@ void HTMLFrameSetElement::ParseAttribute(
     DirtyEdgeInfo();
   } else if (name == html_names::kBorderAttr) {
     if (!value.IsNull()) {
-      border_ = value.ToInt();
+      border_ = StringToInt(value).value_or(0);
     } else {
       border_.reset();
     }

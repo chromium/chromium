@@ -181,9 +181,6 @@ class WTF_EXPORT AtomicString {
 
   bool IsLowerASCII() const { return string_.IsLowerASCII(); }
 
-  // See comments in WTFString.h.
-  int ToInt(bool* ok = nullptr) const { return string_.ToInt(ok); }
-
   template <typename IntegerType>
   static AtomicString Number(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
