@@ -2514,9 +2514,10 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
-class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
+class SingleClientBookmarksThrottlingSyncTest
+    : public SingleClientParameterizedBookmarksSyncTestBase {
  public:
-  SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientBookmarksThrottlingSyncTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();
@@ -2543,24 +2544,44 @@ class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
   void SetupBookmarksSync() {
     // Only enable bookmarks so that sync is not nudged by another data type
     // (with a shorter delay).
-    ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
-        base::BindOnce([](syncer::SyncUserSettings* user_settings) {
-          user_settings->SetSelectedTypes(
-              false, {syncer::UserSelectableType::kBookmarks});
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+      ASSERT_TRUE(
+          GetClient(kSingleProfileIndex)
+              ->SetupSyncWithCustomSettings(
+                  base::BindOnce([](syncer::SyncUserSettings* user_settings) {
+                    user_settings->SetSelectedTypes(
+                        false, {syncer::UserSelectableType::kBookmarks});
 #if BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetSelectedOsTypes(false, {});
+                    user_settings->SetSelectedOsTypes(false, {});
 #else   // BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetInitialSyncFeatureSetupComplete(
-              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
+                    user_settings->SetInitialSyncFeatureSetupComplete(
+                        syncer::SyncFirstSetupCompleteSource::
+                            ADVANCED_FLOW_CONFIRM);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-        })));
+                  })));
+    } else {
+      ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+      ASSERT_TRUE(GetClient(kSingleProfileIndex)->DisableAllSelectableTypes());
+#if BUILDFLAG(IS_CHROMEOS)
+      ASSERT_TRUE(
+          GetClient(kSingleProfileIndex)->DisableAllSelectableOsTypes());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      ASSERT_TRUE(
+          GetClient(kSingleProfileIndex)
+              ->EnableSelectableType(syncer::UserSelectableType::kBookmarks));
+    }
   }
 
  private:
   base::CallbackListSubscription create_services_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientBookmarksThrottlingSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -2581,12 +2602,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
 
   base::HistogramTester histogram_tester;
   SetupBookmarksSync();
+  // Trigger batch upload for transport mode.
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    GetSyncService(kSingleProfileIndex)
+        ->TriggerLocalDataMigration({syncer::BOOKMARKS});
+  }
 
   // All bookmarks get committed in the commit cycle but the quota gets
   // depleted.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Sync.DataTypeCommitMessageHasDepletedQuota",
@@ -2594,7 +2621,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
   // Recovering from depleted quota is tested by another test.
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksThrottlingSyncTest,
                        DepletedQuotaDoesNotStopCommitCycle) {
   ASSERT_TRUE(SetupClients());
 
@@ -2618,19 +2645,25 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
 
   base::HistogramTester histogram_tester;
   SetupBookmarksSync();
+  // Trigger batch upload for transport mode.
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    GetSyncService(kSingleProfileIndex)
+        ->TriggerLocalDataMigration({syncer::BOOKMARKS});
+  }
 
   // All bookmarks get committed in the commit cycle despite the quota gets
   // depleted long before all is committed.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
   EXPECT_EQ(4 + 1, histogram_tester.GetBucketCount(
                        "Sync.DataTypeCommitMessageHasDepletedQuota",
                        DataTypeHistogramValue(syncer::BOOKMARKS)));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksThrottlingSyncTest,
                        DoNotDepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
@@ -2652,20 +2685,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   }
 
   SetupBookmarksSync();
+  // Trigger batch upload for transport mode.
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    GetSyncService(kSingleProfileIndex)
+        ->TriggerLocalDataMigration({syncer::BOOKMARKS});
+  }
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   base::HistogramTester histogram_tester;
 
   // Adding another entity does again trigger an update (normal nudge delay).
   std::u16string client_title = u"Foo";
-  AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
-            client_title);
+  AddFolder(kSingleProfileIndex,
+            GetOtherNode(kSingleProfileIndex, GetStoreType()), 0, client_title);
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   // There is no record in the depleted quota histogram.
@@ -2674,7 +2714,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   histogram_tester.ExpectTotalCount("Sync.DataTypeCommitWithDepletedQuota", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksThrottlingSyncTest,
                        DepleteQuotaAndRecover) {
   ASSERT_TRUE(SetupClients());
 
@@ -2699,10 +2739,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   {
     base::HistogramTester histogram_tester;
     SetupBookmarksSync();
+    // Trigger batch upload for transport mode.
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      GetSyncService(kSingleProfileIndex)
+          ->TriggerLocalDataMigration({syncer::BOOKMARKS});
+    }
 
     ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                     GetBookmarkModel(kSingleProfileIndex),
-                    GetSyncService(kSingleProfileIndex), GetFakeServer())
+                    GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                    GetStoreType())
                     .Wait());
     // The quota should *just* be depleted now.
     EXPECT_EQ(1, histogram_tester.GetBucketCount(
@@ -2713,10 +2759,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   // Need to send another bookmark in the next cycle. As the current cycle
   // determines the next nudge delay. Thus, only now the next commit is
   // scheduled in 3s from now.
-  AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, u"Foo");
+  AddFolder(kSingleProfileIndex,
+            GetOtherNode(kSingleProfileIndex, GetStoreType()), 0, u"Foo");
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   {
@@ -2725,14 +2773,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
     // Adding another bookmark does not trigger an immediate commit: The
     // bookmarks data type is out of quota, so gets a long nudge delay.
     base::TimeTicks time = base::TimeTicks::Now();
-    AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
-              u"Bar");
+    AddFolder(kSingleProfileIndex,
+              GetOtherNode(kSingleProfileIndex, GetStoreType()), 0, u"Bar");
 
     // Since the extra nudge delay is only two seconds, it still manages to
     // commit before test timeout.
     ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                     GetBookmarkModel(kSingleProfileIndex),
-                    GetSyncService(kSingleProfileIndex), GetFakeServer())
+                    GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                    GetStoreType())
                     .Wait());
     // Check that it takes at least one second, that should be robust enough to
     // not flake.
