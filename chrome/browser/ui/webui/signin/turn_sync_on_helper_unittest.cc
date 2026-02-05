@@ -1756,7 +1756,7 @@ TEST_F(TurnSyncOnHelperTest,
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->GetSyncStartupStateObserverForTesting()
-      ->OnSyncStartupStateChanged(
+      ->OnSyncStartupStateChangedForTesting(
           SyncStartupTracker::ServiceStartupState::kComplete);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSync));
@@ -1799,7 +1799,7 @@ TEST_F(TurnSyncOnHelperTest,
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->GetSyncStartupStateObserverForTesting()
-      ->OnSyncStartupStateChanged(
+      ->OnSyncStartupStateChangedForTesting(
           SyncStartupTracker::ServiceStartupState::kComplete);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSync));
@@ -1842,7 +1842,7 @@ TEST_F(TurnSyncOnHelperTest,
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->GetSyncStartupStateObserverForTesting()
-      ->OnSyncStartupStateChanged(
+      ->OnSyncStartupStateChangedForTesting(
           SyncStartupTracker::ServiceStartupState::kError);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSignin));
@@ -1885,7 +1885,7 @@ TEST_F(TurnSyncOnHelperTest,
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->GetSyncStartupStateObserverForTesting()
-      ->OnSyncStartupStateChanged(
+      ->OnSyncStartupStateChangedForTesting(
           SyncStartupTracker::ServiceStartupState::kError);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSync));
