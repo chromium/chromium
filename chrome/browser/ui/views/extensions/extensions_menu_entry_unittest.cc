@@ -74,15 +74,15 @@ void ExtensionsMenuEntryViewTest::SetUp() {
 
   action_model_holder_ = std::move(model);
 
-  std::unique_ptr<ExtensionsMenuEntryView> menu_item =
+  std::unique_ptr<ExtensionsMenuEntryView> menu_entry =
       std::make_unique<ExtensionsMenuEntryView>(
           browser(), /*is_enterprise=*/false, action_model_holder_.get(),
           /*site_access_toggle_callback*/ base::DoNothing(),
           /*site_permissions_button_callback=*/base::RepeatingClosure());
-  primary_button_ = menu_item->primary_action_button_for_testing();
-  context_menu_button_ = menu_item->context_menu_button_for_testing();
+  primary_button_ = menu_entry->primary_action_button_for_testing();
+  context_menu_button_ = menu_entry->context_menu_button_for_testing();
 
-  widget_->SetContentsView(std::move(menu_item));
+  widget_->SetContentsView(std::move(menu_entry));
 }
 
 void ExtensionsMenuEntryViewTest::TearDown() {

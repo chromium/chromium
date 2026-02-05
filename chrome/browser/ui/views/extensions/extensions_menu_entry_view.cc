@@ -154,7 +154,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
                       // Override the hover button border since we are
-                      // adding vertical spacing in between menu items.
+                      // adding vertical spacing in between menu entries.
                       // Instead, set the border to be the padding around the
                       // icon when hovering.
                       .SetBorder(views::CreateEmptyBorder(icon_padding))
@@ -198,32 +198,31 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
 ExtensionsMenuEntryView::~ExtensionsMenuEntryView() = default;
 
 void ExtensionsMenuEntryView::Update(
-    ExtensionsMenuViewModel::MenuEntryState menu_item_state) {
+    ExtensionsMenuViewModel::MenuEntryState entry_state) {
   site_access_toggle_->SetVisible(
-      menu_item_state.site_access_toggle.status !=
+      entry_state.site_access_toggle.status !=
       ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  site_access_toggle_->SetIsOn(menu_item_state.site_access_toggle.is_on);
+  site_access_toggle_->SetIsOn(entry_state.site_access_toggle.is_on);
   site_access_toggle_->SetTooltipText(
-      menu_item_state.site_access_toggle.tooltip_text);
+      entry_state.site_access_toggle.tooltip_text);
 
   site_permissions_button_->SetVisible(
-      menu_item_state.site_permissions_button.status !=
+      entry_state.site_permissions_button.status !=
       ExtensionsMenuViewModel::ControlState::Status::kHidden);
   site_permissions_button_->SetEnabled(
-      menu_item_state.site_permissions_button.status ==
+      entry_state.site_permissions_button.status ==
       ExtensionsMenuViewModel::ControlState::Status::kEnabled);
-  site_permissions_button_->SetText(
-      menu_item_state.site_permissions_button.text);
+  site_permissions_button_->SetText(entry_state.site_permissions_button.text);
   site_permissions_button_->SetTooltipText(
-      menu_item_state.site_permissions_button.tooltip_text);
+      entry_state.site_permissions_button.tooltip_text);
   site_permissions_button_->GetViewAccessibility().SetName(
-      menu_item_state.site_permissions_button.accessible_name);
+      entry_state.site_permissions_button.accessible_name);
 
   // Update button size after changing its contents so it fits in the menu
-  // item row.
+  // entry row.
   site_permissions_button_->PreferredSizeChanged();
 
-  UpdateContextMenuButton(menu_item_state.context_menu_button);
+  UpdateContextMenuButton(entry_state.context_menu_button);
 }
 
 void ExtensionsMenuEntryView::UpdateContextMenuButton(

@@ -464,9 +464,9 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
   std::vector<ExtensionsMenuEntryView*> menu_entries =
       main_page->GetMenuEntries();
   for (auto* menu_entry : menu_entries) {
-    ExtensionsMenuViewModel::MenuEntryState menu_item_state =
+    ExtensionsMenuViewModel::MenuEntryState entry_state =
         menu_model_->GetMenuEntryState(menu_entry->extension_id());
-    menu_entry->Update(menu_item_state);
+    menu_entry->Update(entry_state);
   }
 }
 
@@ -516,7 +516,7 @@ void ExtensionsMenuDelegateDesktop::InsertMenuEntry(
     ExtensionsMenuMainPageView* main_page,
     ExtensionActionViewModel* action_model,
     int index) {
-  ExtensionsMenuViewModel::MenuEntryState menu_item =
+  ExtensionsMenuViewModel::MenuEntryState entry_state =
       menu_model_->GetMenuEntryState(action_model->GetId());
-  main_page->CreateAndInsertMenuEntry(action_model, menu_item, index);
+  main_page->CreateAndInsertMenuEntry(action_model, entry_state, index);
 }

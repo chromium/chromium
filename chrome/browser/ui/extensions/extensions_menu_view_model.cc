@@ -874,17 +874,17 @@ ExtensionsMenuViewModel::GetMenuEntryState(
   CHECK(extension);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  MenuEntryState menu_item;
-  menu_item.context_menu_button = GetContextMenuButtonState(action_model);
-  menu_item.site_access_toggle = GetSiteAccessToggleState(
+  MenuEntryState entry_state;
+  entry_state.context_menu_button = GetContextMenuButtonState(action_model);
+  entry_state.site_access_toggle = GetSiteAccessToggleState(
       *extension, *profile, *toolbar_model_, *web_contents);
-  menu_item.site_permissions_button = GetSitePermissionsButtonState(
+  entry_state.site_permissions_button = GetSitePermissionsButtonState(
       *extension, *profile, *toolbar_model_, *web_contents);
-  menu_item.is_enterprise = extensions::ExtensionSystem::Get(profile)
-                                ->management_policy()
-                                ->HasEnterpriseForcedAccess(*extension);
+  entry_state.is_enterprise = extensions::ExtensionSystem::Get(profile)
+                                  ->management_policy()
+                                  ->HasEnterpriseForcedAccess(*extension);
 
-  return menu_item;
+  return entry_state;
 }
 
 ExtensionsMenuViewModel::OptionalSection
