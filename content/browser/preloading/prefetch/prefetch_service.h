@@ -106,10 +106,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Copies any cookies in the isolated network context associated with
-  // |prefetch_container| to the default network context.
-  void CopyIsolatedCookies(PrefetchServingHandle& serving_handle);
-
   // Adds a `PrefetchContainer` created from the `PrefetchRequest` under control
   // of `PrefetchService` and returns `PrefetchHandle` so that the caller can
   // control prefetch resources associated with this.
@@ -386,14 +382,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
       const PrefetchContainer& prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status,
       const std::optional<int>& response_code) override;
-
-  // Called when the cookies from |prefetch_conatiner| are read from the
-  // isolated network context and are ready to be written to the default network
-  // context.
-  void OnGotIsolatedCookiesForCopy(
-      PrefetchServingHandle serving_handle,
-      const net::CookieAccessResultList& cookie_list,
-      const net::CookieAccessResultList& excluded_cookies);
 
   enum class HandlePrefetchContainerResult {
     // No prefetch was available to be used.

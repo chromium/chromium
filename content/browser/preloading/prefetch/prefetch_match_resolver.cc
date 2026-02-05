@@ -736,9 +736,7 @@ void PrefetchMatchResolver::UnblockForMatch(const PrefetchKey& prefetch_key) {
     // Basically, we can assume `PrefetchService` is available as waiting
     // `PrefetchContainer` is owned by it. But in unit tests, we use invalid
     // frame tree node id and this `prefetch_service` is not available.
-    if (prefetch_service_) {
-      prefetch_service_->CopyIsolatedCookies(serving_handle);
-    }
+    serving_handle.CopyIsolatedCookies();
   }
   CHECK(serving_handle);
 

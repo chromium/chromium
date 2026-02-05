@@ -7,6 +7,7 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
@@ -63,6 +64,16 @@ auto BindOnceForRvalueMemberMethod(Method method,
             std::forward<UnboundArgs>(unbound_args)...);
       },
       method, std::move(receiver), std::forward<BoundArgs>(bound_args)...);
+}
+
+BrowserContext* BrowserContextFromFrameTreeNodeId(
+    FrameTreeNodeId frame_tree_node_id) {
+  WebContents* web_content =
+      WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  if (!web_content) {
+    return nullptr;
+  }
+  return web_content->GetBrowserContext();
 }
 
 }  // namespace
@@ -163,12 +174,13 @@ void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
   if (!state->cookie_copy_complete_if_required) {
     if (IsValid()) {
       if (!HasIsolatedCookieCopyStarted()) {
+        // Checks the same `BrowserContext` is used, just in case. We can remove
+        // this `CHECK` e.g. once we remove `frame_tree_node_id` access here.
+        CHECK_EQ(BrowserContextFromFrameTreeNodeId(state->frame_tree_node_id),
+                 GetPrefetchContainer()->request().browser_context());
+
         // Start the cookie copy for the next redirect hop.
-        if (PrefetchService* prefetch_service =
-                PrefetchService::GetFromFrameTreeNodeId(
-                    state->frame_tree_node_id)) {
-          prefetch_service->CopyIsolatedCookies(*this);
-        }
+        CopyIsolatedCookies();
       }
 
       OnInterceptorCheckCookieCopy();

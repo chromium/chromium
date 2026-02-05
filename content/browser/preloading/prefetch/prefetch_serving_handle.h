@@ -10,14 +10,9 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "net/cookies/cookie_util.h"
 
 class GURL;
-
-namespace net {
-
-struct CookieWithAccessResult;
-
-}  // namespace net
 
 namespace content {
 
@@ -98,10 +93,6 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   void OnInterceptorCheckCookieCopy();
   void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
-  void OnIsolatedCookieCopyStart();
-  void OnIsolatedCookiesReadCompleteAndWriteStart();
-  void OnIsolatedCookieCopyComplete();
-
   // Called with the result of the probe. If the probing feature is enabled,
   // then a probe must complete successfully before the prefetch can be
   // served.
@@ -140,6 +131,10 @@ class CONTENT_EXPORT PrefetchServingHandle final {
       const GURL& tentative_resource_request_url,
       base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback) &&;
 
+  // Copies any cookies in the isolated network context associated with
+  // the current redirect hop to the default network context.
+  void CopyIsolatedCookies();
+
   using OnIsolatedCookieCopyStartCallbackForTesting =
       base::RepeatingCallback<void(const PrefetchServingHandle&)>;
   static void SetOnIsolatedCookieCopyStartCallbackForTesting(
@@ -152,6 +147,17 @@ class CONTENT_EXPORT PrefetchServingHandle final {
 
   // Returns the `SingleRedirectHop` to be served next.
   const PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToServe() const;
+
+  // Isolated cookie copy methods.
+  void OnIsolatedCookieCopyStart();
+  void OnIsolatedCookiesReadCompleteAndWriteStart();
+  // Called when the cookies from |prefetch_conatiner| are read from the
+  // isolated network context and are ready to be written to the default network
+  // context.
+  void OnGotIsolatedCookiesForCopy(
+      const net::CookieAccessResultList& cookie_list,
+      const net::CookieAccessResultList& excluded_cookies) &&;
+  void OnIsolatedCookieCopyComplete() &&;
 
   // Validation methods.
   struct OnGotPrefetchToServeState;

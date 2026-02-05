@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/auto_reset.h"
-#include "base/barrier_closure.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -31,7 +30,6 @@
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
@@ -169,17 +167,6 @@ void RecordPrefetchProxyPrefetchMainframeRespCode(int response_code) {
                            response_code);
 }
 
-void RecordPrefetchProxyPrefetchMainframeCookiesToCopy(
-    size_t cookie_list_size) {
-  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.Mainframe.CookiesToCopy",
-                           cookie_list_size);
-}
-
-void CookieSetHelper(base::RepeatingClosure closure,
-                     net::CookieAccessResult access_result) {
-  closure.Run();
-}
-
 // Returns true if the prefetch is heldback, and set the holdback status
 // correspondingly.
 bool CheckAndSetPrefetchHoldbackStatus(
@@ -280,12 +267,6 @@ void RecordRedirectNetworkContextTransition(
 
   UMA_HISTOGRAM_ENUMERATION(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", transition);
-}
-
-void OnIsolatedCookieCopyComplete(PrefetchServingHandle serving_handle) {
-  if (serving_handle) {
-    serving_handle.OnIsolatedCookieCopyComplete();
-  }
 }
 
 bool IsReferrerPolicySufficientlyStrict(
@@ -1966,62 +1947,6 @@ void PrefetchService::OnPrefetchCompletedOrFailed(
     Prefetch();
   } else {
     RemoveFromSchedulerAndProgressAsync(prefetch_container);
-  }
-}
-
-void PrefetchService::CopyIsolatedCookies(
-    PrefetchServingHandle& serving_handle) {
-  DCHECK(serving_handle);
-
-  // We only need to copy cookies if the prefetch used an isolated network
-  // context.
-  if (!serving_handle.IsIsolatedNetworkContextRequiredToServe()) {
-    return;
-  }
-
-  serving_handle.OnIsolatedCookieCopyStart();
-
-  if (!serving_handle.GetCurrentNetworkContextToServe()) {
-    // Not set in unit tests.
-    CHECK_IS_TEST();
-    return;
-  }
-
-  net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  serving_handle.GetCurrentNetworkContextToServe()
-      ->GetCookieManager()
-      ->GetCookieList(
-          serving_handle.GetCurrentURLToServe(), options,
-          net::CookiePartitionKeyCollection::Todo(),
-          base::BindOnce(&PrefetchService::OnGotIsolatedCookiesForCopy,
-                         weak_method_factory_.GetWeakPtr(),
-                         serving_handle.Clone()));
-}
-
-void PrefetchService::OnGotIsolatedCookiesForCopy(
-    PrefetchServingHandle serving_handle,
-    const net::CookieAccessResultList& cookie_list,
-    const net::CookieAccessResultList& excluded_cookies) {
-  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStart();
-  RecordPrefetchProxyPrefetchMainframeCookiesToCopy(cookie_list.size());
-
-  if (cookie_list.empty()) {
-    serving_handle.OnIsolatedCookieCopyComplete();
-    return;
-  }
-
-  const auto current_url = serving_handle.GetCurrentURLToServe();
-
-  base::RepeatingClosure barrier = base::BarrierClosure(
-      cookie_list.size(),
-      base::BindOnce(&OnIsolatedCookieCopyComplete, std::move(serving_handle)));
-
-  net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  for (const net::CookieWithAccessResult& cookie : cookie_list) {
-    browser_context_->GetDefaultStoragePartition()
-        ->GetCookieManagerForBrowserProcess()
-        ->SetCanonicalCookie(cookie.cookie, current_url, options,
-                             base::BindOnce(&CookieSetHelper, barrier));
   }
 }
 
