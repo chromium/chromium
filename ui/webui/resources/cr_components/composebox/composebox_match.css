@@ -122,24 +122,24 @@
   display: inline-flex;
 }
 
-:host-context([in-deep-search-mode_]) #textContainer {
+:host([tool-mode='1']) #textContainer {
   overflow: hidden;
   white-space: normal;
   line-height: 24px;
 }
 
-:host-context([in-deep-search-mode_]) #focusIndicator {
+:host([tool-mode='1']) #focusIndicator {
   top: 0;
   bottom: 0;
   height: auto;
 }
 
-:host-context([in-deep-search-mode_]) {
+:host([tool-mode='1']) {
   height: auto;
   min-height: var(--cr-composebox-match-height, 44px);
 }
 
-:host-context([in-deep-search-mode_]) .container {
+:host([tool-mode='1']) .container {
   height: auto;
   min-height: 24px;
   padding-block: 10px;

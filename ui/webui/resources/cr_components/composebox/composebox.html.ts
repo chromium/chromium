@@ -5,7 +5,6 @@
 import '//resources/cr_elements/cr_icons.css.js';
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
-import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import type {ComposeboxElement} from './composebox.js';
 
@@ -129,7 +128,7 @@ export function getHtml(this: ComposeboxElement) {
             .result="${this.result_}"
             .selectedMatchIndex="${this.selectedMatchIndex_}"
             .maxSuggestions="${this.maxSuggestions}"
-            .inDeepSearchMode="${this.activeToolMode_ === ToolMode.kDeepSearch}"
+            .toolMode="${this.activeToolMode_}"
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
             @match-focusin="${this.onMatchFocusin_}"
             @match-click="${this.onMatchClick_}"

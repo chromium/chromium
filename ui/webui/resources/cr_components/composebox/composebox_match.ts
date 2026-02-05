@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './composebox_match.css.js';
 import {getHtml} from './composebox_match.html.js';
@@ -50,7 +51,10 @@ export class ComposeboxMatchElement extends CrLitElement {
        */
       matchIndex: {type: Number},
 
-      inDeepSearchMode: {type: Boolean},
+      toolMode: {
+        type: Number,
+        reflect: true,
+      },
 
       removeButtonTitle_: {type: String},
     };
@@ -59,7 +63,7 @@ export class ComposeboxMatchElement extends CrLitElement {
   accessor match: AutocompleteMatch = createAutocompleteMatch();
 
   accessor matchIndex: number = -1;
-  accessor inDeepSearchMode: boolean = false;
+  accessor toolMode: ToolMode = ToolMode.kUnspecified;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
@@ -98,7 +102,7 @@ export class ComposeboxMatchElement extends CrLitElement {
   // This is needed since --webkit-box is deprecated and line-clamp does not
   // work in CSS without it.
   private clampDeepSearchContents_() {
-    if (!this.inDeepSearchMode) {
+    if (this.toolMode !== ToolMode.kDeepSearch) {
       return;
     }
     const textContainer = this.$.textContainer;
