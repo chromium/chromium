@@ -725,6 +725,48 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput_DuplicateName) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_ImplicitLabelText) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <label>
+        LABEL
+        <select name="select" required>
+          <option value="Option 1">This is option 1</option>
+          <option value="Option 2">This is option 2</option>
+          <option value="Option 3">This is option 3</option>
+        </select>
+        <button>Button text</button>
+      </label>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "select": {
+           "type": "string",
+           "oneOf": [
+             { "const": "Option 1", "title": "This is option 1" },
+             { "const": "Option 2", "title": "This is option 2" },
+             { "const": "Option 3", "title": "This is option 3" }
+           ],
+           "enum": ["Option 1", "Option 2", "Option 3"],
+           "description": "LABEL"
+         }
+      },
+      "required": ["select"]
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
   SetBodyInnerHTML(
       R"HTML(

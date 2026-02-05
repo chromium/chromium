@@ -42,6 +42,20 @@ class CORE_EXPORT HTMLLabelElement final : public HTMLElement {
 
   bool WillRespondToMouseClickEvents() override;
 
+  // Similar to Node::textContent(), but excludes the text from
+  // labelable descendants (See HTMLElement::IsLabelable()).
+  //
+  // This is useful if you want the label text without including
+  // the text content of any implicitly associated form controls.
+  //
+  // For example, this function will return just "LABEL:"
+  // for the following:
+  //
+  //   <label>LABEL:<select><option>OPTION</option></label>
+  //
+  // If you use Node::textContent() instead, it will return "LABEL:OPTION".
+  String TextContentExcludingLabelable() const;
+
  private:
   // TODO(crbug.com/452084024): Remove this when the
   // LabelInteractiveContentCheckBeforeHandler flag is removed

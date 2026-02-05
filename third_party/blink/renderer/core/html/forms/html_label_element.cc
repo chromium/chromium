@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
@@ -284,6 +285,26 @@ bool HTMLLabelElement::WillRespondToMouseClickEvents() {
   }
 
   return HTMLElement::WillRespondToMouseClickEvents();
+}
+
+String HTMLLabelElement::TextContentExcludingLabelable() const {
+  StringBuilder builder;
+
+  const Node* node = NodeTraversal::Next(*this, /*stay_within=*/this);
+
+  while (node) {
+    if (auto* html_element = DynamicTo<HTMLElement>(node);
+        html_element && html_element->IsLabelable()) {
+      node = NodeTraversal::NextSkippingChildren(*node, /*stay_within=*/this);
+      continue;
+    }
+    if (auto* text_node = DynamicTo<Text>(node)) {
+      builder.Append(text_node->data());
+    }
+    node = NodeTraversal::Next(*node, /*stay_within=*/this);
+  }
+
+  return builder.ReleaseString();
 }
 
 void HTMLLabelElement::Focus(const FocusParams& params) {

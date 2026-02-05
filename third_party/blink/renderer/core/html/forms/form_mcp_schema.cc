@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
@@ -777,11 +778,11 @@ String FormMCPSchema::LabelText(HTMLFormControlElement& control) {
     StringBuilder builder;
 
     for (wtf_size_t i = 0; i < list->length(); ++i) {
-      Node* label = list->item(i);
       if (i != 0) {
         builder.Append("; ");
       }
-      builder.Append(label->textContent().StripWhiteSpace());
+      HTMLLabelElement& label = To<HTMLLabelElement>(*list->item(i));
+      builder.Append(label.TextContentExcludingLabelable().StripWhiteSpace());
     }
 
     if (!builder.empty()) {
