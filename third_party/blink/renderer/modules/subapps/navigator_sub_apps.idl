@@ -8,5 +8,5 @@
   ImplementedAs=SubApps,
   IsolatedContext
 ] partial interface Navigator {
-  [SameObject, RuntimeEnabled=DesktopPWAsSubApps] readonly attribute SubApps subApps;
+  [SameObject, RuntimeEnabled=SubApps] readonly attribute SubApps subApps;
 };

@@ -224,7 +224,7 @@ class IsolatedWebAppFileHandlingApprovalBrowserTest
     manifest_updated_observer.Wait();
   }
 
-  base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
+  base::test::ScopedFeatureList features_{blink::features::kSubApps};
   FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   IsolatedWebAppTestUpdateServer update_server_;
 };
