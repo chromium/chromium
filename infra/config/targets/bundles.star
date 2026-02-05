@@ -6916,6 +6916,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "trees_in_viz_enabled_tests_chromeos",
+    targets = [
+        "cc_unittests",
+        "viz_unittests",
+        "content_browsertests",
+        "browser_tests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = ["--enable-features=TreesInViz"],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "tvos_rel_tests",
     targets = [
         targets.bundle(

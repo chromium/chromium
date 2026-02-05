@@ -2712,6 +2712,7 @@ ci.builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
@@ -2721,15 +2722,40 @@ ci.builder(
             "chromeos_with_codecs",
             "release_builder",
             "remoteexec",
+            "use_cups",
             "x64",
         ],
     ),
     targets = targets.bundle(
-        targets = ["trees_in_viz_enabled_tests"],
+        targets = ["trees_in_viz_enabled_tests_chromeos"],
         mixins = [
             "x86-64",
             "linux-jammy",
+            "retry_only_failed_tests",
         ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    dimensions = {
+                        "kvm": "1",
+                    },
+                    shards = 60,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entir shards.
+                # crbug.com/1475852
+                retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+        },
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
