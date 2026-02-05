@@ -63,6 +63,7 @@ void OpenXrGraphicsBinding::OnSessionCreated(XrSpace local_space,
       mojom::XRLayerSpecificData::NewProjection(
           std::move(projection_layer_data));
   layer_data->mutable_data->blend_texture_source_alpha = true;
+  layer_data->mutable_data->force_mono_presentation = false;
   layer_data->mutable_data->opacity = 1.f;
   layer_data->mutable_data->native_origin_information =
       mojom::XRNativeOriginInformation::NewReferenceSpaceType(

@@ -802,6 +802,7 @@ struct XRLayerReadOnlyData {
 // and can also be modified later.
 struct XRLayerMutableData {
   bool blend_texture_source_alpha;
+  bool force_mono_presentation;
   float opacity;
   XRNativeOriginInformation native_origin_information;
   XRLayerSpecificData layer_data;

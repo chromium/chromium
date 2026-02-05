@@ -525,6 +525,7 @@ device::mojom::blink::XRCompositionLayerDataPtr XRWebGLLayer::CreateLayerData()
   // Mutable data.
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
   layer_data->mutable_data->blend_texture_source_alpha = true;
+  layer_data->mutable_data->force_mono_presentation = false;
   layer_data->mutable_data->opacity = 1UL;
   layer_data->mutable_data->native_origin_information =
       device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(

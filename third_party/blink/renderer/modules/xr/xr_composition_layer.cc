@@ -54,6 +54,7 @@ bool XRCompositionLayer::forceMonoPresentation() const {
 
 void XRCompositionLayer::setForceMonoPresentation(bool value) {
   force_mono_presentation_ = value;
+  SetModified(true);
 }
 
 float XRCompositionLayer::opacity() const {
@@ -137,6 +138,7 @@ XRCompositionLayer::CreateLayerData() const {
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
   layer_data->mutable_data->blend_texture_source_alpha =
       blendTextureSourceAlpha();
+  layer_data->mutable_data->force_mono_presentation = forceMonoPresentation();
   layer_data->mutable_data->opacity = opacity();
   layer_data->mutable_data->native_origin_information = NativeOrigin();
 
