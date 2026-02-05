@@ -75,7 +75,7 @@ class ObserverBridge : public BulkLeakCheckServiceInterface::Observer {
 }
 
 - (void)dealloc {
-  _bulkLeakCheckService->RemoveObserver(_observerBridge.get());
+  DCHECK(!_bulkLeakCheckService) << "-shutDown must be called before -dealloc";
 }
 
 - (CWVLeakCheckServiceState)state {
@@ -148,6 +148,12 @@ class ObserverBridge : public BulkLeakCheckServiceInterface::Observer {
             didCheckCredential:credential
                       isLeaked:isLeaked];
   }
+}
+
+- (void)shutDown {
+  DCHECK(_bulkLeakCheckService) << "-shutDown must be called only one time";
+  _bulkLeakCheckService->RemoveObserver(_observerBridge.get());
+  _bulkLeakCheckService = nullptr;
 }
 
 @end

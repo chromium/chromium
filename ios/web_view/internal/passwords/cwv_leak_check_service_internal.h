@@ -14,6 +14,8 @@
     (password_manager::BulkLeakCheckServiceInterface*)service
     NS_DESIGNATED_INITIALIZER;
 
+- (void)shutDown;
+
 @end
 
 #endif  // IOS_WEB_VIEW_INTERNAL_PASSWORDS_CWV_LEAK_CHECK_SERVICE_INTERNAL_H_

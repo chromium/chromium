@@ -90,6 +90,8 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
       &pref_service_, primary_account_info.account_id));
   EXPECT_TRUE(
       password_manager::features_util::IsAccountStorageActive(&sync_service_));
+
+  [sync_controller shutDown];
 }
 
 TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
@@ -114,6 +116,8 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
                                        gaiaID:account_info.gaia.ToNSString()]];
 
   CWVWebView.skipAccountStorageCheckEnabled = false;
+
+  [sync_controller shutDown];
 }
 
 TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
@@ -132,6 +136,8 @@ TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
 
   [sync_controller stopSyncAndClearIdentity];
   EXPECT_FALSE(sync_controller.currentIdentity);
+
+  [sync_controller shutDown];
 }
 
 TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
@@ -144,6 +150,8 @@ TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
   EXPECT_FALSE(sync_controller.passphraseNeeded);
   sync_service_.SetPassphraseRequired();
   EXPECT_TRUE(sync_controller.passphraseNeeded);
+
+  [sync_controller shutDown];
 }
 
 TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
@@ -156,6 +164,8 @@ TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
   EXPECT_FALSE(sync_controller.trustedVaultKeysRequired);
   sync_service_.SetTrustedVaultKeyRequired(true);
   EXPECT_TRUE(sync_controller.trustedVaultKeysRequired);
+
+  [sync_controller shutDown];
 }
 
 TEST_F(CWVSyncControllerTest, TrustedVaultRecoverabilityDegraded) {
@@ -167,6 +177,8 @@ TEST_F(CWVSyncControllerTest, TrustedVaultRecoverabilityDegraded) {
   EXPECT_FALSE(sync_controller.trustedVaultRecoverabilityDegraded);
   sync_service_.SetTrustedVaultRecoverabilityDegraded(true);
   EXPECT_TRUE(sync_controller.trustedVaultRecoverabilityDegraded);
+
+  [sync_controller shutDown];
 }
 
 TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
@@ -191,6 +203,8 @@ TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
   sync_service_.FireStateChanged();
 
   [delegate verify];
+
+  [sync_controller shutDown];
 }
 
 TEST_F(CWVSyncControllerTest, DelegateDidUpdateState) {
@@ -205,6 +219,8 @@ TEST_F(CWVSyncControllerTest, DelegateDidUpdateState) {
   OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
   sync_service_.FireStateChanged();
   [delegate verify];
+
+  [sync_controller shutDown];
 }
 
 }  // namespace ios_web_view

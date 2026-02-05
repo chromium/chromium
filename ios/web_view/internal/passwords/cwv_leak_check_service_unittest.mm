@@ -96,6 +96,8 @@ class CWVLeakCheckServiceTest : public PlatformTest {
         initWithBulkLeakCheckService:&service_interface_];
   }
 
+  ~CWVLeakCheckServiceTest() override { [service_ shutDown]; }
+
  protected:
   MockLeakDetectionCheckFactory& mock_leak_factory() {
     return *mock_leak_factory_;

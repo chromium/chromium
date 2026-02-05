@@ -27,6 +27,8 @@ class PrefService;
                         prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
+- (void)shutDown;
+
 @end
 
 NS_ASSUME_NONNULL_END

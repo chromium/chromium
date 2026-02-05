@@ -222,6 +222,8 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
 
 - (void)shutDown {
   [_autofillDataManager shutDown];
+  [_leakCheckService shutDown];
+  [_syncController shutDown];
   for (CWVWebView* webView in _webViews) {
     [webView shutDown];
   }
