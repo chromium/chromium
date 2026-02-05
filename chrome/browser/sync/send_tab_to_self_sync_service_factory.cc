@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync/model/data_type_store_service.h"
@@ -44,6 +45,7 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(SessionSyncServiceFactory::GetInstance());
 }
 
 SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() = default;
@@ -64,7 +66,10 @@ SendTabToSelfSyncServiceFactory::BuildServiceInstanceForBrowserContext(
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
 
+  sync_sessions::SessionSyncService* session_sync_service =
+      SessionSyncServiceFactory::GetForProfile(profile);
+
   return std::make_unique<send_tab_to_self::SendTabToSelfSyncService>(
       chrome::GetChannel(), std::move(store_factory), history_service,
-      profile->GetPrefs(), device_info_tracker);
+      profile->GetPrefs(), device_info_tracker, session_sync_service);
 }

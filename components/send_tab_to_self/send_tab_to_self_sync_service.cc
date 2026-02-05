@@ -26,7 +26,8 @@ SendTabToSelfSyncService::SendTabToSelfSyncService(
     syncer::OnceDataTypeStoreFactory create_store_callback,
     history::HistoryService* history_service,
     PrefService* pref_service,
-    syncer::DeviceInfoTracker* device_info_tracker)
+    syncer::DeviceInfoTracker* device_info_tracker,
+    sync_sessions::SessionSyncService* session_sync_service)
     : bridge_(std::make_unique<send_tab_to_self::SendTabToSelfBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::SEND_TAB_TO_SELF,
@@ -35,6 +36,7 @@ SendTabToSelfSyncService::SendTabToSelfSyncService(
           std::move(create_store_callback),
           history_service,
           device_info_tracker,
+          session_sync_service,
           pref_service)),
       pref_service_(pref_service) {}
 

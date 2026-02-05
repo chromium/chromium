@@ -33,6 +33,10 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
+#include "components/sync_sessions/session_sync_service.h"
+#include "components/sync_sessions/synced_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -118,6 +122,28 @@ class MockSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
   MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<std::string>&));
 };
 
+class FakeSessionSyncService : public sync_sessions::SessionSyncService {
+ public:
+  syncer::GlobalIdMapper* GetGlobalIdMapper() const override { return nullptr; }
+
+  sync_sessions::FakeOpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
+    return &open_tabs_delegate_;
+  }
+
+  base::CallbackListSubscription SubscribeToForeignSessionsChanged(
+      const base::RepeatingClosure& cb) override {
+    return base::CallbackListSubscription();
+  }
+
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
+      override {
+    return nullptr;
+  }
+
+ private:
+  sync_sessions::FakeOpenTabsUIDelegate open_tabs_delegate_;
+};
+
 MATCHER_P(GuidIs, e, "") {
   return testing::ExplainMatchResult(e, arg->GetGUID(), result_listener);
 }
@@ -161,7 +187,8 @@ class SendTabToSelfBridgeTest : public testing::Test {
     bridge_ = std::make_unique<SendTabToSelfBridge>(
         mock_processor_.CreateForwardingProcessor(), &clock_,
         syncer::DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)),
-        /*history_service=*/nullptr, &device_info_tracker_, &pref_service_);
+        /*history_service=*/nullptr, &device_info_tracker_,
+        &session_sync_service_, &pref_service_);
     bridge_->AddObserver(&mock_observer_);
     base::RunLoop().RunUntilIdle();
   }
@@ -247,6 +274,10 @@ class SendTabToSelfBridgeTest : public testing::Test {
     return &device_info_tracker_;
   }
 
+  sync_sessions::FakeOpenTabsUIDelegate* open_tabs_ui_delegate() {
+    return session_sync_service_.GetOpenTabsUIDelegate();
+  }
+
  private:
   base::SimpleTestClock clock_;
 
@@ -266,6 +297,8 @@ class SendTabToSelfBridgeTest : public testing::Test {
   testing::NiceMock<MockSendTabToSelfModelObserver> mock_observer_;
 
   std::unique_ptr<syncer::DeviceInfo> local_device_;
+
+  FakeSessionSyncService session_sync_service_;
 };
 
 TEST_F(SendTabToSelfBridgeTest, CheckEmpties) {
@@ -1014,6 +1047,72 @@ TEST_F(SendTabToSelfBridgeTest, CollapseWhitespacesOfEntryTitle) {
   result =
       bridge()->AddEntry(GURL("http://b.com"), "입", kLocalDeviceCacheGuid);
   EXPECT_EQ("입", result->GetTitle());
+}
+
+// Tests that the timestamp from the sessions sync service is used if it is more
+// recent than the device info timestamp.
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_UsesSessionTimestamp) {
+  InitializeBridge();
+
+  const base::Time device_time = clock()->Now() - base::Days(1);
+  const base::Time session_time = clock()->Now();
+
+  std::unique_ptr<syncer::DeviceInfo> device =
+      CreateDevice("guid", "name", device_time);
+  AddTestDevice(device.get());
+
+  sync_sessions::SyncedSession session;
+  session.SetSessionTag("guid");
+  session.SetModifiedTime(session_time);
+
+  open_tabs_ui_delegate()->SetForeignSessions(
+      std::vector<raw_ptr<const sync_sessions::SyncedSession>>{&session});
+
+  // Trigger computation.
+  bridge()->OnDeviceInfoChange();
+
+  TargetDeviceInfo expected_device_info(device->client_name(),
+                                        device->client_name(), device->guid(),
+                                        device->form_factor(), session_time);
+
+  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
+              ElementsAre(expected_device_info));
+
+  open_tabs_ui_delegate()->SetForeignSessions({});
+}
+
+// Tests that the device info timestamp is used if it is more recent than the
+// sessions sync service timestamp.
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_UsesDeviceTimestampIfNewer) {
+  InitializeBridge();
+
+  const base::Time device_time = clock()->Now();
+  const base::Time session_time = clock()->Now() - base::Days(1);
+
+  std::unique_ptr<syncer::DeviceInfo> device =
+      CreateDevice("guid", "name", device_time);
+  AddTestDevice(device.get());
+
+  sync_sessions::SyncedSession session;
+  session.SetSessionTag("guid");
+  session.SetModifiedTime(session_time);
+
+  open_tabs_ui_delegate()->SetForeignSessions(
+      std::vector<raw_ptr<const sync_sessions::SyncedSession>>{&session});
+
+  // Trigger computation.
+  bridge()->OnDeviceInfoChange();
+
+  TargetDeviceInfo expected_device_info(device->client_name(),
+                                        device->client_name(), device->guid(),
+                                        device->form_factor(), device_time);
+
+  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
+              ElementsAre(expected_device_info));
+
+  open_tabs_ui_delegate()->SetForeignSessions({});
 }
 
 }  // namespace

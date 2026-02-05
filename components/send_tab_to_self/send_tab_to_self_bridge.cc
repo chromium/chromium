@@ -8,7 +8,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -32,9 +32,10 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
+#include "components/sync_sessions/session_sync_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-
 namespace send_tab_to_self {
 
 namespace {
@@ -90,6 +91,17 @@ std::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
   return std::nullopt;
 }
 
+base::flat_map<std::string, base::Time> GetSessionTimestamps(
+    sync_sessions::SessionSyncService* session_sync_service) {
+  if (!session_sync_service) {
+    return {};
+  }
+  sync_sessions::OpenTabsUIDelegate* delegate =
+      session_sync_service->GetOpenTabsUIDelegate();
+  return delegate ? delegate->GetAllForeignSessionLastModifiedTimes()
+                  : base::flat_map<std::string, base::Time>();
+}
+
 }  // namespace
 
 SendTabToSelfBridge::SendTabToSelfBridge(
@@ -98,11 +110,13 @@ SendTabToSelfBridge::SendTabToSelfBridge(
     syncer::OnceDataTypeStoreFactory create_store_callback,
     history::HistoryService* history_service,
     syncer::DeviceInfoTracker* device_info_tracker,
+    sync_sessions::SessionSyncService* session_sync_service,
     PrefService* pref_service)
     : DataTypeSyncBridge(std::move(change_processor)),
       clock_(clock),
       history_service_(history_service),
       device_info_tracker_(device_info_tracker),
+      session_sync_service_(session_sync_service),
       pref_service_(pref_service),
       mru_entry_(nullptr) {
   DCHECK(clock_);
@@ -650,22 +664,36 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
   std::vector<const syncer::DeviceInfo*> all_devices =
       device_info_tracker_->GetAllDeviceInfo();
 
+  base::flat_map<std::string, base::Time> session_timestamps =
+      GetSessionTimestamps(session_sync_service_);
+
+  auto get_last_active =
+      [&session_timestamps](const syncer::DeviceInfo* device) {
+        base::Time last_active = device->last_updated_timestamp();
+        auto it = session_timestamps.find(device->guid());
+        if (it != session_timestamps.end()) {
+          last_active = std::max(last_active, it->second);
+        }
+        return last_active;
+      };
+
   // Sort the DeviceInfo vector so the most recently modified devices are first.
-  std::stable_sort(
-      all_devices.begin(), all_devices.end(),
-      [](const syncer::DeviceInfo* device1, const syncer::DeviceInfo* device2) {
-        return device1->last_updated_timestamp() >
-               device2->last_updated_timestamp();
-      });
+  std::stable_sort(all_devices.begin(), all_devices.end(),
+                   [&get_last_active](const syncer::DeviceInfo* device1,
+                                      const syncer::DeviceInfo* device2) {
+                     return get_last_active(device1) > get_last_active(device2);
+                   });
 
   target_device_info_sorted_list_.clear();
   absl::flat_hash_set<std::string> unique_device_names;
   absl::flat_hash_map<std::string, int> short_names_counter;
   for (const syncer::DeviceInfo* device : all_devices) {
+    base::Time last_active = get_last_active(device);
+
     // If the current device is considered expired for our purposes, stop here
     // since the next devices in the vector are at least as expired than this
     // one.
-    if (clock_->Now() - device->last_updated_timestamp() > kDeviceExpiration) {
+    if (clock_->Now() - last_active > kDeviceExpiration) {
       break;
     }
 
@@ -694,7 +722,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
     if (unique_device_names.insert(device_names.full_name).second) {
       TargetDeviceInfo target_device_info(
           device_names.full_name, device_names.short_name, device->guid(),
-          device->form_factor(), device->last_updated_timestamp());
+          device->form_factor(), last_active);
       target_device_info_sorted_list_.push_back(target_device_info);
 
       ++short_names_counter[device_names.short_name];

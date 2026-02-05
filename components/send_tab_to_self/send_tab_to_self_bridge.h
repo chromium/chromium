@@ -32,6 +32,10 @@ namespace base {
 class Clock;
 }  // namespace base
 
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
+
 namespace send_tab_to_self {
 
 struct TargetDeviceInfo;
@@ -51,6 +55,7 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
       syncer::OnceDataTypeStoreFactory create_store_callback,
       history::HistoryService* history_service,
       syncer::DeviceInfoTracker* device_info_tracker,
+      sync_sessions::SessionSyncService* session_sync_service,
       PrefService* pref_service);
 
   SendTabToSelfBridge(const SendTabToSelfBridge&) = delete;
@@ -179,6 +184,9 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
 
   // |device_info_tracker_| isn't owned.
   const raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
+
+  // `session_sync_service_` isn't owned.
+  const raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
 
   // `pref_service_` isn't owned.
   const raw_ptr<PrefService> pref_service_;

@@ -9,6 +9,7 @@ include_rules = [
   "+components/sync",
   "+components/sync_device_info",
   "+components/sync_preferences",
+  "+components/sync_sessions",
   "+components/version_info",
   "+content/public/browser",
   "+google_apis",
