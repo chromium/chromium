@@ -252,9 +252,38 @@ message YieldToUserAction {
 }
 
 // Attempts to log in to the website.
-// Next ID: 2
+// Next ID: 3
 message AttemptLoginAction {
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+
+  // All of the login methods that the model knows about for this page.
+  // As it does not know in advance which account type will be selected by the
+  // user, the model provides everything it recognizes.
+  // If a password form target is not provided (or if no targets are provided at
+  // all), password form filling will still be done if a password credential is
+  // selected by the user, but submitting the form will need to be done by a
+  // follow up action.
+  repeated LoginTarget login_targets = 2;
+
+  // A target along with a type indicating how it is used to log in.
+  // Next ID: 3
+  message LoginTarget {
+    LoginType login_type = 1 [features = { field_presence: EXPLICIT }];
+
+    ActionTarget target = 2 [features = { field_presence: EXPLICIT }];
+
+    // Indicates how the target is used to log in.
+    enum LoginType {
+      // Unknown login type. This should not be used.
+      UNKNOWN_LOGIN_TYPE = 0;
+
+      // The target is used to submit a username/password form.
+      PASSWORD_FORM_SUBMIT = 1;
+
+      // The target is a "Sign in with Google" button.
+      FEDERATED_GOOGLE_SIGNIN = 2;
+    }
+  }
 }
 
 // Specifies a form by a set of fields (from different autofill sections) and

@@ -25,6 +25,8 @@ message GeminiAntiscamProtectionLoggingData {
   GeminiAntiscamProtectionResponse response = 2 [features = { field_presence: EXPLICIT }];
 
   ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
+
+  GeminiAntiscamProtectionMetadata metadata = 4 [features = { field_presence: EXPLICIT }];
 }
 
 message GeminiAntiscamProtectionRequest {
@@ -39,4 +41,12 @@ message GeminiAntiscamProtectionResponse {
   string content_category = 2 [features = { field_presence: EXPLICIT }];
 
   string justification = 3 [features = { field_presence: EXPLICIT }];
+}
+
+message GeminiAntiscamProtectionMetadata {
+  bool page_contains_financial_fields = 1 [features = { field_presence: EXPLICIT }];
+
+  bool page_contains_password_field = 2 [features = { field_presence: EXPLICIT }];
+
+  bool page_contains_identity_fields = 3 [features = { field_presence: EXPLICIT }];
 }
