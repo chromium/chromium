@@ -121,6 +121,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                bool is_shown_in_tab),
               (override));
   MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
+  MOCK_METHOD(GURL,
+              GetDefaultAiPageUrlForTask,
+              (const base::Uuid& task_id),
+              (override));
   MOCK_METHOD(bool, IsAiUrl, (const GURL& url), (override));
 };
 

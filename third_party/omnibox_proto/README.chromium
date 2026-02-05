@@ -19,4 +19,5 @@ blaze run //chrome/omnibox/tools/proto_export -- \
   --output=$CHROMIUM_SRC/third_party/omnibox_proto
 
 Local Modifications:
-Unchanged from the output of the export script.
+Manually copied changes to ChromeAimEntryPoint before upstream changes were
+ready.

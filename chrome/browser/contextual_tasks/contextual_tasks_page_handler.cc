@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
@@ -30,7 +31,9 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -103,6 +106,12 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
 
 void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
+  std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
+  if (task_id.has_value()) {
+    std::move(callback).Run(
+        ui_service_->GetDefaultAiPageUrlForTask(task_id.value()));
+    return;
+  }
   std::move(callback).Run(ui_service_->GetDefaultAiPageUrl());
 }
 

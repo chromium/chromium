@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
@@ -33,7 +34,9 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -171,6 +174,17 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
     return Do([&]() { identity_test_env()->ClearPrimaryAccount(); });
   }
 
+  content::WebContents* GetSidePanelWebContents() {
+    auto* coordinator =
+        contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
+    return coordinator->GetActiveWebContents();
+  }
+
+  contextual_tasks::ContextualTasksUiService* GetUiService() {
+    return contextual_tasks::ContextualTasksUiServiceFactory::
+        GetForBrowserContext(browser()->profile());
+  }
+
  private:
   base::CallbackListSubscription subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -238,6 +252,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,
       WaitForShow(kSidePanelElementId),
       PressButton(ContextualTasksButton::kContextualTasksToolbarButton),
       WaitForHide(kSidePanelElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,
+                       ToggleToolbarSidePanelWithAepParam) {
+  RunTestSequence(
+      SignIntoEligibleAccount(),
+      EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      PressButton(ContextualTasksButton::kContextualTasksToolbarButton),
+      WaitForShow(kSidePanelElementId),
+      CheckResult(
+          [&] {
+            auto* coordinator =
+                contextual_tasks::ContextualTasksSidePanelCoordinator::From(
+                    browser());
+            std::optional<contextual_tasks::ContextualTask> task =
+                coordinator->GetCurrentTask();
+            if (!task) {
+              return std::string();
+            }
+            return base::NumberToString(
+                static_cast<int>(GetUiService()->GetInitialEntryPointForTask(
+                    task->GetTaskId())));
+          },
+          base::NumberToString(
+              static_cast<int>(omnibox::ChromeAimEntryPoint::
+                                   DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON))));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,

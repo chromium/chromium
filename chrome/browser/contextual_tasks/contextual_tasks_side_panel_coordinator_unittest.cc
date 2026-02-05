@@ -50,6 +50,15 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               GetContextualTaskUrlForTask,
               (const base::Uuid& task_id),
               (override));
+  MOCK_METHOD(void,
+              SetInitialEntryPointForTask,
+              (const base::Uuid& task_id,
+               omnibox::ChromeAimEntryPoint entry_point),
+              (override));
+  MOCK_METHOD(GURL,
+              GetDefaultAiPageUrlForTask,
+              (const base::Uuid& task_id),
+              (override));
 };
 
 class MockSidePanelUI : public SidePanelUI {
@@ -244,6 +253,24 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelAlreadyOpen) {
       Show(SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks), _, _))
       .Times(0);
   coordinator_->Show(false);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+  EXPECT_CALL(
+      *mock_ui_service,
+      SetInitialEntryPointForTask(
+          _,
+          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON))
+      .Times(1);
+  coordinator_->Show(
+      false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
 }
 
 }  // namespace contextual_tasks

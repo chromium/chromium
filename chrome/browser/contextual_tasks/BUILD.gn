@@ -149,6 +149,7 @@ if (!is_android) {
       "//content/public/browser",
       "//content/public/common",
       "//third_party/lens_server_proto:lens_overlay_proto",
+      "//third_party/omnibox_proto",
       "//ui/webui",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",

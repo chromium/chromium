@@ -291,7 +291,9 @@ void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
   registered_entry->AddObserver(this);
 }
 
-void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
+void ContextualTasksSidePanelCoordinator::Show(
+    bool transition_from_tab,
+    omnibox::ChromeAimEntryPoint entry_point) {
   // Increment the impression count and attempt to show the HaTS survey.
   int impression_count =
       pref_service_->GetInteger(prefs::kContextualTasksNextPanelOpenCount);
@@ -321,7 +323,7 @@ void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
                                             task.GetTaskId());
   }
 
-  MaybeCreateCachedWebContents();
+  MaybeCreateCachedWebContents(entry_point);
   UpdateWebContentsForActiveTab();
 
   // Only show the side panel if it's closed.
@@ -752,7 +754,8 @@ ContextualTasksSidePanelCoordinator::GetSidePanelWebContentsForActiveTab() {
   return web_contents;
 }
 
-void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents() {
+void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
+    omnibox::ChromeAimEntryPoint entry_point) {
   std::optional<ContextualTask> task = GetCurrentTask();
   if (!task) {
     return;
@@ -765,6 +768,7 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents() {
   }
 
   // Create new WebContents for the task.
+  ui_service_->SetInitialEntryPointForTask(task_id, entry_point);
   task_id_to_web_contents_cache_[task_id] =
       std::make_unique<WebContentsCacheItem>(
           CreateWebContents(
