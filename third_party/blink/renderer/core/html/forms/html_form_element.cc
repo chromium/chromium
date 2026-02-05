@@ -316,6 +316,8 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   if (IsValidWebMCPForm()) {
     CHECK(!is_valid_mcp_form || name_or_description_changed);
     // Unregister the tool to ensure any in-flight tool executions are aborted.
+    active_webmcp_tool_->CallDoneCallback(
+        base::unexpected(WebDocument::ScriptToolError::kToolCancelled));
     model_context->unregisterTool(active_webmcp_tool_->ToolName(),
                                   ASSERT_NO_EXCEPTION);
     active_webmcp_tool_ = nullptr;
@@ -871,6 +873,11 @@ void HTMLFormElement::reset() {
     } else if (element->IsElementInternals()) {
       CustomElement::EnqueueFormResetCallback(element->ToHTMLElement());
     }
+  }
+
+  if (active_webmcp_tool_) {
+    active_webmcp_tool_->CallDoneCallback(
+        base::unexpected(WebDocument::ScriptToolError::kToolCancelled));
   }
 
   is_in_reset_function_ = false;

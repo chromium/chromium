@@ -656,4 +656,57 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
             "activation:slow,cancel:slow");
 }
 
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Reset_Cancels) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type=text name=query>
+        <button type=submit>Submit</button>
+      </form>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_error = false;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            got_error = true;
+            ASSERT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(),
+                      WebDocument::ScriptToolError::kToolCancelled);
+            run_loop.Quit();
+          }));
+
+  // Run until the tool fills the form and focuses the button.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsBoolean(
+        "document.activeElement === document.querySelector('button')");
+  }));
+
+  EXPECT_FALSE(got_error);
+  EXPECT_TRUE(EvalJsBoolean(
+      "document.querySelector('form').matches(':tool-form-active')"));
+
+  // Reset the form
+  MainFrame().ExecuteScript(
+      WebScriptSource("document.querySelector('form').reset();"));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(got_error);
+  EXPECT_FALSE(EvalJsBoolean(
+      "document.querySelector('form').matches(':tool-form-active')"));
+}
+
 }  // namespace blink
