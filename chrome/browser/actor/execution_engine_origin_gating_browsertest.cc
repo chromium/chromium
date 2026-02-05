@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "url/origin.h"
 
 namespace actor {
 
@@ -133,19 +134,23 @@ class ExecutionEngineOriginGatingBrowserTestBase
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  InteractiveTestApi::MultiStep CreateMockWebClientRequest(
-      const std::string_view handle_dialog_js) {
+  [[nodiscard]] InteractiveTestApi::MultiStep CreateMockWebClientRequest(
+      const std::string_view handle_dialog_js,
+      const base::Location& location = FROM_HERE) {
     return InAnyContext(WithElement(
         glic::test::kGlicContentsElementId,
-        [handle_dialog_js](::ui::TrackedElement* el) mutable {
+        [handle_dialog_js, location](::ui::TrackedElement* el) mutable {
           content::WebContents* glic_contents =
               AsInstrumentedWebContents(el)->web_contents();
-          ASSERT_TRUE(content::ExecJs(glic_contents, handle_dialog_js));
+          ASSERT_TRUE(content::ExecJs(glic_contents, handle_dialog_js))
+              << ", expected at " << location.ToString();
         }));
   }
 
-  InteractiveTestApi::MultiStep VerifyUserConfirmationDialogRequest(
-      const base::DictValue& expected_request) {
+  [[nodiscard]] InteractiveTestApi::MultiStep
+  VerifyUserConfirmationDialogRequest(
+      const base::DictValue& expected_request,
+      const base::Location& location = FROM_HERE) {
     static constexpr char kGetUserConfirmationDialogRequest[] =
         R"js(
           (() => {
@@ -153,11 +158,13 @@ class ExecutionEngineOriginGatingBrowserTestBase
           })();
         )js";
     return VerifyWebClientRequest(kGetUserConfirmationDialogRequest,
-                                  expected_request);
+                                  expected_request, location);
   }
 
-  InteractiveTestApi::MultiStep VerifyNavigationConfirmationRequest(
-      const base::DictValue& expected_request) {
+  [[nodiscard]] InteractiveTestApi::MultiStep
+  VerifyNavigationConfirmationRequest(
+      const base::DictValue& expected_request,
+      const base::Location& location = FROM_HERE) {
     static constexpr char kGetNavigationConfirmationRequestData[] =
         R"js(
           (() => {
@@ -165,7 +172,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
           })();
         )js";
     return VerifyWebClientRequest(kGetNavigationConfirmationRequestData,
-                                  expected_request);
+                                  expected_request, location);
   }
 
   content::RenderFrameHost* main_frame() {
@@ -198,7 +205,8 @@ class ExecutionEngineOriginGatingBrowserTestBase
 
   InteractiveTestApi::MultiStep VerifyWebClientRequest(
       const std::string_view get_request_js,
-      const base::DictValue& expected_request) {
+      const base::DictValue& expected_request,
+      const base::Location& location) {
     return InAnyContext(WithElement(
         glic::test::kGlicContentsElementId,
         [&, get_request_js](::ui::TrackedElement* el) {
@@ -206,7 +214,8 @@ class ExecutionEngineOriginGatingBrowserTestBase
               AsInstrumentedWebContents(el)->web_contents();
           auto eval_result = content::EvalJs(glic_contents, get_request_js);
           const auto& actual_request = eval_result.ExtractDict();
-          ASSERT_EQ(expected_request, actual_request);
+          ASSERT_EQ(expected_request, actual_request)
+              << ", expected at " << location.ToString();
         }));
   }
 
@@ -287,12 +296,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(second_url).GetDebugString())
-          .Set("taskId", actor_task().id().value());
-  RunTestSequence(VerifyNavigationConfirmationRequest(expected_request));
+  RunTestSequence(VerifyNavigationConfirmationRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "taskId": $2})",
+          url::Origin::Create(second_url), actor_task().id().value()))));
 
   // The first navigation should log that gating was not applied. The second
   // should log that gating was applied.
@@ -332,12 +339,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(second_url).GetDebugString())
-          .Set("taskId", actor_task().id().value());
-  RunTestSequence(VerifyNavigationConfirmationRequest(expected_request));
+  RunTestSequence(VerifyNavigationConfirmationRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "taskId": $2})",
+          url::Origin::Create(second_url), actor_task().id().value()))));
 
   // Should log that permission was *denied* once.
   histogram_tester_for_init_.ExpectBucketCount(
@@ -365,12 +370,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", blocked_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(blocked_url).GetDebugString())
-          .Set("forBlocklistedOrigin", true);
-  RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(blocked_url)))));
 
   // The first navigation should log that gating was not applied. The second
   // should log that gating was applied.
@@ -439,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
     "navigationOrigin": $1,
     "forBlocklistedOrigin": false
   })",
-          url::Origin::Create(other_url).GetDebugString()))));
+          url::Origin::Create(other_url)))));
 
   // Start back at `start_url`, and try another x-origin navigation to
   // `other_url`.
@@ -451,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
     "navigationOrigin": $1,
     "forBlocklistedOrigin": false
   })",
-                         url::Origin::Create(start_url).GetDebugString()))));
+                         url::Origin::Create(start_url)))));
 
   // Now this should proceed without a user confirmation or a server
   // confirmation, since the user has already confirmed it.
@@ -486,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
     "navigationOrigin": $1,
     "forBlocklistedOrigin": false
   })",
-          url::Origin::Create(eventually_sensitive).GetDebugString()))));
+          url::Origin::Create(eventually_sensitive)))));
 
   base::FilePath proto_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("base_proto_v2.pb"));
@@ -509,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
     "navigationOrigin": $1,
     "forBlocklistedOrigin": false
   })",
-                         url::Origin::Create(start_url).GetDebugString()))));
+                         url::Origin::Create(start_url)))));
 
   // Now this should proceed without a user confirmation or a server
   // confirmation, since the user has already confirmed it.
@@ -537,12 +540,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", blocked_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(blocked_url).GetDebugString())
-          .Set("forBlocklistedOrigin", true);
-  RunTestSequence(VerifyUserConfirmationDialogRequest(expected_request));
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(blocked_url)))));
 
   // Should log that permission was *denied* once.
   histogram_tester_for_init_.ExpectBucketCount(
@@ -674,12 +675,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                    result.GetCallback());
   ExpectOkResult(result);
 
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(blocked_origin_url).GetDebugString())
-          .Set("forBlocklistedOrigin", true);
-  VerifyUserConfirmationDialogRequest(expected_request);
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(blocked_origin_url)))));
 
   // Trigger ExecutionEngine destructor for metrics.
   actor_keyed_service().ResetForTesting();
@@ -734,12 +733,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                    result.GetCallback());
   ExpectOkResult(result);
 
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(normal_page_with_link).GetDebugString())
-          .Set("forBlocklistedOrigin", true);
-  VerifyUserConfirmationDialogRequest(expected_request);
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(blocked_page)))));
 
   // Trigger ExecutionEngine destructor for metrics.
   actor_keyed_service().ResetForTesting();
@@ -1252,12 +1249,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(second_url).GetDebugString())
-          .Set("forBlocklistedOrigin", false);
-  VerifyUserConfirmationDialogRequest(expected_request);
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": false})",
+          url::Origin::Create(second_url)))));
 
   // Trigger ExecutionEngine destructor for metrics.
   actor_keyed_service().ResetForTesting();
@@ -1447,12 +1442,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
   ASSERT_TRUE(content::ExecJs(
       web_contents(), content::JsReplace("setLink($1);", confirmlist_url)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-  auto expected_request =
-      base::DictValue()
-          .Set("navigationOrigin",
-               url::Origin::Create(confirmlist_url).GetDebugString())
-          .Set("forBlocklistedOrigin", true);
-  VerifyUserConfirmationDialogRequest(expected_request);
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(confirmlist_url)))));
 
   // Should log that permission was *denied* once.
   histogram_tester_for_init_.ExpectBucketCount(
