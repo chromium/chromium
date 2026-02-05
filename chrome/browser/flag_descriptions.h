@@ -5023,11 +5023,6 @@ inline constexpr char kAndroidWindowPopupResizeAfterSpawnDescription[] =
     "enable-android-window-popup-predict-final-bounds flag that regulates "
     "pre-creation bounds adjustments.";
 
-inline constexpr char kAndroidHistoryPaneFaviconsName[] =
-    "Android History Pane Favicons";
-inline constexpr char kAndroidHistoryPaneFaviconsDescription[] =
-    "Enable better favicons in the Android history pane.";
-
 inline constexpr char kAndroidZoomIndicatorName[] = "Android Zoom Indicator";
 inline constexpr char kAndroidZoomIndicatorDescription[] =
     "Enable zoom indicator on Android.";

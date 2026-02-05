@@ -10570,11 +10570,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidZoomIndicatorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(browser_ui::kAndroidZoomIndicator)},
 
-    {"android-history-pane-favicons",
-     flag_descriptions::kAndroidHistoryPaneFaviconsName,
-     flag_descriptions::kAndroidHistoryPaneFaviconsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(ui::kAndroidHistoryPaneFavicons)},
-
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,
