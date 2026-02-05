@@ -7,7 +7,9 @@
 #include <memory>
 #include <optional>
 
+#include "base/files/file_path.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -243,20 +245,28 @@ bool FormMCPSchema::ValidateFileData(const ControlVector& controls_for_name,
   }
   auto* input = To<HTMLInputElement>(controls_for_name.front().Get());
   CHECK(input);
-  String unused;
+
+  auto is_absolute_path_string = [](const JSONValue& value) -> bool {
+    String path_string;
+    if (value.AsString(&path_string)) {
+      return StringToFilePath(path_string).IsAbsolute();
+    }
+    return false;
+  };
+
   if (input->Multiple()) {
     const JSONArray* array = JSONArray::Cast(&value);
     if (!array) {
       return false;
     }
     for (const JSONValue& item : *array) {
-      if (!item.AsString(&unused)) {
+      if (!is_absolute_path_string(item)) {
         return false;
       }
     }
     return true;
   }
-  return value.AsString(&unused);
+  return is_absolute_path_string(value);
 }
 
 void FormMCPSchema::FillParameterData(const String& name,

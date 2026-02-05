@@ -1852,11 +1852,20 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput) {
   ASSERT_TRUE(IsValidWebMCPForm(*form_element));
 
   String json_string =
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+      R"JSON(
+        {
+          "file1": "C:\\Users\\johndoe\\avatar.png"
+        }
+      )JSON"
+#else
       R"JSON(
         {
           "file1": "/home/johndoe/avatar.png"
         }
-      )JSON";
+      )JSON"
+#endif
+      ;
 
   EXPECT_TRUE(FillFormControls(*form_element, json_string));
 
@@ -1865,7 +1874,11 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput) {
   FileList* file_list = file1->files();
   ASSERT_TRUE(file_list);
   ASSERT_EQ(file_list->length(), 1);
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  EXPECT_EQ(file_list->item(0)->GetPath(), "C:\\Users\\johndoe\\avatar.png");
+#else
   EXPECT_EQ(file_list->item(0)->GetPath(), "/home/johndoe/avatar.png");
+#endif
 }
 
 TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Multiple) {
@@ -1881,12 +1894,22 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Multiple) {
   ASSERT_TRUE(IsValidWebMCPForm(*form_element));
 
   String json_string =
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+      R"JSON(
+        {
+          "file1": [ "C:\\Users\\johndoe\\avatar.png",
+                     "C:\\Users\\johndoe\\avatar_old.png" ]
+        }
+      )JSON"
+#else
       R"JSON(
         {
           "file1": [ "/home/johndoe/avatar.png",
                      "/home/johndoe/avatar_old.png" ]
         }
-      )JSON";
+      )JSON"
+#endif
+      ;
 
   EXPECT_TRUE(FillFormControls(*form_element, json_string));
 
@@ -1895,8 +1918,37 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Multiple) {
   FileList* file_list = file1->files();
   ASSERT_TRUE(file_list);
   ASSERT_EQ(file_list->length(), 2);
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  EXPECT_EQ(file_list->item(0)->GetPath(), "C:\\Users\\johndoe\\avatar.png");
+  EXPECT_EQ(file_list->item(1)->GetPath(),
+            "C:\\Users\\johndoe\\avatar_old.png");
+#else
   EXPECT_EQ(file_list->item(0)->GetPath(), "/home/johndoe/avatar.png");
   EXPECT_EQ(file_list->item(1)->GetPath(), "/home/johndoe/avatar_old.png");
+#endif
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Invalid) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=file1 name=file1 type=file>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "file1": "avatar.png"
+        }
+      )JSON";
+
+  // A relative path is not allowed
+  EXPECT_FALSE(FillFormControls(*form_element, json_string));
 }
 
 TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
