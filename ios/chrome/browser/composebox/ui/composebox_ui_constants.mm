@@ -51,3 +51,5 @@ NSString* const kComposeboxCarouselAccessibilityIdentifier =
     @"kComposeboxCarouselAccessibilityIdentifier";
 NSString* const kComposeboxCarouselItemAccessibilityIdentifier =
     @"kComposeboxCarouselItemAccessibilityIdentifier";
+NSString* const kComposeboxInputItemCellCloseButtonAccessibilityIdentifier =
+    @"kComposeboxInputItemCellCloseButtonAccessibilityIdentifier";

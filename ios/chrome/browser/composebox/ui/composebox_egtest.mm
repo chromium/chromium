@@ -172,6 +172,24 @@ void VerifyTabIsAttachedWithTitle(NSString* title) {
       assertWithMatcher:grey_notNil()];
 }
 
+// Matcher for the close button of an item in the carousel.
+id<GREYMatcher> ComposeboxInputItemCellCloseButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(
+          kComposeboxInputItemCellCloseButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Removes an attachment with the given `title` from the composebox carousel.
+void RemoveAttachmentWithTitle(NSString* title) {
+  id<GREYMatcher> cellMatcher = TabCellAttachmentMatcherWithTitle(title);
+  id<GREYMatcher> closeButtonMatcher =
+      grey_allOf(ComposeboxInputItemCellCloseButtonMatcher(),
+                 grey_ancestor(cellMatcher), nil);
+  [[EarlGrey selectElementWithMatcher:closeButtonMatcher]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 @interface ComposeboxTestCase : ChromeTestCase
@@ -647,6 +665,96 @@ void VerifyTabIsAttachedWithTitle(NSString* title) {
   [[EarlGrey selectElementWithMatcher:TabCellAttachmentMatcherWithTitle(
                                           firstPageTitle)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that a tab cannot be attached when in image generation mode, and that
+// image generation mode can be entered after attachments are removed.
+- (void)testNoTabAttachmentsInImageGeneration {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  // Add a tab and attach it.
+  [ChromeEarlGrey closeAllNormalTabs];
+  GURL URL = self.testServer->GetURL(base::StringPrintf(kPageURL, 1));
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:base::StringPrintf(kPageContent, 1)];
+  OpenTabPicker();
+  NSString* pageTitle =
+      base::SysUTF8ToNSString(base::StringPrintf(kPageTitle, 1));
+  SelectTabWithTitle(pageTitle);
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  VerifyTabIsAttachedWithTitle(pageTitle);
+
+  // Display the plus menu to verify that the image generation action is
+  // disabled. This mode only supports a single image attachment, making it
+  // incompatible with the currently attached tab.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+
+  // Tap somewhere to dismiss the plus button menu.
+  [[EarlGrey selectElementWithMatcher:ComposeboxMatcher()]
+      performAction:grey_tap()];
+
+  // Remove the attachment and switch to image generation mode.
+  RemoveAttachmentWithTitle(pageTitle);
+  [[EarlGrey
+      selectElementWithMatcher:TabCellAttachmentMatcherWithTitle(pageTitle)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the image generation button is visible in the composebox.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kComposeboxImageGenerationButtonAccessibilityIdentifier)];
+
+  // Verify that the "Select tabs" action is disabled and the "Create Image"
+  // action is selected.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kComposeboxSelectTabsActionAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kComposeboxImageGenerationActionAccessibilityIdentifier),
+              grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitSelected),
+                                   nil)];
 }
 
 @end

@@ -221,6 +221,8 @@ const CGFloat kCloseButtonAlpha = 0.9;
 - (void)setupCloseButton {
   _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeButton.accessibilityIdentifier =
+      kComposeboxInputItemCellCloseButtonAccessibilityIdentifier;
   _closeButton.isAccessibilityElement = NO;
   [_closeButton addTarget:self
                    action:@selector(closeButtonTapped)
