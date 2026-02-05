@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TAB_COLLECTION_STORAGE_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tabs/public/tab_collection_observer.h"
 
@@ -14,7 +15,8 @@ namespace tabs {
 // Observes changes to the structure of a TabStripCollection.
 // This class does not manage observer registration and
 // unregistration.
-class CollectionStorageObserver : public TabCollectionObserver {
+class CollectionStorageObserver
+    : public StorageCollectionSynchronizer::CollectionSynchronizerObserver {
  public:
   explicit CollectionStorageObserver(TabStateStorageService* service);
   ~CollectionStorageObserver() override;
@@ -23,7 +25,7 @@ class CollectionStorageObserver : public TabCollectionObserver {
   CollectionStorageObserver& operator=(const CollectionStorageObserver&) =
       delete;
 
-  // TabCollectionObserver Implementation:
+  // CollectionSynchronizerObserver Implementation:
   void OnChildrenAdded(const TabCollection::Position& position,
                        const TabCollectionNodes& handles,
                        bool insert_from_detached) override;
@@ -31,6 +33,7 @@ class CollectionStorageObserver : public TabCollectionObserver {
                          const TabCollectionNodes& handles) override;
   void OnChildMoved(const TabCollection::Position& to_position,
                     const NodeData& node_data) override;
+  void SaveChildNodeOnly(TabCollectionNodeHandle handle) override;
 
  private:
   raw_ptr<TabStateStorageService> service_;

@@ -15,6 +15,22 @@ CollectionStorageObserver::CollectionStorageObserver(
 
 CollectionStorageObserver::~CollectionStorageObserver() = default;
 
+void CollectionStorageObserver::SaveChildNodeOnly(
+    TabCollectionNodeHandle handle) {
+  if (std::holds_alternative<TabCollection::Handle>(handle)) {
+    const TabCollection* collection =
+        std::get<TabCollection::Handle>(handle).Get();
+    if (collection->GetParentCollection()) {
+      service_->Save(collection);
+    }
+  } else {
+    const TabInterface* tab = std::get<TabHandle>(handle).Get();
+    if (tab->GetParentCollection()) {
+      service_->Save(tab);
+    }
+  }
+}
+
 void CollectionStorageObserver::OnChildrenAdded(
     const TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles,

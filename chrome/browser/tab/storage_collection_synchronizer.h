@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_strip_collection.h"
@@ -18,6 +17,13 @@ namespace tabs {
 // Provides updates to storage to match the state of a TabStripCollection.
 class StorageCollectionSynchronizer {
  public:
+  class CollectionSynchronizerObserver : public TabCollectionObserver {
+   public:
+    // Saves the node represented by the handle to storage. This
+    // will only save the payload for the given handle.
+    virtual void SaveChildNodeOnly(TabCollectionNodeHandle handle) = 0;
+  };
+
   StorageCollectionSynchronizer(TabStripCollection* collection,
                                 TabStateStorageService* service);
   ~StorageCollectionSynchronizer();
@@ -32,12 +38,12 @@ class StorageCollectionSynchronizer {
   // Sets the TabCollectionObserver. If an observer is already set, it will be
   // unregistered before the new one is registered.
   void SetCollectionObserver(
-      std::unique_ptr<TabCollectionObserver> new_observer);
+      std::unique_ptr<CollectionSynchronizerObserver> new_observer);
 
  private:
   raw_ptr<TabStripCollection> collection_;
   raw_ptr<TabStateStorageService> service_;
-  std::unique_ptr<TabCollectionObserver> observer_;
+  std::unique_ptr<CollectionSynchronizerObserver> observer_;
 };
 
 }  // namespace tabs

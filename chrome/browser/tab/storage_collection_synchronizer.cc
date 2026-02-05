@@ -50,7 +50,7 @@ void StorageCollectionSynchronizer::FullSave() {
 }
 
 void StorageCollectionSynchronizer::SetCollectionObserver(
-    std::unique_ptr<TabCollectionObserver> new_observer) {
+    std::unique_ptr<CollectionSynchronizerObserver> new_observer) {
   if (observer_) {
     collection_->RemoveObserver(observer_.get());
   }
