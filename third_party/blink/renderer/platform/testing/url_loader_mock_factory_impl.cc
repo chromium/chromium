@@ -50,7 +50,8 @@ std::unique_ptr<URLLoader> URLLoaderMockFactoryImpl::CreateURLLoader() {
 
 void URLLoaderMockFactoryImpl::RegisterURL(const WebURL& url,
                                            const WebURLResponse& response,
-                                           const WebString& file_path) {
+                                           const WebString& file_path,
+                                           const size_t chunk_size) {
   ResponseInfo response_info;
   response_info.response = response;
   if (!file_path.IsNull() && !file_path.IsEmpty()) {
@@ -58,6 +59,7 @@ void URLLoaderMockFactoryImpl::RegisterURL(const WebURL& url,
     DCHECK(base::PathExists(response_info.file_path))
         << response_info.file_path.MaybeAsASCII() << " does not exist.";
   }
+  response_info.chunk_size = chunk_size;
 
   DCHECK(!url_to_response_info_.Contains(url));
   url_to_response_info_.Set(url, response_info);
@@ -241,7 +243,8 @@ void URLLoaderMockFactoryImpl::LoadRequest(const WebURL& url,
     NOTREACHED() << url;
   }
 
-  if (!*error && !ReadFile(response_info.file_path, data)) {
+  if (!*error &&
+      !ReadFile(response_info.file_path, data, response_info.chunk_size)) {
     NOTREACHED();
   }
 
@@ -275,7 +278,8 @@ bool URLLoaderMockFactoryImpl::LookupURL(const WebURL& url,
 
 // static
 bool URLLoaderMockFactoryImpl::ReadFile(const base::FilePath& file_path,
-                                        scoped_refptr<SharedBuffer>& data) {
+                                        scoped_refptr<SharedBuffer>& data,
+                                        const size_t chunk_size) {
   // If the path is empty then we return an empty file so tests can simulate
   // requests without needing to actually load files.
   if (file_path.empty()) {
@@ -287,7 +291,18 @@ bool URLLoaderMockFactoryImpl::ReadFile(const base::FilePath& file_path,
     return false;
   }
 
-  data = SharedBuffer::Create(buffer);
+  data = SharedBuffer::Create();
+
+  size_t effective_chunk_size = chunk_size ? chunk_size : buffer.size();
+  size_t offset = 0;
+  while (offset < buffer.size()) {
+    size_t current_chunk_size =
+        std::min(effective_chunk_size, buffer.size() - offset);
+    data->Append(
+        base::span<const char>(buffer).subspan(offset, current_chunk_size));
+    offset += current_chunk_size;
+  }
+
   return true;
 }
 

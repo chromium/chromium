@@ -83,10 +83,12 @@ void RegisterMockedURLLoad(
 // registered again from the another test.
 void RegisterMockedURLUnregister(const WebURL&);
 
-// Registers with a custom response.
+// Registers with a custom response. The response will contain data in spans of
+// size |chunk_size|. If |chunk_size| is 0, all data will be in a single span.
 void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
                                              const WebString& file_path,
-                                             WebURLResponse);
+                                             WebURLResponse,
+                                             const size_t chunk_size = 0);
 
 // Registers a mock URL that returns a 404 error.
 void RegisterMockedErrorURLLoad(

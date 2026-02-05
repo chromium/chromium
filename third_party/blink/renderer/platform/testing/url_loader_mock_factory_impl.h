@@ -45,7 +45,8 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   std::unique_ptr<URLLoader> CreateURLLoader() override;
   void RegisterURL(const WebURL& url,
                    const WebURLResponse& response,
-                   const WebString& file_path = WebString()) override;
+                   const WebString& file_path = WebString(),
+                   const size_t chunk_size = 0) override;
   void RegisterErrorURL(const WebURL& url,
                         const WebURLResponse& response,
                         const WebURLError& error) override;
@@ -80,6 +81,7 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
   struct ResponseInfo {
     WebURLResponse response;
     base::FilePath file_path;
+    size_t chunk_size;
   };
 
   virtual void RunUntilIdle();
@@ -101,10 +103,13 @@ class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
                  std::optional<WebURLError>* error,
                  ResponseInfo* response_info);
 
-  // Reads 'file_path' and puts its content in 'data'.
+  // Reads 'file_path' and puts its content in 'data', using spans of size
+  // 'chunk_size' (except the last one which might be smaller). If 'chunk_size'
+  // is 0, all the content will be put in a single span.
   // Returns true if it successfully read the file.
   static bool ReadFile(const base::FilePath& file_path,
-                       scoped_refptr<SharedBuffer>& data);
+                       scoped_refptr<SharedBuffer>& data,
+                       const size_t chunk_size = 0);
 
   raw_ptr<URLLoaderTestDelegate> delegate_ = nullptr;
 

@@ -96,9 +96,10 @@ void RegisterMockedErrorURLLoad(const WebURL& full_url,
 
 void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
                                              const WebString& file_path,
-                                             WebURLResponse response) {
-  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(full_url, response,
-                                                            file_path);
+                                             WebURLResponse response,
+                                             const size_t chunk_size) {
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+      full_url, response, file_path, chunk_size);
 }
 
 void RegisterMockedURLUnregister(const WebURL& url) {

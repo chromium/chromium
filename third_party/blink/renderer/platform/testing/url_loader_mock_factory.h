@@ -30,12 +30,15 @@ class URLLoaderMockFactory {
   virtual std::unique_ptr<URLLoader> CreateURLLoader() = 0;
 
   // Registers a response and the file to be served when the specified URL
-  // is loaded. If no file is specified then the response content will be empty.
+  // is loaded. The response will contain data in spans of size |chunk_size|. If
+  // no file is specified then the response content will be empty. If
+  // |chunk_size| is 0, the response will include all data in a single chunk.
   // UnregisterURL() should be called for each test entry before registering
   // another response for the same URL from another test.
   virtual void RegisterURL(const WebURL&,
                            const WebURLResponse&,
-                           const WebString& file_path) = 0;
+                           const WebString& file_path,
+                           const size_t chunk_size = 0) = 0;
 
   // Registers an error to be served when the specified URL is requested.
   // UnregisterURL() should be called for each test entry before registering
