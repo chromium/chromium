@@ -4840,6 +4840,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_OPEN_IN_CHROME" desc="Context sensitive menu item for opening a link in Chrome. [CHAR_LIMIT=30]">
         Open in Chrome browser
       </message>
+      <message name="IDS_MENU_OPEN_IN_NEW_TAB" desc="Context sensitive menu item for opening a link in a new tab in Chrome. [CHAR_LIMIT=30]">
+        Open in new tab
+      </message>
       <message name="IDS_MENU_OPEN_IN_INCOGNITO_CHROME" desc="Context sensitive menu item for opening a link in Chrome in an Incognito tab. [CHAR_LIMIT=30]" translateable="false">
         Open in Incognito Chrome
       </message>
