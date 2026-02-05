@@ -67,15 +67,11 @@ ClipboardEndpoint CreateClipboardEndpoint(RenderFrameHost* render_frame_host) {
 
 void VerifyCopyIsAllowedByPolicy(
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback,
+    base::OnceCallback<void(bool)> callback,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data) {
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-
-  base::OnceCallback<void(bool)> boolean_java_callback =
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                     ScopedJavaGlobalRef<jobject>(j_callback));
 
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(render_frame_host), metadata, data,
@@ -86,20 +82,16 @@ void VerifyCopyIsAllowedByPolicy(
              std::optional<std::u16string> replacement_data) {
             std::move(callback).Run(!data.empty());
           },
-          std::move(boolean_java_callback)));
+          std::move(callback)));
 }
 
 void VerifyShareIsAllowedByPolicy(
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback,
+    base::OnceCallback<void(bool)> callback,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data) {
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-
-  base::OnceCallback<void(bool)> boolean_java_callback =
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                     ScopedJavaGlobalRef<jobject>(j_callback));
 
   enterprise_data_protection::IsClipboardShareAllowedByPolicy(
       CreateClipboardEndpoint(render_frame_host), metadata, data,
@@ -110,20 +102,16 @@ void VerifyShareIsAllowedByPolicy(
              std::optional<std::u16string> replacement_data) {
             std::move(callback).Run(!data.empty());
           },
-          std::move(boolean_java_callback)));
+          std::move(callback)));
 }
 
 void VerifyGenericCopyActionIsAllowedByPolicy(
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback,
+    base::OnceCallback<void(bool)> callback,
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data) {
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-
-  base::OnceCallback<void(bool)> boolean_java_callback =
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                     ScopedJavaGlobalRef<jobject>(j_callback));
 
   enterprise_data_protection::IsClipboardGenericCopyActionAllowedByPolicy(
       CreateClipboardEndpoint(render_frame_host), metadata, data,
@@ -134,7 +122,7 @@ void VerifyGenericCopyActionIsAllowedByPolicy(
              std::optional<std::u16string> replacement_data) {
             std::move(callback).Run(!data.empty());
           },
-          std::move(boolean_java_callback)));
+          std::move(callback)));
 }
 
 }  // namespace
@@ -144,14 +132,14 @@ static void JNI_DataProtectionBridge_VerifyCopyTextIsAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jstring>& j_text,
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
 
   ClipboardPasteData data;
   data.text = text;
 
   VerifyCopyIsAllowedByPolicy(
-      jrender_frame_host, j_callback,
+      jrender_frame_host, std::move(callback),
       {
           .size = text.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -164,14 +152,14 @@ static void JNI_DataProtectionBridge_VerifyCopyUrlIsAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jstring>& j_url,
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
 
   ClipboardPasteData data;
   data.text = url;
 
   VerifyCopyIsAllowedByPolicy(
-      jrender_frame_host, j_callback,
+      jrender_frame_host, std::move(callback),
       {
           .size = url.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::UrlType(),
@@ -184,7 +172,7 @@ static void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jstring>& j_image_uri,
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   std::u16string image_uri =
       base::android::ConvertJavaStringToUTF16(env, j_image_uri);
 
@@ -192,7 +180,7 @@ static void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
   data.text = image_uri;
 
   VerifyCopyIsAllowedByPolicy(
-      jrender_frame_host, j_callback,
+      jrender_frame_host, std::move(callback),
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
           //  needed by the data controls logic.
@@ -206,14 +194,14 @@ static void JNI_DataProtectionBridge_VerifyShareTextIsAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jstring>& j_text,
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
 
   ClipboardPasteData data;
   data.text = text;
 
   VerifyShareIsAllowedByPolicy(
-      jrender_frame_host, j_callback,
+      jrender_frame_host, std::move(callback),
       {
           .size = text.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
@@ -226,14 +214,14 @@ static void JNI_DataProtectionBridge_VerifyShareUrlIsAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jstring>& j_url,
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
 
   ClipboardPasteData data;
   data.text = url;
 
   VerifyShareIsAllowedByPolicy(
-      jrender_frame_host, j_callback,
+      jrender_frame_host, std::move(callback),
       {
           .size = url.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::UrlType(),
@@ -246,7 +234,7 @@ static void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jstring>& j_image_uri,
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   std::u16string image_uri =
       base::android::ConvertJavaStringToUTF16(env, j_image_uri);
 
@@ -254,7 +242,7 @@ static void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
   data.text = image_uri;
 
   VerifyShareIsAllowedByPolicy(
-      jrender_frame_host, j_callback,
+      jrender_frame_host, std::move(callback),
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
           //  needed by the data controls logic.
@@ -269,7 +257,7 @@ JNI_DataProtectionBridge_VerifyGenericCopyImageActionIsAllowedByPolicy(
     JNIEnv* env,
     const JavaRef<jstring>& j_image_uri,
     const base::android::JavaRef<jobject>& jrender_frame_host,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   std::u16string image_uri =
       base::android::ConvertJavaStringToUTF16(env, j_image_uri);
 
@@ -277,7 +265,7 @@ JNI_DataProtectionBridge_VerifyGenericCopyImageActionIsAllowedByPolicy(
   data.text = image_uri;
 
   VerifyGenericCopyActionIsAllowedByPolicy(
-      jrender_frame_host, j_callback,
+      jrender_frame_host, std::move(callback),
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
           //  needed by the data controls logic.

@@ -304,7 +304,7 @@ public final class AwCookieManager {
                 long nativeCookieManager,
                 String url,
                 @JniType("std::string") String value,
-                CookieCallback callback);
+                @JniType("base::OnceCallback<void(bool)>") CookieCallback callback);
 
         void setCookieSync(
                 long nativeCookieManager, String url, @JniType("std::string") String value);
@@ -314,11 +314,15 @@ public final class AwCookieManager {
 
         String[] getCookieInfo(long nativeCookieManager, String url);
 
-        void removeSessionCookies(long nativeCookieManager, CookieCallback callback);
+        void removeSessionCookies(
+                long nativeCookieManager,
+                @JniType("base::OnceCallback<void(bool)>") CookieCallback callback);
 
         void removeSessionCookiesSync(long nativeCookieManager);
 
-        void removeAllCookies(long nativeCookieManager, CookieCallback callback);
+        void removeAllCookies(
+                long nativeCookieManager,
+                @JniType("base::OnceCallback<void(bool)>") CookieCallback callback);
 
         void removeAllCookiesSync(long nativeCookieManager);
 

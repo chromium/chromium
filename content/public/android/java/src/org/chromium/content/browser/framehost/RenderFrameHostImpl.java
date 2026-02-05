@@ -334,7 +334,9 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         RenderFrameHost getMainFrame(long nativeRenderFrameHostAndroid);
 
         void getCanonicalUrlForSharing(
-                long nativeRenderFrameHostAndroid, Callback<@Nullable GURL> callback);
+                long nativeRenderFrameHostAndroid,
+                @JniType("base::OnceCallback<void(const std::optional<GURL>&)>")
+                        Callback<@Nullable GURL> callback);
 
         @JniType("std::vector")
         List<RenderFrameHost> getAllRenderFrameHosts(long nativeRenderFrameHostAndroid);
@@ -387,7 +389,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         int getLifecycleState(long nativeRenderFrameHostAndroid);
 
         void insertVisualStateCallback(
-                long nativeRenderFrameHostAndroid, Callback<Boolean> callback);
+                long nativeRenderFrameHostAndroid,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void executeJavaScriptInIsolatedWorld(
                 long nativeRenderFrameHostAndroid,

@@ -171,7 +171,8 @@ public class DomDistillerTabUtils {
     @NativeMethods
     public interface Natives {
         void distillCurrentPageAndViewIfSuccessful(
-                WebContents webContents, Callback<Boolean> callback);
+                WebContents webContents,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void distillCurrentPage(WebContents webContents);
 
@@ -186,6 +187,7 @@ public class DomDistillerTabUtils {
                 InterceptNavigationDelegate delegate, WebContents webContents);
 
         void runReadabilityHeuristicsOnWebContents(
-                @Nullable WebContents webContents, Callback<Boolean> callback);
+                @Nullable WebContents webContents,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
     }
 }

@@ -218,11 +218,8 @@ bool TrackerImplAndroid::IsInitialized(JNIEnv* env) {
 }
 
 void TrackerImplAndroid::AddOnInitializedCallback(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_callback_obj) {
-  tracker_->AddOnInitializedCallback(base::BindOnce(
-      &base::android::RunBooleanCallbackAndroid,
-      base::android::ScopedJavaGlobalRef<jobject>(j_callback_obj)));
+    base::OnceCallback<void(bool)> callback) {
+  tracker_->AddOnInitializedCallback(std::move(callback));
 }
 
 DisplayLockHandleAndroid::DisplayLockHandleAndroid(

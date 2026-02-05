@@ -112,8 +112,7 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
       const base::android::JavaRef<jstring>& jfeature);
   virtual bool IsInitialized(JNIEnv* env);
   virtual void AddOnInitializedCallback(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_callback_obj);
+      base::OnceCallback<void(bool)> callback);
 
  private:
   // A map from the feature name to the base::Feature, to ensure that the Java

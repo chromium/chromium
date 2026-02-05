@@ -31,19 +31,10 @@ namespace android {
 static void JNI_DomDistillerTabUtils_DistillCurrentPageAndViewIfSuccessful(
     JNIEnv* env,
     const JavaRef<jobject>& j_web_contents,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  ::DistillCurrentPageAndViewIfSuccessful(
-      web_contents,
-      base::BindOnce(
-          [](const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
-             bool success) {
-            if (callback) {
-              base::android::RunBooleanCallbackAndroid(callback, success);
-            }
-          },
-          jni_zero::ScopedJavaGlobalRef<jobject>(j_callback)));
+  ::DistillCurrentPageAndViewIfSuccessful(web_contents, std::move(callback));
 }
 
 static void JNI_DomDistillerTabUtils_DistillCurrentPage(
@@ -103,10 +94,7 @@ static void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(
 static void JNI_DomDistillerTabUtils_RunReadabilityHeuristicsOnWebContents(
     JNIEnv* env,
     const JavaRef<jobject>& j_web_contents,
-    const JavaRef<jobject>& j_callback) {
-  base::OnceCallback<void(bool)> callback =
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                     base::android::ScopedJavaGlobalRef<jobject>(j_callback));
+    base::OnceCallback<void(bool)> callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   ::RunReadabilityHeuristicsOnWebContents(web_contents, std::move(callback));

@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_CLIPBOA
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -175,24 +176,38 @@ public class DataProtectionBridge {
     @VisibleForTesting
     public interface Natives {
         void verifyCopyTextIsAllowedByPolicy(
-                String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+                String text,
+                RenderFrameHost renderFrameHost,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyCopyUrlIsAllowedByPolicy(
-                String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+                String url,
+                RenderFrameHost renderFrameHost,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyCopyImageIsAllowedByPolicy(
-                String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+                String imageUri,
+                RenderFrameHost renderFrameHost,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyShareTextIsAllowedByPolicy(
-                String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+                String text,
+                RenderFrameHost renderFrameHost,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyShareUrlIsAllowedByPolicy(
-                String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+                String url,
+                RenderFrameHost renderFrameHost,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyShareImageIsAllowedByPolicy(
-                String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+                String imageUri,
+                RenderFrameHost renderFrameHost,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void verifyGenericCopyImageActionIsAllowedByPolicy(
-                String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+                String imageUri,
+                RenderFrameHost renderFrameHost,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
     }
 }

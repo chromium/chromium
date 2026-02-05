@@ -44,19 +44,6 @@ using base::android::ScopedJavaLocalRef;
 namespace content {
 
 namespace {
-void OnGetCanonicalUrlForSharing(
-    const base::android::JavaRef<jobject>& jcallback,
-    const std::optional<GURL>& url) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (!url) {
-    base::android::RunObjectCallbackAndroid(jcallback,
-                                            url::GURLAndroid::EmptyGURL(env));
-    return;
-  }
-
-  base::android::RunObjectCallbackAndroid(
-      jcallback, url::GURLAndroid::FromNativeGURL(env, url.value()));
-}
 
 void JavaScriptResultCallback(
     const base::android::ScopedJavaGlobalRef<jobject>& callback,
@@ -138,11 +125,8 @@ ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetMainFrame(JNIEnv* env) {
 }
 
 void RenderFrameHostAndroid::GetCanonicalUrlForSharing(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jcallback) const {
-  render_frame_host_->GetCanonicalUrl(base::BindOnce(
-      &OnGetCanonicalUrlForSharing,
-      base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
+    base::OnceCallback<void(const std::optional<GURL>&)> callback) const {
+  render_frame_host_->GetCanonicalUrl(std::move(callback));
 }
 
 std::vector<ScopedJavaLocalRef<jobject>>
@@ -320,11 +304,8 @@ void RenderFrameHostAndroid::ExecuteJavaScriptInIsolatedWorld(
 }
 
 void RenderFrameHostAndroid::InsertVisualStateCallback(
-    JNIEnv* env,
-    const JavaRef<jobject>& jcallback) {
-  render_frame_host()->InsertVisualStateCallback(
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                     base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
+    base::OnceCallback<void(bool)> callback) {
+  render_frame_host()->InsertVisualStateCallback(std::move(callback));
 }
 
 bool RenderFrameHostAndroid::HasHitTestDataForTesting(JNIEnv* env) {

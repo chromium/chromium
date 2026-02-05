@@ -52,11 +52,9 @@ class FeedSurfaceRendererBridge : public ::feed::SurfaceRenderer {
 
   void OnStreamUpdated(const feedui::StreamUpdate& stream_update);
 
-  void LoadMore(JNIEnv* env,
-                const base::android::JavaRef<jobject>& callback_obj);
+  void LoadMore(base::OnceCallback<void(bool)> callback);
 
-  void ManualRefresh(JNIEnv* env,
-                     const base::android::JavaRef<jobject>& callback_obj);
+  void ManualRefresh(base::OnceCallback<void(bool)> callback);
 
   void SurfaceOpened(JNIEnv* env);
   void SurfaceClosed(JNIEnv* env);

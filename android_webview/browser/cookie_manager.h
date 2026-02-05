@@ -119,7 +119,7 @@ class CookieManager {
   void SetCookie(JNIEnv* env,
                  const base::android::JavaRef<jstring>& url,
                  std::string& value,
-                 const base::android::JavaRef<jobject>& java_callback);
+                 base::OnceCallback<void(bool)> callback);
   void SetCookieSync(JNIEnv* env,
                      const base::android::JavaRef<jstring>& url,
                      std::string& value);
@@ -131,11 +131,9 @@ class CookieManager {
       JNIEnv* env,
       const base::android::JavaRef<jstring>& url);
 
-  void RemoveAllCookies(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& java_callback);
-  void RemoveSessionCookies(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& java_callback);
+  void RemoveAllCookies(JNIEnv* env, base::OnceCallback<void(bool)> callback);
+  void RemoveSessionCookies(JNIEnv* env,
+                            base::OnceCallback<void(bool)> callback);
   void RemoveAllCookiesSync(JNIEnv* env);
   void RemoveSessionCookiesSync(JNIEnv* env);
   void RemoveExpiredCookies(JNIEnv* env);

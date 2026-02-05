@@ -7,12 +7,17 @@
 
 #include <jni.h>
 
+#include <optional>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
+
+class GURL;
 
 namespace content {
 
@@ -42,8 +47,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   base::android::ScopedJavaLocalRef<jobject> GetMainFrame(JNIEnv* env);
 
   void GetCanonicalUrlForSharing(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jcallback) const;
+      base::OnceCallback<void(const std::optional<GURL>&)> callback) const;
 
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetAllRenderFrameHosts(
       JNIEnv* env) const;
@@ -97,9 +101,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
 
   int32_t GetLifecycleState(JNIEnv* env) const;
 
-  void InsertVisualStateCallback(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jcallback);
+  void InsertVisualStateCallback(base::OnceCallback<void(bool)> callback);
 
   void ExecuteJavaScriptInIsolatedWorld(
       JNIEnv* env,

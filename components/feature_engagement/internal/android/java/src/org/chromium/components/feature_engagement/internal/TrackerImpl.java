@@ -218,7 +218,9 @@ public class TrackerImpl implements Tracker {
 
         boolean isInitialized(long nativeTrackerImplAndroid);
 
-        void addOnInitializedCallback(long nativeTrackerImplAndroid, Callback<Boolean> callback);
+        void addOnInitializedCallback(
+                long nativeTrackerImplAndroid,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         void release(long nativeDisplayLockHandleAndroid);
     }

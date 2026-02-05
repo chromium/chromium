@@ -55,10 +55,12 @@ public class PriceTrackingUtils {
                 @JniType("Profile*") Profile profile,
                 long bookmarkId,
                 boolean enabled,
-                Callback<Boolean> callback,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback,
                 boolean bookmarkCreatedForPriceTracking);
 
         void isBookmarkPriceTracked(
-                @JniType("Profile*") Profile profile, long bookmarkId, Callback<Boolean> callback);
+                @JniType("Profile*") Profile profile,
+                long bookmarkId,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
     }
 }

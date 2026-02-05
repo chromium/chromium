@@ -280,9 +280,13 @@ public class FeedSurfaceRendererBridge {
         // Member functions, must not be called after destroy().
         void destroy(long nativeFeedSurfaceRendererBridge);
 
-        void loadMore(long nativeFeedSurfaceRendererBridge, Callback<Boolean> callback);
+        void loadMore(
+                long nativeFeedSurfaceRendererBridge,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
-        void manualRefresh(long nativeFeedSurfaceRendererBridge, Callback<Boolean> callback);
+        void manualRefresh(
+                long nativeFeedSurfaceRendererBridge,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
         int getSurfaceId(long nativeFeedSurfaceRendererBridge);
 

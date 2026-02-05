@@ -29,7 +29,7 @@ static void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
     Profile* profile,
     int64_t bookmark_id,
     bool enabled,
-    const JavaRef<jobject>& j_callback,
+    base::OnceCallback<void(bool)> callback,
     bool bookmark_created_by_price_tracking) {
   CHECK(profile);
 
@@ -44,21 +44,16 @@ static void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
   const bookmarks::BookmarkNode* node =
       bookmarks::GetBookmarkNodeByID(model, bookmark_id);
 
-  SetPriceTrackingStateForBookmark(
-      service, model, node, enabled,
-      base::BindOnce(
-          [](const ScopedJavaGlobalRef<jobject>& callback, bool success) {
-            base::android::RunBooleanCallbackAndroid(callback, success);
-          },
-          ScopedJavaGlobalRef<jobject>(j_callback)),
-      bookmark_created_by_price_tracking);
+  SetPriceTrackingStateForBookmark(service, model, node, enabled,
+                                   std::move(callback),
+                                   bookmark_created_by_price_tracking);
 }
 
 static void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
     JNIEnv* env,
     Profile* profile,
     int64_t bookmark_id,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   CHECK(profile);
 
   ShoppingService* service =
@@ -72,13 +67,7 @@ static void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
   const bookmarks::BookmarkNode* node =
       bookmarks::GetBookmarkNodeByID(model, bookmark_id);
 
-  IsBookmarkPriceTracked(
-      service, model, node,
-      base::BindOnce(
-          [](const ScopedJavaGlobalRef<jobject>& callback, bool is_tracked) {
-            base::android::RunBooleanCallbackAndroid(callback, is_tracked);
-          },
-          ScopedJavaGlobalRef<jobject>(j_callback)));
+  IsBookmarkPriceTracked(service, model, node, std::move(callback));
 }
 
 }  // namespace commerce
