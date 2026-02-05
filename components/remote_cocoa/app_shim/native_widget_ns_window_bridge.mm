@@ -60,6 +60,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/image/image_skia_util_mac.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/gfx/mac/menu_text_elider_mac.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
@@ -1203,6 +1204,61 @@ void NativeWidgetNSWindowBridge::SetColorMode(
           ? [NSAppearance appearanceNamed:NSAppearanceNameAqua]
           : [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
   [window_ setAppearance:appearance];
+}
+
+void NativeWidgetNSWindowBridge::BeginFileDrag(
+    mojom::FileDragDataPtr file_drag_data,
+    const gfx::PointF& mouse_location) {
+  if (!window_ || !bridged_view_) {
+    DLOG(WARNING) << "BeginFileDrag failed: window or bridged_view is null";
+    return;
+  }
+
+  NSURL* file_url = base::apple::FilePathToNSURL(file_drag_data->file_path);
+  if (!file_url) {
+    return;
+  }
+
+  NSDraggingItem* file_item =
+      [[NSDraggingItem alloc] initWithPasteboardWriter:file_url];
+
+  // Align to backing pixels for Retina displays.
+  NSPoint mouse_point = NSMakePoint(mouse_location.x(), mouse_location.y());
+  NSPoint current_position =
+      [bridged_view_
+          backingAlignedRect:NSMakeRect(mouse_point.x, mouse_point.y, 0, 0)
+                     options:NSAlignAllEdgesOutward]
+          .origin;
+
+  if (!file_drag_data->drag_image.isNull()) {
+    NSImage* image = gfx::NSImageFromImageSkia(file_drag_data->drag_image);
+    NSSize image_size = image.size;
+    gfx::Vector2d offset = file_drag_data->image_offset;
+    NSRect image_rect = NSMakeRect(current_position.x - offset.x(),
+                                   current_position.y - offset.y(),
+                                   image_size.width, image_size.height);
+    [file_item setDraggingFrame:image_rect contents:image];
+  } else {
+    // 16x16 placeholder corresponding to IconLoader::IconSize::SMALL.
+    NSRect placeholder_rect =
+        NSMakeRect(current_position.x - 8, current_position.y - 8, 16, 16);
+    [file_item setDraggingFrame:placeholder_rect contents:nil];
+  }
+
+  // Synthesize a drag event
+  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
+                                          location:current_position
+                                     modifierFlags:0
+                                         timestamp:NSApp.currentEvent.timestamp
+                                      windowNumber:window_.windowNumber
+                                           context:nil
+                                       eventNumber:0
+                                        clickCount:1
+                                          pressure:1.0];
+
+  [bridged_view_ beginDraggingSessionWithItems:@[ file_item ]
+                                         event:dragEvent
+                                        source:bridged_view_];
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {

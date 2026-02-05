@@ -8,84 +8,56 @@
 
 #include "base/apple/foundation_util.h"
 #include "components/download/public/common/download_item.h"
+#include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/widget/widget.h"
-
-// Cocoa intends a smart dragging source, while `DragDownloadItem()` is a simple
-// "start dragging this" fire-and-forget. This is a generic source just good
-// enough to satisfy AppKit.
-@interface DragDownloadItemSource : NSObject<NSDraggingSource>
-@end
-
-@implementation DragDownloadItemSource
-
-- (NSDragOperation)draggingSession:(NSDraggingSession*)session
-    sourceOperationMaskForDraggingContext:(NSDraggingContext)context {
-  return NSDragOperationEvery;
-}
-
-@end
-
-namespace {
-id<NSDraggingSource> GetDraggingSource() {
-  static id<NSDraggingSource> source = [[DragDownloadItemSource alloc] init];
-  return source;
-}
-}  // namespace
 
 void DragDownloadItem(const download::DownloadItem* download,
                       const gfx::Image* icon,
                       gfx::NativeView native_view) {
   DCHECK_EQ(download::DownloadItem::COMPLETE, download->GetState());
   DCHECK(native_view);
+
   NSView* view = native_view.GetNativeNSView();
-  NSPoint current_position = view.window.mouseLocationOutsideOfEventStream;
-  current_position =
-      [view backingAlignedRect:NSMakeRect(current_position.x,
-                                          current_position.y, 0, 0)
-                       options:NSAlignAllEdgesOutward]
-          .origin;
+  NSPoint mouse_location = view.window.mouseLocationOutsideOfEventStream;
+
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(native_view);
 
   // If this drag was initiated from a views::Widget, that widget may have
   // mouse capture. Drags via View::DoDrag() usually release it. The code below
   // bypasses that, so release manually. See https://crbug.com/863377.
-  views::Widget* widget =
-      views::Widget::GetWidgetForNativeView(gfx::NativeView(view));
-  if (widget)
+  if (widget) {
     widget->ReleaseCapture();
-
-  NSURL* file_url = base::apple::FilePathToNSURL(download->GetTargetFilePath());
-  NSDraggingItem* file_item =
-      [[NSDraggingItem alloc] initWithPasteboardWriter:file_url];
-  if (icon) {
-    NSImage* file_image = icon->ToNSImage();
-    NSSize image_size = file_image.size;
-    NSRect image_rect = NSMakeRect(current_position.x - image_size.width / 2,
-                                   current_position.y - image_size.height / 2,
-                                   image_size.width, image_size.height);
-    [file_item setDraggingFrame:image_rect contents:file_image];
-  } else {
-    // 16x16 placeholder, corresponding to IconLoader::IconSize::SMALL.
-    NSRect placeholder_rect =
-        NSMakeRect(current_position.x - 8, current_position.y - 8, 16, 16);
-    [file_item setDraggingFrame:placeholder_rect contents:nil];
   }
 
-  // Synthesize a drag event, since we don't have access to the actual event
-  // that initiated a drag (possibly consumed by the Web UI, for example).
-  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
-                                          location:current_position
-                                     modifierFlags:0
-                                         timestamp:NSApp.currentEvent.timestamp
-                                      windowNumber:view.window.windowNumber
-                                           context:nil
-                                       eventNumber:0
-                                        clickCount:1
-                                          pressure:1.0];
+  views::NativeWidgetMacNSWindowHost* host =
+      views::NativeWidgetMacNSWindowHost::GetFromNativeView(native_view);
+  if (!host) {
+    DLOG(WARNING) << "DragDownloadItem: host is null";
+    return;
+  }
 
-  // Run the drag operation.
-  [view beginDraggingSessionWithItems:@[ file_item ]
-                                event:dragEvent
-                               source:GetDraggingSource()];
+  remote_cocoa::mojom::NativeWidgetNSWindow* mojo_window =
+      host->GetNSWindowMojo();
+  if (!mojo_window) {
+    DLOG(WARNING) << "DragDownloadItem: mojo_window is null";
+    return;
+  }
+
+  auto file_drag_data = remote_cocoa::mojom::FileDragData::New();
+  file_drag_data->file_path = download->GetTargetFilePath();
+
+  if (icon && !icon->IsEmpty()) {
+    file_drag_data->drag_image = icon->AsImageSkia();
+    gfx::Size size = icon->Size();
+    file_drag_data->image_offset =
+        gfx::Vector2d(size.width() / 2, size.height() / 2);
+  } else {
+    file_drag_data->image_offset = gfx::Vector2d(8, 8);
+  }
+
+  gfx::PointF mouse_point(mouse_location.x, mouse_location.y);
+  mojo_window->BeginFileDrag(std::move(file_drag_data), mouse_point);
 }

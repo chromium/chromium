@@ -323,6 +323,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
                           mojo::PendingReceiver<mojom::Menu> receiver) override;
   void SetAllowScreenshots(bool allow) override;
   void SetColorMode(ui::ColorProviderKey::ColorMode color_mode) override;
+  void BeginFileDrag(mojom::FileDragDataPtr file_drag_data,
+                     const gfx::PointF& mouse_location) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.

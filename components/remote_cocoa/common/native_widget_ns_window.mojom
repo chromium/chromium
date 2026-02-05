@@ -6,6 +6,7 @@ module remote_cocoa.mojom;
 
 import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "components/remote_cocoa/common/menu.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
@@ -13,6 +14,7 @@ import "ui/base/mojom/color_mode.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/events/mojom/event_constants.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 
 // The window class (subclass of kNativeWidgetMacNSWindow) to use for a given
@@ -101,6 +103,18 @@ enum ToolbarVisibilityStyle {
   // The toolbar will autohide. It can be revealed by placing the mouse at the
   // top of the screen.
   kAutohide,
+};
+
+// Data for dragging a file from the window.
+struct FileDragData {
+  // The file path to drag.
+  mojo_base.mojom.FilePath file_path;
+
+  // Optional drag image.
+  gfx.mojom.ImageSkia? drag_image;
+
+  // Offset from the mouse cursor to the drag image origin.
+  gfx.mojom.Vector2d image_offset;
 };
 
 // The interface through which a NativeWidgetMac may interact with an NSWindow
@@ -341,4 +355,9 @@ interface NativeWidgetNSWindow {
 
   // Set the color mode of the window.
   SetColorMode(ui.mojom.ColorMode color_mode);
+
+  // Begin a file drag operation. Used for download drag-and-drop from PWA
+  // running in a separate (app shim) process.
+  BeginFileDrag(FileDragData file_drag_data,
+                gfx.mojom.PointF mouse_location);
 };
