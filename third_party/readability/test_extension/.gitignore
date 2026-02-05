@@ -1,6 +1,12 @@
 Readability.js
 Readability-readerable.js
+content_processing.js
 distilledpage_common.css
 distilledpage_new.css
-dom_distiller_viewer.js
+dom_distiller_viewer_main.js
+font_size_slider.js
+image_classifier.js
+list_classifier.js
+pinch_handler.js
+settings_dialog.js
 

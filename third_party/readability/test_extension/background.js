@@ -81,10 +81,16 @@ function handleDistill(tabId, inNewTab, sendResponse) {
         target: {tabId: tabId},
         files: [
           'Readability.js',
-          'dom_distiller_viewer.js',
-          'article_renderer.js',
           'article_processor.js',
+          'article_renderer.js',
+          'content_processing.js',
           'distiller.js',
+          'dom_distiller_viewer_main.js',
+          'font_size_slider.js',
+          'image_classifier.js',
+          'list_classifier.js',
+          'pinch_handler.js',
+          'settings_dialog.js',
         ]
       },
       (results) => {

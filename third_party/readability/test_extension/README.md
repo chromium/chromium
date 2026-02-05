@@ -66,7 +66,13 @@ distillation algorithm.
     # Link to dom_distiller core files
     ln -s ../../../components/dom_distiller/core/css/distilledpage_common.css .
     ln -s ../../../components/dom_distiller/core/css/distilledpage_new.css .
-    ln -s ../../../components/dom_distiller/core/javascript/dom_distiller_viewer.js .
+    ln -s ../../../components/dom_distiller/core/javascript/dom_distiller_viewer_main.js .
+    ln -s ../../../components/dom_distiller/core/javascript/content_processing.js .
+    ln -s ../../../components/dom_distiller/core/javascript/font_size_slider.js .
+    ln -s ../../../components/dom_distiller/core/javascript/image_classifier.js .
+    ln -s ../../../components/dom_distiller/core/javascript/list_classifier.js .
+    ln -s ../../../components/dom_distiller/core/javascript/pinch_handler.js .
+    ln -s ../../../components/dom_distiller/core/javascript/settings_dialog.js .
     ```
 
 2.  **Load the Extension in Chrome**
@@ -148,5 +154,6 @@ distillation algorithm.
     `isProbablyReaderable()` check.
 *   `distilledpage_common.css` / `distilledpage_new.css`: Core CSS files for
     styling the distilled content view.
-*   `dom_distiller_viewer.js`: Core JavaScript module with helper functions for
-    rendering and interacting with the distilled content.
+*   `dom_distiller_viewer_main.js` and related files: Core JavaScript modules
+    from Chromium that handle rendering and user interaction (e.g., font size,
+    themes, pinch-to-zoom) with the distilled content.
