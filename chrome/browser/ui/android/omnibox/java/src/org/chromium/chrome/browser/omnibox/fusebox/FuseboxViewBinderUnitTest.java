@@ -164,7 +164,7 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void cameraButtonClickListener_isCalled() {
         Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_CAMERA_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED, runnable);
 
         mPopup.mCameraButton.performClick();
         verify(runnable).run();
@@ -173,7 +173,7 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void galleryButtonClickListener_isCalled() {
         Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_GALLERY_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED, runnable);
 
         mPopup.mGalleryButton.performClick();
         verify(runnable).run();
@@ -182,7 +182,7 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void fileButtonClickListener_isCalled() {
         Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_FILE_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, runnable);
 
         mPopup.mFileButton.performClick();
         verify(runnable).run();
@@ -191,7 +191,7 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void tabPickerButtonClickListener_isCalled() {
         Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_TAB_PICKER_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED, runnable);
 
         mPopup.mTabButton.performClick();
         verify(runnable).run();
@@ -286,28 +286,28 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void fileButtonVisibility_setsVisibility() {
-        mModel.set(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE, true);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mFileButton.getVisibility());
 
-        mModel.set(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE, false);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mFileButton.getVisibility());
     }
 
     @Test
     public void addCurrentTabButton() {
-        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mAddCurrentTab.getVisibility());
-        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mAddCurrentTab.getVisibility());
 
         assertNull(mPopup.mAddCurrentTab.getCompoundDrawables()[0]);
 
         Bitmap favicon = UiUtils.createBitmap(/* size= */ 1, Color.RED);
-        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON, favicon);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON, favicon);
         Drawable faviconDrawable = mPopup.mAddCurrentTab.getCompoundDrawablesRelative()[0];
         assertNotNull(faviconDrawable);
 
-        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON, null);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON, null);
         Drawable fallbackDrawable = mPopup.mAddCurrentTab.getCompoundDrawablesRelative()[0];
         assertNotNull(fallbackDrawable);
         assertNotEquals(fallbackDrawable, faviconDrawable);
@@ -315,19 +315,19 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void createImageButtonVisibility() {
-        mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, false);
+        mModel.set(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
-        mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
+        mModel.set(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE, true);
         FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
         assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
     }
 
     @Test
     public void testCurrentTabButtonEnabled() {
-        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, true);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, true);
         assertTrue(mViewHolder.popup.mAddCurrentTab.isEnabled());
-        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, false);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, false);
         assertFalse(mViewHolder.popup.mAddCurrentTab.isEnabled());
     }
 

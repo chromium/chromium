@@ -53,86 +53,86 @@ class FuseboxProperties {
     /** Whether the UI is in compact mode. */
     public static final WritableBooleanPropertyKey COMPACT_UI = new WritableBooleanPropertyKey();
 
+    /** Action to perform when the user clicks the Camera button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CAMERA_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the Camera button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_CAMERA_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Action to perform when the user clicks the Clipboard button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CLIPBOARD_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the Clipboard button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_CLIPBOARD_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the "add current tab" button */
-    public static final WritableObjectPropertyKey<Runnable> CURRENT_TAB_BUTTON_CLICKED =
+    public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CURRENT_TAB_CLICKED =
             new WritableObjectPropertyKey<>();
 
     /**
      * Whether the current tab button is enabled or disabled. Being disabled still leaves it
      * visible, but with a greyed out color and not interactable.
      */
-    public static final WritableBooleanPropertyKey CURRENT_TAB_BUTTON_ENABLED =
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_CURRENT_TAB_ENABLED =
             new WritableBooleanPropertyKey();
 
     /**
      * The favicon of the underlying tab which this button would add. Can be null, in which case a
      * fallback will be used instead.
      */
-    public static final WritableObjectPropertyKey<@Nullable Bitmap> CURRENT_TAB_BUTTON_FAVICON =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<@Nullable Bitmap>
+            POPUP_ATTACH_CURRENT_TAB_FAVICON = new WritableObjectPropertyKey<>();
 
     /** Whether the current tab button is visible. */
-    public static final WritableBooleanPropertyKey CURRENT_TAB_BUTTON_VISIBLE =
-            new WritableBooleanPropertyKey();
-
-    /** Action to perform when the user clicks the AI Mode button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_AI_MODE_CLICKED =
-            new WritableObjectPropertyKey<>();
-
-    /** Whether the Camera button in the popup is enabled. */
-    public static final WritableBooleanPropertyKey POPUP_CAMERA_BUTTON_ENABLED =
-            new WritableBooleanPropertyKey();
-
-    /** Action to perform when the user clicks the Camera button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
-            new WritableObjectPropertyKey<>();
-
-    /** Whether the Clipboard button in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_CLIPBOARD_BUTTON_VISIBLE =
-            new WritableBooleanPropertyKey();
-
-    /** Action to perform when the user clicks the Clipboard button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_CLIPBOARD_CLICKED =
-            new WritableObjectPropertyKey<>();
-
-    /** Whether the create image button is enabled or disabled. */
-    public static final WritableBooleanPropertyKey POPUP_CREATE_IMAGE_BUTTON_ENABLED =
-            new WritableBooleanPropertyKey();
-
-    /** Whether the create image button in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_CREATE_IMAGE_BUTTON_VISIBLE =
-            new WritableBooleanPropertyKey();
-
-    /** Action to perform when the user clicks the 'Create Image' button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_CREATE_IMAGE_CLICKED =
-            new WritableObjectPropertyKey<>();
-
-    /** Whether the File button in the popup is enabled. */
-    public static final WritableBooleanPropertyKey POPUP_FILE_BUTTON_ENABLED =
-            new WritableBooleanPropertyKey();
-
-    /** Whether the File button in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_FILE_BUTTON_VISIBLE =
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_CURRENT_TAB_VISIBLE =
             new WritableBooleanPropertyKey();
 
     /** Action to perform when the user clicks the File button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_FILE_CLICKED =
+    public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_FILE_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    /** Whether the Gallery button in the popup is enabled. */
-    public static final WritableBooleanPropertyKey POPUP_GALLERY_BUTTON_ENABLED =
+    /** Whether the File button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_FILE_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the File button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_FILE_VISIBLE =
             new WritableBooleanPropertyKey();
 
     /** Action to perform when the user clicks the Gallery button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_GALLERY_CLICKED =
+    public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_GALLERY_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the Gallery button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_GALLERY_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Action to perform when the user clicks the tab picker button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_TAB_PICKER_CLICKED =
             new WritableObjectPropertyKey<>();
 
     /** Action to perform when the user clicks the tab picker button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_TAB_PICKER_CLICKED =
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_TAB_PICKER_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Action to perform when the user clicks the AI Mode button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_AI_MODE_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    /** Action to perform when the user clicks the tab picker button in the popup. */
-    public static final WritableBooleanPropertyKey POPUP_TAB_PICKER_ENABLED =
+    /** Action to perform when the user clicks the 'Create Image' button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_TOOL_CREATE_IMAGE_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the create image button is enabled or disabled. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_CREATE_IMAGE_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the create image button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_CREATE_IMAGE_VISIBLE =
             new WritableBooleanPropertyKey();
 
     /** Whether to show the dedicated AIMode button directly in the Fusebox. */
@@ -150,25 +150,25 @@ class FuseboxProperties {
         BUTTON_ADD_CLICKED,
         COLOR_SCHEME,
         COMPACT_UI,
-        CURRENT_TAB_BUTTON_CLICKED,
-        CURRENT_TAB_BUTTON_ENABLED,
-        CURRENT_TAB_BUTTON_FAVICON,
-        CURRENT_TAB_BUTTON_VISIBLE,
-        POPUP_AI_MODE_CLICKED,
-        POPUP_CAMERA_BUTTON_ENABLED,
-        POPUP_CAMERA_CLICKED,
-        POPUP_CLIPBOARD_BUTTON_VISIBLE,
-        POPUP_CLIPBOARD_CLICKED,
-        POPUP_CREATE_IMAGE_BUTTON_ENABLED,
-        POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
-        POPUP_CREATE_IMAGE_CLICKED,
-        POPUP_FILE_BUTTON_ENABLED,
-        POPUP_FILE_BUTTON_VISIBLE,
-        POPUP_FILE_CLICKED,
-        POPUP_GALLERY_BUTTON_ENABLED,
-        POPUP_GALLERY_CLICKED,
-        POPUP_TAB_PICKER_CLICKED,
-        POPUP_TAB_PICKER_ENABLED,
+        POPUP_ATTACH_CAMERA_CLICKED,
+        POPUP_ATTACH_CAMERA_ENABLED,
+        POPUP_ATTACH_CLIPBOARD_CLICKED,
+        POPUP_ATTACH_CLIPBOARD_VISIBLE,
+        POPUP_ATTACH_CURRENT_TAB_CLICKED,
+        POPUP_ATTACH_CURRENT_TAB_ENABLED,
+        POPUP_ATTACH_CURRENT_TAB_FAVICON,
+        POPUP_ATTACH_CURRENT_TAB_VISIBLE,
+        POPUP_ATTACH_FILE_CLICKED,
+        POPUP_ATTACH_FILE_ENABLED,
+        POPUP_ATTACH_FILE_VISIBLE,
+        POPUP_ATTACH_GALLERY_CLICKED,
+        POPUP_ATTACH_GALLERY_ENABLED,
+        POPUP_ATTACH_TAB_PICKER_CLICKED,
+        POPUP_ATTACH_TAB_PICKER_ENABLED,
+        POPUP_TOOL_AI_MODE_CLICKED,
+        POPUP_TOOL_CREATE_IMAGE_CLICKED,
+        POPUP_TOOL_CREATE_IMAGE_ENABLED,
+        POPUP_TOOL_CREATE_IMAGE_VISIBLE,
         SHOW_DEDICATED_MODE_BUTTON
         // go/keep-sorted end
     };

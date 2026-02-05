@@ -318,7 +318,7 @@ public class FuseboxCoordinatorUnitTest {
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
-                        .get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+                        .get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
 
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
         mProfileSupplier.set(mIncognitoProfile);
@@ -326,7 +326,7 @@ public class FuseboxCoordinatorUnitTest {
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
-                        .get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+                        .get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
     }
 
     @Test

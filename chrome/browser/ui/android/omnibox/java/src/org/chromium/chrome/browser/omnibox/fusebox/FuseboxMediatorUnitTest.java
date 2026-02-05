@@ -328,7 +328,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void popupAddsTabs() {
-        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
@@ -346,23 +346,23 @@ public class FuseboxMediatorUnitTest {
         doReturn(false).when(mPopup).isShowing();
 
         mMediator.onToggleAttachmentsPopup();
-        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertNonNull(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
+        assertNonNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
         doReturn(null).when(mTabFaviconFactory).apply(any());
         mMediator.onToggleAttachmentsPopup();
-        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertNull(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
+        assertNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
         doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1);
-        mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
         verify(mComposeboxQueryControllerBridge).addTabContext(mTab1);
         assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
         mMediator.onToggleAttachmentsPopup();
-        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
     }
 
     @Test
@@ -411,7 +411,7 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(1, mAttachments.size());
 
-        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
 
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(1, mAttachments.size());
@@ -469,19 +469,19 @@ public class FuseboxMediatorUnitTest {
         ShadowLooper.idleMainLooper();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
 
-        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
     }
 
     @Test
@@ -521,34 +521,34 @@ public class FuseboxMediatorUnitTest {
     public void onToggleAttachmentsPopup_clipboardHasImage_showsClipboardButton() {
         doReturn(true).when(mClipboard).hasImage();
         mMediator.onToggleAttachmentsPopup();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_clipboardDoesNotHaveImage_hidesClipboardButton() {
         doReturn(false).when(mClipboard).hasImage();
         mMediator.onToggleAttachmentsPopup();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_pdfUploadEligible_showsFileButton() {
         doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));
     }
 
     @Test
     public void onToggleAttachmentsPopup_pdfUploadNotEligible_hidesFileButton() {
         doReturn(false).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.S_V2)
     public void testGalleryIntent_extraAllowMultiple() {
-        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* defaultValue= */ false));
@@ -557,7 +557,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.TIRAMISU)
     public void testGalleryIntent_extraPickImagesMax() {
-        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertEquals(
@@ -568,8 +568,8 @@ public class FuseboxMediatorUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.S_V2)
     public void testGalleryIntent_extraAllowMultiple_duringCreateImage() {
-        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
-        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertFalse(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* defaultValue= */ true));
@@ -578,8 +578,8 @@ public class FuseboxMediatorUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.TIRAMISU)
     public void testGalleryIntent_extraPickImagesMax_duringCreateImage() {
-        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
-        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertEquals(
@@ -588,14 +588,14 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onImagePickerClicked_setsMimeType() {
-        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         assertEquals(MimeTypeUtils.IMAGE_ANY_MIME_TYPE, mIntentCaptor.getValue().getType());
     }
 
     @Test
     public void onFilePickerClicked_setsMimeType() {
-        mModel.get(FuseboxProperties.POPUP_FILE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         assertEquals(MimeTypeUtils.PDF_MIME_TYPE, mIntentCaptor.getValue().getType());
     }
@@ -651,37 +651,37 @@ public class FuseboxMediatorUnitTest {
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
-        mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
         assertEquals(1, mAttachments.size());
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
         mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
         assertEquals(0, mAttachments.size());
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
         assertEquals(1, mAttachments.size());
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
         mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
         assertEquals(0, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
         addAttachment("title", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(1, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
         addAttachment("title", "token3", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(2, mAttachments.size());
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
         mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
         assertEquals(1, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
     }
 
     @Test
@@ -728,7 +728,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onTabPickerClicked_launchesTabPickerActivity() {
-        mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
 
         verify(mPopup).dismiss();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
@@ -750,7 +750,7 @@ public class FuseboxMediatorUnitTest {
         addTabAttachment(tab1);
         addTabAttachment(tab2);
 
-        mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
 
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
@@ -771,7 +771,7 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_FILE);
 
-        mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
 
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
@@ -909,11 +909,11 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testUpdatePopupButtonEnabledStates_maxAttachmentsReached() {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
 
         // Add maximum attachments
         for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
@@ -921,32 +921,32 @@ public class FuseboxMediatorUnitTest {
         }
         assertEquals(0, mAttachments.getRemainingAttachments());
 
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
 
         // Remove one attachment to free up space
         mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
         assertTrue(mAttachments.getRemainingAttachments() > 0);
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
     }
 
     @Test
     public void testUpdatePopupButtonEnabledStates_modeChanges() {
         mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
     }
 
     @Test
@@ -955,11 +955,11 @@ public class FuseboxMediatorUnitTest {
         doReturn(true).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
         doReturn(false).when(mProfile).isIncognitoBranded();
         recreateMediator();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
 
         doReturn(false).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
         recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
     }
 
     @Test
@@ -968,10 +968,10 @@ public class FuseboxMediatorUnitTest {
         doReturn(true).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
         doReturn(true).when(mProfile).isIncognitoBranded();
         recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
 
         OmniboxFeatures.sShowImageGenerationButtonInIncognito.setForTesting(true);
         recreateMediator();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
     }
 }
