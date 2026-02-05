@@ -145,12 +145,14 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
           signin::ConsentLevel::kSignin);
 
   auto completion_block = base::CallbackToBlock(base::BindOnce(
-      [](webauthn::KeysFetchedCallback inner_callback,
+      [](id<IOSPasskeyClientCommands> handler,
+         webauthn::KeysFetchedCallback inner_callback,
          NSArray<NSData*>* trusted_vault_keys) {
         std::move(inner_callback)
             .Run(SharedKeyListFromTrustedVaultKeys(trusted_vault_keys));
+        [handler dismissPasskeyWelcomeScreen];
       },
-      std::move(callback)));
+      command_handler_, std::move(callback)));
   [GetPasskeyKeychainProviderBridge()
       fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
                         credential:nil

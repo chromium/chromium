@@ -69,8 +69,8 @@ NSArray<NSString*>* GetInstructions(PasskeyWelcomeScreenPurpose purpose) {
   ];
 }
 
-// Returns strings needed in the welcome string for `purpose`. `userEmail` is
-// needed for `PasskeyWelcomeScreenPurpose::kEnroll`, otherwise can be nil.
+}  // namespace
+
 PasskeyWelcomeScreenStrings* GetPasskeyWelcomeScreenStrings(
     PasskeyWelcomeScreenPurpose purpose,
     std::string userEmail) {
@@ -90,8 +90,6 @@ PasskeyWelcomeScreenStrings* GetPasskeyWelcomeScreenStrings(
       secondaryButton:secondaryButton
          instructions:GetInstructions(purpose)];
 }
-
-}  // namespace
 
 void CreateAndPresentPasskeyWelcomeScreen(
     PasskeyWelcomeScreenPurpose purpose,

@@ -348,6 +348,7 @@
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/ui_bundled/net_export_coordinator.h"
 #import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
@@ -415,6 +416,7 @@ const char kChromeAppStoreUrl[] =
     PageInfoPresentation,
     ParentAccessCommands,
     PasswordBreachCommands,
+    PasskeyWelcomeScreenCoordinatorDelegate,
     PasswordControllerDelegate,
     PasswordProtectionCommands,
     PasswordProtectionCoordinatorDelegate,
@@ -777,6 +779,9 @@ const char kChromeAppStoreUrl[] =
   // The coordinator for the passkey creation bottom sheet.
   PasskeyCreationBottomSheetCoordinator* _passkeyCreationBottomSheetCoordinator;
 
+  // The coordinator for the passkey welcome screen.
+  PasskeyWelcomeScreenCoordinator* _passkeyWelcomeScreenCoordinator;
+
   // Block to run after the Synced Set Up UI has finished dismissing.
   ProceduralBlock _runAfterSyncedSetUpDismissal;
 }
@@ -1043,6 +1048,9 @@ const char kChromeAppStoreUrl[] =
   [_passkeyCreationBottomSheetCoordinator stop];
   _passkeyCreationBottomSheetCoordinator = nil;
 
+  [_passkeyWelcomeScreenCoordinator stop];
+  _passkeyWelcomeScreenCoordinator = nil;
+
   if (IsSyncedSetUpEnabled()) {
     [self stopSyncedSetUpCoordinator];
   }
@@ -1114,6 +1122,12 @@ const char kChromeAppStoreUrl[] =
   [_trustedVaultReauthenticationCoordinator stop];
   _trustedVaultReauthenticationCoordinator.delegate = nil;
   _trustedVaultReauthenticationCoordinator = nil;
+}
+
+- (void)stopPasskeyWelcomeScreenCoordinator {
+  [_passkeyWelcomeScreenCoordinator stop];
+  _passkeyWelcomeScreenCoordinator.delegate = nil;
+  _passkeyWelcomeScreenCoordinator = nil;
 }
 
 // The Lens UI takes the necessary steps before being backgrounded.
@@ -1660,6 +1674,9 @@ const char kChromeAppStoreUrl[] =
   /* _passkeyCreationBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
+  /* _passkeyWelcomeScreenCoordinator is created and started by a
+   * BrowserCommand */
+
   /* saveCardBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1923,6 +1940,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissAutoDeletionActionSheet];
   [self hideGoogleOne];
   [self stopTrustedVaultReauthentication];
+  [self stopPasskeyWelcomeScreenCoordinator];
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
   [self hideWelcomeBackPromo];
@@ -2423,7 +2441,17 @@ const char kChromeAppStoreUrl[] =
                                 completion:
                                     (webauthn::PasskeyWelcomeScreenAction)
                                         completion {
-  // TODO(crbug.com/460485614): Implement.
+  _passkeyWelcomeScreenCoordinator = [[PasskeyWelcomeScreenCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                         purpose:purpose
+                      completion:completion];
+  _passkeyWelcomeScreenCoordinator.delegate = self;
+  [_passkeyWelcomeScreenCoordinator start];
+}
+
+- (void)dismissPasskeyWelcomeScreen {
+  [self stopPasskeyWelcomeScreenCoordinator];
 }
 
 #pragma mark - BrowserCoordinatorCommands
@@ -5108,6 +5136,14 @@ const char kChromeAppStoreUrl[] =
     (TrustedVaultReauthenticationCoordinator*)coordinator {
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self stopTrustedVaultReauthentication];
+}
+
+#pragma mark - PasskeyWelcomeScreenCoordinatorDelegate
+
+- (void)passkeyWelcomeScreenCoordinatorWantsToBeDismissed:
+    (PasskeyWelcomeScreenCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _passkeyWelcomeScreenCoordinator);
+  [self stopPasskeyWelcomeScreenCoordinator];
 }
 
 #pragma mark - DownloadListCommands

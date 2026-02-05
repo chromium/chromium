@@ -32,6 +32,9 @@ class WebAuthnCredentialsDelegate;
                                     (webauthn::PasskeyWelcomeScreenAction)
                                         completion;
 
+// Dismisses the passkey welcome screen.
+- (void)dismissPasskeyWelcomeScreen;
+
 @end
 
 namespace webauthn {

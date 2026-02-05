@@ -12,6 +12,13 @@
 #import "components/webauthn/ios/passkey_types.h"
 
 @protocol PasskeyWelcomeScreenViewControllerDelegate;
+@class PasskeyWelcomeScreenStrings;
+
+// Returns strings needed in the welcome string for `purpose`. `userEmail` is
+// needed for `PasskeyWelcomeScreenPurpose::kEnroll`, otherwise can be nil.
+PasskeyWelcomeScreenStrings* GetPasskeyWelcomeScreenStrings(
+    webauthn::PasskeyWelcomeScreenPurpose purpose,
+    std::string userEmail);
 
 // Creates a passkey welcome screen for `purpose` and pushes it on the provided
 // `navigationController`. `primaryButtonAction` is invoked on the primary
