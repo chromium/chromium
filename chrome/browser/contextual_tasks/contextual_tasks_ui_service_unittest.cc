@@ -221,9 +221,8 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
   EXPECT_EQ(token_future.Get(), "");
 }
 
-// TODO(crbug.com/477018818): Flaky on Linux ASan and Linux TSan.
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER))
+// TODO(crbug.com/477018818): Flaky on Linux ASan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
 #define MAYBE_GetAccessToken_TransientError_Retries \
   DISABLED_GetAccessToken_TransientError_Retries
 #else
@@ -778,7 +777,8 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
                                           weak_factory.GetWeakPtr(), false);
 
   GURL expected_initial_url(
-      "https://google.com/search?udm=50&q=test+query&cs=0&gsc=2&hl=en");
+      "https://google.com/search?udm=50&q=test+query&cs=0&gsc=2&hl=en&"
+      "sourceid=chrome");
   EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
             expected_initial_url);
 }
@@ -967,6 +967,54 @@ TEST_F(ContextualTasksUiServiceTest, LensQuery_Intercepted) {
       /*is_from_embedded_page=*/true,
       /*is_to_new_tab=*/false));
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest, GetInitialUrlForTask_HasSourceId) {
+  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
+                                   nullptr, aim_eligibility_service_.get());
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(
+                  task.GetTaskId(),
+                  sessions::SessionTabHelper::IdForTab(web_contents.get())))
+      .Times(1);
+  base::WeakPtrFactory weak_factory(&tab);
+
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
+
+  std::optional<GURL> initial_url =
+      service.GetInitialUrlForTask(task.GetTaskId());
+  ASSERT_TRUE(initial_url.has_value());
+
+  std::string sourceid;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(*initial_url, "sourceid", &sourceid));
+  EXPECT_EQ(sourceid, "chrome");
+}
+
+TEST_F(ContextualTasksUiServiceTest, GetDefaultAiPageUrl_HasSourceId) {
+  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
+                                   nullptr, aim_eligibility_service_.get());
+  GURL url = service.GetDefaultAiPageUrl();
+
+  std::string sourceid;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "sourceid", &sourceid));
+  EXPECT_EQ(sourceid, "chrome");
 }
 
 }  // namespace contextual_tasks

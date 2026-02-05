@@ -88,7 +88,7 @@ const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
     &kContextualTasks, "contextual-tasks-ai-page-url",
-    "https://www.google.com/search?udm=50"};
+    "https://www.google.com/search?udm=50&sourceid=chrome"};
 
 // The host that any URL loaded in the embedded WebUi page will be routed to.
 const base::FeatureParam<std::string> kContextualTasksForcedEmbeddedPageHost{

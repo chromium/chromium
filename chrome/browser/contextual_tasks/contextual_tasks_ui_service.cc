@@ -829,6 +829,10 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
   auto it = task_id_to_creation_url_.find(uuid);
   if (it != task_id_to_creation_url_.end()) {
     GURL url = it->second;
+    // Ensure the sourceid param is set. This is needed to identify chrome
+    // source traffic for AIM pages that were directly navigated to by the user,
+    // as opposed to threads created by Chrome.
+    url = net::AppendOrReplaceQueryParameter(url, "sourceid", "chrome");
     task_id_to_creation_url_.erase(it);
     omnibox::ChromeAimEntryPoint entry_point =
         GetInitialEntryPointForTask(uuid);
