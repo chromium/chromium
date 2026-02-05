@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 
+#include <optional>
+#include <utility>
+
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
@@ -84,7 +87,7 @@ void HandleWalletUpsertResponse(
       [[fallthrough]];
     case kSave:
     case kUpdate:
-      // TODO(crbug.com/481566741): Write the entity to EDM.
+      entity_manager->AddOrUpdateEntityInstance(std::move(*wallet_response));
       break;
   }
   UpdateUi(client, kNoNotification);

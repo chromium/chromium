@@ -71,18 +71,49 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpsertResponseInvalidatedEdm) {
       /*wallet_response=*/MaskEntityInstance(passport));
 }
 
-// Tests that the import data bubble is closed after a successful Wallet upsert
-// response.
-TEST_F(AutofillAiWalletUtilsTest,
-       HandleWalletUpsertResponseSuccessClosesBubble) {
+// Tests that the import data bubble is closed after a successful Wallet save
+// response and the entity is written to EDM.
+TEST_F(AutofillAiWalletUtilsTest, HandleWalletSaveResponseSuccess) {
   EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
 
   EntityInstance passport =
       GetPassportEntityInstance({.record_type = kServerWallet});
+  EntityInstance masked_passport = MaskEntityInstance(passport);
   HandleWalletUpsertResponse(edm().GetWeakPtr(), autofill_client().GetWeakPtr(),
                              AutofillClient::AutofillAiImportPromptType::kSave,
                              /*entity=*/passport,
-                             /*wallet_response=*/MaskEntityInstance(passport));
+                             /*wallet_response=*/masked_passport);
+  EntityDataChangedWaiter(&edm()).Wait();
+  EXPECT_THAT(edm().GetEntityInstances(),
+              UnorderedElementsAre(masked_passport));
+}
+
+// Tests that the import data bubble is closed after a successful Wallet update
+// response and the entity is written to EDM.
+TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpdateResponseSuccess) {
+  // Create pre-conditions.
+  const EntityInstance old_passport =
+      MaskEntityInstance(GetPassportEntityInstance(
+          {.name = u"Sophie", .record_type = kServerWallet}));
+  const EntityInstance new_passport = GetPassportEntityInstance(
+      {.name = u"Linus", .record_type = kServerWallet});
+  const EntityInstance new_passport_masked = MaskEntityInstance(new_passport);
+  ASSERT_NE(old_passport, new_passport_masked);
+  ASSERT_EQ(old_passport.guid(), new_passport.guid());
+  edm().AddOrUpdateEntityInstance(old_passport);
+  EntityDataChangedWaiter(&edm()).Wait();
+  ASSERT_THAT(edm().GetEntityInstances(), UnorderedElementsAre(old_passport));
+
+  // The actual behavior to test.
+  EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
+
+  HandleWalletUpsertResponse(edm().GetWeakPtr(), autofill_client().GetWeakPtr(),
+                             AutofillClient::AutofillAiImportPromptType::kSave,
+                             /*entity=*/new_passport,
+                             /*wallet_response=*/new_passport_masked);
+  EntityDataChangedWaiter(&edm()).Wait();
+  EXPECT_THAT(edm().GetEntityInstances(),
+              UnorderedElementsAre(new_passport_masked));
 }
 
 // Tests that the import data bubble is closed and we fall back to a local save
