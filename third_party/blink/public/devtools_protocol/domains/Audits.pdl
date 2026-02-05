@@ -360,6 +360,7 @@ experimental domain Audits
       ItemNotInnerList
       InvalidAllowlistItemType
       ReportingEndpointNotToken
+      InvalidUrlPattern
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api

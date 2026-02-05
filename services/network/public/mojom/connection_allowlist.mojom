@@ -16,6 +16,7 @@ enum ConnectionAllowlistIssue {
   kItemNotInnerList,
   kInvalidAllowlistItemType,
   kReportingEndpointNotToken,
+  kInvalidUrlPattern,
 };
 
 // The result of parsing an allowlist header,

@@ -100,6 +100,10 @@ TEST_F(ConnectionAllowlistParserTest, MalformedHeader) {
       {"(); report-to=?0",
        mojom::ConnectionAllowlistIssue::kReportingEndpointNotToken},
 
+      // Invalid URL Pattern:
+      {"(\"*\")", mojom::ConnectionAllowlistIssue::kInvalidUrlPattern},
+      {"(\"/(\\\\d+)/\")", mojom::ConnectionAllowlistIssue::kInvalidUrlPattern},
+
       // Note: we're not testing dates (`@12345`) or display strings
       // (`%"display"`) because our structured field parser doesn't yet
       // support those types.
@@ -160,7 +164,6 @@ TEST_F(ConnectionAllowlistParserTest, ValidAllowlists) {
       {"(\"https://site.example\")", {"https://site.example"}},
       {"(\"https://site.example/*\")", {"https://site.example/*"}},
       {"(\"https://*.site.example/*\")", {"https://*.site.example/*"}},
-      {"(\"https://site.example/[0-9]+\")", {"https://site.example/[0-9]+"}},
       {"(response-origin)", {kSerializedExampleOrigin}},
 
       // Multiple items:

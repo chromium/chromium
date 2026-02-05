@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/connection_allowlist_parser.h"
 
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/mojom/connection_allowlist.mojom-shared.h"
@@ -25,8 +26,14 @@ std::optional<std::string> ParsePattern(
     return kResponseOriginToken;
   } else if (pattern.item.is_string() &&
              pattern.item.GetString() != kResponseOriginToken) {
-    // TODO(mkwst): Validate the string as a `URLPattern`.
-    return pattern.item.GetString();
+    const std::string& pattern_string = pattern.item.GetString();
+    if (!url_pattern::SimpleUrlPatternMatcher::Create(pattern_string,
+                                                      /*base_url=*/nullptr)
+             .has_value()) {
+      issues.push_back(mojom::ConnectionAllowlistIssue::kInvalidUrlPattern);
+      return std::nullopt;
+    }
+    return pattern_string;
   } else {
     issues.push_back(
         mojom::ConnectionAllowlistIssue::kInvalidAllowlistItemType);

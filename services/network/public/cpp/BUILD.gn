@@ -198,6 +198,7 @@ component("cpp") {
     "//components/os_crypt/async/browser",
     "//components/os_crypt/async/common",
     "//components/prefs",
+    "//components/url_pattern",
     "//ipc",
     "//net",
     "//services/proxy_resolver/public/mojom",

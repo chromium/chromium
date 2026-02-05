@@ -3490,15 +3490,14 @@ void NetworkContext::RevokeNetworkForNonces(
     // network revocation.
     auto& revocation_set = network_revocation_nonces_[nonce];
     for (const std::string& pattern : entry->allowlisted_patterns) {
+      // TODO(crbug.com/447954811): We can safely DCHECK here, as we've done
+      // pattern validation already while validating the header's syntax. That
+      // said, parsing the pattern twice has performance overhead, and it would
+      // be ideal to change our infrastructure to allow passing a
+      // SimpleUrlPatternMatcher directly rather than creating it anew here.
       auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
           pattern, /*base_url=*/nullptr);
-      if (!matcher.has_value()) {
-        // TODO(crbug.com/447954811): This case should result in an issue
-        // delivered to the devtools console (and ideally we'd avoid it
-        // entirely by parsing these strings as URL Patterns when initially
-        // parsing the header rather than here when enforcing it).
-        continue;
-      }
+      DCHECK(matcher.has_value());
       revocation_set.insert(std::move(matcher.value()));
     }
 

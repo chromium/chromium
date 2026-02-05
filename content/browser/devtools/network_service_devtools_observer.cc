@@ -461,6 +461,8 @@ protocol::String ConvertToDevtoolsEnum(
       return ConnectionAllowlistErrorEnum::InvalidAllowlistItemType;
     case ConnectionAllowlistIssue::kReportingEndpointNotToken:
       return ConnectionAllowlistErrorEnum::ReportingEndpointNotToken;
+    case ConnectionAllowlistIssue::kInvalidUrlPattern:
+      return ConnectionAllowlistErrorEnum::InvalidUrlPattern;
   }
 }
 
