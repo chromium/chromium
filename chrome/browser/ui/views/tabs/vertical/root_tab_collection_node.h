@@ -60,7 +60,7 @@ class RootTabCollectionNode : public TabCollectionNode,
   void OnTabBlockedStateChanged(tabs::TabInterface* tab,
                                 int model_index) override;
 
-  void UpdateTabData(tabs::TabInterface* tab);
+  void UpdateTabsData(const std::set<tabs::TabInterface*>& changed_tabs);
 
   raw_ptr<TabStripModel> tab_strip_model_;
   SelectionHandles selected_tabs_;

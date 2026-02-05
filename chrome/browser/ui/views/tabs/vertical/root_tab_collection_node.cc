@@ -140,22 +140,14 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     return;
   }
 
-  std::set<TabCollectionNode*> changed_tabs;
+  std::set<tabs::TabInterface*> changed_tabs;
 
   if (selection.active_tab_changed()) {
     if (selection.old_tab) {
-      TabCollectionNode* old_tab_node =
-          GetNodeForHandle(selection.old_tab->GetHandle());
-      if (old_tab_node) {
-        changed_tabs.insert(old_tab_node);
-      }
+      changed_tabs.insert(selection.old_tab);
     }
     if (selection.new_tab) {
-      TabCollectionNode* new_tab_node =
-          GetNodeForHandle(selection.new_tab->GetHandle());
-      if (new_tab_node) {
-        changed_tabs.insert(new_tab_node);
-      }
+      changed_tabs.insert(selection.new_tab);
     }
   }
 
@@ -170,11 +162,10 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     auto new_selections =
         base::STLSetDifference<SelectionHandles>(selected_tabs, selected_tabs_);
 
-    for (auto tab_handle :
+    for (tabs::TabHandle tab_handle :
          base::STLSetUnion<SelectionHandles>(old_selections, new_selections)) {
-      TabCollectionNode* tab_node = GetNodeForHandle(tab_handle);
-      if (tab_node) {
-        changed_tabs.insert(tab_node);
+      if (auto* tab = tab_handle.Get()) {
+        changed_tabs.insert(tab);
       }
     }
     selected_tabs_ = selected_tabs;
@@ -184,14 +175,10 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     // Discarding a tab causes a replace change notification to be sent. Add any
     // replaced tab to the list of tabs to update.
     auto* replace = change.GetReplace();
-    TabCollectionNode* tab_node = GetNodeForHandle(
-        tab_strip_model->GetTabAtIndex(replace->index)->GetHandle());
-    changed_tabs.insert(tab_node);
+    changed_tabs.insert(tab_strip_model->GetTabAtIndex(replace->index));
   }
 
-  for (auto* tab_node : changed_tabs) {
-    tab_node->NotifyDataChanged();
-  }
+  UpdateTabsData(changed_tabs);
 }
 
 void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
@@ -232,17 +219,44 @@ void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
     return;
   }
 
-  UpdateTabData(tab);
+  UpdateTabsData({tab});
 }
 
 void RootTabCollectionNode::OnTabBlockedStateChanged(tabs::TabInterface* tab,
                                                      int model_index) {
-  UpdateTabData(tab);
+  UpdateTabsData({tab});
 }
 
-void RootTabCollectionNode::UpdateTabData(tabs::TabInterface* tab) {
-  TabCollectionNode* tab_node = GetNodeForHandle(tab->GetHandle());
-  if (tab_node) {
-    tab_node->NotifyDataChanged();
+void RootTabCollectionNode::UpdateTabsData(
+    const std::set<tabs::TabInterface*>& changed_tabs) {
+  std::set<TabCollectionNode*> nodes_to_notify;
+
+  for (auto* tab : changed_tabs) {
+    auto* node = GetNodeForHandle(tab->GetHandle());
+    if (!node) {
+      continue;
+    }
+
+    nodes_to_notify.insert(node);
+
+    // Include all tabs within a split when notifying data change to ensure
+    // consistent visual state across the split.
+    if (!tab->IsSplit() ||
+        !tab_strip_model_->ContainsSplit(tab->GetSplit().value())) {
+      continue;
+    }
+
+    const auto* split_data =
+        tab_strip_model_->GetSplitData(tab->GetSplit().value());
+
+    for (auto* sibling : split_data->ListTabs()) {
+      if (auto* sibling_node = GetNodeForHandle(sibling->GetHandle())) {
+        nodes_to_notify.insert(sibling_node);
+      }
+    }
+  }
+
+  for (auto* node : nodes_to_notify) {
+    node->NotifyDataChanged();
   }
 }
