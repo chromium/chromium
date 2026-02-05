@@ -2582,7 +2582,7 @@
       "--enable-blink-features=PreferDefaultScrollbarStyles",
       "--blink-settings=prefersDefaultScrollbarStyles=true"
     ],
-    "expires": "Feb 1, 2026",
+    "expires": "Feb 1, 2027",
     "owners": [
       "evelynn.kaplan@microsoft.com",
       "almaher@microsoft.com"
