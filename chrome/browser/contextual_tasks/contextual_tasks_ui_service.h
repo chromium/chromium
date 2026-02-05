@@ -82,10 +82,10 @@ class ContextualTasksUiService : public KeyedService {
       base::WeakPtr<tabs::TabInterface> tab,
       base::WeakPtr<BrowserWindowInterface> browser);
 
-  // A notification that a navigation to the search results page occurred in the
-  // contextual tasks WebUI while being viewed in a tab (as opposed to side
-  // panel).
-  virtual void OnSearchResultsNavigationInTab(
+  // A notification that a navigation to a link that is not related to the ai
+  // thread occurred in the contextual tasks WebUI while being viewed in a tab
+  // (as opposed to side panel).
+  virtual void OnNonThreadNavigationInTab(
       const GURL& url,
       base::WeakPtr<tabs::TabInterface> tab);
 

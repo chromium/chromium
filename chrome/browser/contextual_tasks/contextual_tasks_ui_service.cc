@@ -574,7 +574,7 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
       text_directives);
 }
 
-void ContextualTasksUiService::OnSearchResultsNavigationInTab(
+void ContextualTasksUiService::OnNonThreadNavigationInTab(
     const GURL& url,
     base::WeakPtr<tabs::TabInterface> tab) {
   if (!tab || !tab->GetContents()) {
@@ -701,15 +701,16 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     // If the navigation is to a search results page or AI page, it is allowed
     // if being viewed in the side panel, but only if it is intercepted without
     // the side panel-specific params. If the params have already been added, do
-    // nothing, otherwise this logic causes an infinite "intercept" loop.
-    if (IsSearchResultsUrl(url_params.url) || is_nav_to_ai) {
+    // nothing, otherwise this logic causes an infinite "intercept" loop. Any
+    // "allowed domain" (e.g. Google) should not be treated as a thread link.
+    if (IsAllowedHost(url_params.url) || is_nav_to_ai) {
       if (tab) {
         if (!is_nav_to_ai) {
           // The SRP should never be embedded in the WebUI when viewed in a tab.
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
-                  &ContextualTasksUiService::OnSearchResultsNavigationInTab,
+                  &ContextualTasksUiService::OnNonThreadNavigationInTab,
                   weak_ptr_factory_.GetWeakPtr(), url_params.url,
                   tab->GetWeakPtr()));
           return true;
