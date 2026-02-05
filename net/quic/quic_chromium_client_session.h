@@ -1283,10 +1283,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Makes AssertIsValidFor() do nothing.
   bool allow_any_url_for_testing_ = false;
 
-  // If the server supports MTCs (as determined by whether it advertised a trust
-  // anchor ID corresponding to a known Merkle Tree Certificate CA), this is set
-  // to true in OnProofVerifyDetailsAvailable. This is only used for metrics.
-  bool server_advertised_mtc_tai_ = false;
+  // If the server supports MTCs, this is set to true in
+  // OnProofVerifyDetailsAvailable. A server is considered to support MTCs if
+  // either it sends an MTC in its Certificate message or if its trust_anchors
+  // extension (in EncryptedExtensions) contains a trust anchor ID corresponding
+  // to a known Merkle Tree Certificate CA.
+  //
+  // This is only used for metrics.
+  bool server_supports_mtc_tai_ = false;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };
