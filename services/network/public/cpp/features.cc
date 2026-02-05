@@ -246,6 +246,13 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kLocalNetworkAccessChecksWebRTC,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Network Service to use an existing Mojo data pipe producer
+// handle for the response body, instead of creating its own. This is primarily
+// used for ServiceWorkerSyntheticResponse to achieve zero-copy data transfer.
+// crbug.com/352578800 for more details.
+BASE_FEATURE(kURLLoaderUseProvidedResponseBodyStream,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If true, local network access checks will only apply for loopback addresses.
 BASE_FEATURE_PARAM(bool,
                    kLocalNetworkAccessChecksWebRTCLoopbackOnly,

@@ -12320,6 +12320,59 @@ TEST_F(NetworkContextTest, AddQuicHints) {
   EXPECT_EQ(net::NextProto::kProtoQUIC, example_infos[0].protocol());
 }
 
+TEST_F(NetworkContextTest, ProvidedResponseBodyStream) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kURLLoaderUseProvidedResponseBodyStream);
+
+  net::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ResourceRequest request;
+  request.url = test_server.GetURL("/hello.html");
+  request.method = "GET";
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
+
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->response_body_stream =
+      base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+          std::move(producer));
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = OriginatingProcess::browser();
+  params->is_orb_enabled = false;
+  params->is_trusted = true;
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+
+  // When a response body stream is provided, the client should not receive one.
+  EXPECT_FALSE(client.response_body().is_valid());
+
+  // Data should be written to our consumer handle.
+  std::string body;
+  EXPECT_TRUE(mojo::BlockingCopyToString(std::move(consumer), &body));
+  EXPECT_EQ("<!doctype html>\n<p>hello</p>\n", body);
+}
 }  // namespace
 
 }  // namespace network

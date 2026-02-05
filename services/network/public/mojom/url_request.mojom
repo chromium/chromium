@@ -156,6 +156,24 @@ struct TrustedUrlRequestParams {
   // dictionary. If this is set to non-null, the observer passed to
   // URLLoaderFactory will be ignored.
   pending_remote<SharedDictionaryAccessObserver>? shared_dictionary_observer;
+
+  // A data pipe producer handle that the URLLoader will use to write the
+  // response body.
+  //
+  // This allows clients to prepare data pipes in advance, and pass consumer
+  // handles over IPC before waiting for OnReceiveResponse(). This is beneficial
+  // for clients that want to send Mojo messages which require consumer handles
+  // (e.g., navigation commit) as soon as possible, because the receiver side
+  // can initiate some tasks while waiting for the response from the network. By
+  // having this, the response body can be streamed directly from the network
+  // service to the target (e.g., renderer process) without an extra hop through
+  // the client even before receiving the response.
+  //
+  // Note that if this is set, the URLLoaderClient will not create a data pipe
+  // in its own, and the client will not receive a data pipe consumer handle in
+  // OnReceiveResponse(). This handle remains unused until the response body is
+  // ready to be written.
+  handle<data_pipe_producer>? response_body_stream;
 };
 
 // Options that may only be set on URLRequests which are related to WebBundle.

@@ -186,7 +186,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       bool shared_storage_writable_eligible,
       SharedResourceChecker& shared_resource_checker,
       std::unique_ptr<DevtoolsDurableMessageWriter>
-          maybe_durable_message_writer);
+          maybe_durable_message_writer,
+      mojo::ScopedDataPipeProducerHandle response_body_stream = {});
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;

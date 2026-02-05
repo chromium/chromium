@@ -87,6 +87,13 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
       mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>>();
   out->shared_dictionary_observer = data.TakeSharedDictionaryObserver<
       mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>>();
+  mojo::ScopedDataPipeProducerHandle response_body_stream =
+      data.TakeResponseBodyStream();
+  if (response_body_stream.is_valid()) {
+    out->response_body_stream =
+        base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+            std::move(response_body_stream));
+  }
   return true;
 }
 

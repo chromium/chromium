@@ -343,7 +343,8 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     bool shared_storage_writable_eligible,
     SharedResourceChecker& shared_resource_checker,
-    std::unique_ptr<DevtoolsDurableMessageWriter> maybe_durable_message_writer)
+    std::unique_ptr<DevtoolsDurableMessageWriter> maybe_durable_message_writer,
+    mojo::ScopedDataPipeProducerHandle response_body_stream)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -363,6 +364,7 @@ URLLoader::URLLoader(
       receiver_(this, std::move(url_loader_receiver)),
       url_loader_client_(std::move(url_loader_client),
                          std::move(sync_url_loader_client)),
+      response_body_stream_(std::move(response_body_stream)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                TaskRunner(request.priority)),
@@ -1191,20 +1193,22 @@ void URLLoader::ContinueOnResponseStarted() {
   }
 
   if (!(options_ & mojom::kURLLoadOptionReadAndDiscardBody)) {
-    MojoCreateDataPipeOptions options;
-    options.struct_size = sizeof(MojoCreateDataPipeOptions);
-    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-    options.element_num_bytes = 1;
-    options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
-        DataPipeAllocationSize::kLargerSizeIfPossible);
-    MojoResult result =
-        mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
-    if (result != MOJO_RESULT_OK) {
-      NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
-      return;
+    if (!response_body_stream_.is_valid()) {
+      MojoCreateDataPipeOptions options;
+      options.struct_size = sizeof(MojoCreateDataPipeOptions);
+      options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+      options.element_num_bytes = 1;
+      options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
+          DataPipeAllocationSize::kLargerSizeIfPossible);
+      MojoResult result = mojo::CreateDataPipe(&options, response_body_stream_,
+                                               consumer_handle_);
+      if (result != MOJO_RESULT_OK) {
+        NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+        return;
+      }
+      CHECK(consumer_handle_.is_valid());
     }
     CHECK(response_body_stream_.is_valid());
-    CHECK(consumer_handle_.is_valid());
     peer_closed_handle_watcher_.Watch(
         response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
         base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,

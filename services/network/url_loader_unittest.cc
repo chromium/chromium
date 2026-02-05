@@ -703,6 +703,15 @@ struct URLLoaderOptions {
     used = true;
     shared_resource_checker =
         std::make_unique<SharedResourceChecker>(cookie_settings);
+
+    mojo::ScopedDataPipeProducerHandle provided_response_body_stream;
+    if (request.trusted_params &&
+        request.trusted_params->response_body_stream) {
+      provided_response_body_stream =
+          std::move(const_cast<ResourceRequest&>(request)
+                        .trusted_params->response_body_stream->pipe);
+    }
+
     return std::make_unique<URLLoader>(
         context, std::move(delete_callback), std::move(url_loader_receiver),
         options, request, std::move(url_loader_client),
@@ -717,7 +726,8 @@ struct URLLoaderOptions {
         ObserverWrapper(std::move(devtools_observer)),
         ObserverWrapper(std::move(device_bound_session_observer)),
         std::move(accept_ch_frame_observer), shared_storage_writable_eligible,
-        *shared_resource_checker, std::move(durable_message_writer));
+        *shared_resource_checker, std::move(durable_message_writer),
+        std::move(provided_response_body_stream));
   }
 
   int32_t options = mojom::kURLLoadOptionNone;
@@ -1355,6 +1365,51 @@ class URLLoaderMockSocketTest : public URLLoaderTest {
 const OriginatingProcess URLLoaderTest::kProcessId =
     OriginatingProcess::renderer(RendererProcess(4));
 constexpr int URLLoaderTest::kRouteId;
+
+TEST_F(URLLoaderTest, ProvidedResponseBodyStream) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kURLLoaderUseProvidedResponseBodyStream);
+
+  GURL url = test_server()->GetURL("/hello.html");
+  ResourceRequest request = CreateResourceRequest("GET", url);
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
+
+  request.trusted_params->response_body_stream =
+      base::MakeRefCounted<network::SharedDataPipeProducerHandle>(
+          std::move(producer));
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = OriginatingProcess::browser();
+  context().mutable_factory_params().is_orb_enabled = false;
+
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  // Wait until the load completes.
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+
+  // When a response body stream is provided, the client should not receive one.
+  EXPECT_FALSE(client()->response_body().is_valid());
+
+  // Data should be written to our consumer handle.
+  std::string body;
+  EXPECT_TRUE(mojo::BlockingCopyToString(std::move(consumer), &body));
+
+  base::FilePath file_path = GetTestFilePath("hello.html");
+  std::string expected_body;
+  ASSERT_TRUE(base::ReadFileToString(file_path, &expected_body));
+  EXPECT_EQ(expected_body, body);
+
+  delete_run_loop.Run();
+}
 
 TEST_F(URLLoaderTest, Basic) {
   LoadAndCompareFile("simple_page.html");

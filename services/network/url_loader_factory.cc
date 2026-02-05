@@ -381,6 +381,15 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
             resource_request.devtools_request_id.value());
   }
 
+  mojo::ScopedDataPipeProducerHandle provided_response_body_stream;
+  if (base::FeatureList::IsEnabled(
+          features::kURLLoaderUseProvidedResponseBodyStream) &&
+      resource_request.trusted_params &&
+      resource_request.trusted_params->response_body_stream) {
+    provided_response_body_stream =
+        std::move(resource_request.trusted_params->response_body_stream->pipe);
+  }
+
   auto loader = std::make_unique<URLLoader>(
       *this,
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
@@ -397,7 +406,8 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(accept_ch_frame_observer),
       resource_request.shared_storage_writable_eligible,
       *context_->GetSharedResourceChecker(),
-      std::move(maybe_durable_message_writer));
+      std::move(maybe_durable_message_writer),
+      std::move(provided_response_body_stream));
 
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }

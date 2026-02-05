@@ -23,6 +23,12 @@
 
 namespace network {
 
+SharedDataPipeProducerHandle::SharedDataPipeProducerHandle(
+    mojo::ScopedDataPipeProducerHandle pipe)
+    : pipe(std::move(pipe)) {}
+
+SharedDataPipeProducerHandle::~SharedDataPipeProducerHandle() = default;
+
 ResourceRequest::TrustedParams::EnabledClientHints::EnabledClientHints() =
     default;
 ResourceRequest::TrustedParams::EnabledClientHints::~EnabledClientHints() =
@@ -221,6 +227,7 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   shared_dictionary_observer = Clone(
       const_cast<mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>&>(
           other.shared_dictionary_observer));
+  response_body_stream = other.response_body_stream;
   return *this;
 }
 
@@ -237,7 +244,12 @@ bool ResourceRequest::TrustedParams::EqualsForTesting(
          include_request_cookies_with_response ==
              other.include_request_cookies_with_response &&
          enabled_client_hints == other.enabled_client_hints &&
-         client_security_state == other.client_security_state;
+         client_security_state == other.client_security_state &&
+         // `response_body_stream` holds a `mojo::ScopedDataPipeProducerHandle`
+         // which is moved during serialization. Therefore, we only check for
+         // its presence (null or not null) for equality, rather than direct
+         // comparison of the refptrs themselves.
+         (!!response_body_stream == !!other.response_body_stream);
 }
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams() = default;

@@ -48,6 +48,23 @@
 #include "url/origin_debug.h"
 
 namespace network {
+class ResourceRequestBody;
+
+// A reference-counted wrapper for a Mojo data pipe producer handle. This
+// allows the handle to be effectively copyable when stored in ResourceRequest,
+// ensuring it survives intermediate copies in the browser process.
+class COMPONENT_EXPORT(NETWORK_CPP_BASE) SharedDataPipeProducerHandle
+    : public base::RefCountedThreadSafe<SharedDataPipeProducerHandle> {
+ public:
+  explicit SharedDataPipeProducerHandle(
+      mojo::ScopedDataPipeProducerHandle pipe);
+
+  mojo::ScopedDataPipeProducerHandle pipe;
+
+ private:
+  friend class base::RefCountedThreadSafe<SharedDataPipeProducerHandle>;
+  ~SharedDataPipeProducerHandle();
+};
 
 // Typemapped to network.mojom.URLRequest in url_request.mojom.
 //
@@ -110,6 +127,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
     mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>
         shared_dictionary_observer;
+    // TODO(crbug.com/447039330): Consider refactoring this into a Mojo
+    // interface with TakeStream() and Clone() methods, similar to the
+    // PendingRemotes above, to make ownership and copying semantics more
+    // explicit. But scoped_refptr was initially used for simplicity to share
+    // ownership of the underlying Mojo handle.
+    scoped_refptr<SharedDataPipeProducerHandle> response_body_stream;
   };
 
   // Typemapped to network.mojom.WebBundleTokenParams, see comments there

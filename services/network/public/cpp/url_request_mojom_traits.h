@@ -189,6 +189,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
             .shared_dictionary_observer);
   }
 
+  static mojo::ScopedDataPipeProducerHandle response_body_stream(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    if (!trusted_params.response_body_stream) {
+      return mojo::ScopedDataPipeProducerHandle();
+    }
+    return std::move(trusted_params.response_body_stream->pipe);
+  }
+
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
                    network::ResourceRequest::TrustedParams* out);
 };
