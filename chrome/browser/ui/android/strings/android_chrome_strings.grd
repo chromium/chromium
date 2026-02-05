@@ -2857,6 +2857,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ERROR_PRINTING_FAILED" desc="Generic error message shown when Chrome fails to print the current page for some reason.">
         There was a problem printing the page. Please try again.
       </message>
+      <message name="IDS_TOAST_DISALLOW_PRINT" desc="Toast message shown when a user tries to print a native page that doesn't support printing.">
+        This page can't be printed
+      </message>
       <message name="IDS_ACCESSIBILITY_MENU_BOOKMARK" desc="Content description for the bookmark button when the page is not currently bookmarked.">
         Bookmark this page
       </message>

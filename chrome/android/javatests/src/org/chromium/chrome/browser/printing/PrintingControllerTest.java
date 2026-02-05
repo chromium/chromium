@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -45,10 +47,13 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.printing.PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper;
 import org.chromium.printing.PrintDocumentAdapterWrapper.WriteResultCallbackWrapper;
 import org.chromium.printing.PrintManagerDelegate;
 import org.chromium.printing.PrintingControllerImpl;
+import org.chromium.ui.widget.Toast;
+import org.chromium.ui.widget.ToastManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -410,6 +415,30 @@ public class PrintingControllerTest {
                             "currentTab should be allowed to print even when hidden.",
                             new TabPrinter(currentTab).canPrint());
                 });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Printing"})
+    public void testDisallowPrintOnNativePage() {
+        mActivityTestRule.startOnUrl(UrlConstants.HISTORY_URL);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Tab currentTab = ThreadUtils.runOnUiThreadBlocking(() -> cta.getActivityTab());
+        ToastManager toastManager = Mockito.mock(ToastManager.class);
+        ToastManager.setInstanceForTesting(toastManager);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue("Should be a native page.", currentTab.isNativePage());
+                    assertFalse(
+                            "Should return false to indicate the print is not allowed (by showing a"
+                                + " toast).",
+                            cta.onMenuOrKeyboardAction(org.chromium.chrome.R.id.print_id, false));
+                });
+
+        ArgumentCaptor<Toast> toastCaptor = ArgumentCaptor.forClass(Toast.class);
+        Mockito.verify(toastManager, Mockito.times(1)).requestShow(toastCaptor.capture());
+        Assert.assertEquals("This page can't be printed", toastCaptor.getValue().getText());
     }
 
     /**

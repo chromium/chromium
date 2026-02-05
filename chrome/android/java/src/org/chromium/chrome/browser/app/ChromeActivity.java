@@ -219,6 +219,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.webapps.AppInstallMenuHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -269,6 +270,7 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.theme.ThemeResourceWrapper;
 import org.chromium.ui.theme.ThemeResourceWrapperProvider;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -3163,6 +3165,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (!UserPrefs.get(currentTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
             return false;
         }
+
+        if (currentTab.isNativePage()) {
+            NativePage nativePage = currentTab.getNativePage();
+            if (nativePage != null && !nativePage.isPdf()) {
+                Toast.makeText(activity, R.string.toast_disallow_print, Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+
         printingController.startPrint(
                 new TabPrinter(currentTab), new PrintManagerDelegateImpl(activity));
         return true;
