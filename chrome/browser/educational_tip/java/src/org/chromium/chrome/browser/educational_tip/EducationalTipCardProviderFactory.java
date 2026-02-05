@@ -62,7 +62,8 @@ public class EducationalTipCardProviderFactory {
             case ModuleType.SIGN_IN_PROMO:
                 return new SignInPromoCoordinator(onModuleClickedCallback, actionDelegate);
             case ModuleType.SAVE_PASSWORDS_PROMO:
-                return new SavePasswordsPromoCoordinator(onModuleClickedCallback, actionDelegate);
+                return new SavePasswordsPromoCoordinator(
+                        onModuleClickedCallback, callbackController, actionDelegate);
             case ModuleType.PASSWORD_CHECKUP_PROMO:
                 return new PasswordCheckupPromoCoordinator(onModuleClickedCallback, actionDelegate);
             default:
