@@ -49,7 +49,9 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'openLensSearch',
       'setActiveToolMode',
       'setActiveModelMode',
+      'setPage',
       'getInputState',
+      'activateMetricsFunnel',
     ]);
   }
 
