@@ -46,25 +46,24 @@ ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link,
   base::TimeTicks target_time =
       base::TimeTicks() + base::Seconds(display_link.targetTimestamp);
 
-  bool times_valid = true;
   base::TimeDelta interval = base::Seconds(1) * display_link.duration;
 
   // Sanity check. Inputs should always be valid. Use the default values if this
   // is not the case.
-  if (callback_time.is_null() || target_time.is_null()) {
-    callback_time = base::TimeTicks::Now();
-    target_time = callback_time + interval;
-  }
   if (!interval.is_positive()) {
     interval = display::GetNSScreenRefreshInterval(display_id);
   }
+  if (callback_time.is_null() || target_time.is_null()) {
+    callback_time = base::TimeTicks() + base::Seconds(CACurrentMediaTime());
+    target_time = callback_time + interval;
+  }
 
   ui::VSyncParamsMac params;
-  params.callback_times_valid = times_valid;
+  params.callback_times_valid = true;
   params.callback_timebase = callback_time;
   params.callback_interval = interval;
 
-  params.display_times_valid = times_valid;
+  params.display_times_valid = true;
   params.display_timebase = target_time;
   params.display_interval = interval;
 
