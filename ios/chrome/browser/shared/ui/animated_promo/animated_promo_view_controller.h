@@ -9,6 +9,8 @@
 
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
+@protocol LottieAnimation;
+
 // Container view controller for a full-screen promo with a Lottie animation. If
 // the height of the current size class is "regular", the top part of the view
 // plays the animation, and the bottom part displays a
@@ -60,6 +62,9 @@
 // A boolean to indicate if the view controller should use the legacy mode for
 // dark mode (i.e. finding a json ending with _darkmode). Default is YES.
 @property(nonatomic, assign) BOOL useLegacyDarkMode;
+
+// Custom animation view used in the full-screen promo.
+@property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

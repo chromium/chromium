@@ -154,22 +154,6 @@
   RecordDockingPromoAction(IOSDockingPromoAction::kGotIt);
 }
 
-- (void)confirmationAlertSecondaryAction {
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(self.profile);
-  tracker->NotifyEvent(feature_engagement::events::kDockingPromoRemindMeLater);
-
-  if (_firstRun) {
-    [_firstRunDelegate screenWillFinishPresenting];
-  } else {
-    [self hidePromo];
-  }
-
-  [self.mediator registerPromoWithPromosManager];
-  [self promoWasDismissed];
-  RecordDockingPromoAction(IOSDockingPromoAction::kRemindMeLater);
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:

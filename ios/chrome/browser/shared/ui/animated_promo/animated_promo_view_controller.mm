@@ -35,9 +35,6 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 @end
 
 @implementation AnimatedPromoViewController {
-  // Custom animation view used in the full-screen promo.
-  id<LottieAnimation> _animationViewWrapper;
-
   // Custom animation view used in the full-screen promo in dark mode.
   id<LottieAnimation> _animationViewWrapperDarkMode;
 
@@ -73,10 +70,10 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 
   _alertScreen = alertScreen;
 
-  _animationViewWrapper = [self createAnimation:_animationName];
+  self.animationViewWrapper = [self createAnimation:_animationName];
 
   // Set the text localization.
-  [_animationViewWrapper setDictionaryTextProvider:_animationTextProvider];
+  [self.animationViewWrapper setDictionaryTextProvider:_animationTextProvider];
 
   if (self.useLegacyDarkMode) {
     _animationViewWrapperDarkMode =
@@ -86,7 +83,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   }
 
   if (_animationBackgroundColor) {
-    _animationViewWrapper.animationView.backgroundColor =
+    self.animationViewWrapper.animationView.backgroundColor =
         _animationBackgroundColor;
     _animationViewWrapperDarkMode.animationView.backgroundColor =
         _animationBackgroundColor;
@@ -96,7 +93,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
-  if (_animationViewWrapper) {
+  if (self.animationViewWrapper) {
     [self configureAndLayoutAnimationView];
   }
   [self configureAlertScreen];
@@ -166,7 +163,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 
 // Sets the layout of the alertScreen view.
 - (void)layoutAlertScreen {
-  if (_animationViewWrapper.animationView) {
+  if (self.animationViewWrapper.animationView) {
     [self layoutAlertScreenForPromoWithAnimation];
   }
 }
@@ -204,7 +201,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 
 // Configures the animation view and its constraints.
 - (void)configureAndLayoutAnimationView {
-  [self configureAndLayoutAnimationViewForWrapper:_animationViewWrapper];
+  [self configureAndLayoutAnimationViewForWrapper:self.animationViewWrapper];
   if (self.useLegacyDarkMode) {
     [self configureAndLayoutAnimationViewForWrapper:
               _animationViewWrapperDarkMode];
@@ -212,11 +209,11 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
     BOOL darkModeEnabled =
         (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 
-    _animationViewWrapper.animationView.hidden = darkModeEnabled;
+    self.animationViewWrapper.animationView.hidden = darkModeEnabled;
     _animationViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
     [self updateAnimationsPlaying];
   } else {
-    [_animationViewWrapper play];
+    [self.animationViewWrapper play];
   }
 }
 
@@ -247,7 +244,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 // The animation view should be displayed if `animationViewWrapper` is not null
 // and the device is in portrait orientation.
 - (BOOL)shouldShowAnimation {
-  return _animationViewWrapper.animationView &&
+  return self.animationViewWrapper.animationView &&
          self.traitCollection.verticalSizeClass !=
              UIUserInterfaceSizeClassCompact;
 }
@@ -255,8 +252,9 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 // Checks if the animations are hidden or unhidden and plays (or stops) them
 // accordingly.
 - (void)updateAnimationsPlaying {
-  _animationViewWrapper.animationView.hidden ? [_animationViewWrapper stop]
-                                             : [_animationViewWrapper play];
+  self.animationViewWrapper.animationView.hidden
+      ? [self.animationViewWrapper stop]
+      : [self.animationViewWrapper play];
   _animationViewWrapperDarkMode.animationView.hidden
       ? [_animationViewWrapperDarkMode stop]
       : [_animationViewWrapperDarkMode play];
@@ -271,11 +269,11 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
     BOOL darkModeEnabled =
         (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
 
-    _animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
+    self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
     _animationViewWrapperDarkMode.animationView.hidden =
         hidden || !darkModeEnabled;
   } else {
-    _animationViewWrapper.animationView.hidden = hidden;
+    self.animationViewWrapper.animationView.hidden = hidden;
   }
 
   [self updateAnimationsPlaying];
@@ -299,8 +297,8 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 - (void)updateAnimationWithColorProvider:
     (NSDictionary<NSString*, UIColor*>*)colorProvider {
   for (NSString* keypath in colorProvider.allKeys) {
-    [_animationViewWrapper setColorValue:colorProvider[keypath]
-                              forKeypath:keypath];
+    [self.animationViewWrapper setColorValue:colorProvider[keypath]
+                                  forKeypath:keypath];
   }
 }
 
