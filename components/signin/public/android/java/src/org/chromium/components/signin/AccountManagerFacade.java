@@ -167,7 +167,6 @@ public interface AccountManagerFacade {
             Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback);
 
     /** Whether fetching the list of accounts from the device eventually succeeded. */
-    // TODO(crbug.com/330304719): Handle this with exceptions rather than a boolean.
     boolean didAccountFetchSucceed();
 
     /**

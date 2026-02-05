@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -89,6 +90,8 @@ public class ProfileDataCacheRenderTest {
     private FrameLayout mContentView;
     private ImageView mImageView;
 
+    private final AccountManagerFacade mAccountManagerFacade =
+            mAccountManagerTestRule.getAccountManagerFacade();
     private final IdentityManager mIdentityManager = mAccountManagerTestRule.getIdentityManager();
     private ProfileDataCache mProfileDataCache;
 
@@ -110,6 +113,7 @@ public class ProfileDataCacheRenderTest {
                     mProfileDataCache =
                             new ProfileDataCache(
                                     sActivity,
+                                    mAccountManagerFacade,
                                     mIdentityManager,
                                     mImageSize,
                                     /* badgeConfig= */ null);
@@ -139,6 +143,7 @@ public class ProfileDataCacheRenderTest {
                     mProfileDataCache =
                             new ProfileDataCache(
                                     sActivity,
+                                    mAccountManagerFacade,
                                     mIdentityManager,
                                     mImageSize,
                                     /* badgeConfig= */ null);
@@ -151,12 +156,16 @@ public class ProfileDataCacheRenderTest {
                                     .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getFullName());
                 });
-        final DisplayableProfileData profileData =
-                mProfileDataCache.getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail());
-        Assert.assertEquals(TestAccounts.ACCOUNT1.getFullName(), profileData.getFullName());
-        Assert.assertEquals(TestAccounts.ACCOUNT1.getGivenName(), profileData.getGivenName());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    final DisplayableProfileData profileData =
+                            mProfileDataCache.getProfileDataOrDefault(
+                                    TestAccounts.ACCOUNT1.getEmail());
+                    Assert.assertEquals(
+                            TestAccounts.ACCOUNT1.getFullName(), profileData.getFullName());
+                    Assert.assertEquals(
+                            TestAccounts.ACCOUNT1.getGivenName(), profileData.getGivenName());
                     checkImageIsScaled(TestAccounts.ACCOUNT1.getEmail());
                 });
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);

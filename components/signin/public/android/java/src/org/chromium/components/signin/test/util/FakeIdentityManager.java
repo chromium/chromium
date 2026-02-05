@@ -27,6 +27,7 @@ public class FakeIdentityManager implements IdentityManager {
     private final List<Observer> mObservers = new ArrayList<>();
     private final Map<String, AccountInfo> mExtendedAccountInfos = new HashMap<>();
     private @Nullable CoreAccountInfo mPrimaryAccount;
+    private boolean mIsOnExtendedAccountInfoUpdatedBlocked;
     private boolean mIsClearPrimaryAccountAllowed;
 
     @Override
@@ -85,8 +86,10 @@ public class FakeIdentityManager implements IdentityManager {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mExtendedAccountInfos.put(accountInfo.getEmail(), accountInfo);
-                    for (Observer observer : mObservers) {
-                        observer.onExtendedAccountInfoUpdated(accountInfo);
+                    if (!mIsOnExtendedAccountInfoUpdatedBlocked) {
+                        for (Observer observer : mObservers) {
+                            observer.onExtendedAccountInfoUpdated(accountInfo);
+                        }
                     }
                 });
     }
@@ -121,5 +124,9 @@ public class FakeIdentityManager implements IdentityManager {
 
     public int getObserverCount() {
         return mObservers.size();
+    }
+
+    public void blockExtendedAccountInfoUpdate() {
+        mIsOnExtendedAccountInfoUpdatedBlocked = true;
     }
 }

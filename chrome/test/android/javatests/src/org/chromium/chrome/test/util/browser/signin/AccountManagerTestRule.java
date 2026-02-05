@@ -59,6 +59,11 @@ public class AccountManagerTestRule implements TestRule {
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }
 
+    /** Returns the {@link FakeAccountManagerFacade} used by this test rule. */
+    public FakeAccountManagerFacade getAccountManagerFacade() {
+        return mFakeAccountManagerFacade;
+    }
+
     /** Returns the {@link FakeIdentityManager} used by this test rule. */
     public FakeIdentityManager getIdentityManager() {
         return mFakeIdentityManager;
@@ -66,8 +71,8 @@ public class AccountManagerTestRule implements TestRule {
 
     /** Adds an account to the {@link FakeAccountManagerFacade} and {@link FakeIdentityManager}. */
     public void addAccount(AccountInfo accountInfo) {
-        mFakeAccountManagerFacade.addAccount(accountInfo);
         mFakeIdentityManager.addOrUpdateExtendedAccountInfo(accountInfo);
+        mFakeAccountManagerFacade.addAccount(accountInfo);
     }
 
     /**
@@ -96,8 +101,19 @@ public class AccountManagerTestRule implements TestRule {
         mFakeAccountManagerFacade.setAccountFetchFailed();
     }
 
-    /** See {@link FakeAccountManagerFacade#blockGetAccounts(boolean)}. */
+    /**
+     * Block updates from {@link FakeAccountManagerFacade}. See {@link
+     * FakeAccountManagerFacade#blockGetAccounts(boolean)}.
+     */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate(boolean populateCache) {
         return mFakeAccountManagerFacade.blockGetAccounts(populateCache);
+    }
+
+    /**
+     * Block updates from {@link FakeIdentityManager}. See {@link
+     * FakeIdentityManager#blockExtendedAccountInfoUpdate(boolean)}.
+     */
+    public void blockExtendedAccountInfoUpdate() {
+        mFakeIdentityManager.blockExtendedAccountInfoUpdate();
     }
 }
