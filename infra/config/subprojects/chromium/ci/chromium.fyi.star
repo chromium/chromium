@@ -2868,17 +2868,40 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
+            "gpu_tests",
             "release_builder",
             "remoteexec",
+            "devtools_do_typecheck",
             "linux",
             "x64",
-            "chrome_with_codecs",
-            "minimal_symbols",
         ],
     ),
     targets = targets.bundle(
         targets = ["trees_in_viz_disabled_tests"],
-        mixins = ["linux-jammy"],
+        mixins = [
+            "linux-jammy",
+            "retry_only_failed_tests",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+                ],
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+        },
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
