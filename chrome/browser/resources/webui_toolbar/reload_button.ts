@@ -62,10 +62,10 @@ export class ReloadButtonAppElement extends CrLitElement {
           if (menuType === ContextMenuType.kReload) {
             switch (state) {
               case ContextMenuState.kVisible:
-                this.isDisplayingContextMenu_ = true;
+                this.isMenuOpen = true;
                 break;
               case ContextMenuState.kHidden:
-                this.isDisplayingContextMenu_ = false;
+                this.isMenuOpen = false;
                 break;
               case ContextMenuState.kUnspecified:
                 assertNotReached();
@@ -91,14 +91,14 @@ export class ReloadButtonAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      isDisplayingContextMenu_: {state: true, type: Boolean},
       isLoading_: {state: true, type: Boolean},
+      isMenuOpen: {type: Boolean, reflect: true},
       tooltip_: {state: true, type: String},
     };
   }
 
-  protected accessor isDisplayingContextMenu_: boolean = false;
   protected accessor isLoading_: boolean = false;
+  protected accessor isMenuOpen: boolean = false;
   protected accessor tooltip_: string =
       loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);
   protected accName_: string =
