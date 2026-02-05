@@ -162,7 +162,7 @@ BASE_FEATURE(kCriticalClientHint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature controls whether Dev Tools supports debugging Device Bound
 // Sessions.
-BASE_FEATURE(kDeviceBoundSessionsDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeviceBoundSessionsDevTools, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Disables the auto_resize_output_surface feature in the Viz process.
