@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
@@ -103,6 +104,9 @@ public abstract class SigninPromoDelegate {
      *     with new values retrieved from the delegate.
      */
     abstract boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount);
+
+    /** Returns the background color for the account picker in seamless sign-in layout `compact` */
+    abstract @ColorInt int getAccountPickerBackgroundColor();
 
     /** Returns whether this entry point supports seamless sign-in. */
     boolean isSeamlessSigninAllowed() {

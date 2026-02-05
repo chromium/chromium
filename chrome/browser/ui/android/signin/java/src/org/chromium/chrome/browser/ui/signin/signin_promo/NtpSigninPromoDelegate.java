@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -216,6 +218,12 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     @SigninSurveyController.SigninSurveyType
     Integer getSurveyTriggerType() {
         return SigninSurveyController.SigninSurveyType.NTP_PROMO;
+    }
+
+    @Override
+    @ColorInt
+    int getAccountPickerBackgroundColor() {
+        return SemanticColorUtils.getColorSurfaceContainer(mContext);
     }
 
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {

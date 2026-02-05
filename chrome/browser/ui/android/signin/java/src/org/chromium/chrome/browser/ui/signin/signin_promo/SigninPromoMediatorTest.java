@@ -69,6 +69,7 @@ public class SigninPromoMediatorTest {
 
     @Before
     public void setUp() {
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         lenient().doReturn(true).when(mPromoDelegate).canShowPromo();
     }
 
