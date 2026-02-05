@@ -159,11 +159,10 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     [scene_state_ addAgent:reauth_agent];
 
     coordinator_ = [[TabGridCoordinator alloc]
-        initWithBaseViewController:nil
-             sceneCommandsEndpoint:mockSceneHandler
-                    regularBrowser:browser_.get()
-                   inactiveBrowser:browser_->CreateInactiveBrowser()
-                  incognitoBrowser:incognito_browser_.get()];
+        initWithSceneCommandsEndpoint:mockSceneHandler
+                       regularBrowser:browser_.get()
+                      inactiveBrowser:browser_->CreateInactiveBrowser()
+                     incognitoBrowser:incognito_browser_.get()];
     coordinator_.animationsDisabledForTesting = YES;
 
     // TabGridCoordinator will make its view controller the root, so stash the

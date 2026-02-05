@@ -165,20 +165,23 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   CHECK(_inactiveBrowser.get());
   CHECK(_incognitoBrowser);
 
+  _tabGridCoordinator = [[TabGridCoordinator alloc]
+      initWithSceneCommandsEndpoint:_sceneCommandsEndpoint
+                     regularBrowser:_regularBrowser.get()
+                    inactiveBrowser:_inactiveBrowser.get()
+                   incognitoBrowser:_incognitoBrowser];
+  _tabGridCoordinator.delegate = self.delegate;
+  [_tabGridCoordinator start];
   if (IsUseSceneViewControllerEnabled()) {
     _viewController = [[SceneViewController alloc] init];
-  }
-  _tabGridCoordinator = [[TabGridCoordinator alloc]
-      initWithBaseViewController:_viewController
-           sceneCommandsEndpoint:_sceneCommandsEndpoint
-                  regularBrowser:_regularBrowser.get()
-                 inactiveBrowser:_inactiveBrowser.get()
-                incognitoBrowser:_incognitoBrowser];
-  _tabGridCoordinator.delegate = self.delegate;
-  if (IsUseSceneViewControllerEnabled()) {
+    UIViewController* tabGridViewController =
+        _tabGridCoordinator.viewController;
+    [_viewController addChildViewController:tabGridViewController];
+    [_viewController.appContainer addSubview:tabGridViewController.view];
+    tabGridViewController.view.frame = _viewController.appContainer.bounds;
+    [tabGridViewController didMoveToParentViewController:_viewController];
     self.sceneState.window.rootViewController = _viewController;
   }
-  [_tabGridCoordinator start];
 }
 
 - (void)stop {

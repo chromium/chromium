@@ -12,17 +12,15 @@
 @class BrowserLayoutViewController;
 class Browser;
 @protocol SceneCommands;
-@class SceneViewController;
 @protocol TabGridCoordinatorDelegate;
 
 @interface TabGridCoordinator : RootCoordinator
 
-- (instancetype)
-    initWithBaseViewController:(SceneViewController*)baseViewController
-         sceneCommandsEndpoint:(id<SceneCommands>)sceneCommandsEndpoint
-                regularBrowser:(Browser*)regularBrowser
-               inactiveBrowser:(Browser*)inactiveBrowser
-              incognitoBrowser:(Browser*)incognitoBrowser
+- (instancetype)initWithSceneCommandsEndpoint:
+                    (id<SceneCommands>)sceneCommandsEndpoint
+                               regularBrowser:(Browser*)regularBrowser
+                              inactiveBrowser:(Browser*)inactiveBrowser
+                             incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -37,6 +35,9 @@ class Browser;
 
 // The view controller, if any, that is active.
 @property(nonatomic, readonly, strong) UIViewController* activeViewController;
+
+// The view controller for the Tab Grid.
+@property(nonatomic, readonly) UIViewController* viewController;
 
 // If this property is YES, calls to `showTabGridPage:animated:` and
 // `showBrowserLayoutViewController:completion:` will present the
