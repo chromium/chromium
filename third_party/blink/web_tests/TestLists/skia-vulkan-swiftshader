@@ -648,7 +648,7 @@ fast/canvas/canvas-fillPath-pattern-shadow.html
 fast/canvas/canvas-filter-fill-liveness.html
 fast/canvas/canvas-filter-frameless-document.html
 fast/canvas/canvas-filter-liveness.html
-fast/canvas/canvas-filter-shadow.html
+external/wpt/html/canvas/element/manual/filters/canvas-filter-shadow.html
 fast/canvas/canvas-filter-stroke-paint-pattern.html
 fast/canvas/canvas-filter-units-ex.html
 fast/canvas/canvas-frameless-document-text.html
