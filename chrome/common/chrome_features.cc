@@ -1936,10 +1936,6 @@ BASE_FEATURE(kWinPinPWAShortcutWithLAF, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// A feature to enable event based log uploads. See
-// go/cros-eventbasedlogcollection-dd.
-BASE_FEATURE(kEventBasedLogUpload, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A feature to enable periodic log upload migration. This includes using new
 // mechanism for collecting, exporting and uploading logs. See
 // go/legacy-log-upload-migration.

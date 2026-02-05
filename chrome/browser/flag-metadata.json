@@ -4436,11 +4436,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "event-based-log-upload",
-    "owners": [ "iremuguz@google.com", "chromeos-commercial-supportability@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "ewallet-payments",
     "owners": [ "junhuihe@google.com", "chrome-payments-eng@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 151

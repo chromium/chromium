@@ -5642,21 +5642,6 @@
             ]
         }
     ],
-    "ChromeOSEnterpriseEventBasedLogUpload": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EventBasedLogUpload"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSGrowthFramework": [
         {
             "platforms": [

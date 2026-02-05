@@ -8611,10 +8611,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityCaptionsOnBrailleDisplay)},
 
-    {"event-based-log-upload", flag_descriptions::kEventBasedLogUpload,
-     flag_descriptions::kEventBasedLogUploadDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kEventBasedLogUpload)},
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-fenced-frames-developer-mode",

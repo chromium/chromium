@@ -7047,12 +7047,6 @@ inline constexpr char kEolResetDismissedPrefsDescription[] =
     "Reset the end of life notification prefs to their default value, at the "
     "start of the user session. This is meant to make manual testing easier.";
 
-inline constexpr char kEventBasedLogUpload[] = "Enable event based log uploads";
-inline constexpr char kEventBasedLogUploadDescription[] =
-    "Uploads relevant logs to device management server when unexpected events "
-    "(e.g. crashes) occur on the device. The feature is guarded by "
-    "LogUploadEnabled policy.";
-
 inline constexpr char kExoGamepadVibrationName[] =
     "Gamepad Vibration for Exo Clients";
 inline constexpr char kExoGamepadVibrationDescription[] =
