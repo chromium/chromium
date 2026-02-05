@@ -16,7 +16,7 @@ namespace autofill {
 // This is necessary since EDM operates asynchronously on the WebDatabase.
 // Example usage:
 //   edm.AddOrUpdateEntityInstance(...);
-//   EntityDataChangedWaiter(&adm).Wait();
+//   EntityDataChangedWaiter(&edm).Wait();
 class EntityDataChangedWaiter : public EntityDataManager::Observer {
  public:
   explicit EntityDataChangedWaiter(EntityDataManager* edm);
