@@ -28,10 +28,10 @@ repositories {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    compileLatest 'androidx.compose.runtime:runtime-android:+'
-    compileLatest 'androidx.compose.material3:material3:+'
-    compileLatest 'androidx.compose.ui:ui:+'
-    compileLatest 'androidx.compose.ui:ui-text-google-fonts:+'
+    compile 'androidx.compose.runtime:runtime-android:1.11.0-alpha04'
+    compile 'androidx.compose.material3:material3:1.5.0-alpha13'
+    compile 'androidx.compose.ui:ui:1.11.0-alpha04'
+    compile 'androidx.compose.ui:ui-text-google-fonts:1.11.0-alpha04'
     compileLatest 'androidx.activity:activity-compose:+'
     compileLatest 'androidx.fragment:fragment-compose:+'
     compileLatest 'androidx.lifecycle:lifecycle-viewmodel-compose:+'
