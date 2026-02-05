@@ -12,6 +12,9 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
 // void CPPClass::AddStructB(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& caller,
@@ -124,7 +127,7 @@
       } else if constexpr (requires { func_wrapper(caller_ref, b_ref); }) {                        \
         return func_wrapper(caller_ref, b_ref);                                                    \
       } else {                                                                                     \
-        static_assert(false, "CPPClass::AddStructB() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "CPPClass::AddStructB() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -147,7 +150,7 @@
       } else if constexpr (requires { func_wrapper(arg_ref); }) {                                  \
         return func_wrapper(arg_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_ClassUnderSamePackageTest() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleForTests_ClassUnderSamePackageTest() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -176,7 +179,7 @@
       } else if constexpr (requires { func_wrapper(caller_ref, bytes_converted); }) {              \
         return func_wrapper(caller_ref, bytes_converted);                                          \
       } else {                                                                                     \
-        static_assert(false, "CPPClass::Destroy() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, std::vector<uint8_t>)"); \
+        static_assert(false, "CPPClass::Destroy() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, std::vector<uint8_t>)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -199,7 +202,7 @@
       } else if constexpr (requires { func_wrapper(env_ref); }) {                                  \
         return func_wrapper(env_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_GetClass() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jclass>&)"); \
+        static_assert(false, "JNI_SampleForTests_GetClass() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jclass>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -223,7 +226,7 @@
       } else if constexpr (requires { func_wrapper(ret_ref); }) {                                  \
         return func_wrapper(ret_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_GetDoubleFunction() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleForTests_GetDoubleFunction() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -245,7 +248,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_GetFloatFunction() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForTests_GetFloatFunction() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -269,7 +272,7 @@
       } else if constexpr (requires { func_wrapper(jcaller_ref); }) {                              \
         return func_wrapper(jcaller_ref);                                                          \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_GetNonPODDatatype() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleForTests_GetNonPODDatatype() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -293,7 +296,7 @@
       } else if constexpr (requires { func_wrapper(arg0_ref); }) {                                 \
         return func_wrapper(arg0_ref);                                                             \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_GetThrowable() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jthrowable>&)"); \
+        static_assert(false, "JNI_SampleForTests_GetThrowable() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jthrowable>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -353,7 +356,7 @@
             std::move(convertedType_converted),                                                    \
             nonConvertedArray_converted);                                                          \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_Init() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jstring>&, jni_zero::ByteArrayView, jni_zero::tests::CPPClass*, std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)"); \
+        static_assert(false, "JNI_SampleForTests_Init() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jstring>&, jni_zero::ByteArrayView, jni_zero::tests::CPPClass*, std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -379,7 +382,7 @@
       } else if constexpr (requires { func_wrapper(caller_ref); }) {                               \
         return func_wrapper(caller_ref);                                                           \
       } else {                                                                                     \
-        static_assert(false, "CPPClass::IterateAndDoSomethingWithStructB() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "CPPClass::IterateAndDoSomethingWithStructB() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -404,7 +407,7 @@
       } else if constexpr (requires { func_wrapper(items_converted); }) {                          \
         return func_wrapper(items_converted);                                                      \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_ListTest2() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (std::vector<std::string>)"); \
+        static_assert(false, "JNI_SampleForTests_ListTest2() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::vector<std::string>)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -431,7 +434,7 @@
       } else if constexpr (requires { func_wrapper(arg0_converted); }) {                           \
         return func_wrapper(arg0_converted);                                                       \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_MapTest2() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (std::map<std::string, std::string>)"); \
+        static_assert(false, "JNI_SampleForTests_MapTest2() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::map<std::string, std::string>)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -462,7 +465,7 @@
       } else if constexpr (requires { func_wrapper(caller_ref, strings_converted); }) {            \
         return func_wrapper(caller_ref, strings_converted);                                        \
       } else {                                                                                     \
-        static_assert(false, "CPPClass::Method() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, std::vector<std::string>)"); \
+        static_assert(false, "CPPClass::Method() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, std::vector<std::string>)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -488,7 +491,7 @@
       } else if constexpr (requires { func_wrapper(caller_ref); }) {                               \
         return func_wrapper(caller_ref);                                                           \
       } else {                                                                                     \
-        static_assert(false, "CPPClass::InnerClass::MethodOtherP0() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "CPPClass::InnerClass::MethodOtherP0() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -568,7 +571,7 @@
             f_converted,                                                                           \
             d_converted);                                                                          \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_PrimitiveArrays() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (std::vector<uint8_t>, std::vector<uint16_t>, std::vector<int16_t>, std::vector<int32_t>, std::vector<int64_t>, std::vector<float>, std::vector<double>)"); \
+        static_assert(false, "JNI_SampleForTests_PrimitiveArrays() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::vector<uint8_t>, std::vector<uint16_t>, std::vector<int16_t>, std::vector<int32_t>, std::vector<int64_t>, std::vector<float>, std::vector<double>)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -595,7 +598,7 @@
       } else if constexpr (requires { func_wrapper(caller_ref); }) {                               \
         return func_wrapper(caller_ref);                                                           \
       } else {                                                                                     \
-        static_assert(false, "CPPClass::ReturnAString() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "CPPClass::ReturnAString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -617,7 +620,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_ReturnFromEnum() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForTests_ReturnFromEnum() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -646,7 +649,7 @@
       } else if constexpr (requires { func_wrapper(obj_ref, rect_ref); }) {                        \
         return func_wrapper(obj_ref, rect_ref);                                                    \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_SetNonPODDatatype() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleForTests_SetNonPODDatatype() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

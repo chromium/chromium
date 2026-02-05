@@ -12,6 +12,9 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
 // static void JNI_ImportsTinySample_Asdf(JNIEnv* env);
 //
 
@@ -37,7 +40,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_ImportsTinySample_Asdf() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_ImportsTinySample_Asdf() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee ImportsTinySample_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

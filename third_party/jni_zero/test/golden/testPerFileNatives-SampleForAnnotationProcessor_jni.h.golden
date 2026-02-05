@@ -12,6 +12,9 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
 // static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_Bar(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& sample);
@@ -138,7 +141,7 @@
       } else if constexpr (requires { func_wrapper(sample_ref); }) {                               \
         return func_wrapper(sample_ref);                                                           \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_Bar() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -160,7 +163,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_Foo() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -181,7 +184,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_HasPhalange() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_HasPhalange() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -203,7 +206,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClass() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClass() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -225,7 +228,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClasses() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnClasses() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -248,7 +251,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -274,7 +277,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedInts() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedInts() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -297,7 +300,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedString() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -320,7 +323,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedStrings() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnConvertedStrings() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -343,7 +346,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObject() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObject() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -365,7 +368,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObjects() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnObjects() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -387,7 +390,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnString() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -409,7 +412,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStrings() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStrings() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -431,7 +434,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStruct() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStruct() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -453,7 +456,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStructs() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnStructs() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -475,7 +478,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowable() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowable() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -497,7 +500,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowables() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_ReturnThrowables() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -521,7 +524,7 @@
       } else if constexpr (requires { func_wrapper(stringToReverse_ref); }) {                      \
         return func_wrapper(stringToReverse_ref);                                                  \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_RevString() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jstring>&)"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_RevString() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jstring>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -545,7 +548,7 @@
       } else if constexpr (requires { func_wrapper(strs_ref); }) {                                 \
         return func_wrapper(strs_ref);                                                             \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_SendSamplesToNative() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobjectArray>&)"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_SendSamplesToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -569,7 +572,7 @@
       } else if constexpr (requires { func_wrapper(strs_ref); }) {                                 \
         return func_wrapper(strs_ref);                                                             \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_SendToNative() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobjectArray>&)"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_SendToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -689,7 +692,7 @@
             zbool,                                                                                 \
             bools_ref);                                                                            \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_TestAllPrimitives() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int, std::vector<int32_t>, int64_t, const jni_zero::JavaRef<jlongArray>&, int16_t, const jni_zero::JavaRef<jshortArray>&, int, const jni_zero::JavaRef<jcharArray>&, int8_t, const jni_zero::JavaRef<jbyteArray>&, double, const jni_zero::JavaRef<jdoubleArray>&, float, const jni_zero::JavaRef<jfloatArray>&, bool, const jni_zero::JavaRef<jbooleanArray>&)"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_TestAllPrimitives() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int, std::vector<int32_t>, int64_t, const jni_zero::JavaRef<jlongArray>&, int16_t, const jni_zero::JavaRef<jshortArray>&, int, const jni_zero::JavaRef<jcharArray>&, int8_t, const jni_zero::JavaRef<jbyteArray>&, double, const jni_zero::JavaRef<jdoubleArray>&, float, const jni_zero::JavaRef<jfloatArray>&, bool, const jni_zero::JavaRef<jbooleanArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -840,7 +843,7 @@
             context_ref,                                                                           \
             convertedObjects_converted);                                                           \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, std::vector<jni_zero::tests::CPPClass>)"); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, std::vector<jni_zero::tests::CPPClass>)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

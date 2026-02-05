@@ -133,6 +133,7 @@ def entry_point_method(sb,
                        jni_obj,
                        native,
                        gen_jni_class,
+                       output_file,
                        include_forward_declaration=False):
   """The method called by JNI, or by multiplexing methods."""
   params = native.params
@@ -211,9 +212,10 @@ def entry_point_method(sb,
       with sb.block():
         with sb.statement():
           arg_types = [_param_type_for_assert_message(p) for p in params]
-          msg = (f'{func_name_full}() has incorrect signature. '
-                 f'It should accept an optional JNIEnv* parameter, plus: '
-                 f'({", ".join(arg_types)})')
+          msg = (f'{func_name_full}() is missing or has incorrect signature.\\n'
+                 f'It should accept an optional JNIEnv* parameter as well as rvalues of the given types: '
+                 f'({", ".join(arg_types)})\\n'
+                 f'See {output_file} for an example.')
           sb(f'static_assert(false, "{msg}")')
 
     with sb.statement():
@@ -254,13 +256,16 @@ def entry_point_method(sb,
         sb('converted_ret')
 
 
-def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, *,
+def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, output_file, *,
                              enable_definition_macros):
   macro_name = f'DEFINE_JNI_FOR_{jni_obj.java_class.name}_SEE_JNI_ZERO_README'
   if enable_definition_macros and jni_obj.natives:
     with sb.section(
         'Example signatures (to be implemented by #including file).'):
       with sb.commented_section():
+        sb('* JNIEnv* parameters are optional.\n')
+        sb('* Types do not have to be exact; they must accept rvalues of the examples.\n')
+        sb('\n')
         for native in jni_obj.natives:
           _entry_point_example(sb, native)
           sb('\n')
@@ -278,7 +283,7 @@ def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, *,
           if jni_obj.jni_namespace:
             sb(f'using namespace {jni_obj.jni_namespace};\n')
           for native in jni_obj.natives:
-            entry_point_method(sb, jni_mode, jni_obj, native, gen_jni_class)
+            entry_point_method(sb, jni_mode, jni_obj, native, gen_jni_class, output_file)
       sb('#pragma clang diagnostic pop')
   elif enable_definition_macros:
     sb(f'// There are no Java->Native methods.\n')

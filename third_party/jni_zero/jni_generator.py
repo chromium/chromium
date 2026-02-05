@@ -322,11 +322,14 @@ def _CollectReferencedClasses(jni_obj):
 def _generate_header(jni_mode,
                      jni_obj,
                      gen_jni_class,
+                     output_file,
                      *,
                      enable_definition_macros,
                      include_path_prefix,
                      extra_includes=None,
                      add_natives_macro_definition=True):
+  if os.path.isabs(output_file):
+    output_file = os.path.basename(output_file)
   user_includes = [f'{include_path_prefix}jni_zero_internal.h']
   if extra_includes:
     user_includes += extra_includes
@@ -344,6 +347,7 @@ def _generate_header(jni_mode,
         jni_mode,
         jni_obj,
         gen_jni_class,
+        output_file,
         enable_definition_macros=enable_definition_macros)
 
   java_classes = _CollectReferencedClasses(jni_obj)
@@ -365,6 +369,7 @@ def _generate_header(jni_mode,
                                             jni_obj,
                                             native,
                                             gen_jni_class,
+                                            output_file,
                                             include_forward_declaration=True)
 
     if jni_obj.called_by_natives:
@@ -537,6 +542,7 @@ def _WriteHeaders(jni_mode,
         jni_mode,
         jni_obj,
         gen_jni_class,
+        output_file,
         enable_definition_macros=enable_definition_macros,
         include_path_prefix=include_path_prefix,
         extra_includes=extra_includes,

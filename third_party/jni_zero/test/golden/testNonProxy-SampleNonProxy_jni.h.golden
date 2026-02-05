@@ -12,6 +12,9 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
 // static int64_t JNI_SampleNonProxy_AddBookmark(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
@@ -149,7 +152,7 @@
             isFolder,                                                                              \
             parentId);                                                                             \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_AddBookmark() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jstring>&, bool, int64_t)"); \
+        static_assert(false, "JNI_SampleNonProxy_AddBookmark() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jstring>&, bool, int64_t)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -224,7 +227,7 @@
             title_ref,                                                                             \
             visits_ref);                                                                           \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_AddBookmarkFromAPI() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jbyteArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleNonProxy_AddBookmarkFromAPI() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jbyteArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobject>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -249,7 +252,7 @@
       } else if constexpr (requires { func_wrapper(state_ref, tabIndex); }) {                      \
         return func_wrapper(state_ref, tabIndex);                                                  \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_CreateHistoricalTabFromState() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jbyteArray>&, int32_t)"); \
+        static_assert(false, "JNI_SampleNonProxy_CreateHistoricalTabFromState() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jbyteArray>&, int32_t)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -281,7 +284,7 @@
             jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
             nativeChromeBrowserProvider);                                                          \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_Destroy() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t)"); \
+        static_assert(false, "JNI_SampleNonProxy_Destroy() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -309,7 +312,7 @@
           find_ref); }) {                                                                          \
         return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller), find_ref);      \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_FindAll() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jstring>&)"); \
+        static_assert(false, "JNI_SampleNonProxy_FindAll() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jstring>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -331,7 +334,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetAutofillProfileGUIDs() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleNonProxy_GetAutofillProfileGUIDs() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -355,7 +358,7 @@
       } else if constexpr (requires { func_wrapper(url_ref); }) {                                  \
         return func_wrapper(url_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetDomainAndRegistry() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jstring>&)"); \
+        static_assert(false, "JNI_SampleNonProxy_GetDomainAndRegistry() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jstring>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -377,7 +380,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetInnerClass() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleNonProxy_GetInnerClass() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -406,7 +409,7 @@
           view_ref); }) {                                                                          \
         return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller), view_ref);      \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetStateAsByteArray() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleNonProxy_GetStateAsByteArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -454,7 +457,7 @@
             beta,                                                                                  \
             gamma);                                                                                \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GotOrientation() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, double, double, double)"); \
+        static_assert(false, "JNI_SampleNonProxy_GotOrientation() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, double, double, double)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -478,7 +481,7 @@
           jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
         return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_Init() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleNonProxy_Init() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -503,7 +506,7 @@
           jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
         return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_Init() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleNonProxy_Init() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -527,7 +530,7 @@
       } else if constexpr (requires { func_wrapper(e_ref); }) {                                    \
         return func_wrapper(e_ref);                                                                \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_MessWithJavaException() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jthrowable>&)"); \
+        static_assert(false, "JNI_SampleNonProxy_MessWithJavaException() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jthrowable>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -584,7 +587,7 @@
             selectionArgs_ref,                                                                     \
             sortOrder_ref);                                                                        \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_QueryBitmap() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&)"); \
+        static_assert(false, "JNI_SampleNonProxy_QueryBitmap() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -623,7 +626,7 @@
             sessionId,                                                                             \
             results_ref);                                                                          \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_SetRecognitionResults() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jobjectArray>&)"); \
+        static_assert(false, "JNI_SampleNonProxy_SetRecognitionResults() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jobjectArray>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

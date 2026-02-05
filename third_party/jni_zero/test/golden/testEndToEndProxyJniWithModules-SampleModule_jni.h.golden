@@ -12,6 +12,9 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
 // static bool JNI_SampleModule_Bar(JNIEnv* env, bool a);
 //
 // static void JNI_SampleModule_Foo(JNIEnv* env);
@@ -37,7 +40,7 @@
       } else if constexpr (requires { func_wrapper(a); }) {                                        \
         return func_wrapper(a);                                                                    \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleModule_Bar() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (bool)"); \
+        static_assert(false, "JNI_SampleModule_Bar() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (bool)\nSee SampleModule_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -57,7 +60,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleModule_Foo() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleModule_Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleModule_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

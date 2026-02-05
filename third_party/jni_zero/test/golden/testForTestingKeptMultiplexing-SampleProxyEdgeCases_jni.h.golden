@@ -12,6 +12,9 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
+// * JNIEnv* parameters are optional.
+// * Types do not have to be exact; they must accept rvalues of the examples.
+//
 // static int32_t JNI_SampleProxyEdgeCases_AddStructB(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& caller,
@@ -80,7 +83,7 @@
       } else if constexpr (requires { func_wrapper(caller_ref, b_ref); }) {                        \
         return func_wrapper(caller_ref, b_ref);                                                    \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_AddStructB() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_AddStructB() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -105,7 +108,7 @@
       } else if constexpr (requires { func_wrapper(a_ref, b_ref); }) {                             \
         return func_wrapper(a_ref, b_ref);                                                         \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes1() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes1() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -130,7 +133,7 @@
       } else if constexpr (requires { func_wrapper(a_ref, b_ref); }) {                             \
         return func_wrapper(a_ref, b_ref);                                                         \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes2() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes2() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -151,7 +154,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -173,7 +176,7 @@
       } else if constexpr (requires { func_wrapper(arg_ref); }) {                                  \
         return func_wrapper(arg_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobjectArray>&)"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -198,7 +201,7 @@
       } else if constexpr (requires { func_wrapper(b_ref, i_ref); }) {                             \
         return func_wrapper(b_ref, i_ref);                                                         \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_SetBool() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetBool() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -220,7 +223,7 @@
       } else if constexpr (requires { func_wrapper(sb_ref); }) {                                   \
         return func_wrapper(sb_ref);                                                               \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -242,7 +245,7 @@
       } else if constexpr (requires { func_wrapper(sb); }) {                                       \
         return func_wrapper(sb);                                                                   \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t)"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -262,7 +265,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTest() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTest() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -282,7 +285,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTesting() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTesting() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -301,7 +304,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTests() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTests() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -326,7 +329,7 @@
           jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
         return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
       } else {                                                                                     \
-        static_assert(false, "Instance::InstanceMethod() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "Instance::InstanceMethod() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -346,7 +349,7 @@
       } else if constexpr (requires { func_wrapper(); }) {                                         \
         return func_wrapper();                                                                     \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_StaticMethod() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_StaticMethod() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
