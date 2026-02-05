@@ -41,8 +41,10 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/added_inputs.pb.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_lens_file.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
@@ -69,6 +71,7 @@ constexpr char kRegion[] = "US";
 constexpr char kTimeZone[] = "America/Los_Angeles";
 constexpr char kRequestIdParameterKey[] = "vsrid";
 constexpr char kVisualSearchInteractionDataParameterKey[] = "vsint";
+constexpr char kAddedInputsParameterKey[] = "aai";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kTestCellAddress[] = "test_cell_address";
@@ -459,6 +462,19 @@ class ComposeboxQueryControllerTest
         vsint_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
         &serialized_proto));
     lens::LensOverlayVisualSearchInteractionData proto;
+    EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+    return proto;
+  }
+
+  lens::AddedInputs GetAddedInputsFromUrl(const GURL& url) {
+    std::string added_inputs_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kAddedInputsParameterKey,
+                                           &added_inputs_param));
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        added_inputs_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+    lens::AddedInputs proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto;
   }
@@ -3615,6 +3631,71 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequest_NoInteraction) {
   EXPECT_EQ(interaction_data.interaction_type(),
             lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
   EXPECT_FALSE(interaction_data.has_zoomed_crop());
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesAddedInputs) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create search URL.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Verify AddedInputs param.
+  lens::AddedInputs added_inputs = GetAddedInputsFromUrl(search_url);
+  EXPECT_EQ(added_inputs.added_inputs_size(), 1);
+  EXPECT_TRUE(added_inputs.added_inputs(0).has_lens_file());
+  const auto& lens_file = added_inputs.added_inputs(0).lens_file();
+  EXPECT_EQ(lens_file.sticky_cluster_token(), kTestSearchSessionId);
+  EXPECT_EQ(lens_file.mime_type(), "application/pdf");
+  EXPECT_EQ(lens_file.vsrid(), GetEncodedRequestInfoForToken(file_token));
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_IncludesAddedInputs) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Create ClientToAimRequest.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify AddedInputs field.
+  const auto& payload = client_to_aim_message.submit_query().payload();
+  EXPECT_TRUE(payload.has_added_inputs());
+  EXPECT_EQ(payload.added_inputs().added_inputs_size(), 1);
+  EXPECT_TRUE(payload.added_inputs().added_inputs(0).has_lens_file());
+  const auto& lens_file = payload.added_inputs().added_inputs(0).lens_file();
+  EXPECT_EQ(lens_file.sticky_cluster_token(), kTestSearchSessionId);
+  EXPECT_EQ(lens_file.mime_type(), "application/pdf");
+  EXPECT_EQ(lens_file.vsrid(), GetEncodedRequestInfoForToken(file_token));
 }
 
 TEST_F(ComposeboxQueryControllerTest, StandardSearch_SendsVitParam) {
