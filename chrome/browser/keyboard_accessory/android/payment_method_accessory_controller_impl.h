@@ -16,12 +16,14 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class ManualFillingController;
 
 namespace autofill {
 
+class AutofillManager;
 class BrowserAutofillManager;
 
 // Use either PaymentMethodAccessoryController::GetOrCreate or
@@ -31,8 +33,8 @@ class PaymentMethodAccessoryControllerImpl
     : public PaymentMethodAccessoryController,
       public PaymentsDataManager::Observer,
       public ValuablesDataManager::Observer,
-      public content::WebContentsUserData<
-          PaymentMethodAccessoryControllerImpl> {
+      public content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>,
+      public AutofillManager::Observer {
  public:
   ~PaymentMethodAccessoryControllerImpl() override;
 
@@ -124,6 +126,14 @@ class PaymentMethodAccessoryControllerImpl
   // ValuablesDataManager::Observer:
   void OnValuablesDataChanged() override;
 
+  // AutofillManager::Observer:
+  void OnFillOrPreviewForm(
+      AutofillManager&,
+      FormGlobalId,
+      mojom::ActionPersistence action_persistence,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const FillingPayload&) override;
+
   const PaymentsDataManager* paydm() const {
     return paydm_observation_.GetSource();
   }
@@ -135,6 +145,9 @@ class PaymentMethodAccessoryControllerImpl
   base::WeakPtr<ManualFillingController> mf_controller_;
   raw_ptr<BrowserAutofillManager> af_manager_for_testing_ = nullptr;
   raw_ptr<AutofillDriver> af_driver_for_testing_ = nullptr;
+
+  // The browser autofill manager associated with the last form fill.
+  base::WeakPtr<BrowserAutofillManager> browser_autofill_manager_;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
@@ -150,6 +163,9 @@ class PaymentMethodAccessoryControllerImpl
   // Observes the `ValuablesDataManager` of the profile to react to updates.
   base::ScopedObservation<ValuablesDataManager, ValuablesDataManager::Observer>
       valuables_data_manager_observation_{this};
+
+  // The observation for the Autofill managers of the WebContents.
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

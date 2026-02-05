@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -33,18 +35,22 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 using testing::_;
 using testing::InSequence;
@@ -120,7 +126,7 @@ class PaymentMethodAccessoryControllerTestBase
 
   const GURL& url() const { return url_; }
 
-  PaymentMethodAccessoryController* controller() {
+  PaymentMethodAccessoryControllerImpl* controller() {
     return PaymentMethodAccessoryControllerImpl::FromWebContents(web_contents());
   }
 
@@ -151,6 +157,7 @@ class PaymentMethodAccessoryControllerTestBase
 
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
+
  private:
   syncer::TestSyncService sync_service_;
   TestPaymentsDataManager paydm_;
@@ -791,8 +798,20 @@ TEST_F(PaymentMethodAccessoryControllerTest, FillLoyaltyCardNumber) {
   controller()->OnFillingTriggered(field_id, loyalty_card_info.value());
 }
 
-TEST_F(PaymentMethodAccessoryControllerTest,
+class PaymentMethodAccessoryControllerTestForBnpl
+    : public PaymentMethodAccessoryControllerTestBase {
+ public:
+  PaymentMethodAccessoryControllerTestForBnpl()
+      : PaymentMethodAccessoryControllerTestBase(GURL("https://example.com")) {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillTouchToFillShowManualFillForVcnFix};
+};
+
+TEST_F(PaymentMethodAccessoryControllerTestForBnpl,
        RefreshSuggestionsWithCachedBnplCard) {
+  test::AutofillUnitTestEnvironment autofill_test_environment;
   CreditCard bnpl_card = test::GetVirtualCard();
   bnpl_card.set_issuer_id(kBnplAffirmIssuerId);
   bnpl_card.SetNickname(BnplIssuerIdToDisplayName(
@@ -801,6 +820,17 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   bnpl_card.set_guid("bnpl-card-guid");
   bnpl_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnspecified);
+
+  FormData form = test::GetFormData({
+      .fields = {{.role = CREDIT_CARD_NUMBER}},
+      .url = "https://example.com/",
+  });
+  autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      FillingPayload(&bnpl_card),
+      AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet);
 
   std::u16string cvc = u"123";
   autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
