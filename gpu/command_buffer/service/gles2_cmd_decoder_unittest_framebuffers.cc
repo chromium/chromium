@@ -3723,7 +3723,7 @@ TEST_P(GLES2DecoderManualInitTest, MESAFramebufferFlipYExtensionEnabled) {
   EXPECT_TRUE(feature_info()->validators()->framebuffer_parameter.IsValid(
       GL_FRAMEBUFFER_FLIP_Y_MESA));
 
-  EXPECT_CALL(*gl_, FramebufferParameteri(_, _, _))
+  EXPECT_CALL(*gl_, FramebufferParameteriMESA(_, _, _))
       .Times(1)
       .RetiresOnSaturation();
 
@@ -3744,7 +3744,7 @@ TEST_P(GLES2DecoderManualInitTest, MESAFramebufferFlipYExtensionDisabled) {
   EXPECT_FALSE(feature_info()->validators()->framebuffer_parameter.IsValid(
       GL_FRAMEBUFFER_FLIP_Y_MESA));
 
-  EXPECT_CALL(*gl_, FramebufferParameteri(_, _, _))
+  EXPECT_CALL(*gl_, FramebufferParameteriMESA(_, _, _))
       .Times(0)
       .RetiresOnSaturation();
 

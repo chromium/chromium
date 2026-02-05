@@ -418,8 +418,8 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
                  Droppable, SlowOnMac);
 
   // GL 4.0 or GL_ARB_draw_indirect or ES 3.1
-  BIND(DrawArraysIndirect, Droppable, SlowOnMac);
-  BIND(DrawElementsIndirect, Droppable, SlowOnMac);
+  // BIND(DrawArraysIndirect, Droppable, SlowOnMac);
+  // BIND(DrawElementsIndirect, Droppable, SlowOnMac);
 
   BIND(DrawRangeElements, Droppable, SlowOnMac);
   BIND(Enable);
@@ -433,7 +433,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetError);
   BIND(GetFloatv);
   BIND(GetIntegerv);
-  BIND(GetMultisamplefv);
+  // BIND(GetMultisamplefv);
   BIND(GetQueryObjectuiv);
   BIND(GetQueryObjecti64v);
   BIND(GetQueryObjectui64v);
@@ -447,7 +447,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fGetString = get_string;
   BIND(GetStringi);
   BIND(GetShaderPrecisionFormat);
-  BIND(GetTexLevelParameteriv);
+  // BIND(GetTexLevelParameteriv);
   BIND(GenQueries);
   BIND(GenSamplers);
   BIND(GenTextures);

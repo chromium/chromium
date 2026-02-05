@@ -6848,7 +6848,7 @@ void GLES2DecoderImpl::DoFramebufferParameteri(GLenum target,
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name, "no framebuffer bound");
     return;
   }
-  api()->glFramebufferParameteriFn(target, pname, param);
+  api()->glFramebufferParameteriMESAFn(target, pname, param);
 }
 
 void GLES2DecoderImpl::DoFramebufferRenderbuffer(

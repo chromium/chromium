@@ -21,7 +21,6 @@ MOCK_METHOD3(AcquireTexturesANGLE,
              void(GLuint numTextures,
                   const GLuint* textures,
                   const GLenum* layouts));
-MOCK_METHOD2(ActiveShaderProgram, void(GLuint pipeline, GLuint program));
 MOCK_METHOD1(ActiveTexture, void(GLenum texture));
 MOCK_METHOD2(AttachShader, void(GLuint program, GLuint shader));
 MOCK_METHOD2(BeginPixelLocalStorageANGLE,
@@ -44,15 +43,6 @@ MOCK_METHOD4(
     BindFragDataLocationIndexed,
     void(GLuint program, GLuint colorNumber, GLuint index, const char* name));
 MOCK_METHOD2(BindFramebufferEXT, void(GLenum target, GLuint framebuffer));
-MOCK_METHOD7(BindImageTextureEXT,
-             void(GLuint index,
-                  GLuint texture,
-                  GLint level,
-                  GLboolean layered,
-                  GLint layer,
-                  GLenum access,
-                  GLint format));
-MOCK_METHOD1(BindProgramPipeline, void(GLuint pipeline));
 MOCK_METHOD2(BindRenderbufferEXT, void(GLenum target, GLuint renderbuffer));
 MOCK_METHOD2(BindSampler, void(GLuint unit, GLuint sampler));
 MOCK_METHOD2(BindTexture, void(GLenum target, GLuint texture));
@@ -60,9 +50,6 @@ MOCK_METHOD2(BindTransformFeedback, void(GLenum target, GLuint id));
 MOCK_METHOD3(BindUniformLocationCHROMIUM,
              void(GLuint program, GLint location, const char* name));
 MOCK_METHOD1(BindVertexArrayOES, void(GLuint array));
-MOCK_METHOD4(
-    BindVertexBuffer,
-    void(GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride));
 MOCK_METHOD0(BlendBarrierKHR, void());
 MOCK_METHOD4(BlendColor,
              void(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha));
@@ -255,8 +242,6 @@ MOCK_METHOD10(CopyTextureCHROMIUM,
 MOCK_METHOD2(CreateMemoryObjectsEXT, void(GLsizei n, GLuint* memoryObjects));
 MOCK_METHOD0(CreateProgram, GLuint());
 MOCK_METHOD1(CreateShader, GLuint(GLenum type));
-MOCK_METHOD3(CreateShaderProgramv,
-             GLuint(GLenum type, GLsizei count, const char* const* strings));
 MOCK_METHOD1(CullFace, void(GLenum mode));
 MOCK_METHOD2(DebugMessageCallback,
              void(GLDEBUGPROC callback, const void* userParam));
@@ -281,7 +266,6 @@ MOCK_METHOD2(DeleteFramebuffersEXT,
 MOCK_METHOD2(DeleteMemoryObjectsEXT,
              void(GLsizei n, const GLuint* memoryObjects));
 MOCK_METHOD1(DeleteProgram, void(GLuint program));
-MOCK_METHOD2(DeleteProgramPipelines, void(GLsizei n, const GLuint* pipelines));
 MOCK_METHOD2(DeleteQueries, void(GLsizei n, const GLuint* ids));
 MOCK_METHOD2(DeleteRenderbuffersEXT,
              void(GLsizei n, const GLuint* renderbuffers));
@@ -305,11 +289,7 @@ MOCK_METHOD3(DiscardFramebufferEXT,
              void(GLenum target,
                   GLsizei numAttachments,
                   const GLenum* attachments));
-MOCK_METHOD3(DispatchCompute,
-             void(GLuint numGroupsX, GLuint numGroupsY, GLuint numGroupsZ));
-MOCK_METHOD1(DispatchComputeIndirect, void(GLintptr indirect));
 MOCK_METHOD3(DrawArrays, void(GLenum mode, GLint first, GLsizei count));
-MOCK_METHOD2(DrawArraysIndirect, void(GLenum mode, const void* indirect));
 MOCK_METHOD4(DrawArraysInstancedANGLE,
              void(GLenum mode, GLint first, GLsizei count, GLsizei primcount));
 MOCK_METHOD5(DrawArraysInstancedBaseInstanceANGLE,
@@ -323,8 +303,6 @@ MOCK_METHOD2(DrawBuffersARB, void(GLsizei n, const GLenum* bufs));
 MOCK_METHOD4(
     DrawElements,
     void(GLenum mode, GLsizei count, GLenum type, const void* indices));
-MOCK_METHOD3(DrawElementsIndirect,
-             void(GLenum mode, GLenum type, const void* indirect));
 MOCK_METHOD5(DrawElementsInstancedANGLE,
              void(GLenum mode,
                   GLsizei count,
@@ -366,7 +344,7 @@ MOCK_METHOD3(FlushMappedBufferRange,
              void(GLenum target, GLintptr offset, GLsizeiptr length));
 MOCK_METHOD2(FramebufferMemorylessPixelLocalStorageANGLE,
              void(GLint plane, GLenum internalformat));
-MOCK_METHOD3(FramebufferParameteri,
+MOCK_METHOD3(FramebufferParameteriMESA,
              void(GLenum target, GLenum pname, GLint param));
 MOCK_METHOD2(FramebufferPixelLocalClearValuefvANGLE,
              void(GLint plane, const GLfloat* value));
@@ -415,7 +393,6 @@ MOCK_METHOD2(GenBuffersARB, void(GLsizei n, GLuint* buffers));
 MOCK_METHOD1(GenerateMipmapEXT, void(GLenum target));
 MOCK_METHOD2(GenFencesNV, void(GLsizei n, GLuint* fences));
 MOCK_METHOD2(GenFramebuffersEXT, void(GLsizei n, GLuint* framebuffers));
-MOCK_METHOD2(GenProgramPipelines, GLuint(GLsizei n, GLuint* pipelines));
 MOCK_METHOD2(GenQueries, void(GLsizei n, GLuint* ids));
 MOCK_METHOD2(GenRenderbuffersEXT, void(GLsizei n, GLuint* renderbuffers));
 MOCK_METHOD2(GenSamplers, void(GLsizei n, GLuint* samplers));
@@ -467,7 +444,6 @@ MOCK_METHOD4(
     GetAttachedShaders,
     void(GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders));
 MOCK_METHOD2(GetAttribLocation, GLint(GLuint program, const char* name));
-MOCK_METHOD3(GetBooleani_v, void(GLenum target, GLuint index, GLboolean* data));
 MOCK_METHOD2(GetBooleanv, void(GLenum pname, GLboolean* params));
 MOCK_METHOD4(
     GetBooleanvRobustANGLE,
@@ -519,8 +495,6 @@ MOCK_METHOD6(GetFramebufferAttachmentParameterivRobustANGLE,
                   GLsizei bufSize,
                   GLsizei* length,
                   GLint* params));
-MOCK_METHOD3(GetFramebufferParameteriv,
-             void(GLenum target, GLenum pname, GLint* params));
 MOCK_METHOD3(GetFramebufferPixelLocalStorageParameterfvANGLE,
              void(GLint plane, GLenum pname, GLfloat* params));
 MOCK_METHOD5(GetFramebufferPixelLocalStorageParameterfvRobustANGLE,
@@ -579,7 +553,6 @@ MOCK_METHOD6(GetInternalformatSampleivNV,
                   GLenum pname,
                   GLsizei bufSize,
                   GLint* params));
-MOCK_METHOD3(GetMultisamplefv, void(GLenum pname, GLuint index, GLfloat* val));
 MOCK_METHOD5(GetMultisamplefvRobustANGLE,
              void(GLenum pname,
                   GLuint index,
@@ -604,9 +577,6 @@ MOCK_METHOD5(GetProgramBinary,
 MOCK_METHOD4(
     GetProgramInfoLog,
     void(GLuint program, GLsizei bufsize, GLsizei* length, char* infolog));
-MOCK_METHOD4(
-    GetProgramInterfaceiv,
-    void(GLuint program, GLenum programInterface, GLenum pname, GLint* params));
 MOCK_METHOD3(GetProgramiv, void(GLuint program, GLenum pname, GLint* params));
 MOCK_METHOD5(GetProgramivRobustANGLE,
              void(GLuint program,
@@ -614,33 +584,6 @@ MOCK_METHOD5(GetProgramivRobustANGLE,
                   GLsizei bufSize,
                   GLsizei* length,
                   GLint* params));
-MOCK_METHOD4(
-    GetProgramPipelineInfoLog,
-    void(GLuint pipeline, GLsizei bufSize, GLsizei* length, GLchar* infoLog));
-MOCK_METHOD3(GetProgramPipelineiv,
-             void(GLuint pipeline, GLenum pname, GLint* params));
-MOCK_METHOD3(GetProgramResourceIndex,
-             GLuint(GLuint program,
-                    GLenum programInterface,
-                    const GLchar* name));
-MOCK_METHOD8(GetProgramResourceiv,
-             void(GLuint program,
-                  GLenum programInterface,
-                  GLuint index,
-                  GLsizei propCount,
-                  const GLenum* props,
-                  GLsizei bufSize,
-                  GLsizei* length,
-                  GLint* params));
-MOCK_METHOD3(GetProgramResourceLocation,
-             GLint(GLuint program, GLenum programInterface, const char* name));
-MOCK_METHOD6(GetProgramResourceName,
-             void(GLuint program,
-                  GLenum programInterface,
-                  GLuint index,
-                  GLsizei bufSize,
-                  GLsizei* length,
-                  GLchar* name));
 MOCK_METHOD3(GetQueryiv, void(GLenum target, GLenum pname, GLint* params));
 MOCK_METHOD5(GetQueryivRobustANGLE,
              void(GLenum target,
@@ -728,7 +671,7 @@ MOCK_METHOD5(GetSynciv,
                   GLsizei bufSize,
                   GLsizei* length,
                   GLint* values));
-MOCK_METHOD4(GetTexLevelParameterfv,
+MOCK_METHOD4(GetTexLevelParameterfvANGLE,
              void(GLenum target, GLint level, GLenum pname, GLfloat* params));
 MOCK_METHOD6(GetTexLevelParameterfvRobustANGLE,
              void(GLenum target,
@@ -737,7 +680,7 @@ MOCK_METHOD6(GetTexLevelParameterfvRobustANGLE,
                   GLsizei bufSize,
                   GLsizei* length,
                   GLfloat* params));
-MOCK_METHOD4(GetTexLevelParameteriv,
+MOCK_METHOD4(GetTexLevelParameterivANGLE,
              void(GLenum target, GLint level, GLenum pname, GLint* params));
 MOCK_METHOD6(GetTexLevelParameterivRobustANGLE,
              void(GLenum target,
@@ -875,7 +818,6 @@ MOCK_METHOD2(IsEnablediOES, GLboolean(GLenum target, GLuint index));
 MOCK_METHOD1(IsFenceNV, GLboolean(GLuint fence));
 MOCK_METHOD1(IsFramebufferEXT, GLboolean(GLuint framebuffer));
 MOCK_METHOD1(IsProgram, GLboolean(GLuint program));
-MOCK_METHOD1(IsProgramPipeline, GLboolean(GLuint pipeline));
 MOCK_METHOD1(IsQuery, GLboolean(GLuint query));
 MOCK_METHOD1(IsRenderbufferEXT, GLboolean(GLuint renderbuffer));
 MOCK_METHOD1(IsSampler, GLboolean(GLuint sampler));
@@ -893,8 +835,6 @@ MOCK_METHOD4(MapBufferRange,
                    GLsizeiptr length,
                    GLbitfield access));
 MOCK_METHOD1(MaxShaderCompilerThreadsKHR, void(GLuint count));
-MOCK_METHOD1(MemoryBarrierByRegion, void(GLbitfield barriers));
-MOCK_METHOD1(MemoryBarrierEXT, void(GLbitfield barriers));
 MOCK_METHOD3(MemoryObjectParameterivEXT,
              void(GLuint memoryObject, GLenum pname, const GLint* param));
 MOCK_METHOD1(MinSampleShading, void(GLfloat value));
@@ -963,137 +903,6 @@ MOCK_METHOD4(ProgramBinary,
                   GLsizei length));
 MOCK_METHOD3(ProgramParameteri,
              void(GLuint program, GLenum pname, GLint value));
-MOCK_METHOD3(ProgramUniform1f,
-             void(GLuint program, GLint location, GLfloat v0));
-MOCK_METHOD4(
-    ProgramUniform1fv,
-    void(GLuint program, GLint location, GLsizei count, const GLfloat* value));
-MOCK_METHOD3(ProgramUniform1i, void(GLuint program, GLint location, GLint v0));
-MOCK_METHOD4(
-    ProgramUniform1iv,
-    void(GLuint program, GLint location, GLsizei count, const GLint* value));
-MOCK_METHOD3(ProgramUniform1ui,
-             void(GLuint program, GLint location, GLuint v0));
-MOCK_METHOD4(
-    ProgramUniform1uiv,
-    void(GLuint program, GLint location, GLsizei count, const GLuint* value));
-MOCK_METHOD4(ProgramUniform2f,
-             void(GLuint program, GLint location, GLfloat v0, GLfloat v1));
-MOCK_METHOD4(
-    ProgramUniform2fv,
-    void(GLuint program, GLint location, GLsizei count, const GLfloat* value));
-MOCK_METHOD4(ProgramUniform2i,
-             void(GLuint program, GLint location, GLint v0, GLint v1));
-MOCK_METHOD4(
-    ProgramUniform2iv,
-    void(GLuint program, GLint location, GLsizei count, const GLint* value));
-MOCK_METHOD4(ProgramUniform2ui,
-             void(GLuint program, GLint location, GLuint v0, GLuint v1));
-MOCK_METHOD4(
-    ProgramUniform2uiv,
-    void(GLuint program, GLint location, GLsizei count, const GLuint* value));
-MOCK_METHOD5(
-    ProgramUniform3f,
-    void(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2));
-MOCK_METHOD4(
-    ProgramUniform3fv,
-    void(GLuint program, GLint location, GLsizei count, const GLfloat* value));
-MOCK_METHOD5(
-    ProgramUniform3i,
-    void(GLuint program, GLint location, GLint v0, GLint v1, GLint v2));
-MOCK_METHOD4(
-    ProgramUniform3iv,
-    void(GLuint program, GLint location, GLsizei count, const GLint* value));
-MOCK_METHOD5(
-    ProgramUniform3ui,
-    void(GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2));
-MOCK_METHOD4(
-    ProgramUniform3uiv,
-    void(GLuint program, GLint location, GLsizei count, const GLuint* value));
-MOCK_METHOD6(ProgramUniform4f,
-             void(GLuint program,
-                  GLint location,
-                  GLfloat v0,
-                  GLfloat v1,
-                  GLfloat v2,
-                  GLfloat v3));
-MOCK_METHOD4(
-    ProgramUniform4fv,
-    void(GLuint program, GLint location, GLsizei count, const GLfloat* value));
-MOCK_METHOD6(ProgramUniform4i,
-             void(GLuint program,
-                  GLint location,
-                  GLint v0,
-                  GLint v1,
-                  GLint v2,
-                  GLint v3));
-MOCK_METHOD4(
-    ProgramUniform4iv,
-    void(GLuint program, GLint location, GLsizei count, const GLint* value));
-MOCK_METHOD6(ProgramUniform4ui,
-             void(GLuint program,
-                  GLint location,
-                  GLuint v0,
-                  GLuint v1,
-                  GLuint v2,
-                  GLuint v3));
-MOCK_METHOD4(
-    ProgramUniform4uiv,
-    void(GLuint program, GLint location, GLsizei count, const GLuint* value));
-MOCK_METHOD5(ProgramUniformMatrix2fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix2x3fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix2x4fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix3fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix3x2fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix3x4fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix4fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix4x2fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
-MOCK_METHOD5(ProgramUniformMatrix4x3fv,
-             void(GLuint program,
-                  GLint location,
-                  GLsizei count,
-                  GLboolean transpose,
-                  const GLfloat* value));
 MOCK_METHOD1(ProvokingVertexANGLE, void(GLenum provokeMode));
 MOCK_METHOD4(
     PushDebugGroup,
@@ -1139,7 +948,6 @@ MOCK_METHOD5(RenderbufferStorageMultisampleEXT,
 MOCK_METHOD1(RequestExtensionANGLE, void(const char* name));
 MOCK_METHOD0(ResumeTransformFeedback, void());
 MOCK_METHOD2(SampleCoverage, void(GLclampf value, GLboolean invert));
-MOCK_METHOD2(SampleMaski, void(GLuint maskNumber, GLbitfield mask));
 MOCK_METHOD3(SamplerParameterf,
              void(GLuint sampler, GLenum pname, GLfloat param));
 MOCK_METHOD3(SamplerParameterfv,
@@ -1258,13 +1066,6 @@ MOCK_METHOD5(TexStorage2DEXT,
                   GLenum internalformat,
                   GLsizei width,
                   GLsizei height));
-MOCK_METHOD6(TexStorage2DMultisample,
-             void(GLenum target,
-                  GLsizei samples,
-                  GLenum internalformat,
-                  GLsizei width,
-                  GLsizei height,
-                  GLboolean fixedsamplelocations));
 MOCK_METHOD6(TexStorage3D,
              void(GLenum target,
                   GLsizei levels,
@@ -1399,10 +1200,7 @@ MOCK_METHOD4(UniformMatrix4x3fv,
                   const GLfloat* value));
 MOCK_METHOD1(UnmapBuffer, GLboolean(GLenum target));
 MOCK_METHOD1(UseProgram, void(GLuint program));
-MOCK_METHOD3(UseProgramStages,
-             void(GLuint pipeline, GLbitfield stages, GLuint program));
 MOCK_METHOD1(ValidateProgram, void(GLuint program));
-MOCK_METHOD1(ValidateProgramPipeline, void(GLuint pipeline));
 MOCK_METHOD2(VertexAttrib1f, void(GLuint indx, GLfloat x));
 MOCK_METHOD2(VertexAttrib1fv, void(GLuint indx, const GLfloat* values));
 MOCK_METHOD3(VertexAttrib2f, void(GLuint indx, GLfloat x, GLfloat y));
@@ -1413,24 +1211,13 @@ MOCK_METHOD2(VertexAttrib3fv, void(GLuint indx, const GLfloat* values));
 MOCK_METHOD5(VertexAttrib4f,
              void(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w));
 MOCK_METHOD2(VertexAttrib4fv, void(GLuint indx, const GLfloat* values));
-MOCK_METHOD2(VertexAttribBinding,
-             void(GLuint attribindex, GLuint bindingindex));
 MOCK_METHOD2(VertexAttribDivisorANGLE, void(GLuint index, GLuint divisor));
-MOCK_METHOD5(VertexAttribFormat,
-             void(GLuint attribindex,
-                  GLint size,
-                  GLenum type,
-                  GLboolean normalized,
-                  GLuint relativeoffset));
 MOCK_METHOD5(VertexAttribI4i,
              void(GLuint indx, GLint x, GLint y, GLint z, GLint w));
 MOCK_METHOD2(VertexAttribI4iv, void(GLuint indx, const GLint* values));
 MOCK_METHOD5(VertexAttribI4ui,
              void(GLuint indx, GLuint x, GLuint y, GLuint z, GLuint w));
 MOCK_METHOD2(VertexAttribI4uiv, void(GLuint indx, const GLuint* values));
-MOCK_METHOD4(
-    VertexAttribIFormat,
-    void(GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset));
 MOCK_METHOD5(VertexAttribIPointer,
              void(GLuint indx,
                   GLint size,
@@ -1444,7 +1231,6 @@ MOCK_METHOD6(VertexAttribPointer,
                   GLboolean normalized,
                   GLsizei stride,
                   const void* ptr));
-MOCK_METHOD2(VertexBindingDivisor, void(GLuint bindingindex, GLuint divisor));
 MOCK_METHOD4(Viewport, void(GLint x, GLint y, GLsizei width, GLsizei height));
 MOCK_METHOD6(WaitSemaphoreEXT,
              void(GLuint semaphore,
