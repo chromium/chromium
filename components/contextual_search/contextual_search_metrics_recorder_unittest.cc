@@ -64,10 +64,12 @@ const char kContextualSearchFileSizeAll[] =
     "ContextualSearch.File.Size.Unknown";
 const char kContextualSearchFileSizeImage[] =
     "ContextualSearch.File.Size.Image.Unknown";
-const char kContextualSearchToolsSubmissionType[] =
-    "ContextualSearch.Tools.SubmissionType.Unknown";
 const char kContextualSearchToolMode[] = "ContextualSearch.Tools.Unknown";
 const char kContextualSearchModelMode[] = "ContextualSearch.Models.Unknown";
+const char kContextualSearchToolModeOnSubmission[] =
+    "ContextualSearch.Tools.ModeOnSubmission.Unknown";
+const char kContextualSearchModelModeOnSubmission[] =
+    "ContextualSearch.Models.ModeOnSubmission.Unknown";
 const char kContextualSearchTabContextAdded[] =
     "ContextualSearch.TabContextAdded.V2.Unknown";
 const char kContextualSearchTabContextAddedFromSuggestionChip[] =
@@ -241,15 +243,6 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
                                        file_count, 1);
 }
 
-TEST_F(ContextualSearchMetricsRecorderTest, ToolsSubmissionType) {
-  // Setup user flow.
-  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-  metrics().RecordToolsSubmissionType(SubmissionType::kDeepSearch);
-
-  histogram_tester().ExpectBucketCount(kContextualSearchToolsSubmissionType,
-                                       SubmissionType::kDeepSearch, 1);
-}
-
 TEST_F(ContextualSearchMetricsRecorderTest, ToolMode) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().RecordToolMode(composebox_query::mojom::ToolMode::kImageGen);
@@ -265,6 +258,20 @@ TEST_F(ContextualSearchMetricsRecorderTest, ModelMode) {
   DestructMetricsRecorder();
   histogram_tester().ExpectUniqueSample(
       kContextualSearchModelMode,
+      composebox_query::mojom::ModelMode::kGeminiPro, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, ModesOnSubmission) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordModesOnSubmission(
+      composebox_query::mojom::ToolMode::kImageGen,
+      composebox_query::mojom::ModelMode::kGeminiPro);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchToolModeOnSubmission,
+      composebox_query::mojom::ToolMode::kImageGen, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchModelModeOnSubmission,
       composebox_query::mojom::ModelMode::kGeminiPro, 1);
 }
 

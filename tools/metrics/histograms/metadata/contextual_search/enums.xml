@@ -88,16 +88,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Text and File"/>
 </enum>
 
-<!-- LINT.IfChange(SubmissionType) -->
-
-<enum name="ContextualSearchSubmissionType">
-  <int value="0" label="Submission with no tools"/>
-  <int value="1" label="DeepSearch"/>
-  <int value="2" label="CreateImages"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/contextual_search/contextual_search_types.h:SubmissionType) -->
-
 </enums>
 
 </histogram-configuration>

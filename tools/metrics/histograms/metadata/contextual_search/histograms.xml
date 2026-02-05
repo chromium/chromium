@@ -179,6 +179,19 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram
+    name="ContextualSearch.Models.ModeOnSubmission.{ContextualSearchSource}"
+    enum="ContextualSearchAimModel" expires_after="2026-08-06">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks what model the user was using when they submitted the query. This
+    metric is recorded only once the user has submitted the query and navigated
+    to AIM.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram name="ContextualSearch.Models.{ContextualSearchSource}"
     enum="ContextualSearchAimModel" expires_after="2026-08-06">
   <owner>bofengchen@google.com</owner>
@@ -676,14 +689,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualSearch.Tools.SubmissionType.{ContextualSearchSource}"
-    enum="ContextualSearchSubmissionType" expires_after="2026-06-10">
-  <owner>hujasonx@google.com</owner>
+    name="ContextualSearch.Tools.ModeOnSubmission.{ContextualSearchSource}"
+    enum="ContextualSearchAimTool" expires_after="2026-08-06">
+  <owner>bofengchen@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Tracks whether the user submitted a query using a tool or model or through a
-    suggestion. This metric is recorded only once the user has submitted the
-    query and navigated to AIM.
+    Tracks what tool mode the user was in when they submitted the query. This
+    metric is recorded only once the user has submitted the query and navigated
+    to AIM.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
