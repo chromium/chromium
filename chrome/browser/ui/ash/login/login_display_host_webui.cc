@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -58,7 +59,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
@@ -265,7 +265,7 @@ void ShowLoginWizardFinish(
   // `ShowLoginWizardFinish` can be called as a result of
   // `OnLanguageSwitchedCallback` and it can happen that the browser started to
   // shut down. Return early if this is the case.
-  if (browser_shutdown::IsTryingToQuit() ||
+  if (ash::BrowserController::GetInstance()->IsTryingToQuit() ||
       KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
     return;
   }
@@ -742,7 +742,7 @@ content::WebContents* LoginDisplayHostWebUI::GetOobeWebContents() const {
 void LoginDisplayHostWebUI::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // Do not try to restore on shutdown
-  if (browser_shutdown::HasShutdownStarted()) {
+  if (ash::BrowserController::GetInstance()->HasShutdownStarted()) {
     return;
   }
 
@@ -1210,7 +1210,7 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
 // Declared in login_wizard.h so that others don't need to depend on our .h.
 // TODO(nkostylev): Split this into a smaller functions.
 void ShowLoginWizard(OobeScreenId first_screen) {
-  if (browser_shutdown::IsTryingToQuit()) {
+  if (ash::BrowserController::GetInstance()->IsTryingToQuit()) {
     return;
   }
 

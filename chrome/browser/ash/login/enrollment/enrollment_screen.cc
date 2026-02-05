@@ -22,6 +22,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/enrollment/timebound_user_context_holder.h"
@@ -39,7 +40,6 @@
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -174,7 +174,7 @@ EnrollmentScreen::EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
 EnrollmentScreen::~EnrollmentScreen() {
   scoped_network_observation_.Reset();
   DCHECK(!enrollment_launcher_ || g_browser_process->IsShuttingDown() ||
-         browser_shutdown::IsTryingToQuit() ||
+         ash::BrowserController::GetInstance()->IsTryingToQuit() ||
          DBusThreadManager::Get()->IsUsingFakes());
 }
 

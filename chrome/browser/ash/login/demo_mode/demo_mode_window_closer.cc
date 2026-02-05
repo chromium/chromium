@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
-#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
@@ -109,7 +108,7 @@ void DemoModeWindowCloser::OnInstanceUpdate(
         views::Widget::GetWidgetForNativeWindow(update.Window());
     if (is_widget_app) {
       // Some Chrome app has no widget, it will be closed by
-      // `chrome::CloseAllBrowsers`.
+      // `ash::BrowserController::MayCloseAllBrowsers()`.
       opened_apps_with_widget_.insert(instance_id);
     }
     metric_recorder->OnAppCreation(app_id_or_package, is_arc_app);
@@ -141,7 +140,9 @@ void DemoModeWindowCloser::StartClosingApps() {
     // `StartClosingWidgets` until that is done to avoid a race condition.
     is_closing_browsers_ = true;
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsers));
+        FROM_HERE, base::BindOnce([]() {
+          ash::BrowserController::GetInstance()->MayCloseAllBrowsers();
+        }));
   } else {
     StartClosingWidgets();
   }

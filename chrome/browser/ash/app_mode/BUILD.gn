@@ -109,6 +109,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/metrics",
     "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",

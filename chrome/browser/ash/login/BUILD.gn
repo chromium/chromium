@@ -574,6 +574,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/enrollment:test_support",

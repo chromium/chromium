@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_dialog.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"

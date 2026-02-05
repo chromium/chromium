@@ -11,6 +11,8 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -240,6 +242,22 @@ BrowserDelegate* BrowserControllerImpl::CreateWebApp(
   cparams.can_fullscreen = params.allow_fullscreen;
   return GetDelegate(
       web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, cparams));
+}
+
+void BrowserControllerImpl::MayCloseAllBrowsers() {
+  return chrome::CloseAllBrowsers();
+}
+
+void BrowserControllerImpl::MayCloseAllBrowsersAndQuit() {
+  return chrome::CloseAllBrowsersAndQuit();
+}
+
+bool BrowserControllerImpl::IsTryingToQuit() {
+  return browser_shutdown::IsTryingToQuit();
+}
+
+bool BrowserControllerImpl::HasShutdownStarted() {
+  return browser_shutdown::HasShutdownStarted();
 }
 
 void BrowserControllerImpl::AddObserver(Observer* observer) {

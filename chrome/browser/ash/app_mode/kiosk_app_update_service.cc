@@ -8,10 +8,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
-#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -66,7 +66,7 @@ void KioskAppUpdateService::StartAppUpdateRestartTimer() {
 void KioskAppUpdateService::ForceAppUpdateRestart() {
   // Force a chrome restart (not a logout or reboot) by closing all browsers.
   LOG(WARNING) << "Force closing all browsers to update kiosk app.";
-  chrome::CloseAllBrowsersAndQuit();
+  ash::BrowserController::GetInstance()->MayCloseAllBrowsersAndQuit();
 }
 
 void KioskAppUpdateService::Shutdown() {

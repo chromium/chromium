@@ -52,6 +52,10 @@ class BrowserControllerImpl : public BrowserController,
                                 const CreateParams& params) override;
   void CreateAutofillClientForWebContents(
       content::WebContents* web_contents) override;
+  void MayCloseAllBrowsers() override;
+  void MayCloseAllBrowsersAndQuit() override;
+  bool IsTryingToQuit() override;
+  bool HasShutdownStarted() override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

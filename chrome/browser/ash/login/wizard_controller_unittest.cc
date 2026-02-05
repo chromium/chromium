@@ -20,6 +20,7 @@
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -203,6 +204,8 @@ class WizardControllerTestBase : public ::testing::Test {
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
+
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     input_method::Initialize(TestingBrowserProcess::GetGlobal()->local_state(),
                              TestingBrowserProcess::GetGlobal()
@@ -272,6 +275,8 @@ class WizardControllerTestBase : public ::testing::Test {
     // Need to call `StartTearDown` otherwise timezone resolver still registered
     // with prefs when we delete profile manager.
     TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
+
+    browser_controller_.reset();
     profile_ = nullptr;
     profile_manager_.reset();
 
@@ -299,6 +304,7 @@ class WizardControllerTestBase : public ::testing::Test {
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_{std::make_unique<user_manager::FakeUserManager>()};
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ui::TestContextFactories> test_context_factories_;
   std::unique_ptr<AshTestHelper> ash_test_helper_;

@@ -150,6 +150,37 @@ class BrowserController {
                                         BrowserType browser_type,
                                         const CreateParams& params) = 0;
 
+  // Closes all browsers. It may fail.
+  // Note: conceptually this should be equivalent to
+  //
+  // ForEachBrowser(..., [](BrowserDelegate& browser) {
+  //   browser.Close();
+  // });
+  //
+  // but currently it has different implementation with some additional work
+  // for historical reason.
+  // Nice to revisit here to migrate in the future.
+  virtual void MayCloseAllBrowsers() = 0;
+
+  // Closes all browsers and if successful, quits BrowserController
+  // (i.e., the Chrome as a whole encapsulated by BrowserController).
+  // Note: In ChromeOS, it also means to shut down the chromeos-chrome
+  // including OS system UI.
+  // Note: this is currently used only by Kiosk app updating. We should see
+  // if this can be consolidated with CloseAllBrowsers() declared above.
+  virtual void MayCloseAllBrowsersAndQuit() = 0;
+
+  // Returns whether the BrowserController is trying to quit.
+  virtual bool IsTryingToQuit() = 0;
+
+  // Returns whether BrowserController shutdown is started.
+  // Conceptually this is closer to IsTryingToQuit, but run in different
+  // context. Please find chrome/browser/lifetime for details of the
+  // implementation difference.
+  // Note: currently these carries the complexity from Chrome implementation
+  // just to be transparent, but later it'd be great to consolidate closer APIs.
+  virtual bool HasShutdownStarted() = 0;
+
   // Facilitates observation of browser events.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
