@@ -183,5 +183,6 @@
 /* Layering */
 #hoverBackground,
 cr-ripple { z-index: 1; }
+
 #content,
 ::slotted(*) { z-index: 2; }

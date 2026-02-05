@@ -269,6 +269,7 @@ error-page {
   position: absolute;
   width: 100%;
 }
+
 :host([is-zero-state_]:not([enable-native-zero-state-suggestions]))
     .flex-center {
   justify-content: flex-end;

@@ -47,6 +47,7 @@
       --oobe-radio-card-label-line-height: 24px;
       /* Fonts vars end */
     }
+
     html.jelly-enabled {
       --oobe-adaptive-dialog-header-top-padding: 0px;
     }

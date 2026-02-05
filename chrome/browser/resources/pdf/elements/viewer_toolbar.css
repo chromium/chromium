@@ -197,6 +197,7 @@ cr-progress,
 #annotate-controls .vertical-separator {
   margin-inline: 6px;
 }
+
 </if>
 
 <if expr="enable_pdf_save_to_drive">

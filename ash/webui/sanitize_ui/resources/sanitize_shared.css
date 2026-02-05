@@ -160,10 +160,12 @@ h2.first {
   height: 640px;
   width: 680px;
 }
+
 div[slot='body'] {
   border-radius: 20px;
   padding: 32px;
 }
+
 .title {
   margin-top: 16px;
   margin-bottom: 16px;
@@ -184,6 +186,7 @@ div[slot='body'] {
   line-height: var(--cros-body-2-line-height);
   color: var(--cros-sys-on_surface_variant);
 }
+
 .done-button-container {
   text-align: right;
   margin-top: 24px;

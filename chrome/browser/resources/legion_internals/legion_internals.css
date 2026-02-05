@@ -55,6 +55,7 @@ input[type='text'] {
   display: flex;
   flex-direction: column;
 }
+
 #request-input {
   width: 100%;
   height: 100px;
@@ -64,14 +65,17 @@ input[type='text'] {
   flex-grow: 1;
   margin-bottom: 10px; /* Add some space between textarea and button */
 }
+
 #send-button {
   padding: 8px 12px;
   height: 34px;
   align-self: flex-end;
 }
+
 .console-header {
   margin-bottom: 10px;
 }
+
 .hidden {
   display: none;
 }

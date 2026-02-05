@@ -32,6 +32,7 @@
     background-color: var(--color-tab-background-highlighted);
     transition: background-color 100ms ease-in-out;
 }
+
 :host(:not([drag-in-progress]):not([active])) .tab:not(:hover) {
     transition: background-color 300ms ease-in-out;
 }

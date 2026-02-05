@@ -12,48 +12,61 @@ button {
   text-align: center;
   text-decoration: none;
 }
+
 label {
   font-size: 12px;
 }
+
 table {
   border: 1px solid black;
   border-collapse: collapse;
 }
+
 tbody {
   background-color: white;
 }
+
 td {
   border: 1px solid black;
   padding: 5px;
 }
+
 th {
   background-color: powderblue;
   border: 1px solid black;
   padding: 5px;
 }
+
 .available-space {
   text-align: center;
 }
+
 .disk-availability-table {
   width: 30%;
 }
+
 .eviction-statistics-table {
   width: 60%;
 }
+
 .eviction-statistics-table th {
   width: 15%;
 }
+
 .eviction-tr {
   text-align: center;
 }
+
 .test-storage-pressure-header {
   border-top: 1px solid grey;
   margin-top: 10px;
   padding-top: 5px;
 }
+
 .total-space {
   text-align: center;
 }
+
 #simulate-storage-pressure-activation-message {
   color: red;
 }

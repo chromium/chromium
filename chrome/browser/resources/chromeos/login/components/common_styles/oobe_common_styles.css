@@ -29,10 +29,12 @@
       .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
         border-bottom-color: var(--cros-sys-separator);
       }
+
       .scrollable.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
         border-top-color: var(--cros-sys-separator);
         border-bottom-color: var(--cros-sys-separator);
       }
+
       .scrollable.is-scrolled.scrolled-to-bottom {
         border-top-color: var(--cros-sys-separator);
       }
@@ -43,6 +45,7 @@
         cursor: pointer;
         text-decoration: underline;
       }
+
       .oobe-local-link:focus {
         outline-color: var(--cros-sys-focus_ring);
         transition: outline-color 200ms;

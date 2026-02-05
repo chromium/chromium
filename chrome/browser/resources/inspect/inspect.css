@@ -97,6 +97,7 @@ img {
   min-width: 32em;
   padding: 0 20px 65px 0;
 }
+
 #content > div:not(.selected) {
   display: none;
 }

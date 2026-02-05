@@ -32,6 +32,7 @@
 .screen-reader-only-host-node {
   position: relative;
 }
+
 .screen-reader-only-host-node .screen-reader-only {
   height: 100%;
   overflow: hidden;

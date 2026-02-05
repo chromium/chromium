@@ -68,6 +68,7 @@ cr-input {
   --cr-input-color: rgb(31,31,31);
   --cr-input-placeholder-color: rgb(130,130,130);
 }
+
 #trustStateSelect {
   --md-select-option-bg-color: white;
 }

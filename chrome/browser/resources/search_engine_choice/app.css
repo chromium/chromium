@@ -148,6 +148,7 @@ cr-radio-button:last-of-type {
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
 }
+
 cr-radio-button[checked] {
   background-color: var(--cr-fallback-color-tonal-container);
 }

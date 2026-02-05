@@ -114,6 +114,7 @@
   gap: 2px 16px;
   align-items: start;
 }
+
 .category-grid {
   /* Define column templates.
      - 80px for the checkbox
@@ -123,9 +124,11 @@
   */
   grid-template-columns: 40px 1fr 1fr 4fr;
 }
+
 .tags-grid {
   grid-template-columns: 40px 40px 1fr;
 }
+
 .etw-grid {
   grid-template-columns: 40px 1fr 4fr;
 }

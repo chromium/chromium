@@ -30,12 +30,15 @@ iron-list.cr-separators > *:not([first]) {
   border-width: 1px 0;
   overflow-y: auto;
 }
+
 [scrollable].is-scrolled {
   border-top-color: var(--cr-scrollable-border-color);
 }
+
 [scrollable].can-scroll:not(.scrolled-to-bottom) {
   border-bottom-color: var(--cr-scrollable-border-color);
 }
+
 [scrollable] iron-list > :not(.no-outline):focus-visible,
 [selectable]:focus-visible,
 [selectable] > :focus-visible {

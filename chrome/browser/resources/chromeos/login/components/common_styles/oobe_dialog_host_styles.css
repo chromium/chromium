@@ -42,6 +42,7 @@
           border-radius: 4px;
           padding: 13px 0;
         }
+
         :host-context(.jelly-enabled) .oobe-tos-webview {
           border: medium none white;
           border-radius: 16px;
