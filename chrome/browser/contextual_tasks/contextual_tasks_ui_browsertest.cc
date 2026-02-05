@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -100,6 +101,18 @@ class MockLensSearchController : public LensSearchController {
               (lens::LensOverlayInvocationSource invocation_source,
                bool should_show_csb),
               (override));
+};
+
+class MockContextualTasksCookieSynchronizer
+    : public contextual_tasks::ContextualTasksCookieSynchronizer {
+ public:
+  MockContextualTasksCookieSynchronizer(
+      content::BrowserContext* context,
+      signin::IdentityManager* identity_manager)
+      : ContextualTasksCookieSynchronizer(context, identity_manager) {}
+  ~MockContextualTasksCookieSynchronizer() override = default;
+
+  MOCK_METHOD(void, CopyCookiesToWebviewStoragePartition, (), (override));
 };
 
 }  // namespace
@@ -294,6 +307,25 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensBrowserTest, HandleLensButtonClick) {
 
   // Flush to ensure message processing on UI thread
   handler_remote.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       OnInnerWebContentsCreated_TriggersCookieSync) {
+  auto mock_synchronizer = std::make_unique<
+      testing::StrictMock<MockContextualTasksCookieSynchronizer>>(
+      browser()->profile(), identity_test_env_->identity_manager());
+
+  EXPECT_CALL(*mock_synchronizer, CopyCookiesToWebviewStoragePartition())
+      .Times(1);
+
+  controller_->SetCookieSynchronizerForTesting(std::move(mock_synchronizer));
+
+  // Create inner contents to trigger the observer.
+  std::unique_ptr<content::WebContents> inner_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+
+  TriggerOnInnerWebContentsCreated(inner_contents.get());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,

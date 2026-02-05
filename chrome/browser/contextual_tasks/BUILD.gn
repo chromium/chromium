@@ -119,6 +119,7 @@ source_set("ui") {
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler.h",
+      "contextual_tasks_cookie_synchronizer.h",
       "contextual_tasks_internals_page_handler.h",
       "contextual_tasks_navigation_throttle.h",
       "contextual_tasks_side_panel_coordinator.h",
@@ -168,6 +169,7 @@ source_set("ui_impl") {
       "contextual_search_session_finder.cc",
       "contextual_search_session_finder.h",
       "contextual_tasks_composebox_handler.cc",
+      "contextual_tasks_cookie_synchronizer.cc",
       "contextual_tasks_internals_page_handler.cc",
       "contextual_tasks_navigation_throttle.cc",
       "contextual_tasks_page_handler.cc",
@@ -296,6 +298,7 @@ source_set("unit_tests") {
       "contextual_tasks_context_scoring_utils_unittest.cc",
       "contextual_tasks_context_service_factory_unittest.cc",
       "contextual_tasks_context_signal_utils_unittest.cc",
+      "contextual_tasks_cookie_synchronizer_unittest.cc",
       "contextual_tasks_page_handler_unittest.cc",
       "contextual_tasks_side_panel_coordinator_unittest.cc",
       "contextual_tasks_tab_visit_tracker_unittest.cc",

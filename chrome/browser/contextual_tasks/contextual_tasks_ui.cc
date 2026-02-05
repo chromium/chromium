@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -176,6 +177,12 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
               Profile::FromBrowserContext(
                   web_ui->GetWebContents()->GetBrowserContext()))) {
+  if (contextual_tasks::ShouldEnableCookieSync()) {
+    cookie_synchronizer_ =
+        std::make_unique<contextual_tasks::ContextualTasksCookieSynchronizer>(
+            web_ui->GetWebContents()->GetBrowserContext(),
+            IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui)));
+  }
   inner_web_contents_creation_observer_ =
       std::make_unique<InnerFrameCreationObvserver>(
           web_ui->GetWebContents(),
@@ -610,6 +617,12 @@ void ContextualTasksUI::ShowOauthErrorDialog() {
   }
 }
 
+void ContextualTasksUI::SetCookieSynchronizerForTesting(
+    std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
+        cookie_synchronizer) {
+  cookie_synchronizer_ = std::move(cookie_synchronizer);
+}
+
 void ContextualTasksUI::OnInnerWebContentsCreated(
     content::WebContents* inner_contents) {
   // This is assumed to only be called once per WebUI lifetime. Can be called
@@ -622,6 +635,14 @@ void ContextualTasksUI::OnInnerWebContentsCreated(
   nav_observer_ = std::make_unique<FrameNavObserver>(
       inner_contents, ui_service_, contextual_tasks_service_, this);
   embedded_web_contents_ = inner_contents->GetWeakPtr();
+
+  // If the cookie sync is enabled, trigger the cookie sync now that the
+  // embedded page is created. This is a fire and forget call, assuming the
+  // cookie sync will succeed eventually, and relying on OAuth tokens until
+  // then.
+  if (cookie_synchronizer_) {
+    cookie_synchronizer_->CopyCookiesToWebviewStoragePartition();
+  }
 }
 
 void ContextualTasksUI::OnContextRetrievedForActiveTab(

@@ -63,6 +63,11 @@ const base::FeatureParam<bool> kContextualTasksBasicModeZOrder(
     "ContextualTasksBasicModeZOrder",
     true);
 
+const base::FeatureParam<bool> kContextualTasksEnableCookieSync(
+    &kContextualTasks,
+    "ContextualTasksEnableCookieSync",
+    true);
+
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
     "ContextualTasksContextOnlyUseTitles",
@@ -347,6 +352,10 @@ bool ShouldUseSearchResultsScope() {
 
 bool ShouldEnableBasicModeZOrder() {
   return kContextualTasksBasicModeZOrder.Get();
+}
+
+bool ShouldEnableCookieSync() {
+  return kContextualTasksEnableCookieSync.Get();
 }
 
 namespace flag_descriptions {
