@@ -25,7 +25,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -69,12 +70,11 @@ public class BookmarkBarIphControllerTest {
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     private BookmarkBarIphController mController;
-    private ObservableSupplierImpl<Boolean> mXrSpaceModeSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mXrSpaceModeSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     @Before
     public void setUp() {
-        mXrSpaceModeSupplier = new ObservableSupplierImpl<>();
-        mXrSpaceModeSupplier.set(false);
         MockitoAnnotations.initMocks(this);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);

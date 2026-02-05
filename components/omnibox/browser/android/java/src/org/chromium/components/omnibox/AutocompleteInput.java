@@ -10,7 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
@@ -62,7 +62,8 @@ public class AutocompleteInput implements UserData {
     private boolean mSuggestionsListScrolled;
     private @OmniboxFocusReason int mFocusReason;
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-            mRequestTypeSupplier = new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+            mRequestTypeSupplier =
+                    ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
 
     public AutocompleteInput() {
         reset();

@@ -32,9 +32,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 @SuppressWarnings("NullAway") // Implementation for both Nullable and NonNull.
-// TODO(455874046): Remove "T extends @Nullable Object".
-public class ObservableSupplierImpl<T extends @Nullable Object>
-        extends BaseObservableSupplierImpl<T>
+class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
         implements Supplier<T>,
                 SettableNullableObservableSupplier<T>,
                 SettableMonotonicObservableSupplier<T>,
