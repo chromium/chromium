@@ -192,8 +192,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
       EXPECT_EQ(1 + starting_browser_count, chrome::GetTotalBrowserCount());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+      ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
       app_browser->window()->Close();
-      ui_test_utils::WaitForBrowserToClose(app_browser);
+      destroyed_observer.Wait();
 
       // Check the initiating page is intact.
       EXPECT_EQ(initiating_url, initiating_web_contents->GetLastCommittedURL());
@@ -236,8 +237,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
   app_browser->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  destroyed_observer.Wait();
 
   // Check the initiating browser window is intact.
   EXPECT_EQ(kInitiatingChromeUrl, browser()
@@ -281,8 +283,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
   app_browser->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  destroyed_observer.Wait();
 
   // Check the initiating browser window is intact.
   EXPECT_EQ(kInitiatingChromeUrl, browser()
@@ -347,8 +350,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
       EXPECT_EQ(1 + starting_browser_count, chrome::GetTotalBrowserCount());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+      ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
       app_browser->window()->Close();
-      ui_test_utils::WaitForBrowserToClose(app_browser);
+      destroyed_observer.Wait();
 
       // Check the initiating browser window is intact.
       EXPECT_EQ(initiating_url, initiating_web_contents->GetLastCommittedURL());
@@ -388,8 +392,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+      ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
       app_browser->window()->Close();
-      ui_test_utils::WaitForBrowserToClose(app_browser);
+      destroyed_observer.Wait();
 
       // Check the initiating browser window is intact.
       EXPECT_EQ(kInitiatingAppUrl,
@@ -435,8 +440,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   GURL start_url = GetStartUrl();
 
   Browser* incognito_browser = CreateIncognitoBrowser();
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(browser());
   browser()->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  destroyed_observer.Wait();
 
   content::TestNavigationObserver observer(start_url);
   observer.StartWatchingNewWebContents();
@@ -864,11 +870,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
 
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   EXPECT_TRUE(
       content::ExecJs(app_browser->tab_strip_model()->GetActiveWebContents(),
                       "window.close();"));
 
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  observer.Wait();
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 }
 

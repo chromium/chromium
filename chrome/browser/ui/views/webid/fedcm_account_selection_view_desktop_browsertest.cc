@@ -240,8 +240,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 // Tests crash scenario from crbug.com/1473691.
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ClosedBrowser) {
   PreShow();
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   browser()->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 
   // Invoking this after browser is closed should not cause a crash.
   ShowUi("");

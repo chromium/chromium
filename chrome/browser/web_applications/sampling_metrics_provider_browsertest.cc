@@ -33,10 +33,11 @@ IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderBrowserTest, NoCrashOnClose) {
 
   content::WebContentsDestroyedWatcher destroyed_watcher(
       app_browser->tab_strip_model()->GetWebContentsAt(0));
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   app_browser->tab_strip_model()->CloseAllTabs();
   destroyed_watcher.Wait();
 
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  observer.Wait();
 
   EXPECT_TRUE(measure_called);
 }

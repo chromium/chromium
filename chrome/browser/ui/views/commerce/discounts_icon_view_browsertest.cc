@@ -104,7 +104,7 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
   void WaitForUserDismissal() override {
     // Consider closing the browser to be dismissal. This is useful when using
     // the test-launcher-interactive option.
-    ui_test_utils::WaitForBrowserToClose();
+    ui_test_utils::BrowserDestroyedObserver().Wait();
   }
 
  protected:

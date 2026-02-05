@@ -218,8 +218,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
           base::FilePath(), base::FilePath().AppendASCII("simple.html")),
       ui::PAGE_TRANSITION_TYPED);
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+  ui_test_utils::BrowserDestroyedObserver observer(second_browser);
   chrome::CloseWindow(second_browser);
-  ui_test_utils::WaitForBrowserToClose(second_browser);
+  observer.Wait();
   EXPECT_TRUE(std::ranges::contains(tab_restore_service->entries(),
                                     sessions::tab_restore::Type::WINDOW,
                                     &sessions::tab_restore::Entry::type));

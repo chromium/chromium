@@ -496,10 +496,14 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
       before_unload_observer.Wait();
     }
     {
+      std::optional<ui_test_utils::BrowserDestroyedObserver> observer;
+      if (wait_for_browser_close) {
+        observer.emplace(browser());
+      }
       close_method.Run();
       AcceptModalDialog();
-      if (wait_for_browser_close) {
-        ui_test_utils::WaitForBrowserToClose(browser());
+      if (observer) {
+        observer->Wait();
       }
     }
     runner->Run();
@@ -1055,10 +1059,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
   }
   // Try to exit application.
   {
+    ui_test_utils::BrowserDestroyedObserver observer(browser());
     chrome::CloseAllBrowsers();
     AcceptModalDialog();
     AcceptModalDialog();
-    ui_test_utils::WaitForBrowserToClose(browser());
+    observer.Wait();
   }
   for (auto& close_observer : close_observers) {
     close_observer->Wait();
@@ -3325,8 +3330,9 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, BrowserCloseWithBeforeUnload) {
                       "function(event) { event.returnValue = 'Foo'; });"));
   content::PrepContentsForBeforeUnloadTest(tab);
   BrowserHandler handler(nullptr, std::string());
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   handler.Close();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 }
 
 // Flaky.
@@ -3344,9 +3350,10 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
       base::BindOnce(callback));
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   content::SimulateMouseClickAt(tab, 0, blink::WebMouseEvent::Button::kRight,
                                 gfx::Point(15, 15));
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -3370,8 +3377,9 @@ IN_PROC_BROWSER_TEST_F(KeepAliveDevToolsTest, KeepsAliveUntilBrowserClose) {
   chrome::NewEmptyWindow(ProfileManager::GetLastUsedProfile());
   EXPECT_FALSE(global_colection->IsEmpty());
   BrowserHandler handler(nullptr, std::string());
+  ui_test_utils::BrowserDestroyedObserver observer;
   handler.Close();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::REMOTE_DEBUGGING));

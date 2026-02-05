@@ -386,10 +386,11 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ResetTooltipOnClosingWindow) {
   EXPECT_TRUE(helper()->IsTooltipVisible());
 
   // Tooltip should be hidden on closing window.
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseWindow(browser());
   // Verify tooltip is closed.
   tooltip_monitor()->WaitUntilTooltipClosed();
 
   // Make sure Chrome won't crash during window destruction.
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 }

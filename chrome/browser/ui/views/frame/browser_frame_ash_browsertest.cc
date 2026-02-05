@@ -100,8 +100,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
   ash::WindowState::Get(window)->OnWMEvent(&left_snap_event);
   const gfx::Size snapped_size = window->GetBoundsInScreen().size();
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   browser->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
 
   // Recreate the browser window. Test that the bounds are the same as the
   // snapped size (position has been shifted by the ash auto window positioner).

@@ -70,7 +70,7 @@ class PasswordChangeToastBrowserTest : public UiBrowserTest {
   }
 
   void WaitForUserDismissal() override {
-    ui_test_utils::WaitForBrowserToClose(browser());
+    ui_test_utils::BrowserDestroyedObserver().Wait();
   }
 
  private:

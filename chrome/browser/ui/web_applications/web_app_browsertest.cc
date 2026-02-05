@@ -2649,8 +2649,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
       WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
 
   BrowserHandler handler(nullptr, std::string());
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   handler.Close();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);

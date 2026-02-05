@@ -101,7 +101,7 @@ class PriceInsightsIconViewBaseBrowserTest : public UiBrowserTest {
 
   void WaitForUserDismissal() override {
     // Consider closing the browser to be dismissal.
-    ui_test_utils::WaitForBrowserToClose();
+    ui_test_utils::BrowserDestroyedObserver().Wait();
   }
 
  protected:

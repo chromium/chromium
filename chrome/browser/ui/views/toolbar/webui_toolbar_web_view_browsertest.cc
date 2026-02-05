@@ -613,9 +613,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   content::JavaScriptDialogManager* dialog_manager =
       static_cast<content::WebContentsDelegate*>(browser())
           ->GetJavaScriptDialogManager(active_web_contents);
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   dialog_manager->HandleJavaScriptDialog(active_web_contents, /*accept=*/true,
                                          /*prompt_override=*/nullptr);
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 }
 
 class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {

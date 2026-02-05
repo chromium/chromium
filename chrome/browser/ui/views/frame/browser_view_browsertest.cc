@@ -1226,7 +1226,7 @@ class BrowserViewScrimPixelTest : public UiBrowserTest {
   }
 
   void WaitForUserDismissal() override {
-    ui_test_utils::WaitForBrowserToClose();
+    ui_test_utils::BrowserDestroyedObserver().Wait();
   }
 };
 

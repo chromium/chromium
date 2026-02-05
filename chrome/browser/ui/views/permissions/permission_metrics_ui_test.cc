@@ -149,8 +149,9 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   observer_tab_0.Wait();
 
   // Close browser without decision
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseWindow(browser());
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."

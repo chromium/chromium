@@ -304,7 +304,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, DoNotCrashOnBrowserClose) {
       PressButton(kToolbarAppMenuButtonElementId),
       // Close all browsers, ensure the browser process does not crash.
       Do([]() {
+        ui_test_utils::BrowserDestroyedObserver observer;
         chrome::CloseAllBrowsers();
-        ui_test_utils::WaitForBrowserToClose();
+        observer.Wait();
       }));
 }

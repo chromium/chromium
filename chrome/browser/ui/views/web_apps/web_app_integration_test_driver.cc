@@ -2371,8 +2371,9 @@ void WebAppIntegrationTestDriver::OpenInChrome() {
   webapps::AppId app_id = app_browser()->app_controller()->app_id();
   GURL app_url = GetCurrentTab(app_browser())->GetURL();
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser());
   CHECK(chrome::ExecuteCommand(app_browser_, IDC_OPEN_IN_CHROME));
-  ui_test_utils::WaitForBrowserToClose(app_browser());
+  observer.Wait();
   ASSERT_FALSE(IsBrowserOpen(app_browser())) << "App browser should be closed.";
   app_browser_ = nullptr;
   EXPECT_EQ(GetCurrentTab(browser())->GetURL(), app_url);

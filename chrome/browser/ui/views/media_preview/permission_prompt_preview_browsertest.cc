@@ -107,7 +107,8 @@ class PermissionPromptPreviewBrowserTest : public UiBrowserTest {
   }
 
   void WaitForUserDismissal() override {
-    ui_test_utils::WaitForBrowserToClose();
+    ui_test_utils::BrowserDestroyedObserver observer;
+    observer.Wait();
   }
 };
 

@@ -2001,10 +2001,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetIsTheLastOne) {
   SendCommandSync("Target.getTargets");
   EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
 
+  ui_test_utils::BrowserDestroyedObserver observer;
   SendCommandSync("Target.closeTarget",
                   base::DictValue().Set("targetId", targetId));
 
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

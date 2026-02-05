@@ -133,8 +133,9 @@ IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest,
   CheckWebAppCount(/*web_app_count=*/1, /*is_active=*/true);
 
   // Close.
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   chrome::CloseWindow(app_browser);
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  observer.Wait();
   CheckWebAppCount(/*web_app_count=*/0, /*is_active=*/false);
 }
 

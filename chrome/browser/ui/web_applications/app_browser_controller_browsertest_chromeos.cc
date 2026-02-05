@@ -317,8 +317,9 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, Shutdown) {
   InstallMockSystemWebApp();
 
   BrowserHandler handler(nullptr, std::string());
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   handler.Close();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   LaunchMockPopup();
   EXPECT_EQ(app_browser_, nullptr);

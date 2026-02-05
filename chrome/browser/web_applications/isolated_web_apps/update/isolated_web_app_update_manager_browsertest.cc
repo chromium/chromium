@@ -1277,8 +1277,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   // Updates will be applied once the app's window is closed.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   app_browser->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  observer.Wait();
   EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(0ul));
 
   manifest_updated_observer.Wait();
@@ -1591,8 +1592,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
     content::TitleWatcher title_watcher(web_contents, u"1.0.0");
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"1.0.0");
+    ui_test_utils::BrowserDestroyedObserver observer(app_browser);
     app_browser->window()->Close();
-    ui_test_utils::WaitForBrowserToClose(app_browser);
+    observer.Wait();
   }
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
@@ -1611,8 +1613,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
     EXPECT_THAT(EvalJs(web_contents, "document.body.innerText").ExtractString(),
                 HasSubstr("This application is missing or damaged"));
 
+    ui_test_utils::BrowserDestroyedObserver observer(app_browser);
     app_browser->window()->Close();
-    ui_test_utils::WaitForBrowserToClose(app_browser);
+    observer.Wait();
   }
 
   // Apply a late update.
@@ -1700,8 +1703,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
   }
 
   // Close the browser.
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   app_browser->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  observer.Wait();
 
   // Now an attempt to open the app should display the "missing or damaged"
   // page.

@@ -611,8 +611,9 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   SetupAutoSignin(std::move(local_credentials));
   EXPECT_TRUE(IsBubbleShowing());
 
+  ui_test_utils::BrowserDestroyedObserver observer(focused_window);
   focused_window->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(focused_window);
+  observer.Wait();
 
   // Wait until the auto-signin bubble has disappeared, which should happen
   // after its timeout.
