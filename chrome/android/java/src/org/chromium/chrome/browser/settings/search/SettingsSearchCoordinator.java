@@ -70,6 +70,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.reflect.Constructor;
@@ -84,7 +85,8 @@ import java.util.function.BooleanSupplier;
 
 /** The coordinator of search in Settings. TODO(jinsukkim): Build a proper MVC structure. */
 @NullMarked
-public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
+public class SettingsSearchCoordinator
+        implements MultiColumnSettings.Observer, AccessibilityState.Listener {
     private static final String TAG = "SettingsSearch";
 
     public static final String RESULT_BACKSTACK = MainSettings.RESULT_BACKSTACK;
@@ -185,6 +187,8 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             Profile profile,
             Callback<Integer> updateFirstVisibleTitle,
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        AccessibilityState.addListener(this);
+
         mActivity = activity;
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;
@@ -276,6 +280,19 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         boolean reset = (getSettingsFragmentManager().getBackStackEntryCount() == 0);
         if (reset && (mFragmentState == FS_SEARCH || mFragmentState == FS_RESULTS)) {
             exitSearchState(/* clearFragment= */ false);
+        }
+    }
+
+    @Override
+    public void onAccessibilityStateChanged(
+            AccessibilityState.State oldAccessibilityState,
+            AccessibilityState.State newAccessibilityState) {
+        if (!oldAccessibilityState.equals(newAccessibilityState)) {
+            mIndexData.setNeedsIndexing();
+            initIndex();
+            EditText queryEdit = mActivity.findViewById(R.id.search_query);
+            queryEdit.requestFocus();
+            onQueryUpdated(queryEdit.getText().toString());
         }
     }
 

@@ -194,6 +194,23 @@ public class AccessibilityState {
                     + isKnownScreenReaderEnabled
                     + '}';
         }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof State)) return false;
+            State other = (State) obj;
+            return isComplexUserInteractionServiceEnabled
+                            == other.isComplexUserInteractionServiceEnabled
+                    && isTouchExplorationEnabled == other.isTouchExplorationEnabled
+                    && isPerformGesturesEnabled == other.isPerformGesturesEnabled
+                    && isAnyAccessibilityServiceEnabled == other.isAnyAccessibilityServiceEnabled
+                    && isAccessibilityToolPresent == other.isAccessibilityToolPresent
+                    && isTextShowPasswordEnabled == other.isTextShowPasswordEnabled
+                    && isOnlyAutofillRunning == other.isOnlyAutofillRunning
+                    && isOnlyPasswordManagersEnabled == other.isOnlyPasswordManagersEnabled
+                    && isKnownScreenReaderEnabled == other.isKnownScreenReaderEnabled;
+        }
     }
 
     // Analysis of the most popular accessibility services on Android suggests that any service that
