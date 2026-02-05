@@ -1204,12 +1204,10 @@
       "Win"
     ],
     "bases": [
-      "wpt_internal/fenced_frame",
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-with-fenced-frame-client.https.window.js"
+      "wpt_internal/fenced_frame"
     ],
     "exclusive_tests": [
-      "wpt_internal/fenced_frame",
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-with-fenced-frame-client.https.window.js"
+      "wpt_internal/fenced_frame"
     ],
     "args": [
       "--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesDefaultMode"

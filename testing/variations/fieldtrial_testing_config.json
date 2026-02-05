@@ -11963,6 +11963,25 @@
             ]
         }
     ],
+    "FreezeSharedWorker": [
+        {
+            "platforms": [
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FreezeSharedWorker"
+                    ]
+                }
+            ]
+        }
+    ],
     "FullscreenSignInPromoUseDate": [
         {
             "platforms": [
