@@ -20,14 +20,7 @@ using FeedbackPrivateHooksDelegateTest = NativeExtensionBindingsSystemUnittest;
 // Tests that the result modifier used in the sendFeedback handle request hook
 // results in callback-based calls getting a response with multiple arguments
 // and promise-based calls getting a response with a single object.
-// TODO(crbug.com/40243802): Disabled on ASAN due to bot failures caused by an
-// underlying gin issue.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_SendFeedback DISABLED_SendFeedback
-#else
-#define MAYBE_SendFeedback SendFeedback
-#endif
-TEST_F(FeedbackPrivateHooksDelegateTest, MAYBE_SendFeedback) {
+TEST_F(FeedbackPrivateHooksDelegateTest, SendFeedback) {
   // Initialize bindings system.
   bindings_system()->api_system()->RegisterHooksDelegate(
       "feedbackPrivate", std::make_unique<FeedbackPrivateHooksDelegate>());
