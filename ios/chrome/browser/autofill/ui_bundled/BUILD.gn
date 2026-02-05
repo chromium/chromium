@@ -48,6 +48,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",

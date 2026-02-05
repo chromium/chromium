@@ -231,8 +231,33 @@ ChromeAutofillClientIOS::GetAutocompleteHistoryManager() {
 
 void ChromeAutofillClientIOS::GetAiPageContent(
     GetAiPageContentCallback callback) {
-  // TODO(crbug.com/480934102): Add support for getting AI page content.
-  std::move(callback).Run(std::nullopt);
+  // Cancel any ongoing page context operation.
+  if (page_context_wrapper_) {
+    page_context_wrapper_ = nil;
+  }
+
+  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
+      page_context_completion_callback = base::BindOnce(
+          [](GetAiPageContentCallback inner_callback,
+             PageContextWrapperCallbackResponse response) {
+            if (!response.has_value()) {
+              std::move(inner_callback).Run(std::nullopt);
+              return;
+            }
+
+            std::move(inner_callback)
+                .Run((*response)->annotated_page_content());
+          },
+          std::move(callback));
+
+  // Populate the PageContext proto and then execute the query.
+  page_context_wrapper_ = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:std::move(page_context_completion_callback)];
+  [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
+  [page_context_wrapper_ setShouldGetSnapshot:NO];
+  [page_context_wrapper_ setShouldGetFullPagePDF:NO];
+  [page_context_wrapper_ populatePageContextFieldsAsync];
 }
 
 AutofillAiManager* ChromeAutofillClientIOS::GetAutofillAiManager() {

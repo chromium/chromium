@@ -36,6 +36,7 @@
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @protocol AutofillCommands;
@@ -193,6 +194,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
       this};
   const AutofillAblationStudy ablation_study_;
   std::unique_ptr<AutofillAiManager> autofill_ai_manager_;
+  PageContextWrapper* page_context_wrapper_;
 
   // Order matters for this initialization. This initialization must happen
   // after all of the members passed into the constructor of
