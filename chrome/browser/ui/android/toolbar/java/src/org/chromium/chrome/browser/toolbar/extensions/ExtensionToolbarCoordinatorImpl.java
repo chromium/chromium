@@ -34,7 +34,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
-    private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
+    private ExtensionsMenuAndAccessControlButtonCoordinator
+            mExtensionsMenuAndAccessControlButtonCoordinator;
 
     @Override
     public void initializeWithNative(
@@ -60,19 +61,21 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         task,
                         currentTabSupplier,
                         mExtensionsToolbarBridge);
-        mExtensionsMenuCoordinator =
-                new ExtensionsMenuCoordinator(
+        mExtensionsMenuAndAccessControlButtonCoordinator =
+                new ExtensionsMenuAndAccessControlButtonCoordinator(
                         context,
                         container.findViewById(R.id.extensions_menu_button),
                         themeColorProvider,
                         task,
                         currentTabSupplier,
-                        tabCreator);
+                        tabCreator,
+                        mExtensionsToolbarBridge,
+                        container.findViewById(R.id.extensions_request_access_button));
     }
 
     @Override
     public void destroy() {
-        mExtensionsMenuCoordinator.destroy();
+        mExtensionsMenuAndAccessControlButtonCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
         mExtensionsToolbarBridge.destroy();
         mBridge.destroy();
@@ -100,6 +103,6 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     @Override
     public void updateMenuButtonBackground(int backgroundResource) {
-        mExtensionsMenuCoordinator.updateButtonBackground(backgroundResource);
+        mExtensionsMenuAndAccessControlButtonCoordinator.updateButtonBackground(backgroundResource);
     }
 }

@@ -20,6 +20,13 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:layout_gravity="end"/>
 
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/extensions_request_access_button"
+        style="@style/ToolbarHoverableButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/extensions_menu_button"
         style="@style/ToolbarHoverableButton"

@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/buildflags/buildflags.h"
@@ -159,9 +160,9 @@ ExtensionsToolbarViewModel::GetRequestAccessButtonParams(
   Profile* profile = browser_->GetProfile();
   extensions::PermissionsManager* permissions_manager =
       extensions::PermissionsManager::Get(profile);
+  auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   extensions::PermissionsManager::UserSiteSetting site_setting =
-      permissions_manager->GetUserSiteSetting(
-          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+      permissions_manager->GetUserSiteSetting(origin);
 
   if (site_setting !=
       extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
@@ -304,7 +305,8 @@ void ExtensionsToolbarViewModel::DidFinishNavigation(
 }
 
 void ExtensionsToolbarViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
-  WebContentsObserver::Observe(tab ? tab->GetContents() : nullptr);
+  content::WebContents* contents = tab->GetContents();
+  WebContentsObserver::Observe(contents);
   for (Observer& obs : observers_) {
     obs.OnActiveWebContentsChanged();
   }

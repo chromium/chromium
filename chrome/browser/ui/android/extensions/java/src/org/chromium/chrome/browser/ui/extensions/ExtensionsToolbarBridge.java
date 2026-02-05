@@ -99,12 +99,28 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 .movePinnedAction(mNativeExtensionsToolbarAndroid, actionId, targetIndex);
     }
 
+    public RequestAccessButtonParams getRequestAccessButtonParams(WebContents webContents) {
+        assert mNativeExtensionsToolbarAndroid != 0;
+        RequestAccessButtonParams params =
+                ExtensionsToolbarBridgeJni.get()
+                        .getRequestAccessButtonParams(mNativeExtensionsToolbarAndroid, webContents);
+        assert params != null;
+        return params;
+    }
+
     @CalledByNative
     public void triggerPopup(@JniType("std::string") String actionId, long nativeHostPtr) {
         // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
         assert mDelegate != null;
 
         mDelegate.triggerPopup(actionId, nativeHostPtr);
+    }
+
+    @CalledByNative
+    public void onRequestAccessButtonParamsChanged() {
+        for (Observer observer : mObservers) {
+            observer.onRequestAccessButtonParamsChanged();
+        }
     }
 
     @CalledByNative
@@ -151,22 +167,25 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
     public interface Observer {
         // Called after all actions are added to the model.
-        void onActionsInitialized();
+        default void onActionsInitialized() {}
 
         // Called when an action is added to the model.
-        void onActionAdded(String actionId);
+        default void onActionAdded(String actionId) {}
 
         // Called when an action is removed from the model.
-        void onActionRemoved(String actionId);
+        default void onActionRemoved(String actionId) {}
 
         // Called when an action in the model is updated.
-        void onActionUpdated(String actionId);
+        default void onActionUpdated(String actionId) {}
 
         // Called when the pinned actions in the model are changed.
-        void onPinnedActionsChanged();
+        default void onPinnedActionsChanged() {}
 
         // Called when the active web contents changes due to e.g. navigation or tab change.
-        void onActiveWebContentsChanged();
+        default void onActiveWebContentsChanged() {}
+
+        // Called when the request access button parameters have changed.
+        default void onRequestAccessButtonParamsChanged() {}
     }
 
     public interface Delegate {
@@ -206,5 +225,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 long nativeExtensionsToolbarAndroid,
                 @JniType("std::string") String actionId,
                 int targetIndex);
+
+        RequestAccessButtonParams getRequestAccessButtonParams(
+                long nativeExtensionsToolbarAndroid,
+                @JniType("content::WebContents*") WebContents webContents);
     }
 }

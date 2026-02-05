@@ -48,9 +48,14 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnPinnedActionsChanged() override;
   void OnActiveWebContentsChanged() override;
+  void OnRequestAccessButtonParamsChanged(
+      content::WebContents* web_contents) override;
 
   // JNI implementations.
   void Destroy(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetRequestAccessButtonParams(
+      JNIEnv* env,
+      content::WebContents* web_contents);
   base::android::ScopedJavaLocalRef<jobject> GetAction(
       JNIEnv* env,
       const ToolbarActionsModel::ActionId& action_id);

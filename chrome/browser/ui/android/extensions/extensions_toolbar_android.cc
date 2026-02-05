@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,10 +21,13 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionAction_jni.h"
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsToolbarBridge_jni.h"
+#include "chrome/browser/ui/android/extensions/jni_headers/RequestAccessButtonParams_jni.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaArrayOfStrings;
 using content::WebContents;
 
 namespace extensions {
@@ -60,6 +64,22 @@ ExtensionsToolbarAndroid::CreateActionViewModel(
       action_id, browser_,
       std::make_unique<ExtensionActionDelegateAndroid>(browser_.get(),
                                                        action_id, this));
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+ExtensionsToolbarAndroid::GetRequestAccessButtonParams(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  ExtensionsToolbarViewModel::RequestAccessButtonParams params =
+      toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
+  return Java_RequestAccessButtonParams_Constructor(env, params.extension_ids,
+                                                    params.tooltip_text);
+}
+
+void ExtensionsToolbarAndroid::OnRequestAccessButtonParamsChanged(
+    content::WebContents* web_contents) {
+  Java_ExtensionsToolbarBridge_onRequestAccessButtonParamsChanged(
+      AttachCurrentThread(), java_object_);
 }
 
 void ExtensionsToolbarAndroid::HideActivePopup() {

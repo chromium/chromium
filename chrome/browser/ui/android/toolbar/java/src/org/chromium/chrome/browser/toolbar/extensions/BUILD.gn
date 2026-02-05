@@ -16,6 +16,8 @@ android_library("java") {
   ]
   resources_package = "org.chromium.chrome.browser.toolbar"
   sources = [
+    "ExtensionAccessControlButtonCoordinator.java",
+    "ExtensionAccessControlButtonMediator.java",
     "ExtensionActionButtonProperties.java",
     "ExtensionActionButtonViewBinder.java",
     "ExtensionActionContextMenuUtils.java",
@@ -27,6 +29,7 @@ android_library("java") {
     "ExtensionActionPopup.java",
     "ExtensionActionsUpdateHelper.java",
     "ExtensionToolbarCoordinatorImpl.java",
+    "ExtensionsMenuAndAccessControlButtonCoordinator.java",
     "ExtensionsMenuCoordinator.java",
     "ExtensionsMenuItemProperties.java",
     "ExtensionsMenuItemViewBinder.java",
@@ -65,9 +68,11 @@ android_library("java") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.toolbar"
   sources = [
+    "ExtensionAccessControlButtonMediatorTest.java",
     "ExtensionActionDragHelperTest.java",
     "ExtensionActionListMediatorTest.java",
     "ExtensionActionsUpdateHelperTest.java",
+    "ExtensionsMenuAndAccessControlButtonCoordinatorTest.java",
     "ExtensionsMenuCoordinatorTest.java",
     "ExtensionsMenuMediatorTest.java",
   ]
