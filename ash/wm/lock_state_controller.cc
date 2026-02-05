@@ -573,6 +573,18 @@ void LockStateController::OnChromeTerminating() {
   }
 }
 
+void LockStateController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  // Use OnSessionStateChanged instead of OnLockStateChanged. This is used to
+  // update the desktop state that changes the window's occlusion state.
+  if (state == session_manager::SessionState::LOCKED) {
+    // Pause frame eviction while screen is locked.
+    scoped_frame_eviction_pause_.emplace();
+  } else {
+    scoped_frame_eviction_pause_.reset();
+  }
+}
+
 void LockStateController::OnLockStateChanged(bool locked) {
   // Unpause if lock animations didn't start and ends in 3 seconds.
   constexpr base::TimeDelta kPauseTimeout = base::Seconds(3);
@@ -606,10 +618,6 @@ void LockStateController::OnLockStateChanged(bool locked) {
     }
   } else {
     StartUnlockAnimationAfterLockUIDestroyed();
-  }
-
-  for (auto& rwc : Shell::GetAllRootWindowControllers()) {
-    rwc->ForceOccludeWindowsInAlwaysOnTop(locked);
   }
 }
 

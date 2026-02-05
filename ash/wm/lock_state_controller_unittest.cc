@@ -49,6 +49,10 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_occlusion_tracker.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/compositor/test/begin_main_frame_waiter.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/tablet_state.h"
@@ -492,6 +496,38 @@ TEST_F(LockStateControllerTest, LockButtonBasicGuest) {
   EXPECT_FALSE(lock_state_test_api_->is_animating_lock());
   ReleaseLockButton();
   EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
+}
+
+TEST_F(LockStateControllerTest, PauseFrameEvictionWhileLocked) {
+  // The lock button shouldn't do anything when we're logged in as a guest.
+  ClearLogin();
+  SimulateUserLogin({"user@example.com"});
+  auto window = CreateTestWindow();
+  window->TrackOcclusionState();
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE, window->GetOcclusionState());
+  EXPECT_FALSE(
+      viz::FrameEvictionManager::GetInstance()->is_paused_for_testing());
+
+  // No need to explicitly wait BeginMainFrame because `LockScreen` below will
+  // post a task and wait, which will execute next the BeginFrame.
+  GetSessionControllerClient()->LockScreen();
+  EXPECT_FALSE(
+      aura::Env::GetInstance()->GetWindowOcclusionTracker()->IsPaused());
+
+  EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,
+            window->GetOcclusionState());
+  EXPECT_TRUE(
+      viz::FrameEvictionManager::GetInstance()->is_paused_for_testing());
+
+  GetSessionControllerClient()->UnlockScreen();
+  auto* compositor =
+      ash::Shell::GetPrimaryRootWindow()->GetHost()->compositor();
+  ui::BeginMainFrameWaiter(compositor).Wait();
+  EXPECT_FALSE(
+      aura::Env::GetInstance()->GetWindowOcclusionTracker()->IsPaused());
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE, window->GetOcclusionState());
+  EXPECT_FALSE(
+      viz::FrameEvictionManager::GetInstance()->is_paused_for_testing());
 }
 
 class LockStateControllerAnimationTest

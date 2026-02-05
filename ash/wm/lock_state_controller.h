@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/viz/client/frame_eviction_manager.h"
 #include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/gfx/image/image.h"
@@ -127,6 +128,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   // SessionObserver overrides:
   void OnChromeTerminating() override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnLockStateChanged(bool locked) override;
 
   void set_animator_for_test(SessionStateAnimator* animator) {
@@ -357,6 +359,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Disables the `take_screenshot_fail_timer_` for test, which means the timer
   // will never start if this is set to true.
   bool disable_screenshot_timeout_for_test_ = false;
+
+  // Used to pause the frame eviction while the screen is locked to
+  // avoid evicting/reloading the compositor frame.
+  std::optional<viz::FrameEvictionManager::ScopedPause>
+      scoped_frame_eviction_pause_;
 
   base::WeakPtrFactory<LockStateController> weak_ptr_factory_{this};
 };

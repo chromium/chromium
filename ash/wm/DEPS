@@ -1,5 +1,6 @@
 include_rules = [
   "+components/app_restore",
+  "+components/viz/client",
 ]
 
 specific_include_rules = {

@@ -15,6 +15,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
@@ -30,6 +31,34 @@
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
+namespace {
+
+// A utility class to make the given window opaque for occlusion
+// tracker.
+class OpaqueRegionSetter : public aura::WindowObserver {
+ public:
+  explicit OpaqueRegionSetter(aura::Window* window) {
+    window->AddObserver(this);
+  }
+  OpaqueRegionSetter(const OpaqueRegionSetter&) = delete;
+  OpaqueRegionSetter& operator=(const OpaqueRegionSetter&) = delete;
+  ~OpaqueRegionSetter() override = default;
+
+  // views::WidgetObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    window->RemoveObserver(this);
+    delete this;
+  }
+
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override {
+    window->SetOpaqueRegionsForOcclusion({gfx::Rect(new_bounds.size())});
+  }
+};
+
+}  // namespace
 
 // A view that controls the child view's layer so that the layer always has the
 // same size as the display's original, un-scaled size in DIP. The layer is then
@@ -225,6 +254,16 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+
+  // The layer of the wallpaper widget is NOT_DRAWN. The wallpaper is drawn to
+  // a separate layer with translucent bit instead with a SOLID_COLOR layer as a
+  // background.  This is necessary to make sure that even if the system failed
+  // to allocate a texture memory for the wallpaper itself, the SOLID_COLOR
+  // layer can still cover the desktop.
+
+  // The widget has a opaque region so that WindowOcclusionTracker can occlude
+  // desktop windows when screen is locked. Note that frame eviction is
+  // paused during the locked state for performance reason.
   params.name = "WallpaperViewWidget";
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = root_window->GetChildById(container_id);
@@ -266,6 +305,8 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     ::wm::SetWindowVisibilityAnimationTransition(wallpaper_window,
                                                  ::wm::ANIMATE_NONE);
   }
+
+  new OpaqueRegionSetter(wallpaper_widget->GetNativeWindow());
 
   return wallpaper_widget;
 }

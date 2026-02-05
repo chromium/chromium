@@ -20,6 +20,7 @@
 #include "components/exo/server/wayland_server_handle.h"
 #include "components/exo/toast_surface_manager.h"
 #include "components/exo/wayland/server.h"
+#include "components/exo/window_occlusion_manager.h"
 #include "components/exo/wm_helper.h"
 
 namespace exo {
@@ -84,7 +85,8 @@ WaylandServerController::WaylandServerController(
           std::make_unique<Display>(std::move(notification_surface_manager),
                                     std::move(input_method_surface_manager),
                                     std::move(toast_surface_manager),
-                                    std::move(data_exchange_delegate))) {
+                                    std::move(data_exchange_delegate))),
+      window_occlusion_manager_(std::make_unique<WindowOcclusionManager>()) {
   DCHECK(!g_instance);
   g_instance = this;
   default_server_ =
