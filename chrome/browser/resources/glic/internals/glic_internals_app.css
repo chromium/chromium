@@ -19,12 +19,21 @@
   width: calc(100% - 4*var(--cr-card-border-radius));
 }
 
-td {
-  padding: 2px;
-}
-
 tr:nth-child(even) {
   background-color: var(--cr-fallback-color-surface-variant);
+}
+
+td {
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+td.status-true {
+  text-align: center;
+}
+
+td.status-false {
+  text-align: center;
 }
 
 .presets-container {

@@ -6,6 +6,12 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {GlicInternalsAppElement} from './glic_internals_app.js';
 
+function tdForBoolean(value: boolean) {
+  return html`<td class="status-${value}">
+    ${value ? '✅' : '🚫'}
+  </td>`;
+}
+
 export function getHtml(this: GlicInternalsAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
@@ -19,41 +25,41 @@ export function getHtml(this: GlicInternalsAppElement) {
         </tr>
         <tr>
           <td>Enabled by Chrome Flags</td>
-          <td>${!this.data_.enablement.featureDisabled}</td>
+          ${tdForBoolean(!this.data_.enablement.featureDisabled)}
         </tr>
         <tr>
           <td>Regular profile</td>
-          <td>${!this.data_.enablement.notRegularProfile}</td>
+          ${tdForBoolean(!this.data_.enablement.notRegularProfile)}
         </tr>
         <tr>
           <td>Pref or flag based rollout (flag or pref) applies</td>
-          <td>${!this.data_.enablement.notRolledOut}</td>
+          ${tdForBoolean(!this.data_.enablement.notRolledOut)}
         </tr>
         <tr>
           <td>Account exists and has the Gemini in Chrome capability</td>
-          <td>${!this.data_.enablement.primaryAccountNotCapable}</td>
+          ${tdForBoolean(!this.data_.enablement.primaryAccountNotCapable)}
         </tr>
         <tr>
           <td>Account exists and is fully signed-in</td>
-          <td>${!this.data_.enablement.primaryAccountNotFullySignedIn}</td>
+          ${tdForBoolean(!this.data_.enablement.primaryAccountNotFullySignedIn)}
         </tr>
         <tr>
           <td>
             Chrome Enterprise policy allows this feature (or doesn't apply)
           </td>
-          <td>${!this.data_.enablement.disallowedByChromePolicy}</td>
+          ${tdForBoolean(!this.data_.enablement.disallowedByChromePolicy)}
         </tr>
         <tr>
           <td>Server side admin allows this feature</td>
-          <td>${!this.data_.enablement.disallowedByRemoteAdmin}</td>
+          ${tdForBoolean(!this.data_.enablement.disallowedByRemoteAdmin)}
         </tr>
         <tr>
           <td>Server side allows this feature (Not admin policy)</td>
-          <td>${!this.data_.enablement.disallowedByRemoteOther}</td>
+          ${tdForBoolean(!this.data_.enablement.disallowedByRemoteOther)}
         </tr>
         <tr>
           <td>User did pass the FRE</td>
-          <td>${!this.data_.enablement.notConsented}</td>
+          ${tdForBoolean(!this.data_.enablement.notConsented)}
         </tr>
       </table>` :
       html`<h3 id="loadingMsg">Loading...</h3>`}
@@ -66,7 +72,7 @@ export function getHtml(this: GlicInternalsAppElement) {
         </tr>
         <tr>
           <td>Account is eligible for Live</td>
-          <td>${!this.data_.enablement.liveDisallowed}</td>
+          ${tdForBoolean(!this.data_.enablement.liveDisallowed)}
         </tr>
         <tr>
           <td>Actuation eligibility</td>
