@@ -203,14 +203,13 @@ class SyncEngineImplTest : public testing::Test {
     params.authenticated_account_info.account_id =
         CoreAccountId::FromGaiaId(gaia_id);
     params.sync_manager_factory = std::move(fake_manager_factory_);
-    if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
-      std::unique_ptr<os_crypt_async::OSCryptAsync> os_cryp_async =
-          os_crypt_async::GetTestOSCryptAsyncForTesting();
-      base::test::TestFuture<os_crypt_async::Encryptor> future;
-      os_cryp_async->GetInstance(future.GetCallback());
-      params.encryptor =
-          std::make_unique<os_crypt_async::Encryptor>(future.Take());
-    }
+
+    std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async =
+        os_crypt_async::GetTestOSCryptAsyncForTesting();
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    os_crypt_async->GetInstance(future.GetCallback());
+    params.encryptor =
+        std::make_unique<os_crypt_async::Encryptor>(future.Take());
 
     EXPECT_CALL(mock_host_, OnEngineInitialized(expect_success, _))
         .WillOnce(

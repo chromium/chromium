@@ -24,7 +24,6 @@ component("sync") {
     "//components/signin/core/browser",
     "//components/sync:unit_tests",
     "//components/sync/nigori",
-    "//components/sync/service",
     "//headless:headless_non_renderer",
     "//ios/chrome/browser/web/model:web_internal",
     "//services/network:network_service",

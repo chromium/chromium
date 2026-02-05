@@ -206,10 +206,6 @@ BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
 // determine whether the pref values should be set in the account storage.
 BASE_DECLARE_FEATURE(kSyncPreferencesUseSelectedTypes);
 
-// When enabled, Sync will use OSCryptAsync for encryption/decryption instead
-// of OSCrypt within the sync code.
-BASE_DECLARE_FEATURE(kSyncUseOsCryptAsync);
-
 BASE_DECLARE_FEATURE(kSyncDetermineAccountManagedStatus);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kSyncDetermineAccountManagedStatusTimeout);

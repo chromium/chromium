@@ -1344,8 +1344,7 @@ chromium-metrics-reviews@google.com.
   <owner>treib@chromium.org</owner>
   <summary>
     The time between SyncServiceImpl::TryStart() being called and the encryptor
-    being received from OSCryptAsync. Only recorded when kSyncUseOsCryptAsync is
-    enabled.
+    being received from OSCryptAsync.
   </summary>
 </histogram>
 

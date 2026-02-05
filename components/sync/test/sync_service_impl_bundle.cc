@@ -64,9 +64,7 @@ SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
   init_params.network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
   init_params.debug_identifier = "fakeDebugName";
-  if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
-    init_params.os_crypt_async = os_crypt_async_.get();
-  }
+  init_params.os_crypt_async = os_crypt_async_.get();
 
   return init_params;
 }
