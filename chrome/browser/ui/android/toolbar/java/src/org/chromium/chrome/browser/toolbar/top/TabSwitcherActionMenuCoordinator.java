@@ -262,7 +262,7 @@ public class TabSwitcherActionMenuCoordinator {
                         .withStartIconRes(
                                 IncognitoUtils.shouldOpenIncognitoAsWindow()
                                         ? R.drawable.ic_add_box_rounded_corner
-                                        : R.drawable.ic_incognito_fill_24dp)
+                                        : R.drawable.ic_incognito)
                         .withEnabled(enabled)
                         .build();
             case MenuItemType.CLOSE_ALL_INCOGNITO_TABS:

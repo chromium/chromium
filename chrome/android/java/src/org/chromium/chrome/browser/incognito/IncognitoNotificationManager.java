@@ -49,7 +49,7 @@ public class IncognitoNotificationManager {
                         .setContentText(actionMessage)
                         .setOngoing(true)
                         .setVisibility(Notification.VISIBILITY_SECRET)
-                        .setSmallIcon(R.drawable.ic_incognito_fill_24dp)
+                        .setSmallIcon(R.drawable.ic_incognito)
                         .setShowWhen(false)
                         .setLocalOnly(true)
                         .setGroup(NotificationConstants.GROUP_INCOGNITO);
