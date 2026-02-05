@@ -922,7 +922,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Ash.WiFi.WeakestLoginConnectionAvailability"
     enum="WiFiSecurityType" expires_after="2025-07-01">
-  <owner>skuhne@chromium.org</owner>
   <owner>rbock@google.com</owner>
   <summary>
     Logs the weakest security type for a connectable, configured and available
