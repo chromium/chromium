@@ -670,6 +670,14 @@ base::expected<void, std::string> ConvertAttributes(
     ConvertNodeInteractionInfo(*mojom_attributes.node_interaction_info,
                                proto_attributes->mutable_interaction_info());
   }
+  if (mojom_attributes.node_interaction_info &&
+      mojom_attributes.form_control_data &&
+      mojom_attributes.form_control_data->is_readonly) {
+    // Temporarily map readonly to disabled. This is a lossy workaround that
+    // preserves "do not edit" intent for consumers that only read proto data.
+    // TODO(crbug.com/481361478): Add readonly field to FormControlData proto.
+    proto_attributes->mutable_interaction_info()->set_is_disabled(true);
+  }
 
   if (mojom_attributes.text_info) {
     if (mojom_attributes.attribute_type !=

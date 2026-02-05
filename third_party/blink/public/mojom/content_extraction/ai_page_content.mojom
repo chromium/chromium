@@ -449,6 +449,9 @@ struct AIPageContentFormControlData {
   // Whether the field is required.
   bool is_required;
 
+  // Whether the field is read-only.
+  bool is_readonly;
+
 // Redaction decision for form fields.
   AIPageContentRedactionDecision redaction_decision;
 };

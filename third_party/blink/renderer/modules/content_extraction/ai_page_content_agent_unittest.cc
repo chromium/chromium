@@ -2364,6 +2364,43 @@ TEST_F(AIPageContentAgentTest, AriaCheckedMixedOnRoleCheckbox) {
   EXPECT_TRUE(checkbox->content_attributes->form_control_data->is_checked);
 }
 
+TEST_F(AIPageContentAgentTest, AriaReadOnlyOnRoleTextbox) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='textbox' role='textbox' aria-readonly='true'>"
+      "    ARIA Textbox"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Readonly state should be exposed for ARIA-based textboxes so consumers can
+  // avoid actions which would try to edit locked content.
+  GetAIPageContent();
+
+  const auto* textbox = FindNodeBySelector("#textbox");
+  ASSERT_TRUE(textbox);
+  CheckFormControlNode(*textbox, mojom::blink::FormControlType::kInputText);
+  EXPECT_TRUE(textbox->content_attributes->form_control_data->is_readonly);
+}
+
+TEST_F(AIPageContentAgentTest, NativeReadOnlyTextInput) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <input id='input' type='text' readonly>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Native readonly must be surfaced so consumers can avoid editing.
+  GetAIPageContent();
+
+  const auto* input = FindNodeBySelector("#input");
+  ASSERT_TRUE(input);
+  CheckFormControlNode(*input, mojom::blink::FormControlType::kInputText);
+  EXPECT_TRUE(input->content_attributes->form_control_data->is_readonly);
+}
+
 TEST_F(AIPageContentAgentTest, AriaCheckedDoesNotOverrideNativeCheckbox) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

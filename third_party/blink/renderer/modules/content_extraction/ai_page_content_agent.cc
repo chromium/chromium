@@ -881,6 +881,9 @@ bool ProcessAriaFormControlNode(
   bool aria_required =
       ui::SupportsRequired(aria_role) &&
       AXObject::IsAriaAttributeTrue(element, html_names::kAriaRequiredAttr);
+  bool aria_readonly =
+      ui::IsReadOnlySupported(aria_role) &&
+      AXObject::IsAriaAttributeTrue(element, html_names::kAriaReadonlyAttr);
 
   String aria_placeholder;
   if (RoleSupportsAriaPlaceholder(aria_role)) {
@@ -906,15 +909,16 @@ bool ProcessAriaFormControlNode(
 
   attributes.attribute_type =
       mojom::blink::AIPageContentAttributeType::kFormControl;
+
   // Do not gate ARIA form control metadata on visibility. The node can still be
   // included when visible descendants keep the subtree in the APC tree, so we
   // preserve ARIA semantics for downstream consumers.
-
   attributes.form_control_data =
       mojom::blink::AIPageContentFormControlData::New();
   auto& form_control_data = *attributes.form_control_data;
   form_control_data.form_control_type = form_control_type;
   form_control_data.is_required = aria_required;
+  form_control_data.is_readonly = aria_readonly;
   form_control_data.redaction_decision =
       mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
 
@@ -941,10 +945,12 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
   form_control_data->form_control_type = form_control_element.FormControlType();
   form_control_data->field_name = form_control_element.GetName();
   form_control_data->is_required = form_control_element.IsRequired();
+  form_control_data->is_readonly = form_control_element.IsReadOnly();
 
-  // Honor aria-required for native controls only when the native attribute is
-  // not set. This follows WAI-ARIA host language conflict guidance by keeping
-  // native semantics authoritative when present.
+  // Honor aria-required for native controls (and aria-readonly for text
+  // controls below) only when the native attributes are not set. This follows
+  // WAI-ARIA host language conflict guidance by keeping native semantics
+  // authoritative when present.
   if (!form_control_data->is_required &&
       AXObject::IsAriaAttributeTrue(form_control_element,
                                     html_names::kAriaRequiredAttr)) {
@@ -983,6 +989,12 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
       }
     }
     form_control_data->placeholder = placeholder_value;
+
+    if (!form_control_data->is_readonly &&
+        AXObject::IsAriaAttributeTrue(form_control_element,
+                                      html_names::kAriaReadonlyAttr)) {
+      form_control_data->is_readonly = true;
+    }
   }
   if (const auto* html_input_element =
           DynamicTo<HTMLInputElement>(form_control_element)) {

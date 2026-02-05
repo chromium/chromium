@@ -959,6 +959,13 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
       "placeholder";
   form_control_node->content_attributes->form_control_data->is_checked = true;
   form_control_node->content_attributes->form_control_data->is_required = false;
+  form_control_node->content_attributes->form_control_data->is_readonly = true;
+  // Provide interaction info so we can verify the temporary mapping from
+  // read-only to disabled while the proto lacks a dedicated field.
+  form_control_node->content_attributes->node_interaction_info =
+      blink::mojom::AIPageContentNodeInteractionInfo::New();
+  form_control_node->content_attributes->node_interaction_info->is_disabled =
+      false;
   form_control_node->content_attributes->form_control_data->select_options
       .push_back(blink::mojom::AIPageContentSelectOption::New());
   form_control_node->content_attributes->form_control_data->select_options[0]
@@ -990,6 +997,12 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
   EXPECT_EQ(form_control_data_proto.placeholder(), "placeholder");
   EXPECT_TRUE(form_control_data_proto.is_checked());
   EXPECT_FALSE(form_control_data_proto.is_required());
+  // Read-only is mapped to disabled until the proto gains a dedicated field.
+  EXPECT_TRUE(page_content.proto.root_node()
+                  .children_nodes(0)
+                  .content_attributes()
+                  .interaction_info()
+                  .is_disabled());
   ASSERT_EQ(form_control_data_proto.select_options_size(), 1);
   EXPECT_EQ(form_control_data_proto.select_options(0).value(), "option value");
   EXPECT_EQ(form_control_data_proto.select_options(0).text(), "option text");
