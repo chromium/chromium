@@ -18,6 +18,7 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #import "components/autofill/core/browser/integrators/password_form_classification.h"
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -97,6 +98,11 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   GetPasswordManagerFieldClassificationModelHandler() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
+  void GetAiPageContent(GetAiPageContentCallback callback) override;
+  AutofillAiManager* GetAutofillAiManager() override;
+  AutofillAiModelCache* GetAutofillAiModelCache() override;
+  AutofillAiModelExecutor* GetAutofillAiModelExecutor() override;
+  optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -186,6 +192,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};
   const AutofillAblationStudy ablation_study_;
+  std::unique_ptr<AutofillAiManager> autofill_ai_manager_;
 
   // Order matters for this initialization. This initialization must happen
   // after all of the members passed into the constructor of

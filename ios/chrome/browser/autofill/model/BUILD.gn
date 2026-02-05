@@ -21,6 +21,10 @@ source_set("model") {
     "form_suggestion_controller.mm",
     "form_suggestion_tab_helper.h",
     "form_suggestion_tab_helper.mm",
+    "ios_autofill_ai_model_cache_factory.h",
+    "ios_autofill_ai_model_cache_factory.mm",
+    "ios_autofill_ai_model_executor_factory.h",
+    "ios_autofill_ai_model_executor_factory.mm",
     "ios_autofill_entity_data_manager_factory.h",
     "ios_autofill_entity_data_manager_factory.mm",
     "personal_data_manager_factory.h",
@@ -30,6 +34,7 @@ source_set("model") {
     "validation_rules_storage_factory.cc",
     "validation_rules_storage_factory.h",
   ]
+
   if (build_with_tflite_lib) {
     sources += [
       "ios_autofill_field_classification_model_handler_factory.h",
@@ -49,12 +54,14 @@ source_set("model") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/leveldb_proto",
+    "//components/optimization_guide/core:model_execution",
     "//components/plus_addresses/core/common:features",
     "//components/prefs",
     "//components/sync/service",
     "//components/variations/service",
     "//ios/chrome/browser/autofill/resources",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -77,6 +84,7 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
+
   if (build_with_tflite_lib) {
     deps += [ "//ios/chrome/browser/optimization_guide/model" ]
   }

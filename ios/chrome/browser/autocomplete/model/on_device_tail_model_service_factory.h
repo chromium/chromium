@@ -15,7 +15,7 @@ class ProfileIOS;
 class OnDeviceTailModelService;
 
 // A factory to create a unique `OnDeviceTailModelService` per
-// profile. Has dependency on `OptimizationGuideKeyedServiceFactory`.
+// profile. Has dependency on `OptimizationGuideServiceFactory`.
 class OnDeviceTailModelServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   // Gets the singleton instance of `OnDeviceTailModelServiceFactory`.

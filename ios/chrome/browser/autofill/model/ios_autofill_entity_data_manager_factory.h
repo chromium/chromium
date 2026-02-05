@@ -30,7 +30,7 @@ class IOSAutofillEntityDataManagerFactory
   IOSAutofillEntityDataManagerFactory();
   ~IOSAutofillEntityDataManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };

@@ -15,7 +15,7 @@ class ProfileIOS;
 namespace ios {
 
 // A factory to create a unique `AutocompleteScoringModelService` per
-// profile. Has a dependency on `OptimizationGuideKeyedServiceFactory`.
+// profile. Has a dependency on `OptimizationGuideServiceFactory`.
 class AutocompleteScoringModelServiceFactory
     : public ProfileKeyedServiceFactoryIOS {
  public:

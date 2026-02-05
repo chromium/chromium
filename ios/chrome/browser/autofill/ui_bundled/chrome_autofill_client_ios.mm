@@ -39,7 +39,9 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -53,6 +55,8 @@
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_cache_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
@@ -62,6 +66,8 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -109,6 +115,10 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       infobar_manager_(infobar_manager),
       log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
       ablation_study_(GetApplicationContext()->GetLocalState()) {
+  if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+    autofill_ai_manager_ = std::make_unique<AutofillAiManager>(
+        this, autofill::StrikeDatabaseFactory::GetForProfile(profile));
+  }
   // TODO(crbug.com/449708427): Remove once `AccountInfo` supports full_name on
   // IOS.
   if (personal_data_manager_) {
@@ -217,6 +227,29 @@ SingleFieldFillRouter& ChromeAutofillClientIOS::GetSingleFieldFillRouter() {
 AutocompleteHistoryManager*
 ChromeAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;
+}
+
+void ChromeAutofillClientIOS::GetAiPageContent(
+    GetAiPageContentCallback callback) {
+  // TODO(crbug.com/480934102): Add support for getting AI page content.
+  std::move(callback).Run(std::nullopt);
+}
+
+AutofillAiManager* ChromeAutofillClientIOS::GetAutofillAiManager() {
+  return autofill_ai_manager_.get();
+}
+
+AutofillAiModelCache* ChromeAutofillClientIOS::GetAutofillAiModelCache() {
+  return IOSAutofillAiModelCacheFactory::GetForProfile(profile_);
+}
+
+AutofillAiModelExecutor* ChromeAutofillClientIOS::GetAutofillAiModelExecutor() {
+  return IOSAutofillAiModelExecutorFactory::GetForProfile(profile_);
+}
+
+optimization_guide::RemoteModelExecutor*
+ChromeAutofillClientIOS::GetRemoteModelExecutor() {
+  return OptimizationGuideServiceFactory::GetForProfile(profile_);
 }
 
 PrefService* ChromeAutofillClientIOS::GetPrefs() {
