@@ -8,7 +8,6 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <utility>
 
 #include "base/logging.h"
@@ -21,6 +20,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace policy {
 
@@ -160,7 +160,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     return accounts;
   }
 
-  std::set<std::string> account_ids;
+  absl::flat_hash_set<std::string> account_ids;
   for (size_t i = 0; i < list->size(); ++i) {
     const base::Value& entry = (*list)[i];
     if (!entry.is_dict()) {
