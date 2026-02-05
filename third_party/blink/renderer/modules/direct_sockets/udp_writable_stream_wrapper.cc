@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_features.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -174,7 +175,13 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
 
 void UDPWritableStreamWrapper::OnSend(int32_t result) {
   if (write_promise_resolver_) {
-    if (result == net::Error::OK) {
+    if (result == net::ERR_ADDRESS_UNREACHABLE &&
+        base::FeatureList::IsEnabled(kDirectSocketsAllowRecoverableErrors)) {
+      // Log recoverable errors and resolve to keep the WritableStream alive.
+      base::UmaHistogramSparse("DirectSockets.UDPWritableStreamError", -result);
+      write_promise_resolver_->Resolve();
+      write_promise_resolver_ = nullptr;
+    } else if (result >= net::OK) {
       write_promise_resolver_->Resolve();
       write_promise_resolver_ = nullptr;
     } else {

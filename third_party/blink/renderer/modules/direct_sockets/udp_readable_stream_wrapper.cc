@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_features.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -146,9 +147,12 @@ void UDPReadableStreamWrapper::OnReceived(
     const std::optional<::net::IPEndPoint>& src_addr,
     std::optional<::base::span<const ::uint8_t>> data) {
   if (result != net::OK) {
-    if (result == net::ERR_MSG_TOO_BIG) {
-      // TODO(crbug.com/362145407): Figure out the root cause.
-      // Error codes are negative.
+    if (base::FeatureList::IsEnabled(kDirectSocketsAllowRecoverableErrors) &&
+        (result == net::ERR_MSG_TOO_BIG ||
+         result == net::ERR_CONNECTION_REFUSED ||
+         result == net::ERR_ADDRESS_UNREACHABLE)) {
+      // These errors are typically transient or asynchronous notifications
+      // of past failures and should not close the stream.
       base::UmaHistogramSparse("DirectSockets.UDPReadableStreamError", -result);
 
       DCHECK_GT(pending_receive_requests_, 0);
