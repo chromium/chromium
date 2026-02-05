@@ -265,7 +265,8 @@ void MayActOnUrlInternal(const GURL& url,
   // will be included in the `origin_checker`. If `url`'s origin has not been
   // confirmed by the user, we apply the optimization guide check.
   if (IsNavigationGatingEnabled() &&
-      (!origin_checker || origin_checker->IsSensitiveUrlConfirmed(url))) {
+      (!origin_checker ||
+       origin_checker->IsNavigationConfirmedByUser(url::Origin::Create(url)))) {
     decision_wrapper->Accept();
     return;
   }

@@ -18,17 +18,17 @@ constexpr std::string_view kExample = "https://example.com";
 constexpr std::string_view kAnother = "https://another.com";
 
 TEST(OriginCheckerTest, InitialState) {
-  const GURL example(kExample);
+  const url::Origin example = url::Origin::Create(GURL(kExample));
   OriginChecker origin_checker;
-  EXPECT_FALSE(origin_checker.IsNavigationAllowed(url::Origin::Create(example),
-                                                  GURL(kAnother)));
-  EXPECT_FALSE(origin_checker.IsSensitiveUrlConfirmed(example));
+  EXPECT_FALSE(origin_checker.IsNavigationAllowed(example, GURL(kAnother)));
+  EXPECT_FALSE(origin_checker.IsNavigationConfirmedByUser(example));
 }
 
 TEST(OriginCheckerTest, AllowNavigationToSingleOrigin) {
   const GURL example(kExample);
   OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo(url::Origin::Create(example));
+  origin_checker.AllowNavigationTo(url::Origin::Create(example),
+                                   /*is_user_confirmed=*/false);
 
   const url::Origin another_origin = url::Origin::Create(GURL(kAnother));
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(another_origin, example));
@@ -71,7 +71,8 @@ TEST(OriginCheckerTest, IsNavigationAllowed_SameSite_Disallowed) {
 
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(
-      url::Origin::Create(GURL("https://subdomain.example.com")));
+      url::Origin::Create(GURL("https://subdomain.example.com")),
+      /*is_user_confirmed=*/false);
 
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(
       url::Origin::Create(GURL(kAnother)), GURL(kExample)));
@@ -86,7 +87,8 @@ TEST(OriginCheckerTest, IsNavigationAllowed_SameSite_AllowedByFeature) {
 
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(
-      url::Origin::Create(GURL("https://subdomain.example.com")));
+      url::Origin::Create(GURL("https://subdomain.example.com")),
+      /*is_user_confirmed=*/false);
 
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(
       url::Origin::Create(GURL(kAnother)), GURL(kExample)));
@@ -95,7 +97,8 @@ TEST(OriginCheckerTest, IsNavigationAllowed_SameSite_AllowedByFeature) {
 TEST(OriginCheckerTest, IsNavigationAllowed_OpaqueInitiator) {
   const GURL example(kExample);
   OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo(url::Origin::Create(example));
+  origin_checker.AllowNavigationTo(url::Origin::Create(example),
+                                   /*is_user_confirmed=*/false);
 
   url::Origin opaque;
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(opaque, example));
@@ -105,21 +108,34 @@ TEST(OriginCheckerTest, IsNavigationAllowed_OpaqueInitiator) {
 TEST(OriginCheckerTest, IsNavigationAllowed_OmittedInitiator) {
   const GURL example(kExample);
   OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo(url::Origin::Create(example));
+  origin_checker.AllowNavigationTo(url::Origin::Create(example),
+                                   /*is_user_confirmed=*/false);
 
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(std::nullopt, example));
   EXPECT_FALSE(
       origin_checker.IsNavigationAllowed(std::nullopt, GURL(kAnother)));
 }
 
-TEST(OriginCheckerTest, ConfirmSensitiveOrigin) {
-  const GURL sensitive("https://sensitive.com");
+TEST(OriginCheckerTest, ConfirmOrigin_Query) {
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
 
   OriginChecker origin_checker;
-  origin_checker.ConfirmSensitiveOrigin(url::Origin::Create(sensitive));
+  origin_checker.AllowNavigationTo(origin,
+                                   /*is_user_confirmed=*/true);
 
-  EXPECT_TRUE(origin_checker.IsSensitiveUrlConfirmed(sensitive));
-  EXPECT_FALSE(origin_checker.IsSensitiveUrlConfirmed(GURL(kAnother)));
+  EXPECT_TRUE(origin_checker.IsNavigationConfirmedByUser(origin));
+  EXPECT_FALSE(origin_checker.IsNavigationConfirmedByUser(
+      url::Origin::Create(GURL(kAnother))));
+}
+
+TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation) {
+  const GURL example("https://example.com/foo");
+
+  OriginChecker origin_checker;
+  origin_checker.AllowNavigationTo(url::Origin::Create(example),
+                                   /*is_user_confirmed=*/true);
+
+  EXPECT_TRUE(origin_checker.IsNavigationAllowed(std::nullopt, example));
 }
 
 TEST(OriginCheckerTest, RecordsHistograms) {
@@ -128,13 +144,13 @@ TEST(OriginCheckerTest, RecordsHistograms) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
   const url::Origin another = url::Origin::Create(GURL(kAnother));
   OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo({example, another});
-  origin_checker.ConfirmSensitiveOrigin(example);
+  origin_checker.AllowNavigationTo(example, /*is_user_confirmed=*/true);
+  origin_checker.AllowNavigationTo(another, /*is_user_confirmed=*/false);
   origin_checker.RecordSizeMetrics();
 
   histograms.ExpectUniqueSample("Actor.NavigationGating.AllowListSize",
                                 /*sample=*/2, /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample("Actor.NavigationGating.ConfirmedListSize",
+  histograms.ExpectUniqueSample("Actor.NavigationGating.ConfirmedListSize2",
                                 /*sample=*/1, /*expected_bucket_count=*/1);
 }
 

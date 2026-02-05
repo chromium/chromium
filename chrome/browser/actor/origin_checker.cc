@@ -43,11 +43,16 @@ bool OriginChecker::IsNavigationAllowed(
              });
 }
 
-bool OriginChecker::IsSensitiveUrlConfirmed(const GURL& url) const {
-  return user_confirmed_sensitive_origins_.contains(url::Origin::Create(url));
+bool OriginChecker::IsNavigationConfirmedByUser(
+    const url::Origin& origin) const {
+  return user_confirmed_origins_.contains(origin);
 }
 
-void OriginChecker::AllowNavigationTo(url::Origin origin) {
+void OriginChecker::AllowNavigationTo(url::Origin origin,
+                                      bool is_user_confirmed) {
+  if (is_user_confirmed) {
+    user_confirmed_origins_.insert(origin);
+  }
   allowed_navigation_origins_.insert(std::move(origin));
 }
 
@@ -57,13 +62,9 @@ void OriginChecker::AllowNavigationTo(
                                            allowed_navigation_origins_.end()));
 }
 
-void OriginChecker::ConfirmSensitiveOrigin(url::Origin origin) {
-  user_confirmed_sensitive_origins_.insert(std::move(origin));
-}
-
 void OriginChecker::RecordSizeMetrics() const {
   RecordActorNavigationGatingListSize(allowed_navigation_origins_.size(),
-                                      user_confirmed_sensitive_origins_.size());
+                                      user_confirmed_origins_.size());
 }
 
 }  // namespace actor

@@ -219,14 +219,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.ConfirmedListSize" units="origins"
+<histogram name="Actor.NavigationGating.ConfirmedListSize2" units="origins"
     expires_after="2026-03-30">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
-    Records the size of the list of sensitive origins on the optimization guide
-    blocklist that the user confirmed the actor can interact with. Recorded at
-    the end of every task.
+    Records the size of the list of origins that the user confirmed the actor
+    can interact with. Recorded at the end of every task.
   </summary>
 </histogram>
 

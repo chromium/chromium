@@ -137,7 +137,7 @@ void RecordActorNavigationGatingListSize(size_t allow_list_size,
                                          size_t confirmed_list_size) {
   base::UmaHistogramCounts1000("Actor.NavigationGating.AllowListSize",
                                allow_list_size);
-  base::UmaHistogramCounts1000("Actor.NavigationGating.ConfirmedListSize",
+  base::UmaHistogramCounts1000("Actor.NavigationGating.ConfirmedListSize2",
                                confirmed_list_size);
 }
 

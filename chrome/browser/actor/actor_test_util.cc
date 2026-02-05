@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -75,12 +76,41 @@ using tabs::TabHandle;
 using tabs::TabInterface;
 
 namespace {
+
 TabHandle GetTabHandleForFrame(content::RenderFrameHost& rfh) {
   auto* tab = TabInterface::GetFromContents(
       content::WebContents::FromRenderFrameHost(&rfh));
   CHECK(tab);
   return tab->GetHandle();
 }
+
+// Returns a configuration as a binary-serialized protobuf.
+std::string CreateOptimizationGuideConfig(const std::string& blocked_host) {
+  constexpr uint32_t kNumHashFunctions = 7;
+  constexpr uint32_t kNumBits = 511;
+  optimization_guide::BloomFilter blocklist_bloom_filter(kNumHashFunctions,
+                                                         kNumBits);
+  blocklist_bloom_filter.Add(blocked_host);
+  std::string blocklist_bloom_filter_data(
+      reinterpret_cast<const char*>(&blocklist_bloom_filter.bytes()[0]),
+      blocklist_bloom_filter.bytes().size());
+
+  optimization_guide::proto::Configuration config;
+  optimization_guide::proto::OptimizationFilter* blocklist_optimization_filter =
+      config.add_optimization_blocklists();
+  blocklist_optimization_filter->set_optimization_type(
+      optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_num_hash_functions(
+      kNumHashFunctions);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_num_bits(kNumBits);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_data(
+      blocklist_bloom_filter_data);
+
+  std::string encoded_config;
+  config.SerializeToString(&encoded_config);
+  return encoded_config;
+}
+
 }  // namespace
 
 Actions MakeClick(RenderFrameHost& rfh,
@@ -622,34 +652,18 @@ void PrintTo(const mojom::ActionResultCode& code, std::ostream* os) {
   *os << std::to_underlying(code);
 }
 
+bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,
+                                              const std::string& blocked_host) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  return base::WriteFile(path, CreateOptimizationGuideConfig(blocked_host));
+}
+
 void SetUpBlocklist(base::CommandLine* command_line,
                     const std::string& blocked_host) {
-  constexpr uint32_t kNumHashFunctions = 7;
-  constexpr uint32_t kNumBits = 511;
-  optimization_guide::BloomFilter blocklist_bloom_filter(kNumHashFunctions,
-                                                         kNumBits);
-  blocklist_bloom_filter.Add(blocked_host);
-  std::string blocklist_bloom_filter_data(
-      reinterpret_cast<const char*>(&blocklist_bloom_filter.bytes()[0]),
-      blocklist_bloom_filter.bytes().size());
-
-  optimization_guide::proto::Configuration config;
-  optimization_guide::proto::OptimizationFilter* blocklist_optimization_filter =
-      config.add_optimization_blocklists();
-  blocklist_optimization_filter->set_optimization_type(
-      optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK);
-  blocklist_optimization_filter->mutable_bloom_filter()->set_num_hash_functions(
-      kNumHashFunctions);
-  blocklist_optimization_filter->mutable_bloom_filter()->set_num_bits(kNumBits);
-  blocklist_optimization_filter->mutable_bloom_filter()->set_data(
-      blocklist_bloom_filter_data);
-
-  std::string encoded_config;
-  config.SerializeToString(&encoded_config);
-  encoded_config = base::Base64Encode(encoded_config);
-
   command_line->AppendSwitchASCII(
-      optimization_guide::switches::kHintsProtoOverride, encoded_config);
+      optimization_guide::switches::kHintsProtoOverride,
+      base::Base64Encode(CreateOptimizationGuideConfig(blocked_host)));
 }
 
 std::string EncodeURI(const std::string& component) {

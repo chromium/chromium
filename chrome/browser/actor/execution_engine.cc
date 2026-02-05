@@ -370,10 +370,10 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
     bool skip_prompt,
     base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
-  // Check previously confirmed origins on the sensitive list. If the user
-  // has previously confirmed the origin is allowed, we should proceed and not
-  // double prompt.
-  if (origin_checker_.IsSensitiveUrlConfirmed(navigation_url)) {
+  // Check previously confirmed origins. If the user has previously confirmed
+  // the origin is allowed, we should proceed and not double prompt.
+  if (origin_checker_.IsNavigationConfirmedByUser(
+          url::Origin::Create(navigation_url))) {
     OnNavigationSensitiveUrlListChecked(initiator_origin, navigation_url,
                                         skip_prompt, std::move(timer),
                                         std::move(callback),
@@ -482,7 +482,8 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.PermissionGranted",
                           permission_granted);
     if (permission_granted) {
-      origin_checker_.AllowNavigationTo(std::move(navigation_origin));
+      origin_checker_.AllowNavigationTo(std::move(navigation_origin),
+                                        /*is_user_confirmed=*/false);
     }
     std::move(callback).Run(permission_granted);
     return;
@@ -508,13 +509,11 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
   task_->delegate()->RequestToShowUserConfirmationDialog(
       task_->id(), navigation_origin, for_sensitive_origin,
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
-                     GetWeakPtr(), navigation_origin, for_sensitive_origin,
-                     std::move(callback)));
+                     GetWeakPtr(), navigation_origin, std::move(callback)));
 }
 
 void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
     url::Origin navigation_origin,
-    bool for_sensitive_origin,
     ExecutionEngine::NavigationDecisionCallback callback,
     webui::mojom::UserConfirmationDialogResponsePtr response) {
   if (response->result->is_permission_granted()) {
@@ -523,17 +522,10 @@ void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
                           permission_granted);
     if (permission_granted) {
       // See the comment on `OriginOrPrecursorIfOpaque` for why we do not store
-      // `navigation_origin` directly here and for the confirmed sensitive
-      // origins.
+      // `navigation_origin` directly here.
       origin_checker_.AllowNavigationTo(
-          OriginOrPrecursorIfOpaque(navigation_origin));
-      // We update both lists in the `for_sensitive_origin` case so that we do
-      // not have to double-confirm this origin when we invoke
-      // ExecutionEngine::HandleNavigationToNewOrigin.
-      if (for_sensitive_origin) {
-        origin_checker_.ConfirmSensitiveOrigin(
-            OriginOrPrecursorIfOpaque(navigation_origin));
-      }
+          OriginOrPrecursorIfOpaque(navigation_origin),
+          /*is_user_confirmed=*/true);
     }
     std::move(callback).Run(permission_granted);
     return;
@@ -650,7 +642,8 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
       if (std::optional<url::Origin> maybe_origin =
               action->AssociatedOriginGrant();
           maybe_origin) {
-        origin_checker_.AllowNavigationTo(maybe_origin.value());
+        origin_checker_.AllowNavigationTo(maybe_origin.value(),
+                                          /*is_user_confirmed=*/false);
       }
     }
   }
@@ -714,9 +707,8 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   // Asynchronously check if we can act on the tab. NOTE that the MayActOnTab
   // check uses `GetLastCommittedURL()` from the tab. For opaque origins, this
   // means that we'll get the precursor URL. For this reason, we previously
-  // invoked `origin_checker_.ConfirmSensitiveOrigin()` with the precursor to
-  // ensure the optimization guide sensitive origin check would be skipped as
-  // expected.
+  // added the precursor to `origin_checker_` to ensure the optimization guide
+  // sensitive origin check would be skipped as expected.
   MayActOnTab(
       *tab, *journal_, task_->id(), origin_checker_, task_->policy_checker(),
       base::BindOnce(

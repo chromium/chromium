@@ -6,6 +6,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -32,7 +34,9 @@ constexpr char kHandleUserConfirmationDialogTempl[] =
     R"js(
   (() => {
     window.userConfirmationDialogRequestData = new Promise(resolve => {
-      client.browser.selectUserConfirmationDialogRequestHandler().subscribe(
+      const subscription = client.browser
+          .selectUserConfirmationDialogRequestHandler()
+          .subscribe(
         request => {
           // Response will be verified in C++ callback below.
           request.onDialogClosed({
@@ -42,6 +46,7 @@ constexpr char kHandleUserConfirmationDialogTempl[] =
           });
           // Resolve the promise with the request data to be verified.
           resolve(request);
+          subscription.unsubscribe();
         }
       );
     });
@@ -52,7 +57,8 @@ constexpr char kHandleNavigationConfirmationTempl[] =
     R"js(
   (() => {
     window.navigationConfirmationRequestData = new Promise(resolve => {
-      client.browser.selectNavigationConfirmationRequestHandler()
+      const subscription = client.browser
+          .selectNavigationConfirmationRequestHandler()
           .subscribe(
             request => {
               // Response will be verified in C++ callback below.
@@ -63,6 +69,7 @@ constexpr char kHandleNavigationConfirmationTempl[] =
               });
               // Resolve the promise with the request data to be verified.
               resolve(request);
+              subscription.unsubscribe();
             }
           );
     });
@@ -104,18 +111,18 @@ class ExecutionEngineOriginGatingBrowserTestBase
     optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester_for_init_,
         "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
-    // Simulate the component loading, as the implementation checks it, but the
-    // actual list is set via the command line.
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
-        ->MaybeUpdateHintsComponent(
-            {base::Version("123"),
-             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
-  }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    glic::test::InteractiveGlicTest::SetUpCommandLine(command_line);
-    SetUpBlocklist(command_line, "blocked.example.com");
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    base::FilePath proto_path =
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("base_proto.pb"));
+    ASSERT_TRUE(SetUpOptimizationGuideComponentBlocklist(
+        proto_path, "blocked.example.com"));
+    optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+        ->MaybeUpdateHintsComponent({base::Version("1"), proto_path});
+
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester_for_init_,
+        optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
   }
 
   virtual bool multi_instance_enabled() {
@@ -227,11 +234,11 @@ class ExecutionEngineOriginGatingBrowserTestBase
 
  protected:
   base::HistogramTester histogram_tester_for_init_;
+  base::ScopedTempDir temp_dir_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TaskId task_id_;
-  base::ScopedTempDir temp_dir_;
 };
 
 class ExecutionEngineOriginGatingBrowserTest
@@ -379,6 +386,134 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   // Should log that permission was *granted* once.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.PermissionGranted", true, 1);
+}
+
+class ExecutionEngineOriginGatingUserPromptingBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTest {
+ public:
+  ExecutionEngineOriginGatingUserPromptingBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kGlic, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {kGlicCrossOriginNavigationGating,
+             {{
+                 {"confirm_navigation_to_new_origins", "true"},
+                 {std::string(kGlicPromptUserForNavigationToNewOrigins.name),
+                  "true"},
+             }}},
+        },
+        /*disabled_features=*/{features::kGlicWarming});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// When kGlicPromptUserForNavigationToNewOrigins is enabled, we should not
+// prompt twice for the same non-sensitive origin.
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
+                       ConfirmBlockedOriginWithUser_Nonsensitive) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL other_url = embedded_https_test_server().GetURL(
+      "other.example.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // The user should be prompted due to
+  // `kGlicPromptUserForNavigationToNewOrigins`.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", other_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({
+    "navigationOrigin": $1,
+    "forBlocklistedOrigin": false
+  })",
+          url::Origin::Create(other_url).GetDebugString()))));
+
+  // Start back at `start_url`, and try another x-origin navigation to
+  // `other_url`.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  RunTestSequence(VerifyUserConfirmationDialogRequest(base::test::ParseJsonDict(
+      content::JsReplace(R"({
+    "navigationOrigin": $1,
+    "forBlocklistedOrigin": false
+  })",
+                         url::Origin::Create(start_url).GetDebugString()))));
+
+  // Now this should proceed without a user confirmation or a server
+  // confirmation, since the user has already confirmed it.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), other_url));
+}
+
+// When kGlicPromptUserForNavigationToNewOrigins is enabled, we should not
+// prompt twice even if the origin becomes sensitive during the task.
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
+                       ConfirmBlockedOriginWithUser_ComponentUpdate) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL eventually_sensitive = embedded_https_test_server().GetURL(
+      "eventually-sensitive.example.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // The user should be prompted due to
+  // `kGlicPromptUserForNavigationToNewOrigins`.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("setLink($1);", eventually_sensitive)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({
+    "navigationOrigin": $1,
+    "forBlocklistedOrigin": false
+  })",
+          url::Origin::Create(eventually_sensitive).GetDebugString()))));
+
+  base::FilePath proto_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("base_proto_v2.pb"));
+  ASSERT_TRUE(SetUpOptimizationGuideComponentBlocklist(
+      proto_path, "eventually-sensitive.example.com"));
+  optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+      ->MaybeUpdateHintsComponent({base::Version("2"), proto_path});
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester_for_init_,
+      optimization_guide::kComponentHintsUpdatedResultHistogramString, 2);
+
+  // Start back at `start_url`, and try another x-origin navigation to
+  // `eventually_sensitive`.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  RunTestSequence(VerifyUserConfirmationDialogRequest(base::test::ParseJsonDict(
+      content::JsReplace(R"({
+    "navigationOrigin": $1,
+    "forBlocklistedOrigin": false
+  })",
+                         url::Origin::Create(start_url).GetDebugString()))));
+
+  // Now this should proceed without a user confirmation or a server
+  // confirmation, since the user has already confirmed it.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), eventually_sensitive));
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
@@ -564,7 +699,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AllowListSize", 2, 1);
   // The list of confirmed sensitive origins should have 1 entry.
   histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.ConfirmedListSize", 1, 1);
+      "Actor.NavigationGating.ConfirmedListSize2", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
@@ -624,7 +759,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                                       1);
   // The list of confirmed sensitive origins should have 1 entry.
   histogram_tester.ExpectUniqueSample(
-      "Actor.NavigationGating.ConfirmedListSize", 1, 1);
+      "Actor.NavigationGating.ConfirmedListSize2", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
@@ -979,6 +1114,13 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExecutionEngineOriginGatingBrowserTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "MultiInstance"
+                                             : "SingleInstance";
+                         });
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineOriginGatingUserPromptingBrowserTest,
                          testing::Bool(),
                          [](auto& info) {
                            return info.param ? "MultiInstance"

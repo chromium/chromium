@@ -24,20 +24,19 @@ class OriginChecker {
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL& url) const;
 
-  // Returns true iff the user has confirmed that the actor may interact with
-  // `url` (via a previous call to `ConfirmSensitiveOrigin`).
-  bool IsSensitiveUrlConfirmed(const GURL& url) const;
+  // Returns true iff navigation to or interaction with `origin` has been
+  // allowed (via a previous call to `AllowNavigationTo`) with
+  // `is_user_confirmed` set to true.
+  bool IsNavigationConfirmedByUser(const url::Origin& origin) const;
 
   // Adds the given origin to the set of origins to which the actor is allowed
-  // to navigate.
-  void AllowNavigationTo(url::Origin origin);
+  // to navigate. `is_user_confirmed` controls whether
+  // `IsNavigationConfirmedByUser` will return true for this origin in the
+  // future.
+  void AllowNavigationTo(url::Origin origin, bool is_user_confirmed);
   // Adds the given origins to the set of origins to which the actor is allowed
-  // to navigate.
+  // to navigate. The origins are considered non-user-confirmed.
   void AllowNavigationTo(const absl::flat_hash_set<url::Origin>& origins);
-
-  // Adds the given origin to the set of sensitive origins the actor may
-  // interact with.
-  void ConfirmSensitiveOrigin(url::Origin origin);
 
   // Records histograms with size metrics for each set of origins. Callers
   // should ensure that this method is only called in cases that are documented
@@ -49,12 +48,12 @@ class OriginChecker {
   // control without needing to confirm the navigation with the web client. This
   // set can have origins added to it by the server actions or by confirming the
   // new origin with the model or user. Sensitive origins that are on the
-  // optimization guide blocklist are not exempt by this list.
+  // optimization guide blocklist are not exempt by this set.
   absl::flat_hash_set<url::Origin> allowed_navigation_origins_;
 
-  // The set of sensitive origins that the user has manually confirmed the actor
-  // may interact with.
-  absl::flat_hash_set<url::Origin> user_confirmed_sensitive_origins_;
+  // The set of origins that the user has manually confirmed the actor may
+  // interact with.
+  absl::flat_hash_set<url::Origin> user_confirmed_origins_;
 };
 
 }  // namespace actor
