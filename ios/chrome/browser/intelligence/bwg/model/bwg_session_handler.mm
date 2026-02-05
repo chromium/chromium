@@ -304,18 +304,19 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 
 // Called when the user taps on the photo, gallery, CreateImageSelected or
 // CreateImageDeselected in Attachment sheet behind + button.
-- (void)didTapInputPlateAttachmentOption:(NSString*)attachmentOption
+- (void)didTapInputPlateAttachmentOption:
+            (gemini::InputPlateAttachmentOption)attachmentOption
                                sessionID:(NSString*)sessionID
                           conversationID:(NSString*)conversationID {
-  // TODO: Implement metrics once attachmentOption is available as an enum.
+  RecordGeminiInputPlateAttachmentOptionTapped(attachmentOption);
 }
 
 // Called when the user taps on save / share / copy / download image action
 // button.
-- (void)imageActionButtonTapped:(NSString*)actionButtonType
+- (void)imageActionButtonTapped:(gemini::ImageActionButtonType)actionButtonType
                       sessionID:(NSString*)sessionID
                  conversationID:(NSString*)conversationID {
-  // TODO: Implement metrics once actionButtonType is available as an enum.
+  RecordGeminiImageActionButtonTapped(actionButtonType);
 }
 
 #pragma mark - Private

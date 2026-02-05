@@ -8,8 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
+// TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
+// equivalent with an enum in bwg_constants.h
 // Input type for BWG queries.
 // LINT.IfChange(BWGInputType)
 typedef NS_ENUM(NSInteger, BWGInputType) {
@@ -67,6 +70,8 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
 //   /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod
 // )
 
+// TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
+// equivalent with an enum in bwg_constants.h
 // The feedback type for Gemini queries.
 // LINT.IfChange(GeminiFeedbackType)
 enum class GeminiFeedbackType {
@@ -75,8 +80,13 @@ enum class GeminiFeedbackType {
   // Thumbs down feedback type.
   kThumbsDown,
 };
-// LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFeedback)
+// LINT.ThenChange(
+//   /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFeedback,
+//   /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFeedback
+// )
 
+// TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
+// equivalent with an enum in bwg_constants.h
 // Cancellation types for a Gemini session.
 typedef NS_ENUM(NSInteger, GeminiCancelType) {
   // Unknown cancellation reason.
@@ -92,6 +102,9 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
   // Close button was tapped in the loading state.
   GeminiCancelTypeLoadingStateCloseButtonTapped = 5,
 };
+
+// TODO(crbug.com/481711842): Do not add any more enums here if they are only
+// used for metrics.
 
 // Delegate for Gemini session events. Keep up to date with GCR's
 // SessionDelegate.
@@ -153,13 +166,14 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 
 // Called when the user taps on an attachment option e.g. camera, gallery,
 // CreateImageSelected, CreateImageDeselected  in the input plate.
-- (void)didTapInputPlateAttachmentOption:(NSString*)attachmentOption
+- (void)didTapInputPlateAttachmentOption:
+            (gemini::InputPlateAttachmentOption)attachmentOption
                                sessionID:(NSString*)sessionID
                           conversationID:(NSString*)conversationID;
 
 // Called when the user taps on an image action button e.g.  share, copy,
 // download image.
-- (void)imageActionButtonTapped:(NSString*)actionButtonType
+- (void)imageActionButtonTapped:(gemini::ImageActionButtonType)actionButtonType
                       sessionID:(NSString*)sessionID
                  conversationID:(NSString*)conversationID;
 

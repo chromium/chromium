@@ -27057,6 +27057,15 @@ should be able to be added at any place in this file.
   <description>Reported when the BWG FRE was shown. iOS only.</description>
 </action>
 
+<action name="MobileGeminiImageActionButtonTapped">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped one of the buttons associated with an image that was
+    provided in a response from Gemini.
+  </description>
+</action>
+
 <action name="MobileGeminiImageRemixContextMenuEntryPointShown">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -27079,6 +27088,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user taps on the Gemini Image Remix IPH or its anchor to
     trigger the feature.
+  </description>
+</action>
+
+<action name="MobileGeminiInputPlateAttachmentOptionTapped">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped one of the attachment options in the input plate in Gemini.
   </description>
 </action>
 

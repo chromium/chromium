@@ -780,7 +780,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Thumbs Down"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFeedback) -->
+<!-- LINT.ThenChange(
+    /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFeedback,
+    /ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h:GeminiFeedbackType
+) -->
 
 <!-- LINT.IfChange(IOSGeminiFirstPromptSubmissionMethod) -->
 
@@ -858,6 +861,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiGoToOSSettingsAlertResult) -->
 
+<!-- LINT.IfChange(IOSGeminiImageActionButtonType) -->
+
+<enum name="IOSGeminiImageActionButtonType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Copy"/>
+  <int value="2" label="Download"/>
+  <int value="3" label="Share"/>
+</enum>
+
+<!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:ImageActionButtonType) -->
+
+<!-- LINT.IfChange(IOSGeminiInputPlateAttachmentOption) -->
+
+<enum name="IOSGeminiInputPlateAttachmentOption">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Camera"/>
+  <int value="2" label="Gallery"/>
+  <int value="3" label="Create Image Deselected"/>
+  <int value="4" label="Create Image Selected"/>
+</enum>
+
+<!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:InputPlateAttachmentOption) -->
+
 <!-- LINT.IfChange(IOSGeminiOSCameraAuthorizationInitialStatus) -->
 
 <enum name="IOSGeminiOSCameraAuthorizationInitialStatus">
@@ -874,7 +900,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiOSCameraAuthorizationInitialStatus) -->
 
-<!--  LINT.IfChange(IOSGeminiSessionCancellationReason) -->
+<!-- LINT.IfChange(IOSGeminiSessionCancellationReason) -->
 
 <enum name="IOSGeminiSessionCancellationReason">
   <int value="0" label="Unknown"/>

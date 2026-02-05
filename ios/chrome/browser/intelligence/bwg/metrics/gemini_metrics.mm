@@ -55,6 +55,11 @@ const char kEntryPointHistogram[] = "IOS.Gemini.EntryPoint";
 
 const char kFeedbackHistogram[] = "IOS.Gemini.Feedback";
 
+const char kImageActionButtonHistogram[] = "IOS.Gemini.ImageActionButton";
+
+const char kInputPlateAttachmentOptionHistogram[] =
+    "IOS.Gemini.InputPlateAttachmentOption";
+
 const char kFREEntryPointHistogram[] = "IOS.Gemini.FRE.EntryPoint";
 
 const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
@@ -515,4 +520,17 @@ void RecordGeminiCameraFlowCameraPickerResult(
       break;
   }
   base::UmaHistogramEnumeration(kCameraFlowCameraPickerResultHistogram, result);
+}
+
+void RecordGeminiImageActionButtonTapped(gemini::ImageActionButtonType type) {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiImageActionButtonTapped"));
+  base::UmaHistogramEnumeration(kImageActionButtonHistogram, type);
+}
+
+void RecordGeminiInputPlateAttachmentOptionTapped(
+    gemini::InputPlateAttachmentOption option) {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiInputPlateAttachmentOptionTapped"));
+  base::UmaHistogramEnumeration(kInputPlateAttachmentOptionHistogram, option);
 }

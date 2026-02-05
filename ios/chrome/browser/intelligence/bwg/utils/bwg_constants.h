@@ -53,6 +53,33 @@ enum class FloatyUpdateSource {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFloatyUpdateSource)
 
+// The action button type for an image in Gemini.
+// Logged as IOSGeminiImageActionButtonType enum for the
+// IOS.Gemini.ImageActionButton.Tapped histogram.
+// LINT.IfChange(ImageActionButtonType)
+enum class ImageActionButtonType {
+  kUnknown = 0,
+  kCopy = 1,
+  kDownload = 2,
+  kShare = 3,
+  kMaxValue = kShare,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiImageActionButtonType)
+
+// The input plate view attachment option for Gemini queries.
+// Logged as IOSGeminiInputPlateAttachmentOption enum for the
+// IOS.Gemini.InputPlateAttachmentOption.Tapped histogram.
+// LINT.IfChange(InputPlateAttachmentOption)
+enum class InputPlateAttachmentOption {
+  kUnknown = 0,
+  kCamera = 1,
+  kGallery = 2,
+  kCreateImageDeselected = 3,
+  kCreateImageSelected = 4,
+  kMaxValue = kCreateImageSelected,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiInputPlateAttachmentOption)
+
 }  // namespace gemini
 
 // BWG UI sheet detent identifier.

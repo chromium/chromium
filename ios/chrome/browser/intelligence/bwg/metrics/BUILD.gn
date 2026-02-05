@@ -20,5 +20,6 @@ source_set("unit_tests") {
   deps = [
     ":metrics",
     "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
   ]
 }

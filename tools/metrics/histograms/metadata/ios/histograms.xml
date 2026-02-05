@@ -2584,6 +2584,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.ImageActionButton"
+    enum="IOSGeminiImageActionButtonType" expires_after="2027-02-02">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the type of action button tapped on an image in a Gemini response.
+  </summary>
+</histogram>
+
 <histogram
     name="IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped"
     enum="IOSGeminiAspectRatioBucket" expires_after="2027-01-16">
@@ -2601,6 +2610,15 @@ chromium-metrics-reviews@google.com.
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     Records the dismissal reason for the Gemini Image Remix IPH.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.InputPlateAttachmentOption"
+    enum="IOSGeminiInputPlateAttachmentOption" expires_after="2027-02-02">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the attachment option that was tapped in the input plate in Gemini.
   </summary>
 </histogram>
 

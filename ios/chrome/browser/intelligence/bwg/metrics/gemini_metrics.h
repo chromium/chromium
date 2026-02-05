@@ -17,6 +17,8 @@ class TimeTicks;
 namespace gemini {
 enum class EntryPoint;
 enum class FloatyUpdateSource;
+enum class ImageActionButtonType;
+enum class InputPlateAttachmentOption;
 }  // namespace gemini
 
 namespace ios::provider {
@@ -113,6 +115,8 @@ extern const char kGeminiSessionLengthFREWithPromptHistogram[];
 // UMA histogram key for IOS.Gemini.SessionLength.FRE.Abandoned.
 extern const char kGeminiSessionLengthFREWithAbandonedHistogram[];
 
+// TODO(crbug.com/481711842): Replace this enum and its
+// gemini_session_delegate.h equivalent with an enum in bwg_constants.h
 // Enum for the IOS.Gemini.FirstPrompt.SubmissionMethod histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -187,6 +191,8 @@ enum class IOSGeminiSessionType {
   kMaxValue = kAbandoned,
 };
 
+// TODO(crbug.com/481711842): Replace this enum and its
+// gemini_session_delegate.h equivalent with an enum in bwg_constants.h
 // Enum for the IOS.Gemini.Feedback histogram.
 // LINT.IfChange(IOSGeminiFeedback)
 enum class IOSGeminiFeedback {
@@ -194,7 +200,10 @@ enum class IOSGeminiFeedback {
   kThumbsDown = 1,
   kMaxValue = kThumbsDown,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFeedback)
+// LINT.ThenChange(
+//    /ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h:GeminiFeedbackType,
+//    /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFeedback
+//)
 
 // UMA histogram key for IOS.Gemini.Feedback.
 extern const char kFeedbackHistogram[];
@@ -304,6 +313,19 @@ extern const char kCameraFlowCameraPickerResultHistogram[];
 // IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped.
 extern const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[];
 
+// UMA histogram key for IOS.Gemini.ImageActionButton.
+extern const char kImageActionButtonHistogram[];
+
+// UMA histogram key for IOS.Gemini.InputPlateAttachmentOption.
+extern const char kInputPlateAttachmentOptionHistogram[];
+
+// Records that an image action button was tapped.
+void RecordGeminiImageActionButtonTapped(gemini::ImageActionButtonType type);
+
+// Records that an input plate attachment option was tapped.
+void RecordGeminiInputPlateAttachmentOptionTapped(
+    gemini::InputPlateAttachmentOption option);
+
 // Records that the Image Remix context menu entry point was shown.
 void RecordImageRemixContextMenuEntryPointShown();
 
@@ -313,6 +335,7 @@ void RecordImageRemixContextMenuEntryPointTapped(double aspect_ratio);
 
 // Records user feedback on a Gemini response.
 void RecordGeminiFeedback(IOSGeminiFeedback feedback);
+
 // Records the duration of a Gemini session.
 void RecordGeminiSessionTime(base::TimeDelta session_duration);
 
