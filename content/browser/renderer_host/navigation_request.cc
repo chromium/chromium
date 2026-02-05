@@ -1779,12 +1779,7 @@ NavigationRequest::NavigationRequest(
           frame_tree_node_->current_frame_host()
               ->GetSiteInstance()
               ->GetSiteURL());
-  bool is_reload_or_crash_recovery_from_initial_webui =
-      current_rfh_is_initial_webui &&
-      (IsReload() ||
-       !frame_tree_node_->current_frame_host()->IsRenderFrameLive());
-  CHECK(!current_rfh_is_initial_webui ||
-        is_reload_or_crash_recovery_from_initial_webui);
+  CHECK(!current_rfh_is_initial_webui || IsInitialWebUINavigation());
   if (IsInitialWebUINavigation()) {
     // Initial WebUI navigations must satisfy all these conditions
     // - Is browser initiated
@@ -1807,7 +1802,7 @@ NavigationRequest::NavigationRequest(
             .GetLastCommittedEntry()
             ->IsInitialEntry();
     CHECK(is_navigating_from_initial_empty_document ||
-          is_reload_or_crash_recovery_from_initial_webui);
+          current_rfh_is_initial_webui);
   }
 #endif
 
