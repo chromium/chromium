@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <set>
 #include <string>
 #include <vector>
 
@@ -24,6 +23,7 @@
 #include "content/services/auction_worklet/debug_command_queue.h"
 #include "content/services/auction_worklet/protocol/event_breakpoints.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "third_party/inspector_protocol/crdtp/frontend_channel.h"
@@ -52,8 +52,7 @@ class AuctionV8DevToolsSession::BreakpointHandler
 
   void MaybeTriggerInstrumentationBreakpoint(const std::string& name) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-    if (instrumentation_breakpoints_.find(name) !=
-        instrumentation_breakpoints_.end()) {
+    if (instrumentation_breakpoints_.contains(name)) {
       std::string category("EventListener");
       std::string aux_json = base::StringPrintf(
           R"({"eventName":"instrumentation:%s"})", name.c_str());
@@ -80,7 +79,7 @@ class AuctionV8DevToolsSession::BreakpointHandler
   }
 
   raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
-  std::set<std::string> instrumentation_breakpoints_;
+  absl::flat_hash_set<std::string> instrumentation_breakpoints_;
   SEQUENCE_CHECKER(v8_sequence_checker_);
 };
 
