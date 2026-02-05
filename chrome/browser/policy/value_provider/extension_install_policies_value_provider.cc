@@ -7,11 +7,14 @@
 #include "base/feature_list.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/policy/value_provider/value_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace em = enterprise_management;
 
@@ -36,7 +39,7 @@ base::ListValue ReasonsToListValue(const base::ListValue* reasons) {
   for (const auto& reason : *reasons) {
     switch (reason.GetInt()) {
       case em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY:
-        result.Append("blocked_category");
+        result.Append("category");
         break;
       case em::ExtensionInstallPolicy::REASON_RISK_SCORE:
         result.Append("risk_score");
@@ -104,21 +107,23 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
           extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled)) {
     return base::DictValue();
   }
-  auto* policy_service =
-      profile_->GetProfilePolicyConnector()->policy_service();
+  auto* policy_service = GetPolicyService(&profile_.get());
   if (!policy_service) {
     return base::DictValue();
   }
+  const extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(&profile_.get());
+  CHECK(registry);
 
   // Create a `dict` value like this:
   // {
-  //   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@123": {
+  //   "Extension Name (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@1.2.3)": {
   //     "level": "mandatory",
   //     "scope": "machine",
   //     "source": "cloud",
   //     "value": {
-  //       "value": "Blocked",
-  //       "reasons": ["Blocked category", "Risk score"]
+  //       "value": "blocked",
+  //       "reasons": ["category", "risk_score"]
   //     }
   //   },
   //   ...
@@ -150,8 +155,15 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
               .Set("level", LevelToString(entry.level))
               .Set("scope", ScopeToString(entry.scope))
               .Set("source", SourceToString(entry.source));
-      dict.Set(base::StrCat({extension_id, "@", extension_version}),
-               std::move(policy_dict));
+      if (const auto* extension =
+              registry->GetInstalledExtension(extension_id)) {
+        dict.Set(absl::StrFormat("%s (%s@%s)", extension->name(), extension_id,
+                                 extension_version),
+                 std::move(policy_dict));
+      } else {
+        dict.Set(absl::StrFormat("%s@%s", extension_id, extension_version),
+                 std::move(policy_dict));
+      }
     }
   }
 
