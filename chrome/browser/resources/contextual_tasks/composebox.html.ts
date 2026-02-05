@@ -44,7 +44,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       carousel-on-top_
       entrypoint-name="ContextualTasks"
       searchbox-layout-mode="TallBottomContext"
-      .lensButtonDisabled="${this.isLensOverlayShowing}"
+      .lensButtonDisabled="${false}"
       .tabSuggestions="${this.tabSuggestions_}"
       .showLensButton="${this.isSidePanel}"
       .disableCaretColorAnimation="${true}"

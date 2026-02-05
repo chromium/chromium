@@ -1585,7 +1585,10 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
 
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}}},
+        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
+                              {contextual_tasks::
+                                   kContextualTasksForceEntryPointEligibility,
+                               {}}},
         /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
   }
 
@@ -1821,7 +1824,50 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
               "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', { "
               "key:'Enter', bubbles: true })); }",
               ExecuteJsMode::kFireAndForget)),
-      WaitForHide(kOverlayId), WaitForShow(kContextualTasksSidePanelWebViewElementId));
+      WaitForHide(kOverlayId),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       ComposeboxLensButtonTogglesOverlay) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kLensButtonExists);
+
+  const DeepQuery kPathToLensButton{"contextual-tasks-app",
+                                    "contextual-tasks-composebox",
+                                    "cr-composebox", "#lensIcon"};
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  StateChange lens_button_exists;
+  lens_button_exists.event = kLensButtonExists;
+  lens_button_exists.where = kPathToLensButton;
+  lens_button_exists.type = StateChange::Type::kExists;
+
+  RunTestSequence(
+      // 1. Open Lens Overlay and make a selection to open the side panel.
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              kContextualTasksSidePanelWebViewElementId),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+
+      // 2. Click the Lens button in the side panel to close the overlay.
+      WaitForStateChange(kSidePanelWebContentsId, lens_button_exists),
+      ClickElement(kSidePanelWebContentsId, kPathToLensButton),
+      WaitForHide(kOverlayId),
+
+      // 3. Click the Lens button again to re-open the overlay.
+      ClickElement(kSidePanelWebContentsId, kPathToLensButton),
+      WaitForShow(LensOverlayController::kOverlayId));
 }
 
 class TabScopedContextualTasksLensOverlayControllerInteractiveUiTest
