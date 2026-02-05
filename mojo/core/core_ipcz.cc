@@ -685,6 +685,11 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
   const base::UnguessableToken guid = buffer->region().GetGUID();
   const uint32_t size = static_cast<uint32_t>(buffer->region().GetSize());
 
+  // SAFETY: The caller is a C-API which cannot be spanified further
+  // up the stack. The caller guarantees that `platform_handles` points to
+  // `*num_platform_handles` elements.
+  auto platform_handles_span =
+      UNSAFE_BUFFERS(base::span(platform_handles, *num_platform_handles));
   uint32_t capacity = *num_platform_handles;
   uint32_t required_handles = 1;
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
@@ -698,7 +703,7 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   }
 
-  PlatformHandle handles[2];
+  std::array<PlatformHandle, 2> handles = {};
   base::subtle::ScopedPlatformSharedMemoryHandle region_handle =
       buffer->region().PassPlatformHandle();
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
@@ -709,8 +714,8 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
 #endif
 
   for (size_t i = 0; i < required_handles; ++i) {
-    PlatformHandle::ToMojoPlatformHandle(std::move(UNSAFE_TODO(handles[i])),
-                                         UNSAFE_TODO(&platform_handles[i]));
+    PlatformHandle::ToMojoPlatformHandle(std::move(handles[i]),
+                                         &platform_handles_span[i]);
   }
 
   *num_bytes = size;
