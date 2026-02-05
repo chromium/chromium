@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -373,4 +374,27 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify third inner contents is observed.
   EXPECT_EQ(controller_->GetInnerFrameUrl(), url3);
+}
+
+class ContextualTasksNoMockBrowserTest : public InProcessBrowserTest {
+ public:
+  ContextualTasksNoMockBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest, CanZoom) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  ASSERT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DEFAULT,
+            zoom_controller->zoom_mode());
 }
