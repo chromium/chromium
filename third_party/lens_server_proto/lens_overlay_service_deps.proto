@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -82,6 +82,7 @@ message ChunkDebugOptions {
   // Total number of chunks that will be uploaded to Lens server for the given
   // payload.
   int64 total_chunks = 1;
+
   // Optional. When true, Lens server will return a repeated list of remaining
   // chunk ids that it expects to receive to complete the payload. Should only
   // be used for debugging purposes.
@@ -195,6 +196,7 @@ message StoredChunkOptions {
 enum CompressionType {
   // Default value. File is not compressed.
   UNCOMPRESSED = 0;
+
   // ZSTD compression.
   ZSTD = 1;
 }
@@ -204,10 +206,13 @@ enum CompressionType {
 message Content {
   // Optional. Page url for the webpage.
   string webpage_url = 1;
+
   // Optional. Page title of the webpage.
   string webpage_title = 4;
+
   // Optional. Content items for the request.
   repeated ContentData content_data = 2;
+
   // The type of the request.
   RequestType request_type = 3;
 }
@@ -218,25 +223,34 @@ message Content {
 message ContentData {
   // The type of the content.
   ContentType content_type = 1;
+
   // The content data.
   bytes data = 2;
+
   // Optional. Compression format of content_data.
   CompressionType compression_type = 3;
+
   // Optional. Options for reading stored chunks from state layer.
   StoredChunkOptions stored_chunk_options = 4;
+
   // Possible types of the content.
   // Next ID: 6
   enum ContentType {
     // Default value.
     CONTENT_TYPE_UNSPECIFIED = 0;
+
     // PDF content.
     CONTENT_TYPE_PDF = 1;
+
     // Inner text content.
     CONTENT_TYPE_INNER_TEXT = 2;
+
     // Inner HTML content.
     CONTENT_TYPE_INNER_HTML = 3;
+
     // Annotated page content.
     CONTENT_TYPE_ANNOTATED_PAGE_CONTENT = 4;
+
     // Early partial PDF content.
     CONTENT_TYPE_EARLY_PARTIAL_PDF = 5;
   }

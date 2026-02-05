@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -14,7 +14,7 @@ import "lens_overlay_payload.proto";
 // User-selected / auto-detected cropped image region.
 message ImageCrop {
   // The ID of the cropped image region.
-  string crop_id = 1;
+  string crop_id = 1 [features.field_presence = IMPLICIT];
 
   // The image content of the cropped image region.
   ClientImage image = 2;

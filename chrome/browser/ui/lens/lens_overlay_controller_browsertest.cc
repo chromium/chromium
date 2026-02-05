@@ -3625,7 +3625,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading another url in the side panel should update the results page.
   const GURL third_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.menu&vsint=CAMiBioEa2l3aSoKCgIIBxICCAMgAg&q="
+      "search?source=chrome.cr.menu&vsint=CAMiBioEa2l3aSoMCgIIBxICCAMYACAC&q="
       "kiwi&lns_fp=1"
       "&lns_mode=text&lns_surface=42&cs=0&gsc=2&hl=en-US");
   content::TestNavigationObserver third_search_observer(
@@ -3775,7 +3775,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.ctxi&vsint=CAMiBioEa2l3aSoKCgIIBxICCAMgAg&q="
+      "search?source=chrome.cr.ctxi&vsint=CAMiBioEa2l3aSoMCgIIBxICCAMYACAC&q="
       "kiwi&lns_fp="
       "1&lns_mode=text&lns_surface=42&cs=0&gsc=2&hl=en-US");
   content::TestNavigationObserver second_observer(

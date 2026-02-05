@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -16,6 +16,8 @@ message LensOverlayClientLogs {
   LensOverlayPhaseLatenciesMetadata phase_latencies_metadata = 1;
 
   enum LensOverlayEntryPoint {
+    option features.enum_type = CLOSED;
+
     UNKNOWN_ENTRY_POINT = 0;
     APP_MENU = 1;
     PAGE_CONTEXT_MENU = 2;

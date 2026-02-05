@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -10,6 +10,8 @@ package lens;
 
 import "lens_overlay_geometry.proto";
 import "lens_overlay_text_query.proto";
+
+option features.field_presence = IMPLICIT;
 
 // Metadata associated with an interaction request.
 message LensOverlayInteractionRequestMetadata {
@@ -56,6 +58,7 @@ message LensOverlayInteractionRequestMetadata {
 
     message Object {
       string object_id = 1;
+
       Geometry geometry = 2;
     }
 

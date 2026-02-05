@@ -1,0 +1,24 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_lens_file.proto";
+
+// Wrapper around all different added input types.
+message AddedInput {
+  oneof addition {
+    LensOverlayLensFile lens_file = 1;
+  }
+}
+
+// Wrapper for list of AddedInput objects. This is used to pass the list of
+// added inputs from the client to the server.
+message AddedInputs {
+  repeated AddedInput added_inputs = 1;
+}

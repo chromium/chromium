@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
             client_message.ParseFromArray(message.data(), message.size()));
         ASSERT_TRUE(client_message.has_set_cobrowsing_display_mode());
         EXPECT_EQ(client_message.set_cobrowsing_display_mode()
-                      .payload()
+                      .params()
                       .display_mode(),
                   lens::CobrowsingDisplayModeParams::COBROWSING_TAB);
         run_loop.Quit();
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
             client_message.ParseFromArray(message.data(), message.size()));
         ASSERT_TRUE(client_message.has_set_cobrowsing_display_mode());
         EXPECT_EQ(client_message.set_cobrowsing_display_mode()
-                      .payload()
+                      .params()
                       .display_mode(),
                   lens::CobrowsingDisplayModeParams::COBROWSING_SIDEPANEL);
         run_loop.Quit();

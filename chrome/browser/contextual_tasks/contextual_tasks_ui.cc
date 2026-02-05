@@ -665,7 +665,7 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   lens::ClientToAimMessage message;
   auto* display_mode_msg = message.mutable_set_cobrowsing_display_mode();
   if (IsShownInTab()) {
-    display_mode_msg->mutable_payload()->set_display_mode(
+    display_mode_msg->mutable_params()->set_display_mode(
         lens::CobrowsingDisplayModeParams::COBROWSING_TAB);
     if (previous_web_ui_state_ != WebUIState::kShownInTab) {
       previous_web_ui_state_ = WebUIState::kShownInTab;
@@ -681,7 +681,7 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
       previous_web_ui_state_ = WebUIState::kShownInSidePanel;
       OnActiveTabContextStatusChanged();
     }
-    display_mode_msg->mutable_payload()->set_display_mode(
+    display_mode_msg->mutable_params()->set_display_mode(
         lens::CobrowsingDisplayModeParams::COBROWSING_SIDEPANEL);
   }
 

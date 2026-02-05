@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2024";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -11,6 +11,8 @@ package lens;
 import "lens_overlay_geometry.proto";
 import "lens_overlay_interaction_request_metadata.proto";
 import "lens_overlay_visual_search_interaction_log_data.proto";
+
+option features.field_presence = IMPLICIT;
 
 // Metadata associated with a Lens Visual Search request.
 message LensOverlayVisualSearchInteractionData {
@@ -32,6 +34,7 @@ message LensOverlayVisualSearchInteractionData {
 
     reserved 1, 2, 3, 4;
   }
+
   TextSelect text_select = 4;
 
   // Logging-specific data.

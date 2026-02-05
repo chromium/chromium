@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
 package lens;
 
 import "lens_overlay_text.proto";
+option features.utf8_validation = NONE;
 
 message DeepGleamData {
   oneof rendering_oneof {
@@ -37,8 +38,10 @@ message TranslationData {
 
     Code code = 1;
   }
+
   Status status = 1;
   string target_language = 2;
+
   string source_language = 3;
 
   // The translated text.
@@ -86,6 +89,7 @@ message TranslationData {
       WEBP_RGBA = 3;
       JPEG_RGB_PNG_MASK = 4;
     }
+
     FileFormat file_format = 6;
 
     // Text mask for the generated background image.
@@ -108,7 +112,6 @@ message TranslationData {
     }
 
     TextStyle style = 3;
-
     repeated Word word = 5;
 
     // Background image data is set only when inpainting is computed.
