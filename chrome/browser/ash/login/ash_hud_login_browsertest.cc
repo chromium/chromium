@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/hud_display/ash_tracing_handler.h"
 #include "ash/hud_display/ash_tracing_request.h"
@@ -13,6 +15,7 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/notimplemented.h"
@@ -155,7 +158,7 @@ class TestAshTraceDestinationIO : public hud_display::AshTraceDestinationIO {
   int fstat(base::PlatformFile fd, struct stat* statbuf) override {
     LOG(INFO) << "TestAshTraceDestinationIO::fstat(): Called.";
     AssertRegistry();
-    UNSAFE_TODO(memset(statbuf, 0, sizeof(struct stat)));
+    std::ranges::fill(base::byte_span_from_ref(*statbuf), 0);
     return CanWriteFile(fd) ? 0 : -1;
   }
 

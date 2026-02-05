@@ -15,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -1521,7 +1522,7 @@ HRESULT CGaiaCredentialBase::GetSerialization(
 
   *status_text = nullptr;
   *status_icon = CPSI_NONE;
-  UNSAFE_TODO(memset(cpcs, 0, sizeof(*cpcs)));
+  std::ranges::fill(base::byte_span_from_ref(*cpcs), 0);
 
   // This may be a long running function so disable user input while processing.
   if (events_) {
