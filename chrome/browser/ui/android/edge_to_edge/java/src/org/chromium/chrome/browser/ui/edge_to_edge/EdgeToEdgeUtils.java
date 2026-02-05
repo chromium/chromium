@@ -49,13 +49,9 @@ public class EdgeToEdgeUtils {
     private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
     private static @Nullable Boolean sHas3ButtonNavBarForTesting;
 
-    private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible2";
+    private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
-            "Android.EdgeToEdge.IneligibilityReason2";
-    private static final String ELIGIBLE_ON_CREATE_HISTOGRAM =
-            "Android.EdgeToEdge.Eligible2.OnCreateController";
-    private static final String INELIGIBLE_REASON_ON_CREATE_HISTOGRAM =
-            "Android.EdgeToEdge.IneligibilityReason2.OnCreateController";
+            "Android.EdgeToEdge.IneligibilityReason";
     private static final String MISSING_NAVBAR_INSETS_HISTOGRAM =
             "Android.EdgeToEdge.MissingNavbarInsets2";
 
@@ -225,42 +221,18 @@ public class EdgeToEdgeUtils {
 
     /**
      * Record if the current activity is eligible for edge to edge. If not, also record the reason
-     * why it is ineligible. This is for the general "for all users" check at startup.
+     * why it is ineligible.
      *
      * @param activity The current active activity.
      * @return Whether the activity is eligible for edge to edge based on device configuration.
      */
-    public static boolean recordEligibilityForEveryStart(Activity activity) {
-        return recordEligibility(activity, ELIGIBLE_HISTOGRAM, INELIGIBLE_REASON_HISTOGRAM);
-    }
-
-    /**
-     * Record if the current activity is eligible for edge to edge when the controller is created.
-     *
-     * @param activity The current active activity.
-     * @return Whether the activity is eligible for edge to edge based on device configuration.
-     */
-    public static boolean recordEligibilityOnCreate(Activity activity) {
-        return recordEligibility(
-                activity, ELIGIBLE_ON_CREATE_HISTOGRAM, INELIGIBLE_REASON_ON_CREATE_HISTOGRAM);
-    }
-
-    /**
-     * Checks if the current activity is eligible for edge to edge.
-     *
-     * @param activity The current active activity.
-     * @param eligibleName The name of the histogram to record eligibility.
-     * @param ineligibleName The name of the histogram to record ineligibility reasons.
-     * @return Whether the activity is eligible for edge to edge based on device configuration.
-     */
-    private static boolean recordEligibility(
-            Activity activity, String eligibleName, String ineligibleName) {
+    public static boolean recordEligibility(Activity activity) {
         boolean eligible = true;
 
         if (hasTappableNavigationBar(activity.getWindow())) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
-                    ineligibleName,
+                    INELIGIBLE_REASON_HISTOGRAM,
                     IneligibilityReason.NAVIGATION_MODE,
                     IneligibilityReason.NUM_TYPES);
         }
@@ -270,22 +242,27 @@ public class EdgeToEdgeUtils {
                 && (!isEdgeToEdgeTabletEnabled() || !EdgeToEdgeUtils.isSupportedTablet(activity))) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
-                    ineligibleName, IneligibilityReason.FORM_FACTOR, IneligibilityReason.NUM_TYPES);
+                    INELIGIBLE_REASON_HISTOGRAM,
+                    IneligibilityReason.FORM_FACTOR,
+                    IneligibilityReason.NUM_TYPES);
         }
 
         if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.R) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
-                    ineligibleName, IneligibilityReason.OS_VERSION, IneligibilityReason.NUM_TYPES);
+                    INELIGIBLE_REASON_HISTOGRAM,
+                    IneligibilityReason.OS_VERSION,
+                    IneligibilityReason.NUM_TYPES);
         }
 
         if (DeviceInfo.isAutomotive()) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
-                    ineligibleName, IneligibilityReason.DEVICE_TYPE, IneligibilityReason.NUM_TYPES);
+                    INELIGIBLE_REASON_HISTOGRAM,
+                    IneligibilityReason.DEVICE_TYPE,
+                    IneligibilityReason.NUM_TYPES);
         }
-
-        RecordHistogram.recordBooleanHistogram(eligibleName, eligible);
+        RecordHistogram.recordBooleanHistogram(ELIGIBLE_HISTOGRAM, eligible);
 
         return eligible;
     }
