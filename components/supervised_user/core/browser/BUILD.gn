@@ -229,6 +229,11 @@ source_set("unit_tests") {
     "supervised_user_service_unittest.cc",
     "supervised_user_utils_unittest.cc",
   ]
+
+  if (is_android) {
+    sources += [ "supervised_user_url_filtering_service_android_unittest.cc" ]
+  }
+
   deps = [
     ":browser",
     ":device_parental_controls",

@@ -41,6 +41,32 @@ void UrlCheckerCallback(WebFilteringResult::Callback callback,
        .reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
        .async_check_details = details});
 }
+
+// Aggregates the web filter types from two delegates. The settings are rated in
+// the following order and the most restrictive setting is returned:
+// 1. kTryToBlockMatureSites
+// 2. kCertainSites
+// 3. kAllowAllSites
+// 4. kDisabled
+WebFilterType AggregateWebFilterType(const UrlFilteringDelegate& first,
+                                     const UrlFilteringDelegate& second) {
+  WebFilterType first_web_filter_type = first.GetWebFilterType();
+  WebFilterType second_web_filter_type = second.GetWebFilterType();
+
+  if (first_web_filter_type == WebFilterType::kTryToBlockMatureSites ||
+      second_web_filter_type == WebFilterType::kTryToBlockMatureSites) {
+    return WebFilterType::kTryToBlockMatureSites;
+  }
+  if (first_web_filter_type == WebFilterType::kCertainSites ||
+      second_web_filter_type == WebFilterType::kCertainSites) {
+    return WebFilterType::kCertainSites;
+  }
+  if (first_web_filter_type == WebFilterType::kAllowAllSites ||
+      second_web_filter_type == WebFilterType::kAllowAllSites) {
+    return WebFilterType::kAllowAllSites;
+  }
+  return WebFilterType::kDisabled;
+}
 }  // namespace
 
 // Creates a callback for safe search api that will invoke `callback` argument
@@ -67,6 +93,10 @@ SupervisedUserUrlFilteringService::~SupervisedUserUrlFilteringService() =
     default;
 
 WebFilterType SupervisedUserUrlFilteringService::GetWebFilterType() const {
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    return AggregateWebFilterType(*device_parental_controls_url_filter_,
+                                  *supervised_user_service_->GetURLFilter());
+  }
   return supervised_user_service_->GetURLFilter()->GetWebFilterType();
 }
 
