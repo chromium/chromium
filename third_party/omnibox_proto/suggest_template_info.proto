@@ -42,10 +42,15 @@ message SuggestTemplateInfo {
     TRENDING = 4;
     // A sub arrow right icon.
     SUB_ARROW_RIGHT = 5;
-    GLOBE_WITH_SEARCH_LOUPE = 6;
+    // A globe with a search loop icon, typically used for deep search.
+    GLOBE_WITH_SEARCH_LOOP = 6;
+    // Banana icon, typically used for nano banana suggestions.
+    // Uses the banana emoji.
     BANANA = 7;
+    // Indicates the client should use the favicon from the page the suggestion
+    // is from.
     FAVICON = 8;
-    // A notes with sparkle icon.
+    // Notes spark icon, used for AIM More Threads suggestions.
     NOTES_SPARK = 9;
   }
 

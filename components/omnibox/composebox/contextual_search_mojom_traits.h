@@ -7,9 +7,9 @@
 
 #include "components/omnibox/composebox/composebox_query.mojom-forward.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
-#include "third_party/omnibox_proto/aim_input_types.pb.h"
-#include "third_party/omnibox_proto/aim_models.pb.h"
-#include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace mojo {
 

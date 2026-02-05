@@ -13,10 +13,10 @@
 #include "base/memory/raw_ref.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/omnibox/common/input_state.h"
-#include "third_party/omnibox_proto/aim_input_types.pb.h"
-#include "third_party/omnibox_proto/aim_models.pb.h"
-#include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 class PrefService;
 namespace contextual_search {

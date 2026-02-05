@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'InputTypeRuleProto';
+
+package omnibox;
+
+import "model_mode.proto";
+import "tool_mode.proto";
+import "input_type.proto";
+
+message InputTypeRule {
+  optional InputType input_type = 1;
+  optional int32 max_instance = 2;
+  repeated InputType allowed_input_types = 3;
+  optional bool allow_all_input_types = 4;
+  repeated ToolMode allowed_tools = 5;
+  optional bool allow_all_tools = 6;
+  repeated ModelMode allowed_models = 7;
+  optional bool allow_all_models = 8;
+}

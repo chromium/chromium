@@ -12,7 +12,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 class Section;
 using Groups = std::vector<Group>;

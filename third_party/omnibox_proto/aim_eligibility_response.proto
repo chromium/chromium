@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
@@ -10,7 +10,7 @@ option java_outer_classname = 'AimEligibilityResponseProto';
 
 package omnibox;
 
-import "aim_models.proto";
+import "model_mode.proto";
 import "searchbox_config.proto";
 
 // AIM Eligibility Response.

@@ -103,16 +103,14 @@ GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
       // TODO(crbug.com/437177158): Replace with the correct symbol when it's
       // available.
       return OmniboxSuggestionIconType::kSearch;
+    case omnibox::SuggestTemplateInfo_IconType_GLOBE_WITH_SEARCH_LOOP:
     case omnibox::SuggestTemplateInfo_IconType_BANANA:
-      // TODO(crbug.com/479463122): Replace with the correct symbol when it's
-      // available.
+    case omnibox::SuggestTemplateInfo_IconType_NOTES_SPARK:
       return OmniboxSuggestionIconType::kSearch;
     case omnibox::SuggestTemplateInfo_IconType_FAVICON:
-      // TODO(crbug.com/479463122): Replace with the correct symbol when it's
-      // available.
+      return OmniboxSuggestionIconType::kDefaultFavicon;
+    case omnibox::SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED:
       return OmniboxSuggestionIconType::kSearch;
-    case omnibox::SuggestTemplateInfo_IconType_NOTES_SPARK:
-      return OmniboxSuggestionIconType::kNotesSpark;
     default:
       return OmniboxSuggestionIconType::kSearch;
   }

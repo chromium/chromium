@@ -16,7 +16,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 class AutocompleteResult;
 class ChromeAutocompleteProviderClient;
