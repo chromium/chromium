@@ -4,7 +4,6 @@
 
 #include "base/path_service.h"
 
-#include <unordered_map>
 #include <utility>
 
 #include "base/check_op.h"
@@ -15,6 +14,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -52,7 +52,7 @@ bool PathProviderPosix(int key, FilePath* result);
 
 namespace {
 
-typedef std::unordered_map<int, FilePath> PathMap;
+using PathMap = absl::flat_hash_map<int, FilePath>;
 
 // We keep a linked list of providers.  In a debug build we ensure that no two
 // providers claim overlapping keys.
