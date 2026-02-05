@@ -53,7 +53,6 @@ VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node)
   SetScrollViewProperties(pinned_tabs_scroll_view_);
 
   auto tabs_separator = std::make_unique<views::Separator>();
-  tabs_separator->SetColorId(kColorTabDividerFrameActive);
   tabs_separator_ = AddChildView(std::move(tabs_separator));
 
   unpinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
@@ -71,6 +70,7 @@ VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node)
           &VerticalTabStripView::ResetCollectionNode, base::Unretained(this)));
 
   SetNotifyEnterExitOnChild(true);
+  UpdateColors();
 }
 
 VerticalTabStripView::~VerticalTabStripView() = default;
@@ -184,6 +184,12 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
                                 unpinned_container_bounds.bottom());
   layouts.host_size.SetToMax(GetMinimumSize());
   return layouts;
+}
+
+void VerticalTabStripView::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &VerticalTabStripView::UpdateColors, base::Unretained(this)));
 }
 
 gfx::Size VerticalTabStripView::GetMinimumSize() const {
@@ -375,6 +381,15 @@ void VerticalTabStripView::DidPresentFramePostActivation(
   int diff = activated_view_bounds.y() - adjusted_activated_view_bounds.y();
 
   scroll_view->ScrollByOffset({0, static_cast<float>(diff)});
+}
+
+void VerticalTabStripView::UpdateColors() {
+  tabs_separator_->SetColorId(IsFrameActive() ? kColorTabDividerFrameActive
+                                              : kColorTabDividerFrameInactive);
+}
+
+bool VerticalTabStripView::IsFrameActive() const {
+  return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
 }
 
 BEGIN_METADATA(VerticalTabStripView)

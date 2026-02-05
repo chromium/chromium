@@ -52,6 +52,7 @@ class VerticalTabStripView final : public views::View,
       const views::SizeBounds& size_bounds) const override;
 
   // views::View:
+  void AddedToWidget() override;
   gfx::Size GetMinimumSize() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
@@ -74,6 +75,10 @@ class VerticalTabStripView final : public views::View,
       views::ScrollView* scroll_view,
       std::unique_ptr<views::ViewTracker> tracked_view);
 
+  void UpdateColors();
+
+  bool IsFrameActive() const;
+
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
   raw_ptr<VerticalPinnedTabContainerView> pinned_tabs_container_view_ = nullptr;
@@ -83,6 +88,7 @@ class VerticalTabStripView final : public views::View,
       nullptr;
   bool is_collapsed_ = false;
   base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
   std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
