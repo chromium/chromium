@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
+#include "content/browser/locks/lock_manager.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
@@ -81,10 +82,12 @@ struct WorkerScriptFetcherResult;
 // SharedWorkerHost is the browser-side host of a single shared worker running
 // in the renderer. This class is owned by the SharedWorkerServiceImpl of the
 // current BrowserContext.
-class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
-                                        public RenderProcessHostObserver,
-                                        public BucketContext,
-                                        public base::SupportsUserData {
+class CONTENT_EXPORT SharedWorkerHost
+    : public blink::mojom::SharedWorkerHost,
+      public RenderProcessHostObserver,
+      public LockManager<storage::BucketId>::Observer,
+      public BucketContext,
+      public base::SupportsUserData {
  public:
   SharedWorkerHost(
       SharedWorkerServiceImpl* service,
@@ -306,6 +309,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                                bool allowed);
   void OnClientConnectionLost();
   void OnWorkerConnectionLost();
+
+  // LockObserver
+  void OnLockContention() override;
 
   void BindCacheStorageInternal(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,

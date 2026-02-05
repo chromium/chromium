@@ -164,6 +164,10 @@ DedicatedWorkerHost::~DedicatedWorkerHost() {
         ->Remove(weak_factory_.GetSafeRef());
   }
 
+  if (auto* lock_manager = GetStoragePartitionImpl()->GetLockManager()) {
+    lock_manager->RemoveLockObserver(GetToken().value());
+  }
+
   // Send any final reports and allow the reporting configuration to be
   // removed. Note that the RenderProcessHost and the associated
   // StoragePartition outlives `this`.
@@ -202,8 +206,24 @@ void DedicatedWorkerHost::CreateContentSecurityNotifier(
 
 void DedicatedWorkerHost::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
-  GetStoragePartitionImpl()->BindLockManager(
-      GetStorageKey(), GetToken().value(), std::move(receiver));
+  GetStoragePartitionImpl()->BindLockManager(GetStorageKey(), GetToken().value(),
+                                          std::move(receiver));
+  GetStoragePartitionImpl()->GetLockManager()->AddLockObserver(GetToken().value(),
+                                                            this);
+}
+
+void DedicatedWorkerHost::OnLockContention() {
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host) {
+    // The frame may have already been closed.
+    return;
+  }
+  if (ancestor_render_frame_host->IsInBackForwardCache()) {
+    // Evict the frame from the back-forward cache to avoid deadlock.
+    ancestor_render_frame_host->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kWebLocksContention);
+  }
 }
 
 void DedicatedWorkerHost::OnMojoDisconnect() {

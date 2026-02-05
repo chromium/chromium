@@ -50,6 +50,7 @@
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/can_commit_status.h"
+#include "content/browser/locks/lock_manager.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
@@ -332,6 +333,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public network::mojom::TrustTokenAccessObserver,
       public network::mojom::SharedDictionaryAccessObserver,
       public network::mojom::DeviceBoundSessionAccessObserver,
+      public LockManager<storage::BucketId>::Observer,
       public BucketContext,
       public base::MemoryPressureListener {
  public:
@@ -770,6 +772,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // SiteInstanceGroup::Observer
   void RenderProcessGone(SiteInstanceGroup* site_instance_group,
                          const ChildProcessTerminationInfo& info) override;
+
+  // LockObserver
+  void OnLockContention() override;
 
   // ui::AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;

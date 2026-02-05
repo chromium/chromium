@@ -70,12 +70,6 @@ Lock::Lock(ScriptState* script_state,
   lock_lifetime_.Bind(std::move(lock_lifetime), task_runner);
   handle_.set_disconnect_handler(
       BindOnce(&Lock::OnConnectionError, WrapWeakPersistent(this)));
-  feature_handle_for_scheduler_ =
-      ExecutionContext::From(script_state)
-          ->GetScheduler()
-          ->RegisterFeature(
-              blink::SchedulingPolicy::Feature::kWebLocks,
-              {blink::SchedulingPolicy::DisableBackForwardCache()});
 }
 
 Lock::~Lock() = default;
@@ -149,8 +143,6 @@ void Lock::ReleaseIfHeld() {
 
     // Let the lock manager know that this instance can be collected.
     manager_->OnLockReleased(this);
-
-    feature_handle_for_scheduler_.reset();
   }
 }
 

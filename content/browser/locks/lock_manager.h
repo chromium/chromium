@@ -46,6 +46,16 @@ class CONTENT_EXPORT LockManager : public blink::mojom::LockManager {
   LockManager(const LockManager&) = delete;
   LockManager& operator=(const LockManager&) = delete;
 
+  class Observer {
+   public:
+    // Called when another client attempts to acquire a held lock or when the
+    // current lock state is queried.
+    virtual void OnLockContention() {}
+
+   protected:
+    virtual ~Observer() = default;
+  };
+
   // Binds |receiver| to this LockManager. |receiver| belongs to a frame or
   // worker at |lock_group_id|.
   void BindReceiver(LockGroupIdType lock_group_id,
@@ -68,6 +78,16 @@ class CONTENT_EXPORT LockManager : public blink::mojom::LockManager {
 
   // Called to request a snapshot of the current lock state for a lock group.
   void QueryState(QueryStateCallback callback) override;
+
+  // Registers an observer for the client token. This token must match the
+  // one provided when binding the LockManager receiver (e.g., via
+  // BindReceiver).
+  //
+  // The observer is notified only when a lock held by the matching client is
+  // contended. It is safe to remove an observer during a callback, because each
+  // notification performs a fresh map lookup.
+  void AddLockObserver(const base::UnguessableToken& token, Observer* observer);
+  void RemoveLockObserver(const base::UnguessableToken& token);
 
  private:
   // Internal representation of a lock request or held lock.
@@ -97,6 +117,8 @@ class CONTENT_EXPORT LockManager : public blink::mojom::LockManager {
 
   int64_t next_lock_id_ = 0;
   std::map<LockGroupIdType, LockGroupState> lock_groups_;
+
+  base::flat_map<std::string, Observer*> client_observer_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LockManager> weak_ptr_factory_{this};
@@ -299,6 +321,18 @@ class LockManager<LockGroupIdType>::LockGroupState {
     lock_id_to_iterator_.emplace(it->lock_id(), it);
     if (can_grant) {
       it->Grant(lock_manager_, receiver_state.lock_group_id);
+    } else {
+      for (auto holder_it = request_queue.begin();
+           holder_it != request_queue.end() && holder_it->is_granted();
+           ++holder_it) {
+        const std::string& holder_client_id = holder_it->client_id();
+
+        auto observer_it =
+            lock_manager_->client_observer_map_.find(holder_client_id);
+        if (observer_it != lock_manager_->client_observer_map_.end()) {
+          observer_it->second->OnLockContention();
+        }
+      }
     }
   }
 
@@ -518,8 +552,29 @@ void LockManager<LockGroupIdType>::QueryState(QueryStateCallback callback) {
   DCHECK(!lock_group_id.is_null());
   LockGroupState& state = lock_group_id_it->second;
   auto requested_held_pair = state.Snapshot();
+  for (const auto& lock_info : requested_held_pair.second) {
+    auto observer_it = client_observer_map_.find(lock_info->client_id);
+    if (observer_it != client_observer_map_.end()) {
+      observer_it->second->OnLockContention();
+    }
+  }
   std::move(callback).Run(std::move(requested_held_pair.first),
                           std::move(requested_held_pair.second));
+}
+
+template <typename LockGroupIdType>
+void LockManager<LockGroupIdType>::AddLockObserver(
+    const base::UnguessableToken& token,
+    Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  client_observer_map_[token.ToString()] = observer;
+}
+
+template <typename LockGroupIdType>
+void LockManager<LockGroupIdType>::RemoveLockObserver(
+    const base::UnguessableToken& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  client_observer_map_.erase(token.ToString());
 }
 
 template <typename LockGroupIdType>

@@ -218,6 +218,10 @@ SharedWorkerHost::~SharedWorkerHost() {
         ->SendReportsAndRemoveSource(reporting_source_);
 
     GetProcessHost()->RemoveObserver(this);
+
+    if (auto* lock_manager = GetStoragePartitionImpl()->GetLockManager()) {
+      lock_manager->RemoveLockObserver(token().value());
+    }
   }
 
   // Notify the service that each client still connected will be removed and
@@ -582,7 +586,33 @@ void SharedWorkerHost::BindCacheStorageInternal(
 void SharedWorkerHost::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   GetStoragePartitionImpl()->BindLockManager(GetStorageKey(), token().value(),
-                                             std::move(receiver));
+                                          std::move(receiver));
+  GetStoragePartitionImpl()->GetLockManager()->AddLockObserver(token().value(),
+                                                            this);
+}
+
+void SharedWorkerHost::OnLockContention() {
+  std::vector<RenderFrameHostImpl*> bf_cached_clients;
+
+  for (const ClientInfo& info : clients_) {
+    auto* const rfh = RenderFrameHostImpl::FromID(info.render_frame_host_id);
+    if (!rfh) {
+      continue;
+    }
+    if (rfh->IsActive()) {
+      return;
+    }
+    if (rfh->IsInBackForwardCache()) {
+      bf_cached_clients.push_back(rfh);
+    }
+  }
+
+  // If we reach here, all the clients are in the back-forward cache. Evict
+  // them to avoid deadlock.
+  for (RenderFrameHostImpl* rfh_to_evict : bf_cached_clients) {
+    rfh_to_evict->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kWebLocksContention);
+  }
 }
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(

@@ -2882,6 +2882,10 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
         GetNetworkIsolationKey());
   }
 
+  if (auto* lock_manager = GetStoragePartition()->GetLockManager()) {
+    lock_manager->RemoveLockObserver(GetFrameToken().value());
+  }
+
   GetTokenFrameMap().erase(frame_token_);
 
   // Ensure that the render process host has been notified that all media
@@ -4439,6 +4443,13 @@ void RenderFrameHostImpl::RenderProcessGone(
   // Note: don't add any more code at this point in the function because
   // |this| may be deleted. Any additional cleanup should happen before
   // the last block of code here.
+}
+
+void RenderFrameHostImpl::OnLockContention() {
+  if (IsInBackForwardCache()) {
+    EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kWebLocksContention);
+  }
 }
 
 void RenderFrameHostImpl::PerformAction(const ui::AXActionData& data) {
@@ -14862,6 +14873,8 @@ void RenderFrameHostImpl::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   GetStoragePartition()->BindLockManager(
       GetStorageKey(), GetFrameToken().value(), std::move(receiver));
+  GetStoragePartition()->GetLockManager()->AddLockObserver(
+      GetFrameToken().value(), this);
 }
 
 void RenderFrameHostImpl::CreateIDBFactory(
