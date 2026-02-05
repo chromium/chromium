@@ -155,6 +155,7 @@ class BinaryUploadRequest {
   void set_frame_url_chain(
       const google::protobuf::RepeatedPtrField<std::string> frame_url_chain);
   void set_content_hash_in_final_call(bool content_hash_in_final_call);
+  void set_file_size(uint64_t file_size);
 
   std::string SetRandomRequestToken();
 
@@ -177,6 +178,7 @@ class BinaryUploadRequest {
   bool is_content_too_large() const;
   bool should_skip_malware_scan() const;
   bool content_hash_in_final_call() const;
+  uint64_t file_size() const;
 
   // Called when beginning to try upload.
   void StartRequest();

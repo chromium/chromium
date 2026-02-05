@@ -406,6 +406,7 @@ void FileAnalysisRequestBase::CacheResultAndData(ScanRequestUploadResult result,
   DCHECK(!data.path.empty());
   cached_data_ = std::move(data);
 
+  set_file_size(cached_data_.size);
   set_digest(cached_data_.hash);
   set_content_type(cached_data_.mime_type);
 }

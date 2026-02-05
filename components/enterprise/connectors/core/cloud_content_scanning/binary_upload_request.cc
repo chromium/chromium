@@ -252,6 +252,10 @@ void BinaryUploadRequest::set_content_hash_in_final_call(
       content_hash_in_final_call);
 }
 
+void BinaryUploadRequest::set_file_size(uint64_t file_size) {
+  content_analysis_request_.mutable_request_data()->set_file_size(file_size);
+}
+
 std::string BinaryUploadRequest::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(
@@ -347,6 +351,10 @@ bool BinaryUploadRequest::is_content_encrypted() const {
 
 bool BinaryUploadRequest::content_hash_in_final_call() const {
   return content_analysis_request_.content_hash_in_final_call();
+}
+
+uint64_t BinaryUploadRequest::file_size() const {
+  return content_analysis_request_.request_data().file_size();
 }
 
 void BinaryUploadRequest::StartRequest() {

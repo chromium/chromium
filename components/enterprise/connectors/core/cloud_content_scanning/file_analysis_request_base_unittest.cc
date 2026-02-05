@@ -410,6 +410,8 @@ TEST_F(FileAnalysisRequestBaseTest, CachesResultsWithKnownMimetype) {
             "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
   EXPECT_EQ(request->digest(), data.hash);
   EXPECT_EQ(request->content_type(), "fake/mimetype");
+  EXPECT_EQ(data.size, 20UL);  // printf "Normal file contents" | wc -c
+  EXPECT_EQ(request->file_size(), data.size);
 }
 
 TEST_F(FileAnalysisRequestBaseTest, DelayedFileOpening) {

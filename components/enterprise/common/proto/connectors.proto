@@ -105,6 +105,9 @@ message ContentMetaData {
   // The parent URL chain of the frame from which the action was triggered,
   // ordered from current frame URL to tab URL, inclusive.
   repeated string frame_url_chain = 16;
+
+  // File size in bytes. Only populated for file scanning events.
+  optional uint64 file_size = 18;
 }
 
 message ClientMetadata {
