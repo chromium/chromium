@@ -255,6 +255,13 @@ experimental domain Overlay
       captureAreaScreenshot
       none
 
+  type InspectedElementAnchorConfig extends object
+    properties
+      # Identifier of the node to highlight.
+      optional DOM.NodeId nodeId
+      # Identifier of the backend node to highlight.
+      optional DOM.BackendNodeId backendNodeId
+
   # Disables domain notifications.
   command disable
 
@@ -423,6 +430,11 @@ experimental domain Overlay
       # An array of node identifiers and descriptors for the highlight appearance.
       array of ContainerQueryHighlightConfig containerQueryHighlightConfigs
 
+  command setShowInspectedElementAnchor
+    parameters
+      # Node identifier for which to show an anchor for.
+      InspectedElementAnchorConfig inspectedElementAnchorConfig
+
   # Requests that backend shows paint rectangles
   command setShowPaintRects
     parameters
@@ -493,6 +505,18 @@ experimental domain Overlay
     parameters
       # Viewport to capture, in device independent pixels (dip).
       Page.Viewport viewport
+
+  # Fired when user asks to show the Inspect panel.
+  event inspectPanelShowRequested
+    parameters
+      # Id of the node to show in the panel.
+      DOM.BackendNodeId backendNodeId
+
+  # Fired when user asks to restore the Inspected Element floating window.
+  event inspectedElementWindowRestored
+    parameters
+      # Id of the node to restore the floating window for.
+      DOM.BackendNodeId backendNodeId
 
   # Fired when user cancels the inspect mode.
   event inspectModeCanceled

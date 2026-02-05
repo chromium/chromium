@@ -948,6 +948,13 @@ protocol::Response InspectorOverlayAgent::setShowIsolatedElements(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorOverlayAgent::setShowInspectedElementAnchor(
+    std::unique_ptr<protocol::Overlay::InspectedElementAnchorConfig>
+        inspected_element_anchor_config) {
+  LOG(ERROR) << "Not implemented yet";
+  return protocol::Response::Success();
+}
+
 protocol::Response InspectorOverlayAgent::highlightSourceOrder(
     std::unique_ptr<protocol::Overlay::SourceOrderConfig>
         source_order_inspector_object,

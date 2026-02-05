@@ -261,6 +261,9 @@ class CORE_EXPORT InspectorOverlayAgent final
       std::unique_ptr<
           protocol::Array<protocol::Overlay::IsolatedElementHighlightConfig>>
           isolated_element_highlight_configs) override;
+  protocol::Response setShowInspectedElementAnchor(
+      std::unique_ptr<protocol::Overlay::InspectedElementAnchorConfig>
+          inspected_element_anchor_config) override;
 
   // InspectorBaseAgent overrides.
   void Restore() override;
