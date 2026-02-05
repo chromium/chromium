@@ -150,13 +150,36 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
   }
 }
 
-GURL AppendAimEntryPointParam(GURL url,
-                              omnibox::ChromeAimEntryPoint entry_point) {
-  if (entry_point != omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT) {
-    return net::AppendOrReplaceQueryParameter(
-        url, "aep", base::NumberToString(static_cast<int>(entry_point)));
+// Returns the Lens invocation source for the given AIM entry point, if it
+// is used for AIM zero-state invocations.
+std::optional<lens::LensOverlayInvocationSource>
+GetLensInvocationSourceForAimZeroState(
+    omnibox::ChromeAimEntryPoint entry_point) {
+  switch (entry_point) {
+    case omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON:
+      return lens::LensOverlayInvocationSource::kCobrowseToolbarButton;
+    default:
+      return std::nullopt;
   }
-  return url;
+}
+
+// Appends the AIM entry point and Lens invocation source query parameters to
+// the given URL, if the entry point is used for AIM zero-state invocations.
+GURL AppendAimEntryPointParams(GURL url,
+                               omnibox::ChromeAimEntryPoint entry_point) {
+  if (entry_point == omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT) {
+    return url;
+  }
+
+  GURL new_url = url;
+  auto invocation_source = GetLensInvocationSourceForAimZeroState(entry_point);
+  if (invocation_source.has_value()) {
+    new_url = lens::AppendInvocationSourceParamToURL(
+        new_url, invocation_source.value(), /*is_contextual_tasks=*/true);
+  }
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, "aep", base::NumberToString(static_cast<int>(entry_point)));
+  return new_url;
 }
 
 }  // namespace
@@ -319,7 +342,6 @@ void ContextualTasksUiService::OnOAuthTokenReceived(
   request_access_token_backoff_.Reset();
   RunPendingAccessTokenCallbacks(access_token_info.token);
 }
-
 
 void ContextualTasksUiService::ShowOauthErrorDialogForWebContents(
     base::WeakPtr<content::WebContents> web_contents) {
@@ -790,7 +812,7 @@ GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
                                   task_id.AsLowercaseString());
   omnibox::ChromeAimEntryPoint entry_point =
       GetInitialEntryPointForTask(task_id);
-  return AppendAimEntryPointParam(url, entry_point);
+  return AppendAimEntryPointParams(url, entry_point);
 }
 
 void ContextualTasksUiService::SetInitialEntryPointForTask(
@@ -809,7 +831,7 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
     task_id_to_creation_url_.erase(it);
     omnibox::ChromeAimEntryPoint entry_point =
         GetInitialEntryPointForTask(uuid);
-    return AppendAimEntryPointParam(url, entry_point);
+    return AppendAimEntryPointParams(url, entry_point);
   }
   return std::nullopt;
 }
@@ -865,7 +887,7 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrlForTask(
   GURL url = GetDefaultAiPageUrl();
   omnibox::ChromeAimEntryPoint entry_point =
       GetInitialEntryPointForTask(task_id);
-  return AppendAimEntryPointParam(url, entry_point);
+  return AppendAimEntryPointParams(url, entry_point);
 }
 
 void ContextualTasksUiService::OnTaskChanged(
