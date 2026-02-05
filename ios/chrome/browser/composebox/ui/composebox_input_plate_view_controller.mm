@@ -1539,11 +1539,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      galleryAction, fileAction
                    ]];
 
-  // TODO(crbug.com/477243979): Replace icon once defined.
   UIAction* canvasAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
-                image:DefaultSymbolWithPointSize(kEditActionSymbol,
-                                                 kSymbolActionPointSize)
+                image:CustomSymbolWithPointSize(kDocumentBadgeSpark,
+                                                kSymbolActionPointSize)
            identifier:nil
               handler:^(UIAction* action) {
                 [weakSelf handleCanvasTappedFromToolMenu];
@@ -1963,8 +1962,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIButtonConfiguration* config = [self
       modeIndicatorButtonConfigWithTitle:l10n_util::GetNSString(
                                              IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
-                                   image:DefaultSymbolWithPointSize(
-                                             kEditActionSymbol,
+                                   image:CustomSymbolWithPointSize(
+                                             kDocumentBadgeSpark,
                                              kAIMButtonSymbolPointSize)];
   NSDirectionalEdgeInsets insets = kModeIndicatorButtonInsets;
   insets.trailing = kModeIndicatorButtonInsets.trailing + kXButtonWidthInButton;
