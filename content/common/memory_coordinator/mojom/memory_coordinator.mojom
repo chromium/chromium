@@ -4,13 +4,14 @@
 
 module content.mojom;
 
-// The MemoryConsumer interface.
-interface ChildMemoryConsumer {
-  // Invokes ReleaseMemory().
-  NotifyReleaseMemory();
+// The interface for communicating with the MemoryCoordinator in a child
+// process.
+interface ChildMemoryCoordinator {
+  // Notifies the consumer with `consumer_id` to release memory.
+  NotifyReleaseMemory(string consumer_id);
 
-  // Invokes UpdateMemoryLimit().
-  NotifyUpdateMemoryLimit(int32 percentage);
+  // Notifies the consumer with `consumer_id` of a new memory limit.
+  NotifyUpdateMemoryLimit(string consumer_id, int32 percentage);
 };
 
 // This struct directly corresponds to base::MemoryConsumerTraits, from which it
@@ -32,9 +33,15 @@ struct MemoryConsumerTraits {
 // The interface for communicating with the MemoryConsumerRegistry that lives in
 // the browser process.
 interface ChildMemoryConsumerRegistryHost {
+  // Binds the ChildMemoryCoordinator interface for the process associated with
+  // this host.
+  BindCoordinator(pending_remote<ChildMemoryCoordinator> coordinator);
+
   // Registers a MemoryConsumer with the browser-side registry.
   Register(
       string consumer_id,
-      MemoryConsumerTraits traits,
-      pending_remote<ChildMemoryConsumer> child_consumer);
+      MemoryConsumerTraits traits);
+
+  // Unregisters a MemoryConsumer with the browser-side registry.
+  Unregister(string consumer_id);
 };

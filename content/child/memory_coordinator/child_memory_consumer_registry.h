@@ -30,15 +30,16 @@ namespace content {
 // mojom::ChildMemoryConsumerRegistryHost interface.
 class CONTENT_EXPORT ChildMemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
-      public mojom::ChildMemoryConsumer {
+      public mojom::ChildMemoryCoordinator {
  public:
   explicit ChildMemoryConsumerRegistry(
       MemoryConsumerGroupController& controller);
   ~ChildMemoryConsumerRegistry() override;
 
-  // mojom::ChildMemoryConsumer:
-  void NotifyReleaseMemory() override;
-  void NotifyUpdateMemoryLimit(int percentage) override;
+  // mojom::ChildMemoryCoordinator:
+  void NotifyReleaseMemory(const std::string& consumer_id) override;
+  void NotifyUpdateMemoryLimit(const std::string& consumer_id,
+                               int percentage) override;
 
   // Returns the number of consumers with different IDs.
   size_t size() const { return consumer_groups_.size(); }
@@ -95,23 +96,12 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
 
   const raw_ref<MemoryConsumerGroupController> controller_;
 
-  // Contains groups of all MemoryConsumers with the same consumer ID, and their
-  // associated mojo::ReceiverId.
-  struct ConsumerGroupAndReceiverId {
-    template <class... Args>
-    explicit ConsumerGroupAndReceiverId(Args&&... args)
-        : consumer_group(std::forward<Args>(args)...) {}
-
-    ConsumerGroup consumer_group;
-    std::optional<mojo::ReceiverId> receiver_id;
-  };
-  absl::flat_hash_map<std::string, std::unique_ptr<ConsumerGroupAndReceiverId>>
+  // Contains groups of all MemoryConsumers with the same consumer ID.
+  absl::flat_hash_map<std::string, std::unique_ptr<ConsumerGroup>>
       consumer_groups_;
 
-  // For each ConsumerGroup, a mojom::ChildMemoryConsumer connection with the
-  // browser process exists and is bound in this ReceiverSet.
-  mojo::ReceiverSet<mojom::ChildMemoryConsumer, base::RegisteredMemoryConsumer>
-      child_memory_consumers_;
+  // A mojom::ChildMemoryCoordinator connection with the browser process.
+  mojo::Receiver<mojom::ChildMemoryCoordinator> receiver_{this};
 };
 
 }  // namespace content

@@ -63,19 +63,28 @@ ChildMemoryConsumerRegistry::~ChildMemoryConsumerRegistry() {
   NotifyDestruction();
 
   CHECK(consumer_groups_.empty());
-  CHECK(child_memory_consumers_.empty());
 }
 
-void ChildMemoryConsumerRegistry::NotifyReleaseMemory() {
-  base::RegisteredMemoryConsumer consumer =
-      child_memory_consumers_.current_context();
-  consumer.ReleaseMemory();
+void ChildMemoryConsumerRegistry::NotifyReleaseMemory(
+    const std::string& consumer_id) {
+  // There's a possible race where a MemoryConsumer is unregistered but the
+  // browser process sent a notification before it was made aware. Ignore it.
+  auto it = consumer_groups_.find(consumer_id);
+  if (it != consumer_groups_.end()) {
+    CreateRegisteredMemoryConsumer(it->second.get()).ReleaseMemory();
+  }
 }
 
-void ChildMemoryConsumerRegistry::NotifyUpdateMemoryLimit(int percentage) {
-  base::RegisteredMemoryConsumer consumer =
-      child_memory_consumers_.current_context();
-  consumer.UpdateMemoryLimit(percentage);
+void ChildMemoryConsumerRegistry::NotifyUpdateMemoryLimit(
+    const std::string& consumer_id,
+    int percentage) {
+  // There's a possible race where a MemoryConsumer is unregistered but the
+  // browser process sent a notification before it was made aware. Ignore it.
+  auto it = consumer_groups_.find(consumer_id);
+  if (it != consumer_groups_.end()) {
+    CreateRegisteredMemoryConsumer(it->second.get())
+        .UpdateMemoryLimit(percentage);
+  }
 }
 
 // static
@@ -95,36 +104,26 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
     base::MemoryConsumerTraits traits,
     base::RegisteredMemoryConsumer consumer) {
-  auto [it, inserted] = consumer_groups_.try_emplace(std::string(consumer_id));
-  if (inserted) {
-    it->second = std::make_unique<ConsumerGroupAndReceiverId>(traits);
-  }
-
-  ConsumerGroup& consumer_group = it->second->consumer_group;
+  auto [it, inserted] = consumer_groups_.try_emplace(consumer_id);
+  std::unique_ptr<ConsumerGroup>& consumer_group = it->second;
 
   if (inserted) {
     // First time seeing a consumer with this ID.
+    consumer_group = std::make_unique<ConsumerGroup>(traits);
 
     if (registry_host_) {
-      // Bind a new pipe to connect with the browser process.
-      mojo::PendingRemote<mojom::ChildMemoryConsumer> remote;
-      it->second->receiver_id = child_memory_consumers_.Add(
-          this, remote.InitWithNewPipeAndPassReceiver(),
-          CreateRegisteredMemoryConsumer(&consumer_group));
-
       // Notify the browser process.
-      registry_host_->Register(std::string(consumer_id), traits,
-                               std::move(remote));
+      registry_host_->Register(std::string(consumer_id), traits);
     }
 
     controller_->OnConsumerGroupAdded(
         consumer_id, traits, PROCESS_TYPE_UNKNOWN, ChildProcessId(),
-        CreateRegisteredMemoryConsumer(&consumer_group));
+        CreateRegisteredMemoryConsumer(consumer_group.get()));
   }
 
-  CHECK(consumer_group.traits() == traits);
+  CHECK(consumer_group->traits() == traits);
 
-  consumer_group.AddMemoryConsumer(consumer);
+  consumer_group->AddMemoryConsumer(consumer);
 }
 
 void ChildMemoryConsumerRegistry::OnMemoryConsumerRemoved(
@@ -132,16 +131,15 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerRemoved(
     base::RegisteredMemoryConsumer consumer) {
   auto it = consumer_groups_.find(consumer_id);
   CHECK(it != consumer_groups_.end());
-  ConsumerGroup& consumer_group = it->second->consumer_group;
-  std::optional<mojo::ReceiverId> receiver_id = it->second->receiver_id;
+  ConsumerGroup& consumer_group = *it->second;
 
   consumer_group.RemoveMemoryConsumer(consumer);
 
   if (consumer_group.empty()) {
     // Last consumer with this ID. First remove the connection with the browser
     // process, if there ever was one.
-    if (receiver_id) {
-      child_memory_consumers_.Remove(*receiver_id);
+    if (registry_host_) {
+      registry_host_->Unregister(std::string(consumer_id));
     }
 
     controller_->OnConsumerGroupRemoved(consumer_id, ChildProcessId());
@@ -157,19 +155,12 @@ ChildMemoryConsumerRegistry::BindAndPassReceiverImpl() {
 
   auto pending_receiver = registry_host_.BindNewPipeAndPassReceiver();
 
+  // Bind the process-level coordinator and send it to the host.
+  registry_host_->BindCoordinator(receiver_.BindNewPipeAndPassRemote());
+
   // Notify the browser for consumers that registered early.
-  for (auto& [consumer_id, entry] : consumer_groups_) {
-    auto& [consumer_group, receiver_id] = *entry;
-
-    // Bind a new pipe to connect with the browser process.
-    mojo::PendingRemote<mojom::ChildMemoryConsumer> remote;
-    receiver_id = child_memory_consumers_.Add(
-        this, remote.InitWithNewPipeAndPassReceiver(),
-        CreateRegisteredMemoryConsumer(&consumer_group));
-
-    // Notify the browser process.
-    registry_host_->Register(std::string(consumer_id), consumer_group.traits(),
-                             std::move(remote));
+  for (auto& [consumer_id, consumer_group] : consumer_groups_) {
+    registry_host_->Register(consumer_id, consumer_group->traits());
   }
 
   return pending_receiver;

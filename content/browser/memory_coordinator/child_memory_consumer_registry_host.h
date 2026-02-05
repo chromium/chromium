@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
@@ -22,8 +24,9 @@
 namespace content {
 
 // An implementation of mojom::ChildMemoryConsumerRegistryHost that connects
-// registries in child processes with the main registry in the browser process.
-// There is only one instance of this class and it handles all connections.
+// memory consumers in a child process with the main registry in the browser
+// process. An instance of this class is created for each child process
+// connection.
 class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
     : public mojom::ChildMemoryConsumerRegistryHost {
  public:
@@ -46,7 +49,9 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
         base::MemoryConsumer* consumer) = 0;
   };
 
-  explicit ChildMemoryConsumerRegistryHost(Delegate& delegate);
+  ChildMemoryConsumerRegistryHost(Delegate& delegate,
+                                  ProcessType process_type,
+                                  ChildProcessId child_process_id);
 
   ChildMemoryConsumerRegistryHost(const ChildMemoryConsumerRegistryHost&) =
       delete;
@@ -55,60 +60,36 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
 
   ~ChildMemoryConsumerRegistryHost() override;
 
-  // Binds a mojo receiver from a child process to this host. All
-  // MemoryConsumers registered through this receiver will be associated with
-  // the given `process_type` and `child_process_id`.
-  void Bind(
-      ProcessType process_type,
-      ChildProcessId child_process_id,
-      mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver);
+  // Sets a callback that will be run when the coordinator remote disconnects.
+  void SetDisconnectHandler(base::OnceClosure handler);
 
   // mojom::ChildMemoryConsumerRegistryHost:
-  void Register(
-      const std::string& consumer_id,
-      base::MemoryConsumerTraits traits,
-      mojo::PendingRemote<mojom::ChildMemoryConsumer> remote_consumer) override;
+  void BindCoordinator(mojo::PendingRemote<mojom::ChildMemoryCoordinator>
+                           coordinator_remote) override;
+  void Register(const std::string& consumer_id,
+                base::MemoryConsumerTraits traits) override;
+  void Unregister(const std::string& consumer_id) override;
 
  private:
-  // An implementation of base::MemoryConsumer that encapsulates a connection to
-  // to a mojom::ChildMemoryConsumer in a child process. This enables uniform
-  // handling of local and remote MemoryConsumers.
-  class ChildMemoryConsumer : public base::MemoryConsumer {
-   public:
-    ChildMemoryConsumer(
-        mojo::PendingRemote<mojom::ChildMemoryConsumer> remote_consumer,
-        base::OnceCallback<void(ChildMemoryConsumer*)> on_disconnect_handler);
-    ~ChildMemoryConsumer() override;
+  class ChildMemoryConsumer;
 
-    // base::MemoryConsumer:
-    void OnReleaseMemory() override;
-    void OnUpdateMemoryLimit() override;
-
-   private:
-    mojo::Remote<mojom::ChildMemoryConsumer> remote_consumer_;
-  };
-
-  void OnChildMemoryConsumerDisconnected(
-      ChildProcessId child_process_id,
-      const std::string& consumer_id,
-      ChildMemoryConsumer* child_memory_consumer);
+  void NotifyReleaseMemory(const std::string& consumer_id);
+  void NotifyUpdateMemoryLimit(const std::string& consumer_id, int percentage);
 
   const raw_ref<Delegate> delegate_;
 
-  struct ConnectionContext {
-    ProcessType process_type;
-    ChildProcessId child_process_id;
-  };
+  const ProcessType process_type_;
+  const ChildProcessId child_process_id_;
 
-  mojo::ReceiverSet<mojom::ChildMemoryConsumerRegistryHost, ConnectionContext>
-      receivers_;
+  mojo::Remote<mojom::ChildMemoryCoordinator> coordinator_remote_;
 
-  using ConsumerKey = std::pair<std::string, ChildProcessId>;
+  // Handles a disconnection with `coordinator_remote_`.
+  base::OnceClosure disconnect_handler_;
 
   // Holds a ChildMemoryConsumer for each consumer group that lives in a
   // child process.
-  absl::flat_hash_map<ConsumerKey, std::unique_ptr<ChildMemoryConsumer>>
-      child_memory_consumers_;
+  absl::flat_hash_map<std::string, std::unique_ptr<ChildMemoryConsumer>>
+      consumers_;
 };
 
 }  // namespace content

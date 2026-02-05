@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+
 namespace content {
 
 namespace {
@@ -34,7 +36,14 @@ void BrowserMemoryCoordinator::Bind(
     ProcessType process_type,
     ChildProcessId child_process_id,
     mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver) {
-  host_.Bind(process_type, child_process_id, std::move(receiver));
+  auto host = std::make_unique<ChildMemoryConsumerRegistryHost>(
+      registry_.Get(), process_type, child_process_id);
+  auto* host_ptr = host.get();
+  mojo::ReceiverId id = hosts_.Add(std::move(host), std::move(receiver));
+  host_ptr->SetDisconnectHandler(base::BindOnce(
+      [](mojo::UniqueReceiverSet<mojom::ChildMemoryConsumerRegistryHost>* hosts,
+         mojo::ReceiverId id) { hosts->Remove(id); },
+      &hosts_, id));
 }
 
 }  // namespace content
