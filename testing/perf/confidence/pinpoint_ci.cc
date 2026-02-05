@@ -151,12 +151,15 @@ int main(int argc, char** argv) {
 
   bool sort_by_value = false;
   bool speedometer_spreadsheet = false;
-  if (std::string(argv_span[0]) == "--sort-by-value") {
-    sort_by_value = true;
-    argv_span.take_first_elem();
-  } else if (std::string(argv_span[0]) == "--speedometer-spreadsheet") {
-    speedometer_spreadsheet = true;
-    argv_span.take_first_elem();
+  if (!argv_span.empty()) {
+    std::string_view arg = argv_span[0];
+    if (arg == "--sort-by-value") {
+      sort_by_value = true;
+      argv_span.take_first_elem();
+    } else if (arg == "--speedometer-spreadsheet") {
+      speedometer_spreadsheet = true;
+      argv_span.take_first_elem();
+    }
   }
 
   if (argv_span.empty()) {
