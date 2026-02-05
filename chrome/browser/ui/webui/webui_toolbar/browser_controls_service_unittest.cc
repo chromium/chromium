@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -84,10 +86,16 @@ class BrowserControlsServiceTest : public testing::Test {
 
     mock_command_updater_ =
         std::make_unique<testing::NiceMock<MockCommandUpdater>>();
+
+    ON_CALL(mock_browser_window_, GetProfile())
+        .WillByDefault(Return(&profile_));
+    ON_CALL(mock_browser_window_, GetTabStripModel())
+        .WillByDefault(Return(nullptr));
+
     handler_ = std::make_unique<BrowserControlsService>(
         mojo::PendingReceiver<
             browser_controls_api::mojom::BrowserControlsService>(),
-        web_contents_.get(), mock_command_updater_.get(),
+        web_contents_.get(), mock_command_updater_.get(), &mock_browser_window_,
         /*delegate=*/&delegate_);
     handler_->AddObserver(page().BindAndGetRemote());
 
@@ -127,6 +135,7 @@ class BrowserControlsServiceTest : public testing::Test {
 
   testing::StrictMock<MockReloadButtonPage>& page() { return page_; }
   content::WebContents& web_contents() { return *web_contents_; }
+  TestingProfile& profile() { return profile_; }
   testing::NiceMock<MockCommandUpdater>& mock_command_updater() {
     return *mock_command_updater_;
   }
@@ -391,4 +400,45 @@ TEST_F(BrowserControlsServiceTest, AddObserverResetsPreviousObserver) {
 
   page2.FlushForTesting();
   page().FlushForTesting();
+}
+
+// Test suite for SplitTabs-related tests.
+using BrowserControlsServiceSplitTabsTest = BrowserControlsServiceTest;
+
+// Tests that OnTabSplitStatusChanged calls the page with the correct state.
+TEST_F(BrowserControlsServiceSplitTabsTest, TestOnTabSplitStatusChanged) {
+  EXPECT_CALL(
+      page(),
+      OnTabSplitStatusChanged(
+          true, browser_controls_api::mojom::SplitTabActiveLocation::kStart))
+      .Times(1);
+
+  handler().OnTabSplitStatusChanged(
+      true, browser_controls_api::mojom::SplitTabActiveLocation::kStart);
+
+  page().FlushForTesting();
+}
+
+// Tests that OnButtonPinStateChanged calls the page with the correct
+// state.
+TEST_F(BrowserControlsServiceSplitTabsTest,
+       TestOnSplitTabsButtonPinStateChanged) {
+  EXPECT_CALL(
+      page(),
+      OnButtonPinStateChanged(
+          browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true))
+      .Times(1);
+
+  handler().OnButtonPinStateChanged(
+      browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true);
+
+  page().FlushForTesting();
+}
+
+// Tests that OnPageInitialized calls the delegate.
+TEST_F(BrowserControlsServiceSplitTabsTest, TestOnPageInitializedDelegates) {
+  // Delegate OnPageInitialized should be called.
+  EXPECT_CALL(delegate(), OnPageInitialized()).Times(1);
+
+  handler().OnPageInitialized();
 }

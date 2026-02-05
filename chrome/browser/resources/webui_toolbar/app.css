@@ -7,6 +7,13 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  display: flex;
+  /* Overridden by app.ts */
+  --toolbar-icon-default-margin: 0px;
+  gap: var(--toolbar-icon-default-margin);
+}
+
 reload-button-app {
   margin: 0;
   overflow: hidden;

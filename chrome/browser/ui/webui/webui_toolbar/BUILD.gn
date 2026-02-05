@@ -11,6 +11,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 source_set("webui_toolbar") {
   sources = [
     "browser_controls_service.h",
+    "split_tabs_utils.h",
     "webui_toolbar_ui.h",
   ]
   public_deps = [
@@ -23,12 +24,17 @@ source_set("webui_toolbar") {
     "//ui/webui/resources/js/tracked_element:mojo_bindings",
     "//ui/webui/tracked_element",
   ]
-  deps = [ "//chrome/browser:primitives" ]
+  deps = [
+    "//chrome/browser:primitives",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//ui/views",
+  ]
 }
 
 source_set("impl") {
   sources = [
     "browser_controls_service.cc",
+    "split_tabs_utils.cc",
     "webui_toolbar_ui.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -40,8 +46,12 @@ source_set("impl") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/interaction",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/browser_apis/browser_controls:mojom",

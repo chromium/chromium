@@ -43,6 +43,16 @@ class MockReloadButtonPage
               (browser_controls_api::mojom::ContextMenuType menu_type,
                browser_controls_api::mojom::ContextMenuState state),
               (override));
+  MOCK_METHOD(void,
+              OnTabSplitStatusChanged,
+              (bool is_split,
+               browser_controls_api::mojom::SplitTabActiveLocation location),
+              (override));
+  MOCK_METHOD(void,
+              OnButtonPinStateChanged,
+              (browser_controls_api::mojom::ToolbarButtonType type,
+               bool is_pinned),
+              (override));
 
  private:
   mojo::Receiver<browser_controls_api::mojom::BrowserControlsObserver>

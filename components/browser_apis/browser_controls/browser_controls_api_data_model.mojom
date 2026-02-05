@@ -18,6 +18,8 @@ enum ClickDispositionFlag {
 enum ContextMenuType {
   kUnspecified = 0,
   kReload = 1,
+  kSplitTabsAction = 2,
+  kSplitTabsContext = 3,
 };
 
 // The state of a paritcular context menu.
@@ -37,4 +39,15 @@ enum NavigationState {
   kUnspecified = 0,
   kLoading = 1,
   kNotLoading = 2,
+};
+
+enum SplitTabActiveLocation {
+  kStart,
+  kEnd,
+  kTop,
+  kBottom,
+};
+
+enum ToolbarButtonType {
+  kSplitTabs,
 };

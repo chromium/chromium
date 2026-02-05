@@ -160,6 +160,47 @@ TEST_F(WebUIToolbarUITest, SetReloadButtonState) {
   connection.mock_observer().FlushForTesting();
 }
 
+// Tests that OnTabSplitStatusChanged calls the browser controls observer with
+// the correct parameters.
+TEST_F(WebUIToolbarUITest, OnTabSplitStatusChanged) {
+  MockBrowserControlsServiceConnection connection(ui());
+  connection.RegisterObserver();
+
+  EXPECT_CALL(
+      connection.mock_observer(),
+      OnTabSplitStatusChanged(
+          true, browser_controls_api::mojom::SplitTabActiveLocation::kStart))
+      .Times(1);
+  ui()->OnTabSplitStatusChanged(
+      true, browser_controls_api::mojom::SplitTabActiveLocation::kStart);
+  connection.mock_observer().FlushForTesting();
+}
+
+// Tests that OnButtonPinStateChanged calls the browser controls observer with
+// the correct parameters.
+TEST_F(WebUIToolbarUITest, OnButtonPinStateChanged) {
+  MockBrowserControlsServiceConnection connection(ui());
+  connection.RegisterObserver();
+
+  EXPECT_CALL(
+      connection.mock_observer(),
+      OnButtonPinStateChanged(
+          browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true))
+      .Times(1);
+  ui()->OnButtonPinStateChanged(
+      browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, true);
+  connection.mock_observer().FlushForTesting();
+
+  EXPECT_CALL(
+      connection.mock_observer(),
+      OnButtonPinStateChanged(
+          browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, false))
+      .Times(1);
+  ui()->OnButtonPinStateChanged(
+      browser_controls_api::mojom::ToolbarButtonType::kSplitTabs, false);
+  connection.mock_observer().FlushForTesting();
+}
+
 // Tests that the BindInterface method for BrowserControlsService works
 // correctly.
 TEST_F(WebUIToolbarUITest, BindService) {
@@ -235,13 +276,24 @@ TEST_F(WebUIToolbarUIConfigTest, IsWebUIEnabled) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+        {features::kInitialWebUI, features::kWebUIReloadButton},
+        {features::kWebUISplitTabsButton});
     EXPECT_TRUE(config.IsWebUIEnabled(&profile));
   }
 
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kWebUIReloadButton);
+    feature_list.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUISplitTabsButton},
+        {features::kWebUIReloadButton});
+    EXPECT_TRUE(config.IsWebUIEnabled(&profile));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kInitialWebUI},
+        {features::kWebUIReloadButton, features::kWebUISplitTabsButton});
     EXPECT_FALSE(config.IsWebUIEnabled(&profile));
   }
 }

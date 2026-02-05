@@ -21,6 +21,14 @@ interface BrowserControlsObserver {
 
   // Indicates the context menu of type |menu_type| changed to |state| state.
   OnContextMenuStateChanged(ContextMenuType menu_type, ContextMenuState state);
+
+  // Sets the split status of the active tab in the renderer, the renderer is
+  // expected to make UI changes accordingly.
+  OnTabSplitStatusChanged(bool is_split, SplitTabActiveLocation location);
+
+  // Sets the pin state of the specified button in the renderer, the renderer
+  // is expected to make UI changes accordingly.
+  OnButtonPinStateChanged(ToolbarButtonType type, bool is_pinned);
 };
 
 // BrowserControlsService defines methods to be called from the WebUI to the
@@ -53,4 +61,14 @@ interface BrowserControlsService {
   // might affect the reload logic (e.g. whether it's clicked through the
   // middle mouse button, or whether the alt key is pressed).
   ReloadFromClick(bool bypass_cache, array<ClickDispositionFlag> click_flags);
+
+  // Enters split view mode for the active tab. Only called when not in split.
+  SplitActiveTab();
+
+  // Gets the split status of the active tab.
+  GetTabSplitState()
+      => (bool is_split, SplitTabActiveLocation location);
+
+  // Gets the pin state for the specified button.
+  GetButtonPinState(ToolbarButtonType type) => (bool is_pinned);
 };

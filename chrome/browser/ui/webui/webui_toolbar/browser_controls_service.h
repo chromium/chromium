@@ -7,14 +7,19 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
+class BrowserWindowInterface;
 class CommandUpdater;
 class MetricsReporter;
 
@@ -39,6 +44,7 @@ class BrowserControlsService
           service,
       content::WebContents* web_contents,
       CommandUpdater* command_updater,
+      BrowserWindowInterface* browser,
       BrowserControlsServiceDelegate* delegate);
 
   BrowserControlsService(const BrowserControlsService&) = delete;
@@ -67,6 +73,20 @@ class BrowserControlsService
                        const gfx::Point& viewport_coordinate_css_pixels,
                        ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
+  void SplitActiveTab() override;
+  void GetTabSplitState(GetTabSplitStateCallback callback) override;
+  void GetButtonPinState(browser_controls_api::mojom::ToolbarButtonType type,
+                         GetButtonPinStateCallback callback) override;
+
+  // Updates the split status of the active tab in the renderer.
+  void OnTabSplitStatusChanged(
+      bool is_split,
+      browser_controls_api::mojom::SplitTabActiveLocation location);
+
+  // Updates the pin state of the specified button in the renderer.
+  void OnButtonPinStateChanged(
+      browser_controls_api::mojom::ToolbarButtonType type,
+      bool is_pinned);
 
  private:
   // Returns the MetricsReporter associated with `web_contents_` or nullptr.
@@ -88,8 +108,8 @@ class BrowserControlsService
 
   // Not owned.
   const raw_ptr<content::WebContents> web_contents_;
-  // Not owned.
   const raw_ptr<CommandUpdater> command_updater_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   raw_ptr<BrowserControlsServiceDelegate> delegate_;
 

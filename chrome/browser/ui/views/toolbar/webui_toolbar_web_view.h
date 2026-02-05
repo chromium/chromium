@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
+#include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -64,8 +65,7 @@ class WebUIToolbarWebView
 
  private:
   friend WebUIReloadControl;
-
-  void InitializeWebView();
+  friend WebUISplitTabsControl;
 
   // Reloads the WebUI toolbar to recover from crashes or unresponsiveness.
   void RecoverFromRendererCrashOrUnresponsiveness();
@@ -77,6 +77,7 @@ class WebUIToolbarWebView
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
   WebUIReloadControl reload_control_;
+  WebUISplitTabsControl split_tabs_control_;
   raw_ptr<const base::TickClock> clock_;
   base::OnceClosure did_first_non_empty_paint_callback_;
   bool has_finished_first_non_empty_paint_ = false;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,14 +21,19 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
@@ -116,6 +122,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
     : browser_(browser),
       controller_(controller),
       reload_control_(this),
+      split_tabs_control_(this),
       clock_(base::DefaultTickClock::GetInstance()) {
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
@@ -154,7 +161,17 @@ void WebUIToolbarWebView::AddedToWidget() {
   // Ensure the browser window interface is associated with the WebContents
   // before the WebUI acts on it.
   webui::SetBrowserWindowInterface(web_view_->GetWebContents(), browser_);
+
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
+
+  // Initialize the split tabs control early to determine its initial visibility
+  // state (based on prefs/tab state) before the first layout. This prevents
+  // layout shifts that would occur if we waited for OnPageInitialized.
+  // This is safe because the split tabs control's Init() doesn't need to push
+  // state to the WebUI.
+  if (features::IsWebUISplitTabsButtonEnabled()) {
+    split_tabs_control_.Init();
+  }
 
   // Do NOT call GetWebUIToolbarUI() here as it may be null.
   // The reload_control_ will be initialized once the WebUI is ready.
@@ -164,6 +181,8 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int button_count = 0;
   button_count += features::IsWebUIReloadButtonEnabled();
+  button_count += features::IsWebUISplitTabsButtonEnabled() &&
+                  split_tabs_control_.IsVisible();
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   int width = button_count * size;
@@ -194,13 +213,18 @@ void WebUIToolbarWebView::HandleContextMenu(
     case browser_controls_api::mojom::ContextMenuType::kReload:
       reload_control_.HandleContextMenu(GetWidget(), screen_location, source);
       break;
+    case browser_controls_api::mojom::ContextMenuType::kSplitTabsAction:
+    case browser_controls_api::mojom::ContextMenuType::kSplitTabsContext:
+      split_tabs_control_.HandleContextMenu(menu_type, screen_location, source);
+      break;
     case browser_controls_api::mojom::ContextMenuType::kUnspecified:
       NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
   }
 }
 
 void WebUIToolbarWebView::OnPageInitialized() {
-  if (!reload_control_.is_initialized()) {
+  if (features::IsWebUIReloadButtonEnabled() &&
+      !reload_control_.is_initialized()) {
     reload_control_.Init();
   }
 

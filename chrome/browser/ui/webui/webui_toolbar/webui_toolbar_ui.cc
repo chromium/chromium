@@ -10,9 +10,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/split_tabs_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -57,8 +60,19 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
+  source->AddInteger(
+      "toolbarIconDefaultMargin",
+      GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin));
+
   webui::SetupWebUIDataSource(source, kWebuiToolbarResources,
                               IDR_WEBUI_TOOLBAR_WEBUI_TOOLBAR_HTML);
+
+  source->AddBoolean("enableReloadButton",
+                     features::IsWebUIReloadButtonEnabled());
+
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_ui->GetWebContents());
+  webui_toolbar::PopulateSplitTabsDataSource(source, browser);
 
   // Handles chrome.send() calls that records non-timestamp histograms.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
@@ -87,7 +101,8 @@ void WebUIToolbarUI::BindInterface(
   }
 
   browser_controls_service_ = std::make_unique<BrowserControlsService>(
-      std::move(receiver), web_contents, command_updater, delegate_);
+      std::move(receiver), web_contents, command_updater,
+      webui::GetBrowserWindowInterface(web_contents), delegate_);
 }
 
 void WebUIToolbarUI::BindInterface(
@@ -165,6 +180,22 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(
 void WebUIToolbarUI::SetCommandUpdaterForTesting(
     CommandUpdater* command_updater) {
   command_updater_for_testing_ = command_updater;
+}
+
+void WebUIToolbarUI::OnTabSplitStatusChanged(
+    bool is_split,
+    browser_controls_api::mojom::SplitTabActiveLocation location) {
+  if (browser_controls_service_) {
+    browser_controls_service_->OnTabSplitStatusChanged(is_split, location);
+  }
+}
+
+void WebUIToolbarUI::OnButtonPinStateChanged(
+    browser_controls_api::mojom::ToolbarButtonType type,
+    bool is_pinned) {
+  if (browser_controls_service_) {
+    browser_controls_service_->OnButtonPinStateChanged(type, is_pinned);
+  }
 }
 
 void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import './reload_button.js';
+import './split_tabs_button.js';
 
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -15,25 +17,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 
-export interface ToolbarAppElement {
-  $: {
-    reload: CrLitElement,
-  };
-}
-
 export class ToolbarAppElement extends CrLitElement {
-  private browserProxy_: BrowserProxy;
-  private metricsRecorder_: MetricsRecorder;
-  private trackedElementManager_: TrackedElementManager;
-
-  constructor() {
-    super();
-    this.browserProxy_ = BrowserProxyImpl.getInstance();
-    this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
-    this.trackedElementManager_ = TrackedElementManager.getInstance();
-    ColorChangeUpdater.forDocument().start();
-  }
-
   static get is() {
     return 'toolbar-app';
   }
@@ -46,6 +30,32 @@ export class ToolbarAppElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      isReloadButtonEnabled_: {type: Boolean},
+      isSplitTabsButtonEnabled_: {type: Boolean},
+    };
+  }
+
+  protected accessor isReloadButtonEnabled_: boolean =
+      loadTimeData.getBoolean('enableReloadButton');
+  protected accessor isSplitTabsButtonEnabled_: boolean =
+      loadTimeData.getBoolean('enableSplitTabsButton');
+
+  private browserProxy_: BrowserProxy;
+  private metricsRecorder_: MetricsRecorder;
+  private trackedElementManager_: TrackedElementManager;
+
+  constructor() {
+    super();
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
+    this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
+    this.trackedElementManager_ = TrackedElementManager.getInstance();
+    const gap = loadTimeData.getInteger('toolbarIconDefaultMargin');
+    this.style.setProperty('--toolbar-icon-default-margin', `${gap}px`);
+    ColorChangeUpdater.forDocument().start();
+  }
+
   /**
    * Sets up event listeners and the PerformanceObserver when the element is
    * added to the DOM.
@@ -54,8 +64,11 @@ export class ToolbarAppElement extends CrLitElement {
     super.connectedCallback();
 
     this.metricsRecorder_.startObserving();
-    this.trackedElementManager_.startTracking(
-        this.$.reload, 'kReloadButtonElementId');
+    const reload = this.shadowRoot.querySelector<HTMLElement>('#reload');
+    if (reload) {
+      this.trackedElementManager_.startTracking(
+          reload, 'kReloadButtonElementId');
+    }
   }
 
   /**
@@ -66,15 +79,23 @@ export class ToolbarAppElement extends CrLitElement {
     super.disconnectedCallback();
 
     this.metricsRecorder_.stopObserving();
+    const reload = this.shadowRoot.querySelector<HTMLElement>('#reload');
+    if (reload) {
+      this.trackedElementManager_.stopTracking(reload);
+    }
   }
 
-  override async firstUpdated(changedProperties: PropertyValues) {
+  override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    await this.$.reload.updateComplete;
-    this.browserProxy_.handler.onPageInitialized();
+    const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
+    if (reload) {
+      reload.updateComplete.then(
+          () => this.browserProxy_.handler.onPageInitialized());
+    } else {
+      this.browserProxy_.handler.onPageInitialized();
+    }
   }
 }
-
 
 declare global {
   interface HTMLElementTagNameMap {

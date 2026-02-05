@@ -324,13 +324,16 @@ void ToolbarView::Init() {
         browser_->profile(), browser_->command_controller(),
         InitialWebUIWindowMetricsManager::From(browser_)));
   }
+
   if (!features::IsWebUIHomeButtonEnabled()) {
     home_ = AddChildView(std::make_unique<HomeButton>(
         browser_, base::BindRepeating(callback, browser_, IDC_HOME)));
   }
-  std::unique_ptr<SplitTabsToolbarButton> split =
-      std::make_unique<SplitTabsToolbarButton>(browser_);
-  split_tabs_ = AddChildView(std::move(split));
+
+  if (!features::IsWebUISplitTabsButtonEnabled()) {
+    split_tabs_ =
+        AddChildView(std::make_unique<SplitTabsToolbarButton>(browser_));
+  }
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
       ((contextual_tasks::kShowEntryPoint.Get() ==

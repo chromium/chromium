@@ -15,17 +15,21 @@ build_webui("build") {
   ]
 
   ts_files = [
+    "app.html.ts",
+    "app.ts",
     "browser_proxy.ts",
     "metrics_recorder.ts",
     "reload_button.html.ts",
     "reload_button.ts",
-    "app.ts",
-    "app.html.ts",
+    "split_tabs_button.html.ts",
+    "split_tabs_button.ts",
+    "split_tabs_button_icons.html.ts",
     "toolbar_button.ts",
   ]
   css_files = [
-    "reload_button.css",
     "app.css",
+    "reload_button.css",
+    "split_tabs_button.css",
   ]
 
   webui_context_type = "trusted"

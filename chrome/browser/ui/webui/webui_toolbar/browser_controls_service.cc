@@ -14,19 +14,35 @@
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/split_tabs_utils.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 // Measurement marks.
@@ -76,10 +92,12 @@ BrowserControlsService::BrowserControlsService(
         service,
     content::WebContents* web_contents,
     CommandUpdater* command_updater,
+    BrowserWindowInterface* browser,
     BrowserControlsServiceDelegate* delegate)
     : service_(this, std::move(service)),
       web_contents_(web_contents),
       command_updater_(command_updater),
+      browser_(browser),
       delegate_(delegate) {
   CHECK(web_contents_);
   CHECK(command_updater_);
@@ -191,6 +209,43 @@ void BrowserControlsService::OnContextMenuStateChanged(
     browser_controls_api::mojom::ContextMenuState state) {
   if (observer_) {
     observer_->OnContextMenuStateChanged(menu_type, state);
+  }
+}
+
+void BrowserControlsService::SplitActiveTab() {
+  // We only reach here if the frontend decided we need to CREATE a split.
+  // We don't need to check IsActiveTabInSplit() or handle the menu here.
+  chrome::NewSplitTab(browser_,
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+}
+
+void BrowserControlsService::GetTabSplitState(
+    GetTabSplitStateCallback callback) {
+  webui_toolbar::TabSplitStatus status =
+      webui_toolbar::ComputeTabSplitStatus(browser_);
+  std::move(callback).Run(status.is_split, status.location);
+}
+
+void BrowserControlsService::GetButtonPinState(
+    browser_controls_api::mojom::ToolbarButtonType type,
+    GetButtonPinStateCallback callback) {
+  bool is_pinned = webui_toolbar::IsButtonPinned(browser_, type);
+  std::move(callback).Run(is_pinned);
+}
+
+void BrowserControlsService::OnTabSplitStatusChanged(
+    bool is_split,
+    browser_controls_api::mojom::SplitTabActiveLocation location) {
+  if (observer_) {
+    observer_->OnTabSplitStatusChanged(is_split, location);
+  }
+}
+
+void BrowserControlsService::OnButtonPinStateChanged(
+    browser_controls_api::mojom::ToolbarButtonType type,
+    bool is_pinned) {
+  if (observer_) {
+    observer_->OnButtonPinStateChanged(type, is_pinned);
   }
 }
 
