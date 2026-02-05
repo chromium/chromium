@@ -326,7 +326,7 @@ void LayoutBoxModelObject::StyleDidChange(
 
   // The backdrop-filter effect is clipped by the element's border radii, so we
   // need to update properties when the border radii change.
-  if (HasNonInitialBackdropFilter() && diff.BorderRadiusChanged()) {
+  if (HasNonInitialBackdropFilter() && diff.border_radius_changed) {
     SetNeedsPaintPropertyUpdate();
   }
 }

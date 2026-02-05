@@ -260,12 +260,12 @@ StyleDifference AdjustForCompositableAnimationPaint(
   DCHECK(new_style);
 
   bool skip_background_color_paint_invalidation =
-      !diff.BackgroundColorChanged() || HasNativeBackgroundPainter(node);
+      !diff.background_color_changed || HasNativeBackgroundPainter(node);
   if (!skip_background_color_paint_invalidation)
     diff.SetNeedsNormalPaintInvalidation();
 
   bool skip_clip_path_paint_invalidation =
-      !diff.ClipPathChanged() || HasClipPathPaintWorklet(node);
+      !diff.clip_path_changed || HasClipPathPaintWorklet(node);
   if (!skip_clip_path_paint_invalidation)
     diff.SetNeedsNormalPaintInvalidation();
 
@@ -2751,7 +2751,7 @@ static inline void HandleDynamicFloatPositionChange(LayoutObject* object) {
 StyleDifference LayoutObject::AdjustStyleDifference(
     StyleDifference diff) const {
   NOT_DESTROYED();
-  if (diff.TransformChanged() && IsSVG()) {
+  if (diff.transform_changed && IsSVG()) {
     // Skip a full layout for transforms at the html/svg boundary which do not
     // affect sizes inside SVG.
     if (!IsSVGRoot())
@@ -2760,7 +2760,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
 
   // Optimization: for decoration/color property changes, invalidation is only
   // needed if we have style or text affected by these properties.
-  if (diff.TextDecorationOrColorChanged() &&
+  if (diff.text_decoration_or_color_changed &&
       !diff.NeedsNormalPaintInvalidation() &&
       !diff.NeedsSimplePaintInvalidation()) {
     if (StyleRef().HasOutlineWithCurrentColor() ||
@@ -3001,7 +3001,7 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
     if (updated_diff.NeedsFullLayout()) {
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kStyleChange);
-    } else if (updated_diff.NeedsPositionedMovementLayout() ||
+    } else if (updated_diff.NeedsPositionedLayout() ||
                StyleRef().HasAnchorFunctionsWithoutEvaluator()) {
       if (StyleRef().HasOutOfFlowPosition()) {
         ContainingBlock()->SetNeedsSimplifiedLayout();
@@ -3014,12 +3014,12 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
 
   // TODO(cbiesinger): Shouldn't this check container->NeedsLayout, since that's
   // the one we'll mark for NeedsOverflowRecalc()?
-  if (diff.TransformChanged() && !NeedsLayout()) {
+  if (diff.transform_changed && !NeedsLayout()) {
     if (LayoutBlock* container = ContainingBlock())
       container->SetNeedsOverflowRecalc();
   }
 
-  if (diff.NeedsRecomputeVisualOverflow()) {
+  if (diff.needs_recompute_visual_overflow) {
     InvalidateVisualOverflow();
 #if DCHECK_IS_ON()
     InvalidateVisualOverflowForDCheck();
@@ -3043,7 +3043,7 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
   // and cc thread clip path animations require updates when stopping or
   // starting. See: AdjustForCompositableAnimationPaint.
   if (old_style && diff.NeedsNormalPaintInvalidation() &&
-      diff.ClipPathChanged()) {
+      diff.clip_path_changed) {
     SetNeedsPaintPropertyUpdate();
     PaintingLayer()->SetNeedsCompositingInputsUpdate();
   }
@@ -3055,10 +3055,10 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
   // This is skipped if no layer is present because |PaintLayer::StyleDidChange|
   // will handle this invalidation.
   if (!IsText() && !HasLayer() &&
-      (diff.TransformChanged() || diff.OpacityChanged() ||
-       diff.ZIndexChanged() || diff.FilterChanged() || diff.CssClipChanged() ||
-       diff.BlendModeChanged() || diff.MaskChanged() ||
-       diff.CompositingReasonsChanged())) {
+      (diff.transform_changed || diff.opacity_changed || diff.z_index_changed ||
+       diff.filter_changed || diff.clip_property_changed ||
+       diff.blend_mode_changed || diff.mask_changed ||
+       diff.compositing_reasons_changed)) {
     SetNeedsPaintPropertyUpdate();
   }
 }
@@ -3141,7 +3141,7 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         ResolveColorFast(GetCSSPropertyBackgroundColor()) !=
         ResolveColorFast(new_style, GetCSSPropertyBackgroundColor());
 
-    if (diff.TextDecorationOrColorChanged() || background_color_changed ||
+    if (diff.text_decoration_or_color_changed || background_color_changed ||
         style_->GetFontDescription() != new_style.GetFontDescription() ||
         style_->GetWritingDirection() != new_style.GetWritingDirection() ||
         style_->InsideLink() != new_style.InsideLink() ||
@@ -3407,7 +3407,7 @@ void LayoutObject::StyleDidChange(
 
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
-  } else if (diff.NeedsPositionedMovementLayout()) {
+  } else if (diff.NeedsPositionedLayout()) {
     if (auto* containing_block = ContainingBlock()) {
       if (StyleRef().HasOutOfFlowPosition()) {
         containing_block->SetNeedsSimplifiedLayout();
@@ -3417,8 +3417,9 @@ void LayoutObject::StyleDidChange(
     }
   }
 
-  if (diff.ScrollAnchorDisablingPropertyChanged())
+  if (diff.disable_scroll_anchoring) {
     SetScrollAnchorDisablingStyleChanged(true);
+  }
 
   // Don't check for paint invalidation here; we need to wait until the layer
   // has been updated by subclasses before we know if we have to invalidate
@@ -3520,7 +3521,7 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
   }
 
   if (BehavesLikeBlockContainer() && (diff.NeedsNormalPaintInvalidation() ||
-                                      diff.TextDecorationOrColorChanged())) {
+                                      diff.text_decoration_or_color_changed)) {
     if (auto* first_line_container =
             To<LayoutBlock>(this)->NearestInnerBlockWithFirstLine())
       first_line_container->SetShouldDoFullPaintInvalidationForFirstLine();

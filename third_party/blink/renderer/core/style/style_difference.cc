@@ -15,78 +15,63 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
 
   switch (diff.layout_type_) {
     case StyleDifference::kNoLayout:
-      out << "NoLayout";
+      out << "None";
       break;
-    case StyleDifference::kPositionedMovement:
-      out << "PositionedMovement";
+    case StyleDifference::kPositionedLayout:
+      out << "Positioned";
       break;
     case StyleDifference::kFullLayout:
-      out << "FullLayout";
+      out << "Full";
       break;
     default:
       NOTREACHED();
   }
 
-  out << ", reshape=" << diff.needs_reshape_;
+  out << ", reshape=" << diff.needs_reshape;
 
   out << ", paintInvalidationType=";
-  switch (diff.paint_invalidation_type_) {
-    case static_cast<unsigned>(StyleDifference::PaintInvalidationType::kNone):
+  switch (diff.paint_type_) {
+    case StyleDifference::kNoPaint:
       out << "None";
       break;
-    case static_cast<unsigned>(StyleDifference::PaintInvalidationType::kSimple):
+    case StyleDifference::kSimplePaint:
       out << "Simple";
       break;
-    case static_cast<unsigned>(StyleDifference::PaintInvalidationType::kNormal):
+    case StyleDifference::kNormalPaint:
       out << "Normal";
       break;
     default:
       NOTREACHED();
   }
 
-  out << ", recomputeVisualOverflow=" << diff.recompute_visual_overflow_;
+  out << ", recomputeVisualOverflow=" << diff.needs_recompute_visual_overflow;
 
-  out << ", propertySpecificDifferences=";
-  int diff_count = 0;
-  for (int i = 0; i < StyleDifference::kPropertyDifferenceCount; i++) {
-    unsigned bit_test = 1 << i;
-    if (diff.property_specific_differences_ & bit_test) {
-      if (diff_count++ > 0) {
-        out << "|";
-      }
-      switch (bit_test) {
-        case StyleDifference::kTransformPropertyChanged:
-          out << "TransformPropertyChanged";
-          break;
-        case StyleDifference::kOtherTransformPropertyChanged:
-          out << "OtherTransformPropertyChanged";
-          break;
-        case StyleDifference::kOpacityChanged:
-          out << "OpacityChanged";
-          break;
-        case StyleDifference::kZIndexChanged:
-          out << "ZIndexChanged";
-          break;
-        case StyleDifference::kFilterChanged:
-          out << "FilterChanged";
-          break;
-        case StyleDifference::kCSSClipChanged:
-          out << "CSSClipChanged";
-          break;
-        case StyleDifference::kTextDecorationOrColorChanged:
-          out << "TextDecorationOrColorChanged";
-          break;
-        case StyleDifference::kBlendModeChanged:
-          out << "BlendModeChanged";
-          break;
-        default:
-          NOTREACHED();
-      }
-    }
+  if (diff.blend_mode_changed) {
+    out << ", BlendModeChanged";
+  }
+  if (diff.clip_property_changed) {
+    out << ", ClipPropertyChanged";
+  }
+  if (diff.filter_changed) {
+    out << ", FilterChanged";
+  }
+  if (diff.opacity_changed) {
+    out << ", OpacityChanged";
+  }
+  if (diff.only_transform_property_changed) {
+    out << ", OnlyTransformPropertyChanged";
+  }
+  if (diff.text_decoration_or_color_changed) {
+    out << ", TextDecorationOrColorChanged";
+  }
+  if (diff.transform_changed) {
+    out << ", TransformChanged";
+  }
+  if (diff.z_index_changed) {
+    out << ", ZIndexChanged";
   }
 
-  out << ", scrollAnchorDisablingPropertyChanged="
-      << diff.scroll_anchor_disabling_property_changed_;
+  out << ", disableScrollAnchoring=" << diff.disable_scroll_anchoring;
 
   return out << "}";
 }

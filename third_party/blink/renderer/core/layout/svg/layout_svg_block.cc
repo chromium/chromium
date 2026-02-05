@@ -136,8 +136,9 @@ void LayoutSVGBlock::StyleDidChange(
   transform_uses_reference_box_ = TransformHelper::DependsOnReferenceBox(style);
 
   if (diff.NeedsFullLayout()) {
-    if (diff.TransformChanged())
+    if (diff.transform_changed) {
       SetNeedsTransformUpdate();
+    }
   }
 
   SVGResources::UpdateEffects(*this, diff, old_style);
@@ -145,7 +146,7 @@ void LayoutSVGBlock::StyleDidChange(
   if (!Parent())
     return;
 
-  if (diff.BlendModeChanged()) {
+  if (diff.blend_mode_changed) {
     DCHECK(IsBlendingAllowed());
     Parent()->DescendantIsolationRequirementsChanged(
         style.HasBlendMode() ? kDescendantIsolationRequired

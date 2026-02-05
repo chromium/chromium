@@ -112,7 +112,7 @@ void SVGResources::UpdateEffects(LayoutObject& object,
     style.Filter().AddClient(EnsureClient(object));
   // FilterChanged() includes changes from more than just the 'filter'
   // property, so explicitly check that a filter existed or exists.
-  if (diff.FilterChanged() &&
+  if (diff.filter_changed &&
       (style.HasFilter() || (old_style && old_style->HasFilter()))) {
     // We either created one above, or had one already.
     DCHECK(GetClient(object));

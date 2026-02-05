@@ -164,7 +164,6 @@ blink_core_tests_style = [
   "position_area_test.cc",
   "scoped_css_name_test.cc",
   "style_aspect_ratio_test.cc",
-  "style_difference_test.cc",
   "style_initial_letter_test.cc",
   "style_name_or_keyword_test.cc",
   "style_name_test.cc",

@@ -94,7 +94,7 @@ class ComputedStyleTest : public testing::Test {
         expected_changes == kCompositingReasonsChanged;
     EXPECT_EQ(expect_compositing_reasons_changed, diff.HasDifference());
     EXPECT_EQ(expect_compositing_reasons_changed,
-              diff.CompositingReasonsChanged());
+              diff.compositing_reasons_changed);
   }
 
  private:
@@ -252,7 +252,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.TransformChanged());
+  EXPECT_TRUE(diff.transform_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -273,8 +273,8 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_FALSE(diff.TransformChanged());
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_FALSE(diff.transform_changed);
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -285,7 +285,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.TransformChanged());
+  EXPECT_TRUE(diff.transform_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -296,7 +296,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.TransformChanged());
+  EXPECT_TRUE(diff.transform_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -307,7 +307,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.TransformChanged());
+  EXPECT_TRUE(diff.transform_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -318,7 +318,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -329,7 +329,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -340,7 +340,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -351,7 +351,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -363,7 +363,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -378,7 +378,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -389,7 +389,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest,
@@ -401,7 +401,7 @@ TEST_F(ComputedStyleTest,
   const ComputedStyle* other = builder.TakeStyle();
 
   StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_TRUE(diff.CompositingReasonsChanged());
+  EXPECT_TRUE(diff.compositing_reasons_changed);
 }
 
 TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
@@ -1422,11 +1422,11 @@ TEST_F(ComputedStyleTest,
   EXPECT_EQ(TextDecorationLine::kUnderline, style->TextDecorationsInEffect());
 
   StyleDifference diff1 = style->VisualInvalidationDiff(GetDocument(), *clone);
-  EXPECT_FALSE(diff1.NeedsRecomputeVisualOverflow());
+  EXPECT_FALSE(diff1.needs_recompute_visual_overflow);
 
   // Different color, should not invalidate.
   StyleDifference diff2 = style->VisualInvalidationDiff(GetDocument(), *other);
-  EXPECT_FALSE(diff2.NeedsRecomputeVisualOverflow());
+  EXPECT_FALSE(diff2.needs_recompute_visual_overflow);
 }
 
 TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
@@ -1467,27 +1467,27 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   // Change decoration style
   StyleDifference diff_decoration_style =
       style->VisualInvalidationDiff(GetDocument(), *wavy);
-  EXPECT_TRUE(diff_decoration_style.NeedsRecomputeVisualOverflow());
+  EXPECT_TRUE(diff_decoration_style.needs_recompute_visual_overflow);
 
   // Change decoration line
   StyleDifference diff_decoration_line =
       style->VisualInvalidationDiff(GetDocument(), *overline);
-  EXPECT_TRUE(diff_decoration_line.NeedsRecomputeVisualOverflow());
+  EXPECT_TRUE(diff_decoration_line.needs_recompute_visual_overflow);
 
   // Change decoration thickness
   StyleDifference diff_decoration_thickness =
       style->VisualInvalidationDiff(GetDocument(), *thickness);
-  EXPECT_TRUE(diff_decoration_thickness.NeedsRecomputeVisualOverflow());
+  EXPECT_TRUE(diff_decoration_thickness.needs_recompute_visual_overflow);
 
   // Change underline offset
   StyleDifference diff_underline_offset =
       style->VisualInvalidationDiff(GetDocument(), *offset);
-  EXPECT_TRUE(diff_underline_offset.NeedsRecomputeVisualOverflow());
+  EXPECT_TRUE(diff_underline_offset.needs_recompute_visual_overflow);
 
   // Change underline position
   StyleDifference diff_underline_position =
       style->VisualInvalidationDiff(GetDocument(), *position);
-  EXPECT_TRUE(diff_underline_position.NeedsRecomputeVisualOverflow());
+  EXPECT_TRUE(diff_underline_position.needs_recompute_visual_overflow);
 }
 
 // Verify that cloned ComputedStyle is independent from source, i.e.

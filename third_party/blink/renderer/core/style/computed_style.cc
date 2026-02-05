@@ -775,7 +775,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   uint64_t field_diff = FieldInvalidationDiff(*this, other);
 
   if (DiffNeedsReshape(other, field_diff)) {
-    diff.SetNeedsReshape();
+    diff.needs_reshape = true;
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
   }
@@ -784,7 +784,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
       other.IsStackingContextWithoutContainment()) {
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
-    diff.SetZIndexChanged();
+    diff.z_index_changed = true;
   }
 
   if ((!diff.NeedsFullLayout() || !diff.NeedsNormalPaintInvalidation()) &&
@@ -797,9 +797,9 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     if (DiffNeedsFullLayout(document, other, field_diff)) {
       diff.SetNeedsFullLayout();
     } else if ((field_diff & kOutOfFlow) && HasOutOfFlowPosition()) {
-      diff.SetNeedsPositionedMovementLayout();
+      diff.SetNeedsPositionedLayout();
     } else if ((field_diff & kInset) && HasInFlowPosition()) {
-      diff.SetNeedsPositionedMovementLayout();
+      diff.SetNeedsPositionedLayout();
     }
   }
 
@@ -809,54 +809,50 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   }
 
   if (DiffNeedsRecomputeVisualOverflow(other, field_diff)) {
-    diff.SetNeedsRecomputeVisualOverflow();
+    diff.needs_recompute_visual_overflow = true;
   }
 
   if (DiffCompositingReasonsChanged(other, field_diff)) {
-    diff.SetCompositingReasonsChanged();
+    diff.compositing_reasons_changed = true;
   }
 
   if (field_diff & kBackgroundColor) {
     // If the background color change is not due to a composited animation,
     // then paint invalidation is required; but we can defer the decision until
     // we know whether the color change will be rendered by the compositor.
-    diff.SetBackgroundColorChanged();
+    diff.background_color_changed = true;
   }
   if (field_diff & kBlendMode) {
-    diff.SetBlendModeChanged();
+    diff.blend_mode_changed = true;
   }
   if (field_diff & kBorderRadius) {
-    diff.SetBorderRadiusChanged();
+    diff.border_radius_changed = true;
   }
   if (field_diff & kBorderShape) {
-    diff.SetBorderShapeChanged();
+    diff.border_shape_changed = true;
   }
   if (field_diff & kClip) {
     bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
     bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
     if (has_clip != other_has_clip || (has_clip && Clip() != other.Clip())) {
-      diff.SetCSSClipChanged();
+      diff.clip_property_changed = true;
     }
   }
   if (field_diff & kClipPath) {
-    diff.SetClipPathChanged();
+    diff.clip_path_changed = true;
   }
   if (field_diff & kColor) {
-    diff.SetTextDecorationOrColorChanged();
+    diff.text_decoration_or_color_changed = true;
   }
   if (field_diff & kFilterData) {
-    diff.SetFilterChanged();
+    diff.filter_changed = true;
   }
-  if (field_diff & kHasTransform) {
-    if (HasTransform() != other.HasTransform()) {
-      diff.SetOtherTransformPropertyChanged();
-    }
-  }
+
   if (field_diff & kMask) {
-    diff.SetMaskChanged();
+    diff.mask_changed = true;
   }
   if (field_diff & kOpacity) {
-    diff.SetOpacityChanged();
+    diff.opacity_changed = true;
   }
   if (field_diff & kScrollbarColor) {
     if (UsedScrollbarColor() != other.UsedScrollbarColor()) {
@@ -872,16 +868,19 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     }
   }
   if (field_diff & kTextDecoration) {
-    diff.SetTextDecorationOrColorChanged();
+    diff.text_decoration_or_color_changed = true;
   }
   if (field_diff & kTransformData) {
-    diff.SetTransformDataChanged();
+    diff.transform_data_changed = true;
   }
   if (field_diff & kTransformOther) {
-    diff.SetOtherTransformPropertyChanged();
-  }
-  if (field_diff & kTransformProperty) {
-    diff.SetTransformPropertyChanged();
+    diff.transform_changed = true;
+  } else if ((field_diff & kHasTransform) &&
+             HasTransform() != other.HasTransform()) {
+    diff.transform_changed = true;
+  } else if (field_diff & kTransformProperty) {
+    diff.only_transform_property_changed = true;
+    diff.transform_changed = true;
   }
   if (field_diff & kVisibility) {
     if ((Visibility() == EVisibility::kCollapse) !=
@@ -890,28 +889,28 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     }
   }
   if (field_diff & kZIndex) {
-    diff.SetZIndexChanged();
+    diff.z_index_changed = true;
   }
 
   // If the (current)color changes and a filter or backdrop-filter uses it, the
   // filter or backdrop-filter needs to be updated. This reads
   // `diff.TextDecorationOrColorChanged()` and so needs to be after the setters,
   // above.
-  if (diff.TextDecorationOrColorChanged()) {
+  if (diff.text_decoration_or_color_changed) {
     if (HasFilter() && Filter().UsesCurrentColor()) {
-      diff.SetFilterChanged();
+      diff.filter_changed = true;
     }
     if (HasBackdropFilter() && BackdropFilter().UsesCurrentColor()) {
       // This could be optimized with a targeted backdrop-filter-changed
       // invalidation.
-      diff.SetCompositingReasonsChanged();
+      diff.compositing_reasons_changed = true;
     }
   }
 
   // The following condition needs to be at last, because it may depend on
   // conditions in diff computed above.
-  if ((field_diff & kScrollAnchor) || diff.TransformChanged()) {
-    diff.SetScrollAnchorDisablingPropertyChanged();
+  if ((field_diff & kScrollAnchor) || diff.transform_changed) {
+    diff.disable_scroll_anchoring = true;
   }
 
   // Cursors are not checked, since they will be set appropriately in response

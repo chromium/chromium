@@ -307,8 +307,9 @@ void LayoutSVGResourceClipper::StyleDidChange(
   NOT_DESTROYED();
   LayoutSVGResourceContainer::StyleDidChange(diff, old_style,
                                              style_change_context);
-  if (diff.TransformChanged())
+  if (diff.transform_changed) {
     MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
+  }
 }
 
 }  // namespace blink

@@ -165,8 +165,9 @@ void LayoutSVGModelObject::StyleDidChange(
   LayoutObject::StyleDidChange(diff, old_style, style_change_context);
 
   if (diff.NeedsFullLayout()) {
-    if (diff.TransformChanged())
+    if (diff.transform_changed) {
       SetNeedsTransformUpdate();
+    }
   }
 
   SetHasTransformRelatedProperty(
@@ -178,7 +179,7 @@ void LayoutSVGModelObject::StyleDidChange(
     return;
 
   if (!IsSVGHiddenContainer()) {
-    if (diff.BlendModeChanged()) {
+    if (diff.blend_mode_changed) {
       DCHECK(IsBlendingAllowed());
       Parent()->DescendantIsolationRequirementsChanged(
           StyleRef().HasBlendMode() ? kDescendantIsolationRequired

@@ -41,7 +41,7 @@ LayoutSVGFilterPrimitive::LayoutSVGFilterPrimitive(
     : LayoutObject(filter_primitive_element) {}
 
 static bool CurrentColorChanged(StyleDifference diff, const StyleColor& color) {
-  return diff.TextDecorationOrColorChanged() && color.IsCurrentColor();
+  return diff.text_decoration_or_color_changed && color.IsCurrentColor();
 }
 
 static void CheckForColorChange(SVGFilterPrimitiveStandardAttributes& element,

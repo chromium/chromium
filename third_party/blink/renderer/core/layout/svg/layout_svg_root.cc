@@ -304,7 +304,7 @@ void LayoutSVGRoot::StyleDidChange(
 
   SVGResources::UpdateEffects(*this, diff, old_style);
 
-  if (diff.TransformChanged()) {
+  if (diff.transform_changed) {
     for (auto& svg_text : text_set_) {
       svg_text->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
                                kMarkContainerChain);

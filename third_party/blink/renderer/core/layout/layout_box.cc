@@ -732,8 +732,8 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       //
       // For some controls, it depends on paddings.
       if (!old_style->BorderSizeEquals(new_style) ||
-          diff.BorderRadiusChanged() ||
-          (diff.BorderShapeChanged() &&
+          diff.border_radius_changed ||
+          (diff.border_shape_changed &&
            (new_style.HasBorderShape() || old_style->HasBorderShape())) ||
           (HasControlClip() && !old_style->PaddingEqual(new_style))) {
         SetNeedsPaintPropertyUpdate();
@@ -772,7 +772,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     }
   }
 
-  if (diff.TransformChanged() && TransformsChangeMayRequireLayout()) {
+  if (diff.transform_changed && TransformsChangeMayRequireLayout()) {
     SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kStyleChange);
   }

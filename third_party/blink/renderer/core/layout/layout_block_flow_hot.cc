@@ -74,7 +74,7 @@ void LayoutBlockFlow::StyleDidChange(
     }
   }
 
-  if (diff.NeedsReshape()) {
+  if (diff.needs_reshape) {
     SetNeedsCollectInlines();
 
     // The `initial-letter` creates a special `InlineItem`. When it's turned

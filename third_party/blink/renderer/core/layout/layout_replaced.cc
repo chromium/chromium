@@ -80,7 +80,7 @@ void LayoutReplaced::StyleDidChange(
 
   // Replaced elements can have border-radius clips without clipping overflow;
   // the overflow clipping case is already covered in LayoutBox::StyleDidChange
-  if (old_style && diff.BorderRadiusChanged()) {
+  if (old_style && diff.border_radius_changed) {
     SetNeedsPaintPropertyUpdate();
   }
 

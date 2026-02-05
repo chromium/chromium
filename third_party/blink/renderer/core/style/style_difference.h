@@ -17,223 +17,106 @@ class StyleDifference {
   STACK_ALLOCATED();
 
  public:
-  enum PropertyDifference {
-    kTransformPropertyChanged = 1 << 0,
-    // Other transform properties include changes other than the transform
-    // property itself such as individual transform properties, motion
-    // path, etc. See: |ComputedStyle::HasTransform|.
-    kOtherTransformPropertyChanged = 1 << 1,
-    kOpacityChanged = 1 << 2,
-    kZIndexChanged = 1 << 3,
-    kFilterChanged = 1 << 4,
-    kCSSClipChanged = 1 << 5,
-    // The object needs to issue paint invalidations if it is affected by text
-    // decorations or properties dependent on color (e.g., border or outline).
-    // TextDecorationLine changes must also invalidate ink overflow.
-    kTextDecorationOrColorChanged = 1 << 6,
-    kBlendModeChanged = 1 << 7,
-    kMaskChanged = 1 << 8,
-    kBackgroundColorChanged = 1 << 9,
-    kClipPathChanged = 1 << 10
-    // If you add a value here, be sure to update kPropertyDifferenceCount.
-  };
-
-  StyleDifference()
-      : paint_invalidation_type_(
-            static_cast<unsigned>(PaintInvalidationType::kNone)),
-        layout_type_(kNoLayout),
-        needs_reshape_(false),
-        recompute_visual_overflow_(false),
-        property_specific_differences_(0),
-        scroll_anchor_disabling_property_changed_(false),
-        compositing_reasons_changed_(false),
-        border_radius_changed_(false),
-        border_shape_changed_(false),
-        transform_data_changed_(false) {}
-
   void Merge(StyleDifference other) {
-    paint_invalidation_type_ =
-        std::max(paint_invalidation_type_, other.paint_invalidation_type_);
+    needs_reshape |= other.needs_reshape;
+    needs_recompute_visual_overflow |= other.needs_recompute_visual_overflow;
+    disable_scroll_anchoring |= other.disable_scroll_anchoring;
+    compositing_reasons_changed |= other.compositing_reasons_changed;
+    background_color_changed |= other.background_color_changed;
+    blend_mode_changed |= other.blend_mode_changed;
+    border_radius_changed |= other.border_radius_changed;
+    border_shape_changed |= other.border_shape_changed;
+    clip_path_changed |= other.clip_path_changed;
+    clip_property_changed |= other.clip_property_changed;
+    filter_changed |= other.filter_changed;
+    mask_changed |= other.mask_changed;
+    opacity_changed |= other.opacity_changed;
+    only_transform_property_changed |= other.only_transform_property_changed;
+    text_decoration_or_color_changed |= other.text_decoration_or_color_changed;
+    transform_changed |= other.transform_changed;
+    transform_data_changed |= other.transform_data_changed;
+    z_index_changed |= other.z_index_changed;
+    paint_type_ = std::max(paint_type_, other.paint_type_);
     layout_type_ = std::max(layout_type_, other.layout_type_);
-    needs_reshape_ |= other.needs_reshape_;
-    recompute_visual_overflow_ |= other.recompute_visual_overflow_;
-    property_specific_differences_ |= other.property_specific_differences_;
-    scroll_anchor_disabling_property_changed_ |=
-        other.scroll_anchor_disabling_property_changed_;
-    compositing_reasons_changed_ |= other.compositing_reasons_changed_;
-    border_radius_changed_ |= other.border_radius_changed_;
-    transform_data_changed_ |= other.transform_data_changed_;
   }
 
   bool HasDifference() const {
-    return (paint_invalidation_type_ !=
-            static_cast<unsigned>(PaintInvalidationType::kNone)) ||
-           layout_type_ || needs_reshape_ || property_specific_differences_ ||
-           recompute_visual_overflow_ ||
-           scroll_anchor_disabling_property_changed_ ||
-           compositing_reasons_changed_ || border_radius_changed_ ||
-           transform_data_changed_;
+    return needs_reshape || needs_recompute_visual_overflow ||
+           disable_scroll_anchoring || compositing_reasons_changed ||
+           background_color_changed || blend_mode_changed ||
+           border_radius_changed || border_shape_changed || clip_path_changed ||
+           clip_property_changed || filter_changed || mask_changed ||
+           opacity_changed || only_transform_property_changed ||
+           text_decoration_or_color_changed || transform_changed ||
+           transform_data_changed || z_index_changed || paint_type_ ||
+           layout_type_;
   }
 
   // For simple paint invalidation, we can directly invalidate the
   // DisplayItemClients during style update, without paint invalidation during
   // PrePaintTreeWalk.
   bool NeedsSimplePaintInvalidation() const {
-    return paint_invalidation_type_ ==
-           static_cast<unsigned>(PaintInvalidationType::kSimple);
+    return paint_type_ == kSimplePaint;
   }
   bool NeedsNormalPaintInvalidation() const {
-    return paint_invalidation_type_ ==
-           static_cast<unsigned>(PaintInvalidationType::kNormal);
-  }
-  void SetNeedsSimplePaintInvalidation() {
-    DCHECK(!NeedsNormalPaintInvalidation());
-    paint_invalidation_type_ =
-        static_cast<unsigned>(PaintInvalidationType::kSimple);
-  }
-  void SetNeedsNormalPaintInvalidation() {
-    paint_invalidation_type_ =
-        static_cast<unsigned>(PaintInvalidationType::kNormal);
+    return paint_type_ == kNormalPaint;
   }
 
-  // The offset of this positioned object has been updated.
-  bool NeedsPositionedMovementLayout() const {
-    return layout_type_ == kPositionedMovement;
-  }
-  void SetNeedsPositionedMovementLayout() {
-    DCHECK(!NeedsFullLayout());
-    layout_type_ = kPositionedMovement;
+  void SetNeedsNormalPaintInvalidation() { paint_type_ = kNormalPaint; }
+  void SetNeedsSimplePaintInvalidation() {
+    DCHECK(!NeedsNormalPaintInvalidation());
+    paint_type_ = kSimplePaint;
   }
 
   bool NeedsFullLayout() const { return layout_type_ == kFullLayout; }
+  bool NeedsPositionedLayout() const {
+    return layout_type_ == kPositionedLayout;
+  }
+
   void SetNeedsFullLayout() { layout_type_ = kFullLayout; }
-
-  bool NeedsReshape() const { return needs_reshape_; }
-  void SetNeedsReshape() { needs_reshape_ = true; }
-
-  bool NeedsRecomputeVisualOverflow() const {
-    return recompute_visual_overflow_;
-  }
-  void SetNeedsRecomputeVisualOverflow() { recompute_visual_overflow_ = true; }
-
-  // True if the transform property itself changed, or properties related to
-  // transform changed (e.g., individual transform properties, motion path,
-  // etc.). See: |ComputedStyle::HasTransform|.
-  bool TransformChanged() const {
-    return property_specific_differences_ & kTransformPropertyChanged ||
-           property_specific_differences_ & kOtherTransformPropertyChanged;
-  }
-  bool OtherTransformPropertyChanged() const {
-    return property_specific_differences_ & kOtherTransformPropertyChanged;
-  }
-  void SetTransformPropertyChanged() {
-    property_specific_differences_ |= kTransformPropertyChanged;
-  }
-  void SetOtherTransformPropertyChanged() {
-    property_specific_differences_ |= kOtherTransformPropertyChanged;
+  void SetNeedsPositionedLayout() {
+    DCHECK(!NeedsFullLayout());
+    layout_type_ = kPositionedLayout;
   }
 
-  bool OpacityChanged() const {
-    return property_specific_differences_ & kOpacityChanged;
-  }
-  void SetOpacityChanged() {
-    property_specific_differences_ |= kOpacityChanged;
-  }
-
-  bool ZIndexChanged() const {
-    return property_specific_differences_ & kZIndexChanged;
-  }
-  void SetZIndexChanged() { property_specific_differences_ |= kZIndexChanged; }
-
-  bool FilterChanged() const {
-    return property_specific_differences_ & kFilterChanged;
-  }
-  void SetFilterChanged() { property_specific_differences_ |= kFilterChanged; }
-
-  bool CssClipChanged() const {
-    return property_specific_differences_ & kCSSClipChanged;
-  }
-  void SetCSSClipChanged() {
-    property_specific_differences_ |= kCSSClipChanged;
-  }
-
-  bool BlendModeChanged() const {
-    return property_specific_differences_ & kBlendModeChanged;
-  }
-  void SetBlendModeChanged() {
-    property_specific_differences_ |= kBlendModeChanged;
-  }
-
-  bool TextDecorationOrColorChanged() const {
-    return property_specific_differences_ & kTextDecorationOrColorChanged;
-  }
-  void SetTextDecorationOrColorChanged() {
-    property_specific_differences_ |= kTextDecorationOrColorChanged;
-  }
-
-  bool MaskChanged() const {
-    return property_specific_differences_ & kMaskChanged;
-  }
-  void SetMaskChanged() { property_specific_differences_ |= kMaskChanged; }
-
-  bool BackgroundColorChanged() const {
-    return property_specific_differences_ & kBackgroundColorChanged;
-  }
-  void SetBackgroundColorChanged() {
-    property_specific_differences_ |= kBackgroundColorChanged;
-  }
-
-  bool ClipPathChanged() const {
-    return property_specific_differences_ & kClipPathChanged;
-  }
-  void SetClipPathChanged() {
-    property_specific_differences_ |= kClipPathChanged;
-  }
-
-  bool ScrollAnchorDisablingPropertyChanged() const {
-    return scroll_anchor_disabling_property_changed_;
-  }
-  void SetScrollAnchorDisablingPropertyChanged() {
-    scroll_anchor_disabling_property_changed_ = true;
-  }
-  bool CompositingReasonsChanged() const {
-    return compositing_reasons_changed_;
-  }
-  void SetCompositingReasonsChanged() { compositing_reasons_changed_ = true; }
-  bool BorderRadiusChanged() const { return border_radius_changed_; }
-  void SetBorderRadiusChanged() { border_radius_changed_ = true; }
-  bool BorderShapeChanged() const { return border_shape_changed_; }
-  void SetBorderShapeChanged() { border_shape_changed_ = true; }
-  bool TransformDataChanged() const { return transform_data_changed_; }
-  void SetTransformDataChanged() { transform_data_changed_ = true; }
+  unsigned needs_reshape : 1 = false;
+  unsigned needs_recompute_visual_overflow : 1 = false;
+  unsigned disable_scroll_anchoring : 1 = false;
+  unsigned compositing_reasons_changed : 1 = false;
+  unsigned background_color_changed : 1 = false;
+  unsigned blend_mode_changed : 1 = false;
+  unsigned border_radius_changed : 1 = false;
+  unsigned border_shape_changed : 1 = false;
+  unsigned clip_path_changed : 1 = false;
+  unsigned clip_property_changed : 1 = false;
+  unsigned filter_changed : 1 = false;
+  unsigned mask_changed : 1 = false;
+  unsigned opacity_changed : 1 = false;
+  unsigned only_transform_property_changed : 1 = false;
+  // The object needs to issue paint invalidations if it is affected by text
+  // decorations or properties dependent on color (e.g., border or outline).
+  // TextDecorationLine changes must also invalidate ink overflow.
+  unsigned text_decoration_or_color_changed : 1 = false;
+  unsigned transform_changed : 1 = false;
+  unsigned transform_data_changed : 1 = false;
+  unsigned z_index_changed : 1 = false;
 
  private:
-  static constexpr int kPropertyDifferenceCount = 11;
+  enum PaintType { kNoPaint = 0, kSimplePaint, kNormalPaint };
+  unsigned paint_type_ : 2 = kNoPaint;
+
+  enum LayoutType { kNoLayout = 0, kPositionedLayout, kFullLayout };
+  unsigned layout_type_ : 2 = kNoLayout;
+
+  // This exists only to get the object up to exactly 32 bits, which keeps
+  // Clang from making partial writes of it when copying (making two small
+  // writes to the stack and then reading the same data back again with a large
+  // read can cause store-to-load forward stalls). Feel free to take bits from
+  // here if you need them for something else.
+  unsigned padding_ [[maybe_unused]] : 10;
 
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const StyleDifference&);
-
-  enum class PaintInvalidationType { kNone, kSimple, kNormal };
-  unsigned paint_invalidation_type_ : 2;
-
-  enum LayoutType { kNoLayout = 0, kPositionedMovement, kFullLayout };
-  unsigned layout_type_ : 2;
-  unsigned needs_reshape_ : 1;
-  unsigned recompute_visual_overflow_ : 1;
-  unsigned property_specific_differences_ : kPropertyDifferenceCount;
-  unsigned scroll_anchor_disabling_property_changed_ : 1;
-  unsigned compositing_reasons_changed_ : 1;
-  unsigned border_radius_changed_ : 1;
-  unsigned border_shape_changed_ : 1;
-  unsigned transform_data_changed_ : 1;
-
-  // This exists only to get the object up to exactly 32 bits,
-  // which keeps Clang from making partial writes of it when copying
-  // (making two small writes to the stack and then reading the same
-  // data back again with a large read can cause store-to-load forward
-  // stalls). Feel free to take bits from here if you need them
-  // for something else.
-  unsigned padding_ [[maybe_unused]] : 10;
 };
 static_assert(sizeof(StyleDifference) == 4, "Remove some padding bits!");
 

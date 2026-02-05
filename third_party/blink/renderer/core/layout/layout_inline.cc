@@ -183,7 +183,7 @@ void LayoutInline::StyleDidChange(
     if (!ShouldCreateBoxFragment()) {
       UpdateShouldCreateBoxFragment();
     }
-    if (diff.NeedsReshape()) {
+    if (diff.needs_reshape) {
       SetNeedsCollectInlines();
     }
   }
