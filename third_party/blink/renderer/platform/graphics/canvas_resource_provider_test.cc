@@ -302,7 +302,7 @@ scoped_refptr<CanvasResource> UpdateResource(
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageEndExternalWrite) {
-  // Set up this test to use OOP rasterization to be able to verify
+  // Set up this test to use GPU rasterization to be able to verify
   // conditions against the test raster interface.
   SharedGpuContext::Reset();
   auto raster_context_provider = viz::TestContextProvider::CreateRaster();
