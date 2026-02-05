@@ -6609,13 +6609,6 @@ inline constexpr char kCaptureModeEducationDescription[] =
     "of the screenshot keyboard shortcut and the screen capture tool in the "
     "quick settings menu.";
 
-inline constexpr char kCaptureModeEducationBypassLimitsName[] =
-    "Enable Capture Mode Education bypass limits";
-inline constexpr char kCaptureModeEducationBypassLimitsDescription[] =
-    "Enables bypassing the 3 times / 24 hours show limit for Capture Mode "
-    "Education nudges and tutorials, so they can be viewed repeatedly for "
-    "testing purposes.";
-
 inline constexpr char kCrosContentAdjustedRefreshRateName[] =
     "Content Adjusted Refresh Rate";
 inline constexpr char kCrosContentAdjustedRefreshRateDescription[] =

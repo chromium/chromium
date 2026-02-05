@@ -161,8 +161,6 @@ enum class CaptureModeEducationParam {
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<CaptureModeEducationParam>
     kCaptureModeEducationParam;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kCaptureModeEducationBypassLimits);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeOnDeviceOcr);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
@@ -1022,8 +1020,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaHostAudioEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaReceiverCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsCaptureModeEducationBypassLimitsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeOnDeviceOcrEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsContinuousOverviewScrollAnimationEnabled();

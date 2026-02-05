@@ -366,11 +366,6 @@ const base::FeatureParam<CaptureModeEducationParam> kCaptureModeEducationParam{
     CaptureModeEducationParam::kShortcutNudge,
     &capture_mode_education_type_options};
 
-// Enables bypassing the 3 times / 24 hours show limits for the Capture Mode
-// education nudges and tutorials.
-BASE_FEATURE(kCaptureModeEducationBypassLimits,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables on-device OCR functionality in capture mode, used as part of the
 // Scanner and Sunfish features.
 BASE_FEATURE(kCaptureModeOnDeviceOcr, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2391,10 +2386,6 @@ bool IsBrightnessControlInSettingsEnabled() {
 
 bool IsCaptureModeEducationEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeEducation);
-}
-
-bool IsCaptureModeEducationBypassLimitsEnabled() {
-  return base::FeatureList::IsEnabled(kCaptureModeEducationBypassLimits);
 }
 
 bool IsCaptureModeOnDeviceOcrEnabled() {

@@ -545,34 +545,4 @@ TEST_F(CaptureModeEducationQuickSettingsNudgeTest, SettingsNudgeMetrics) {
       NudgeCatalogName::kCaptureModeEducationShortcutTutorial, 0);
 }
 
-class CaptureModeEducationControllerBypassLimitsFlagTest
-    : public CaptureModeEducationControllerTest {
- public:
-  CaptureModeEducationControllerBypassLimitsFlagTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kCaptureModeEducation,
-          {{"CaptureModeEducationParam", "ShortcutNudge"}}},
-         {features::kCaptureModeEducationBypassLimits, {}}},
-        /*disabled_features=*/{});
-  }
-  CaptureModeEducationControllerBypassLimitsFlagTest(
-      const CaptureModeEducationControllerBypassLimitsFlagTest&) = delete;
-  CaptureModeEducationControllerBypassLimitsFlagTest& operator=(
-      const CaptureModeEducationControllerBypassLimitsFlagTest&) = delete;
-  ~CaptureModeEducationControllerBypassLimitsFlagTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(CaptureModeEducationControllerBypassLimitsFlagTest, NoShowLimits) {
-  // Show the nudge more than three times without advancing the clock,
-  // it should be visible each time.
-  for (int i = 0; i < 4; i++) {
-    ActivateNudgeAndCheckVisibility();
-    CancelNudge(kCaptureModeNudgeId);
-  }
-}
-
 }  // namespace ash

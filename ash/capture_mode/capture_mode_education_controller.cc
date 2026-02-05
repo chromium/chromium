@@ -201,8 +201,7 @@ void CaptureModeEducationController::MaybeShowEducation() {
   auto* pref_service = GetPrefService();
   CHECK(pref_service);
 
-  if (!(features::IsCaptureModeEducationBypassLimitsEnabled() ||
-        skip_prefs_for_test_)) {
+  if (!skip_prefs_for_test_) {
     const int shown_count =
         pref_service->GetInteger(prefs::kCaptureModeEducationShownCount);
     const base::Time last_shown_time =
