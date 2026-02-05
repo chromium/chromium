@@ -92,6 +92,7 @@ class OmniboxPopupViewViews : public views::View,
   void OnMatchIconUpdated(size_t match_index) override;
   void OnContentsChanged() override;
   void OnKeywordStateChanged(bool is_keyword_selected) override {}
+  void OnCharTyped(base::TimeTicks timestamp) override {}
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 

@@ -93,6 +93,9 @@ class OmniboxEditModel {
     // The keyword state has changed.
     virtual void OnKeywordStateChanged(bool is_keyword_selected) = 0;
 
+    // Time when a character is inserted into the model.
+    virtual void OnCharTyped(base::TimeTicks timestamp) = 0;
+
     ~Observer() override = default;
   };
 
@@ -549,6 +552,9 @@ class OmniboxEditModel {
   void OnNavigationLikely(
       size_t line,
       omnibox::mojom::NavigationPredictor navigation_predictor);
+
+  // Notify listening observers of the timestamp of character insertion.
+  void NotifyObserversCharTyped(base::TimeTicks timestamp);
 
  protected:
   // Utility method to get current PrefService; protected instead of private
