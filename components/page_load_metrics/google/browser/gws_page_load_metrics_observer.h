@@ -61,6 +61,7 @@ extern const char kHistogramNoServiceWorkerLoadSearch[];
 extern const char kTraverseNavigation[];
 extern const char kRestoreNavigation[];
 extern const char kNonRestoreNavigation[];
+extern const char kStartedFromContextMenu[];
 
 extern const char kHistogramPrerenderHostReused[];
 extern const char kHistogramPrerenderPrewarmNavigationStatus[];
@@ -204,6 +205,10 @@ class GWSPageLoadMetricsObserver
   // Indicates if it is session restore navigation, a subset of traverse
   // navigation. Restore navigation might be slower than a regular navigation.
   bool is_restore_navigation_ = false;
+
+  // Indicates if the navigation was started from the context menu, for checking
+  // the percentage of context menu triggered navigations.
+  bool was_started_from_context_menu_ = false;
 
   NavigationSourceType source_type_ = kUnknown;
   net::HttpConnectionInfoCoarse http_connection_info_ =

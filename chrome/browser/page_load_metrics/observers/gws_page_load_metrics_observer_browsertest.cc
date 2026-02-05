@@ -5,15 +5,22 @@
 #include "components/page_load_metrics/google/browser/gws_page_load_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/lens/lens_features.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_types.h"
 #include "content/public/browser/web_contents.h"
@@ -268,6 +275,78 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverBrowserTest,
   const std::string restored_lcp_histogram =
       base::StrCat({traverse_lcp_histogram, internal::kRestoreNavigation});
   histogram_tester.ExpectTotalCount(restored_lcp_histogram, 1);
+}
+
+class GWSPageLoadMetricsObserverContextMenuNaviBrowserTest
+    : public GWSPageLoadMetricsObserverBrowserTest {
+ public:
+  GWSPageLoadMetricsObserverContextMenuNaviBrowserTest() {
+    feature_list_.InitAndDisableFeature(lens::features::kLensOverlay);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverContextMenuNaviBrowserTest,
+                       ContextMenuSearchNavigation) {
+  // 1. Setup the test server as the default search engine.
+  auto* model = TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  TemplateURLData data;
+  data.SetShortName(u"test");
+  data.SetKeyword(u"test");
+  // Point the search URL to your embedded test server's search handler.
+  data.SetURL(embedded_test_server()
+                  ->GetURL("www.google.com", "/search?q={searchTerms}")
+                  .spec());
+  TemplateURL* t_url = model->Add(std::make_unique<TemplateURL>(data));
+  model->SetUserSelectedDefaultSearchProvider(t_url);
+
+  base::HistogramTester histogram_tester;
+
+  // 2. Navigate to an initial page with text.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      GURL("data:text/html,<html><body>SearchMe</body></html>")));
+
+  // 3. Select the text.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "window.getSelection().selectAllChildren(document.body);"));
+
+  // 4. Set up the observer to click the search item.
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
+
+  // 5. Capture the new tab that search will open.
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // 6. Trigger the context menu by right-clicking.
+  content::SimulateMouseClickAt(web_contents(), 0,
+                                blink::WebMouseEvent::Button::kRight,
+                                gfx::Point(15, 15));
+
+  // 7. Wait for the search results page.
+  content::WebContents* search_tab = add_tab.Wait();
+  PageLoadMetricsTestWaiter waiter{search_tab};
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
+  EXPECT_TRUE(content::WaitForLoadStop(search_tab));
+  waiter.Wait();
+
+  // 8. Verify we are on a Google Search page.
+  EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(
+      search_tab->GetLastCommittedURL()));
+
+  // 9. Flush metrics by navigating away.
+  ASSERT_TRUE(content::NavigateToURL(search_tab, GURL(url::kAboutBlankURL)));
+
+  // 10. Check if GWS metrics were recorded.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({internal::kHistogramGWSLargestContentfulPaint,
+                    internal::kStartedFromContextMenu}),
+      1);
 }
 
 }  // namespace

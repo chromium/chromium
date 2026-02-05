@@ -152,6 +152,9 @@ const char kTraverseNavigation[] = ".TraverseNavigation";
 const char kRestoreNavigation[] = ".Restored";
 const char kNonRestoreNavigation[] = ".NotRestored";
 
+// Suffix for context menu navigation
+const char kStartedFromContextMenu[] = ".ContextMenu";
+
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
     HISTOGRAM_PREFIX "Prerender.HostReused";
@@ -367,6 +370,9 @@ GWSPageLoadMetricsObserver::OnStart(
   is_traverse_navigation_ = navigation_handle->IsHistory();
   is_restore_navigation_ =
       navigation_handle->GetRestoreType() == content::RestoreType::kRestored;
+
+  was_started_from_context_menu_ =
+      navigation_handle->WasStartedFromContextMenu();
 
   return CONTINUE_OBSERVING;
 }
@@ -797,6 +803,13 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
     ReportMetricForTraverseNavigation(
         is_restore_navigation_, internal::kHistogramGWSLargestContentfulPaint,
         all_frames_largest_contentful_paint.Time().value());
+  }
+  if (was_started_from_context_menu_) {
+    auto context_menu_histogram_name =
+        base::StrCat({internal::kHistogramGWSLargestContentfulPaint,
+                      internal::kStartedFromContextMenu});
+    PAGE_LOAD_HISTOGRAM(context_menu_histogram_name,
+                        all_frames_largest_contentful_paint.Time().value());
   }
 }
 
