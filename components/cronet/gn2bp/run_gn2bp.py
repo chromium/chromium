@@ -29,6 +29,7 @@ import tempfile
 import textwrap
 import time
 import urllib.request
+from functools import cmp_to_key
 from typing import List, Optional, Set, Tuple
 
 REPOSITORY_ROOT = os.path.abspath(
@@ -358,21 +359,34 @@ def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
     _write_desc_json(gn_out_dir, desc_file)
 
 
+# TODO(crbug.com/481701970): Create an abstraction for versions and move this there.
+def compare_versions(version1: str, version2: str) -> int:
+  return int(version1.split('.')[2]) - int(version2.split('.')[2])
+
+
+# TODO(crbug.com/481701970): Create an abstraction for versions and move this there.
+def sort_versions(versions: List[str]) -> List[str]:
+  return sorted(versions, key=cmp_to_key(compare_versions))
+
 def _verify_latest_stable_or_exit(stamp: str):
   """Verifies that the current checkout is on the latest stable milestone."""
   print('Fetching latest stable version from chromiumdash...')
   with urllib.request.urlopen(
-      'https://chromiumdash.appspot.com/fetch_releases?num=1&platform=Android&channel=Stable'
+      # Chromiumdash lists releases by date. Because of LTS backports, an older
+      # milestone is often released more recently than the newest major version.
+      # We fetch a large batch (e.g., 50) and select the highest branch number
+      # to ensure we identify the actual latest stable branch.
+      'https://chromiumdash.appspot.com/fetch_releases?num=50&platform=Android&channel=Stable'
   ) as url:
     data = json.loads(url.read().decode())
-    latest_stable = data[0]
-    latest_version = latest_stable['version']
-    print(f'Latest stable version is {latest_version}')
     current_version = _get_version_string()
     print(f'Current checkout version is {current_version}')
+    latest_stable = sort_versions(
+        [release_json['version'] for release_json in data])[-1]
+    print(f'Latest stable version is {latest_stable}')
 
     # Version is major.minor.build.patch
-    latest_build = latest_version.split('.')[2]
+    latest_build = latest_stable.split('.')[2]
     current_build = current_version.split('.')[2]
 
     if latest_build != current_build:

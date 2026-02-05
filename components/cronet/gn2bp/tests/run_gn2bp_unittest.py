@@ -62,6 +62,14 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
         }], {'foo': 0})
 
+  def test_sort_versions(self):
+    self.assertEqual(
+        run_gn2bp.sort_versions(["123.0.1000.0", "123.0.999.0",
+                                 "123.0.1001.0"]),
+        ["123.0.999.0", "123.0.1000.0", "123.0.1001.0"])
+
+
+
   def test_bad_change_id_and_good_change_id_in_history_should_not_throw(self):
     run_gn2bp.validate_release([{
         breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
