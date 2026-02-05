@@ -9,6 +9,7 @@
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
@@ -255,6 +256,9 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(sync_pb::SharedUrlContext::Source source);
 
 const char* ProtoEnumToString(sync_pb::SkillSource skill_source);
+
+const char* ProtoEnumToString(
+    sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type);
 
 }  // namespace syncer
 

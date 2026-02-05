@@ -7,10 +7,12 @@
 #include <string>
 
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
-#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace autofill {
+
+using sync_pb::AutofillValuableMetadataSpecifics;
+using sync_pb::AutofillValuableSpecifics;
 
 LoyaltyCard TestLoyaltyCard(std::string_view id) {
   return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
@@ -39,6 +41,19 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
 ValuableMetadata TestValuableMetadata(std::string_view id) {
   return ValuableMetadata(ValuableId(std::string(id)),
                           /*use_date=*/base::Time::Now(), /*use_count=*/1);
+}
+
+sync_pb::AutofillValuableMetadataSpecifics TestValuableMetadataSpecifics(
+    std::string_view id) {
+  sync_pb::AutofillValuableMetadataSpecifics specifics =
+      sync_pb::AutofillValuableMetadataSpecifics();
+  specifics.set_valuable_id(std::string(id));
+  specifics.set_use_count(1);
+  specifics.set_last_used_date_unix_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_pass_type(
+      sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
+  return specifics;
 }
 
 }  // namespace autofill

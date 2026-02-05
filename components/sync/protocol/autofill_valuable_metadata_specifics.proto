@@ -17,6 +17,14 @@ package sync_pb;
 // LINT.IfChange(AutofillValuableMetadataSpecifics)
 // Usage metadata for Google Wallet passes.
 message AutofillValuableMetadataSpecifics {
+  // Represents the type of the pass.
+  enum PassType {
+    PASS_TYPE_UNSPECIFIED = 0;
+    LOYALTY_CARD = 1;
+    VEHICLE_REGISTRATION = 2;
+    FLIGHT_RESERVATION = 3;
+  }
+
   // The id of the Valuabe this metadata belongs to. Used as the client tag.
   optional string valuable_id = 1;
 
@@ -28,5 +36,8 @@ message AutofillValuableMetadataSpecifics {
 
   // The timestamp of the last time the Valuable was modified.
   optional int64 last_modified_date_unix_epoch_micros = 4;
+
+  // The type of the pass.
+  optional PassType pass_type = 5;
 }
 // LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimAutofillValuableMetadataSpecificsDataForCaching)

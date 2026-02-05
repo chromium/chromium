@@ -191,4 +191,12 @@ TEST(ValuableMetadataSyncUtilTest, CreateSpecificsFromValuableMetadata) {
   EXPECT_EQ(metadata.use_count, specifics.use_count());
 }
 
+TEST(ValuableMetadataSyncUtilTest,
+     TrimAutofillValuableMetadataSpecificsDataForCaching) {
+  EXPECT_EQ(TrimAutofillValuableMetadataSpecificsDataForCaching(
+                TestValuableMetadataSpecifics(kId1))
+                .ByteSizeLong(),
+            0u);
+}
+
 }  // namespace autofill

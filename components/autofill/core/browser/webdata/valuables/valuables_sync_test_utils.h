@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
+#include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 
 namespace autofill {
@@ -24,6 +25,10 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
 
 // Creates a test `ValuableMetadata`.
 ValuableMetadata TestValuableMetadata(std::string_view id = "1");
+
+// Creates a test `AutofillValuableMetadataSpecifics`.
+sync_pb::AutofillValuableMetadataSpecifics TestValuableMetadataSpecifics(
+    std::string_view id = "1");
 
 }  // namespace autofill
 

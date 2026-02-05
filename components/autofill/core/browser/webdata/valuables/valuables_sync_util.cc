@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
-#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -180,6 +179,7 @@ TrimAutofillValuableMetadataSpecificsDataForCaching(
   trimmed_specifics.clear_use_count();
   trimmed_specifics.clear_last_used_date_unix_epoch_micros();
   trimmed_specifics.clear_last_modified_date_unix_epoch_micros();
+  trimmed_specifics.clear_pass_type();
   // LINT.ThenChange(//components/sync/protocol/autofill_valuable_metadata_specifics.proto:AutofillValuableMetadataSpecifics)
   return trimmed_specifics;
 }

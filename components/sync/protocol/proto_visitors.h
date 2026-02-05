@@ -2147,6 +2147,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableMetadataSpecifics& proto) {
   VISIT(use_count);
   VISIT(last_used_date_unix_epoch_micros);
   VISIT(last_modified_date_unix_epoch_micros);
+  VISIT_ENUM(pass_type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AccountSettingSpecifics& proto) {
