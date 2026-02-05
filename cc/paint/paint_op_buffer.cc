@@ -591,6 +591,26 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
   }
 }
 
+void PaintOpBuffer::UpdateDrawRecordOp(size_t offset,
+                                       PaintRecord paint_record) {
+  CHECK(is_mutable());
+  uint16_t aligned_size = ComputeOpAlignedSize<DrawRecordOp>();
+  CHECK_LE(offset + aligned_size, used_);
+  DrawRecordOp* op = reinterpret_cast<DrawRecordOp*>(&data_[offset]);
+  CHECK_EQ(op->GetType(), DrawRecordOp::kType);
+  CHECK(op->record.empty());
+  CHECK(op->local_ctm);
+  CHECK_NE(op->placeholder_id, ElementId());
+
+  // AdditionalBytesUsed is non-zero even with an empty PaintRecord
+  CHECK_GE(subrecord_bytes_used_, op->AdditionalBytesUsed());
+  subrecord_bytes_used_ -= op->AdditionalBytesUsed();
+
+  op->~DrawRecordOp();
+  new (op) DrawRecordOp{std::move(paint_record)};
+  AnalyzeAddedOp(op);
+}
+
 PaintOpBuffer::Iterator PaintOpBuffer::begin() const {
   return Iterator(*this);
 }

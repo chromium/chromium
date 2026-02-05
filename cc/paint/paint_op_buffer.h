@@ -275,6 +275,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   }
 
   void UpdateSaveLayerBounds(size_t offset, const SkRect& bounds);
+  void UpdateDrawRecordOp(size_t offset, PaintRecord paint_record);
 
   template <typename T>
   void AnalyzeAddedOp(const T* op) {

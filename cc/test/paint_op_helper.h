@@ -174,6 +174,9 @@ class PaintOpHelper {
       }
       case PaintOpType::kDrawRecord: {
         const auto& op = static_cast<const DrawRecordOp&>(base_op);
+        if (op.placeholder_id != ElementId()) {
+          str << "element_id=" << op.placeholder_id << ", ";
+        }
         str << "record=" << ToString(op.record);
         break;
       }

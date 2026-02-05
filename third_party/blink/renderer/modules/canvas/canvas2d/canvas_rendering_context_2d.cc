@@ -924,6 +924,18 @@ DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
     dst_rect.set_size(ideal_dst_size);
   }
 
+  CompositorElementId placeholder_id =
+      CompositorElementIdFromDOMNodeId(element->GetDomNodeId());
+  {
+    auto* c = GetOrCreatePaintCanvas();
+    cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
+        static_cast<cc::RecordPaintCanvas*>(c));
+    c->drawElementImagePlaceholder(placeholder_id);
+  };
+
+  // TODO(crbug.com/480074852): All the drawing code below should be removed
+  // once the placeholder op recorded above is handled during BeginMainFrame.
+
   // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
   // need a distinct paint_type: kImagePaintType seems to do the right thing
   // but maybe its treatment of anti-aliasing is incorrect. The kNonOpaqueImage

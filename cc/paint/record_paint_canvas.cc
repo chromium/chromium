@@ -389,6 +389,10 @@ void RecordPaintCanvas::drawPicture(PaintRecord record, bool local_ctm) {
   push<DrawRecordOp>(std::move(record), local_ctm);
 }
 
+void RecordPaintCanvas::drawElementImagePlaceholder(ElementId placeholder_id) {
+  push<DrawRecordOp>(placeholder_id);
+}
+
 void RecordPaintCanvas::Annotate(AnnotationType type,
                                  const SkRect& rect,
                                  sk_sp<SkData> data) {
