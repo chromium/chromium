@@ -2274,16 +2274,6 @@ Google Chrome is unable to recover your settings.
           Ask Google<ph name="LINE_BREAK">$1</ph>about this tab
         </message>
 
-        <message name="IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE"
-          desc="Title for the AI Mode zero state welcome message in the Lens tab. The first placeholder is the user's given name.">
-          Hi <ph name="USER_NAME">$1<ex>Josh</ex></ph>, what's on your mind?
-        </message>
-
-        <message name="IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE_WITHOUT_NAME"
-          desc="Title for the AI Mode zero state welcome message in the Lens tab.">
-          What's on your mind?
-        </message>
-
         <message name="IDS_AI_MODE_NEW_SEARCH"
           desc="Header in the Lens side panel indicating a new AI Mode search session.">
           New search
