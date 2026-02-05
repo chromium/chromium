@@ -330,7 +330,8 @@ class CONTENT_EXPORT PrefetchContainer {
       bool is_isolated_network_context_required) const;
 
   // The network context used to make network requests for the next prefetch.
-  PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch();
+  PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch(
+      PrefetchService* prefetch_service);
 
   // Closes idle connections for all elements in |network_contexts_|.
   void CloseIdleConnections();

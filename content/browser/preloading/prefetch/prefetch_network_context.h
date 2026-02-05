@@ -25,7 +25,10 @@ class PrefetchService;
 // any cookies.
 class CONTENT_EXPORT PrefetchNetworkContext {
  public:
+  // Creates an isolated `NetworkContext` (if `use_isolated_network_context`)
+  // and `URLLoaderFactory` inside ctor.
   PrefetchNetworkContext(
+      PrefetchService* service,
       bool use_isolated_network_context,
       const PrefetchType& prefetch_type,
       const GlobalRenderFrameHostId& referring_render_frame_host_id,
@@ -36,11 +39,8 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   const PrefetchNetworkContext operator=(const PrefetchNetworkContext&) =
       delete;
 
-  // Get a reference to |url_loader_factory_|. If it is null, then
-  // |network_context_| is bound and configured, and a new
-  // |SharedURLLoaderFactory| is created.
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
-      PrefetchService* service);
+  // Get a reference to |url_loader_factory_|.
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   // Get a reference to |cookie_manager_|. If it is null, then it is bound to
   // the cookie manager of |network_context_|.

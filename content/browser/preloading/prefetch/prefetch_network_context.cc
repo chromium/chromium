@@ -46,6 +46,7 @@ BASE_FEATURE(kVariationsHeaderForCrossSiteSpeculationRulesPrefetch,
 }  // namespace
 
 PrefetchNetworkContext::PrefetchNetworkContext(
+    PrefetchService* service,
     bool use_isolated_network_context,
     const PrefetchType& prefetch_type,
     const GlobalRenderFrameHostId& referring_render_frame_host_id,
@@ -59,25 +60,25 @@ PrefetchNetworkContext::PrefetchNetworkContext(
   } else {
     CHECK(!referring_render_frame_host_id);
   }
+
+  if (use_isolated_network_context_) {
+    CreateIsolatedURLLoaderFactory(service);
+    CHECK(network_context_);
+  } else {
+    // Create new URL factory in the default network context.
+    url_loader_factory_ = CreateNewURLLoaderFactory(
+        service->GetBrowserContext(), service->GetBrowserContext()
+                                          ->GetDefaultStoragePartition()
+                                          ->GetNetworkContext());
+  }
+
+  CHECK(url_loader_factory_);
 }
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
 
 scoped_refptr<network::SharedURLLoaderFactory>
-PrefetchNetworkContext::GetURLLoaderFactory(PrefetchService* service) {
-  if (!url_loader_factory_) {
-    if (use_isolated_network_context_) {
-      CreateIsolatedURLLoaderFactory(service);
-      CHECK(network_context_);
-    } else {
-      // Create new URL factory in the default network context.
-      url_loader_factory_ = CreateNewURLLoaderFactory(
-          service->GetBrowserContext(), service->GetBrowserContext()
-                                            ->GetDefaultStoragePartition()
-                                            ->GetNetworkContext());
-    }
-  }
-  CHECK(url_loader_factory_);
+PrefetchNetworkContext::GetURLLoaderFactory() {
   return url_loader_factory_;
 }
 

@@ -583,7 +583,8 @@ PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
 }
 
 PrefetchNetworkContext*
-PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch() {
+PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch(
+    PrefetchService* prefetch_service) {
   bool is_isolated_network_context_required =
       IsIsolatedNetworkContextRequiredForCurrentPrefetch();
 
@@ -600,8 +601,9 @@ PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch() {
   }
 
   auto owned_network_context = std::make_unique<PrefetchNetworkContext>(
-      is_isolated_network_context_required, request().prefetch_type(),
-      referring_render_frame_host_id, request().referring_origin());
+      prefetch_service, is_isolated_network_context_required,
+      request().prefetch_type(), referring_render_frame_host_id,
+      request().referring_origin());
   network_context = owned_network_context.get();
   network_contexts_.emplace(is_isolated_network_context_required,
                             std::move(owned_network_context));

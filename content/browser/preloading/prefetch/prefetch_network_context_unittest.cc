@@ -77,13 +77,12 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
+          prefetch_service(),
           /*use_isolated_network_context=*/true,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kImmediate),
           main_rfh()->GetGlobalId(), main_rfh()->GetLastCommittedOrigin());
-
-  prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
 
 TEST_F(PrefetchNetworkContextTest,
@@ -105,13 +104,12 @@ TEST_F(PrefetchNetworkContextTest,
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
+          prefetch_service(),
           /*use_isolated_network_context=*/false,
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kImmediate),
           main_rfh()->GetGlobalId(), main_rfh()->GetLastCommittedOrigin());
-
-  prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
 
 TEST_F(PrefetchNetworkContextTest,
@@ -132,13 +130,12 @@ TEST_F(PrefetchNetworkContextTest,
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
+          prefetch_service(),
           /*use_isolated_network_context=*/false,
           PrefetchType(PreloadingTriggerType::kEmbedder,
                        /*use_prefetch_proxy=*/false),
           /*referring_render_frame_host_id=*/GlobalRenderFrameHostId(),
           kReferringOrigin);
-
-  prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
 
 }  // namespace

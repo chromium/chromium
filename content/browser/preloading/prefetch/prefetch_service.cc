@@ -1742,8 +1742,8 @@ PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
   if (g_url_loader_factory_for_testing) {
     return base::WrapRefCounted(g_url_loader_factory_for_testing);
   }
-  return prefetch_container->GetOrCreateNetworkContextForCurrentPrefetch()
-      ->GetURLLoaderFactory(this);
+  return prefetch_container->GetOrCreateNetworkContextForCurrentPrefetch(this)
+      ->GetURLLoaderFactory();
 }
 
 void PrefetchService::OnPrefetchRedirect(
