@@ -289,6 +289,10 @@ bool PopupViewViews::Show(
     }
   }
 
+  // `SetSelectedCell` can hide the popup and destroy the controller.
+  if (!controller_) {
+    return false;
+  }
   // Compose has separate on show announcements.
   // TODO(crbug.com/340359989): Replace with AutofillComposeDelegate::OnShow
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
