@@ -104,10 +104,6 @@ void OnDeviceTranslationInstallerImpl::Init(
 
 void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
     LanguagePackKey language_pack) {
-  if (!IsInit()) {
-    return;
-  }
-
   // Registers the TranslateKit language pack component.
   component_updater::RegisterTranslateKitLanguagePackComponent(
       g_browser_process->component_updater(), g_browser_process->local_state(),

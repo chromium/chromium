@@ -39,12 +39,6 @@ class ComponentManagerImpl : public ComponentManager {
 
   void RegisterTranslateKitLanguagePackComponent(
       LanguagePackKey language_pack) override {
-    if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
-      OnDeviceTranslationInstaller::GetInstance()->Init(base::BindRepeating(
-          &ComponentManagerImpl::RegisterTranslateKitLanguagePackComponent,
-          weak_ptr_factory_.GetWeakPtr(), language_pack));
-      return;
-    }
     OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
         language_pack);
   }

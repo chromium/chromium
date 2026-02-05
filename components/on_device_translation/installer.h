@@ -60,13 +60,9 @@ class OnDeviceTranslationInstaller {
   // Start initialization. When initialization is finished, the
   // `on_ready_callback` is called.
   virtual void Init(base::RepeatingClosure on_ready_callback) = 0;
-  // Start installation of a language pack. The callback is supposed to be
-  // called once the registration for installation is finished (not the
-  // installation itself). A bool is returned for quick failure.
+  // Start installation of a language pack.
   virtual void InstallLanguagePack(LanguagePackKey language_pack) = 0;
-  // Start uninstallation of a language pack. The callback is supposed to be
-  // called once the uninstallation is registered to happen. A bool is returned
-  // for quick failures.
+  // Start uninstallation of a language pack.
   virtual void UnInstallLanguagePack(LanguagePackKey language_pack) = 0;
 
   // Subscribes a new observer to be notified of events.
