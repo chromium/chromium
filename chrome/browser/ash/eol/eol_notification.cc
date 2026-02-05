@@ -19,17 +19,17 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/user.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -38,6 +38,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 namespace {
@@ -130,6 +131,8 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
   DCHECK_EQ(BUTTON_MORE_INFO, data.buttons.size());
   data.buttons.emplace_back(GetStringUTF16(IDS_LEARN_MORE));
 
+  NotificationCatalogName catalog_name = NotificationCatalogName::kNone;
+
   if (now < eol_date) {
     // Notifies user that updates will stop occurring at a month and year.
     notification_builder
@@ -138,8 +141,8 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                               eol_date, icu::TimeZone::getGMT())})
         .SetMessageWithArgs(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
                             {ui::GetChromeOSDeviceName()})
-        .SetCatalogName(NotificationCatalogName::kPendingEOL)
         .SetSmallImage(vector_icons::kBusinessIcon);
+    catalog_name = NotificationCatalogName::kPendingEOL;
   } else {
     DCHECK_EQ(BUTTON_DISMISS, data.buttons.size());
     data.buttons.emplace_back(GetStringUTF16(IDS_EOL_DISMISS_BUTTON));
@@ -148,20 +151,27 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
     notification_builder.SetTitleId(IDS_EOL_NOTIFICATION_TITLE)
         .SetMessageWithArgs(IDS_EOL_NOTIFICATION_EOL,
                             {ui::GetChromeOSDeviceName()})
-        .SetCatalogName(NotificationCatalogName::kEOL)
         .SetSmallImage(kNotificationEndOfSupportIcon);
+    catalog_name = NotificationCatalogName::kEOL;
   }
 
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT,
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId,
+      catalog_name);
+  if (const user_manager::User* user =
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_)) {
+    notifier_id.profile_id = user->GetAccountId().GetUserEmail();
+  }
+
+  message_center::MessageCenter::Get()->AddNotification(
       notification_builder.SetId(kEolNotificationId)
           .SetOriginUrl(GURL(kEolNotificationId))
+          .SetNotifierId(notifier_id)
           .SetOptionalFields(data)
           .SetDelegate(
               base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
                   weak_ptr_factory_.GetWeakPtr()))
-          .Build(false),
-      /*metadata=*/nullptr);
+          .BuildPtr(false));
 }
 
 void EolNotification::Close(bool by_user) {
@@ -204,8 +214,10 @@ void EolNotification::Click(const std::optional<int>& button_index,
     profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
   }
 
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kEolNotificationId);
+  // Pass `by_user=false` to avoid triggering the Close() callback, since the
+  // user's interaction has already been handled above.
+  message_center::MessageCenter::Get()->RemoveNotification(kEolNotificationId,
+                                                           /*by_user=*/false);
 }
 
 void EolNotification::OverrideClockForTesting(base::Clock* clock) {

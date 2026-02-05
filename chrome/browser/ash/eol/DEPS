@@ -19,12 +19,13 @@ include_rules = [
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",
+
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {
@@ -35,5 +36,6 @@ specific_include_rules = {
 
   "eol_notification_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+ui/message_center/test/message_center_waiter.h",
   ]
 }
