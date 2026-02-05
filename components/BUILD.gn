@@ -743,6 +743,7 @@ test("components_unittests") {
     }
   } else {  #!is_android
     deps += [
+      "//components/accessibility_annotator/content/content_annotator:unit_tests",
       "//components/keep_alive_registry:unit_tests",
       "//components/manta:unit_tests",
       "//components/trusted_vault:unit_tests",

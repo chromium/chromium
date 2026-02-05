@@ -6,11 +6,24 @@ source_set("content_annotator") {
   sources = [
     "content_annotator_service.cc",
     "content_annotator_service.h",
+    "content_classifier.cc",
+    "content_classifier.h",
   ]
 
   deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/page_content_annotations/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_classifier_unittest.cc" ]
+  deps = [
+    ":content_annotator",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
   ]
 }
