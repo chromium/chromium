@@ -6,6 +6,7 @@
 #define UI_EVENTS_GESTURE_DETECTION_FILTERED_GESTURE_PROVIDER_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -72,7 +73,7 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
   const ui::MotionEvent* GetLastEventWithoutHistory() const;
   void OnUnconfirmedTapConvertedToTap();
 
-  bool HasPendingTapTimeoutForTesting() const;
+  GestureDetector* GetGestureDetectorForTesting();
 
  private:
   // GestureProviderClient implementation.

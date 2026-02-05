@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -385,6 +386,36 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     run_loop_.reset();
   }
 
+  void DoTouchCancel() {
+    DCHECK(URLLoaded());
+    const std::string pointer_actions_json = R"HTML(
+        [{"source": "touch", "id": 0,
+              "actions": [
+              { "name": "pointerDown", "x": 50, "y": 50 },
+              { "name": "pointerCancel"}]}]
+        )HTML";
+
+    ASSERT_OK_AND_ASSIGN(
+        auto parsed_json,
+        base::JSONReader::ReadAndReturnValueWithError(
+            pointer_actions_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+    ActionsParser actions_parser(std::move(parsed_json));
+
+    ASSERT_TRUE(actions_parser.Parse());
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+
+    GetWidgetHost()->QueueSyntheticGesture(
+        std::make_unique<SyntheticPointerAction>(
+            actions_parser.pointer_action_params()),
+        base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
+                       base::Unretained(this)));
+
+    // Runs until we get the OnSyntheticGestureCompleted callback
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
   // Generate touch events for a double tap and drag zoom gesture at
   // coordinates (50, 50).
   void DoDoubleTapDragZoom() {
@@ -559,12 +590,26 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
     </script>)HTML";
   LoadURL(kDoubleTapZoomDataURL);
 
+  // A touch cancel to initialize gesture provider in Aura.
+  DoTouchCancel();
+
+  ui::GestureDetector* gesture_detector =
+      GetWidgetHost()
+          ->GetView()
+          ->GetFilteredGestureProviderForTesting()
+          ->GetGestureDetectorForTesting();
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  gesture_detector->SetGestureTimeoutHandlerTaskRunnerForTesting(task_runner);
+
+  GestureTapEventObserver tap_observer;
+  GetWidgetHost()->AddInputEventObserver(&tap_observer);
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+
   SyntheticTapGestureParams params;
   params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.position = gfx::PointF(50, 50);
   params.duration_ms = 100;
-
-  run_loop_ = std::make_unique<base::RunLoop>();
   GetWidgetHost()->QueueSyntheticGesture(
       std::make_unique<SyntheticTapGesture>(params),
       base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
@@ -572,11 +617,18 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
 
   run_loop_->Run();
 
-  RenderWidgetHostViewBase* rwhv = static_cast<RenderWidgetHostViewBase*>(
-      shell()->web_contents()->GetRenderWidgetHostView());
-  // After the tap gesture has been completed, the timer should be gone.
-  EXPECT_FALSE(rwhv->GetFilteredGestureProviderForTesting()
-                   ->HasPendingTapTimeoutForTesting());
+  // After the tap gesture has been completed, the tap event should have been
+  // seen exactly once.
+  EXPECT_EQ(1, tap_observer.num_gesture_tap_seen());
+
+  // Advance the task runner clock by timeout delay, to make sure the tap
+  // timeout task runs.
+  task_runner->FastForwardBy(gesture_detector->GetDoubleTapTimeoutForTesting());
+
+  // No extra tap is seen by input observers.
+  EXPECT_EQ(1, tap_observer.num_gesture_tap_seen());
+
+  GetWidgetHost()->RemoveInputEventObserver(&tap_observer);
 }
 
 // TODO(crbug.com/40236573): Fix Mac failures.

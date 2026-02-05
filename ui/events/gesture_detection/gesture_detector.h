@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
@@ -153,7 +154,10 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
 
   void OnUnconfirmedTapConvertedToTap();
 
-  bool HasPendingTapTimeoutForTesting() const;
+  void SetGestureTimeoutHandlerTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  base::TimeDelta GetDoubleTapTimeoutForTesting() const;
 
  private:
   void Init(const Config& config);
@@ -230,6 +234,7 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
   bool showpress_enabled_ = true;
   bool swipe_enabled_ = false;
   bool two_finger_tap_enabled_ = false;
+  bool unconfirmed_tap_was_converted_to_tap_ = false;
 
   // Determines speed during touch scrolling.
   VelocityTrackerState velocity_tracker_;

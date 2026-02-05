@@ -31,6 +31,9 @@ PointerActionType ToSyntheticPointerActionType(const std::string& action_type) {
     return PointerActionType::RELEASE;
   if (action_type == "pointerLeave")
     return PointerActionType::LEAVE;
+  if (action_type == "pointerCancel") {
+    return PointerActionType::CANCEL;
+  }
   if (action_type == "pause")
     return PointerActionType::IDLE;
   return PointerActionType::NOT_INITIALIZED;

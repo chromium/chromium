@@ -1716,6 +1716,27 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
   base::OnceClosure quit_closure_;
 };
 
+// Watches for gesture tap events.
+class GestureTapEventObserver : public RenderWidgetHost::InputEventObserver {
+ public:
+  GestureTapEventObserver() = default;
+
+  GestureTapEventObserver(const GestureTapEventObserver&) = delete;
+  GestureTapEventObserver& operator=(const GestureTapEventObserver&) = delete;
+
+  ~GestureTapEventObserver() override = default;
+
+  // RenderWidgetHost::InputEventObserver:
+  void OnInputEvent(const RenderWidgetHost& host,
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override;
+
+  int num_gesture_tap_seen() const { return num_gesture_tap_seen_; }
+
+ private:
+  int num_gesture_tap_seen_ = 0;
+};
+
 // Sets up a ui::TestClipboard for use in browser tests. On Windows,
 // clipboard is handled on the IO thread, BrowserTestClipboardScope
 // hops messages onto the right thread.

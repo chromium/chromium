@@ -21,4 +21,6 @@ const base::FeatureParam<bool>
 
 BASE_FEATURE(kLegacyKeyRepeatSynthesis, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFixDoubleClickNotWorking, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace ui

@@ -943,8 +943,7 @@ GestureDetector* GestureProvider::GetGestureDetectorForTesting() {
   if (!gesture_listener_) {
     return nullptr;
   }
-  return static_cast<GestureListenerImpl*>(gesture_listener_.get())
-      ->GetGestureDetectorForTesting();  // IN-TEST
+  return gesture_listener_->GetGestureDetectorForTesting();  // IN-TEST
 }
 
 bool GestureProvider::CanHandle(const MotionEvent& event) const {
