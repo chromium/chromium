@@ -7,7 +7,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "components/history/core/browser/history_types.h"
@@ -28,10 +27,6 @@ std::string GetDebugJSONForVisits(
 // Gets a loggable JSON representation of `clusters`.
 std::string GetDebugJSONForClusters(
     const std::vector<history::Cluster>& clusters);
-
-template <typename T>
-std::string GetDebugJSONForUrlKeywordSet(
-    const std::unordered_set<T>& keyword_set);
 
 std::string GetDebugJSONForKeywordMap(
     const std::unordered_map<std::u16string, history::ClusterKeywordData>&

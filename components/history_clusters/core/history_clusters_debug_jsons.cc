@@ -6,7 +6,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -173,28 +172,6 @@ std::string GetDebugJSONForClusters(
   }
   return debug_string;
 }
-
-template <typename T>
-std::string GetDebugJSONForUrlKeywordSet(
-    const std::unordered_set<T>& keyword_set) {
-  base::ListValue keyword_list;
-  for (const auto& keyword : keyword_set) {
-    keyword_list.Append(keyword);
-  }
-
-  std::string debug_string;
-  if (!base::JSONWriter::WriteWithOptions(
-          keyword_list, base::JSONWriter::OPTIONS_PRETTY_PRINT,
-          &debug_string)) {
-    debug_string = "Error: Could not write keywords list to JSON.";
-  }
-  return debug_string;
-}
-
-template std::string GetDebugJSONForUrlKeywordSet<std::u16string>(
-    const std::unordered_set<std::u16string>&);
-template std::string GetDebugJSONForUrlKeywordSet<std::string>(
-    const std::unordered_set<std::string>&);
 
 std::string GetDebugJSONForKeywordMap(
     const std::unordered_map<std::u16string, history::ClusterKeywordData>&
