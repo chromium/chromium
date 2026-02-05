@@ -14,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -21,6 +22,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +30,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "base/win/shortcut.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
@@ -164,6 +167,30 @@ void CopyPreferenceFileForFirstRun(const InstallerState& installer_state,
   }
 }
 
+// Returns true if a diagnostic crash dump should be uploaded in case of a
+// failure while installing or updating the browser.
+bool ShouldSampleFailures() {
+  // Sample across channels based on historic error rates.
+  double report_probability = 0.0;
+  switch (install_static::GetChromeChannel()) {
+    case version_info::Channel::CANARY:
+      report_probability = 0.05;
+      break;
+    case version_info::Channel::DEV:
+      report_probability = 0.01;
+      break;
+    case version_info::Channel::BETA:
+      report_probability = 0.03;
+      break;
+    case version_info::Channel::STABLE:
+      report_probability = 0.00005;
+      break;
+    default:
+      return false;
+  }
+  return base::RandDouble() < report_probability;
+}
+
 // This function installs a new version of Chrome to the specified location.
 //
 // install_params: See install_params.h
@@ -195,6 +222,10 @@ InstallStatus InstallNewVersion(const InstallParams& install_params,
   installer_state.SetStage(EXECUTING);
 
   if (!install_list->Do()) {
+    if (ShouldSampleFailures()) {
+      // TODO(crbug.com/40462942): Remove after analyzing results.
+      base::debug::DumpWithoutCrashing();
+    }
     installer_state.SetStage(ROLLINGBACK);
     InstallStatus result = base::PathExists(new_chrome_exe) &&
                                    current_version.IsValid() &&
