@@ -430,6 +430,10 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
       if (child == tab_strip_view_) {
         return tab_strip_view_->IsPositionInWindowCaption(point_in_child);
       }
+      if (child == bottom_button_container_) {
+        return bottom_button_container_->IsPositionInWindowCaption(
+            point_in_child);
+      }
       return false;
     }
   }

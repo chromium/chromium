@@ -28,6 +28,8 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
 
   TabStripFlatEdgeButton* AddChildButtonFor(actions::ActionId action_id);
 
+  bool IsPositionInWindowCaption(const gfx::Point& point);
+
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
 

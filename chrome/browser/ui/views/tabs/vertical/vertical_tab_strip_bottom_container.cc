@@ -64,6 +64,21 @@ TabStripFlatEdgeButton* VerticalTabStripBottomContainer::AddChildButtonFor(
   return raw_container_button;
 }
 
+bool VerticalTabStripBottomContainer::IsPositionInWindowCaption(
+    const gfx::Point& point) {
+  for (views::View* child : children()) {
+    if (!child->GetVisible()) {
+      continue;
+    }
+    gfx::Point point_in_child = point;
+    views::View::ConvertPointToTarget(this, child, &point_in_child);
+    if (child->HitTestPoint(point_in_child)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void VerticalTabStripBottomContainer::OnCollapsedStateChanged(
     tabs::VerticalTabStripStateController* controller) {
   UpdateButtonStyles(controller);

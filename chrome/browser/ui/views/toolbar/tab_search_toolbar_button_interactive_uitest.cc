@@ -19,6 +19,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_utils.h"
@@ -75,6 +76,11 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
 // This test verifies the TabSearch functionality after unpinning.
 IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
                        VerifyTabSearchWhenUnpinned) {
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "Skipping on Wayland due to flakiness.";
+  }
+#endif
   RunTestSequence(
       // Unpinning Tab Search Button
       MoveMouseTo(kTabSearchButtonElementId),
