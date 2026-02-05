@@ -500,58 +500,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     }
   }
 
-  __weak __typeof(self) weakSelf = self;
-
-  ProceduralBlock transitionCompletionBlock = ^{
-    TabGridCoordinator* strongSelf = weakSelf;
-    if (strongSelf && IsBestOfAppGuidedTourEnabled()) {
-      Browser* browser = strongSelf.regularBrowser;
-      FirstRunProfileAgent* profileAgent = [FirstRunProfileAgent
-          agentFromProfile:browser->GetSceneState().profileState];
-      [profileAgent tabGridWasPresented];
-    }
-    [weakSelf transitionToGridCompleteForAndroidTabsPrompt:
-                  shouldDisplayBringAndroidTabsPrompt];
-  };
-
-  ProceduralBlock transitionBlock = ^{
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    strongSelf.viewController.childViewControllerForStatusBarStyle = nil;
-
-    if (IsGeminiCopresenceEnabled()) {
-      id<BWGCommands> geminiHandler = HandlerForProtocol(
-          self.regularBrowser->GetCommandDispatcher(), BWGCommands);
-      [geminiHandler
-          hideFloatyIfInvokedAnimated:NO
-                           fromSource:gemini::FloatyUpdateSource::TabGrid];
-    }
-    if (IsNewTabGridTransitionsEnabled()) {
-      BOOL isIncognito = page == TabGridPageIncognitoTabs;
-
-      [strongSelf
-          performBrowserToTabGridTransitionWithAnimationEnabled:animated
-                                                    isIncognito:isIncognito
-                                                     completion:
-                                                         transitionCompletionBlock];
-    } else {
-      [strongSelf
-          performLegacyBrowserToTabGridTransitionWithActivePage:
-              currentActivePage
-                                               animationEnabled:animated
-                                                     toTabGroup:toTabGroup
-                                                     completion:
-                                                         transitionCompletionBlock];
-    }
-  };
-
   // If a BVC is currently being presented, dismiss it.  This will trigger any
   // necessary animations.
   if (self.browserLayoutViewController) {
     [self.viewController contentWillAppearAnimated:animated];
+    __weak __typeof(self) weakSelf = self;
+    ProceduralBlock transitionBlock = ^{
+      [weakSelf performTransitionToTabGridWithPage:page
+                                 currentActivePage:currentActivePage
+                                          animated:animated
+                                        toTabGroup:toTabGroup
+                    shouldDisplayAndroidTabsPrompt:
+                        shouldDisplayBringAndroidTabsPrompt];
+    };
     // This is done with a dispatch to make sure that the view isn't added to
     // the view hierarchy right away, as it is not the expectations of the
     // API.
@@ -772,6 +733,62 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                   isRegularBrowserNTP:isRegularBrowserNTP
                             incognito:isIncognito];
   [self.transitionHandler performTransitionWithCompletion:completionHandler];
+}
+
+// Handles the completion of the transition to the tab grid, including
+// displaying the "Bring Android Tabs" prompt if needed and notifying the
+// guided tour.
+- (void)handleTransitionToTabGridCompletionWithBringAndroidTabsPrompt:
+    (BOOL)shouldDisplayBringAndroidTabsPrompt {
+  if (IsBestOfAppGuidedTourEnabled()) {
+    Browser* browser = self.regularBrowser;
+    FirstRunProfileAgent* profileAgent = [FirstRunProfileAgent
+        agentFromProfile:browser->GetSceneState().profileState];
+    [profileAgent tabGridWasPresented];
+  }
+  [self transitionToGridCompleteForAndroidTabsPrompt:
+            shouldDisplayBringAndroidTabsPrompt];
+}
+
+// Performs the transition from browser to tab grid, handling UI updates and
+// selecting the appropriate transition method based on feature flags.
+- (void)performTransitionToTabGridWithPage:(TabGridPage)page
+                         currentActivePage:(TabGridPage)currentActivePage
+                                  animated:(BOOL)animated
+                                toTabGroup:(BOOL)toTabGroup
+            shouldDisplayAndroidTabsPrompt:
+                (BOOL)shouldDisplayBringAndroidTabsPrompt {
+  self.viewController.childViewControllerForStatusBarStyle = nil;
+
+  if (IsGeminiCopresenceEnabled()) {
+    id<BWGCommands> geminiHandler = HandlerForProtocol(
+        self.regularBrowser->GetCommandDispatcher(), BWGCommands);
+    [geminiHandler
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::TabGrid];
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock transitionCompletionBlock = ^{
+    [weakSelf handleTransitionToTabGridCompletionWithBringAndroidTabsPrompt:
+                  shouldDisplayBringAndroidTabsPrompt];
+  };
+
+  if (IsNewTabGridTransitionsEnabled()) {
+    BOOL isIncognito = page == TabGridPageIncognitoTabs;
+    [self
+        performBrowserToTabGridTransitionWithAnimationEnabled:animated
+                                                  isIncognito:isIncognito
+                                                   completion:
+                                                       transitionCompletionBlock];
+  } else {
+    [self
+        performLegacyBrowserToTabGridTransitionWithActivePage:currentActivePage
+                                             animationEnabled:animated
+                                                   toTabGroup:toTabGroup
+                                                   completion:
+                                                       transitionCompletionBlock];
+  }
 }
 
 // Performs the new browser to tab grid transition.
