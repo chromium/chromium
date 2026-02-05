@@ -12,6 +12,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -36,6 +37,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(alexiswu): Add setting search index.
+    // TODO(crbug.com/480218604): Override #updateDynamicPreferences once the preference is
+    // implemented.
 
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(GlicSettings.class.getName(), R.xml.glic_settings);
 }

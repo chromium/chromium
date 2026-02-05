@@ -746,9 +746,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
     }
 
+    private static boolean shouldShowGlicPreference() {
+        return ChromeFeatureList.sGlic.isEnabled();
+    }
+
     // TODO(crbug.com/481386779): Replace it with glic_enabling.
     private void updateGlicPreference() {
-        if (ChromeFeatureList.sGlic.isEnabled()) {
+        if (shouldShowGlicPreference()) {
             addPreferenceIfAbsent(PREF_GLIC);
         } else {
             removePreferenceIfPresent(PREF_GLIC);
@@ -1032,6 +1036,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowDefaultBrowserSetting()) {
                         indexData.removeEntry(getUniqueId(PREF_DEFAULT_BROWSER));
+                    }
+                    if (!shouldShowGlicPreference()) {
+                        indexData.removeEntry(getUniqueId(PREF_GLIC));
                     }
                 }
             };

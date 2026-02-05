@@ -35,6 +35,7 @@ public final class SearchIndexProviderRegistry {
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.glic.GlicSettings.SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.homepage.settings.HomepageSettings
