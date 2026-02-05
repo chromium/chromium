@@ -137,25 +137,6 @@ TEST_F(SignedWebBundleMetadataTest, Succeeds) {
           Property(&SignedWebBundleMetadata::app_id, Eq(url_info.app_id())))));
 }
 
-TEST_F(SignedWebBundleMetadataTest, FailsWhenWebBundleIdNotTrusted) {
-  IsolatedWebAppUrlInfo url_info = WriteBundleToDisk();
-  SetTrustedWebBundleIdsForTesting({});
-  FakeWebContentsManager& fake_web_contents_manager =
-      static_cast<FakeWebContentsManager&>(
-          fake_provider().web_contents_manager());
-  MockIconAndPageState(fake_web_contents_manager, url_info);
-
-  base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
-      metadata_future;
-  SignedWebBundleMetadata::Create(profile(), &fake_provider(), url_info,
-                                  bundle_source(),
-                                  metadata_future.GetCallback());
-  base::expected<SignedWebBundleMetadata, std::string> metadata =
-      metadata_future.Get();
-
-  EXPECT_THAT(metadata, ErrorIs(HasSubstr("not trusted")));
-}
-
 TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
   IsolatedWebAppUrlInfo url_info = WriteBundleToDisk(
       TestSignedWebBundleBuilder::BuildOptions().SetErrorsForTesting(

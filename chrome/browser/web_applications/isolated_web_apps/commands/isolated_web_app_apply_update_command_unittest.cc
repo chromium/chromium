@@ -118,8 +118,8 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
 
   void InstallIwa(
       std::optional<IsolationData::PendingUpdateInfo> pending_update_info) {
-    std::unique_ptr<WebApp> isolated_web_app =
-        test::CreateWebApp(url_info_.origin().GetURL());
+    std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(
+        url_info_.origin().GetURL(), WebAppManagement::Type::kIwaUserInstalled);
     isolated_web_app->SetName("installed app");
 
     auto builder =
@@ -311,9 +311,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
   SetTrustedWebBundleIdsForTesting({});
 
   auto result = ApplyPendingUpdate();
-  EXPECT_THAT(result,
-              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
-                            HasSubstr("The public key(s) are not trusted"))));
+  EXPECT_THAT(result, ErrorIs(_));
   ExpectAppNotUpdatedAndDataCleared();
 }
 

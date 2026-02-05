@@ -138,7 +138,7 @@ void IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures(
   command_helper_->CheckTrustAndSignatures(
       IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
                                              pending_update_info().location),
-      &profile(),
+      IwaUpdateOperation{}, &profile(),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::OnTrustAndSignaturesChecked,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));
@@ -194,8 +194,8 @@ void IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo(
       profile(),
       IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
                                              pending_update_info().location),
-      pending_update_info().version, *web_contents_, *command_helper_,
-      lock_->web_contents_manager().CreateUrlLoader(),
+      IwaUpdateOperation{}, pending_update_info().version, *web_contents_,
+      *command_helper_, lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }
 

@@ -20,14 +20,15 @@ namespace web_app {
 std::unique_ptr<PrepareInstallInfoJob> PrepareInstallInfoJob::CreateAndStart(
     Profile& profile,
     IwaSourceWithMode source,
+    IwaOperation operation,
     std::optional<IwaVersion> expected_version,
     content::WebContents& web_contents,
     IsolatedWebAppInstallCommandHelper& command_helper,
     std::unique_ptr<webapps::WebAppUrlLoader> loader,
     ResultCallback callback) {
   auto job = base::WrapUnique(new PrepareInstallInfoJob(
-      profile, std::move(source), std::move(expected_version), web_contents,
-      command_helper));
+      profile, std::move(source), std::move(operation),
+      std::move(expected_version), web_contents, command_helper));
   job->Start(std::move(loader), std::move(callback));
   return job;
 }
@@ -37,11 +38,13 @@ PrepareInstallInfoJob::~PrepareInstallInfoJob() = default;
 PrepareInstallInfoJob::PrepareInstallInfoJob(
     Profile& profile,
     IwaSourceWithMode source,
+    IwaOperation operation,
     std::optional<IwaVersion> expected_version,
     content::WebContents& web_contents,
     IsolatedWebAppInstallCommandHelper& command_helper)
     : profile_(profile),
       source_(std::move(source)),
+      operation_(std::move(operation)),
       expected_version_(std::move(expected_version)),
       web_contents_(web_contents),
       command_helper_(command_helper) {}
@@ -75,7 +78,7 @@ void PrepareInstallInfoJob::ReportFailure(Error error,
 void PrepareInstallInfoJob::LoadInstallUrl(
     base::OnceClosure next_step_callback) {
   command_helper_->LoadInstallUrl(
-      source_, *web_contents_, *url_loader_.get(),
+      source_, operation_, *web_contents_, *url_loader_.get(),
       base::BindOnce(&PrepareInstallInfoJob::RunNextStepOnSuccess<void>,
                      weak_factory_.GetWeakPtr(), std::move(next_step_callback),
                      Error::kCantLoadInstallUrl));

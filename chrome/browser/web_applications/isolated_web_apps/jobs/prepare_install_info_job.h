@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -49,6 +50,7 @@ class PrepareInstallInfoJob {
   static std::unique_ptr<PrepareInstallInfoJob> CreateAndStart(
       Profile& profile,
       IwaSourceWithMode source,
+      IwaOperation operation,
       std::optional<IwaVersion> expected_version,
       content::WebContents& web_contents,
       IsolatedWebAppInstallCommandHelper& command_helper,
@@ -87,6 +89,7 @@ class PrepareInstallInfoJob {
 
   PrepareInstallInfoJob(Profile& profile,
                         IwaSourceWithMode source,
+                        IwaOperation operation,
                         std::optional<IwaVersion> expected_version,
                         content::WebContents& web_contents,
                         IsolatedWebAppInstallCommandHelper& command_helper);
@@ -116,6 +119,7 @@ class PrepareInstallInfoJob {
   const raw_ref<Profile> profile_;
 
   const IwaSourceWithMode source_;
+  const IwaOperation operation_;
   const std::optional<IwaVersion> expected_version_;
   const raw_ref<content::WebContents> web_contents_;
   blink::mojom::ManifestPtr manifest_;

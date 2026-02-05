@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -186,16 +187,14 @@ void IwaPermissionsPolicyCache::ObtainManifestAndCache(
   // If the IWA is not trusted, we skip caching the manifest. The main
   // navigation will handle the trust failure and show an appropriate error
   // page. Fetching the manifest here would result in an opaque network
-  // error. Trust check is skipped in case of dev proxy mode.
-  if (!iwa_origin.web_bundle_id().is_for_proxy_mode() &&
-      !IsolatedWebAppTrustChecker::IsTrusted(
-           *provider_->profile(), iwa_origin.web_bundle_id(),
-           iwa->isolation_data()->location().dev_mode())
-           .has_value()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
-    return;
-  }
+  // error.
+  RETURN_IF_ERROR(IsolatedWebAppTrustChecker::IsResourceLoadingAllowed(
+                      *provider_->profile(), iwa_origin.web_bundle_id(), *iwa),
+                  [&](const auto&) {
+                    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                        FROM_HERE, base::BindOnce(std::move(callback), true));
+                    return;
+                  });
 
   // Policy not cached, fetch the manifest.
   auto resource_request = std::make_unique<network::ResourceRequest>();

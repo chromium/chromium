@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -125,6 +126,7 @@ class IsolatedWebAppInstallCommandHelper {
   // Returns the integrity block if the IWA is backed by a signed web bundle.
   void CheckTrustAndSignatures(
       const IwaSourceWithMode& location,
+      const IwaOperation& operation,
       Profile* profile,
       base::OnceCallback<
           void(base::expected<
@@ -135,6 +137,7 @@ class IsolatedWebAppInstallCommandHelper {
   // Use this overload if you don't need the returned integrity block.
   void CheckTrustAndSignatures(
       const IwaSourceWithMode& location,
+      const IwaOperation& operation,
       Profile* profile,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);
 
@@ -142,6 +145,7 @@ class IsolatedWebAppInstallCommandHelper {
 
   void LoadInstallUrl(
       const IwaSourceWithMode& source,
+      const IwaOperation& operation,
       content::WebContents& web_contents,
       webapps::WebAppUrlLoader& url_loader,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);

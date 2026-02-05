@@ -406,8 +406,7 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfAppNotTrusted) {
   SetTrustedWebBundleIdsForTesting({});
 
   auto result = PrepareAndStoreUpdateInfo(url_info, *update_bundle.get());
-  EXPECT_THAT(result, IsErrorWithMessage(
-                          HasSubstr("The public key(s) are not trusted")));
+  EXPECT_THAT(result, IsErrorWithMessage(_));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info.app_id());

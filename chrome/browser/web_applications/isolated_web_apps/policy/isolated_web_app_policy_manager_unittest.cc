@@ -658,9 +658,6 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, AllowedAppInstalled) {
                 .Build()
                 .UploadFromComponentFolder());
 
-  EXPECT_TRUE(IwaKeyDistributionInfoProvider::GetInstanceForTesting()
-                  .IsManagedInstallPermitted(web_bundle_id_1().id()));
-
   test::AddForceInstalledIwaToPolicy(
       profile()->GetPrefs(),
       IwaTestServerConfigurator::CreateForceInstallPolicyEntry(

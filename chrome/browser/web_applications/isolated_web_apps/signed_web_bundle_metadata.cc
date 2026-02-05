@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -69,7 +70,7 @@ class WebAppInstallInfoFetcher {
 
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback) {
     helper_->CheckTrustAndSignatures(
-        source_, &*profile_,
+        source_, IwaMetadataReadingOperation{}, &*profile_,
         base::BindOnce(&WebAppInstallInfoFetcher::OnTrustAndSignaturesChecked,
                        weak_factory_.GetWeakPtr(),
                        std::move(next_step_callback)));
@@ -86,7 +87,7 @@ class WebAppInstallInfoFetcher {
       base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
           next_step_callback) {
     prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
-        *profile_, source_,
+        *profile_, source_, IwaMetadataReadingOperation{},
         /*expected_version=*/std::nullopt, *web_contents_, *helper_,
         provider_->web_contents_manager().CreateUrlLoader(),
         std::move(next_step_callback));

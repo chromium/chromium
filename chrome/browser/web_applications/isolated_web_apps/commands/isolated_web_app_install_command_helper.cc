@@ -321,25 +321,22 @@ IsolatedWebAppInstallCommandHelper::~IsolatedWebAppInstallCommandHelper() =
 
 void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
     const IwaSourceWithMode& location,
+    const IwaOperation& operation,
     Profile* profile,
     base::OnceCallback<
         void(base::expected<std::optional<SignedWebBundleIntegrityBlock>,
                             std::string>)> callback) {
+  RETURN_IF_ERROR(
+      IsolatedWebAppTrustChecker::IsOperationAllowed(
+          *profile, url_info_.web_bundle_id(), location.dev_mode(), operation),
+      [&](const std::string& error) {
+        std::move(callback).Run(base::unexpected(error));
+      });
+
   std::visit(
       absl::Overload{
           [&](const IwaSourceBundleWithMode& location) {
             CHECK(!url_info_.web_bundle_id().is_for_proxy_mode());
-            if (location.dev_mode() && !IsIwaDevModeEnabled(profile)) {
-              std::move(callback).Run(
-                  base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
-              return;
-            }
-            RETURN_IF_ERROR(
-                IsolatedWebAppTrustChecker::IsTrusted(
-                    *profile, url_info_.web_bundle_id(), location.dev_mode()),
-                [&](const std::string& error) {
-                  std::move(callback).Run(base::unexpected(error));
-                });
             ValidateSignedWebBundleSignatures(
                 profile, location.path(), url_info_.web_bundle_id(),
                 base::BindOnce(&ExpectedToExpectedOptional)
@@ -347,11 +344,6 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
           },
           [&](const IwaSourceProxy& location) {
             CHECK(url_info_.web_bundle_id().is_for_proxy_mode());
-            if (!IsIwaDevModeEnabled(profile)) {
-              std::move(callback).Run(
-                  base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
-              return;
-            }
             // Dev mode proxy mode does not use Web Bundles, hence there is no
             // bundle to validate / trust and no signatures to check.
             std::move(callback).Run(base::ok(std::nullopt));
@@ -361,10 +353,11 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
 
 void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
     const IwaSourceWithMode& location,
+    const IwaOperation& operation,
     Profile* profile,
     base::OnceCallback<void(base::expected<void, std::string>)> callback) {
   CheckTrustAndSignatures(
-      location, profile,
+      location, operation, profile,
       base::BindOnce(
           [](base::expected<std::optional<SignedWebBundleIntegrityBlock>,
                             std::string> result) {
@@ -381,6 +374,7 @@ void IsolatedWebAppInstallCommandHelper::CreateStoragePartitionIfNotPresent(
 
 void IsolatedWebAppInstallCommandHelper::LoadInstallUrl(
     const IwaSourceWithMode& source,
+    const IwaOperation& operation,
     content::WebContents& web_contents,
     webapps::WebAppUrlLoader& url_loader,
     base::OnceCallback<void(base::expected<void, std::string>)> callback) {
@@ -389,7 +383,7 @@ void IsolatedWebAppInstallCommandHelper::LoadInstallUrl(
   // process vs application data serving) and source of data (proxy, web
   // bundle, etc...).
   NonInstalledBundleInspectionContext::CreateForWebContents(&web_contents,
-                                                            source);
+                                                            source, operation);
 
   GURL install_page_url =
       url_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);

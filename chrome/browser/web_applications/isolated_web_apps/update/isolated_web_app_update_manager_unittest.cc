@@ -251,7 +251,6 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(manifest).BuildBundle(
             GetIwa1WebBundleId(), {test::GetDefaultEd25519KeyPair()});
-    app->TrustSigningKey();
     app->FakeInstallPageState(profile());
     return app;
   }
@@ -262,7 +261,6 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
             .BuildBundle(GetIwa2WebBundleId(),
                          {test::GetDefaultEcdsaP256KeyPair()});
-    app->TrustSigningKey();
     app->FakeInstallPageState(profile());
     return app;
   }

@@ -12,15 +12,25 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/common/content_features.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_policy_util.h"
@@ -43,79 +53,188 @@ GetTrustedWebBundleIdsForTesting() {
 // Returns `true` if this Web Bundle ID is configured and currently running as
 // a kiosk. Kiosk mode is configured via DeviceLocalAccounts enterprise
 // policy.
-bool IsTrustedAsKiosk(const web_package::SignedWebBundleId& web_bundle_id) {
-  return ash::GetCurrentKioskIwaBundleId() == web_bundle_id;
+base::expected<void, std::string> IsTrustedForKiosk(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  if (ash::GetCurrentKioskIwaBundleId() == web_bundle_id) {
+    return base::ok();
+  }
+  return base::unexpected("IWAs in Kiosk mode can only run in Kiosk sessions.");
+}
+
+base::expected<void, std::string> IsTrustedForShimlessRma(
+    Profile& profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  if (ash::IsShimlessRmaAppBrowserContext(&profile) &&
+      chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
+    return base::ok();
+  }
+  return base::unexpected(
+      "Shimless RMA IWA is only supported in Shimless Profile on "
+      "ChromeOS.");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool IsTrustedViaPolicy(Profile& profile,
-                        const web_package::SignedWebBundleId& web_bundle_id) {
-  return std::ranges::any_of(
-      profile.GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList),
-      [&web_bundle_id](const base::Value& force_install_entry) {
-        auto options =
-            IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-                force_install_entry);
-        return options.has_value() && options->web_bundle_id() == web_bundle_id;
-      });
-}
-
-bool IsTrustedForUserInstall(
+base::expected<void, std::string> IsTrustedForIwaPolicy(
+    Profile& profile,
     const web_package::SignedWebBundleId& web_bundle_id) {
-  return ChromeIwaRuntimeDataProvider::GetInstance()
-      .GetUserInstallAllowlistData(web_bundle_id.id());
+  if (!ChromeIwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
+          web_bundle_id.id())) {
+    return base::unexpected(
+        "IWA with WebAppManagement::Type::kIwaPolicy must be on the managed "
+        "allowlist.");
+  }
+  if (std::ranges::none_of(
+          profile.GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList),
+          [&web_bundle_id](const base::Value& force_install_entry) {
+            auto options =
+                IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
+                    force_install_entry);
+            return options.has_value() &&
+                   options->web_bundle_id() == web_bundle_id;
+          })) {
+    return base::unexpected(
+        "IWA with WebAppManagement::Type::kIwaPolicy must be listed on the"
+        "IsolatedWebAppInstallForceListPolicy.");
+  }
+  return base::ok();
 }
 
-bool IsBlocklisted(const web_package::SignedWebBundleId& web_bundle_id) {
-  return ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
-      web_bundle_id.id());
+base::expected<void, std::string> IsTrustedForUserInstall(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  if (!ChromeIwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
+          web_bundle_id.id())) {
+    return base::unexpected(
+        "IWA with WebAppManagement::Type::kIwaUserInstalled must be on the "
+        "user "
+        "install allowlist.");
+  }
+  return base::ok();
+}
+
+base::expected<void, std::string> CheckAgainstBlocklist(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  if (ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+          web_bundle_id.id())) {
+    return base::unexpected("IWA is blocklisted.");
+  }
+  return base::ok();
+}
+
+base::expected<void, std::string> EnsureDevModeEnabled(Profile& profile) {
+  if (!IsIwaDevModeEnabled(&profile)) {
+    return base::unexpected(
+        "Isolated Web App Developer Mode is not enabled or blocked by "
+        "policy.");
+  }
+  return base::ok();
+}
+
+base::expected<WebAppManagement::Type, std::string> GetHighestPrioritySource(
+    Profile& profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  if (auto* provider = WebAppProvider::GetForWebApps(&profile)) {
+    if (auto* iwa = provider->registrar_unsafe().GetAppById(
+            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
+                .app_id(),
+            WebAppFilter::IsIsolatedApp())) {
+      return iwa->GetHighestPrioritySource();
+    }
+  }
+  return base::unexpected(
+      "Something went wrong while quering the Web App system.");
+}
+
+base::expected<void, std::string> IsTrustedForManagementType(
+    Profile& profile,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    WebAppManagement::Type type) {
+  switch (type) {
+    case WebAppManagement::Type::kIwaPolicy: {
+      return IsTrustedForIwaPolicy(profile, web_bundle_id);
+    }
+    case WebAppManagement::Type::kIwaUserInstalled: {
+      return IsTrustedForUserInstall(web_bundle_id);
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    case WebAppManagement::Type::kKiosk: {
+      return IsTrustedForKiosk(web_bundle_id);
+    }
+    case WebAppManagement::Type::kIwaShimlessRma: {
+      return IsTrustedForShimlessRma(profile, web_bundle_id);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
 
 // static
-base::expected<void, std::string> IsolatedWebAppTrustChecker::IsTrusted(
+base::expected<void, std::string>
+IsolatedWebAppTrustChecker::IsOperationAllowed(
     Profile& profile,
     const web_package::SignedWebBundleId& web_bundle_id,
-    bool is_dev_mode_bundle) {
-  if (IsBlocklisted(web_bundle_id)) {
-    return base::unexpected("Web Bundle is blocklisted.");
-  }
-
-  if (web_bundle_id.is_for_proxy_mode()) {
-    return base::unexpected(
-        "Web Bundle IDs of type ProxyMode are not supported.");
-  }
-
-  if (IsTrustedViaPolicy(profile, web_bundle_id)) {
-    return base::ok();
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (IsTrustedAsKiosk(web_bundle_id)) {
-    return base::ok();
-  }
-
-  if (ash::IsShimlessRmaAppBrowserContext(&profile) &&
-      chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
-    return base::ok();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (is_dev_mode_bundle && IsIwaDevModeEnabled(&profile)) {
-    return base::ok();
-  }
-
-  if (IsTrustedForUserInstall(web_bundle_id)) {
-    return base::ok();
+    bool dev_mode,
+    const IwaOperation& operation) {
+  RETURN_IF_ERROR(CheckAgainstBlocklist(web_bundle_id));
+  if (dev_mode) {
+    return EnsureDevModeEnabled(profile);
   }
 
   if (GetTrustedWebBundleIdsForTesting().contains(web_bundle_id)) {
-    CHECK_IS_TEST();
     return base::ok();
   }
 
-  return base::unexpected("The public key(s) are not trusted.");
+  return std::visit(
+      absl::Overload{
+          [&](const IwaInstallOperation& op)
+              -> base::expected<void, std::string> {
+            return IsTrustedForManagementType(
+                profile, web_bundle_id,
+                ConvertInstallSurfaceToWebAppSource(op.source));
+          },
+          [&](const IwaUpdateOperation&) -> base::expected<void, std::string> {
+            ASSIGN_OR_RETURN(WebAppManagement::Type type,
+                             GetHighestPrioritySource(profile, web_bundle_id));
+            return IsTrustedForManagementType(profile, web_bundle_id, type);
+          },
+          [&](const IwaMetadataReadingOperation&)
+              -> base::expected<void, std::string> {
+            // Metadata reading is always fine since it doesn't modify the state
+            // of the system.
+            return base::ok();
+          }},
+      operation);
+}
+
+// static
+base::expected<void, std::string>
+IsolatedWebAppTrustChecker::IsResourceLoadingAllowed(
+    Profile& profile,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const NonInstalledBundleInspectionContext& context) {
+  return IsOperationAllowed(profile, web_bundle_id, context.source().dev_mode(),
+                            context.operation());
+}
+
+// static
+base::expected<void, std::string>
+IsolatedWebAppTrustChecker::IsResourceLoadingAllowed(
+    Profile& profile,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const WebApp& iwa) {
+  RETURN_IF_ERROR(CheckAgainstBlocklist(web_bundle_id));
+
+  if (WebAppProvider::GetForWebApps(&profile)->registrar_unsafe().AppMatches(
+          iwa.app_id(), WebAppFilter::IsDevModeIsolatedApp())) {
+    return EnsureDevModeEnabled(profile);
+  }
+
+  // The IWA is assumed to be trusted for as long as it remains installed; it's
+  // the responsibility of various per-management-type managers to ensure faulty
+  // IWAs are removed.
+  return base::ok();
 }
 
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST

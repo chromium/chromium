@@ -292,10 +292,6 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   bool IsAnyIwaInstalled();
 
-  bool IsUpdatePermittedByRuntimeData(
-      const WebApp& web_app,
-      const IsolatedWebAppUrlInfo& url_info) const;
-
   // Queues new update discovery tasks and returns the number of new tasks
   // that have been queued.
   size_t QueueUpdateDiscoveryTasks();

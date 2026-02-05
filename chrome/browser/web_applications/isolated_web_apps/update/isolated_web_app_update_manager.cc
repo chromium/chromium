@@ -35,6 +35,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
@@ -559,35 +561,6 @@ bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
   return apps.begin() != apps.end();
 }
 
-bool IsolatedWebAppUpdateManager::IsUpdatePermittedByRuntimeData(
-    const WebApp& web_app,
-    const IsolatedWebAppUrlInfo& url_info) const {
-  const auto& runtime_data = ChromeIwaRuntimeDataProvider::GetInstance();
-  const std::string& bundle_id = url_info.web_bundle_id().id();
-
-  switch (web_app.GetHighestPrioritySource()) {
-    case WebAppManagement::kIwaPolicy:
-      return runtime_data.IsManagedUpdatePermitted(bundle_id);
-
-    case WebAppManagement::kUserInstalled:
-      return runtime_data.GetUserInstallAllowlistData(bundle_id);
-
-    case WebAppManagement::kSystem:
-    case WebAppManagement::kKiosk:
-    case WebAppManagement::kPolicy:
-    case WebAppManagement::kOem:
-    case WebAppManagement::kSubApp:
-    case WebAppManagement::kWebAppStore:
-    case WebAppManagement::kOneDriveIntegration:
-    case WebAppManagement::kSync:
-    case WebAppManagement::kApsDefault:
-    case WebAppManagement::kDefault:
-    case WebAppManagement::kIwaShimlessRma:
-    case WebAppManagement::kIwaUserInstalled:
-      return true;
-  }
-}
-
 size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
   // Clear the log of previously finished update discovery tasks when queueing
   // new tasks so that it doesn't grow forever.
@@ -636,11 +609,14 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     return false;
   }
 
-  if (!IsUpdatePermittedByRuntimeData(web_app, url_info)) {
-    LOG(WARNING) << "The app " << url_info.app_id()
-                 << " cannot be updated because it's not allowlisted.";
-    return false;
-  }
+  RETURN_IF_ERROR(IsolatedWebAppTrustChecker::IsOperationAllowed(
+                      *profile_, url_info.web_bundle_id(), /*dev_mode=*/false,
+                      IwaUpdateOperation{}),
+                  [&](const std::string& error) {
+                    LOG(WARNING) << "The app " << url_info.web_bundle_id()
+                                 << " cannot be updated: " << error;
+                    return false;
+                  });
 
   if (update_options->pinned_version.has_value() &&
       !ShouldProceedWithVersionChange(

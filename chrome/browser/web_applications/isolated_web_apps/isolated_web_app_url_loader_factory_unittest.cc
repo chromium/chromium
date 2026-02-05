@@ -407,8 +407,14 @@ TEST_F(
           .Build()));
 
   NonInstalledBundleInspectionContext::CreateForWebContents(
-      web_contents(), IwaSourceProxy{url::Origin::Create(
-                          GURL("http://pending-install-proxy-url.com"))});
+
+      web_contents(),
+
+      IwaSourceProxy{url::Origin::Create(
+
+          GURL("http://pending-install-proxy-url.com"))},
+
+      IwaInstallOperation{.source = webapps::WebappInstallSource::IWA_DEV_UI});
 
   CreateFactoryForFrame();
 
@@ -670,7 +676,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        ReturnGeneratedPageWhenInstallingApplication) {
   NonInstalledBundleInspectionContext::CreateForWebContents(
       web_contents(),
-      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))});
+      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))},
+      IwaInstallOperation{.source = webapps::WebappInstallSource::IWA_DEV_UI});
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl,
       IsolationData::Builder(
@@ -697,7 +704,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestsRedirectedToPendingInstallIsolationDataWhenAppIsInstalled) {
   NonInstalledBundleInspectionContext::CreateForWebContents(
       web_contents(),
-      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))});
+      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))},
+      IwaInstallOperation{.source = webapps::WebappInstallSource::IWA_DEV_UI});
 
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl,
@@ -726,7 +734,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
   NonInstalledBundleInspectionContext::CreateForWebContents(
       web_contents(),
-      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))});
+      IwaSourceProxy{url::Origin::Create(GURL("http://some-proxy-url.com"))},
+      IwaInstallOperation{.source = webapps::WebappInstallSource::IWA_DEV_UI});
 
   CreateFactoryForFrame();
 
@@ -1001,8 +1010,9 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
     EXPECT_THAT(status, IsNetError(net::OK));
     EXPECT_THAT(ResponseInfo(), NotNull());
   } else {
-    EXPECT_THAT(status, IsNetError(net::ERR_INVALID_WEB_BUNDLE));
-    EXPECT_THAT(ResponseInfo(), IsNull());
+    // Installed apps are assumed to be trusted.
+    EXPECT_THAT(status, IsNetError(net::OK));
+    EXPECT_THAT(ResponseInfo(), NotNull());
   }
 }
 
@@ -1173,7 +1183,7 @@ TEST_P(IsolatedWebAppURLLoaderFactoryDevModeDisabledTest,
 
   int status = CreateLoaderAndRun(std::move(request));
   if (is_dev_mode_bundle_) {
-    EXPECT_THAT(status, IsNetError(net::ERR_FAILED));
+    EXPECT_THAT(status, IsNetError(net::ERR_INVALID_WEB_BUNDLE));
     EXPECT_THAT(ResponseInfo(), IsNull());
   } else {
     EXPECT_THAT(status, IsNetError(net::OK));

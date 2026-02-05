@@ -256,7 +256,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::OnCopiedToProfileDirectory(
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckTrustAndSignatures(
     base::OnceClosure next_step_callback) {
   command_helper_->CheckTrustAndSignatures(
-      *destination_location_, &profile(),
+      *destination_location_, IwaUpdateOperation{}, &profile(),
       base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::
                          OnTrustAndSignaturesChecked,
                      weak_factory_.GetWeakPtr(),
@@ -290,8 +290,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::PrepareInstallInfo(
     base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
         next_step_callback) {
   prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
-      profile(), *destination_location_, expected_version_, *web_contents_,
-      *command_helper_, lock_->web_contents_manager().CreateUrlLoader(),
+      profile(), *destination_location_, IwaUpdateOperation{},
+      expected_version_, *web_contents_, *command_helper_,
+      lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }
 

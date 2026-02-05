@@ -14,16 +14,22 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(NonInstalledBundleInspectionContext);
 
 NonInstalledBundleInspectionContext::NonInstalledBundleInspectionContext(
     content::WebContents* web_contents,
-    IwaSourceWithMode source)
+    IwaSourceWithMode source,
+    IwaOperation operation)
     : content::WebContentsUserData<NonInstalledBundleInspectionContext>(
           *web_contents),
-      source_(std::move(source)) {}
+      source_(std::move(source)),
+      operation_(std::move(operation)) {}
 
 NonInstalledBundleInspectionContext::~NonInstalledBundleInspectionContext() =
     default;
 
 const IwaSourceWithMode& NonInstalledBundleInspectionContext::source() const {
   return source_;
+}
+
+const IwaOperation& NonInstalledBundleInspectionContext::operation() const {
+  return operation_;
 }
 
 }  // namespace web_app

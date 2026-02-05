@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
@@ -239,7 +240,8 @@ void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
 void InstallIsolatedWebAppCommand::CheckTrustAndSignatures(
     base::OnceClosure next_step_callback) {
   command_helper_->CheckTrustAndSignatures(
-      *destination_source_, &profile(),
+      *destination_source_, IwaInstallOperation{.source = install_surface_},
+      &profile(),
       base::BindOnce(&InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -271,8 +273,10 @@ void InstallIsolatedWebAppCommand::PrepareInstallInfo(
     base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
         next_step_callback) {
   prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
-      profile(), *destination_source_, expected_version_, *web_contents_,
-      *command_helper_, lock_->web_contents_manager().CreateUrlLoader(),
+      profile(), *destination_source_,
+      IwaInstallOperation{.source = install_surface_}, expected_version_,
+      *web_contents_, *command_helper_,
+      lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }
 
