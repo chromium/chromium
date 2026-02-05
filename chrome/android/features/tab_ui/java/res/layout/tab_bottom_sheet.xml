@@ -4,7 +4,6 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!-- TODO (crbug.com/474583728) Replace hardcoded strings -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -21,9 +20,9 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="7dp"
-        android:contentDescription="Handle"
         android:src="@drawable/drag_handlebar"
-        app:tint="@macro/drag_handle_color"/>
+        app:tint="@macro/drag_handle_color"
+        android:importantForAccessibility="no"/>
 
     <!-- Toolbar Container -->
     <FrameLayout
