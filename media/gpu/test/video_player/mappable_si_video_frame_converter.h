@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_TEST_VIDEO_PLAYER_MAPPABLE_VIDEO_FRAME_CONVERTER_H_
-#define MEDIA_GPU_TEST_VIDEO_PLAYER_MAPPABLE_VIDEO_FRAME_CONVERTER_H_
+#ifndef MEDIA_GPU_TEST_VIDEO_PLAYER_MAPPABLE_SI_VIDEO_FRAME_CONVERTER_H_
+#define MEDIA_GPU_TEST_VIDEO_PLAYER_MAPPABLE_SI_VIDEO_FRAME_CONVERTER_H_
 
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -12,20 +12,20 @@
 
 namespace media {
 
-// MappableVideoFrameConverter converts a NativePixmapFrameResource to a
-// GMB-backed VideoFrame. It is used for decoder tests.
-class MEDIA_GPU_EXPORT MappableVideoFrameConverter
+// MappableSIVideoFrameConverter converts a NativePixmapFrameResource to a
+// MappableSharedImage-backed VideoFrame. It is used for decoder tests.
+class MEDIA_GPU_EXPORT MappableSIVideoFrameConverter
     : public FrameResourceConverter {
  public:
   static std::unique_ptr<FrameResourceConverter> CreateForTesting();
 
-  MappableVideoFrameConverter(const MappableVideoFrameConverter&) = delete;
-  MappableVideoFrameConverter& operator=(const MappableVideoFrameConverter&) =
-      delete;
+  MappableSIVideoFrameConverter(const MappableSIVideoFrameConverter&) = delete;
+  MappableSIVideoFrameConverter& operator=(
+      const MappableSIVideoFrameConverter&) = delete;
 
  private:
-  MappableVideoFrameConverter();
-  ~MappableVideoFrameConverter() override;
+  MappableSIVideoFrameConverter();
+  ~MappableSIVideoFrameConverter() override;
 
   // FrameConverter overrides.
   void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override;
@@ -35,4 +35,4 @@ class MEDIA_GPU_EXPORT MappableVideoFrameConverter
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_TEST_VIDEO_PLAYER_MAPPABLE_VIDEO_FRAME_CONVERTER_H_
+#endif  // MEDIA_GPU_TEST_VIDEO_PLAYER_MAPPABLE_SI_VIDEO_FRAME_CONVERTER_H_

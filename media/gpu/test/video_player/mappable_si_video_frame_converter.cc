@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/test/video_player/mappable_video_frame_converter.h"
+#include "media/gpu/test/video_player/mappable_si_video_frame_converter.h"
 
 #include <memory>
 
@@ -15,17 +15,17 @@ namespace media {
 
 // static.
 std::unique_ptr<FrameResourceConverter>
-MappableVideoFrameConverter::CreateForTesting() {
+MappableSIVideoFrameConverter::CreateForTesting() {
   return base::WrapUnique<FrameResourceConverter>(
-      new MappableVideoFrameConverter());
+      new MappableSIVideoFrameConverter());
 }
 
-MappableVideoFrameConverter::MappableVideoFrameConverter()
+MappableSIVideoFrameConverter::MappableSIVideoFrameConverter()
     : test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
 
-MappableVideoFrameConverter::~MappableVideoFrameConverter() = default;
+MappableSIVideoFrameConverter::~MappableSIVideoFrameConverter() = default;
 
-void MappableVideoFrameConverter::ConvertFrameImpl(
+void MappableSIVideoFrameConverter::ConvertFrameImpl(
     scoped_refptr<FrameResource> frame) {
   DVLOGF(4);
 
