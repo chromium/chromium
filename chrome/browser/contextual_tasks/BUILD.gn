@@ -105,7 +105,6 @@ source_set("impl") {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//components/contextual_search:public",
       "//components/optimization_guide/core:model_execution",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/url_deduplication",
@@ -114,19 +113,21 @@ source_set("impl") {
 }
 
 source_set("ui") {
-  sources = [ "contextual_tasks_page_handler.h" ]
+  sources = [
+    "contextual_tasks_internals_page_handler.h",
+    "contextual_tasks_navigation_throttle.h",
+    "contextual_tasks_page_handler.h",
+    "contextual_tasks_ui_service.h",
+    "entry_point_eligibility_manager.h",
+  ]
 
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler.h",
       "contextual_tasks_cookie_synchronizer.h",
-      "contextual_tasks_internals_page_handler.h",
-      "contextual_tasks_navigation_throttle.h",
       "contextual_tasks_side_panel_coordinator.h",
       "contextual_tasks_ui.h",
-      "contextual_tasks_ui_service.h",
       "contextual_tasks_ui_service_factory.h",
-      "entry_point_eligibility_manager.h",
     ]
   }
 
@@ -135,8 +136,14 @@ source_set("ui") {
     ":mojo_bindings",
     "//base",
     "//chrome/browser/ui/tabs:tab_list_interface",
+    "//components/contextual_search:public",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/tabs:public",
+    "//content/public/browser",
     "//third_party/lens_server_proto:lens_overlay_proto",
+    "//third_party/omnibox_proto",
+    "//ui/base/unowned_user_data",
   ]
 
   if (!is_android) {
@@ -151,9 +158,7 @@ source_set("ui") {
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome",
       "//components/contextual_tasks/public:feature_list",
-      "//content/public/browser",
       "//content/public/common",
-      "//third_party/omnibox_proto",
       "//ui/webui",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",
@@ -162,41 +167,52 @@ source_set("ui") {
 }
 
 source_set("ui_impl") {
-  sources = []
+  sources = [
+    "contextual_search_session_finder.h",
+    "contextual_tasks_internals_page_handler.cc",
+    "contextual_tasks_page_handler.cc",
+    "contextual_tasks_url_loader_factory_interceptor.h",
+    "entry_point_eligibility_manager.cc",
+  ]
 
   if (!is_android) {
     sources += [
       "contextual_search_session_finder.cc",
-      "contextual_search_session_finder.h",
       "contextual_tasks_composebox_handler.cc",
       "contextual_tasks_cookie_synchronizer.cc",
-      "contextual_tasks_internals_page_handler.cc",
       "contextual_tasks_navigation_throttle.cc",
-      "contextual_tasks_page_handler.cc",
       "contextual_tasks_side_panel_coordinator.cc",
       "contextual_tasks_ui.cc",
       "contextual_tasks_ui_service.cc",
       "contextual_tasks_ui_service_factory.cc",
       "contextual_tasks_url_loader_factory_interceptor.cc",
-      "contextual_tasks_url_loader_factory_interceptor.h",
-      "entry_point_eligibility_manager.cc",
     ]
   }
 
-  deps = []
+  deps = [
+    ":ui",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window",
+    "//components/application_locale_storage",
+    "//components/contextual_search:public",
+    "//components/lens",
+    "//components/omnibox/browser:mojo_bindings",
+    "//components/tabs:public",
+    "//google_apis",
+  ]
 
   if (!is_android) {
     deps += [
-      ":ui",
-      "//base",
-      "//chrome/browser:global_features",
-      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/companion/text_finder",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/contextual_tasks:resources",
-      "//chrome/browser/signin",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/omnibox",
@@ -206,13 +222,9 @@ source_set("ui_impl") {
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/searchbox",
-      "//components/application_locale_storage",
       "//components/contextual_tasks/public:feature_list",
       "//components/keyed_service/core",
-      "//components/lens",
-      "//components/omnibox/browser:mojo_bindings",
       "//components/shared_highlighting/core/common",
-      "//google_apis",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/lens_server_proto:lens_overlay_proto",
@@ -341,7 +353,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
-      "//components/contextual_search:public",
       "//components/contextual_search:test_support",
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",

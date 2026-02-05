@@ -11,14 +11,12 @@
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -35,6 +33,10 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#endif
 
 namespace {
 
@@ -147,7 +149,11 @@ void ContextualTasksPageHandler::SetThreadTitle(const std::string& title) {
 
 void ContextualTasksPageHandler::IsZeroState(const GURL& url,
                                              IsZeroStateCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(ContextualTasksUI::IsZeroState(url, ui_service_));
+#else
+  std::move(callback).Run(false);
+#endif
 }
 
 void ContextualTasksPageHandler::IsAiPage(const GURL& url,
@@ -208,18 +214,15 @@ void ContextualTasksPageHandler::MoveTaskUiToNewTab() {
 void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
                                                              const GURL& url) {
   if (ui_service_) {
-    ui_service_->OnTabClickedFromSourcesMenu(
-        tab_id, url,
-        webui::GetBrowserWindowInterface(
-            web_ui_controller_->GetWebUIWebContents()));
+    ui_service_->OnTabClickedFromSourcesMenu(tab_id, url,
+                                             web_ui_controller_->GetBrowser());
   }
 }
 
 void ContextualTasksPageHandler::OnFileClickedFromSourcesMenu(const GURL& url) {
   if (ui_service_) {
-    ui_service_->OnFileClickedFromSourcesMenu(
-        url, webui::GetBrowserWindowInterface(
-                 web_ui_controller_->GetWebUIWebContents()));
+    ui_service_->OnFileClickedFromSourcesMenu(url,
+                                              web_ui_controller_->GetBrowser());
   }
 }
 
@@ -227,8 +230,7 @@ void ContextualTasksPageHandler::OnImageClickedFromSourcesMenu(
     const GURL& url) {
   if (ui_service_) {
     ui_service_->OnImageClickedFromSourcesMenu(
-        url, webui::GetBrowserWindowInterface(
-                 web_ui_controller_->GetWebUIWebContents()));
+        url, web_ui_controller_->GetBrowser());
   }
 }
 
