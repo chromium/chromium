@@ -115,7 +115,7 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   void ResetInternalBitmapToBlackTransparent(int width, int height);
 
   Member<ImageLayerBridge> image_layer_bridge_;
-  std::unique_ptr<CanvasResourceProviderSharedImage>
+  std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
       resource_provider_for_offscreen_canvas_;
 };
 
