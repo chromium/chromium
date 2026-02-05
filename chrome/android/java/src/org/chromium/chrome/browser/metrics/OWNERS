@@ -1,1 +1,4 @@
 per-file WebApk*=file://chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
+
+# For Startup metrics changes.
+per-file *Startup*=nafisabedin@google.com
