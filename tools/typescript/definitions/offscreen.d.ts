@@ -1,12 +1,12 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Definitions for chrome.offscreen API
- * Generated from: extensions/common/api/offscreen.idl
+ * Generated from: extensions/common/api/offscreen.webidl
  * run `tools/json_schema_compiler/compiler.py
- * extensions/common/api/offscreen.idl -g ts_definitions` to regenerate.
+ * extensions/common/api/offscreen.webidl -g ts_definitions` to regenerate.
  */
 
 
