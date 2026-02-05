@@ -20,10 +20,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
-namespace url_session_test_util {
-class ScopedURLSessionOverrideForTesting;
-}
-
 namespace enterprise_auth {
 
 class URLSessionURLLoaderTest;
@@ -48,6 +44,11 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client_info);
 
+  static void CreateAndStartForTesting(
+      const network::ResourceRequest& request,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client_info);
+
   // network::mojom::URLLoader
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
@@ -57,6 +58,9 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
 
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
+
+  static constexpr char kTestServerResponseBody[] =
+      "This is a test response body";
 
  private:
   URLSessionURLLoader();
@@ -95,10 +99,12 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) URLSessionURLLoader
 
   void RecordFailureMetrics(SSORequestFailReason reason);
 
-  static void OverrideURLSessionForTesting(NSURLSession* new_session);
-
+  inline void OverrideURLSessionForTesting(NSURLSession* new_session) {
+    CHECK_IS_TEST();
+    nsurl_session_override_for_testing_ = new_session;
+  }
+  NSURLSession* nsurl_session_override_for_testing_{nil};
   friend URLSessionURLLoaderTest;
-  friend class url_session_test_util::ScopedURLSessionOverrideForTesting;
 
   static constexpr base::TimeDelta kTimeout = base::Seconds(30);
 

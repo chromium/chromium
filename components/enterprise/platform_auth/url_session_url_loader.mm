@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/enterprise/platform_auth/url_session_helper.h"
+#include "components/enterprise/platform_auth/url_session_test_util.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_version.h"
@@ -26,7 +27,6 @@ namespace enterprise_auth {
 
 namespace {
 
-NSURLSession* g_url_session_override_for_testing = nil;
 constexpr base::ByteSize kDataSizeLimit = base::KiBU(128);
 
 }  // namespace
@@ -47,6 +47,25 @@ void URLSessionURLLoader::CreateAndStart(
   // Lifetime of this class is self-managed, see url_session_url_loader.h for
   // more details.
   URLSessionURLLoader* url_loader = new URLSessionURLLoader();
+  url_loader->Start(request, std::move(loader), std::move(client_info));
+}
+
+// static
+void URLSessionURLLoader::CreateAndStartForTesting(  // IN-TEST
+    const network::ResourceRequest& request,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_info) {
+  CHECK_IS_TEST();
+  // Lifetime of this class is self-managed, see url_session_url_loader.h for
+  // more details.
+  URLSessionURLLoader* url_loader = new URLSessionURLLoader();
+
+  url_session_test_util::ResponseConfig config;
+  config.body = kTestServerResponseBody;
+  NSURLSession* session_override =
+      url_session_test_util::GetTestURLSessionForConfig(std::move(config));
+  url_loader->OverrideURLSessionForTesting(session_override);  // IN-TEST
+
   url_loader->Start(request, std::move(loader), std::move(client_info));
 }
 
@@ -76,9 +95,9 @@ void URLSessionURLLoader::Start(
   NSURLRequest* ns_request =
       url_session_helper::ConvertResourceRequest(request, timeout);
   NSURLSession* session = nil;
-  if (g_url_session_override_for_testing) {
+  if (nsurl_session_override_for_testing_) {
     CHECK_IS_TEST();
-    session = g_url_session_override_for_testing;
+    session = nsurl_session_override_for_testing_;
   } else {
     session = [NSURLSession sharedSession];
   }
@@ -248,12 +267,5 @@ void URLSessionURLLoader::FollowRedirect(
 // Does not apply to URLSession.
 void URLSessionURLLoader::SetPriority(net::RequestPriority priority,
                                       int32_t intra_priority_value) {}
-
-// static
-void URLSessionURLLoader::OverrideURLSessionForTesting(  // IN-TEST
-    NSURLSession* new_session) {
-  CHECK_IS_TEST();
-  g_url_session_override_for_testing = new_session;
-}
 
 }  // namespace enterprise_auth

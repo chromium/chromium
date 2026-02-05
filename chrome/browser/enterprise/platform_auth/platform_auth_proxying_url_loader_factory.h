@@ -39,6 +39,16 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       ChromeContentBrowserClient::URLLoaderFactoryType type,
       network::URLLoaderFactoryBuilder& factory_builder);
 
+  // While alive all requests executed by
+  // URLSessionURLLoader will return 200 OK with
+  // |URLSessionURLLoader::kTestServerResponseBody|.
+  // There should every only be one instance of this object.
+  class ScopedURLSessionOverrideForTesting {
+   public:
+    ScopedURLSessionOverrideForTesting();
+    ~ScopedURLSessionOverrideForTesting();
+  };
+
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,

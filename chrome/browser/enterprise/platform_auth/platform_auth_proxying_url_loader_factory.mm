@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -30,6 +31,12 @@
 #include "url/url_constants.h"
 
 namespace enterprise_auth {
+
+namespace {
+
+static bool g_use_mock_server_for_testing = false;
+
+}
 
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -94,8 +101,14 @@ void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     if (intercepted_request_callback_for_testing_) {
       std::move(intercepted_request_callback_for_testing_).Run(request);
     } else {
-      URLSessionURLLoader::CreateAndStart(request, std::move(loader_receiver),
-                                          std::move(client));
+      if (g_use_mock_server_for_testing) {
+        CHECK_IS_TEST();
+        URLSessionURLLoader::CreateAndStartForTesting(  // IN-TEST
+            request, std::move(loader_receiver), std::move(client));
+      } else {
+        URLSessionURLLoader::CreateAndStart(request, std::move(loader_receiver),
+                                            std::move(client));
+      }
     }
   } else {
     target_factory_->CreateLoaderAndStart(
@@ -123,6 +136,18 @@ ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() {
   if (destruction_callback_for_testing_) {
     std::move(destruction_callback_for_testing_).Run();
   }
+}
+
+ProxyingURLLoaderFactory::ScopedURLSessionOverrideForTesting::
+    ScopedURLSessionOverrideForTesting() {
+  CHECK_IS_TEST();
+  CHECK(!g_use_mock_server_for_testing);
+  g_use_mock_server_for_testing = true;
+}
+
+ProxyingURLLoaderFactory::ScopedURLSessionOverrideForTesting::
+    ~ScopedURLSessionOverrideForTesting() {
+  g_use_mock_server_for_testing = false;
 }
 
 }  // namespace enterprise_auth

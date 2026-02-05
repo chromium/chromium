@@ -67,20 +67,6 @@ class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH) ResponseConfig {
 COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
 NSURLSession* GetTestURLSessionForConfig(ResponseConfig&& config);
 
-// A RAII helper that sets the global URLSession override upon construction
-// and clears it upon destruction. There should always be at most one instance
-// of this class. This ensures that the overrides don't leak between the unit
-// tests.
-class COMPONENT_EXPORT(ENTERPRISE_PLATFORM_AUTH)
-    ScopedURLSessionOverrideForTesting {
- public:
-  explicit ScopedURLSessionOverrideForTesting(NSURLSession* session_override);
-  ~ScopedURLSessionOverrideForTesting();
-
- private:
-  static bool instance_exists_;
-};
-
 }  // namespace url_session_test_util
 
 #endif  // COMPONENTS_ENTERPRISE_PLATFORM_AUTH_URL_SESSION_TEST_UTIL_H_

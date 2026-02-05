@@ -26,12 +26,14 @@
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/enterprise/platform_auth/url_session_test_util.h"
+#include "components/enterprise/platform_auth/url_session_url_loader.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -54,7 +56,6 @@ using url_session_test_util::ResponseConfig;
 namespace {
 
 constexpr char kLoginWebsiteDomain[] = "foo.bar.example";
-constexpr char kResponseBody[] = "response body";
 
 std::string CreateSsoRequest(std::string_view domain) {
   std::string path = enterprise_auth::kOktaSsoURLPattern.Get();
@@ -78,12 +79,6 @@ ScopedPropList HostsToPropRef(const std::vector<std::string>& hosts) {
     CFArrayAppendValue(res.get(), host.get());
   }
   return res;
-}
-
-NSURLSession* CreateTestURLSession() {
-  ResponseConfig config;
-  config.body = kResponseBody;
-  return url_session_test_util::GetTestURLSessionForConfig(std::move(config));
 }
 
 class MockCFPreferencesObserver
@@ -113,8 +108,7 @@ namespace enterprise_auth {
 class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
  public:
   ExtensibleEnterpriseSsoOktaBrowserTest()
-      : session_override_(CreateTestURLSession()),
-        cf_prefs_override_(
+      : cf_prefs_override_(
             base::BindRepeating(&ExtensibleEnterpriseSsoOktaBrowserTest::
                                     CreateMockCFPreferenceObserver,
                                 base::Unretained(this))) {}
@@ -183,7 +177,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
     return http_response;
   }
 
-  void CheckSSORequest(bool should_work,
+  void CheckSSORequest(bool expect_response,
                        std::string_view hostname = kLoginWebsiteDomain) {
     const GURL test_url = https_server_.GetURL(hostname, "/login");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
@@ -206,10 +200,10 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
         )",
                             CreateSsoRequest(hostname)));
 
-    if (should_work) {
-      EXPECT_EQ(kResponseBody, result);
+    if (expect_response) {
+      EXPECT_EQ(URLSessionURLLoader::kTestServerResponseBody, result);
     } else {
-      EXPECT_NE(kResponseBody, result);
+      EXPECT_NE(URLSessionURLLoader::kTestServerResponseBody, result);
     }
   }
 
@@ -231,7 +225,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
       policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  const url_session_test_util::ScopedURLSessionOverrideForTesting
+  const ProxyingURLLoaderFactory::ScopedURLSessionOverrideForTesting
       session_override_;
   const ScopedCFPreferenceObserverOverride cf_prefs_override_;
 };

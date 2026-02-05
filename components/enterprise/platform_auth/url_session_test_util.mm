@@ -159,20 +159,4 @@ NSURLSession* GetTestURLSessionForConfig(ResponseConfig&& config) {
   return [NSURLSession sessionWithConfiguration:session_config];
 }
 
-bool ScopedURLSessionOverrideForTesting::instance_exists_{false};
-
-ScopedURLSessionOverrideForTesting::ScopedURLSessionOverrideForTesting(
-    NSURLSession* session_override) {
-  CHECK_IS_TEST();
-  CHECK(!instance_exists_);
-  enterprise_auth::URLSessionURLLoader::OverrideURLSessionForTesting(
-      session_override);
-  instance_exists_ = true;
-}
-
-ScopedURLSessionOverrideForTesting::~ScopedURLSessionOverrideForTesting() {
-  enterprise_auth::URLSessionURLLoader::OverrideURLSessionForTesting(nil);
-  instance_exists_ = false;
-}
-
 }  // namespace url_session_test_util

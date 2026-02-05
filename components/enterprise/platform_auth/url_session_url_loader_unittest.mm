@@ -119,10 +119,12 @@ class URLSessionURLLoaderTest : public testing::Test {
       kFailReasonOSError = URLSessionURLLoader::SSORequestFailReason::kOsError;
 
  private:
-  void CreateURLSessionURLLoader(ResponseConfig&& reponse_config) {
+  void CreateURLSessionURLLoader(ResponseConfig&& response_config) {
     URLSessionURLLoader* instance = new URLSessionURLLoader();
-    session_override_.emplace(url_session_test_util::GetTestURLSessionForConfig(
-        std::move(reponse_config)));
+    NSURLSession* session_override =
+        url_session_test_util::GetTestURLSessionForConfig(
+            std::move(response_config));
+    instance->OverrideURLSessionForTesting(session_override);
     url_loader_ = instance->weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -135,8 +137,6 @@ class URLSessionURLLoaderTest : public testing::Test {
   MockClient mock_client;
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote_;
   mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_;
-  std::optional<url_session_test_util::ScopedURLSessionOverrideForTesting>
-      session_override_;
 };
 
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {
