@@ -101,8 +101,6 @@ source_set("extensions") {
     "api/downloads/download_extension_errors.h",
     "api/downloads/downloads_api.cc",
     "api/downloads/downloads_api.h",
-    "api/history/history_api.cc",
-    "api/history/history_api.h",
     "api/identity/extension_token_key.cc",
     "api/identity/extension_token_key.h",
     "api/identity/identity_api.cc",
