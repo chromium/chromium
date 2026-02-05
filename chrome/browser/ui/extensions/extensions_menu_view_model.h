@@ -293,10 +293,6 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     return host_access_requests_;
   }
 
-  // Returns whether the view model has been populated after action models were
-  // initialized.
-  bool is_populated() { return is_populated_; }
-
   // PermissionsManager::Observer:
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int tab_id) override;
@@ -369,10 +365,6 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // The delegate to retrieve platform-specific information.
   raw_ptr<Delegate> delegate_;
-
-  // Whether the view model has been populated after action models were
-  // initialized.
-  bool is_populated_ = false;
 
   // The actions models ordered alphabetically by their action name.
   std::vector<std::unique_ptr<ExtensionActionViewModel>> action_models_;

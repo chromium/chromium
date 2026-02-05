@@ -6,15 +6,21 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Looper;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -41,8 +47,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.TaskModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.content_public.browser.WebContents;
@@ -52,200 +59,236 @@ import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link ExtensionsMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
 public class ExtensionsMenuMediatorTest {
-    // Constants identifying the tabs and pointers used in the test environment.
-    private static final int TAB_ID = 111;
+    // Static inner class to hold property keys for the test. In a real scenario, this would
+    // be a public class.
+    private static final int TAB1_ID = 111;
+    private static final int TAB2_ID = 222;
     private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
-    private static final long EXTENSIONS_MENU_BRIDGE_POINTER = 10001L;
     private static final long BROWSER_WINDOW_POINTER = 1000L;
 
+    private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
+    private static final Bitmap ICON_BLUE = createSimpleIcon(Color.BLUE);
+    private static final Bitmap ICON_GREEN = createSimpleIcon(Color.GREEN);
+    private static final Bitmap ICON_CYAN = createSimpleIcon(Color.CYAN);
+    private static final Bitmap ICON_MAGENTA = createSimpleIcon(Color.MAGENTA);
+    private static final Bitmap ICON_YELLOW = createSimpleIcon(Color.YELLOW);
+    private static final Bitmap ICON_WHITE = createSimpleIcon(Color.WHITE);
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ChromeAndroidTask mTask;
+    @Mock private Profile mProfile;
+    @Mock private Runnable mDataReadyCallback;
+    @Mock private WebContents mWebContents;
+    @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
+    @Mock private MenuModelBridge mMenuModelBridge;
+
+    @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
     @Rule
     public final FakeExtensionActionsBridgeRule mBridgeRule = new FakeExtensionActionsBridgeRule();
 
     @Rule public final FakeExtensionUiBackendRule mUiBackendRule = new FakeExtensionUiBackendRule();
 
-    @Mock private ChromeAndroidTask mTask;
-    @Mock private Profile mProfile;
-    @Mock private WebContents mWebContents;
-    @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
-    @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
-    @Mock private MenuModelBridge mActionContextMenuModelBridge;
-    @Mock private PropertyModel mMenuPropertyModel;
-    @Mock private Runnable mOnReadyRunnable;
+    private final FakeExtensionActionsBridge mActionsBridge = mBridgeRule.getFakeBridge();
 
-    @Captor private ArgumentCaptor<ExtensionsMenuBridge> mBridgeCaptor;
-    @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
-
+    private TaskModel mTaskModel;
+    private MockTab mTab1;
+    private MockTab mTab2;
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
-    // This is the reference to the list that the mediator holds and modifies.
-    // We hold it here to verify that the mediator correctly updates the model.
-    private ModelList mActionModels;
-
-    private ExtensionsMenuMediator mMenuMediator;
+    private ModelList mModels;
+    private ExtensionsMenuMediator mMediator;
 
     @Before
     public void setUp() {
         // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
 
+        // Set up the fake ExtensionActionsBridge.
+        mTaskModel = mActionsBridge.getOrCreateTaskModel(mTask);
+        mTaskModel.setInitialized(true);
+        mTaskModel.putAction(
+                "a", new ActionData.Builder().setTitle("title of a").setIcon(ICON_RED).build());
+        mTaskModel.putAction(
+                "b", new ActionData.Builder().setTitle("title of b").setIcon(ICON_GREEN).build());
+
         // Mock {@link ExtensionActionContextMenuBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
         when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
                 .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
         when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
-                .thenReturn(mActionContextMenuModelBridge);
-        when(mActionContextMenuModelBridge.populateModelList()).thenReturn(new ModelList());
+                .thenReturn(mMenuModelBridge);
+        when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 
-        // Mock {@link ExtensionsMenuBridge}.
-        ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
-        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong()))
-                .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
+        // Initialize common objects.
+        mTab1 = new MockTab(TAB1_ID, mProfile);
+        mTab2 = new MockTab(TAB2_ID, mProfile);
+        mTab1.setWebContentsOverrideForTesting(mWebContents);
+        mTab2.setWebContentsOverrideForTesting(mWebContents);
+        mModels = new ModelList();
 
-        // Set the current tab.
-        MockTab tab = new MockTab(TAB_ID, mProfile);
-        tab.setWebContentsOverrideForTesting(mWebContents);
-        mCurrentTabSupplier.set(tab);
-
-        // Create the extensions menu mediator to be tested.
-        mActionModels = new ModelList();
-        mMenuMediator =
+        mMediator =
                 new ExtensionsMenuMediator(
                         ApplicationProvider.getApplicationContext(),
                         mTask,
                         mCurrentTabSupplier,
-                        mActionModels,
-                        mMenuPropertyModel,
-                        null,
-                        mOnReadyRunnable);
+                        mModels,
+                        mDataReadyCallback,
+                        null);
 
-        // Capture the bridge instance created inside the constructor
-        verify(mExtensionsMenuBridgeJniMock).init(mBridgeCaptor.capture(), anyLong());
+        // Wait for the main thread to settle.
+        shadowOf(Looper.getMainLooper()).idle();
     }
 
     @After
     public void tearDown() {
-        mMenuMediator.destroy();
+        mMediator.destroy();
     }
 
     @Test
-    public void testOnReady_ZeroState() {
-        // Mock the bridge to return an empty array (no extensions).
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong())).thenReturn(new String[] {});
+    public void testUpdateModels() {
+        // Set the current tab.
+        mCurrentTabSupplier.set(mTab1);
 
-        // Simulate the native callback triggering onReady.
-        mBridgeCaptor.getValue().onReady();
-
-        // Verify action models remain empty, property model is updated to show zero state and the
-        // onReady runnable is called.
-        assertTrue(mActionModels.isEmpty());
-        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, true);
-        verify(mOnReadyRunnable).run();
+        // The model should have been updated.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, "title of a", ICON_RED);
+        assertItemAt(1, "title of b", ICON_GREEN);
     }
 
     @Test
-    public void testOnReady_Actions() {
-        // Mock the bridge to return flattened actions [id, name, id, name].
-        String[] actions = new String[] {"id_a", "Extension A", "id_b", "Extension B"};
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong())).thenReturn(actions);
+    public void testUpdateModels_dataReadyCallback() {
+        // The callback should not have been called.
+        verify(mDataReadyCallback, never()).run();
 
-        // Simulate the native callback triggering onReady.
-        mBridgeCaptor.getValue().onReady();
+        // Set the current tab.
+        mCurrentTabSupplier.set(mTab1);
 
-        // Verify action models are populated, property model is updated to hide zero state and the
-        // onReady runnable is called.
-        assertEquals(2, mActionModels.size());
-        assertItemAt(0, "Extension A");
-        assertItemAt(1, "Extension B");
-        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, false);
-        verify(mOnReadyRunnable).run();
+        // The callback should have been called.
+        verify(mDataReadyCallback).run();
     }
 
     @Test
-    public void testOnReady_AlreadyPopulated() {
-        // Setup a new mediator context where the bridge is already ready during construction.
-        when(mExtensionsMenuBridgeJniMock.isReady(anyLong())).thenReturn(true);
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong()))
-                .thenReturn(new String[] {"id_a", "Extension A"});
-
-        mActionModels.clear();
-
-        // Re-create mediator (simulating a fresh open where C++ is already ready).
-        ExtensionsMenuMediator mediator =
-                new ExtensionsMenuMediator(
-                        ApplicationProvider.getApplicationContext(),
-                        mTask,
-                        mCurrentTabSupplier,
-                        mActionModels,
-                        mMenuPropertyModel,
-                        null,
-                        mOnReadyRunnable);
-
-        // Verify it should have populated immediately without needing a callback.
-        assertEquals(1, mActionModels.size());
-        assertItemAt(0, "Extension A");
-        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, false);
-
-        mediator.destroy();
+    public void testUpdateModels_noTab() {
+        // The current tab is not available yet.
+        assertTrue(mModels.isEmpty());
     }
 
-    /**
-     * Tests that clicking on the context menu button of an extension item opens the context menu.
-     */
+    @Test
+    public void testUpdateModels_tabChanged() {
+        // Set up tab-dependent actions.
+        mTaskModel.putAction(
+                "a",
+                (tabId) -> {
+                    switch (tabId) {
+                        case TAB1_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("a for tab1")
+                                    .setIcon(ICON_RED)
+                                    .build();
+                        case TAB2_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("a for tab2")
+                                    .setIcon(ICON_CYAN)
+                                    .build();
+                        default:
+                            throw new RuntimeException("Unknown tab ID: " + tabId);
+                    }
+                });
+        mTaskModel.putAction(
+                "b",
+                (tabId) -> {
+                    switch (tabId) {
+                        case TAB1_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("b for tab1")
+                                    .setIcon(ICON_GREEN)
+                                    .build();
+                        case TAB2_ID:
+                            return new ActionData.Builder()
+                                    .setTitle("b for tab2")
+                                    .setIcon(ICON_MAGENTA)
+                                    .build();
+                        default:
+                            throw new RuntimeException("Unknown tab ID: " + tabId);
+                    }
+                });
+
+        // Set the current tab.
+        mCurrentTabSupplier.set(mTab1);
+
+        // The model should have been updated.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, "a for tab1", ICON_RED);
+        assertItemAt(1, "b for tab1", ICON_GREEN);
+
+        // Simulate changing the tab.
+        mCurrentTabSupplier.set(mTab2);
+
+        // The model should have been updated.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, "a for tab2", ICON_CYAN);
+        assertItemAt(1, "b for tab2", ICON_MAGENTA);
+    }
+
     @Test
     public void testContextClick_showMenu() {
-        // Initialize the action models.
-        String[] actions = new String[] {"a", "Extension A"};
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong())).thenReturn(actions);
+        // Set the current tab.
+        mCurrentTabSupplier.set(mTab1);
 
-        mBridgeCaptor.getValue().onReady();
+        ListItem item = mModels.get(0);
+        View.OnClickListener listener = item.model.get(ExtensionsMenuItemProperties.CLICK_LISTENER);
 
-        // Click on the context menu button.
-        ListItem item = mActionModels.get(0);
-        View.OnClickListener contextMenuButtonListener =
-                item.model.get(ExtensionsMenuItemProperties.CLICK_LISTENER);
-        ListMenuButton mockContextMenuButton = createMockMenuButton();
-        contextMenuButtonListener.onClick(mockContextMenuButton);
+        // Stub helper calls on the mock button.
+        ListMenuHost mockListMenuHost = mock(ListMenuHost.class);
+        when(mockListMenuHost.getHierarchicalMenuController())
+                .thenReturn(mock(HierarchicalMenuController.class));
 
-        // Verify the context menu is shown.
+        ListMenuButton mockButton = mock(ListMenuButton.class);
+        when(mockButton.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
+        when(mockButton.getHost()).thenReturn(mockListMenuHost);
+        when(mockButton.getRootView())
+                .thenReturn(new View(ApplicationProvider.getApplicationContext()));
+        when(mockButton.getResources())
+                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
+
+        listener.onClick(mockButton);
+
         verify(mActionContextMenuBridgeJniMock)
                 .init(
                         eq(BROWSER_WINDOW_POINTER),
                         eq("a"),
                         eq(mWebContents),
                         eq(ContextMenuSource.MENU_ITEM));
-        verify(mockContextMenuButton).showMenu();
 
-        // Verify dismissal logic (required for cleanup).
+        verify(mockButton).showMenu();
+
         // Manually capture and fire the dismiss listener. This is required to
         // trigger bridge.destroy() and pass the test framework's leak check.
-        verify(mockContextMenuButton).addPopupListener(mPopupListenerCaptor.capture());
+        verify(mockButton).addPopupListener(mPopupListenerCaptor.capture());
         mPopupListenerCaptor.getValue().onPopupMenuDismissed();
         verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
     }
 
-    /** Helper to create a mock {@link ListMenuButton} with a mock {@link ListMenuHost}. */
-    private ListMenuButton createMockMenuButton() {
-        ListMenuHost mockListMenuHost = mock(ListMenuHost.class);
-        when(mockListMenuHost.getHierarchicalMenuController())
-                .thenReturn(mock(HierarchicalMenuController.class));
-
-        ListMenuButton mockButton = mock(ListMenuButton.class);
-        when(mockButton.getHost()).thenReturn(mockListMenuHost);
-        return mockButton;
+    private static Bitmap createSimpleIcon(int color) {
+        Bitmap bitmap = Bitmap.createBitmap(12, 12, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(color);
+        canvas.drawRect(0, 0, 12, 12, paint);
+        return bitmap;
     }
 
-    /** Helper to assert that the item at the given index has the correct title. */
-    private void assertItemAt(int index, String title) {
-        ListItem item = mActionModels.get(index);
+    private void assertItemAt(int index, String title, Bitmap icon) {
+        ListItem item = mModels.get(index);
         assertEquals(0, item.type);
         assertEquals(title, item.model.get(ExtensionsMenuItemProperties.TITLE));
+        assertTrue(icon.sameAs(item.model.get(ExtensionsMenuItemProperties.ICON)));
     }
 }

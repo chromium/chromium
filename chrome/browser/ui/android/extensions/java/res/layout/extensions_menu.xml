@@ -45,23 +45,7 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/extensions_menu_zero_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/extensions_menu_zero_state_header"
-        android:gravity="center"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
-        app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer_divider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
+        android:layout_marginTop="8dp" />
 
     <View
         android:id="@+id/extensions_menu_footer_divider"

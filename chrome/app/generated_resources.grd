@@ -6621,9 +6621,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP" desc="Title of the context menu for individual extensions in the Extensions Menu" formatter_data="android_java">
           More options
         </message>
-        <message name="IDS_EXTENSIONS_MENU_ZERO_STATE_HEADER" desc="Header in the Extensions Menu when there are no extensions installed." formatter_data="android_java">
-          Get started with extensions
-        </message>
       </if>
       <message name="IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP_ACCESSIBLE_NAME" desc="Title of the context menu for individual extensions in the Extensions Menu">
           <ph name="EXTENSION_NAME">More options for $1<ex>MyExtension</ex></ph>
