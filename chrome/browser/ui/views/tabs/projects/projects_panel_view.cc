@@ -125,6 +125,8 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   auto* groups_list_title =
       content_container_->AddChildView(std::make_unique<views::Label>());
   groups_list_title->SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUPS_TITLE));
+  groups_list_title->SetProperty(views::kElementIdentifierKey,
+                                 kProjectsPanelTabGroupsListTitleElementId);
   SetListTitleProperties(*groups_list_title);
 
   tab_groups_scroll_view_ =
@@ -309,9 +311,12 @@ void ProjectsPanelView::MouseEventHandler::OnEvent(const ui::Event& event) {
 
   if (event.type() == ui::EventType::kMousePressed ||
       event.type() == ui::EventType::kGestureTapDown) {
-    auto* mouse_event = event.AsMouseEvent();
-    gfx::Point click_point = mouse_event->root_location();
-    if (!owning_view_->GetBoundsInScreen().Contains(click_point)) {
+    auto point_in_view = event.AsLocatedEvent()->location();
+
+    // Convert the point from the event's target to the panel's coordinates.
+    views::View::ConvertPointFromWidget(owning_view_, &point_in_view);
+
+    if (!owning_view_->GetLocalBounds().Contains(point_in_view)) {
       owning_view_->ClosePanel();
     }
   }

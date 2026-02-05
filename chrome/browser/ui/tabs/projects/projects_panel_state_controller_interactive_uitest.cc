@@ -115,6 +115,39 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, CloseOnClickOutside) {
           false));
 }
 
+// This is a regression test that checks that the panel stays open when clicking
+// inside (but not on a button or other interactive element).
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, StaysOpenOnClickInside) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      // Verify Initial State for Projects Panel.
+      CheckResult(
+          [this]() {
+            return projects_panel_state_controller()->IsProjectsPanelVisible();
+          },
+          false),
+      // Click Projects Panel Button and Verify Visibilities.
+      EnsurePresent(kVerticalTabStripProjectsButtonElementId),
+      MoveMouseTo(kVerticalTabStripProjectsButtonElementId), ClickMouse(),
+      CheckResult(
+          [this]() {
+            return projects_panel_state_controller()->IsProjectsPanelVisible();
+          },
+          true),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kProjectsPanelViewElementId),
+      // Click on the Tab groups list title (inside the panel).
+      MoveMouseTo(kProjectsPanelTabGroupsListTitleElementId), ClickMouse(),
+      // Verify Projects Panel is still shown.
+      Do([this]() { RunScheduledLayouts(); }),
+      CheckResult(
+          [this]() {
+            return projects_panel_state_controller()->IsProjectsPanelVisible();
+          },
+          true));
+}
+
 // This test checks that the projects panel closes when pressing Esc.
 // TODO(crbug.com/479270567): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, DISABLED_CloseOnEsc) {
