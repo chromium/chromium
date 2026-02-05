@@ -470,25 +470,6 @@ bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {
 
   UNSAFE_TODO(U16_NEXT(text_, ahead_pos_, length_, ahead_character_));
 
-  if (Character::IsGcMark(ahead_character_) &&
-      RuntimeEnabledFeatures::ScriptRunIteratorCombiningMarksEnabled())
-      [[unlikely]] {
-    // A combining mark--whatever its Script property value--should inherit the
-    // script property value of its base character.
-    // https://www.unicode.org/reports/tr24/#Nonspacing_Marks
-    if (RuntimeEnabledFeatures::ScriptRunIteratorCombiningMarkAlwaysEnabled()) {
-      ahead_set_->resize(1);
-      ahead_set_->front() = USCRIPT_INHERITED;
-      return true;
-    } else if (!next_set_->empty() && next_set_->front() != USCRIPT_COMMON) {
-      // `USCRIPT_COMMON` could try looking for more context, but the script of
-      // the combining mark may be still useful, and is backward compatible.
-      // https://www.unicode.org/reports/tr24/#Common
-      *ahead_set_ = *next_set_;
-      return true;
-    }
-  }
-
   script_data_->GetScripts(ahead_character_, *ahead_set_);
   if (ahead_set_->empty()) {
     // No scripts for this character. This has already been logged, so
