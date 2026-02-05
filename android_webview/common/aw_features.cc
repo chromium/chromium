@@ -153,12 +153,12 @@ BASE_FEATURE(kWebViewRecordAppCacheHistograms,
 //
 // Each code cache's limit will be half the value of the HTTP cache limit.
 BASE_FEATURE(kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The multiplier that is used to compute the cache limit from the cache quota.
 const base::FeatureParam<double> kWebViewCacheSizeLimitMultiplier{
     &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
-    "WebViewCacheSizeLimitMultiplier", 0.5};
+    "WebViewCacheSizeLimitMultiplier", 0.1};
 
 // The minimum HTTP cache size limit
 const base::FeatureParam<int> kWebViewCacheSizeLimitMinimum{
