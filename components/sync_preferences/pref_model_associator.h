@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,13 +17,14 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-#include "components/prefs/transparent_unordered_string_map.h"
 #include "components/prefs/writeable_pref_store.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/synced_pref_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace sync_pb {
 class EntitySpecifics;
@@ -195,7 +195,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // to eventually match `registered_preferences_` as more preferences are
   // synced. It determines whether a preference change should update an existing
   // sync node or create a new sync node.
-  std::set<std::string, std::less<>> synced_preferences_;
+  absl::flat_hash_set<std::string> synced_preferences_;
 
   // Sync's handler for outgoing changes. Non-null between
   // MergeDataAndStartSyncing() and StopSyncing().
@@ -206,7 +206,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // from sync.
   using SyncedPrefObserverList =
       base::ObserverList<SyncedPrefObserver>::Unchecked;
-  TransparentUnorderedStringMap<std::unique_ptr<SyncedPrefObserverList>>
+  absl::flat_hash_map<std::string, std::unique_ptr<SyncedPrefObserverList>>
       synced_pref_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

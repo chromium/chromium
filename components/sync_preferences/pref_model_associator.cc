@@ -214,7 +214,7 @@ void PrefModelAssociator::InitPrefAndAssociate(
     }
     sync_changes->emplace_back(FROM_HERE, syncer::SyncChange::ACTION_ADD,
                                sync_data);
-    synced_preferences_.insert(std::string(pref_name));
+    synced_preferences_.emplace(pref_name);
   }
   // Else: This pref has neither a sync value nor a user-controlled value, so
   // ignore it for now. If it gets a new user-controlled value in the future,
@@ -254,12 +254,13 @@ std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
     const sync_pb::PreferenceSpecifics& preference = GetSpecifics(sync_data);
     std::string sync_pref_name = preference.name();
 
-    if (!remaining_preferences.contains(sync_pref_name)) {
+    auto it = remaining_preferences.find(sync_pref_name);
+    if (it == remaining_preferences.end()) {
       // We're not syncing this preference locally, ignore the sync data.
       continue;
     }
 
-    remaining_preferences.erase(sync_pref_name);
+    remaining_preferences.erase(it);
     InitPrefAndAssociate(sync_data, sync_pref_name, &new_changes);
     NotifyStartedSyncing(sync_pref_name);
   }
@@ -444,7 +445,7 @@ void PrefModelAssociator::RemoveSyncedPrefObserver(
 
 bool PrefModelAssociator::IsPrefSyncedForTesting(
     const std::string& name) const {
-  return synced_preferences_.find(name) != synced_preferences_.end();
+  return synced_preferences_.contains(name);
 }
 
 void PrefModelAssociator::RegisterPref(std::string_view name) {
@@ -458,7 +459,7 @@ void PrefModelAssociator::RegisterPref(std::string_view name) {
       << " has not been added to syncable prefs allowlist, or has incorrect "
          "data.";
 
-  registered_preferences_.insert(std::string(name));
+  registered_preferences_.emplace(name);
 }
 
 bool PrefModelAssociator::IsPrefRegistered(std::string_view name) const {
