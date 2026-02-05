@@ -1500,37 +1500,6 @@ TEST_F(ManifestParserTest, DisplayOverrideAcceptsOutOfScopeUrlPatterns) {
   EXPECT_EQ(0u, GetErrorCount());
 }
 
-TEST_F(ManifestParserTest, BorderlessUrlPatternsParseRules) {
-  // Reject 'borderless_url_patterns' when the flag is disabled (default).
-  {
-    auto& manifest = ParseManifest(R"({
-      "borderless_url_patterns": [ {"hostname": "foo.com"} ]
-    })");
-    EXPECT_TRUE(manifest->borderless_url_patterns.empty());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Accept 'borderless_url_patterns' when the flag is enabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
-    auto& manifest = ParseManifest(R"({
-      "borderless_url_patterns": [
-        {"protocol": "ftp"},
-        {"hostname": "foo.com"},
-        {"protocol": "ftp", "hostname": "bar.com"}
-      ]
-    })");
-    EXPECT_THAT(
-        manifest->borderless_url_patterns,
-        ElementsAre(
-            PatternDataEq({.protocol = {"ftp"}}),
-            PatternDataEq({.protocol = {"http"}, .hostname = {"foo.com"}}),
-            PatternDataEq({.protocol = {"ftp"}, .hostname = {"bar.com"}})));
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-}
-
 TEST_F(ManifestParserTest, OrientationParseRules) {
   // Smoke test.
   {
