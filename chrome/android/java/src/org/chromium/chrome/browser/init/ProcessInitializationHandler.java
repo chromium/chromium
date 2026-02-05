@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.backup.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
-import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
+import org.chromium.chrome.browser.contacts_picker.ContactsPickerDelegateProvider;
 import org.chromium.chrome.browser.content_capture.ContentCaptureHistoryDeletionObserver;
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
@@ -114,8 +114,6 @@ import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
-import org.chromium.components.browser_ui.contacts_picker.AndroidContactsPermissionProviderImpl;
-import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
@@ -131,13 +129,8 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
-import org.chromium.content_public.browser.ContactsDialogHost;
-import org.chromium.content_public.browser.ContactsFetcher;
-import org.chromium.content_public.browser.ContactsPicker;
-import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.SpeechRecognition;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.RegistrationPolicyApplicationStatus;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -429,43 +422,7 @@ public class ProcessInitializationHandler {
                     }
                 });
 
-        ContactsDialogHost.setPermissionProvider(new AndroidContactsPermissionProviderImpl());
-
-        ContactsPicker.setContactsPickerDelegate(
-                (WebContents webContents,
-                        ContactsPickerListener listener,
-                        boolean allowMultiple,
-                        boolean includeNames,
-                        boolean includeEmails,
-                        boolean includeTel,
-                        boolean includeAddresses,
-                        boolean includeIcons,
-                        String formattedOrigin,
-                        ContactsFetcher contactsFetcher) -> {
-                    WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
-                    assumeNonNull(windowAndroid);
-                    Context context = windowAndroid.getContext().get();
-                    assumeNonNull(context);
-                    ContactsPickerDialog dialog =
-                            new ContactsPickerDialog(
-                                    windowAndroid,
-                                    new ChromePickerAdapter(
-                                            context, Profile.fromWebContents(webContents)),
-                                    listener,
-                                    allowMultiple,
-                                    includeNames,
-                                    includeEmails,
-                                    includeTel,
-                                    includeAddresses,
-                                    includeIcons,
-                                    formattedOrigin,
-                                    shouldDialogPadForContent(windowAndroid),
-                                    contactsFetcher);
-                    assumeNonNull(dialog.getWindow()).getAttributes().windowAnimations =
-                            R.style.PickerDialogAnimation;
-                    dialog.show();
-                    return dialog;
-                });
+        ContactsPickerDelegateProvider.initialize();
 
         SearchActivityPreferencesManager.onNativeLibraryReady();
         SearchWidgetProvider.initialize();
