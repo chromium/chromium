@@ -2619,6 +2619,18 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_LABEL" desc="Label for settings toggle button that enables or disables opening Chrome on system startup">
           Open Chrome when my computer starts
         </message>
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_OPT_IN_TITLE" desc="Title of the infobar shown to ask the user if they want to allow Chrome to launch when windows starts." translateable="false">
+          Begin browsing instantly. Chrome can now launch when windows starts. Allow Chrome to open automatically?
+        </message>
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_OPT_OUT_TITLE" desc="Title of the infobar shown to inform the user that Chrome now starts automatically when Windows starts." translateable="false">
+          Chrome now starts automatically when Windows starts. You can turn this off in Settings.
+        </message>
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_ALLOW_BUTTON" desc="Label for the button on the infobar offering to allow Chrome to launch when windows starts." translateable="false">
+          Allow
+        </message>
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_SETTINGS_BUTTON" desc="Label for the button on the infobar that opens settings." translateable="false">
+          Settings
+        </message>
       </if>
 
       <!-- Advanced security settings -->

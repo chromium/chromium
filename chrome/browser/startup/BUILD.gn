@@ -9,6 +9,7 @@ assert(!is_android, "Startup launch manager is only for desktop platforms")
 source_set("startup") {
   public = [
     "startup_features.h",
+    "startup_launch_infobar_manager.h",
     "startup_launch_manager.h",
   ]
 

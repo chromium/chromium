@@ -88,6 +88,19 @@ source_set("startup") {
   }
 
   if (is_win) {
+    sources += [
+      "startup_launch_infobar_delegate.h",
+      "startup_launch_infobar_manager_impl.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/startup",
+      "//chrome/browser/ui:browser_tab_strip",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    ]
+  }
+
+  if (is_win) {
     assert(toolkit_views)
     assert(use_aura)
 
@@ -247,6 +260,13 @@ source_set("impl") {
 
     if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
+    }
+
+    if (is_win) {
+      sources += [
+        "startup_launch_infobar_delegate.cc",
+        "startup_launch_infobar_manager_impl.cc",
+      ]
     }
 
     if (is_win && is_chrome_branded) {
@@ -510,6 +530,11 @@ if (!is_android && !is_chromeos_device) {
     ]
     if (use_aura) {
       deps += [ "//ui/aura" ]
+    }
+
+    if (is_win) {
+      sources += [ "startup_launch_infobar_interactive_uitest.cc" ]
+      deps += [ "//chrome/browser/ui/views/infobars" ]
     }
   }
 }
