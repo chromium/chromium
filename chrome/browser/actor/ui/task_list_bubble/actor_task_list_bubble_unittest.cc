@@ -29,27 +29,18 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 using ::tabs::MockTabInterface;
-class ActorTaskListBubbleTest : public ChromeViewsTestBase,
-                                public testing::WithParamInterface<bool> {
+class ActorTaskListBubbleTest : public ChromeViewsTestBase {
  public:
   ActorTaskListBubbleTest() = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    base::test::FeatureRefAndParams enable_glic_policy = {
-        features::kGlicActor,
-        {{features::kGlicActorPolicyControlExemption.name, "true"}}};
-    if (GetParam()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{enable_glic_policy,
-                                {features::kGlicActorUiGlobalTaskIndicator,
-                                 {}}},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{enable_glic_policy},
-          /*disabled_features=*/{features::kGlicActorUiGlobalTaskIndicator});
-    }
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActor,
+         {{features::kGlicActorPolicyControlExemption.name, "true"}}}};
+    feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
+                                                {});
 
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
@@ -121,13 +112,13 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase,
   MockTabInterface& mock_tab() { return mock_tab_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   MockTabInterface mock_tab_;
   views::UniqueWidgetPtr anchor_widget_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
+TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
   absl::flat_hash_map<actor::TaskId, bool> task_list;
   task_list[CreatePausedTask()] = true;
   task_list[CreatePausedTask()] = false;
@@ -150,7 +141,7 @@ TEST_P(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
 
 // TODO(crbug.com/469817191): Handle non-existent task_ids alongside completed
 // task ids.
-TEST_P(ActorTaskListBubbleTest, CreateShowBubbleWithInvalidTask) {
+TEST_F(ActorTaskListBubbleTest, CreateShowBubbleWithInvalidTask) {
   base::HistogramTester histogram_tester;
   absl::flat_hash_map<actor::TaskId, bool> task_list;
   task_list[actor::TaskId(1)] = true;
@@ -163,7 +154,7 @@ TEST_P(ActorTaskListBubbleTest, CreateShowBubbleWithInvalidTask) {
       actor::ui::ActorUiTaskIconError::kBubbleTaskDoesntExist, 1);
 }
 
-TEST_P(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
+TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
   actor::TaskId id = actor_service_->CreateTaskForTesting();
   actor_service_->GetTask(id)->Pause(/*from_actor=*/true);
   absl::flat_hash_map<actor::TaskId, bool> task_list;
@@ -187,11 +178,3 @@ TEST_P(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
   EXPECT_FALSE(static_cast<RichHoverButton*>(content_view->children().front())
                    ->GetEnabled());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ActorTaskListBubbleTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "GlobalIndicatorEnabled"
-                                             : "GlobalIndicatorDisabled";
-                         });

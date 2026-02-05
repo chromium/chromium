@@ -38,9 +38,6 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   // Sets the task icon back to its default colors.
   void SetDefaultColors();
 
-  // Sets the task icon to its highlighted state.
-  void HighlightTaskIcon();
-
   // Sets the task icon's color to its pressed state color if `is_pressed` is
   // true, or to its default color otherwise.
   void SetPressedColor(bool is_pressed);

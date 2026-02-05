@@ -46,13 +46,6 @@ GlicAndActorButtonsContainer::GlicAndActorButtonsContainer() {
 
   SetCollapseMargins(true);
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  if (!base::FeatureList::IsEnabled(
-          features::kGlicActorUiGlobalTaskIndicator)) {
-    // Remove background for global task indicator.
-    SetBackground(views::CreateRoundedRectBackground(
-        kColorNewTabButtonCRBackgroundFrameActive, gfx::RoundedCornersF(12),
-        gfx::Insets::VH(4, 8)));
-  }
 }
 
 GlicAndActorButtonsContainer::~GlicAndActorButtonsContainer() = default;

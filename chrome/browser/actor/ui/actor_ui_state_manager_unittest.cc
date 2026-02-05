@@ -196,10 +196,6 @@ TEST_F(ActorUiStateManagerTest, OnActorTaskState_kCreatedNewStateCrashes) {
 }
 
 TEST_F(ActorUiStateManagerTest, OnActorTaskState_FinalStateCrashes) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kGlicActorUiGlobalTaskIndicator, {});
-
   EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
                    TaskStateChanged(TaskId(123), ActorTask::State::kCancelled)),
                "");
@@ -354,9 +350,6 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        GetsInactiveTaskInfoBeforeExpiry) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kGlicActorUiGlobalTaskIndicator, {});
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event(task_id);
   actor_ui_state_manager()->OnUiEvent(start_task_event);
@@ -371,9 +364,6 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        DoesNotGetInactiveTaskInfoAfterExpiry) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kGlicActorUiGlobalTaskIndicator, {});
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event(task_id);
   actor_ui_state_manager()->OnUiEvent(start_task_event);
@@ -388,9 +378,6 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 }
 
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest, GetsActiveTaskInfo) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kGlicActorUiGlobalTaskIndicator, {});
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
 
   base::RunLoop loop;

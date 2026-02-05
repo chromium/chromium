@@ -250,12 +250,9 @@ void ActorTask::SetState(State new_state) {
     ++total_number_of_interruptions_;
   }
 
-  // In the new implementation, stopped tasks are tracked separately as they
-  // need to store additional information before they're cleared.
-  bool should_dispatch = !base::FeatureList::IsEnabled(
-                             features::kGlicActorUiGlobalTaskIndicator) ||
-                         !stopped_reason_;
-  if (should_dispatch) {
+  // Stopped tasks are tracked separately as they need to store additional
+  // information before they're cleared.
+  if (!stopped_reason_) {
     ui_event_dispatcher_->OnActorTaskSyncChange(
         ui::UiEventDispatcher::ChangeTaskState{
             .task_id = id_, .old_state = old_state, .new_state = new_state});
@@ -417,13 +414,11 @@ void ActorTask::Stop(StoppedReason stop_reason) {
 
   SetState(final_state);
 
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
     ui_event_dispatcher_->OnActorTaskSyncChange(ui::UiEventDispatcher::StopTask{
         .task_id = id_,
         .final_state = final_state,
         .title = title_,
         .last_acted_on_tab_handle = last_tab_handle});
-  }
 }
 
 void ActorTask::Pause(bool from_actor) {

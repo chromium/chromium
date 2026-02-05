@@ -33,18 +33,14 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #endif
 
-class ActorTaskListBubbleControllerTest
-    : public ChromeViewsTestBase,
-      public testing::WithParamInterface<bool> {
+class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
  public:
   ActorTaskListBubbleControllerTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
-    }
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActor,
+         {{features::kGlicActorPolicyControlExemption.name, "true"}}}};
+    feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
+                                                {});
   }
 
   void SetUp() override {
@@ -147,7 +143,7 @@ class ActorTaskListBubbleControllerTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
+TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
 #if BUILDFLAG(ENABLE_GLIC)
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_.get());
@@ -182,23 +178,10 @@ TEST_P(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
       anchor_widget_->GetContentsView());
 
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
-  if (ActorTaskListBubbleControllerTest::GetParam()) {
-    histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 4, 1);
-  } else {
-    // Row will be removed on stop if GlicActorUiGlobalTaskIndicator is
-    // disabled.
-    histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 3, 1);
-  }
+  histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 4, 1);
+
   EXPECT_EQ(
       2u,
       histogram_tester.GetAllSamples("Actor.Ui.TaskListBubble.Rows").size());
 #endif
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ActorTaskListBubbleControllerTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "GlobalIndicatorEnabled"
-                                             : "GlobalIndicatorDisabled";
-                         });

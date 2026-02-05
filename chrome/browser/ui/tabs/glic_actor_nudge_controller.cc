@@ -42,7 +42,6 @@ GlicActorNudgeController::GlicActorNudgeController(
     UpdateCurrentActorNudgeState();
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
     ActorTaskListBubbleController* bubble_controller =
         ActorTaskListBubbleController::From(browser_);
     bubble_visibility_change_subscription_.push_back(
@@ -53,7 +52,6 @@ GlicActorNudgeController::GlicActorNudgeController(
         bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
             &GlicActorNudgeController::OnBubbleVisibilityChange,
             weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
-  }
 }
 
 GlicActorNudgeController::~GlicActorNudgeController() = default;
@@ -79,25 +77,16 @@ void GlicActorNudgeController::OnStateUpdateImpl(
   GlicActorTaskIconManager* manager =
       GlicActorTaskIconManagerFactory::GetForProfile(profile_);
   DCHECK(manager);
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
-      manager->actor_task_list_bubble_rows().empty()) {
+  if (manager->actor_task_list_bubble_rows().empty()) {
     tab_strip_action_container_->HideGlicActorTaskIcon();
     CloseBubble();
     return;
   }
 
-  size_t num_tasks_need_processing =
-      base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)
-          ? manager->GetNumActorTasksNeedProcessing()
-          : manager->actor_task_list_bubble_rows().size();
+  size_t num_tasks_need_processing = manager->GetNumActorTasksNeedProcessing();
   switch (actor_task_nudge_state.text) {
     case ActorTaskNudgeState::Text::kDefault:
-      if (base::FeatureList::IsEnabled(
-              features::kGlicActorUiGlobalTaskIndicator)) {
         tab_strip_action_container_->ShowGlicActorTaskIcon();
-      } else {
-        tab_strip_action_container_->HideGlicActorTaskIcon();
-      }
       // In either case, close the bubble as the nudge has been either hidden or
       // reset.
       CloseBubble();
@@ -107,26 +96,18 @@ void GlicActorNudgeController::OnStateUpdateImpl(
           IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, num_tasks_need_processing));
       break;
     case ActorTaskNudgeState::Text::kCompleteTasks:
-      if (base::FeatureList::IsEnabled(
-              features::kGlicActorUiGlobalTaskIndicator)) {
         UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
             IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL,
             actor::ActorKeyedService::Get(profile_)
                 ->GetActorUiStateManager()
                 ->GetInactiveTaskCount()));
-      }
       break;
     default:
       NOTREACHED();
   }
 
   if (tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {
-    if (base::FeatureList::IsEnabled(
-            features::kGlicActorUiGlobalTaskIndicator)) {
       actor::ui::RecordGlobalTaskIndicatorNudgeShown(actor_task_nudge_state);
-    } else {
-      actor::ui::RecordTaskNudgeShown(actor_task_nudge_state);
-    }
   }
 }
 

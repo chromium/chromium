@@ -552,10 +552,6 @@ TEST_F(ExecutionEngineTest, MAYBE_CancelOngoingAction) {
 #define MAYBE_ActorTaskCompletedHistogram ActorTaskCompletedHistogram
 #endif
 TEST_F(ExecutionEngineTest, MAYBE_ActorTaskCompletedHistogram) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kGlicActorUiGlobalTaskIndicator, {});
-
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 

@@ -47,7 +47,6 @@ class ActorTaskListBubbleInteractiveUiTest
              {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
-            {features::kGlicActorUiGlobalTaskIndicator, {}},
 #endif  // BUILDFLAG(ENABLE_GLIC)
         },
         {});
