@@ -481,7 +481,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
   private onTabStripChangedListenerId_: number|null = null;
-  private onInputStateChangedListenerId_: number|null = null;
   private placeholderCycler_: PlaceholderTextCycler|null = null;
   private contextMenuOpened_: boolean = false;
 
@@ -507,9 +506,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.onTabStripChangedListenerId_ =
         this.callbackRouter_.onTabStripChanged.addListener(
             this.refreshTabSuggestions_.bind(this));
-    this.onInputStateChangedListenerId_ =
-        this.callbackRouter_.onInputStateChanged.addListener(
-            this.onInputStateChanged_.bind(this));
     this.inputState_ = (await this.pageHandler_.getInputState()).state;
 
     if (this.cyclingPlaceholders) {
@@ -542,8 +538,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
     assert(this.onTabStripChangedListenerId_);
     this.callbackRouter_.removeListener(this.onTabStripChangedListenerId_);
-    assert(this.onInputStateChangedListenerId_);
-    this.callbackRouter_.removeListener(this.onInputStateChangedListenerId_);
 
     this.placeholderCycler_?.stop();
   }
@@ -697,10 +691,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   private onSetThumbnail_(thumbnailUrl: string, isDeletable: boolean) {
     this.thumbnailUrl_ = thumbnailUrl;
     this.isThumbnailDeletable_ = isDeletable;
-  }
-
-  private onInputStateChanged_(inputState: InputState) {
-    this.inputState_ = inputState;
   }
 
   //============================================================================
