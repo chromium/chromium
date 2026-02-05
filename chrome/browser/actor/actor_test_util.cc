@@ -585,6 +585,14 @@ std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
                                  : WindowOpenDisposition::NEW_BACKGROUND_TAB);
 }
 
+std::unique_ptr<ToolRequest> MakeActivateTabRequest(TabHandle tab) {
+  return std::make_unique<ActivateTabToolRequest>(tab);
+}
+
+std::unique_ptr<ToolRequest> MakeCloseTabRequest(TabHandle tab) {
+  return std::make_unique<CloseTabToolRequest>(tab);
+}
+
 std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(TabInterface& tab) {
   return std::make_unique<AttemptLoginToolRequest>(tab.GetHandle());
 }

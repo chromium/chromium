@@ -178,6 +178,8 @@ std::unique_ptr<ToolRequest> MakeWaitRequest(
     tabs::TabInterface* observe_tab = nullptr);
 std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
                                                   bool foreground);
+std::unique_ptr<ToolRequest> MakeActivateTabRequest(tabs::TabHandle tab);
+std::unique_ptr<ToolRequest> MakeCloseTabRequest(tabs::TabHandle tab);
 std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(tabs::TabInterface& tab);
 std::unique_ptr<ToolRequest> MakeScriptToolRequest(
     content::RenderFrameHost& rfh,

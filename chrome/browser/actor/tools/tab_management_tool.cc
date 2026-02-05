@@ -48,43 +48,79 @@ void TabManagementTool::Validate(ToolCallback callback) {
 
 void TabManagementTool::Invoke(ToolCallback callback) {
   callback_ = std::move(callback);
+  CHECK(window_id_.has_value() || target_tab_.has_value());
 
-  // TODO(crbug.com/445993857): Only the create action is hooked up and
-  // implemented.
-  switch (action_) {
-    case kCreate: {
-      CHECK(window_id_.has_value());
-      CHECK(create_disposition_.has_value());
-      BrowserWindowInterface* browser_window_interface =
-          BrowserWindowInterface::FromSessionID(
-              SessionID::FromSerializedValue(window_id_.value()));
-      if (!browser_window_interface) {
-        PostResponseTask(std::move(callback_),
-                         MakeResult(mojom::ActionResultCode::kWindowWentAway));
-        return;
-      }
-
-      // The observer is removed in the TabStripModelObserver's destructor.
-      browser_window_interface->GetTabStripModel()->AddObserver(this);
-
-      // Watch for the window going away as well so we don't wait indefinitely.
-      browser_did_close_subscription_ =
-          browser_window_interface->RegisterBrowserDidClose(base::BindRepeating(
-              &TabManagementTool::OnBrowserDidClose, base::Unretained(this)));
-
-      // Open a blank tab.
-      browser_window_interface->OpenGURL(GURL(url::kAboutBlankURL),
-                                         create_disposition_.value());
-      break;
-    }
-    case kActivate:
-    case kClose:
-      CHECK(target_tab_.has_value());
-      NOTIMPLEMENTED() << "ActivateTab and CloseTab not yet implemented";
-      PostResponseTask(std::move(callback_),
-                       MakeResult(mojom::ActionResultCode::kNotImplemented));
-      return;
+  if (target_tab_.has_value() && !target_tab_->Get()) {
+    PostResponseTask(std::move(callback_),
+                     MakeResult(mojom::ActionResultCode::kTabWentAway));
+    return;
   }
+
+  BrowserWindowInterface* browser_window_interface =
+      window_id_.has_value()
+          ? BrowserWindowInterface::FromSessionID(
+                SessionID::FromSerializedValue(window_id_.value()))
+          : target_tab_.value().Get()->GetBrowserWindowInterface();
+
+  if (!browser_window_interface) {
+    PostResponseTask(std::move(callback_),
+                     MakeResult(mojom::ActionResultCode::kWindowWentAway));
+    return;
+  }
+
+  // The observer is removed in the TabStripModelObserver's destructor.
+  browser_window_interface->GetTabStripModel()->AddObserver(this);
+
+  // Watch for the window going away as well so we don't wait indefinitely.
+  browser_did_close_subscription_ =
+      browser_window_interface->RegisterBrowserDidClose(base::BindRepeating(
+          &TabManagementTool::OnBrowserDidClose, base::Unretained(this)));
+
+  // Each of these functions result in a call to `TabStripModelChanged` if they
+  // complete successfully. Otherwise, they will fire `callback_` early and
+  // return.
+  switch (action_) {
+    case kCreate:
+      CreateTab(browser_window_interface);
+      break;
+    case kActivate:
+      ActivateTab(browser_window_interface);
+      break;
+    case kClose:
+      CloseTab();
+      break;
+  }
+}
+
+void TabManagementTool::CreateTab(
+    BrowserWindowInterface* browser_window_interface) {
+  CHECK(window_id_.has_value());
+  CHECK(create_disposition_.has_value());
+  // Open a blank tab.
+  browser_window_interface->OpenGURL(GURL(url::kAboutBlankURL),
+                                     create_disposition_.value());
+}
+
+void TabManagementTool::ActivateTab(
+    BrowserWindowInterface* browser_window_interface) {
+  CHECK(target_tab_.has_value());
+  // The tab might already be activated. In which case, treat that as a
+  // successful tool invocation.
+  if (target_tab_->Get()->IsActivated()) {
+    PostResponseTask(std::move(callback_), MakeOkResult());
+    return;
+  }
+
+  int target_tab_index =
+      browser_window_interface->GetTabStripModel()->GetIndexOfTab(
+          target_tab_->Get());
+  CHECK(target_tab_index != TabStripModel::kNoTab);
+  browser_window_interface->GetTabStripModel()->ActivateTabAt(target_tab_index);
+}
+
+void TabManagementTool::CloseTab() {
+  CHECK(target_tab_.has_value());
+  target_tab_->Get()->Close();
 }
 
 std::string TabManagementTool::DebugString() const {
@@ -112,6 +148,15 @@ TabManagementTool::GetObservationDelayer(
   return std::make_unique<ObservationDelayController>(task_id(), journal());
 }
 
+void TabManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
+                                               ToolCallback callback) const {
+  if (action_ == kClose) {
+    CHECK(target_tab_.has_value());
+    task.RemoveTab(*target_tab_);
+  }
+  std::move(callback).Run(MakeOkResult());
+}
+
 void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
                                               mojom::ActionResultPtr result,
                                               ToolCallback callback) const {
@@ -130,25 +175,70 @@ void TabManagementTool::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (action_ != kCreate) {
+  if (!callback_) {
     return;
   }
 
-  if (change.type() == TabStripModelChange::kInserted) {
-    if (callback_) {
-      CHECK_GT(change.GetInsert()->contents.size(), 0ul);
-      target_tab_ = change.GetInsert()->contents[0].tab->GetHandle();
+  // Determine if a tab we are waiting for has closed unexpectedly. If so,
+  // return early.
+  if (action_ == kActivate && change.type() == TabStripModelChange::kRemoved) {
+    auto result_it = std::find_if(
+        change.GetRemove()->contents.begin(),
+        change.GetRemove()->contents.end(),
+        [&](const TabStripModelChange::RemovedTab& removed_tab) {
+          return removed_tab.tab->GetHandle() == this->target_tab_.value();
+        });
+    if (result_it != change.GetRemove()->contents.end()) {
+      PostResponseTask(std::move(callback_),
+                       MakeResult(mojom::ActionResultCode::kTabWentAway));
+      return;
+    }
+  }
+
+  // Handle successful tab creation.
+  if (action_ == kCreate && change.type() == TabStripModelChange::kInserted) {
+    CHECK_GT(change.GetInsert()->contents.size(), 0ul);
+    target_tab_ = change.GetInsert()->contents[0].tab->GetHandle();
+    PostResponseTask(std::move(callback_), MakeOkResult());
+    return;
+  }
+
+  // Handle successful tab activation.
+  if (action_ == kActivate &&
+      change.type() == TabStripModelChange::kSelectionOnly) {
+    if (selection.active_tab_changed() &&
+        *target_tab_ == selection.new_tab->GetHandle()) {
       PostResponseTask(std::move(callback_), MakeOkResult());
     }
+    return;
+  }
+
+  // Handle successful tab removal.
+  if (action_ == kClose && change.type() == TabStripModelChange::kRemoved) {
+    CHECK_GT(change.GetRemove()->contents.size(), 0ul);
+    TabHandle removed_tab = change.GetRemove()->contents[0].tab->GetHandle();
+    if (*target_tab_ != removed_tab) {
+      // Observing a different tab close, so do nothing.
+      return;
+    }
+    // Our single tab should have been deleted, rather than moved elsewhere.
+    if (change.GetRemove()->contents[0].remove_reason !=
+        TabRemovedReason::kDeleted) {
+      PostResponseTask(std::move(callback_),
+                       MakeResult(mojom::ActionResultCode::kTabWentAway));
+      return;
+    }
+
+    PostResponseTask(std::move(callback_), MakeOkResult());
+    return;
   }
 }
 
 void TabManagementTool::OnBrowserDidClose(BrowserWindowInterface* browser) {
-  // If the window is destroyed in the interval after a create tab has been
-  // invoked but before the tab's been added, this ensures we don't hang waiting
-  // for the new tab.
-  CHECK(window_id_);
-  if (action_ == kCreate && callback_) {
+  // If the window is destroyed in the interval after a tab action has been
+  // invoked but before the action is completed, this ensures we don't hang
+  // waiting for the action.
+  if (callback_) {
     PostResponseTask(std::move(callback_),
                      MakeResult(mojom::ActionResultCode::kWindowWentAway));
   }

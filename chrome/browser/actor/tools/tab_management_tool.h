@@ -20,7 +20,6 @@ class ObservationDelayController;
 
 // A tool to manage the tabs in a browser window, e.g. create, close,
 // activate, etc.
-// TODO(crbug.com/445993857): Implement actions other than create.
 class TabManagementTool : public Tool, public TabStripModelObserver {
  public:
   enum Action { kCreate, kActivate, kClose };
@@ -46,6 +45,8 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
+  void UpdateTaskBeforeInvoke(ActorTask& task,
+                              ToolCallback callback) const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
                              ToolCallback callback) const override;
@@ -57,6 +58,10 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
                               const TabStripSelectionChange& selection) final;
 
  private:
+  void CreateTab(BrowserWindowInterface* browser_window_interface);
+  void ActivateTab(BrowserWindowInterface* browser_window_interface);
+  void CloseTab();
+
   // Called when the browser with `window_id_` has closed.
   void OnBrowserDidClose(BrowserWindowInterface* browser);
 

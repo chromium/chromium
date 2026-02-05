@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -140,6 +141,109 @@ IN_PROC_BROWSER_TEST_F(
       future.Get();
   ASSERT_TRUE(observation_result.has_value());
   ASSERT_TRUE(observation_result.value()->screenshot_result.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, ActivateTab) {
+  // Navigate the first tab.
+  const GURL start_tab_url =
+      embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
+
+  // Create a second tab in the foreground.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), start_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  TabStripModel* tsm = browser()->tab_strip_model();
+  ASSERT_EQ(tsm->count(), 2);
+  ASSERT_EQ(tsm->GetTabAtIndex(1), tsm->GetActiveTab());
+
+  // Use a TabManagementTool to activate the first tab again, which should
+  // bring it to the foreground.
+  std::unique_ptr<ToolRequest> action =
+      MakeActivateTabRequest(tsm->GetTabAtIndex(0)->GetHandle());
+  ActResultFuture act_result;
+  actor_task().Act(ToRequestList(action), act_result.GetCallback());
+  ExpectOkResult(act_result);
+
+  ASSERT_EQ(tsm->count(), 2);
+  ASSERT_EQ(tsm->GetTabAtIndex(0), tsm->GetActiveTab());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, CloseTab) {
+  // Navigate the first tab.
+  const GURL start_tab_url =
+      embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
+
+  // Create a second tab in the foreground.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), start_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  TabStripModel* tsm = browser()->tab_strip_model();
+  ASSERT_EQ(tsm->count(), 2);
+  ASSERT_EQ(tsm->GetTabAtIndex(1), tsm->GetActiveTab());
+
+  // Use a TabManagementTool to close the inactive tab.
+  std::unique_ptr<ToolRequest> action =
+      MakeCloseTabRequest(tsm->GetTabAtIndex(0)->GetHandle());
+  ActResultFuture act_result;
+  actor_task().Act(ToRequestList(action), act_result.GetCallback());
+  ExpectOkResult(act_result);
+
+  ASSERT_EQ(tsm->count(), 1);
+  ASSERT_EQ(tsm->GetTabAtIndex(0), tsm->GetActiveTab());
+}
+
+// Ensures that if a tab is closed, it's properly removed from the list of tabs
+// managed by the ActorTask.
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
+                       CloseTabRemovesFromActorTask) {
+  // Create a new tab, ensure it's added to the set of acted on tabs.
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeCreateTabRequest(browser()->session_id(), /*foreground=*/false);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
+
+    // Since the tab was added in the background, the current tab should not
+    // have been added.
+    EXPECT_FALSE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
+  }
+
+  // Create a second tab, ensure it too is added to the set of acted on tabs.
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    EXPECT_EQ(actor_task().GetTabs().size(), 2ul);
+
+    // This time the tab was created in the foreground so the active tab must be
+    // in the set.
+    EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
+  }
+
+  {
+    tabs::TabHandle closed_tab_handle = active_tab()->GetHandle();
+    // Use a TabManagementTool to close the active tab.
+    std::unique_ptr<ToolRequest> action =
+        MakeCloseTabRequest(closed_tab_handle);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    // The closed tab should no longer be managed by the actor.
+    EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
+
+    // Because the active tab was closed, the new active tab should be
+    // different.
+    EXPECT_NE(closed_tab_handle, active_tab()->GetHandle());
+  }
 }
 
 }  // namespace
