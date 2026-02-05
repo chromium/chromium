@@ -1380,11 +1380,9 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // In this case, we are using CPU raster and CPU compositing. Create a
     // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
     // buffer that can be written by canvas raster and read by the compositor.
-    provider =
-        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
-            canvas()->Size(), format, alpha_type, color_space,
-            kShouldInitialize, SharedGpuContext::SharedImageInterfaceProvider(),
-            canvas());
+    provider = Canvas2DResourceProviderSharedImage::CreateForSoftwareCompositor(
+        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        SharedGpuContext::SharedImageInterfaceProvider(), canvas());
   }
   if (!provider) {
     // The final fallback is to raster into a bitmap that will then either be
