@@ -971,6 +971,7 @@ _CONFIG = [
             'ui::IsTableHeader',
             'ui::IsText',
             'ui::IsTextField',
+            'ui::SupportsRequired',
 
             # Blink uses UKM for logging e.g. always-on leak detection (crbug/757374)
             'ukm::.+',

@@ -5837,7 +5837,19 @@ ax::mojom::blink::Role AXObject::RawAriaRole() const {
 }
 
 ax::mojom::blink::Role AXObject::DetermineRawAriaRole() const {
-  const AtomicString& aria_role = AriaAttribute(html_names::kRoleAttr);
+  const Element* element = GetElement();
+  if (!element) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+  return DetermineRawAriaRole(*element);
+}
+
+// static
+ax::mojom::blink::Role AXObject::DetermineRawAriaRole(const Element& element) {
+  // Only consult the explicit role attribute so callers can opt into ARIA
+  // semantics without picking up any native or implicit roles.
+  const AtomicString& aria_role =
+      AXObject::AriaAttribute(element, html_names::kRoleAttr);
   if (aria_role.empty()) {
     return ax::mojom::blink::Role::kUnknown;
   }

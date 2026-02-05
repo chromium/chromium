@@ -1443,6 +1443,24 @@ TEST_F(AIPageContentAgentTest, LandmarkSectionsWithAriaRoles) {
   CheckTextNode(*footer.children_nodes[0], "Footer");
 }
 
+TEST_F(AIPageContentAgentTest, LandmarkSectionsWithUppercaseAriaRoles) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='banner' role='BANNER'>Header</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // ARIA role tokens are ASCII case-insensitive; APC should still annotate the
+  // landmark role even if authors use uppercase role names.
+  GetAIPageContent();
+
+  const auto* banner = FindNodeBySelector("#banner");
+  ASSERT_TRUE(banner);
+  CheckAnnotatedRoles(*banner,
+                      {mojom::blink::AIPageContentAnnotatedRole::kHeader});
+}
+
 TEST_F(AIPageContentAgentTest, RootScroller) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -2260,6 +2278,110 @@ TEST_F(AIPageContentAgentTest, FormWithTextInput) {
   CheckContainerNode(*text_input2.children_nodes[0]);
   EXPECT_EQ(text_input2.children_nodes[0]->children_nodes.size(), 1u);
   CheckTextNode(*text_input2.children_nodes[0]->children_nodes[0], "Ipsum");
+}
+
+TEST_F(AIPageContentAgentTest, AriaRequiredAndPlaceholderOnTextInput) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <input id='input' type='text' aria-required='true' "
+      "aria-placeholder='Type here'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // ARIA required/placeholder should be surfaced for native text inputs when
+  // the native attributes are not present, so we pick up author-provided ARIA
+  // metadata without overriding native semantics.
+  GetAIPageContent();
+
+  const auto* input = FindNodeBySelector("#input");
+  ASSERT_TRUE(input);
+  CheckFormControlNode(*input, mojom::blink::FormControlType::kInputText);
+  EXPECT_TRUE(input->content_attributes->form_control_data->is_required);
+  EXPECT_EQ(input->content_attributes->form_control_data->placeholder,
+            "Type here");
+}
+
+TEST_F(AIPageContentAgentTest, AriaCheckedOnRoleCheckbox) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='checkbox' role='checkbox' aria-checked='true'>"
+      "    ARIA Checkbox"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // ARIA-based controls should produce form control data when aria-checked is
+  // provided, enabling actionable extraction for custom widgets.
+  GetAIPageContent();
+
+  const auto* checkbox = FindNodeBySelector("#checkbox");
+  ASSERT_TRUE(checkbox);
+  CheckFormControlNode(*checkbox,
+                       mojom::blink::FormControlType::kInputCheckbox);
+  EXPECT_TRUE(checkbox->content_attributes->form_control_data->is_checked);
+}
+
+TEST_F(AIPageContentAgentTest, AriaRoleCheckboxWithoutProperties) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='checkbox' role='checkbox'>"
+      "    ARIA Checkbox"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // An explicit ARIA role should be enough to surface form control metadata,
+  // even when no other ARIA state or property is provided.
+  GetAIPageContent();
+
+  const auto* checkbox = FindNodeBySelector("#checkbox");
+  ASSERT_TRUE(checkbox);
+  CheckFormControlNode(*checkbox,
+                       mojom::blink::FormControlType::kInputCheckbox);
+}
+
+TEST_F(AIPageContentAgentTest, AriaCheckedMixedOnRoleCheckbox) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='checkbox' role='checkbox' aria-checked='mixed'>"
+      "    ARIA Checkbox"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Keep aria-checked handling simple by treating "mixed" as a truthy state
+  // when the attribute is present, matching IsAriaAttributeTrue semantics.
+  GetAIPageContent();
+
+  const auto* checkbox = FindNodeBySelector("#checkbox");
+  ASSERT_TRUE(checkbox);
+  CheckFormControlNode(*checkbox,
+                       mojom::blink::FormControlType::kInputCheckbox);
+  EXPECT_TRUE(checkbox->content_attributes->form_control_data->is_checked);
+}
+
+TEST_F(AIPageContentAgentTest, AriaCheckedDoesNotOverrideNativeCheckbox) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <input id='native' type='checkbox' checked aria-checked='false'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Native checked state must remain authoritative over aria-checked, matching
+  // the HTML-AAM rule that ARIA must not override strong native semantics.
+  GetAIPageContent();
+
+  const auto* native_checkbox = FindNodeBySelector("#native");
+  ASSERT_TRUE(native_checkbox);
+  CheckFormControlNode(*native_checkbox,
+                       mojom::blink::FormControlType::kInputCheckbox);
+  EXPECT_TRUE(
+      native_checkbox->content_attributes->form_control_data->is_checked);
 }
 
 TEST_F(AIPageContentAgentTest, FormWithSelect) {

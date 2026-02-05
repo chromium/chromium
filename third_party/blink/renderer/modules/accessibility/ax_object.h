@@ -857,6 +857,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // additional rules or limitations on role usage are applied. Use
   // RawAriaRole() instead if the raw role does not need to be recomputed.
   ax::mojom::blink::Role DetermineRawAriaRole() const;
+  // Static helper for callers that only have an Element. It mirrors
+  // DetermineRawAriaRole() by mapping the explicit role attribute (if present)
+  // to the internal role enum, otherwise returning kUnknown.
+  static ax::mojom::blink::Role DetermineRawAriaRole(const Element&);
 
   // (2) Determine the ARIA role after applying rules based on other properties.
   ax::mojom::blink::Role DetermineAriaRole() const;

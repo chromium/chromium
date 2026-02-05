@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -393,7 +394,7 @@ void ComputeScrollerInfo(
 
 // TODO(crbug.com/383128653): This is duplicating logic from
 // UnsupportedTagTypeValueForNode, consider reusing it.
-bool IsHeadingTag(const HTMLElement& element) {
+bool IsHeadingTag(const Element& element) {
   return element.HasTagName(html_names::kH1Tag) ||
          element.HasTagName(html_names::kH2Tag) ||
          element.HasTagName(html_names::kH3Tag) ||
@@ -809,6 +810,124 @@ void ProcessFormNode(const HTMLFormElement& form_element,
   attributes.form_data = std::move(form_data);
 }
 
+// Roles that accept aria-checked, per WAI-ARIA. We only surface aria-checked
+// for these roles to avoid exposing unsupported states.
+bool RoleSupportsAriaChecked(ax::mojom::blink::Role role) {
+  switch (role) {
+    case ax::mojom::blink::Role::kCheckBox:
+    case ax::mojom::blink::Role::kListBoxOption:
+    case ax::mojom::blink::Role::kMenuItemCheckBox:
+    case ax::mojom::blink::Role::kMenuItemRadio:
+    case ax::mojom::blink::Role::kMenuListOption:
+    case ax::mojom::blink::Role::kRadioButton:
+    case ax::mojom::blink::Role::kSwitch:
+    case ax::mojom::blink::Role::kTreeItem:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// aria-placeholder is intended for text entry widgets, so scope to text fields
+// and combobox-like roles.
+bool RoleSupportsAriaPlaceholder(ax::mojom::blink::Role role) {
+  return ui::IsTextField(role) || ui::IsComboBox(role);
+}
+
+// Maps ARIA roles to a FormControlType where the semantics are clear enough to
+// surface APC form control data.
+bool FormControlTypeForAriaRole(ax::mojom::blink::Role role,
+                                mojom::blink::FormControlType* out_type) {
+  switch (role) {
+    case ax::mojom::blink::Role::kCheckBox:
+    case ax::mojom::blink::Role::kMenuItemCheckBox:
+    case ax::mojom::blink::Role::kSwitch:
+      *out_type = mojom::blink::FormControlType::kInputCheckbox;
+      return true;
+    case ax::mojom::blink::Role::kMenuItemRadio:
+    case ax::mojom::blink::Role::kRadioButton:
+      *out_type = mojom::blink::FormControlType::kInputRadio;
+      return true;
+    case ax::mojom::blink::Role::kSearchBox:
+      *out_type = mojom::blink::FormControlType::kInputSearch;
+      return true;
+    case ax::mojom::blink::Role::kTextField:
+    case ax::mojom::blink::Role::kTextFieldWithComboBox:
+      *out_type = mojom::blink::FormControlType::kInputText;
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Populates form control data for ARIA-based controls (e.g. role=checkbox).
+// Returns true if ARIA form control data should be emitted for this element.
+bool ProcessAriaFormControlNode(
+    const LayoutObject& object,
+    const Element& element,
+    mojom::blink::AIPageContentAttributes& attributes) {
+  // Use AXObject's raw role resolver so we only honor explicit ARIA roles and
+  // ignore implicit/native roles for ARIA-only control semantics.
+  ax::mojom::blink::Role aria_role = AXObject::DetermineRawAriaRole(element);
+  if (aria_role == ax::mojom::blink::Role::kUnknown) {
+    return false;
+  }
+
+  mojom::blink::FormControlType form_control_type;
+  if (!FormControlTypeForAriaRole(aria_role, &form_control_type)) {
+    return false;
+  }
+
+  bool aria_required =
+      ui::SupportsRequired(aria_role) &&
+      AXObject::IsAriaAttributeTrue(element, html_names::kAriaRequiredAttr);
+
+  String aria_placeholder;
+  if (RoleSupportsAriaPlaceholder(aria_role)) {
+    const AtomicString& aria_placeholder_attribute =
+        AXObject::AriaAttribute(element, html_names::kAriaPlaceholderAttr);
+    if (!aria_placeholder_attribute.empty()) {
+      aria_placeholder = aria_placeholder_attribute;
+    }
+  }
+
+  bool has_aria_checked = false;
+  bool aria_checked = false;
+  if (RoleSupportsAriaChecked(aria_role)) {
+    // Keep aria-checked handling simple: require the attribute to be present,
+    // and treat any non-false value (including "mixed") as true.
+    has_aria_checked =
+        AXObject::HasAriaAttribute(element, html_names::kAriaCheckedAttr);
+    if (has_aria_checked) {
+      aria_checked =
+          AXObject::IsAriaAttributeTrue(element, html_names::kAriaCheckedAttr);
+    }
+  }
+
+  attributes.attribute_type =
+      mojom::blink::AIPageContentAttributeType::kFormControl;
+  // Do not gate ARIA form control metadata on visibility. The node can still be
+  // included when visible descendants keep the subtree in the APC tree, so we
+  // preserve ARIA semantics for downstream consumers.
+
+  attributes.form_control_data =
+      mojom::blink::AIPageContentFormControlData::New();
+  auto& form_control_data = *attributes.form_control_data;
+  form_control_data.form_control_type = form_control_type;
+  form_control_data.is_required = aria_required;
+  form_control_data.redaction_decision =
+      mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
+
+  if (!aria_placeholder.empty()) {
+    form_control_data.placeholder = aria_placeholder;
+  }
+
+  if (has_aria_checked) {
+    form_control_data.is_checked = aria_checked;
+  }
+  return true;
+}
+
 void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
                             mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type =
@@ -816,10 +935,21 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
   if (!IsVisible(*form_control_element.GetLayoutObject())) {
     return;
   }
-  auto form_control_data = mojom::blink::AIPageContentFormControlData::New();
+  attributes.form_control_data =
+      mojom::blink::AIPageContentFormControlData::New();
+  auto* form_control_data = attributes.form_control_data.get();
   form_control_data->form_control_type = form_control_element.FormControlType();
   form_control_data->field_name = form_control_element.GetName();
   form_control_data->is_required = form_control_element.IsRequired();
+
+  // Honor aria-required for native controls only when the native attribute is
+  // not set. This follows WAI-ARIA host language conflict guidance by keeping
+  // native semantics authoritative when present.
+  if (!form_control_data->is_required &&
+      AXObject::IsAriaAttributeTrue(form_control_element,
+                                    html_names::kAriaRequiredAttr)) {
+    form_control_data->is_required = true;
+  }
 
   // Set the default value for redaction, and override below as appropriate.
   form_control_data->redaction_decision =
@@ -844,8 +974,15 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
             kRedacted_HasBeenPassword) {
       form_control_data->field_value = text_control_element->Value();
     }
-    form_control_data->placeholder =
-        text_control_element->GetPlaceholderValue();
+    String placeholder_value = text_control_element->GetPlaceholderValue();
+    if (placeholder_value.empty()) {
+      const AtomicString& aria_placeholder = AXObject::AriaAttribute(
+          form_control_element, html_names::kAriaPlaceholderAttr);
+      if (!aria_placeholder.empty()) {
+        placeholder_value = aria_placeholder;
+      }
+    }
+    form_control_data->placeholder = placeholder_value;
   }
   if (const auto* html_input_element =
           DynamicTo<HTMLInputElement>(form_control_element)) {
@@ -865,7 +1002,6 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
       form_control_data->select_options.push_back(std::move(select_option));
     }
   }
-  attributes.form_control_data = std::move(form_control_data);
 }
 
 mojom::blink::AIPageContentTableRowType GetTableRowType(
@@ -1581,13 +1717,15 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
   AddForDomNodeId(object, attributes);
-  // Interaction info depends on aria role.
-  AddAriaRole(object, attributes);
+
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (actionable_mode() && element) {
+    attributes.aria_role = AXObject::DetermineRawAriaRole(*element);
+  }
   AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled);
 
   // Set the attribute type and add any special attributes if the attribute type
   // requires it.
-  auto* element = DynamicTo<HTMLElement>(object.GetNode());
   if (const auto* iframe = GetIFrame(object)) {
     // If the `iframe` is invisible, it's Document can't override this and must
     // also be invisible.
@@ -1644,6 +1782,9 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   } else if (const auto* form_control =
                  DynamicTo<HTMLFormControlElement>(object.GetNode())) {
     ProcessFormControlNode(*form_control, attributes);
+  } else if (element &&
+             ProcessAriaFormControlNode(object, *element, attributes)) {
+    // ProcessAriaFormControlNode sets the attribute type and data.
   } else if (element && IsHeadingTag(*element)) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kHeading;
@@ -1766,40 +1907,44 @@ void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
   if (!element) {
     return;
   }
+  // Use the ARIA role parser so role checks are case-insensitive and avoid
+  // re-implementing token parsing in APC.
+  const ax::mojom::blink::Role aria_role =
+      AXObject::DetermineRawAriaRole(*element);
   if (element->HasTagName(html_names::kHeaderTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
+      aria_role == ax::mojom::blink::Role::kBanner) {
     annotated_roles.push_back(
         mojom::blink::AIPageContentAnnotatedRole::kHeader);
   }
   if (element->HasTagName(html_names::kNavTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "navigation") {
+      aria_role == ax::mojom::blink::Role::kNavigation) {
     annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kNav);
   }
   if (element->HasTagName(html_names::kSearchTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "search") {
+      aria_role == ax::mojom::blink::Role::kSearch) {
     annotated_roles.push_back(
         mojom::blink::AIPageContentAnnotatedRole::kSearch);
   }
   if (element->HasTagName(html_names::kMainTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "main") {
+      aria_role == ax::mojom::blink::Role::kMain) {
     annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kMain);
   }
   if (element->HasTagName(html_names::kArticleTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "article") {
+      aria_role == ax::mojom::blink::Role::kArticle) {
     annotated_roles.push_back(
         mojom::blink::AIPageContentAnnotatedRole::kArticle);
   }
   if (element->HasTagName(html_names::kSectionTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "region") {
+      aria_role == ax::mojom::blink::Role::kRegion) {
     annotated_roles.push_back(
         mojom::blink::AIPageContentAnnotatedRole::kSection);
   }
   if (element->HasTagName(html_names::kAsideTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "complementary") {
+      aria_role == ax::mojom::blink::Role::kComplementary) {
     annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kAside);
   }
   if (element->HasTagName(html_names::kFooterTag) ||
-      element->FastGetAttribute(html_names::kRoleAttr) == "contentinfo") {
+      aria_role == ax::mojom::blink::Role::kContentInfo) {
     annotated_roles.push_back(
         mojom::blink::AIPageContentAnnotatedRole::kFooter);
   }
@@ -2180,28 +2325,6 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
   if (it != dom_node_to_z_order_.end()) {
     interaction_info.document_scoped_z_order = it->value;
   }
-}
-
-void AIPageContentAgent::ContentBuilder::AddAriaRole(
-    const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes) {
-  if (!actionable_mode()) {
-    return;
-  }
-
-  auto* element = DynamicTo<Element>(object.GetNode());
-  if (!element) {
-    attributes.aria_role = ax::mojom::blink::Role::kUnknown;
-    return;
-  }
-
-  auto aria_role = AXObject::AriaAttribute(*element, html_names::kRoleAttr);
-  if (aria_role.empty()) {
-    attributes.aria_role = ax::mojom::blink::Role::kUnknown;
-    return;
-  }
-
-  attributes.aria_role = AXObject::FirstValidRoleInRoleString(aria_role);
 }
 
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(

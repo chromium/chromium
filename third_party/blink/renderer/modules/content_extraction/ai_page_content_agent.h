@@ -131,8 +131,6 @@ class MODULES_EXPORT AIPageContentAgent final
             frame_interaction_info);
     void MaybeAddPopupData(LocalFrame& frame,
                            mojom::blink::AIPageContentFrameData& frame_data);
-    void AddAriaRole(const LayoutObject& object,
-                     mojom::blink::AIPageContentAttributes& attributes);
     void AddNodeInteractionInfo(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes,
