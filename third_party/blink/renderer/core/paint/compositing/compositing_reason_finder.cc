@@ -93,6 +93,15 @@ CompositingReasons CompositingReasonsForWillChange(const ComputedStyle& style) {
   if (style.HasWillChangeMixBlendModeHint()) {
     reasons |= CompositingReason::kWillChangeMixBlendMode;
   }
+  // Even though 'mask' generally implies mask-image, will-change treats them
+  // separately, so we need to check them both to get accurate backdrop filter
+  // reasons.
+  if (style.HasWillChangeMaskHint()) {
+    reasons |= CompositingReason::kWillChangeMask;
+  }
+  if (style.HasWillChangeMaskImageHint()) {
+    reasons |= CompositingReason::kWillChangeMaskImage;
+  }
 
   // kWillChangeOther is needed only when none of the explicit kWillChange*
   // reasons are set.

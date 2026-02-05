@@ -1731,18 +1731,24 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffect() const {
   // A mask-based clip-path needs an effect node, similar to a normal mask.
   if (needs_mask_based_clip_path_)
     return true;
-  // A clip-path needs an effect node if it has backdrop-filter descendants
-  // that need the correct backdrop root per CSS spec.
+
   // TODO(crbug.com/446078857): For now backdrop-filter doesn't work properly on
   // SVG elements (see crbug.com/40721696). When we fix that, we will need to
   // modify the following code to apply to SVG elements that don't create a
   // PaintLayer.
-  if (RuntimeEnabledFeatures::
-          BackdropRootForClipPathWithBackdropFilterEnabled() &&
-      properties_ && properties_->ClipPathClip() && object_.HasLayer()) {
+  if (object_.HasLayer()) {
     const auto* layer = To<LayoutBoxModelObject>(object_).Layer();
     if (layer->HasBackdropFilterDescendant()) {
-      return true;
+      // Some backdrop roots (especially will-change) do not create effect nodes
+      // on their own, so we check for those here. See Filter Effects Level 2:
+      // Backdrop Root
+      if (properties_ && properties_->ClipPathClip()) {
+        return true;
+      }
+      if (full_context_.direct_compositing_reasons &
+          CompositingReason::kAuxiliaryReasonsForBackdropRoot) {
+        return true;
+      }
     }
   }
   if (NeedsEffectFor2DScaleTransform()) {

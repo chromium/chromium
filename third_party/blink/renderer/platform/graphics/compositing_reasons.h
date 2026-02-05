@@ -49,6 +49,8 @@ using CompositingReasons = uint64_t;
   V(WillChangeBackdropFilter)                                                  \
   V(WillChangeClipPath)                                                        \
   V(WillChangeMixBlendMode)                                                    \
+  V(WillChangeMask)                                                            \
+  V(WillChangeMaskImage)                                                       \
   /* This flag is needed only when none of the explicit kWillChange* reasons   \
      are set. */                                                               \
   V(WillChangeOther)                                                           \
@@ -152,15 +154,19 @@ class PLATFORM_EXPORT CompositingReason {
         kRootScroller | kOverflowScrolling,
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
-        kWillChangeBackdropFilter | kWillChangeClipPath |
-        kWillChangeMixBlendMode | kActiveBackdropFilterAnimation |
-        kViewTransitionPseudoElement | kTransform3DSceneLeaf | kElementCapture |
-        kCanvasChild,
+        kWillChangeBackdropFilter | kWillChangeMixBlendMode |
+        kActiveBackdropFilterAnimation | kViewTransitionPseudoElement |
+        kTransform3DSceneLeaf | kElementCapture | kCanvasChild,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
     kDirectReasonsForBackdropFilter = kBackdropFilter |
                                       kActiveBackdropFilterAnimation |
                                       kWillChangeBackdropFilter,
+    // These will-change properties create a backdrop root if a child with
+    // backdrop-filter is present, but otherwise do not create an effect node on
+    // their own (and thus do not self-enforce)
+    kAuxiliaryReasonsForBackdropRoot =
+        kWillChangeClipPath | kWillChangeMask | kWillChangeMaskImage,
 
     // These reasons also cause any effect or filter node that exists
     // to be composited. They don't cause creation of a node.

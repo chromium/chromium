@@ -1284,6 +1284,12 @@ class ComputedStyle final : public ComputedStyleBase {
   bool HasWillChangeMixBlendModeHint() const {
     return WillChangeProperties().Contains(CSSPropertyID::kMixBlendMode);
   }
+  bool HasWillChangeMaskHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kMask);
+  }
+  bool HasWillChangeMaskImageHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kMaskImage);
+  }
 
   // Hyphen utility functions.
   Hyphenation* GetHyphenation() const;
