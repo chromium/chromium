@@ -76,6 +76,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -3813,6 +3815,23 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testGetSkillPreviewsSuccess) {
   SkillsService()->AddSkill(/*name=*/"test_skill_2", /*icon=*/"test_icon_2",
                             /*prompt=*/"test_prompt_2");
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testDisplaySkillInDialogSuccess) {
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    tabs::TabInterface* tab =
+        InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+    auto* controller = static_cast<skills::SkillsUiTabController*>(
+        skills::SkillsUiTabControllerInterface::From(tab));
+    if (controller && controller->IsShowing()) {
+      const auto& skill = controller->GetCurrentSkillForTesting();
+      return skill.has_value() && skill->id == "id" && skill->name == "name" &&
+             skill->icon == "icon" && skill->prompt == "prompt" &&
+             skill->source == sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+    }
+    return false;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testShowManageSkillsUi) {

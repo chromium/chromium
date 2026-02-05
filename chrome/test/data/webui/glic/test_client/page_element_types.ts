@@ -172,6 +172,9 @@ export interface PageElementTypes {
   textmode: HTMLInputElement;
   audiomode: HTMLInputElement;
   skillIdInput: HTMLInputElement;
+  skillNameInput: HTMLInputElement;
+  skillIconInput: HTMLInputElement;
+  skillSourceSelect: HTMLSelectElement;
   skillPromptInput: HTMLInputElement;
   createSkillBtn: HTMLButtonElement;
   updateSkillBtn: HTMLButtonElement;

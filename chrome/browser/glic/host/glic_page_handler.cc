@@ -209,6 +209,17 @@ mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::Skill* skill) {
                                   ToMojomSkillSource(skill->source),
                                   skill->description);
 }
+
+sync_pb::SkillSource FromMojomSkillSource(mojom::SkillSource source) {
+  switch (source) {
+    case mojom::SkillSource::kUnknown:
+      return sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN;
+    case mojom::SkillSource::kFirstParty:
+      return sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+    case mojom::SkillSource::kUserCreated:
+      return sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
+  }
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Monitors the panel state and the browser widget state. Emits an event any
@@ -1340,10 +1351,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "CreateSkill cannot be called without Skills enabled.");
       return;
     }
-    // Pass empty strings for id, name, and icon.
-    skills::Skill skill(/*id=*/"",
-                        /*name=*/"",
-                        /*icon=*/"", request->prompt);
+    // There are three scenarios:
+    // 1. Users click the + button in the / menu: no field is set.
+    // 2. Users click the save as a skill button: only prompt is set.
+    // 3. Users edit a 1P skill: all fields are set.
+    // TODO(https://crbug.com/479950619): consider using mojom source enum
+    // directly in skills::Skill..
+    skills::Skill skill(request->id, request->name, request->icon,
+                        request->prompt, request->description,
+                        FromMojomSkillSource(request->source));
     host().skills_manager().LaunchSkillsDialog(profile_, std::move(skill),
                                                std::move(scoped_callback));
 #else

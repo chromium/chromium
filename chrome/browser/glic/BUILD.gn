@@ -579,6 +579,7 @@ source_set("browser_tests") {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/skills",
+      "//chrome/browser/skills:ui",
       "//chrome/browser/subscription_eligibility",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",

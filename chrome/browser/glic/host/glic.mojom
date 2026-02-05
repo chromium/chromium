@@ -640,8 +640,18 @@ struct Skill {
 
 // Request to create a skill.
 struct CreateSkillRequest {
+  // The unique identifier of the skill which is an UUID.
+  string id;
+  // The name of the skill.
+  string name;
+  // The icon of the skill, which is an emoji.
+  string icon;
+  // The source of the skill.
+  SkillSource source;
   // A prompt for the skill which can be an empty string.
   string prompt;
+  // The description of the skill.
+  string description;
 };
 
 // Request to update a skill.

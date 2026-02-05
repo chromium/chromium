@@ -69,6 +69,9 @@ void SkillsUiTabController::ShowDialog(Skill skill) {
   if (dialog_delegate_) {
     return;
   }
+
+  current_skill_ = skill;
+
   content::WebContents* contents = tab_->GetContents();
   CHECK(contents);
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
@@ -120,6 +123,10 @@ void SkillsUiTabController::OnSkillSaved(const std::string& skill_id) {
       window_controller->OnSkillSaved(skill_id);
     }
   }
+}
+
+bool SkillsUiTabController::IsShowing() const {
+  return dialog_delegate_ != nullptr;
 }
 
 void SkillsUiTabController::InvokeSkill(std::string_view skill_id) {

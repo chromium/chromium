@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {CaptureRegionErrorReason, HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CaptureRegionErrorReason, HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -2744,6 +2744,18 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
   async testShowManageSkillsUi() {
     assertDefined(this.host.showManageSkillsUi);
     this.host.showManageSkillsUi();
+  }
+
+  async testDisplaySkillInDialogSuccess() {
+    assertDefined(this.host.createSkill);
+    const request = {
+      id: 'id',
+      name: 'name',
+      icon: 'icon',
+      prompt: 'prompt',
+      source: SkillSource.FIRST_PARTY,
+    };
+    this.host.createSkill(request);
   }
 
   async testSendingContextualSkillsToGlic() {

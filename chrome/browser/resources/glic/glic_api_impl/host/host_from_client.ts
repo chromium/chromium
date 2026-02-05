@@ -9,7 +9,7 @@ import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
-import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, SkillSource as MojomSkillSource, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
 import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, CaptureRegionErrorReason, ConversationInfo, CreateSkillRequest, DraggableArea, GetPinCandidatesOptions, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillSource, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, ViewChangedNotification, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
@@ -390,7 +390,15 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
   async glicBrowserCreateSkill(request: {
     request: CreateSkillRequest,
   }): Promise<{modalOpened: boolean}> {
-    return await this.handler.createSkill(request.request);
+    const mojoRequest = {
+      id: request.request.id ?? '',
+      name: request.request.name ?? '',
+      icon: request.request.icon ?? '',
+      prompt: request.request.prompt,
+      description: request.request.description ?? '',
+      source: request.request.source as number as MojomSkillSource,
+    };
+    return await this.handler.createSkill(mojoRequest);
   }
 
   async glicBrowserUpdateSkill(request: {

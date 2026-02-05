@@ -12,12 +12,14 @@ Skill::Skill(const std::string& id,
              const std::string& name,
              const std::string& icon,
              const std::string& prompt,
-             const std::string& description)
+             const std::string& description,
+             const sync_pb::SkillSource& source)
     : id(id),
       name(name),
       icon(icon),
       prompt(prompt),
-      description(description) {}
+      description(description),
+      source(source) {}
 
 Skill::Skill(const Skill&) = default;
 Skill& Skill::operator=(const Skill&) = default;

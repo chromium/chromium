@@ -2091,8 +2091,21 @@ export declare interface Skill {
 }
 
 export declare interface CreateSkillRequest {
+  /**
+   * A unique identifier for the skill. This is only available when the user is
+   * trying to remix a 1P skill.
+   */
+  id?: string;
+  /** The user-facing name of the skill. Only available in 1P remix flow. */
+  name?: string;
+  /** The icon for the skill. Only available in 1P remix flow. */
+  icon?: string;
   /** A prompt for the skill, which can be empty. */
   prompt: string;
+  /** The description of the skill. Only available in 1P remix flow. */
+  description?: string;
+  /** The source of the skill. */
+  source?: SkillSource;
 }
 
 export declare interface UpdateSkillRequest {
