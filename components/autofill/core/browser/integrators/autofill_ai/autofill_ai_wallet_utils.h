@@ -13,7 +13,7 @@
 namespace autofill {
 
 class EntityInstance;
-class EntityManager;
+class EntityDataManager;
 
 // Reacts to the response of a Wallet upsert request by writing to EDM and
 // updating the UI.
@@ -21,10 +21,15 @@ class EntityManager;
 // This is a stand-alone method and not a method of `AutofillAiManager` to allow
 // running it even after the `AutofillAiManager` has been destroyed (e.g.,
 // during tab close).
+// The arguments have the following meaning:
+// - `prompt_type`: The type of prompt that triggered the Wallet request.
+// - `entity`: The entity that we tried to save/update/migrate to Wallet.
+// - `wallet_response`: The response from Wallet.
 void HandleWalletUpsertResponse(
-    base::WeakPtr<EntityManager> entity_manager,
+    base::WeakPtr<EntityDataManager> entity_manager,
     base::WeakPtr<AutofillClient> client,
     AutofillClient::AutofillAiImportPromptType prompt_type,
+    EntityInstance entity,
     std::optional<EntityInstance> wallet_response);
 
 }  // namespace autofill

@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -146,6 +147,10 @@ class EntityDataManager : public KeyedService,
   }
 
   const GeoIpCountryCode& GetVariationCountryCode() const;
+
+  base::WeakPtr<EntityDataManager> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   void LoadEntities();

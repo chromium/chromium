@@ -413,10 +413,10 @@ void AutofillAiManager::HandlePromptResult(
     return;
   }
 
-  // TODO(crbug.com/481566741): Pass the entity manager as a weak pointer.
   base::OnceCallback<void(std::optional<EntityInstance>)> callback =
-      base::BindOnce(&HandleWalletUpsertResponse, /*entity_manager=*/nullptr,
-                     client_->GetWeakPtr(), prompt_type);
+      base::BindOnce(&HandleWalletUpsertResponse,
+                     client_->GetEntityDataManager()->GetWeakPtr(),
+                     client_->GetWeakPtr(), prompt_type, entity);
   // For now, asynchronous saves imply saving to Wallet.
   SendWalletUpsertRequest(entity, std::move(callback));
 }

@@ -116,7 +116,7 @@ void EntityDataManager::LoadEntities() {
           self->NotifyEntityInstancesChanged();
         }
       },
-      weak_ptr_factory_.GetWeakPtr()));
+      GetWeakPtr()));
 }
 
 void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
@@ -135,7 +135,7 @@ void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
             }
             self->NotifyEntityInstancesChanged();
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          GetWeakPtr()));
 }
 
 void EntityDataManager::RemoveEntityInstance(EntityInstance::EntityId guid) {
@@ -155,7 +155,7 @@ void EntityDataManager::RemoveEntityInstance(EntityInstance::EntityId guid) {
             self->entities_.erase(eic.key());
             self->NotifyEntityInstancesChanged();
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          GetWeakPtr()));
 }
 
 void EntityDataManager::RemoveEntityInstancesModifiedBetween(

@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+
 namespace autofill {
 
 namespace {
@@ -36,19 +39,29 @@ void UpdateUi(base::WeakPtr<AutofillClient> client, UiAction action) {
 }  // namespace
 
 void HandleWalletUpsertResponse(
-    base::WeakPtr<EntityManager> entity_manager,
+    base::WeakPtr<EntityDataManager> entity_manager,
     base::WeakPtr<AutofillClient> client,
     AutofillClient::AutofillAiImportPromptType prompt_type,
+    EntityInstance entity,
     std::optional<EntityInstance> wallet_response) {
   using enum AutofillClient::AutofillAiImportPromptType;
   using enum UiAction;
+
+  CHECK(entity.type().SupportsMaskedStorage());
+  CHECK(!entity.IsMaskedServerEntity());
+
+  if (!entity_manager) {
+    UpdateUi(client, kNoNotification);
+    return;
+  }
 
   // The Wallet request failed.
   if (!wallet_response) {
     switch (prompt_type) {
       case kSave:
         // Save locally instead.
-        // TODO(crbug.com/481566741): Write a local entity to EDM.
+        entity_manager->AddOrUpdateEntityInstance(
+            entity.CopyWithNewRecordType(EntityInstance::RecordType::kLocal));
         UpdateUi(client, kLocalSaveNotification);
         break;
       case kUpdate:
@@ -61,6 +74,10 @@ void HandleWalletUpsertResponse(
     return;
   }
 
+  // The Wallet server API must always return a masked entity. This CHECK can be
+  // enforced on the client even though it involves server data because the bit
+  // whether an attribute is masked is purely determined client-side.
+  CHECK(!wallet_response->IsUnmaskedServerEntity());
   switch (prompt_type) {
     case kMigrate:
       // TODO(crbug.com/481566741): Delete local entity.
