@@ -257,7 +257,7 @@ bool AutofillClient::IsCvcSavingSupported() const {
 
 bool AutofillClient::IsCreditCardUploadEnabled() const {
   return ::autofill::IsCreditCardUploadEnabled(
-      GetSyncService(), *GetPrefs(),
+      GetSyncService(),
       GetPersonalDataManager()
           .payments_data_manager()
           .GetCountryCodeForExperimentGroup(),

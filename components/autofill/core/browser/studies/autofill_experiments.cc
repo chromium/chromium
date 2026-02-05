@@ -33,8 +33,6 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -105,7 +103,6 @@ const char* const kAutofillUpstreamLaunchedCountries[] = {
 
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
-    const PrefService& pref_service,
     const std::string& user_country,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     LogManager* log_manager) {
@@ -170,22 +167,7 @@ bool IsCreditCardUploadEnabled(
   // In sync settings, address and payment toggles are independent. However,
   // since address information is uploaded during the server card saving flow,
   // credit card upload is not available when address sync is disabled.
-  // Before address sync was available in transport mode, server card save was
-  // offered in transport mode regardless of the setting. (The sync API exposes
-  // the kAutofill type as disabled in this case.)
-  // TODO(crbug.com/40066949): Simplify once IsSyncFeatureActive() is deleted
-  // from the codebase.
-  bool addresses_in_transport_mode = true;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Dice users don't have addresses in transport mode until they went through
-  // the explicit signin flow.
-  addresses_in_transport_mode =
-      pref_service.GetBoolean(::prefs::kExplicitBrowserSignin);
-#endif
-  bool syncing_or_addresses_in_transport_mode =
-      sync_service->IsSyncFeatureActive() || addresses_in_transport_mode;
-  if (syncing_or_addresses_in_transport_mode &&
-      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kAutofill)) {
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::
@@ -295,27 +277,6 @@ bool IsTouchToFillPaymentMethodSupported() {
 #else
   return false;
 #endif
-}
-
-bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
-                                      const CoreAccountId& account_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // On mobile, no specific opt-in is required.
-  return true;
-#else
-  if (prefs->GetBoolean(::prefs::kExplicitBrowserSignin)) {
-    // Explicit browser signin makes the explicit opt-in unnecessary.
-    return true;
-  }
-
-  // Get the hash of the account id.
-  std::string account_hash =
-      base::Base64Encode(crypto::hash::Sha256(account_id.ToString()));
-
-  // Return whether the wallet opt-in bit is set.
-  return GetSyncTransportOptInBitFieldForAccount(prefs, account_hash) &
-         prefs::sync_transport_opt_in::kWallet;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,

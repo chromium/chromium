@@ -1818,18 +1818,6 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
 
   CHECK(sync_service_);
 
-  // Check if the user is in sync transport mode for wallet data.
-  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
-  // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  if (!sync_service_->IsSyncFeatureEnabled()) {
-    // For SyncTransport, only show server payment methods if the user has
-    // opted in to seeing them in the dropdown.
-    if (!IsUserOptedInWalletSyncTransport(
-            pref_service_, sync_service_->GetAccountInfo().account_id)) {
-      return false;
-    }
-  }
-
   // Server payment methods should be suggested if the sync service is active.
   return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }

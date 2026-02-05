@@ -228,7 +228,7 @@ bool SaveAndFillManagerImpl::IsCreditCardUploadEnabled() const {
   const PaymentsDataManager& payments_data_manager =
       payments_autofill_client()->GetPaymentsDataManager();
   return autofill::IsCreditCardUploadEnabled(
-      autofill_client_->GetSyncService(), *autofill_client_->GetPrefs(),
+      autofill_client_->GetSyncService(),
       payments_data_manager.GetCountryCodeForExperimentGroup(),
       payments_data_manager.GetPaymentsSigninStateForMetrics(),
       autofill_client_->GetCurrentLogManager());

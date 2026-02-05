@@ -30,7 +30,6 @@ class LogManager;
 // be a member of a supported domain.
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
-    const PrefService& pref_service,
     const std::string& user_country,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     LogManager* log_manager);
@@ -61,9 +60,6 @@ bool IsDeviceAuthAvailable(
 
 // Returns true if the Touch To Fill feature is supported by platform.
 bool IsTouchToFillPaymentMethodSupported();
-
-bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
-                                      const CoreAccountId& account_id);
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
                                        const CoreAccountId& account_id,

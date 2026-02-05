@@ -1653,9 +1653,6 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
       identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
 
-  // Opt-in to seeing server card in sync transport mode.
-  SetUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id, true);
-
   // Check that the server card is available for suggestion.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
   EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
@@ -1672,33 +1669,6 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   EXPECT_EQ(1U, GetCreditCardsToSuggest(payments_data_manager()).size());
   EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
   EXPECT_EQ(0U, payments_data_manager().GetServerCreditCards().size());
-}
-
-// Make sure that the opt in is necessary to show server cards if the
-// appropriate feature is disabled.
-TEST_F(PaymentsDataManagerSyncTransportModeTest,
-       ServerCardsShowInTransportMode_NeedOptIn) {
-  SetUpTwoCardTypes();
-
-  CoreAccountInfo active_info =
-      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-
-  // The server card should not be available at first. The user needs to
-  // accept the opt-in offer.
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(1U, GetCreditCardsToSuggest(payments_data_manager()).size());
-  EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
-  EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
-
-  // Opt-in to seeing server card in sync transport mode.
-  SetUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id, true);
-
-  // Check that the server card is available for suggestion.
-  EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
-  EXPECT_EQ(2U, GetCreditCardsToSuggest(payments_data_manager()).size());
-  EXPECT_EQ(1U, payments_data_manager().GetLocalCreditCards().size());
-  EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -3392,104 +3362,6 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled,
       payments_data_manager().GetPaymentsSigninStateForMetrics());
 }
-
-// On mobile, no dedicated opt-in is required for WalletSyncTransport - the
-// user is always considered opted-in and thus this test doesn't make sense.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
-  ///////////////////////////////////////////////////////////
-  // kSignedInAndWalletSyncTransportEnabled
-  ///////////////////////////////////////////////////////////
-  // Make sure a primary account with no sync consent is available so
-  // AUTOFILL_WALLET_DATA can run in sync-transport mode.
-  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSync));
-  CoreAccountInfo active_info =
-      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, active_info);
-
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill,
-                 syncer::UserSelectableType::kPayments});
-  // Make sure there are no opt-ins recorded yet.
-  ASSERT_FALSE(
-      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
-
-  // Account wallet storage only makes sense together with support for
-  // unconsented primary accounts, i.e. on Win/Mac/Linux.
-#if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(
-      !sync_service_.IsSyncFeatureEnabled() &&
-      sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
-
-  // Make sure an opt-in gets recorded if the user accepted an Upstream offer.
-  payments_data_manager().OnUserAcceptedUpstreamOffer();
-  EXPECT_TRUE(
-      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
-
-  // Clear the prefs.
-  prefs::ClearSyncTransportOptIns(prefs_.get());
-  ASSERT_FALSE(
-      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
-
-  ///////////////////////////////////////////////////////////
-  // kSignedIn
-  ///////////////////////////////////////////////////////////
-  // Disable the wallet data type. kSignedInAndWalletSyncTransportEnabled
-  // shouldn't be available.
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_TRUE(!sync_service_.GetAccountInfo().IsEmpty());
-
-  // Make sure an opt-in does not get recorded even if the user accepted an
-  // Upstream offer.
-  payments_data_manager().OnUserAcceptedUpstreamOffer();
-  EXPECT_FALSE(
-      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
-
-  // Clear the prefs.
-  prefs::ClearSyncTransportOptIns(prefs_.get());
-  ASSERT_FALSE(
-      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
-
-  ///////////////////////////////////////////////////////////
-  // kSignedOut
-  ///////////////////////////////////////////////////////////
-  identity_test_env_.ClearPrimaryAccount();
-  sync_service_.SetSignedOut();
-  {
-    EXPECT_TRUE(sync_service_.GetAccountInfo().IsEmpty());
-
-    // Make sure an opt-in does not get recorded even if the user accepted an
-    // Upstream offer.
-    payments_data_manager().OnUserAcceptedUpstreamOffer();
-    EXPECT_FALSE(
-        IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  ///////////////////////////////////////////////////////////
-  // kSignedInAndSyncFeature
-  ///////////////////////////////////////////////////////////
-  identity_test_env_.MakePrimaryAccountAvailable(active_info.email,
-                                                 signin::ConsentLevel::kSync);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, active_info);
-  {
-    EXPECT_TRUE(sync_service_.IsSyncFeatureEnabled());
-
-    // Make sure an opt-in does not get recorded even if the user accepted an
-    // Upstream offer.
-    payments_data_manager().OnUserAcceptedUpstreamOffer();
-    EXPECT_FALSE(
-        IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PaymentsDataManagerTest,
