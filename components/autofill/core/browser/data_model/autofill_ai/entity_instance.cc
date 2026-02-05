@@ -372,12 +372,28 @@ std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
   return os;
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         const EntityInstance::RecordType& t) {
+  switch (t) {
+    case EntityInstance::RecordType::kLocal:
+      os << "kLocal" << std::endl;
+      break;
+    case EntityInstance::RecordType::kServerWallet:
+      os << "kServerWallet" << std::endl;
+      break;
+  }
+  return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
   os << "- name: " << '"' << e.type() << '"' << std::endl;
   os << "- nickname: " << '"' << e.nickname() << '"' << std::endl;
   os << "- guid: " << '"' << e.guid() << '"' << std::endl;
   os << "- use date: " << '"' << e.use_date() << '"' << std::endl;
   os << "- date modified: " << '"' << e.date_modified() << '"' << std::endl;
+  os << "- record type: " << e.record_type() << std::endl;
+  os << "- are attributes read only: "
+     << (e.are_attributes_read_only() ? "true" : "false") << std::endl;
   for (const AttributeInstance& a : e.attributes()) {
     os << "- attribute " << a << std::endl;
   }

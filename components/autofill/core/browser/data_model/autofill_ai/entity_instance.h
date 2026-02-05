@@ -421,6 +421,7 @@ class EntityInstance final {
 };
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);
+std::ostream& operator<<(std::ostream& os, const EntityInstance::RecordType& t);
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e);
 
 struct EntityInstance::CompareByGuid {
