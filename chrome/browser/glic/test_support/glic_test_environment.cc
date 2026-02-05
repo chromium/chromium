@@ -16,11 +16,90 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#include "components/signin/public/android/jni_headers/AccountCapabilities_jni.h"
+#include "components/signin/public/android/jni_headers/AccountInfo_jni.h"
+#pragma clang diagnostic pop
+
+namespace {
+
+// Defined locally to avoid changes to identity_test_utils.h/cc.
+void AddTestAccountToFakeAccountManagerFacade(const std::string& email,
+                                              const std::string& gaia_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // 1. Construct GaiaId
+  GaiaId gaia_id_cpp(gaia_id);
+
+  // 2. Construct CoreAccountId
+  CoreAccountId core_account_id_cpp = CoreAccountId::FromGaiaId(gaia_id_cpp);
+
+  // 3. Construct AccountCapabilities (empty)
+  std::vector<std::string> cap_names;
+  std::vector<bool> cap_values;
+  base::android::ScopedJavaLocalRef<jobjectArray> j_cap_names =
+      base::android::ToJavaArrayOfStrings(env, cap_names);
+  base::android::ScopedJavaLocalRef<jbooleanArray> j_cap_values =
+      base::android::ToJavaBooleanArray(env, cap_values);
+  base::android::ScopedJavaLocalRef<jobject> account_capabilities_obj =
+      signin::Java_AccountCapabilities_Constructor(env, j_cap_names,
+                                                   j_cap_values);
+
+  // 4. Construct AccountInfo
+  base::android::ScopedJavaLocalRef<jobject> account_info_obj =
+      signin::Java_AccountInfo_Constructor(
+          env, core_account_id_cpp, email, gaia_id_cpp, "Test User", "Test",
+          base::android::ScopedJavaLocalRef<jstring>(),  // hostedDomain
+          base::android::ScopedJavaLocalRef<jobject>(),  // accountImage
+          account_capabilities_obj);
+
+  // 5. Get AccountManagerFacadeProvider class and getInstance method
+  base::android::ScopedJavaLocalRef<jclass> provider_class =
+      base::android::GetClass(
+          env, "org/chromium/components/signin/AccountManagerFacadeProvider");
+  jmethodID get_instance_method =
+      base::android::MethodID::Get<base::android::MethodID::TYPE_STATIC>(
+          env, provider_class.obj(), "getInstance",
+          "()Lorg/chromium/components/signin/AccountManagerFacade;");
+
+  // 6. Get AccountManagerFacade instance
+  base::android::ScopedJavaLocalRef<jobject> facade_obj =
+      base::android::ScopedJavaLocalRef<jobject>::Adopt(
+          env, env->CallStaticObjectMethod(provider_class.obj(),
+                                           get_instance_method));
+
+  // 7. Get addAccount method (FakeAccountManagerFacade specific)
+  base::android::ScopedJavaLocalRef<jclass> facade_class =
+      base::android::ScopedJavaLocalRef<jclass>::Adopt(
+          env, env->GetObjectClass(facade_obj.obj()));
+  jmethodID add_account_method =
+      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
+          env, facade_class.obj(), "addAccount",
+          "(Lorg/chromium/components/signin/base/AccountInfo;)V");
+
+  // 8. Call addAccount
+  env->CallVoidMethod(facade_obj.obj(), add_account_method,
+                      account_info_obj.obj());
+}
+
+}  // namespace
+#endif
 
 namespace glic {
 
@@ -101,6 +180,7 @@ class GlicTestEnvironmentServiceFactory : public ProfileKeyedServiceFactory {
       : ProfileKeyedServiceFactory(
             "GlicTestEnvironmentService",
             ProfileSelections::BuildForRegularProfile()) {
+    DependsOn(IdentityManagerFactory::GetInstance());
     // It would be sensible to depend on GlicKeyedServiceFactory, but that ends
     // up creating some service factories too early.
   }
@@ -135,6 +215,14 @@ GlicTestEnvironment::GlicTestEnvironment(
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
               &GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices,
               base::Unretained(this)));
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, SigninManager validates the account with the OS AccountManager
+  // (mediated by AccountManagerFacade). We must set up the fake facade.
+  // The account seeding is done in OnWillCreateBrowserContextKeyedServices
+  // to run after TestingProfile::Init resets the facade.
+  signin::SetUpFakeAccountManagerFacade();
+#endif
 }
 
 GlicTestEnvironment::~GlicTestEnvironment() = default;
@@ -170,6 +258,8 @@ void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
   if (internal::GetConfig().force_signin_and_glic_capability) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+
+    adaptor_ = std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile);
   }
 
   auto observation =
@@ -220,6 +310,14 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
     // See also crbug.com/460334478 for details.
     auto disabled = ash::BrowserContextHelper::
         DisableImplicitBrowserContextCreationForTest();
+#endif
+#if BUILDFLAG(IS_ANDROID)
+    // Seed the account into the FakeAccountManagerFacade.
+    // This is required on Android because SigninManager checks the facade
+    // directly.
+    AddTestAccountToFakeAccountManagerFacade(
+        "glic-test@example.com",
+        signin::GetTestGaiaIdForEmail("glic-test@example.com").ToString());
 #endif
     SigninWithPrimaryAccount(profile);
     SetModelExecutionCapability(true);

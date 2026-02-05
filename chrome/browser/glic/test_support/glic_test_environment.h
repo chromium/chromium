@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_features.h"
 
 class Profile;
+class IdentityTestEnvironmentProfileAdaptor;
 namespace glic {
 class GlicKeyedService;
 namespace internal {
@@ -104,6 +105,7 @@ class GlicTestEnvironment : public ProfileObserver {
       std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
       profile_observations_;
   internal::GlicTestEnvironmentShared shared_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
 };
 
 // Note: This constructs the GlicKeyedService, if it's not already created,

@@ -427,8 +427,10 @@ class GlicKeyedService : public KeyedService,
 
   raw_ptr<Profile> profile_;
 
-  // Never null - GlicActorTaskManager holds a reference so this must be
-  // destroyed after it.
+  // Never null - GlicActorTaskManager and GlicInstanceCoordinatorImpl hold a
+  // reference to this so it must be destroyed after them.
+  // NEEDS_ANDROID_IMPL: This is temporarily null on Android until
+  // ActorKeyedService stops crashing at runtime.
   std::unique_ptr<GlicActorPolicyChecker> actor_policy_checker_;
 
   std::unique_ptr<GlicEnabling> enabling_;
@@ -444,6 +446,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
+
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
   // Null in multi-instance mode.
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;

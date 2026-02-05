@@ -1,0 +1,285 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_BROWSER_TEST_H_
+#define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_BROWSER_TEST_H_
+
+#include <map>
+#include <sstream>
+#include <string_view>
+
+#include "base/base_switches.h"
+#include "base/command_line.h"
+#include "base/path_service.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/android_buildflags.h"
+#include "build/build_config.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/platform_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
+#include "url/gurl.h"
+#include "url/url_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
+namespace glic {
+
+#if BUILDFLAG(IS_ANDROID)
+#define SKIP_TEST_FOR_NON_DESKTOP_ANDROID()            \
+  if (!base::android::device_info::is_desktop()) {     \
+    GTEST_SKIP() << "Skipping on non-desktop Android"; \
+  }
+#else
+#define SKIP_TEST_FOR_NON_DESKTOP_ANDROID()
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#define SKIP_NEEDS_ANDROID_IMPL(message) \
+  if (true) {                            \
+    GTEST_SKIP() << message;             \
+  }
+#else
+#define SKIP_NEEDS_ANDROID_IMPL(message)
+#endif
+
+template <typename Trigger>
+[[nodiscard]] bool RunUntil(Trigger&& trigger, std::string_view message) {
+  if (base::test::RunUntil(std::forward<Trigger>(trigger))) {
+    return true;
+  }
+  LOG(ERROR) << message;
+  return false;
+}
+
+class GlicInstanceImpl;
+
+template <typename T>
+class GlicBrowserTestMixin : public T {
+ public:
+  template <typename... Args>
+  explicit GlicBrowserTestMixin(Args&&... args)
+      : T(std::forward<Args>(args)...) {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicMultiInstance);
+  }
+  ~GlicBrowserTestMixin() override = default;
+
+  // PlatformBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    T::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+    // This is needed to force is_desktop() to return true for desktop Android
+    // builds.
+    command_line->AppendSwitch(switches::kForceDesktopAndroid);
+#endif
+  }
+
+  void SetUpOnMainThread() override {
+    T::SetUpOnMainThread();
+
+    T::embedded_test_server()->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"));
+    T::embedded_https_test_server().ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"));
+
+    T::embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/webui/glic/");
+    T::embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "chrome/test/data/webui/glic/");
+
+    ASSERT_TRUE(test_server_handle_ =
+                    T::embedded_test_server()->StartAndReturnHandle());
+
+    // Need to set this here rather than in SetUpCommandLine because we need to
+    // use the embedded test server to get the right URL and it's not started
+    // at that time.
+    std::ostringstream path;
+    path << glic_page_path_;
+
+    // Append the query parameters to the URL.
+    bool first_param = true;
+    auto encode = [](const std::string_view& value) {
+      url::RawCanonOutputT<char> encoded;
+      url::EncodeURIComponent(value, &encoded);
+      return std::string(encoded.view());
+    };
+    for (const auto& [key, value] : mock_glic_query_params_) {
+      path << (first_param ? "?" : "&");
+      first_param = false;
+      path << encode(key);
+      if (!value.empty()) {
+        path << "=" << encode(value);
+      }
+    }
+
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    guest_url_ = T::embedded_test_server()->GetURL(path.str());
+    command_line->AppendSwitchASCII(::switches::kGlicGuestURL,
+                                    guest_url_.spec());
+    GURL fre_url = glic_fre_url_.value_or(
+        T::embedded_test_server()->GetURL("/glic/test_client/fre.html"));
+    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url.spec());
+    LOG(INFO) << "GlicBrowserTest: done setting up";
+  }
+
+  // Toggles the Glic UI.
+  // If `prevent_close` is true, the Glic window will be set to prevent
+  // closing on deactivation (if applicable).
+  void ToggleGlicForActiveTab(bool prevent_close = false) {
+    auto* service = GlicKeyedService::Get(T::GetProfile());
+    service->ToggleUI(
+        T::GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface(),
+        prevent_close, mojom::InvocationSource::kTopChromeButton);
+  }
+
+  // Opens the Glic UI on the active tab and returns it.
+  [[nodiscard]] GlicInstanceImpl* OpenGlicForActiveTab() {
+    ToggleGlicForActiveTab(/*prevent_close=*/true);
+    GlicInstanceImpl* instance =
+        WaitForGlicOpen(T::GetTabListInterface()->GetActiveTab());
+    if (!instance) {
+      LOG(ERROR) << "Failed to open Glic for active tab";
+    }
+    return instance;
+  }
+
+  // Waits for the Glic UI to be open and visible. Defaults to the only glic
+  // instance, but can be specified. Returns the opened instance or nullptr if
+  // it fails to open.
+  [[nodiscard]] GlicInstanceImpl* WaitForGlicOpen(
+      GlicInstance* instance = nullptr) {
+    std::optional<InstanceId> id =
+        instance ? std::make_optional(instance->id()) : std::nullopt;
+    bool success = RunUntil(
+        [this, id]() {
+          GlicInstance* target =
+              id ? GetInstanceById(*id) : GetOnlyGlicInstance();
+          return target && target->IsShowing();
+        },
+        "Failed to wait for Glic to open");
+    if (!success) {
+      return nullptr;
+    }
+    return id ? GetInstanceById(*id) : GetOnlyGlicInstance();
+  }
+
+  // Waits for the Glic UI to be open and visible for a specific tab. Returns
+  // the opened instance or nullptr if it fails to open.
+  [[nodiscard]] GlicInstanceImpl* WaitForGlicOpen(tabs::TabInterface* tab) {
+    bool success = RunUntil(
+        [this, tab]() {
+          GlicInstance* instance = GetInstanceForTab(tab);
+          return instance && instance->IsShowing();
+        },
+        "Failed to wait for Glic to open for tab");
+    if (!success) {
+      return nullptr;
+    }
+    return GetInstanceForTab(tab);
+  }
+
+  // Waits for the Glic UI to be closed. Defaults to the only glic instance,
+  // but can be specified.
+  [[nodiscard]] bool WaitForGlicClose(GlicInstance* instance = nullptr) {
+    std::optional<InstanceId> id =
+        instance ? std::make_optional(instance->id()) : std::nullopt;
+    return RunUntil(
+        [this, id]() {
+          GlicInstance* target =
+              id ? GetInstanceById(*id) : GetOnlyGlicInstance();
+          return !target || !target->IsShowing();
+        },
+        "Failed to close Glic UI");
+  }
+
+  // Returns the only glic instance. CHECK fails if there is ever more than one.
+  GlicInstanceImpl* GetOnlyGlicInstance() {
+    CHECK(GlicEnabling::IsMultiInstanceEnabled());
+    return static_cast<GlicInstanceImpl*>(
+        ::glic::GetOnlyGlicInstance(T::GetProfile()));
+  }
+
+  // Returns the glic instance bound to the given tab. Returns nullptr if not
+  // found.
+  GlicInstanceImpl* GetInstanceForTab(tabs::TabInterface* tab) {
+    CHECK(GlicEnabling::IsMultiInstanceEnabled());
+    return static_cast<GlicInstanceImpl*>(
+        ::glic::GetInstanceForTab(T::GetProfile(), tab));
+  }
+
+  // Returns the glic instance with the given id. Returns nullptr if not found.
+  GlicInstanceImpl* GetInstanceById(InstanceId id) {
+    CHECK(GlicEnabling::IsMultiInstanceEnabled());
+    return static_cast<GlicInstanceImpl*>(
+        ::glic::GetInstanceById(T::GetProfile(), id));
+  }
+
+  GlicInstanceCoordinatorImpl& coordinator() {
+    CHECK(GlicEnabling::IsMultiInstanceEnabled());
+    return static_cast<GlicInstanceCoordinatorImpl&>(
+        GlicKeyedService::Get(T::GetProfile())->window_controller());
+  }
+
+  // Opens a new tab with the given URL.
+  tabs::TabInterface* CreateAndActivateTab(const GURL& url) {
+    tabs::TabInterface* new_tab = T::GetTabListInterface()->OpenTab(url, -1);
+    T::GetTabListInterface()->ActivateTab(new_tab->GetHandle());
+    return new_tab;
+  }
+
+  void SetGlicPagePath(const std::string& glic_page_path) {
+    glic_page_path_ = glic_page_path;
+  }
+
+  // Adds a query param to the URL that will be used to load the mock glic.
+  // Must be called before `SetUpOnMainThread()`. Both `key` and `value` (if
+  // specified) will be URL-encoded for safety.
+  void add_mock_glic_query_param(const std::string_view& key,
+                                 const std::string_view& value = "") {
+    mock_glic_query_params_.emplace(key, value);
+  }
+
+  GURL GetGuestURL() {
+    CHECK(guest_url_.is_valid()) << "Guest URL not yet configured.";
+    return guest_url_;
+  }
+
+  void SetGlicFreUrlOverride(const GURL& url) { glic_fre_url_ = url; }
+
+ protected:
+  GlicTestEnvironment& glic_test_environment() {
+    return glic_test_environment_;
+  }
+
+ private:
+  GlicTestEnvironment glic_test_environment_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+  // This is the default test file. Tests can override with a different path.
+  std::string glic_page_path_ = "/glic/test_client/index.html";
+  GURL guest_url_;
+  std::optional<GURL> glic_fre_url_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::map<std::string, std::string> mock_glic_query_params_;
+};
+
+using GlicBrowserTest = GlicBrowserTestMixin<PlatformBrowserTest>;
+
+}  // namespace glic
+
+#endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_BROWSER_TEST_H_

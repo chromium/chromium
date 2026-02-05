@@ -161,6 +161,13 @@ class GlicInstanceTracker {
 // found. CHECK fails if there is ever more than one.
 GlicInstance* GetOnlyGlicInstance(Profile* profile);
 
+// Returns the glic instance bound to the given tab, or nullptr if none is
+// found.
+GlicInstance* GetInstanceForTab(Profile* profile, tabs::TabInterface* tab);
+
+// Returns the glic instance with the given id, or nullptr if none is found.
+GlicInstance* GetInstanceById(Profile* profile, InstanceId id);
+
 // Signs in a primary account, accepts the FRE, and enables the relevant
 // capability for that profile. browser_tests and interactive_ui_tests should
 // use GlicTestEnvironment. These methods are for unit_tests.

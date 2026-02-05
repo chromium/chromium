@@ -9,6 +9,7 @@ assert(enable_glic)
 source_set("test_support") {
   testonly = true
   sources = [
+    "glic_browser_test.h",
     "glic_test_environment.cc",
     "glic_test_environment.h",
     "glic_test_util.cc",
@@ -45,6 +46,11 @@ source_set("test_support") {
       "//chrome/browser/actor/ui",
       "//chrome/browser/ui/tabs:glic",
       "//ui/events:test_support",
+    ]
+  } else {
+    deps += [
+      "//components/signin/public/android:jni_headers",
+      "//google_apis/gaia/android:jni_headers",
     ]
   }
   public_deps = [ "//chrome/test:test_support" ]
