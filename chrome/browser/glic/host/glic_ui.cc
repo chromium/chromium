@@ -49,6 +49,10 @@
 #include "ui/webui/webui_allowlist.h"
 #include "ui/webui/webui_util.h"
 
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/grit/guest_view_shared_resources_map.h"  // nogncheck
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 namespace glic {
 
 // Enables sending bitmaps across glic for favicons instead of converting to
@@ -145,6 +149,13 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
   ConfigureSharedWebUISource(*source);
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  auto bindings = web_ui->GetBindings();
+  bindings.Put(content::BindingsPolicyValue::kSlimWebView);
+  web_ui->SetBindings(bindings);
+  source->AddResourcePaths(kGuestViewSharedResources);
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   for (const auto& resource : kGlicFreResources) {
     source->AddResourcePath(base::StrCat({"fre/", resource.path}), resource.id);

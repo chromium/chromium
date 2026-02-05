@@ -528,6 +528,9 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/extensions:resources",
         "//extensions:extensions_resources",
       ]
+    } else if (is_android) {
+      sources += [ "$root_gen_dir/chrome/guest_view_shared_resources.pak" ]
+      deps += [ "//chrome/browser/resources/guest_view_shared:resources" ]
     }
 
     if (enable_pdf) {

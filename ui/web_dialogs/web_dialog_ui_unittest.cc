@@ -25,7 +25,10 @@ TEST(MojoWebDialogUITest, ChromeSendAndMojoBindingsForMojoWebDialogUI) {
   MojoWebDialogUI web_dialog_ui(&test_web_ui);
 
   // MojoWebDialogUIs rely on both Mojo and chrome.send().
-  EXPECT_EQ(content::kWebUIBindingsPolicySet, test_web_ui.GetBindings());
+  EXPECT_EQ(content::BindingsPolicySet::FromRange(
+                content::BindingsPolicyValue::kWebUi,
+                content::BindingsPolicyValue::kWebUiHistograms),
+            test_web_ui.GetBindings());
 }
 
 }  // namespace ui

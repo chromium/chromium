@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/guest_view/buildflags/buildflags.gni")
+
+assert(enable_guest_view)
+
+static_library("slim_web_view") {
+  sources = [
+    "slim_web_view_bindings.cc",
+    "slim_web_view_bindings.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/guest_view/common",
+    "//components/guest_view/common:mojom",
+    "//content/public/common",
+    "//content/public/renderer",
+    "//gin",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
+    "//v8",
+  ]
+}

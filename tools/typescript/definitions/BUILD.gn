@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//tools/typescript/ts_library.gni")
 
 # This target is the only target that actually checks the correctness of the
@@ -68,5 +70,10 @@ ts_library("build_ts") {
       "//tools/typescript/definitions/chromeos_info_private.d.ts",
       "//tools/typescript/definitions/quick_unlock_private.d.ts",
     ]
+  }
+
+  if (enable_guest_view && !enable_extensions_core) {
+    definitions +=
+        [ "//tools/typescript/definitions/chrome_slim_web_view_private.d.ts" ]
   }
 }

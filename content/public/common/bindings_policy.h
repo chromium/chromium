@@ -31,9 +31,14 @@ enum class BindingsPolicyValue {
   // These bindings must not be exposed to normal web content.
   kWebUiHistograms,
 
+  // HTML-based UI bindings that allow access to the chrome.slimWebViewInternal
+  // API.
+  // These bindings must not be exposed to normal web content.
+  kSlimWebView,
+
   // Other types of bindings in the future can go here.
 
-  kLastValue = kWebUiHistograms,
+  kLastValue = kSlimWebView,
 };
 
 using BindingsPolicySet = base::EnumSet<BindingsPolicyValue,
@@ -42,8 +47,8 @@ using BindingsPolicySet = base::EnumSet<BindingsPolicyValue,
 
 // The set of WebUI bindings.
 inline constexpr BindingsPolicySet kWebUIBindingsPolicySet =
-    BindingsPolicySet::FromRange(BindingsPolicyValue::kWebUi,
-                                 BindingsPolicyValue::kWebUiHistograms);
+    BindingsPolicySet::FromRange(BindingsPolicyValue::kFirstValue,
+                                 BindingsPolicyValue::kLastValue);
 
 }  // namespace content
 

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
@@ -86,6 +88,15 @@ build_webui("build") {
     "/shared/*|./shared/tsc/*",
     "/fre/*|./fre/tsc/*",
   ]
+
+  if (enable_guest_view && !enable_extensions_core) {
+    ts_deps += [ "//chrome/browser/resources/guest_view_shared:build_ts" ]
+
+    ts_path_mappings +=
+        [ "/shared/guest_view/*|" + rebase_path(
+              "$root_gen_dir/chrome/browser/resources/guest_view_shared/tsc/*",
+              target_gen_dir) ]
+  }
 
   ts_composite = true
 }

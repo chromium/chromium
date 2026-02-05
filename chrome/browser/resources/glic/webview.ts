@@ -5,6 +5,8 @@
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {GlicRequestHeaderInjector} from '/shared/glic_request_headers.js';
+import {createWebView, isFullWebView} from '/shared/web_view_type.js';
+import type {WebViewType} from '/shared/web_view_type.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
@@ -113,7 +115,7 @@ type ChromeEventFunctionType<T> =
 // Creates and manages the <webview> element, and the GlicApiHost which
 // communicates with it.
 export class WebviewController {
-  webview: chrome.webviewTag.WebView;
+  webview: WebViewType;
   private host?: GlicApiHost;
   private communicator?: GlicApiCommunicator;
   private hostSubscriber?: Subscriber;
@@ -122,7 +124,7 @@ export class WebviewController {
   private webClientState =
       ObservableValue.withValue(WebClientState.UNINITIALIZED);
   private oneMinuteTimer = new OneShotTimer(1000 * 60);
-  private glicRequestHeaderInjector: GlicRequestHeaderInjector;
+  private glicRequestHeaderInjector?: GlicRequestHeaderInjector;
 
   constructor(
       private readonly container: HTMLElement,
@@ -131,26 +133,31 @@ export class WebviewController {
       private hostEmbedder: ApiHostEmbedder,
       private persistentState: WebviewPersistentState,
   ) {
-    this.webview =
-        document.createElement('webview') as chrome.webviewTag.WebView;
+    this.webview = createWebView();
 
-    this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
-        this.webview, loadTimeData.getString('chromeVersion'),
-        loadTimeData.getString('chromeChannel'),
-        loadTimeData.getString('glicHeaderRequestTypes'));
+    if (isFullWebView(this.webview)) {
+      this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
+          this.webview, loadTimeData.getString('chromeVersion'),
+          loadTimeData.getString('chromeChannel'),
+          loadTimeData.getString('glicHeaderRequestTypes'));
 
-    // Intercept all main frame requests, and block them if they are not allowed
-    // origins.
-    const onBeforeRequest = this.onBeforeRequest.bind(this);
-    this.webview.request.onBeforeRequest.addListener(
-        onBeforeRequest, {
-          types: [ResourceType.MAIN_FRAME],
-          urls: ['<all_urls>'],
-        },
-        ['blocking']);
-    this.onDestroy.push(() => {
-      this.webview.request.onBeforeRequest.removeListener(onBeforeRequest);
-    });
+      // Intercept all main frame requests, and block them if they are not
+      // allowed origins.
+      const onBeforeRequest = this.onBeforeRequest.bind(this);
+      this.webview.request.onBeforeRequest.addListener(
+          onBeforeRequest, {
+            types: [ResourceType.MAIN_FRAME],
+            urls: ['<all_urls>'],
+          },
+          ['blocking']);
+      this.onDestroy.push(() => {
+        // Need to check the type again as this function runs in a different
+        // scope.
+        if (isFullWebView(this.webview)) {
+          this.webview.request.onBeforeRequest.removeListener(onBeforeRequest);
+        }
+      });
+    }
 
     this.webview.id = 'guestFrame';
     this.webview.setAttribute('partition', 'persist:glicpart');
@@ -186,7 +193,10 @@ export class WebviewController {
   }
 
   destroy() {
-    this.glicRequestHeaderInjector.destroy();
+    if (this.glicRequestHeaderInjector !== undefined) {
+      this.glicRequestHeaderInjector.destroy();
+      this.glicRequestHeaderInjector = undefined;
+    }
     this.oneMinuteTimer.reset();
     if (this.host) {
       chrome.metricsPrivate.recordEnumerationValue(

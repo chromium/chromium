@@ -401,7 +401,10 @@ source_set("impl") {
     deps += [ "//components/guest_view/browser" ]
 
     if (!enable_extensions_core) {
-      deps += [ "//components/guest_view/browser/slim_web_view" ]
+      deps += [
+        "//chrome/browser/resources/guest_view_shared:resources",
+        "//components/guest_view/browser/slim_web_view",
+      ]
     }
   }
 
