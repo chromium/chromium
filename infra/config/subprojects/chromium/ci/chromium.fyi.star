@@ -2721,10 +2721,6 @@ ci.builder(
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
-                # Only retry the individual failed tests instead of rerunning
-                # entire shards.
-                # crbug.com/1473501
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     dimensions = {
                         "kvm": "1",
@@ -2733,10 +2729,6 @@ ci.builder(
                 ),
             ),
             "content_browsertests": targets.mixin(
-                # Only retry the individual failed tests instead of rerunning
-                # entir shards.
-                # crbug.com/1475852
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     shards = 6,
                 ),
