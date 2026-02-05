@@ -69,6 +69,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoFocusVisible:
     case CSSSelector::kPseudoFocusWithin:
     case CSSSelector::kPseudoActive:
+    case CSSSelector::kPseudoActiveOption:
     case CSSSelector::kPseudoChecked:
     case CSSSelector::kPseudoEnabled:
     case CSSSelector::kPseudoFullPageMedia:

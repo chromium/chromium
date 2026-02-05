@@ -39,3 +39,7 @@
   gap: 0.5em;
   white-space: nowrap;
 }
+
+.active-option {
+  outline: black auto 1px;
+}

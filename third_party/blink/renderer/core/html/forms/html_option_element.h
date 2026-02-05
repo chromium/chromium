@@ -144,6 +144,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   String CollectOptionInnerText() const;
 
   void UpdateLabel();
+  void UpdateAncestors();
 
   void DefaultEventHandlerInternal(Event&);
 
@@ -176,6 +177,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // maintained just like nearest_ancestor_select_, but doesn't account for any
   // <optgroup> element ancestor above nearest_ancestor_select_.
   Member<HTMLOptGroupElement> nearest_ancestor_optgroup_;
+
+  // Just like nearest_ancestor_select_ and nearest_ancestor_optgroup_, but for
+  // an ancestor <datalist> if present. Only one of nearest_ancestor_select_ and
+  // nearest_ancestor_datalist_ can be non-null.
+  Member<HTMLDataListElement> nearest_ancestor_datalist_;
 
   // label_container_ contains the text content of DisplayLabel(). Based on UA
   // style rules, it is rendered when this option is not inside of a select

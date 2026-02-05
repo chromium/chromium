@@ -162,14 +162,22 @@ class CORE_EXPORT HTMLSelectElement final
   const ListItems& GetListItems() const;
 
   // NearestAncestorSelectNoNesting is called with <hr>, <option>, and
-  // <optgroup> elements to determine if they have an ancestor <select> which
-  // they are associated with. An ancestor <select> will not be returned in some
-  // cases, such as nested <option>s, in order to match the logic in
-  // RecalcListItems and OptionList. This method also returns an <optgroup> if
-  // there is an <optgroup> in between the provided element and the returned
-  // <select>.
-  static std::pair<HTMLSelectElement*, HTMLOptGroupElement*>
-  AssociatedSelectAndOptgroup(const Element&);
+  // <optgroup> elements to determine if they have an ancestor <select> or
+  // <datalist> which they are associated with. An ancestor <select> will not be
+  // returned in some cases, such as nested <option>s, in order to match the
+  // logic in RecalcListItems and OptionList. This method also returns an
+  // <optgroup> if there is an <optgroup> in between the provided element and
+  // the returned <select>.
+  struct SelectOptgroupDatalist {
+    STACK_ALLOCATED();
+
+   public:
+    HTMLSelectElement* select;
+    HTMLOptGroupElement* optgroup;
+    HTMLDataListElement* datalist;
+  };
+  static SelectOptgroupDatalist AssociatedSelectAndOptgroupAndDatalist(
+      const Element&);
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void SelectOptionByAccessKey(HTMLOptionElement*);

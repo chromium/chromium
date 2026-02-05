@@ -131,6 +131,7 @@ void HTMLOptionElement::Trace(Visitor* visitor) const {
   visitor->Trace(text_observer_);
   visitor->Trace(nearest_ancestor_select_);
   visitor->Trace(nearest_ancestor_optgroup_);
+  visitor->Trace(nearest_ancestor_datalist_);
   visitor->Trace(label_container_);
   HTMLElement::Trace(visitor);
 }
@@ -475,6 +476,9 @@ void HTMLOptionElement::DidChangeTextContent() {
 }
 
 HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {
+  if (RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    return nearest_ancestor_datalist_;
+  }
   return Traversal<HTMLDataListElement>::FirstAncestor(*this);
 }
 
@@ -557,13 +561,20 @@ void HTMLOptionElement::UpdateLabel() {
   }
 }
 
+void HTMLOptionElement::UpdateAncestors() {
+  HTMLSelectElement::SelectOptgroupDatalist ancestors =
+      HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(*this);
+  nearest_ancestor_select_ = ancestors.select;
+  nearest_ancestor_optgroup_ = ancestors.optgroup;
+  nearest_ancestor_datalist_ = ancestors.datalist;
+}
+
 Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     ContainerNode& insertion_point) {
   auto return_value = HTMLElement::InsertedInto(insertion_point);
 
   HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
-  std::tie(nearest_ancestor_select_, nearest_ancestor_optgroup_) =
-      HTMLSelectElement::AssociatedSelectAndOptgroup(*this);
+  UpdateAncestors();
 
   if (nearest_ancestor_select_ &&
       nearest_ancestor_select_ != old_ancestor_select) {
@@ -578,8 +589,8 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
   HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
-  std::tie(nearest_ancestor_select_, nearest_ancestor_optgroup_) =
-      HTMLSelectElement::AssociatedSelectAndOptgroup(*this);
+  UpdateAncestors();
+
   if (nearest_ancestor_select_ != old_ancestor_select) {
     // We should only get here if we are being removed from a <select>
     CHECK(!nearest_ancestor_select_);

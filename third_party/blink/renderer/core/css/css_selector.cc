@@ -406,6 +406,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoOverscrollAreaParent:
       return kPseudoIdOverscrollAreaParent;
     case kPseudoActive:
+    case kPseudoActiveOption:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
     case kPseudoAny:
@@ -606,6 +607,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-webkit-scrollbar-track", CSSSelector::kPseudoScrollbarTrack},
     {"-webkit-scrollbar-track-piece", CSSSelector::kPseudoScrollbarTrackPiece},
     {"active", CSSSelector::kPseudoActive},
+    {"active-option", CSSSelector::kPseudoActiveOption},
     {"active-view-transition", CSSSelector::kPseudoActiveViewTransition},
     {"after", CSSSelector::kPseudoAfter},
     {"any-link", CSSSelector::kPseudoAnyLink},
@@ -848,6 +850,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoActiveOption &&
+      !RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
@@ -988,6 +995,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       [[fallthrough]];
     // For pseudo-classes
     case kPseudoActive:
+    case kPseudoActiveOption:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
     case kPseudoAny:
@@ -1601,6 +1609,7 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
+    case CSSSelector::kPseudoActiveOption:
       // TODO(https://crbug.com/1346456): Many pseudos should probably be
       // added to this list.  The default: case below should also be removed
       // so that those adding new pseudos know they need to choose one path or
@@ -1811,6 +1820,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoAutofillSelected:
     case kPseudoWebKitAutofill:
     case kPseudoActive:
+    case kPseudoActiveOption:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
     case kPseudoAnyLink:
@@ -2160,6 +2170,7 @@ CSSSelector::RelationType ConvertRelationToRelative(
 bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
   switch (type) {
     case CSSSelector::kPseudoActive:
+    case CSSSelector::kPseudoActiveOption:
     case CSSSelector::kPseudoActiveViewTransition:
     case CSSSelector::kPseudoActiveViewTransitionType:
     case CSSSelector::kPseudoAnyLink:

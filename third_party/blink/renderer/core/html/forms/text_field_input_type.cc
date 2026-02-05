@@ -297,9 +297,22 @@ void TextFieldInputType::ForwardEvent(Event& event) {
 
 void TextFieldInputType::HandleBlurEvent() {
   InputTypeView::HandleBlurEvent();
-  GetElement().EndEditing();
+  HTMLInputElement& input = GetElement();
+
+  input.EndEditing();
   if (SpinButtonElement* spin_button = GetSpinButtonElement())
     spin_button->ReleaseCapture();
+
+  if (input.IsBaseAppearanceCombobox()) {
+    auto* datalist = input.DataList();
+    CHECK(datalist);
+    if (datalist->popoverOpen()) {
+      datalist->HidePopoverInternal(
+          &input, HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+          /*exception_state=*/nullptr);
+    }
+  }
 }
 
 bool TextFieldInputType::ShouldSubmitImplicitly(const Event& event) {

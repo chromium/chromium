@@ -1973,34 +1973,36 @@ void HTMLSelectElement::UpdateAllSelectedcontents(
 }
 
 // static
-std::pair<HTMLSelectElement*, HTMLOptGroupElement*>
-HTMLSelectElement::AssociatedSelectAndOptgroup(const Element& element) {
+HTMLSelectElement::SelectOptgroupDatalist
+HTMLSelectElement::AssociatedSelectAndOptgroupAndDatalist(
+    const Element& element) {
   HTMLOptGroupElement* ancestor_optgroup = nullptr;
   for (Node& ancestor : NodeTraversal::AncestorsOf(element)) {
     if (IsA<HTMLOptionElement>(ancestor)) {
       // Elements nested inside of an <option> are not associated with the
       // <select>.
-      return std::make_pair(nullptr, ancestor_optgroup);
+      return {nullptr, ancestor_optgroup, nullptr};
     } else if (auto* new_ancestor_optgroup =
                    DynamicTo<HTMLOptGroupElement>(ancestor)) {
       if (ancestor_optgroup || IsA<HTMLOptGroupElement>(element)) {
         // Doubly-nested <optgroup>s and their descendants are not <select>
         // associated.
-        return std::make_pair(nullptr, ancestor_optgroup);
+        return {nullptr, ancestor_optgroup, nullptr};
       }
       ancestor_optgroup = new_ancestor_optgroup;
     } else if (IsA<HTMLHRElement>(ancestor)) {
       // Descendants of <hr> elements are not <select> associated.
-      return std::make_pair(nullptr, ancestor_optgroup);
-    } else if (RuntimeEnabledFeatures::SelectDisallowDatalistEnabled() &&
-               IsA<HTMLDataListElement>(ancestor)) {
-      // Descendants of <datalist> elements are not <select> associated.
-      return std::make_pair(nullptr, ancestor_optgroup);
+      return {nullptr, ancestor_optgroup, nullptr};
+    } else if (auto* datalist = DynamicTo<HTMLDataListElement>(ancestor)) {
+      if (RuntimeEnabledFeatures::SelectDisallowDatalistEnabled()) {
+        // Descendants of <datalist> elements are not <select> associated.
+        return {nullptr, ancestor_optgroup, datalist};
+      }
     } else if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-      return std::make_pair(select, ancestor_optgroup);
+      return {select, ancestor_optgroup, nullptr};
     }
   }
-  return std::make_pair(nullptr, ancestor_optgroup);
+  return {nullptr, ancestor_optgroup, nullptr};
 }
 
 FocusableState HTMLSelectElement::SupportsFocus(

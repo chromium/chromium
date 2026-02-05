@@ -2528,4 +2528,8 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
     padding-inline: -internal-auto-base(2px, 0.5em);
     padding-block-end: -internal-auto-base(1px, 0);
   }
+
+  datalist option:active-option {
+    outline: black auto 1px;
+  }
 }
