@@ -53,6 +53,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/first_run/guided_tour/coordinator",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
+    "//ios/chrome/browser/history/ui_bundled:coordinator_factory",
     "//ios/chrome/browser/history/ui_bundled/public",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",

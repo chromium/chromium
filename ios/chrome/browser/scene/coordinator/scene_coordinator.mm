@@ -28,8 +28,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
-#import "ios/chrome/browser/history/ui_bundled/history_coordinator_impl.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -712,9 +711,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   CHECK(!self.currentBrowser->GetProfile()->IsOffTheRecord())
       << "Current interface is incognito and should NOT show history. Call "
          "this on regular interface.";
-  _historyCoordinator = [[HistoryCoordinatorImpl alloc]
-      initWithBaseViewController:self.activeViewController
-                         browser:_regularBrowser.get()];
+  _historyCoordinator = CreateHistoryCoordinator(self.activeViewController,
+                                                 _regularBrowser.get());
   _historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
   _historyCoordinator.delegate = self;
   [_historyCoordinator start];

@@ -36,6 +36,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/fullscreen/ui_bundled:coordinators",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
+    "//ios/chrome/browser/history/ui_bundled:coordinator_factory",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/page_info/features",
     "//ios/chrome/browser/page_info/last_visited",
