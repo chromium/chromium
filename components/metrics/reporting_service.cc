@@ -104,10 +104,12 @@ void ReportingService::DisableReporting() {
 #if BUILDFLAG(IS_ANDROID)
 void ReportingService::SendNextLogNow(base::PassKey<BackgroundUploadTask>,
                                       base::OnceClosure done_callback) {
-  CHECK(!background_upload_task_scheduled_time_.is_null());
+  CHECK(background_upload_task_scheduled_);
+  CHECK(background_upload_task_scheduled_time_.has_value());
+  background_upload_task_scheduled_ = false;
   LogBackgroundUploadTaskPendingTime(base::TimeTicks::Now() -
-                                     background_upload_task_scheduled_time_);
-  background_upload_task_scheduled_time_ = base::TimeTicks();
+                                     *background_upload_task_scheduled_time_);
+  background_upload_task_scheduled_time_ = std::nullopt;
   SendNextLogImpl(std::move(done_callback));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -179,8 +181,12 @@ void ReportingService::SendNextLogWhenPossible() {
   // JobScheduler. See metrics::BackgroundUploadTask for implementation of the
   // background task.
   if (client_->IsJobSchedulerSupported()) {
-    // There should not be two upload tasks scheduled simultaneously.
-    CHECK(background_upload_task_scheduled_time_.is_null());
+    // There should not be two upload tasks scheduled simultaneously. Note that
+    // the following fields are intentionally set *before* we call Schedule() in
+    // case that function can in-line the execution of the task immediately.
+    CHECK(!background_upload_task_scheduled_);
+    CHECK(!background_upload_task_scheduled_time_.has_value());
+    background_upload_task_scheduled_ = true;
     background_upload_task_scheduled_time_ = base::TimeTicks::Now();
     // For consistency with other platforms, we use OneOffInfo (rather than
     // PeriodicInfo), as we have our own scheduling mechanisms. When the task
@@ -193,9 +199,19 @@ void ReportingService::SendNextLogWhenPossible() {
     // is no connectivity, which we want to exercise for consistency with other
     // platforms).
     background_task::TaskInfo task_info(background_upload_task_id_, one_off);
-    background_task::BackgroundTaskSchedulerFactory::GetScheduler()->Schedule(
-        task_info);
-    return;
+    bool success =
+        background_task::BackgroundTaskSchedulerFactory::GetScheduler()
+            ->Schedule(task_info);
+    if (success) {
+      return;
+    }
+
+    // If we couldn't schedule the task for whatever reason, fall back to
+    // uploading without JobScheduler (though the network request may fail if
+    // the browser is currently in the background). Clear the "pending" fields
+    // first.
+    background_upload_task_scheduled_ = false;
+    background_upload_task_scheduled_time_ = std::nullopt;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   SendNextLogImpl(base::DoNothing());

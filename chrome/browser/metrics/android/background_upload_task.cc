@@ -26,6 +26,8 @@ static base::NoDestructor<
     base::flat_map<MetricsLogUploader::MetricServiceType, ReportingService*>>
     g_reporting_service_overrides_for_testing;
 
+static base::NoDestructor<base::OnceClosure> g_task_done_callback_for_testing;
+
 MetricsLogUploader::MetricServiceType TaskIdToMetricServiceType(
     background_task::TaskIds task_id) {
   switch (task_id) {
@@ -69,13 +71,21 @@ BackgroundUploadTask::~BackgroundUploadTask() = default;
 void BackgroundUploadTask::SetReportingServiceForTesting(
     MetricsLogUploader::MetricServiceType service_type,
     ReportingService* service) {
-  if (!service) {
-    // Empty `service` means to delete the override instead.
-    g_reporting_service_overrides_for_testing->erase(service_type);
-    return;
-  }
   g_reporting_service_overrides_for_testing->insert_or_assign(service_type,
                                                               service);
+}
+
+// static
+bool BackgroundUploadTask::UnsetReportingServiceForTesting(
+    MetricsLogUploader::MetricServiceType service_type) {
+  return g_reporting_service_overrides_for_testing->erase(service_type);
+}
+
+// static
+void BackgroundUploadTask::SetTaskDoneCallbackForTesting(
+    base::OnceClosure callback) {
+  CHECK(g_task_done_callback_for_testing->is_null());
+  *g_task_done_callback_for_testing = std::move(callback);
 }
 
 void BackgroundUploadTask::OnStartTaskInReducedMode(
@@ -115,8 +125,36 @@ void BackgroundUploadTask::StartUpload(
   // services already have their own rescheduling mechanisms.
   base::OnceClosure done_callback =
       base::BindOnce(std::move(callback), /*reschedule=*/false);
-  GetReportingService(task_id_)->SendNextLogNow(
-      base::PassKey<BackgroundUploadTask>(), std::move(done_callback));
+  if (!g_task_done_callback_for_testing->is_null()) {
+    done_callback = std::move(done_callback)
+                        .Then(std::move(*g_task_done_callback_for_testing));
+  }
+
+  ReportingService* reporting_service = GetReportingService(task_id_);
+
+  // Tasks posted to the JobScheduler will actually persist even when the app is
+  // killed/closed. For example, if a task is pending, but the app is closed,
+  // the OS will re-start the application whenever it deems the task ready to
+  // run, and the task will run in this completely new process. This means that
+  // we may be trying to run a task here that was posted by a previous session,
+  // and the ReportingService may not be ready for it (e.g. not fully
+  // initialized yet). In fact, the target ReportingService may not even exist
+  // if, say, it is gated behind a feature flag (e.g. task was posted in a
+  // previous session when the feature was enabled, but ran in a new session
+  // where the feature was disabled). As a result, only actually start the
+  // upload if the corresponding ReportingService is actually expecting an
+  // upload. This keeps the behaviour more consistent across platforms, and
+  // ensures the ReportingService is actually ready to upload (though it is
+  // technically possible to adapt ReportingService to gracefully handle these
+  // "unplanned" uploads).
+  if (!reporting_service ||
+      !reporting_service->background_upload_task_scheduled()) {
+    std::move(done_callback).Run();
+    return;
+  }
+
+  reporting_service->SendNextLogNow(base::PassKey<BackgroundUploadTask>(),
+                                    std::move(done_callback));
 }
 
 }  // namespace metrics

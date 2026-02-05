@@ -26,10 +26,17 @@ class BackgroundUploadTask : public background_task::BackgroundTask {
   // registered with the browser, but in tests, it may actually have been
   // scheduled through a custom ReportingService that we manually instantiated.
   // This helper allows overriding which ReportingService will have its upload
-  // started. If `service` is null, the override will be deleted instead.
+  // started.
   static void SetReportingServiceForTesting(
       MetricsLogUploader::MetricServiceType service_type,
       ReportingService* service);
+
+  // Removes an override set by SetReportingServiceForTesting().
+  static bool UnsetReportingServiceForTesting(
+      MetricsLogUploader::MetricServiceType service_type);
+
+  // Sets a callback to run when the next upload task has finished running.
+  static void SetTaskDoneCallbackForTesting(base::OnceClosure callback);
 
  private:
   // background_task::BackgroundTask:
