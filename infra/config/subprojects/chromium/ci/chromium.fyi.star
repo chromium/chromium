@@ -2810,6 +2810,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    builderless = True,
     console_view_entry = [
         consoles.console_view_entry(
             category = "treesinviz",
