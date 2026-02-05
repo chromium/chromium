@@ -313,15 +313,6 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This parameter enables adding an experiment id to requests to the Autofill
-// to enable Autofill AI predictions. The experiment id is not used for other
-// backends.
-BASE_FEATURE_PARAM(int,
-                   kAutofillAiWithDataSchemaServerExperimentId,
-                   &kAutofillAiWithDataSchema,
-                   "autofill_ai_server_experiment_id",
-                   IS_AUTOFILL_AI_PLATFORM ? 3314871 : 0);
-
 // When enabled, autofill will fill not skip filling fields that had an initial
 // value which was modified.
 BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,

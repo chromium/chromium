@@ -597,14 +597,6 @@ void InitActiveExperiments() {
       std::unique(active_experiments.begin(), active_experiments.end()),
       active_experiments.end());
 
-  // We specify the experiment id for AutofillAI server predictions via a
-  // feature parameter instead of a variations ids so that we can use it
-  // together with a Google Groups controlled study.
-  if (features::kAutofillAiWithDataSchemaServerExperimentId.Get()) {
-    active_experiments.push_back(
-        features::kAutofillAiWithDataSchemaServerExperimentId.Get());
-  }
-
   GetActiveExperiments() = std::move(active_experiments);
 }
 

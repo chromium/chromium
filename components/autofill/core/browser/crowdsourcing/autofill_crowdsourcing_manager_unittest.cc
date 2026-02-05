@@ -1371,13 +1371,7 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     AutofillPageQueryRequest query_contents;
     ASSERT_TRUE(query_contents.ParseFromString(payloads()[0]));
 
-    if constexpr (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
-                  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) {
-      EXPECT_THAT(query_contents.experiments(),
-                  ElementsAre(3312923, 3314883, 3314871));
-    } else {
-      EXPECT_THAT(query_contents.experiments(), ElementsAre(3312923, 3314883));
-    }
+    EXPECT_THAT(query_contents.experiments(), ElementsAre(3312923, 3314883));
   }
 
   // Query a third time (will experiments still enabled). This should go to the
@@ -1439,30 +1433,6 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
                                 CACHE_MISS, 1);
   }
-}
-
-// Tests that setting the "autofill_ai_server_experiment_id" parameter for
-// kAutofillAiWithDataSchema adds the parameter as an experiment to the query
-// request.
-TEST_P(AutofillQueryTest, IncludesAutofillAiExperiment) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillAiWithDataSchema,
-      {{"autofill_ai_server_experiment_id", "12345678"}});
-
-  std::vector<FormData> forms = {
-      test::GetFormData({.fields = {{.role = NAME_FIRST}}})};
-
-  payloads().clear();
-  ASSERT_TRUE(SendQueryRequest(forms));
-  EXPECT_EQ(1, call_count());
-
-  ASSERT_THAT(payloads(), SizeIs(1));
-  AutofillPageQueryRequest query_contents;
-  ASSERT_TRUE(query_contents.ParseFromString(payloads()[0]));
-
-  ASSERT_EQ(1, query_contents.experiments_size());
-  EXPECT_EQ(12345678, query_contents.experiments(0));
 }
 
 TEST_P(AutofillQueryTest, Metadata) {
