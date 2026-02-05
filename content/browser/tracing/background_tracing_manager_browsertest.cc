@@ -672,8 +672,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 // now started asynchronously.
 // TODO(khokhlov): Re-enable when background tracing is switched to synchronous
 // start.
+// TODO(https://crbug.com/480203711): Flaky on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_EarlyTraceEventsInTrace DISABLED_EarlyTraceEventsInTrace
+#else
+#define MAYBE_EarlyTraceEventsInTrace EarlyTraceEventsInTrace
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       EarlyTraceEventsInTrace) {
+                       MAYBE_EarlyTraceEventsInTrace) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
