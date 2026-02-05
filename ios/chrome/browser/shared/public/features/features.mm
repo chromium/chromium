@@ -491,12 +491,7 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
 BASE_FEATURE(kEnableAppBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
-  // To test background refresh in conjunction with the keychain access
-  // migration, enable app background refresh if *either* its flag or
-  // the keychain access flag is enabled.
-  return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh) ||
-         base::FeatureList::IsEnabled(
-             crypto::features::kMigrateIOSKeychainAccessibility);
+  return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh);
 }
 
 BASE_FEATURE(kHomeMemoryImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
