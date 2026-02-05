@@ -2148,7 +2148,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="443121186588148776">Porto en serie</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> non aceptou o teu certificado de inicio de sesión ou ben este non se proporcionou.</translation>
 <translation id="4432792777822557199">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora</translation>
-<translation id="4433642172056592619">Ignorouse porque o usuario non está vinculado á xestión de dispositivos ou porque o dispositivo non está xestionado.</translation>
+<translation id="4433642172056592619">Ignorouse porque o usuario non está afiliado á xestión de dispositivos ou porque o dispositivo non está xestionado.</translation>
 <translation id="4434017585895599560">Alugueiro residencial</translation>
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>

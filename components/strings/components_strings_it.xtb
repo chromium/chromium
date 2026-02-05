@@ -51,7 +51,7 @@
 <translation id="1075364221219156102">Usa una passkey</translation>
 <translation id="1080116354587839789">Adatta in larghezza</translation>
 <translation id="1081061862829655580">Vassoio 19</translation>
-<translation id="1082026381988252344">Scorrimento e zoom dei contenuti della scheda condivisa</translation>
+<translation id="1082026381988252344">Scorrere e zoomare sui contenuti della scheda condivisa</translation>
 <translation id="108859316315249327">Riprova</translation>
 <translation id="1088664500620117635">Il prezzo tipico di <ph name="PRODUCT_NAME" /> è <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />, ma il prezzo attuale sul web è <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Cambia password</translation>
@@ -1594,7 +1594,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3583757800736429874">&amp;Ripeti spostamento</translation>
 <translation id="3584299510153766161">Perforatura doppia in basso</translation>
 <translation id="3584755835709800788">Film di fantascienza e fantasy</translation>
-<translation id="3585455899094692781">Usa e sposta le videocamere disponibili (<ph name="CAMERAS_COUNT" />)</translation>
+<translation id="3585455899094692781">Usare e spostare le videocamere disponibili (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Pellicola umida</translation>
 <translation id="3586931643579894722">Nascondi dettagli</translation>
 <translation id="3587725436724465984">La tua organizzazione ha identificato <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> come un sito che potrebbe violare una policy. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" />.</translation>
@@ -4265,7 +4265,7 @@ Ulteriori dettagli:
 <translation id="787226752901403048">Accedi a Chrome per partecipare a gruppi di schede, nonché condividerli, e collaborare sulle idee</translation>
 <translation id="7877007680666472091">ID contenuti protetti</translation>
 <translation id="7878562273885520351">La tua password potrebbe essere stata compromessa</translation>
-<translation id="7881044256965445977">Cerca e connettiti a qualsiasi dispositivo sulla rete locale</translation>
+<translation id="7881044256965445977">Cercare e connettersi a qualsiasi dispositivo sulla rete locale</translation>
 <translation id="7885670691503039914">Riceverai avvisi via email se il prezzo calerà su qualsiasi sito. Questa pagina verrà salvata nella cartella dei preferiti "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7886897188117641322">Scegli quali categorie di argomenti possono essere utilizzate per personalizzare gli annunci</translation>
 <translation id="7887683347370398519">Controlla il tuo codice CVC e riprova</translation>
