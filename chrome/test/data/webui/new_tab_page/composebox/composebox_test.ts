@@ -1370,8 +1370,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Enter create image mode.
     composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-create-image-mode', {
-          detail: {inCreateImageMode: true},
+        new CustomEvent('set-tool-mode', {
+          detail: {tool: ComposeboxToolMode.kImageGen, enabled: true},
         }));
     await microtasksFinished();
     assertEquals(searchboxHandler.getCallCount('setActiveToolMode'), 1);
@@ -1950,8 +1950,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Deep search mode enabled.
     composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-deep-search-mode', {
-          detail: {inDeepSearchMode: true},
+        new CustomEvent('set-tool-mode', {
+          detail: {tool: ComposeboxToolMode.kDeepSearch, enabled: true},
         }));
     await microtasksFinished();
     assertEquals(
@@ -1960,8 +1960,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Deep search mode disabled.
     composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-deep-search-mode', {
-          detail: {inDeepSearchMode: false},
+        new CustomEvent('set-tool-mode', {
+          detail: {tool: ComposeboxToolMode.kDeepSearch, enabled: false},
         }));
     await microtasksFinished();
     assertEquals(
@@ -1977,8 +1977,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Create image mode enabled.
     composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-create-image-mode', {
-          detail: {inCreateImageMode: true},
+        new CustomEvent('set-tool-mode', {
+          detail: {tool: ComposeboxToolMode.kImageGen, enabled: true},
         }));
     await microtasksFinished();
     assertEquals(
@@ -1987,8 +1987,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Create image mode disabled.
     composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-create-image-mode', {
-          detail: {inCreateImageMode: false},
+        new CustomEvent('set-tool-mode', {
+          detail: {tool: ComposeboxToolMode.kImageGen, enabled: false},
         }));
     await microtasksFinished();
     assertEquals(
