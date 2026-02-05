@@ -37,6 +37,7 @@ bool ShouldIgnoreProvider(ProviderType type) {
     // In development:
     case ProviderType::kImageSearch:
     case ProviderType::kHelpApp:
+    case ProviderType::kKeyboardShortcut:
       return true;
     case ProviderType::kArcAppShortcut:
     case ProviderType::kDriveSearch:
@@ -52,13 +53,6 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kSystemInfo:
     case ProviderType::kAppShortcutV2:
       return false;
-    case ProviderType::kKeyboardShortcut:
-      // Allows key shortcut results to appear in best match if flag enabled,
-      // otherwise disable it by default to avoid possible over-triggering.
-      if (search_features::IskLauncherKeyShortcutInBestMatchEnabled()) {
-        return false;
-      }
-      return true;
   }
 }
 

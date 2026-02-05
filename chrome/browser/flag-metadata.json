@@ -5972,11 +5972,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "launcher-key-shortcut-in-best-match",
-    "owners": ["chenjih@google.com", "chromeos-launcher-search@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "launcher-keyword-extraction-scoring",
     "owners": ["rbeccahsu@chromium.org", "celiahe@chromium.org", "wrong@chromium.org", "amandadeacon@chromium.org"],
     "expiry_milestone": 120

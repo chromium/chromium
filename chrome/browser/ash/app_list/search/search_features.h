@@ -43,9 +43,6 @@ BASE_DECLARE_FEATURE(kLauncherImageSearchDebug);
 // into any issues.
 BASE_DECLARE_FEATURE(kLauncherSearchFileScan);
 
-// Allows keyboard shortcut results to appear in best match and answer card.
-BASE_DECLARE_FEATURE(kLauncherKeyShortcutInBestMatch);
-
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherImageSearchEnabled();
@@ -54,7 +51,6 @@ bool IsLauncherImageSearchOcrEnabled();
 bool IsLauncherImageSearchIndexingLimitEnabled();
 bool IsLauncherImageSearchDebugEnabled();
 bool IsLauncherSearchFileScanEnabled();
-bool IskLauncherKeyShortcutInBestMatchEnabled();
 }  // namespace search_features
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_SEARCH_FEATURES_H_
