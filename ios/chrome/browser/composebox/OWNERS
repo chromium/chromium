@@ -4,3 +4,6 @@ stkhapugin@chromium.org
 radunitescu@google.com
 alionadangla@google.com
 lpromero@google.com
+
+# For refactorings and simple, mechanical changes:
+file://components/omnibox/OWNERS
