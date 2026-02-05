@@ -48,6 +48,8 @@ target(link_target_type, "child") {
     "field_trial.cc",
     "field_trial.h",
     "image_decoder_utils.cc",
+    "memory_coordinator/browser_memory_coordinator_bridge.cc",
+    "memory_coordinator/browser_memory_coordinator_bridge.h",
     "memory_coordinator/child_memory_consumer_registry.cc",
     "memory_coordinator/child_memory_consumer_registry.h",
     "memory_coordinator/child_memory_coordinator.cc",

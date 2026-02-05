@@ -3052,6 +3052,7 @@ test("content_unittests") {
     "../child/blink_platform_impl_unittest.cc",
     "../child/child_performance_coordinator_unittest.cc",
     "../child/child_process_synthetic_trial_syncer_unittest.cc",
+    "../child/memory_coordinator/browser_memory_coordinator_bridge_unittest.cc",
     "../child/memory_coordinator/child_memory_consumer_registry_unittest.cc",
     "../common/background_fetch/background_fetch_mojom_traits_unittest.cc",
     "../common/color_parser_unittest.cc",

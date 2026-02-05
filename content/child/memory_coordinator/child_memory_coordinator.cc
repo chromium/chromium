@@ -20,14 +20,25 @@ ChildMemoryCoordinator& ChildMemoryCoordinator::Get() {
   return *g_instance;
 }
 
-ChildMemoryCoordinator::ChildMemoryCoordinator() {
+ChildMemoryCoordinator::ChildMemoryCoordinator()
+    : browser_memory_coordinator_bridge_(policy_manager_) {
   CHECK(!g_instance);
   g_instance = this;
+
+  policy_manager_.AddPolicy(&browser_memory_coordinator_bridge_);
 }
 
 ChildMemoryCoordinator::~ChildMemoryCoordinator() {
+  policy_manager_.RemovePolicy(&browser_memory_coordinator_bridge_);
+
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+}
+
+// static
+mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
+ChildMemoryCoordinator::BindAndPassReceiver() {
+  return Get().browser_memory_coordinator_bridge_.BindAndPassReceiver();
 }
 
 }  // namespace content

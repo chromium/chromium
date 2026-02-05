@@ -47,7 +47,7 @@
 #include "content/child/child_performance_coordinator.h"
 #include "content/child/child_process.h"
 #include "content/child/child_process_synthetic_trial_syncer.h"
-#include "content/child/memory_coordinator/child_memory_consumer_registry.h"
+#include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
@@ -695,8 +695,8 @@ void ChildThreadImpl::Init(const Options& options) {
   BindHostReceiver(performance_coordinator_->InitializeAndPassReceiver());
 
   if (!IsInBrowserProcess()) {
-    // Connect the global ChildMemoryConsumerRegistry with the browser registry.
-    BindHostReceiver(ChildMemoryConsumerRegistry::BindAndPassReceiver());
+    // Connect the global ChildMemoryCoordinator with the browser registry.
+    BindHostReceiver(ChildMemoryCoordinator::BindAndPassReceiver());
   }
 
 #if BUILDFLAG(IS_POSIX)
