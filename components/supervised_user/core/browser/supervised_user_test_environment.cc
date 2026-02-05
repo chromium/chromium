@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/safe_search_api/url_checker_client.h"
+#include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
@@ -225,8 +226,11 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       std::make_unique<FakePlatformDelegate>(),
       pref_store_environment_.device_parental_controls());
 
-  url_filtering_service_ =
-      std::make_unique<SupervisedUserUrlFilteringService>(*service_.get());
+  url_filtering_service_ = std::make_unique<SupervisedUserUrlFilteringService>(
+      *service_.get(), std::make_unique<DeviceParentalControlsUrlFilter>(
+                           pref_store_environment_.device_parental_controls(),
+                           std::make_unique<UrlCheckerClientWrapper>(
+                               device_parental_controls_url_checker_client_)));
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
       *url_filtering_service_.get(),
@@ -313,7 +317,8 @@ void SupervisedUserTestEnvironment::SetManualFilterForUrl(
                   family_link_settings_service);
 }
 
-FamilyLinkUrlFilter* SupervisedUserTestEnvironment::url_filter() const {
+FamilyLinkUrlFilter* SupervisedUserTestEnvironment::family_link_url_filter()
+    const {
   return service()->GetURLFilter();
 }
 SupervisedUserService* SupervisedUserTestEnvironment::service() const {

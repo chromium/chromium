@@ -147,8 +147,10 @@ class SupervisedUserUrlFilteringService : public KeyedService,
     virtual void OnUrlChecked(WebFilteringResult result) {}
   };
 
-  explicit SupervisedUserUrlFilteringService(
-      const SupervisedUserService& supervised_user_service);
+  SupervisedUserUrlFilteringService(
+      const SupervisedUserService& supervised_user_service,
+      std::unique_ptr<UrlFilteringDelegate>
+          device_parental_controls_url_filter);
 
   ~SupervisedUserUrlFilteringService() override;
   SupervisedUserUrlFilteringService(const SupervisedUserUrlFilteringService&) =
@@ -195,6 +197,8 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   // Provides access to legacy way of resolving URL filtering. Temporarily, also
   // owns one of the delegates (Family Link url filter delegate).
   raw_ref<const SupervisedUserService> supervised_user_service_;
+  // Owns the device parental controls url filter delegate.
+  std::unique_ptr<UrlFilteringDelegate> device_parental_controls_url_filter_;
 
   // External observers.
   base::ObserverList<Observer> observer_list_;
@@ -202,6 +206,8 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   // Own observees.
   base::ScopedObservation<UrlFilteringDelegate, UrlFilteringDelegateObserver>
       family_link_url_filter_observation_{this};
+  base::ScopedObservation<UrlFilteringDelegate, UrlFilteringDelegateObserver>
+      device_parental_controls_url_filter_observation_{this};
 
   base::WeakPtrFactory<SupervisedUserUrlFilteringService> weak_ptr_factory_{
       this};

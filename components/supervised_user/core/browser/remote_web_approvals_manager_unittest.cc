@@ -108,7 +108,7 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
   void RequestApproval(WebFilteringResult filtering_result,
                        AsyncResultHolder* result_holder) {
     remote_web_approvals_manager_.RequestApproval(
-        supervised_user_test_environment_.url_filter()
+        supervised_user_test_environment_.family_link_url_filter()
             ->GetEffectiveUrlToUnblock(filtering_result),
         base::BindOnce(&AsyncResultHolder::SetResult,
                        base::Unretained(result_holder)));

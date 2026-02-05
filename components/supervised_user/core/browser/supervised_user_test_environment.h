@@ -16,6 +16,7 @@
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
+#include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -147,7 +148,8 @@ class SupervisedUserTestEnvironment {
 
   MockUrlCheckerClient& family_link_url_checker_client();
 
-  FamilyLinkUrlFilter* url_filter() const;
+  FamilyLinkUrlFilter* family_link_url_filter() const;
+
   SupervisedUserService* service() const;
   SupervisedUserUrlFilteringService* url_filtering_service() const;
   PrefService* pref_service();
@@ -183,6 +185,7 @@ class SupervisedUserTestEnvironment {
 
  private:
   MockUrlCheckerClient family_link_url_checker_client_;
+  MockUrlCheckerClient device_parental_controls_url_checker_client_;
 
   SupervisedUserPrefStoreTestEnvironment pref_store_environment_;
 

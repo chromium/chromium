@@ -53,10 +53,15 @@ WebFilteringResult::BindUrlCheckerCallback(Callback callback,
 }
 
 SupervisedUserUrlFilteringService::SupervisedUserUrlFilteringService(
-    const SupervisedUserService& supervised_user_service)
-    : supervised_user_service_(supervised_user_service) {
+    const SupervisedUserService& supervised_user_service,
+    std::unique_ptr<UrlFilteringDelegate> device_parental_controls_url_filter)
+    : supervised_user_service_(supervised_user_service),
+      device_parental_controls_url_filter_(
+          std::move(device_parental_controls_url_filter)) {
   family_link_url_filter_observation_.Observe(
       supervised_user_service_->GetURLFilter());
+  device_parental_controls_url_filter_observation_.Observe(
+      device_parental_controls_url_filter_.get());
 }
 SupervisedUserUrlFilteringService::~SupervisedUserUrlFilteringService() =
     default;
