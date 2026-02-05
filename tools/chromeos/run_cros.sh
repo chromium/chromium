@@ -55,11 +55,13 @@ DISPLAY_CONFIG=${DISPLAY_RES[wxga]}
 FEATURES=
 
 # GLIC specific feature flags.
-GLIC_FEATURES=Glic,TabstripComboButton,GlicDevelopmentCookies,\
-ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,GlicFreWarming,\
-GlicUseNonClient,GlicSidePanel,GlicMultiInstance,FeatureManagementGlic,\
-GlicDefaultTabContextSetting,GlicLiveModeOnlyGlow,GlicDaisyChainNewTabs,\
-GlicUnifiedFreScreen
+GLIC_BASIC_FEATURES=Glic,TabstripComboButton,GlicUserStatusCheck,\
+ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,GlicUseNonClient,\
+GlicWindowDragRegions,GlicHandleDraggingNatively,GlicZeroStateSuggestions,\
+FeatureManagementGlic
+
+GLIC_SIDE_PANEL_FEATURES=GlicMultiInstance,GlicDefaultTabContextSetting,\
+GlicUnifiedFreScreen,GlicDaisyChainNewTabs,GlicLiveModeOnlyGlow
 
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
 
@@ -206,11 +208,11 @@ do
     --wayland-debug)
       export WAYLAND_DEBUG=1
       ;;
-    --glic-side-panel)
-      echo "Warning: --glic-side-panel is deprecated. use --glic instead."
-      ;&
     --glic)
-      FEATURES=${FEATURES},${GLIC_FEATURES}
+      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES}
+      ;;
+    --glic-side-panel)
+      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES},${GLIC_SIDE_PANEL_FEATURES}
       ;;
     --touch-device-id=*)
       id=${1:18}
