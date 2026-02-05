@@ -616,7 +616,6 @@ OneTimeMessageHandler::CreateListenerErrorCallback(const PortId& port_id) {
 
 void OneTimeMessageHandler::OnAllCallbacksCollected(
     ScriptContext* script_context,
-    v8::Local<v8::Context> context,
     const PortId& port_id) {
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
@@ -880,9 +879,6 @@ void OneTimeMessageHandler::CloseReceiverMessagePortOrChannel(
     const PortId& port_id,
     bool close_channel,
     std::optional<std::string> error) {
-  // With the message port closing callbacks aren't allowed to be called after
-  // this point so proactively clean them up.
-  callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
 
   // If there was an error send it back to the message sender.
   if (close_channel && error) {
@@ -931,6 +927,11 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
 
+  // With the message port closing callbacks aren't allowed to be called after
+  // this point so try to proactively clean them up.
+  CHECK(script_context->is_valid());
+  callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
+
   std::string message_creation_error;
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
       context, value, port_id.serialization_format, &message_creation_error);
@@ -955,9 +956,6 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
                                       /*close_channel=*/true,
                                       /*error=*/std::nullopt);
   }
-
-  // With the message port closed no more callbacks should be called.
-  callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
 }
 
 v8::Local<v8::Function> OneTimeMessageHandler::OneTimeMessageCallbackManager::
@@ -1036,19 +1034,10 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
     OnDelayedOneTimeMessageCallbackCollected(ScriptContext* script_context,
                                              const PortId& port_id,
                                              CallbackID callback_id) {
-  // TODO(crbug.com/475029699): Can probably remove this check after this is
-  // resolved because then we'll know that the script context will be valid when
-  // this is called.
-  // The ScriptContext may have been invalidated (and the `v8::Context`
-  // released) if this callback was created during context invalidation. In that
-  // case, the `OneTimeMessageContextData` will be destroyed when the
-  // `v8::Context` is garbage collected, so we can just return.
-  if (!script_context->is_valid()) {
-    return;
-  }
-
-  // Note: we know |script_context| is still valid because the GC callback won't
+  // Note: we know `script_context` is still valid because the GC callback won't
   // be called after context invalidation.
+  CHECK(script_context->is_valid());
+
   v8::HandleScope handle_scope(script_context->isolate());
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
@@ -1086,8 +1075,7 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
   }
 
   // Notify `message_handler_` so it can update the port state.
-  message_handler_->OnAllCallbacksCollected(
-      script_context, script_context->v8_context(), port_id);
+  message_handler_->OnAllCallbacksCollected(script_context, port_id);
   // More callbacks could be collected later so we'll leave the callback data
   // alone after closing the port.
 }
@@ -1148,6 +1136,11 @@ void OneTimeMessageHandler::OnPromiseRejectedResponse(
   CHECK(arguments->Length() > 0);
   CHECK(arguments->GetNext(&promise_reject_value));
 
+  // With the message port closing callbacks aren't allowed to be called after
+  // this point so try to proactively clean them up.
+  CHECK(script_context->is_valid());
+  callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
+
   // If promise rejection reason is a JS Error type then close the message port
   // with the Error's .message property. Otherwise return a generic error
   // message.
@@ -1198,6 +1191,13 @@ void OneTimeMessageHandler::OnListenerThrowsError(const PortId& port_id,
   // The listener thrown error will be sent as an error response after this
   // point so we no longer need to track the receiver.
   data->receivers.erase(port_id);
+
+  // Since we catch the error thrown by the context in order to get here the
+  // context should still be valid at this point.
+  CHECK(script_context->is_valid());
+  // With the message port closing callbacks aren't allowed to be called after
+  // this point so try to proactively clean them up.
+  callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
 
   v8::Local<v8::Value> listener_thrown_value;
   CHECK(arguments->Length() > 0);
@@ -1313,7 +1313,13 @@ void OneTimeMessageHandler::OnEventFired(
   // for synchronous thrown errors to appear after all listeners have finished
   // being dispatched to.
   if (IsMessagePolyfillSupportEnabled(script_context) &&
-      listener_error_callback_id) {
+      listener_error_callback_id
+      // We get here once all listeners have been dispatched to, but since any
+      // of them could invalidate the context we need to check it's still valid
+      // before trying to access the context to cleanup the callback. If the
+      // context is invalid the cleanup will happen shortly after this when the
+      // context destructs.
+      && binding::IsContextValid(context)) {
     callback_manager_->DeleteCallbackDataForCallbackId(
         script_context, port_id, *listener_error_callback_id);
   }
