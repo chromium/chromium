@@ -8,8 +8,10 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "pdf/buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -100,9 +102,11 @@ void ContextualCueingPageData::FindMatchingConfig() {
         return;
       } else if (config.has_cue_label()) {
         std::move(cueing_decision_callback_)
-            .Run(base::ok(CueingResult{config.cue_label(),
-                                       /*prompt_suggestion=*/"",
-                                       /*is_dynamic=*/false}));
+            .Run(base::ok(CueingResult{
+                l10n_util::GetStringUTF8(
+                    IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL),
+                /*prompt_suggestion=*/"",
+                /*is_dynamic=*/false}));
         return;
       }
     } else if (decision == kNeedsPdfPageCount) {
