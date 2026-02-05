@@ -384,8 +384,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DISABLED_BasicRestoreFromClosedWindow) {
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Close the final tab in the first browser.
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   CloseTab(0);
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   // Tab should be in a new window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -490,8 +491,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreIntoSameWindow) {
     CloseTab(0);
 
   // Close the last tab, closing the browser.
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   CloseTab(0);
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Restore the last-closed tab into a new window.

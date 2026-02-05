@@ -699,8 +699,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTestWithWebApps,
   tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
   ui_test_utils::FullscreenWaiter(app, {.tab_fullscreen = true}).Wait();
 
+  ui_test_utils::BrowserDestroyedObserver observer(app);
   app->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(app);
+  observer.Wait();
 }
 
 // Tests that Ctrl+Enter/Cmd+Enter keys on a link open the background tab.

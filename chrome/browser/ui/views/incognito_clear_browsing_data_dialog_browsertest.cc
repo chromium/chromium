@@ -116,11 +116,12 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
   auto destroyed_observer = BubbleWidgetDestroyedObserver(
       GetIncognitoBrowser(), GetDialogView()->GetWidget());
 
+  ui_test_utils::BrowserDestroyedObserver observer(GetIncognitoBrowser());
   GetDialogView()->AcceptDialog();
   histogram_tester.ExpectBucketCount(
       "Incognito.ClearBrowsingDataDialog.ActionType",
       IncognitoClearBrowsingDataDialog::DialogActionType::kCloseIncognito, 1);
-  ui_test_utils::WaitForBrowserToClose(GetIncognitoBrowser());
+  observer.Wait();
   ASSERT_EQ(0u, chrome::GetIncognitoBrowserCount());
 }
 
@@ -185,8 +186,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
   OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
                  kHistoryDisclaimerBubble);
 
+  ui_test_utils::BrowserDestroyedObserver observer(GetIncognitoBrowser());
   GetDialogView()->CancelDialog();
-  ui_test_utils::WaitForBrowserToClose(GetIncognitoBrowser());
+  observer.Wait();
   ASSERT_EQ(0u, chrome::GetIncognitoBrowserCount());
 }
 

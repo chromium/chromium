@@ -173,10 +173,11 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Original browser will be closed, and browser with the new profile created.
-  BrowserCreatedObserver created_observer;
+  ui_test_utils::BrowserCreatedObserver created_observer;
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(original_browser);
   webui::DeleteProfileAtPath(original_browser->GetProfile()->GetPath(),
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
-  ui_test_utils::WaitForBrowserToClose(original_browser);
+  destroyed_observer.Wait();
   BrowserWindowInterface* new_browser = created_observer.Wait();
 
   content::RunAllTasksUntilIdle();
@@ -202,9 +203,10 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
 
   // Original browser will be closed, and browser with the new profile created.
+  ui_test_utils::BrowserDestroyedObserver observer(original_browser);
   webui::DeleteProfileAtPath(original_browser->GetProfile()->GetPath(),
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
-  ui_test_utils::WaitForBrowserToClose(original_browser);
+  observer.Wait();
 
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   BrowserWindowInterface* const additional_browser =

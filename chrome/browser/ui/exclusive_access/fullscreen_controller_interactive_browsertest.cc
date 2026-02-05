@@ -1175,8 +1175,9 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
   ExitFullscreen(popup->tab_strip_model()->GetActiveWebContents());
   EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
   EXPECT_FALSE(RequestFullscreen());
+  ui_test_utils::BrowserDestroyedObserver observer(popup);
   popup->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(popup);
+  observer.Wait();
   EXPECT_LT(base::TimeTicks::Now() - exit, base::Seconds(5));
   EXPECT_FALSE(RequestFullscreen());
   EXPECT_TRUE(RequestFullscreen(/*gesture=*/true));

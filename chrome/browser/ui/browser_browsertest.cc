@@ -1355,9 +1355,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   // Re-attach the dev tools window. This resets its Browser*.
+  ui_test_utils::BrowserDestroyedObserver observer(
+      chrome::FindBrowserWithTab(devtools_main_web_contents));
   devtools_delegate->SetIsDocked(true);
   // Wait until the browser actually gets closed.
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 
   // Do something that will make SearchTabHelper access its OmniboxView. This

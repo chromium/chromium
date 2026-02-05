@@ -115,9 +115,10 @@ IN_PROC_BROWSER_TEST_F(RelaunchIgnoreUnloadHandlersTest, Do) {
                       "window.addEventListener('beforeunload',"
                       "function(event) { event.returnValue = 'Foo'; });"));
   content::PrepContentsForBeforeUnloadTest(tab);
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&chrome::RelaunchIgnoreUnloadHandlers));
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 }
 
 using ApplicationLifetimeTest = InProcessBrowserTest;

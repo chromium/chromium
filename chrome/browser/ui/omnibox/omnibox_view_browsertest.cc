@@ -269,20 +269,13 @@ class OmniboxViewTest : public InProcessBrowserTest {
   void ExpectBrowserClosed(Browser* browser,
                            ui::KeyboardCode key,
                            int modifiers) {
-    // Press the accelerator after starting to wait for a browser to close as
-    // the close may be synchronous.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const Browser* browser, ui::KeyboardCode key, int modifiers) {
-              EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
-                  browser, key, (modifiers & ui::EF_CONTROL_DOWN) != 0,
-                  (modifiers & ui::EF_SHIFT_DOWN) != 0,
-                  (modifiers & ui::EF_ALT_DOWN) != 0,
-                  (modifiers & ui::EF_COMMAND_DOWN) != 0));
-            },
-            browser, key, modifiers));
-    ui_test_utils::WaitForBrowserToClose(browser);
+    ui_test_utils::BrowserDestroyedObserver observer(browser);
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
+        browser, key, (modifiers & ui::EF_CONTROL_DOWN) != 0,
+        (modifiers & ui::EF_SHIFT_DOWN) != 0,
+        (modifiers & ui::EF_ALT_DOWN) != 0,
+        (modifiers & ui::EF_COMMAND_DOWN) != 0));
+    observer.Wait();
   }
 
   void NavigateExpectUrl(const GURL& url, int modifiers = 0) {

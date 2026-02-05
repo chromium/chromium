@@ -996,12 +996,13 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
   EXPECT_EQ(1, browser->tab_strip_model()->count());
 
   // Profile deletion closes the browser.
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   g_browser_process->profile_manager()
       ->GetDeleteProfileHelper()
       .MaybeScheduleProfileForDeletion(
           new_profile->GetPath(), base::DoNothing(),
           ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
   EXPECT_FALSE(chrome::FindBrowserWithProfile(new_profile));
 
   // `ShowExtensionSigninPrompt()` does nothing for deleted profile.

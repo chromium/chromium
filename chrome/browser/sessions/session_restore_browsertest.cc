@@ -1746,8 +1746,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
   std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
       KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseTab(browser());
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 
   ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
   SessionRestoreTestHelper restore_observer;
@@ -1784,8 +1785,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
   // First close the original browser to clear the session information (as
   // verified by CloseSingleTabRestoresNothing).
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseTab(browser());
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 
   SessionRestoreTestHelper restore_observer;
 

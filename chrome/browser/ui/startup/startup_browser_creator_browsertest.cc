@@ -3085,8 +3085,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
   content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
   EXPECT_EQ(file_handler.action, web_contents->GetVisibleURL());
 
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   app_browser->GetWindow()->Close();
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  observer.Wait();
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
