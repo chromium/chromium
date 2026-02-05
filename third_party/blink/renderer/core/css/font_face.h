@@ -114,9 +114,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   String sizeAdjust() const;
 
   // FIXME: Changing these attributes should affect font matching.
-  void setFamily(ExecutionContext*, const AtomicString& s, ExceptionState&) {
-    family_ = s;
-  }
+  void setFamily(ExecutionContext*, const AtomicString& s, ExceptionState&);
   void setStyle(ExecutionContext*, const String&, ExceptionState&);
   void setWeight(ExecutionContext*, const String&, ExceptionState&);
   void setStretch(ExecutionContext*, const String&, ExceptionState&);
@@ -145,6 +143,8 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   CSSFontFace* CssFontFace() { return css_font_face_.Get(); }
   size_t ApproximateBlankCharacterCount() const;
   FontDisplay GetFontDisplay() const;
+
+  void InvalidateFontFaceOnDescriptorUpdate();
 
   void Trace(Visitor*) const override;
 

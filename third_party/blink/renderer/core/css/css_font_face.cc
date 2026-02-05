@@ -61,6 +61,10 @@ void CSSFontFace::RemoveSegmentedFontFace(
   segmented_font_faces_.erase(segmented_font_face);
 }
 
+void CSSFontFace::UpdateRanges(HeapVector<UnicodeRange>&& ranges) {
+  ranges_ = MakeGarbageCollected<UnicodeRangeSet>(std::move(ranges));
+}
+
 void CSSFontFace::DidBeginLoad() {
   if (LoadStatus() == FontFace::kUnloaded) {
     SetLoadStatus(FontFace::kLoading);

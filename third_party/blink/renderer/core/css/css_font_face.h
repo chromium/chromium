@@ -70,6 +70,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
 
   void AddSource(CSSFontFaceSource*);
   void SetDisplay(FontDisplay);
+  void UpdateRanges(HeapVector<UnicodeRange>&& ranges);
 
   void DidBeginLoad();
   bool FontLoaded(CSSFontFaceSource*);

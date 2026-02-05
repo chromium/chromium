@@ -2247,9 +2247,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/bidi/vertical_lr.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/vertical_text-combine-upright.html [ Failure ]
 
-# FontFace object failures detected by WPT test
-crbug.com/965409 external/wpt/css/css-font-loading/fontface-descriptor-updates.html [ Failure ]
-
 crbug.com/1002514 external/wpt/web-share/share-sharePromise-internal-slot.https.html [ Crash Failure ]
 
 # font-variant-emoji tests. These tests are platform specififc and depends on

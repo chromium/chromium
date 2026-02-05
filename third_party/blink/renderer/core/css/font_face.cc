@@ -97,8 +97,8 @@ const CSSValue* ParseCSSValue(const ExecutionContext* context,
                                                          *parser_context);
 }
 
-CSSFontFace* CreateCSSFontFace(FontFace* font_face,
-                               const CSSValue* unicode_range) {
+HeapVector<UnicodeRange> BuildUnicodeRangeVector(
+    const CSSValue* unicode_range) {
   HeapVector<UnicodeRange> ranges;
   if (const auto* range_list = To<CSSValueList>(unicode_range)) {
     unsigned num_ranges = range_list->length();
@@ -108,8 +108,13 @@ CSSFontFace* CreateCSSFontFace(FontFace* font_face,
       ranges.push_back(UnicodeRange(range.From(), range.To()));
     }
   }
+  return ranges;
+}
 
-  return MakeGarbageCollected<CSSFontFace>(font_face, std::move(ranges));
+CSSFontFace* CreateCSSFontFace(FontFace* font_face,
+                               const CSSValue* unicode_range) {
+  return MakeGarbageCollected<CSSFontFace>(
+      font_face, BuildUnicodeRangeVector(unicode_range));
 }
 
 const CSSValue* ConvertFontMetricOverrideValue(const CSSValue* parsed_value) {
@@ -338,6 +343,16 @@ String FontFace::sizeAdjust() const {
   return size_adjust_ ? size_adjust_->CssText() : "100%";
 }
 
+void FontFace::setFamily(ExecutionContext* context,
+                         const AtomicString& s,
+                         ExceptionState& exception_state) {
+  if (family_ == s) {
+    return;
+  }
+  family_ = s;
+  InvalidateFontFaceOnDescriptorUpdate();
+}
+
 void FontFace::setStyle(ExecutionContext* context,
                         const String& s,
                         ExceptionState& exception_state) {
@@ -348,8 +363,14 @@ void FontFace::setStyle(ExecutionContext* context,
 void FontFace::setWeight(ExecutionContext* context,
                          const String& s,
                          ExceptionState& exception_state) {
+  // Save old value to detect actual change.
+  Member<const CSSValue> old_weight = weight_;
   SetPropertyFromString(context, s, AtRuleDescriptorID::FontWeight,
                         &exception_state);
+
+  if (old_weight != weight_) {
+    InvalidateFontFaceOnDescriptorUpdate();
+  }
 }
 
 void FontFace::setStretch(ExecutionContext* context,
@@ -362,8 +383,17 @@ void FontFace::setStretch(ExecutionContext* context,
 void FontFace::setUnicodeRange(ExecutionContext* context,
                                const String& s,
                                ExceptionState& exception_state) {
+  // Save old value to detect actual change.
+  Member<const CSSValue> old_unicode_range = unicode_range_;
   SetPropertyFromString(context, s, AtRuleDescriptorID::UnicodeRange,
                         &exception_state);
+
+  // If unicode_range actually changed and css_font_face_ exists, we need to
+  // update its ranges since unicode_range affects font matching.
+  if (old_unicode_range != unicode_range_ && css_font_face_) {
+    css_font_face_->UpdateRanges(BuildUnicodeRangeVector(unicode_range_.Get()));
+    InvalidateFontFaceOnDescriptorUpdate();
+  }
 }
 
 void FontFace::setVariant(ExecutionContext* context,
@@ -1001,6 +1031,27 @@ bool FontFace::HasPendingActivity() const {
 
 FontDisplay FontFace::GetFontDisplay() const {
   return CSSValueToFontDisplay(display_.Get());
+}
+
+void FontFace::InvalidateFontFaceOnDescriptorUpdate() {
+  Document* document = GetDocument();
+  if (!document) {
+    return;
+  }
+
+  FontSelector* font_selector = document->GetStyleEngine().GetFontSelector();
+  if (!font_selector) {
+    return;
+  }
+
+  FontFaceCache* cache = font_selector->GetFontFaceCache();
+
+  cache->RemoveFontFace(this, /*css_connected=*/false);
+
+  cache->AddFontFace(this, /*css_connected=*/false);
+
+  font_selector->FontFaceInvalidated(
+      FontInvalidationReason::kGeneralInvalidation);
 }
 
 void FontFace::DidBeginImperativeLoad() {
