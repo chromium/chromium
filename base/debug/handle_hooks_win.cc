@@ -159,6 +159,28 @@ void EATPatch(HMODULE module,
 }
 #endif  // defined(ARCH_CPU_32_BITS)
 
+// Implementation function because a function with __try cannot have object
+// unwinding: https://crbug.com/481661206.
+void IATPatchImpl(HMODULE module,
+                  const char* function_name,
+                  void* new_function,
+                  std::unique_ptr<base::win::IATPatchFunction>& patch) {
+  __try {
+    // There is no guarantee that |module| is still loaded at this point.
+    if (patch->PatchFromModule(module, "kernel32.dll", function_name,
+                               new_function)) {
+      patch.reset();
+    }
+  } __except ((GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION ||
+               GetExceptionCode() == EXCEPTION_GUARD_PAGE ||
+               GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR)
+                  ? EXCEPTION_EXECUTE_HANDLER
+                  : EXCEPTION_CONTINUE_SEARCH) {
+    // Leak the patch.
+    std::ignore = patch.release();
+  }
+}
+
 // Performs an IAT interception.
 std::unique_ptr<base::win::IATPatchFunction> IATPatch(HMODULE module,
                                                       const char* function_name,
@@ -169,19 +191,8 @@ std::unique_ptr<base::win::IATPatchFunction> IATPatch(HMODULE module,
   }
 
   auto patch = std::make_unique<base::win::IATPatchFunction>();
-  __try {
-    // There is no guarantee that |module| is still loaded at this point.
-    if (patch->PatchFromModule(module, "kernel32.dll", function_name,
-                               new_function)) {
-      return nullptr;
-    }
-  } __except ((GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION ||
-               GetExceptionCode() == EXCEPTION_GUARD_PAGE ||
-               GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR)
-                  ? EXCEPTION_EXECUTE_HANDLER
-                  : EXCEPTION_CONTINUE_SEARCH) {
-    // Leak the patch.
-    std::ignore = patch.release();
+  IATPatchImpl(module, function_name, new_function, patch);
+  if (!patch) {
     return nullptr;
   }
 
