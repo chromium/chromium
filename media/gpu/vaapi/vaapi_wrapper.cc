@@ -475,7 +475,7 @@ bool FillVADRMPRIMESurfaceDescriptor(const gfx::NativePixmap& pixmap,
     UNSAFE_TODO(descriptor.objects[i]).size =
         base::checked_cast<uint32_t>(data_size);
     UNSAFE_TODO(descriptor.objects[i]).drm_format_modifier =
-        pixmap.GetBufferFormatModifier();
+        pixmap.GetFormatModifier();
 
     UNSAFE_TODO(descriptor.layers[0].object_index[i]) =
         base::checked_cast<uint32_t>(i);
@@ -2440,7 +2440,7 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForPixmap(
        GetImplementationType() == VAImplementation::kChromiumFakeDriver ||
        GetImplementationType() == VAImplementation::kMesaGallium) &&
       !protected_content &&
-      pixmap->GetBufferFormatModifier() != gfx::NativePixmapHandle::kNoModifier;
+      pixmap->GetFormatModifier() != gfx::NativePixmapHandle::kNoModifier;
 
   union {
     VADRMPRIMESurfaceDescriptor descriptor;

@@ -60,8 +60,7 @@ TEST_P(NativePixmapDmaBufTest, Convert) {
   scoped_refptr<gfx::NativePixmap> native_pixmap_dmabuf(
       new gfx::NativePixmapDmaBuf(image_size, format, std::move(handle)));
   EXPECT_TRUE(native_pixmap_dmabuf->AreDmaBufFdsValid());
-  EXPECT_EQ(native_pixmap_dmabuf->GetBufferFormatModifier(),
-            handle_clone.modifier);
+  EXPECT_EQ(native_pixmap_dmabuf->GetFormatModifier(), handle_clone.modifier);
   // NativePixmap to NativePixmapHandle.
   const int num_planes = format.NumberOfPlanes();
   for (int i = 0; i < num_planes; ++i) {

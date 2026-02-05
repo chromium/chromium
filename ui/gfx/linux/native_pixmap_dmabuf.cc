@@ -48,7 +48,7 @@ size_t NativePixmapDmaBuf::GetDmaBufPlaneSize(size_t plane) const {
   return base::checked_cast<size_t>(handle_.planes[plane].size);
 }
 
-uint64_t NativePixmapDmaBuf::GetBufferFormatModifier() const {
+uint64_t NativePixmapDmaBuf::GetFormatModifier() const {
   return handle_.modifier;
 }
 

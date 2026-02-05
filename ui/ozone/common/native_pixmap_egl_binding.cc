@@ -189,7 +189,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
       attrs.push_back(kPlanePitchAttrs[attrs_plane]);
       attrs.push_back(pixmap->GetDmaBufPitch(attrs_plane));
 
-      uint64_t modifier = pixmap->GetBufferFormatModifier();
+      uint64_t modifier = pixmap->GetFormatModifier();
       if (has_dma_buf_import_modifier &&
           modifier != gfx::NativePixmapHandle::kNoModifier) {
         DCHECK(attrs_plane < std::size(kPlaneLoModifierAttrs));

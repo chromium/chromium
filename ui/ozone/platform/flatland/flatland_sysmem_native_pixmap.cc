@@ -48,7 +48,7 @@ bool FlatlandSysmemNativePixmap::SupportsZeroCopyWebGPUImport() const {
   NOTREACHED();
 }
 
-uint64_t FlatlandSysmemNativePixmap::GetBufferFormatModifier() const {
+uint64_t FlatlandSysmemNativePixmap::GetFormatModifier() const {
   NOTREACHED();
 }
 

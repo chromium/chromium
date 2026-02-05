@@ -64,7 +64,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
   uint32_t GetDmaBufPitch(size_t plane) const override { return 0; }
   size_t GetDmaBufOffset(size_t plane) const override { return 0; }
   size_t GetDmaBufPlaneSize(size_t plane) const override { return 0; }
-  uint64_t GetBufferFormatModifier() const override { return 0; }
+  uint64_t GetFormatModifier() const override { return 0; }
   SharedImageFormat GetSharedImageFormat() const override { return format_; }
   size_t GetNumberOfPlanes() const override { return 0; }
   bool SupportsZeroCopyWebGPUImport() const override { return false; }

@@ -110,7 +110,7 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
     descriptor.planeLayouts[plane].offset = pixmap_->GetDmaBufOffset(plane);
     descriptor.planeLayouts[plane].stride = pixmap_->GetDmaBufPitch(plane);
   }
-  descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
+  descriptor.drmModifier = pixmap_->GetFormatModifier();
   descriptor.waitFDs = {};
 
   for (auto& fence : fences) {

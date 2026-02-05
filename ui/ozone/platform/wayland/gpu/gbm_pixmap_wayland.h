@@ -61,7 +61,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   size_t GetDmaBufPlaneSize(size_t plane) const override;
   size_t GetNumberOfPlanes() const override;
   bool SupportsZeroCopyWebGPUImport() const override;
-  uint64_t GetBufferFormatModifier() const override;
+  uint64_t GetFormatModifier() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;

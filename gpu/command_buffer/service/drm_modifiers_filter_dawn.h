@@ -38,7 +38,8 @@ class GPU_GLES2_EXPORT DrmModifiersFilterDawn : public ui::DrmModifiersFilter {
                                const std::vector<uint64_t>& modifiers) override;
 
  private:
-  // Map from all BufferFormats to a set of modifiers supported by that format.
+  // Map from all SharedImageFormats to a set of modifiers supported by that
+  // format.
   base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>> modifier_map_;
 };
 

@@ -183,7 +183,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   auto layout = media::VideoFrameLayout::CreateWithPlanes(
       *pixel_format, pixmap->GetBufferSize(), std::move(planes),
       media::VideoFrameLayout::kBufferAddressAlignment,
-      pixmap->GetBufferFormatModifier());
+      pixmap->GetFormatModifier());
   if (!layout) {
     DLOGF(ERROR) << " Invalid layout";
     return nullptr;

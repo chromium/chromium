@@ -158,7 +158,7 @@ bool GbmPixmapWayland::SupportsZeroCopyWebGPUImport() const {
   return false;
 }
 
-uint64_t GbmPixmapWayland::GetBufferFormatModifier() const {
+uint64_t GbmPixmapWayland::GetFormatModifier() const {
   return gbm_bo_->GetFormatModifier();
 }
 
@@ -222,7 +222,7 @@ gfx::NativePixmapHandle GbmPixmapWayland::ExportHandle() const {
                                gbm_bo_->GetPlaneSize(i),
                                std::move(scoped_fds[i]));
   }
-  handle.modifier = GetBufferFormatModifier();
+  handle.modifier = GetFormatModifier();
   return handle;
 }
 

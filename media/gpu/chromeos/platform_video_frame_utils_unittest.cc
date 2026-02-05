@@ -112,7 +112,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
       CreateNativePixmapDmaBuf(video_frame.get());
   ASSERT_TRUE(native_pixmap);
   EXPECT_EQ(native_pixmap->GetSharedImageFormat(), *si_format);
-  EXPECT_EQ(native_pixmap->GetBufferFormatModifier(),
+  EXPECT_EQ(native_pixmap->GetFormatModifier(),
             video_frame->layout().modifier());
 
   // Verify the DMA Buf layouts are the same.
