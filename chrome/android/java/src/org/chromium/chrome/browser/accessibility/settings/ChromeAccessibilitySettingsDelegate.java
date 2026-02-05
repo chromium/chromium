@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.accessibility.settings;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.dom_distiller.DomDistillerServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -12,6 +13,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -108,6 +110,11 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     public BooleanPreferenceDelegate getReaderAccessibilityDelegate() {
         return new ChromeBooleanPreferenceDelegate(
                 getBrowserContextHandle(), Pref.READER_FOR_ACCESSIBILITY);
+    }
+
+    @Override
+    public DistilledPagePrefs getDistilledPagePrefs() {
+        return DomDistillerServiceFactory.getForProfile(mProfile).getDistilledPagePrefs();
     }
 
     /**

@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.accessibility;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
@@ -77,6 +78,9 @@ public interface AccessibilitySettingsDelegate {
      *     preference.
      */
     BooleanPreferenceDelegate getReaderAccessibilityDelegate();
+
+    /** Returns an instance of DistilledPagePrefs. */
+    DistilledPagePrefs getDistilledPagePrefs();
 
     /**
      * Returns whether the material slider should be used for the page zoom preference.

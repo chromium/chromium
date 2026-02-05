@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -30,6 +31,8 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -47,12 +50,33 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public static final String PREF_PAGE_ZOOM_ALWAYS_SHOW = "page_zoom_always_show";
     public static final String PREF_FORCE_ENABLE_ZOOM = "force_enable_zoom";
     public static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
+    public static final String PREF_READER_ENABLE_LINKS = "reader_enable_links";
     public static final String PREF_CAPTIONS = "captions";
     public static final String PREF_ZOOM_INFO = "zoom_info";
     public static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
     public static final String PREF_CARET_BROWSING = "caret_browsing";
     public static final String PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION =
             "touchpad_overscroll_history_navigation";
+
+    @VisibleForTesting
+    final DistilledPagePrefs.Observer mDistilledPagePrefsObserver =
+            new DistilledPagePrefs.Observer() {
+                @Override
+                public void onChangeFontFamily(int font) {}
+
+                @Override
+                public void onChangeTheme(int theme) {}
+
+                @Override
+                public void onChangeFontScaling(float scaling) {}
+
+                @Override
+                public void onChangeLinksEnabled(boolean enabled) {
+                    ChromeSwitchPreference readerEnableLinks =
+                            findPreference(PREF_READER_ENABLE_LINKS);
+                    readerEnableLinks.setChecked(enabled);
+                }
+            };
 
     private PageZoomPreference mPageZoomDefaultZoomPref;
     private ChromeSwitchPreference mPageZoomIncludeOSAdjustment;
@@ -63,6 +87,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private AccessibilitySettingsDelegate mDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
     private ChromeSwitchPreference mTouchpadOverscrollHistoryNavigationPref;
+    private @Nullable DistilledPagePrefs mDistilledPagePrefs;
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -129,6 +154,16 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         readerForAccessibilityPref.setChecked(
                 mDelegate.getReaderAccessibilityDelegate().getValue());
         readerForAccessibilityPref.setOnPreferenceChangeListener(this);
+
+        boolean toggleLinksEnabled = shouldShowReadingModeToggleLinks();
+        ChromeSwitchPreference readerEnableLinks = findPreference(PREF_READER_ENABLE_LINKS);
+        readerEnableLinks.setVisible(toggleLinksEnabled);
+        if (toggleLinksEnabled) {
+            mDistilledPagePrefs = mDelegate.getDistilledPagePrefs();
+            mDistilledPagePrefs.addObserver(mDistilledPagePrefsObserver);
+            mDistilledPagePrefsObserver.onChangeLinksEnabled(mDistilledPagePrefs.getLinksEnabled());
+            readerEnableLinks.setOnPreferenceChangeListener(this);
+        }
 
         Preference captions = findPreference(PREF_CAPTIONS);
         captions.setOnPreferenceClickListener(
@@ -201,6 +236,15 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     }
 
     @Override
+    public void onDestroy() {
+        if (mDistilledPagePrefs != null) {
+            mDistilledPagePrefs.removeObserver(mDistilledPagePrefsObserver);
+        }
+
+        super.onDestroy();
+    }
+
+    @Override
     public void onStop() {
         // Ensure that the user has set a default zoom value during this session.
         if (mPageZoomLatestDefaultZoomPrefValue != 0.0) {
@@ -222,6 +266,14 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             RecordHistogram.recordBooleanHistogram(
                     "DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings",
                     readerModeEnabled);
+        } else if (PREF_READER_ENABLE_LINKS.equals(preference.getKey())) {
+            // This preference is only registered if mDistilledPagePrefs is non-null.
+            assert mDistilledPagePrefs != null;
+            boolean readerEnableLinks = (Boolean) newValue;
+            mDistilledPagePrefs.setLinksEnabled(readerEnableLinks);
+            RecordHistogram.recordBooleanHistogram(
+                    "DomDistiller.Android.ReaderModeEnableLinksInAccessibilitySettings",
+                    readerEnableLinks);
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
             mPageZoomLatestDefaultZoomPrefValue =
                     PageZoomUtils.convertBarValueToZoomLevel((Integer) newValue);
@@ -276,6 +328,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
     private static boolean shouldShowImageDescriptionsPref(AccessibilitySettingsDelegate delegate) {
         return delegate.shouldShowImageDescriptionsSetting();
+    }
+
+    private static boolean shouldShowReadingModeToggleLinks() {
+        return DomDistillerFeatures.sReaderModeToggleLinks.isEnabled();
     }
 
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
@@ -338,6 +394,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         }
         if (!shouldShowTouchpadOverscrollHistoryNavigationPref()) {
             indexData.removeEntryForKey(prefFragment, PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
+        }
+        if (!shouldShowReadingModeToggleLinks()) {
+            indexData.removeEntryForKey(prefFragment, PREF_READER_ENABLE_LINKS);
         }
     }
 

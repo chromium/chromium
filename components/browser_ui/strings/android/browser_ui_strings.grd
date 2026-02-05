@@ -1030,14 +1030,20 @@
       <message name="IDS_FORCE_ENABLE_ZOOM_SUMMARY" desc="Summary of preference that allows the user to zoom in on any webpage, even if the page tries to disable zooming.">
         Override a website’s request to prevent zooming in
       </message>
-      <message name="IDS_READER_FOR_ACCESSIBILITY_TITLE" desc="Title of preference that allows the user to use simplified view on any articles, even if the page is mobile-friendly. Simplified view is the new user-facing name for Reader Mode, which extracts the content of an article and removes clutter from a web page and puts the result in a easier-to-read format.">
-        Simplified view for web pages
-      </message>
       <message name="IDS_ZOOM_INFO_PREFERENCE_TITLE" desc="Summary of preference that allows the user to view the set zoom levels for all websites.">
         Saved zoom for sites
       </message>
+      <message name="IDS_READER_FOR_ACCESSIBILITY_TITLE" desc="Title of preference that allows the user to use simplified view on any articles, even if the page is mobile-friendly. Simplified view is the new user-facing name for Reader Mode, which extracts the content of an article and removes clutter from a web page and puts the result in a easier-to-read format.">
+        Simplified view for web pages
+      </message>
       <message name="IDS_READER_FOR_ACCESSIBILITY_SUMMARY" desc="Summary of preference that allows the user to use simplified view on any supported articles, even if the page is mobile-friendly.">
         Get notified when an article can be shown in simplified view
+      </message>
+      <message name="IDS_READER_ENABLE_LINKS_TITLE" desc="Title of preference that allows the user to turn links on or off for Reading Mode.">
+        Show hyperlinks
+      </message>
+      <message name="IDS_READER_ENABLE_LINKS_SUMMARY" desc="Summary of preference that allows the user to turn links on or off for Reading Mode.">
+        Show links once Reading Mode is on
       </message>
       <message name="IDS_ACCESSIBILITY_CAPTIONS_TITLE" desc="Title of the preference that allows the user to update caption settings.">
         Captions

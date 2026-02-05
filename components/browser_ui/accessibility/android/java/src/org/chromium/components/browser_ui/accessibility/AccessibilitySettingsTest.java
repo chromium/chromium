@@ -51,10 +51,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -88,6 +91,7 @@ public class AccessibilitySettingsTest {
     @Mock private AccessibilitySettingsDelegate.IntegerPreferenceDelegate mIntegerPrefMock;
     @Mock private AccessibilitySettingsDelegate.BooleanPreferenceDelegate mBoolPrefMock;
     @Mock private SettingsNavigation mSettingsNavigationMock;
+    @Mock private DistilledPagePrefs mDistilledPagePrefsMock;
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapBridgeMock;
 
@@ -105,6 +109,7 @@ public class AccessibilitySettingsTest {
                 .thenReturn(mBoolPrefMock);
         when(mDelegate.getTextSizeContrastAccessibilityDelegate()).thenReturn(mIntegerPrefMock);
         when(mDelegate.getSiteSettingsNavigation()).thenReturn(mSettingsNavigationMock);
+        when(mDelegate.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefsMock);
 
         // Enable screen reader to display all settings options.
         ThreadUtils.runOnUiThreadBlocking(
@@ -296,6 +301,85 @@ public class AccessibilitySettingsTest {
                         .build();
         readerModePref.callChangeListener(!initialValue);
         watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    public void testReaderEnableLinksPreferenceChange() {
+        when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
+        launchPreferenceUI();
+        ChromeSwitchPreference readerEnableLinksPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_READER_ENABLE_LINKS);
+        assertTrue(readerEnableLinksPref.isVisible());
+        assertTrue(readerEnableLinksPref.isChecked());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "DomDistiller.Android.ReaderModeEnableLinksInAccessibilitySettings",
+                                false)
+                        .build();
+        readerEnableLinksPref.callChangeListener(false);
+        verify(mDistilledPagePrefsMock).setLinksEnabled(false);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    public void testReaderEnableLinksObserver() {
+        when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
+        launchPreferenceUI();
+        ChromeSwitchPreference readerEnableLinksPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_READER_ENABLE_LINKS);
+        assertTrue(readerEnableLinksPref.isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mAccessibilitySettings.mDistilledPagePrefsObserver.onChangeLinksEnabled(
+                                false));
+        Assert.assertFalse(readerEnableLinksPref.isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mAccessibilitySettings.mDistilledPagePrefsObserver.onChangeLinksEnabled(
+                                true));
+        assertTrue(readerEnableLinksPref.isChecked());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    public void testReaderEnableLinksObserver_unregisterObserverOnDestroy() {
+        when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(true);
+        launchPreferenceUI();
+        verify(mDistilledPagePrefsMock).addObserver(any());
+
+        mAccessibilitySettings.onDestroy();
+        verify(mDistilledPagePrefsMock).removeObserver(any());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    public void testReaderEnableLinksInitialState_Disabled() {
+        when(mDistilledPagePrefsMock.getLinksEnabled()).thenReturn(false);
+        launchPreferenceUI();
+        ChromeSwitchPreference readerEnableLinksPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_READER_ENABLE_LINKS);
+        assertTrue(readerEnableLinksPref.isVisible());
+        Assert.assertFalse(readerEnableLinksPref.isChecked());
     }
 
     @Test

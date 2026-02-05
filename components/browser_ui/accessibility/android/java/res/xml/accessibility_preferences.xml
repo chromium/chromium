@@ -31,6 +31,11 @@ found in the LICENSE file.
         android:title="@string/reader_for_accessibility_title" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="reader_enable_links"
+        android:summary="@string/reader_enable_links_summary"
+        android:title="@string/reader_enable_links_title" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="jump_start_omnibox"
         android:summary="@string/jump_start_omnibox_summary"
         android:title="@string/jump_start_omnibox_title" />
