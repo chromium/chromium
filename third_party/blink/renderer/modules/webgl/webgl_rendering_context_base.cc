@@ -1997,7 +1997,7 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
         shared_image_usage_flags, Host());
   } else {
     resource_provider_ =
-        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+        CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
             Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
