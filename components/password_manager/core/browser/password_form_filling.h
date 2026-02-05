@@ -66,8 +66,7 @@ autofill::PasswordFormFillData CreatePasswordFormFillData(
     std::optional<PasswordForm> preferred_match,
     const url::Origin& main_frame_origin,
     bool wait_for_username,
-    base::span<const autofill::FieldRendererId> suggestion_banned_fields,
-    bool notify_browser_of_successful_filling = false);
+    base::span<const autofill::FieldRendererId> suggestion_banned_fields);
 
 }  // namespace password_manager
 

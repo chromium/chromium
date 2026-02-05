@@ -153,9 +153,6 @@ struct PasswordFormFillData {
 
   // Fields that are banned from Password Manager filling suggestion.
   std::vector<FieldRendererId> suggestion_banned_fields;
-
-  // Instructs renderer to notify about successful filling on pageload.
-  bool notify_browser_of_successful_filling = false;
 };
 
 // If |data.wait_for_username| is set, the renderer does not need to receive

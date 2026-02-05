@@ -92,10 +92,6 @@ BASE_DECLARE_FEATURE(kCredentialManagementUnifiedUi);
 // launched.
 BASE_DECLARE_FEATURE(kDebugUiForOtps);
 
-// This feature disables filling on page load for leaked credentials on some
-// sites. Filling on page load interferes with password change feature.
-BASE_DECLARE_FEATURE(kDisableFillingOnPageLoadForLeakedCredentials);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables the Mojo JavaScript API for the password manager, replacing the
 // legacy passwordsPrivate extension API.

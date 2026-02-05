@@ -63,22 +63,6 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 }
 #endif
 
-bool ShouldNotifyAboutFillingOnPageload(
-    PasswordManagerClient* client,
-    const std::optional<PasswordForm>& preferred_match) {
-  // Change password url override is provided. Always notify about filling on
-  // page load.
-  if (!GetChangePasswordUrlOverrides().empty()) {
-    return true;
-  }
-  // TODO(crbug.com/392020509): Consider removing check for leak when password
-  // change is launched.
-  return preferred_match && preferred_match->change_password_url.is_valid() &&
-         preferred_match->password_issues.contains(InsecureType::kLeaked) &&
-         client->GetPasswordChangeService() &&
-         client->GetPasswordChangeService()->IsPasswordChangeAvailable();
-}
-
 void Autofill(PasswordManagerClient* client,
               PasswordManagerDriver* driver,
               const PasswordForm& form_for_autofill,
@@ -94,13 +78,10 @@ void Autofill(PasswordManagerClient* client,
     logger->LogMessage(Logger::STRING_PASSWORDMANAGER_AUTOFILL);
   }
 
-  bool notify_browser_of_successful_filling =
-      ShouldNotifyAboutFillingOnPageload(client, preferred_match);
-
   PasswordFormFillData fill_data = CreatePasswordFormFillData(
       form_for_autofill, best_matches, std::move(preferred_match),
       client->GetLastCommittedOrigin(), wait_for_username,
-      suggestion_banned_fields, notify_browser_of_successful_filling);
+      suggestion_banned_fields);
   if (logger) {
     logger->LogBoolean(Logger::STRING_WAIT_FOR_USERNAME, wait_for_username);
   }
@@ -152,9 +133,7 @@ bool IsEligibleForPasswordChange(PasswordManagerClient* client,
   }
 
   return preferred_match && preferred_match->change_password_url.is_valid() &&
-         preferred_match->password_issues.contains(InsecureType::kLeaked) &&
-         base::FeatureList::IsEnabled(
-             features::kDisableFillingOnPageLoadForLeakedCredentials);
+         preferred_match->password_issues.contains(InsecureType::kLeaked);
 }
 #endif
 
@@ -322,15 +301,12 @@ PasswordFormFillData CreatePasswordFormFillData(
     std::optional<PasswordForm> preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username,
-    base::span<const autofill::FieldRendererId> suggestion_banned_fields,
-    bool notify_browser_of_successful_filling) {
+    base::span<const autofill::FieldRendererId> suggestion_banned_fields) {
   PasswordFormFillData result;
 
   result.form_renderer_id = form_on_page.form_data.renderer_id();
   result.url = form_on_page.url;
   result.wait_for_username = wait_for_username;
-  result.notify_browser_of_successful_filling =
-      notify_browser_of_successful_filling;
 
   if (!form_on_page.only_for_fallback &&
       (form_on_page.HasPasswordElement() || form_on_page.IsSingleUsername())) {

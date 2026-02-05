@@ -539,8 +539,6 @@ bool StructTraits<autofill::mojom::PasswordFormFillDataDataView,
   }
 
   out->wait_for_username = data.wait_for_username();
-  out->notify_browser_of_successful_filling =
-      data.notify_browser_of_successful_filling();
 
   return true;
 }
