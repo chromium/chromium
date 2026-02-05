@@ -444,38 +444,42 @@ PhysicalRect AnchorEvaluatorImpl::CalculateAnchorRectWithScrollOffset(
   }
 
   // Update the anchor rect based on remembered (or current) scroll offsets.
-  PhysicalOffset scroll_offset = [&]() {
+  OutOfFlowData::ScrollOffsetPair scroll_offsets = [&]() {
     if (remembered_scroll_offsets_) {
-      if (auto offset = remembered_scroll_offsets_->GetOffsetForAnchor(
+      if (auto offsets = remembered_scroll_offsets_->GetOffsetsForAnchor(
               &anchor_reference.GetElement())) {
-        return *offset;
+        return *offsets;
       }
     }
 
     if (used_scroll_offsets_) {
-      if (auto offset = used_scroll_offsets_->GetOffsetForAnchor(
+      if (auto offsets = used_scroll_offsets_->GetOffsetsForAnchor(
               &anchor_reference.GetElement())) {
-        return *offset;
+        return *offsets;
       }
     }
 
-    Element* anchored_element = To<Element>(query_box_->GetNode());
-    LayoutObject* anchor_object = anchor_reference.GetLayoutObject();
+    const Element* anchored_element = To<Element>(query_box_->GetNode());
+    const LayoutObject* anchor_object = anchor_reference.GetLayoutObject();
     CHECK(anchored_element && anchor_object);
 
-    return AnchorPositionScrollData::ComputeAdjustmentContainersData(
-               anchored_element, *anchor_object)
-        .accumulated_adjustment;
+    const auto& adjustment_data =
+        AnchorPositionScrollData::ComputeAdjustmentContainersData(
+            anchored_element, *anchor_object);
+    return OutOfFlowData::ScrollOffsetPair{
+        .scroll_offset_for_layout = adjustment_data.accumulated_adjustment,
+        .scroll_offset_for_range_adjustment =
+            adjustment_data.accumulated_range_adjustment_offset};
   }();
 
-  result.Move(-scroll_offset);
+  result.Move(-scroll_offsets.scroll_offset_for_layout);
 
   if (!used_scroll_offsets_) {
     used_scroll_offsets_ =
         MakeGarbageCollected<OutOfFlowData::RememberedScrollOffsets>();
   }
-  used_scroll_offsets_->SetOffsetForAnchor(&anchor_reference.GetElement(),
-                                           scroll_offset);
+  used_scroll_offsets_->SetOffsetsForAnchor(&anchor_reference.GetElement(),
+                                            scroll_offsets);
   return result;
 }
 

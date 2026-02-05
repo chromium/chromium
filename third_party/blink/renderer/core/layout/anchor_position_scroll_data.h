@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_POSITION_SCROLL_DATA_H_
 
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -147,8 +149,15 @@ class AnchorPositionScrollData
     // snapshots of
     // - scroll offsets of scroll containers,
     // - opposite of sticky offsets of stick-positioned containers,
+    // In CSSAnchorUpdate disabled mode, it also includes
     // - `accumulated_adjustment` of anchor-positioned containers.
     PhysicalOffset accumulated_adjustment;
+
+    // Similar to `accumulated_adjustment`, except it always includes
+    // `accumulated_range_adjustment_offset` of anchor-positioned containers.
+    // This is used to compute the non overlapping range for position try
+    // fallbacks.
+    PhysicalOffset accumulated_range_adjustment_offset;
 
     // Sum of the scroll origins of scroll containers in the above containers.
     // Used by the compositor to deal with writing modes.
@@ -169,7 +178,6 @@ class AnchorPositionScrollData
     bool needs_scroll_adjustment_in_y = false;
 
     bool has_chained_anchor = false;
-
     void Trace(Visitor* visitor) const { visitor->Trace(anchor_element); }
 
     PhysicalOffset TotalOffset() const {
@@ -178,11 +186,19 @@ class AnchorPositionScrollData
                        anchored_element_container_scroll_offset
                  : accumulated_adjustment;
     }
+    PhysicalOffset TotalOffsetIncludingChained() const {
+      return containers_include_viewport
+                 ? accumulated_range_adjustment_offset +
+                       anchored_element_container_scroll_offset
+                 : accumulated_range_adjustment_offset;
+    }
   };
 
   static AdjustmentData ComputeAdjustmentContainersData(
       const Element* anchored_element,
       const LayoutObject& anchor);
+
+  void AddDependentAnchor(const Node* node) { dependent_anchors_.insert(node); }
 
  private:
   enum class SnapshotDiff { kNone, kScrollersOrFallbackPosition, kOffsetOnly };
@@ -193,7 +209,8 @@ class AnchorPositionScrollData
   SnapshotDiff TakeAndCompareSnapshot(bool update);
   bool IsFallbackPositionValid(const AdjustmentData& new_adjustment_data) const;
 
-  void InvalidateLayoutAndPaint();
+  void InvalidateLayoutAndPaintDependentAndAncestors();
+  void InvalidateLayoutAndPaintDependents();
   void InvalidatePaint();
 
   // The anchor-positioned element.
@@ -202,6 +219,8 @@ class AnchorPositionScrollData
   AdjustmentData default_anchor_adjustment_data_;
 
   Member<AnchorPositionVisibilityObserver> position_visibility_observer_;
+
+  HeapHashSet<WeakMember<const Node>> dependent_anchors_;
 };
 
 template <>

@@ -2213,7 +2213,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       if (const auto* offsets = iter.GetCurrentUsedScrollOffsets()) {
         non_overflowing_range.containing_block_range.Move(
             offsets
-                ->GetOffsetForAnchor(non_overflowing_range.anchor_element.Get())
+                ->GetOffsetForAnchorForRangeAdjustment(
+                    non_overflowing_range.anchor_element.Get())
                 .value_or(PhysicalOffset()));
       }
 

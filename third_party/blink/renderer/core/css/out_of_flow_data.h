@@ -27,12 +27,23 @@ class CORE_EXPORT OutOfFlowData final
     : public GarbageCollected<OutOfFlowData>,
       public ElementRareDataField {
  public:
+  struct ScrollOffsetPair {
+    PhysicalOffset scroll_offset_for_layout;
+    PhysicalOffset scroll_offset_for_range_adjustment;
+
+    bool operator==(const ScrollOffsetPair& other) const {
+      return scroll_offset_for_layout == other.scroll_offset_for_layout &&
+             scroll_offset_for_range_adjustment ==
+                 other.scroll_offset_for_range_adjustment;
+    }
+  };
+
   class RememberedScrollOffsets
       : public GarbageCollected<RememberedScrollOffsets> {
    public:
     RememberedScrollOffsets() = default;
 
-    std::optional<PhysicalOffset> GetOffsetForAnchor(
+    std::optional<ScrollOffsetPair> GetOffsetsForAnchor(
         const Element* anchor) const {
       if (!anchor) {
         return std::nullopt;
@@ -41,8 +52,23 @@ class CORE_EXPORT OutOfFlowData final
       return it != offsets_.end() ? std::make_optional(it->value)
                                   : std::nullopt;
     }
-    void SetOffsetForAnchor(const Element* anchor, PhysicalOffset offset) {
-      offsets_.Set(anchor, offset);
+    std::optional<PhysicalOffset> GetOffsetForAnchor(
+        const Element* anchor) const {
+      if (const auto& offsets = GetOffsetsForAnchor(anchor)) {
+        return offsets->scroll_offset_for_layout;
+      }
+      return std::nullopt;
+    }
+    std::optional<PhysicalOffset> GetOffsetForAnchorForRangeAdjustment(
+        const Element* anchor) const {
+      if (const auto& offsets = GetOffsetsForAnchor(anchor)) {
+        return offsets->scroll_offset_for_range_adjustment;
+      }
+      return std::nullopt;
+    }
+    void SetOffsetsForAnchor(const Element* anchor,
+                             const ScrollOffsetPair& offsets) {
+      offsets_.Set(anchor, offsets);
     }
 
     bool operator==(const RememberedScrollOffsets& other) const {
@@ -54,7 +80,7 @@ class CORE_EXPORT OutOfFlowData final
     String ToString() const;
 
    private:
-    HeapHashMap<WeakMember<const Element>, PhysicalOffset> offsets_;
+    HeapHashMap<WeakMember<const Element>, ScrollOffsetPair> offsets_;
   };
 
   // For each layout of an OOF that ever had a successful try fallback, register

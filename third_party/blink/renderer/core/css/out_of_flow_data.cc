@@ -133,9 +133,11 @@ String OutOfFlowData::RememberedScrollOffsets::ToString() const {
   for (const auto& offset : offsets_) {
     builder.Append("  ");
     builder.Append(offset.key->DebugName());
-    builder.Append(": ");
-    builder.Append(offset.value.ToString());
-    builder.Append(",\n");
+    builder.Append(": {for_layout: ");
+    builder.Append(offset.value.scroll_offset_for_layout.ToString());
+    builder.Append(", for_range_adjustment: ");
+    builder.Append(offset.value.scroll_offset_for_range_adjustment.ToString());
+    builder.Append("},\n");
   }
   builder.Append("]\n");
   return builder.ReleaseString();
