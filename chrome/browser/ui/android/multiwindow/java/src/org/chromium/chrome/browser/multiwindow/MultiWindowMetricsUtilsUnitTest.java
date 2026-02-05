@@ -21,6 +21,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -66,6 +67,10 @@ public class MultiWindowMetricsUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(
                                 WindowingMode.FULLSCREEN)));
+        assertTrue(
+                "Cycle start time should be recorded.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME));
 
         // Simulate another activity resuming in fullscreen mode, count should be 2.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 2, true);
@@ -214,6 +219,50 @@ public class MultiWindowMetricsUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(
                                 WindowingMode.DESKTOP_WINDOW)));
+    }
+
+    @Test
+    public void recordTimeSpentInWindowingMode_cycleStartTimeUpdated() {
+        long t0 = TimeUtils.currentTimeMillis();
+
+        long expectedDuration = 30000;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MultiWindowMetricsUtils.WINDOWING_MODE_HISTOGRAM_PREFIX
+                                        + MultiWindowMetricsUtils.getWindowingModeHistogramName(
+                                                WindowingMode.FULLSCREEN)
+                                        + MultiWindowMetricsUtils.DURATION_SUFFIX,
+                                (int) expectedDuration)
+                        .build();
+        // Start in fullscreen mode. Cycle start time should be initialized here.
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
+
+        // Advance time for some duration, but not past the cycle boundary.
+        mFakeTimeTestRule.advanceMillis(expectedDuration);
+
+        // Stop fullscreen mode.
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, false);
+
+        // Advance time past the cycle boundary.
+        mFakeTimeTestRule.advanceMillis(CYCLE_LENGTH_MS);
+
+        // Start in desktop window mode.
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.DESKTOP_WINDOW, 2, true);
+
+        // Advance time for some duration.
+        mFakeTimeTestRule.advanceMillis(1000);
+
+        // Stop desktop window mode.
+        MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.DESKTOP_WINDOW, 2, false);
+
+        // Cycle start time should have been updated to the end of the first cycle.
+        assertEquals(
+                "Cycle start time should be updated to the end of the last recorded cycle.",
+                t0 + CYCLE_LENGTH_MS,
+                mSharedPreferencesManager.readLong(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, -1L));
+        histogramWatcher.assertExpected();
     }
 
     @Test

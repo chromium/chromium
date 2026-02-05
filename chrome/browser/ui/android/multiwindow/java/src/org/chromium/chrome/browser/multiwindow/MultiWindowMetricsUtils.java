@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -24,6 +25,8 @@ import java.util.Set;
 public class MultiWindowMetricsUtils {
     private static final long CYCLE_LENGTH_MS = DateUtils.DAY_IN_MILLIS;
     public static final int INVALID_WINDOW_ID = -1;
+    public static final String WINDOWING_MODE_HISTOGRAM_PREFIX = "Android.MultiWindowMode.";
+    public static final String DURATION_SUFFIX = ".Duration";
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -94,7 +97,12 @@ public class MultiWindowMetricsUtils {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         String startTimeKey = ChromePreferenceKeys.MULTI_WINDOW_MODE_START_TIME2.createKey(mode);
         if (startClock) {
-            prefs.writeLong(startTimeKey, TimeUtils.currentTimeMillis());
+            long currentTime = TimeUtils.currentTimeMillis();
+            prefs.writeLong(startTimeKey, currentTime);
+            if (!prefs.contains(ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME)) {
+                prefs.writeLong(
+                        ChromePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME, currentTime);
+            }
         } else if (prefs.contains(startTimeKey)) {
             recordTimeSpentInWindowingMode(mode);
         }
@@ -181,13 +189,15 @@ public class MultiWindowMetricsUtils {
         if (modeDurationMs > 0) {
             assert modeDurationMs <= CYCLE_LENGTH_MS;
             RecordHistogram.recordLongTimesHistogram(
-                    "Android.MultiWindowMode." + histogramVariant + ".Duration", modeDurationMs);
+                    WINDOWING_MODE_HISTOGRAM_PREFIX + histogramVariant + DURATION_SUFFIX,
+                    modeDurationMs);
         }
         // Remove the duration key for the mode.
         prefs.removeKey(modeDurationKey);
     }
 
-    private static String getWindowingModeHistogramName(int mode) {
+    @VisibleForTesting
+    static String getWindowingModeHistogramName(int mode) {
         switch (mode) {
             case WindowingMode.FULLSCREEN:
                 return "Fullscreen";
