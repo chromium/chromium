@@ -635,6 +635,9 @@ void AboutHandler::HandleGetChannelInfo(const base::ListValue& args) {
 }
 
 void AboutHandler::HandleCanChangeFirmware(const base::ListValue& args) {
+  // It's possible this function could fire prior to other runs
+  // of AllowJavascript(), ensure it's enabled.
+  AllowJavascript();
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
