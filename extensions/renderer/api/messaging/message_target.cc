@@ -19,8 +19,9 @@ MessageTarget MessageTarget::ForTab(int tab_id,
   MessageTarget target(TAB);
   target.tab_id = tab_id;
   target.frame_id = frame_id;
-  if (!document_id.empty())
+  if (!document_id.empty()) {
     target.document_id = document_id;
+  }
   return target;
 }
 

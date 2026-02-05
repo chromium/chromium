@@ -293,8 +293,9 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
 }
 
 int ExtractIntegerId(v8::Local<v8::Value> value) {
-  if (value->IsInt32())
+  if (value->IsInt32()) {
     return value.As<v8::Int32>()->Value();
+  }
 
   // Account for -0, which is a valid integer, but is stored as a number in v8.
   DCHECK(value->IsNumber() && value.As<v8::Number>()->Value() == 0.0);
@@ -408,14 +409,16 @@ void MassageSendMessageArguments(v8::Isolate* isolate,
                                  v8::LocalVector<v8::Value>* arguments_out) {
   base::span<const v8::Local<v8::Value>> arguments = *arguments_out;
   size_t max_size = allow_options_argument ? 4u : 3u;
-  if (arguments.empty() || arguments.size() > max_size)
+  if (arguments.empty() || arguments.size() > max_size) {
     return;
+  }
 
   v8::Local<v8::Value> target_id = v8::Null(isolate);
   v8::Local<v8::Value> message = v8::Null(isolate);
   v8::Local<v8::Value> options;
-  if (allow_options_argument)
+  if (allow_options_argument) {
     options = v8::Null(isolate);
+  }
   v8::Local<v8::Value> response_callback = v8::Null(isolate);
 
   // If the last argument is a function, it is the response callback.
@@ -427,8 +430,9 @@ void MassageSendMessageArguments(v8::Isolate* isolate,
 
   // Re-check for too many arguments after looking for the callback. If there
   // are, early-out and rely on normal signature parsing to report the error.
-  if (arguments.size() >= max_size)
+  if (arguments.size() >= max_size) {
     return;
+  }
 
   switch (arguments.size()) {
     case 0:
@@ -465,10 +469,11 @@ void MassageSendMessageArguments(v8::Isolate* isolate,
       NOTREACHED();
   }
 
-  if (allow_options_argument)
+  if (allow_options_argument) {
     *arguments_out = {target_id, message, options, response_callback};
-  else
+  } else {
     *arguments_out = {target_id, message, response_callback};
+  }
 }
 
 bool IsSendRequestDisabled(ScriptContext* script_context) {

@@ -152,8 +152,9 @@ void DelayedOneTimeMessageCallbackHelper(
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
           context, CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return;
+  }
 
   // Retrieve the CallbackID from v8 that we set when we created the callback.
   v8::Local<v8::String> callback_id_v8_string = info.Data().As<v8::String>();
@@ -432,8 +433,9 @@ bool OneTimeMessageHandler::HasPort(ScriptContext* script_context,
       GetPerContextData<OneTimeMessageContextData>(
           script_context->v8_context(),
           CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return false;
+  }
   return port_id.is_opener ? data->openers.contains(port_id)
                            : data->receivers.contains(port_id);
 }
@@ -466,8 +468,9 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
   if (wants_response) {
     // If this is a promise based request no callback should have been passed
     // in.
-    if (async_type == binding::AsyncResponseType::kPromise)
+    if (async_type == binding::AsyncResponseType::kPromise) {
       DCHECK(response_callback.IsEmpty());
+    }
 
     APIRequestHandler::RequestDetails details =
         bindings_system_->api_system()->request_handler()->AddPendingRequest(
@@ -654,12 +657,14 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
           context, CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return handled;
+  }
 
   auto iter = data->receivers.find(target_port_id);
-  if (iter == data->receivers.end())
+  if (iter == data->receivers.end()) {
     return handled;
+  }
 
   handled = true;
   OneTimeReceiver& port = iter->second;
@@ -747,12 +752,14 @@ bool OneTimeMessageHandler::DeliverReplyToOpener(ScriptContext* script_context,
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
           v8_context, CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return handled;
+  }
 
   auto iter = data->openers.find(target_port_id);
-  if (iter == data->openers.end())
+  if (iter == data->openers.end()) {
     return handled;
+  }
 
   handled = true;
 
@@ -801,12 +808,14 @@ bool OneTimeMessageHandler::DisconnectReceiver(ScriptContext* script_context,
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
           context, CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return handled;
+  }
 
   auto iter = data->receivers.find(port_id);
-  if (iter == data->receivers.end())
+  if (iter == data->receivers.end()) {
     return handled;
+  }
 
   handled = true;
   // With the channel closed, clean up the receiver port and its pending
@@ -829,12 +838,14 @@ bool OneTimeMessageHandler::DisconnectOpener(ScriptContext* script_context,
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
           v8_context, CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return handled;
+  }
 
   auto iter = data->openers.find(port_id);
-  if (iter == data->openers.end())
+  if (iter == data->openers.end()) {
     return handled;
+  }
 
   handled = true;
 
@@ -905,14 +916,16 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
           context, CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return;
+  }
 
   auto iter = data->receivers.find(port_id);
   // The channel may already be closed (if a listener replied (promise rejected)
   // or listener threw error).
-  if (iter == data->receivers.end())
+  if (iter == data->receivers.end()) {
     return;
+  }
   // The response will be sent after this point so we no longer need to track
   // the receiver.
   data->receivers.erase(port_id);
@@ -920,10 +933,11 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   v8::Local<v8::Value> value;
   // We allow omitting the message argument (e.g., sendMessage()). Default the
   // value to undefined.
-  if (arguments->Length() > 0)
+  if (arguments->Length() > 0) {
     CHECK(arguments->GetNext(&value));
-  else
+  } else {
     value = v8::Undefined(isolate);
+  }
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
 
@@ -1046,8 +1060,9 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
   // ScriptContext invalidation and PerContextData cleanup happen "around" the
   // same time, but there aren't strict guarantees about ordering. It's possible
   // the data was collected.
-  if (!data)
+  if (!data) {
     return;
+  }
 
   // Since there is no way to call the callback anymore, we can remove it from
   // the pending callbacks and delete the port entry if this was the last
@@ -1301,8 +1316,9 @@ void OneTimeMessageHandler::OnEventFired(
   OneTimeMessageContextData* data =
       GetPerContextData<OneTimeMessageContextData>(
           context, CreatePerContextData::kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return;
+  }
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   DCHECK(script_context)
