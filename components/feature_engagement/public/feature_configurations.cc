@@ -725,7 +725,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used = EventConfig("fusebox_attachment_popup_interacted_with",
                               Comparator(ANY, 0), 0, 0);
     config.event_configs.insert(EventConfig(
-        "fusebox_attachment_popup_used", Comparator(GREATER_THAN, 0), 90, 360));
+        "fusebox_attachment_popup_used", Comparator(GREATER_THAN, 0), 28, 360));
     return config;
   }
 
