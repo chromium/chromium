@@ -85,12 +85,14 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -1506,7 +1508,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         List<InstanceInfo> instanceInfoList = new ArrayList();
         for (int instanceId : instanceIds) {
             // Do not update the Recent Tabs page if the closed window has no regular tabs.
-            if (!hasRegularTabs(instanceId)) {
+            if (!hasRestorableRegularTabs(instanceId)) {
                 continue;
             }
             InstanceInfo instanceInfo =
@@ -1528,8 +1530,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             instanceInfoList.add(instanceInfo);
         }
 
-        RecentlyClosedEntriesManagerTrackerFactory.getInstance()
-                .onInstancesClosed(instanceInfoList, isPermanentDeletion);
+        if (instanceInfoList.size() > 0) {
+            RecentlyClosedEntriesManagerTrackerFactory.getInstance()
+                    .onInstancesClosed(instanceInfoList, isPermanentDeletion);
+        }
     }
 
     /**
@@ -1543,19 +1547,25 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
      *
      * @param source The window closure source, from {@link CloseWindowAppSource}.
      */
-    private boolean isPermanentClosureSource(@CloseWindowAppSource int source) {
+    private static boolean isPermanentClosureSource(@CloseWindowAppSource int source) {
         if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) return true;
 
         return source != CloseWindowAppSource.WINDOW_MANAGER;
     }
 
-    private boolean hasRegularTabs(int instanceId) {
-        return MultiInstancePersistentStore.readNormalTabCount(instanceId) > 0;
+    private static boolean hasRestorableRegularTabs(int instanceId) {
+        int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(instanceId);
+
+        if (normalTabCount > 1) return true;
+        if (normalTabCount == 0) return false;
+
+        String activeUrl = MultiInstancePersistentStore.readActiveTabUrl(instanceId);
+        return !UrlUtilities.isNtpUrl(UrlFormatter.fixupUrl(activeUrl));
     }
 
-    private boolean shouldPermanentlyDeleteWindow(
+    private static boolean shouldPermanentlyDeleteWindow(
             int instanceId, @CloseWindowAppSource int source) {
-        return isPermanentClosureSource(source) || !hasRegularTabs(instanceId);
+        return isPermanentClosureSource(source) || !hasRestorableRegularTabs(instanceId);
     }
 
     @VisibleForTesting
@@ -1632,7 +1642,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // subsequent task kill will also not be reflected as an instance closure until the Recent
         // Tabs page is reopened.
         if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            boolean isPermanentDeletion = !hasRegularTabs(mInstanceId);
+            boolean isPermanentDeletion = !hasRestorableRegularTabs(mInstanceId);
 
             if (!isPermanentDeletion) {
                 MultiInstancePersistentStore.writeClosureTime(mInstanceId);

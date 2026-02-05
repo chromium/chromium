@@ -947,6 +947,30 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    public void testCloseWindows_OnInstancesClosedNotInvoked_WindowContainsOnlyOneNtp() {
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        MultiInstancePersistentStore.writeTabCount(
+                1, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
+        MultiInstancePersistentStore.writeActiveTabUrl(1, "chrome-native://newtab/");
+
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+
+        // Close the window that contains only 1 NTP.
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(1), CloseWindowAppSource.WINDOW_MANAGER);
+
+        // Verify that #onInstanceClosed is never invoked.
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
+
+        // Verify the window that contains only 1 NTP is permanently closed.
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+    }
+
+    @Test
     public void testCloseAllWindows_markedForDeletion() {
         MultiWindowUtils.setMaxInstancesForTesting(5);
 
@@ -3148,9 +3172,10 @@ public class MultiInstanceManagerApi31UnitTest {
         long closureTime1 = MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1);
         assertEquals("Closure time should be updated.", 0, closureTime1);
 
-        InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(false));
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(true));
+        // Verify #onInstancesClosed is only invoked for the window that contains restorable regular
+        // tabs.
+        verify(mRecentlyClosedTracker, times(1)).onInstancesClosed(any(), eq(false));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), eq(true));
     }
 
     @Test
@@ -3208,9 +3233,10 @@ public class MultiInstanceManagerApi31UnitTest {
                 /* instanceId= */ 1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 3);
         manager2.onDestroy();
 
-        InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(false));
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(true));
+        // Verify #onInstancesClosed is only invoked for the window that contains restorable regular
+        // tabs.
+        verify(mRecentlyClosedTracker, times(1)).onInstancesClosed(any(), eq(false));
+        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), eq(true));
     }
 
     private TabGroupMetadata getTabGroupMetadata(boolean isIncognito) {
