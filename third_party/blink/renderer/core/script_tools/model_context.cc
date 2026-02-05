@@ -221,7 +221,7 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
   if (LocalDOMWindow* window = document_->domWindow()) {
     // This is a synchronous, non-cancelable event.
     window->DispatchEvent(
-        *WebMCPEvent::Create(event_type_names::kToolactivation, name));
+        *WebMCPEvent::Create(event_type_names::kToolactivated, name));
   }
 
   if (it->value->v8_tool_function) {

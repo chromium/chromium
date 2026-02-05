@@ -626,7 +626,7 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
     });
 
     window.events = [];
-    window.addEventListener('toolactivation', e => window.events.push('activation:' + e.toolName));
+    window.addEventListener('toolactivated', e => window.events.push('activated:' + e.toolName));
     window.addEventListener('toolcancel', e => window.events.push('cancel:' + e.toolName));
   </script>
   </body>
@@ -646,14 +646,14 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
             run_loop.Quit();
           }));
 
-  EXPECT_EQ(EvalJsString("window.events.join(',')"), "activation:slow");
+  EXPECT_EQ(EvalJsString("window.events.join(',')"), "activated:slow");
 
   ASSERT_TRUE(execution_id.has_value());
   model_context->CancelTool(*execution_id);
   run_loop.Run();
 
   EXPECT_EQ(EvalJsString("window.events.join(',')"),
-            "activation:slow,cancel:slow");
+            "activated:slow,cancel:slow");
 }
 
 TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Reset_Cancels) {

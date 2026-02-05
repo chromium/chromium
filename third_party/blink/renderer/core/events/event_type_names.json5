@@ -329,7 +329,7 @@
     "timezonechange",
     "toggle",
     "tonechange",
-    "toolactivation",
+    "toolactivated",
     "toolcancel",
     "touchcancel",
     "touchend",
