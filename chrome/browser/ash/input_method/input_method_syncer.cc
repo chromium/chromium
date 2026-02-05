@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -25,6 +24,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -39,7 +39,7 @@ void CheckAndResolveInputMethodIDs(
     const InputMethodDescriptors& supported_descriptors,
     std::vector<std::string>* values) {
   // Extract the supported input method IDs into a set.
-  std::set<std::string> supported_input_method_ids;
+  absl::flat_hash_set<std::string> supported_input_method_ids;
   for (const auto& descriptor : supported_descriptors) {
     supported_input_method_ids.insert(descriptor.id());
   }
@@ -89,15 +89,14 @@ std::string CheckAndResolveLocales(const std::string& app_locale,
 void MergeLists(std::vector<std::string_view>* dest,
                 const std::vector<std::string_view>& src) {
   // Keep track of already-added tokens.
-  std::set<std::string_view> unique_tokens(dest->begin(), dest->end());
+  absl::flat_hash_set<std::string_view> unique_tokens(dest->begin(),
+                                                      dest->end());
 
   for (const auto& token : src) {
     // Skip token if it's already in |dest|.
-    if (binary_search(unique_tokens.begin(), unique_tokens.end(), token)) {
-      continue;
+    if (auto [it, inserted] = unique_tokens.insert(token); inserted) {
+      dest->push_back(token);
     }
-    dest->push_back(token);
-    unique_tokens.insert(token);
   }
 }
 
