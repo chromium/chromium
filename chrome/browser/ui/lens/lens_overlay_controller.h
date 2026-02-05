@@ -99,8 +99,6 @@ class LensSearchController;
 class PrefService;
 enum class SidePanelEntryHideReason;
 
-extern void* kLensOverlayPreselectionWidgetIdentifier;
-
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
 // thread.
@@ -196,18 +194,6 @@ class LensOverlayController : public OverlayBaseController,
   // Send message to overlay to copy the currently selection if any.
   void TriggerCopy();
 
-  // Returns true if the overlay is open and covering the current active tab.
-  bool IsOverlayShowing() const;
-
-  // Returns true if the overlay is showing or is in live page mode.
-  bool IsOverlayActive() const;
-
-  // Returns true if the overlay is in the process of initializing.
-  bool IsOverlayInitializing();
-
-  // Returns true if the overlay is currently in the process of closing.
-  bool IsOverlayClosing();
-
   // Returns true if the overlay has a region selection.
   bool HasRegionSelection() const;
 
@@ -220,18 +206,6 @@ class LensOverlayController : public OverlayBaseController,
   // Returns the tab interface that that owns the search controller that owns
   // this overlay controller.
   tabs::TabInterface* GetTabInterface();
-
-  // Show preselection toast bubble. Creates a preselection bubble if it does
-  // not exist.
-  void ShowPreselectionBubble();
-
-  // Closes the preselection bubble and reopens it. Used to prevent UI conflicts
-  // between the preselection bubble and top chrome in fullscreen.
-  void CloseAndReshowPreselectionBubble();
-
-  // Hides preselection toast bubble. Used when backgrounding the overlay. This
-  // hides the widget associated with the bubble.
-  void HidePreselectionBubble();
 
   // Queues a tutorial IPH to be shown if the given URL is eligible. Cancels any
   // queued IPH.
@@ -668,8 +642,9 @@ class LensOverlayController : public OverlayBaseController,
   // Returns true if the searchbox is a CONTEXTUAL_SEARCHBOX.
   bool IsContextualSearchbox();
 
-  // Returns true if the Lens results side panel is showing.
-  bool IsResultsSidePanelShowing();
+  // OverlayBaseController overrides:
+  bool IsResultsSidePanelShowing() override;
+  void RequestSyncClose(DismissalSource source) override;
 
   // Called when the UI needs to create the view to show in the overlay.
   raw_ptr<views::View> CreateViewForOverlay();
@@ -693,12 +668,6 @@ class LensOverlayController : public OverlayBaseController,
   // find_in_page::FindResultObserver:
   void OnFindEmptyText(content::WebContents* web_contents) override;
   void OnFindResultAvailable(content::WebContents* web_contents) override;
-
-  // ImmersiveModeController::Observer:
-  void OnImmersiveRevealStarted() override;
-  void OnImmersiveRevealEnded() override;
-  void OnImmersiveFullscreenEntered() override;
-  void OnImmersiveFullscreenExited() override;
 
   // Called when the Lens backend handshake is complete.
   void OnHandshakeComplete();
@@ -884,6 +853,9 @@ class LensOverlayController : public OverlayBaseController,
   // permissions have not already been permanently granted.
   virtual void MaybeGrantLensOverlayPermissionsForSession(
       std::optional<lens::LensOverlayInvocationSource> invocation_source);
+
+  static lens::LensOverlayDismissalSource ConvertDismissalSource(
+      DismissalSource dismissal_source);
 
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();

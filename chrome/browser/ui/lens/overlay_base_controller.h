@@ -98,6 +98,18 @@ class OverlayBaseController : public content::WebContentsDelegate,
     return preselection_widget_.get();
   }
 
+  // Returns true if the overlay is open and covering the current active tab.
+  bool IsOverlayShowing() const;
+
+  // Returns true if the overlay is showing or is in live page mode.
+  bool IsOverlayActive() const;
+
+  // Returns true if the overlay is in the process of initializing.
+  bool IsOverlayInitializing();
+
+  // Returns true if the overlay is currently in the process of closing.
+  bool IsOverlayClosing();
+
  private:
   // ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
@@ -108,7 +120,39 @@ class OverlayBaseController : public content::WebContentsDelegate,
 #endif
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  // ImmersiveModeController::Observer:
+  void OnImmersiveRevealStarted() override;
+  void OnImmersiveRevealEnded() override;
+  void OnImmersiveFullscreenEntered() override;
+  void OnImmersiveFullscreenExited() override;
+
  protected:
+  // Whether the side panel is showing.
+  virtual bool IsResultsSidePanelShowing() = 0;
+
+  enum class DismissalSource {
+    kPreselectionToastExitButton,
+    kPreselectionToastEscapeKeyPress
+  };
+
+  // Request synchronous close of the overlay.
+  virtual void RequestSyncClose(DismissalSource source) = 0;
+
+  // Show preselection toast bubble. Creates a preselection bubble if it does
+  // not exist.
+  void ShowPreselectionBubble();
+
+  // Closes the preselection bubble and reopens it. Used to prevent UI conflicts
+  // between the preselection bubble and top chrome in fullscreen.
+  void CloseAndReshowPreselectionBubble();
+
+  // Hides preselection toast bubble. Used when backgrounding the overlay. This
+  // hides the widget associated with the bubble.
+  void HidePreselectionBubble();
+
+  // Close the preselection bubble.
+  void ClosePreselectionBubbleImpl();
+
   // Owns the this class via TabFeatures.
   raw_ptr<tabs::TabInterface> tab_;
 
