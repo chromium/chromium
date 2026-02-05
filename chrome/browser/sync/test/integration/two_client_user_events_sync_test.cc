@@ -21,6 +21,7 @@ namespace {
 
 using bookmarks_helper::BookmarksMatchChecker;
 using bookmarks_helper::CountBookmarksWithUrlsMatching;
+using bookmarks_helper::StoreType;
 
 const int kEncryptingClientId = 0;
 const int kDecryptingClientId = 1;
@@ -47,14 +48,13 @@ class TwoClientUserEventsSyncTest
   }
 
   void AddTestBookmarkToClient(int index) {
-    bookmarks::BookmarkModel* bookmark_model =
-        bookmarks_helper::GetBookmarkModel(index);
-    const bookmarks::BookmarkNode* bar =
-        (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature)
-            ? bookmark_model->bookmark_bar_node()
-            : bookmark_model->account_bookmark_bar_node();
-    ASSERT_TRUE(bookmarks_helper::AddURL(
-        index, bar, 0, u"What are you syncing about?", GURL(kTestBookmarkURL)));
+    StoreType store_type =
+        GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+            ? StoreType::kAccountStore
+            : StoreType::kLocalOrSyncableStore;
+    ASSERT_TRUE(bookmarks_helper::AddURL(index, 0,
+                                         u"What are you syncing about?",
+                                         GURL(kTestBookmarkURL), store_type));
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {

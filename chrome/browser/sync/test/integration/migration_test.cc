@@ -22,6 +22,7 @@
 using bookmarks_helper::AddURL;
 using bookmarks_helper::IndexedURL;
 using bookmarks_helper::IndexedURLTitle;
+using bookmarks_helper::StoreType;
 
 using preferences_helper::BooleanPrefMatches;
 using preferences_helper::ChangeBooleanPref;
@@ -150,14 +151,10 @@ class MigrationTest
     return migration_list;
   }
 
-  const bookmarks::BookmarkNode* GetParent() {
-    bookmarks::BookmarkModel* model = bookmarks_helper::GetBookmarkModel(0);
-    switch (GetSetupSyncMode()) {
-      case SetupSyncMode::kSyncTransportOnly:
-        return model->account_bookmark_bar_node();
-      case SetupSyncMode::kSyncTheFeature:
-        return model->bookmark_bar_node();
-    }
+  StoreType GetStoreType() {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? StoreType::kAccountStore
+               : StoreType::kLocalOrSyncableStore;
   }
 
   // Trigger a migration for the given types with the given method.
@@ -174,7 +171,7 @@ class MigrationTest
         break;
       case MODIFY_BOOKMARK:
         ASSERT_TRUE(
-            AddURL(0, GetParent(), 0, IndexedURLTitle(0), GURL(IndexedURL(0))));
+            AddURL(0, IndexedURLTitle(0), GURL(IndexedURL(0)), GetStoreType()));
         break;
       case TRIGGER_REFRESH:
         TriggerSyncForDataTypes(/*index=*/0, data_types);

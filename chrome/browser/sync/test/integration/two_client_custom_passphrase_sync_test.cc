@@ -27,6 +27,7 @@ static const int kDecryptingClientId = 1;
 using bookmarks_helper::AddURL;
 using bookmarks_helper::AllModelsMatch;
 using bookmarks_helper::BookmarksMatchChecker;
+using bookmarks_helper::StoreType;
 
 // These tests consider the client as a black-box; they are not concerned with
 // whether the data is committed to the server correctly encrypted. Rather, they
@@ -61,16 +62,16 @@ class TwoClientCustomPassphraseSyncTest
   }
 
   void AddTestBookmarksToClient(int index) {
-    bookmarks::BookmarkModel* bookmark_model =
-        bookmarks_helper::GetBookmarkModel(0);
-    const bookmarks::BookmarkNode* bar =
-        (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature)
-            ? bookmark_model->bookmark_bar_node()
-            : bookmark_model->account_bookmark_bar_node();
-    ASSERT_TRUE(AddURL(index, bar, 0, u"What are you syncing about?",
-                       GURL("https://google.com/synced-bookmark-1")));
-    ASSERT_TRUE(AddURL(index, bar, 1, u"Test bookmark",
-                       GURL("https://google.com/synced-bookmark-2")));
+    StoreType store_type =
+        GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+            ? StoreType::kAccountStore
+            : StoreType::kLocalOrSyncableStore;
+    ASSERT_TRUE(AddURL(index, 0, u"What are you syncing about?",
+                       GURL("https://google.com/synced-bookmark-1"),
+                       store_type));
+    ASSERT_TRUE(AddURL(index, 1, u"Test bookmark",
+                       GURL("https://google.com/synced-bookmark-2"),
+                       store_type));
   }
 
  private:

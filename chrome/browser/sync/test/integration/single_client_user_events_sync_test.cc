@@ -26,6 +26,7 @@
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
 
+using bookmarks_helper::StoreType;
 using sync_pb::CommitResponse;
 using sync_pb::SyncEntity;
 using sync_pb::UserEventSpecifics;
@@ -60,6 +61,12 @@ class SingleClientUserEventsSyncTest
     return UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
                                     expected_specifics)
         .Wait();
+  }
+
+  StoreType GetStoreType() {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? StoreType::kAccountStore
+               : StoreType::kLocalOrSyncableStore;
   }
 
  protected:
@@ -282,14 +289,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest,
   // Just checking that we don't see test_event isn't very convincing yet,
   // because it may simply not have reached the server yet. So let's send
   // something else through the system that we can wait on before checking.
-  bookmarks::BookmarkModel* bookmark_model =
-      bookmarks_helper::GetBookmarkModel(0);
-  const bookmarks::BookmarkNode* bar =
-      (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature)
-          ? bookmark_model->bookmark_bar_node()
-          : bookmark_model->account_bookmark_bar_node();
-  bookmarks_helper::AddURL(0, bar, bar->children().size(), u"title",
-                           GURL("http://www.example.com"));
+  bookmarks_helper::AddURL(0, u"title", GURL("http://www.example.com"),
+                           GetStoreType());
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::BOOKMARKS, 1).Wait());
 
   // No event should get synced up.

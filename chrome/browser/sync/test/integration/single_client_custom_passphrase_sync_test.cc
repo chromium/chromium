@@ -178,7 +178,7 @@ class SingleClientCustomPassphraseSyncTest
     GetFakeServer()->InjectEntity(std::move(server_entity));
   }
 
-  password_manager::PasswordForm::Store GetStoreType() const {
+  password_manager::PasswordForm::Store GetPasswordsStoreType() const {
     switch (GetSetupSyncMode()) {
       case SetupSyncMode::kSyncTransportOnly:
         return password_manager::PasswordForm::Store::kAccountStore;
@@ -192,14 +192,10 @@ class SingleClientCustomPassphraseSyncTest
     return model->bookmark_bar_node();
   }
 
-  const bookmarks::BookmarkNode* GetBookmarkBarNode() {
-    bookmarks::BookmarkModel* model = bookmarks_helper::GetBookmarkModel(0);
-    switch (GetSetupSyncMode()) {
-      case SetupSyncMode::kSyncTransportOnly:
-        return model->account_bookmark_bar_node();
-      case SetupSyncMode::kSyncTheFeature:
-        return model->bookmark_bar_node();
-    }
+  bookmarks_helper::StoreType GetBookmarksStoreType() {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? bookmarks_helper::StoreType::kAccountStore
+               : bookmarks_helper::StoreType::kLocalOrSyncableStore;
   }
 
  private:
@@ -222,9 +218,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
   GetSyncService()->GetUserSettings()->SetEncryptionPassphrase("hunter2");
 
   ASSERT_TRUE(
-      AddURL(/*profile=*/0, GetBookmarkBarNode(), 0, title1, page_url1));
+      AddURL(/*profile=*/0, title1, page_url1, GetBookmarksStoreType()));
   ASSERT_TRUE(
-      AddURL(/*profile=*/0, GetBookmarkBarNode(), 0, title2, page_url2));
+      AddURL(/*profile=*/0, title2, page_url2, GetBookmarksStoreType()));
 
   ASSERT_TRUE(WaitForNigori(PassphraseType::kCustomPassphrase));
   NigoriSpecifics nigori;
@@ -268,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
 
   const std::u16string kTitle = u"Should be encrypted";
   const GURL kURL("https://google.com/encrypted");
-  ASSERT_TRUE(AddURL(/*profile=*/0, GetBookmarkBarNode(), 0, kTitle, kURL));
+  ASSERT_TRUE(AddURL(/*profile=*/0, kTitle, kURL, GetBookmarksStoreType()));
 
   EXPECT_TRUE(WaitForEncryptedServerBookmarks({{kTitle, kURL}},
                                               /*passphrase=*/"hunter2"));
@@ -306,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
 
   const std::u16string kTitle = u"Should be encrypted";
   const GURL kURL("https://google.com/encrypted");
-  ASSERT_TRUE(AddURL(/*profile=*/0, GetBookmarkBarNode(), 0, kTitle, kURL));
+  ASSERT_TRUE(AddURL(/*profile=*/0, kTitle, kURL, GetBookmarksStoreType()));
 
   EXPECT_TRUE(WaitForEncryptedServerBookmarks({{kTitle, kURL}},
                                               /*passphrase=*/"hunter2"));
@@ -334,13 +330,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
                        CanDecryptWithKeystoreKeys) {
   const password_manager::PasswordForm password_form =
-      passwords_helper::CreateTestPasswordForm(0, GetStoreType());
+      passwords_helper::CreateTestPasswordForm(0, GetPasswordsStoreType());
   passwords_helper::InjectKeystoreEncryptedServerPassword(password_form,
                                                           GetFakeServer());
   ASSERT_TRUE(SetupClients());
   EXPECT_TRUE(PasswordFormsChecker(/*index=*/0,
                                    /*expected_forms=*/{password_form},
-                                   GetStoreType())
+                                   GetPasswordsStoreType())
                   .Wait());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -392,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
   const GURL page_url("https://google.com/re-encrypted");
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(WaitForNigori(PassphraseType::kKeystorePassphrase));
-  ASSERT_TRUE(AddURL(/*profile=*/0, GetBookmarkBarNode(), 0, title, page_url));
+  ASSERT_TRUE(AddURL(/*profile=*/0, title, page_url, GetBookmarksStoreType()));
   const std::vector<ServerBookmarksEqualityChecker::ExpectedBookmark> expected =
       {{title, page_url}};
   ASSERT_TRUE(WaitForUnencryptedServerBookmarks(expected));
@@ -428,8 +424,8 @@ IN_PROC_BROWSER_TEST_P(
   // Mimic going through CLIENT_DATA_OBSOLETE state.
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
   // Trigger sync by making one more change.
-  ASSERT_TRUE(AddURL(/*profile=*/0, GetBookmarkBarNode(), 0,
-                     /*title=*/u"title1", GURL("https://www.google.com")));
+  ASSERT_TRUE(AddURL(/*profile=*/0, /*title=*/u"title1",
+                     GURL("https://www.google.com"), GetBookmarksStoreType()));
   ASSERT_TRUE(SyncEngineStoppedChecker(GetSyncService()).Wait());
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::SUCCESS);
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
@@ -457,8 +453,8 @@ IN_PROC_BROWSER_TEST_P(
   // Mimic going through CLIENT_DATA_OBSOLETE state.
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
   // Trigger sync by making one more change.
-  ASSERT_TRUE(AddURL(/*profile=*/0, GetBookmarkBarNode(), 0,
-                     /*title=*/u"title1", GURL("https://www.google.com")));
+  ASSERT_TRUE(AddURL(/*profile=*/0, /*title=*/u"title1",
+                     GURL("https://www.google.com"), GetBookmarksStoreType()));
   ASSERT_TRUE(SyncEngineStoppedChecker(GetSyncService()).Wait());
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::SUCCESS);
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
