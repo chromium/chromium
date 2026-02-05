@@ -62,8 +62,8 @@ class OfficeWebAppUnitTest : public WebAppTest {
       const GURL& install_url,
       const GURL& start_url,
       webapps::WebappInstallSource install_source) {
-    auto install_info =
-        std::make_unique<web_app::WebAppInstallInfo>(start_url, start_url);
+    auto install_info = std::make_unique<web_app::WebAppInstallInfo>(
+        webapps::ManifestId(start_url), start_url);
     install_info->install_url = install_url;
     install_info->title = u"Microsoft 365";
     return web_app::test::InstallWebApp(
