@@ -492,7 +492,7 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
 
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
 
-  serving_handle.OnIsolatedCookieCopyStart();
+  serving_handle.OnIsolatedCookieCopyStartForTesting();
 
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgress());
 
@@ -502,7 +502,7 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
   EXPECT_FALSE(serving_handle.HaveDefaultContextCookiesChanged());
 
   task_environment()->FastForwardBy(base::Milliseconds(10));
-  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStart();
+  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStartForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
   // The URL interceptor checks on the cookie copy status when trying to serve a
@@ -516,7 +516,7 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  serving_handle.OnIsolatedCookieCopyComplete();
+  serving_handle.OnIsolatedCookieCopyCompleteForTesting();
 
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
@@ -555,7 +555,7 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   EXPECT_EQ(serving_handle.GetCurrentURLToServe(), kTestUrl);
 
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
-  serving_handle.OnIsolatedCookieCopyStart();
+  serving_handle.OnIsolatedCookieCopyStartForTesting();
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgress());
 
   // Once the cookie copy process has started, all cookie listeners are stopped.
@@ -576,7 +576,7 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   }
 
   task_environment()->FastForwardBy(base::Milliseconds(10));
-  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStart();
+  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStartForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
   // The URL interceptor checks on the cookie copy status when trying to serve a
@@ -590,7 +590,7 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  serving_handle.OnIsolatedCookieCopyComplete();
+  serving_handle.OnIsolatedCookieCopyCompleteForTesting();
 
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
@@ -600,11 +600,11 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   EXPECT_EQ(serving_handle.GetCurrentURLToServe(), kRedirectUrl1);
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
 
-  serving_handle.OnIsolatedCookieCopyStart();
+  serving_handle.OnIsolatedCookieCopyStartForTesting();
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgress());
   task_environment()->FastForwardBy(base::Milliseconds(10));
 
-  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStart();
+  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStartForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgress());
 
@@ -616,7 +616,7 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  serving_handle.OnIsolatedCookieCopyComplete();
+  serving_handle.OnIsolatedCookieCopyCompleteForTesting();
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
 
@@ -625,11 +625,11 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   EXPECT_EQ(serving_handle.GetCurrentURLToServe(), kRedirectUrl2);
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
 
-  serving_handle.OnIsolatedCookieCopyStart();
+  serving_handle.OnIsolatedCookieCopyStartForTesting();
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgress());
   task_environment()->FastForwardBy(base::Milliseconds(10));
 
-  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStart();
+  serving_handle.OnIsolatedCookiesReadCompleteAndWriteStartForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgress());
 
@@ -641,7 +641,7 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  serving_handle.OnIsolatedCookieCopyComplete();
+  serving_handle.OnIsolatedCookieCopyCompleteForTesting();
   EXPECT_FALSE(serving_handle.IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
 

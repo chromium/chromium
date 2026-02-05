@@ -92,11 +92,15 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   // well as record metrics about how long this process takes.
   bool HasIsolatedCookieCopyStarted() const;
   bool IsIsolatedCookieCopyInProgress() const;
+  void OnIsolatedCookieCopyStartForTesting();
+  void OnIsolatedCookiesReadCompleteAndWriteStartForTesting();
+  void OnIsolatedCookieCopyCompleteForTesting();
+  void OnInterceptorCheckCookieCopy();
+  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
+
   void OnIsolatedCookieCopyStart();
   void OnIsolatedCookiesReadCompleteAndWriteStart();
   void OnIsolatedCookieCopyComplete();
-  void OnInterceptorCheckCookieCopy();
-  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
   // Called with the result of the probe. If the probing feature is enabled,
   // then a probe must complete successfully before the prefetch can be

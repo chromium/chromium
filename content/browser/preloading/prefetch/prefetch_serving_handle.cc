@@ -176,6 +176,24 @@ void PrefetchServingHandle::OnIsolatedCookieCopyComplete() {
   }
 }
 
+// The `OnIsolatedCookie*ForTesting` methods are called different from the
+// non-test code, e.g. `OnIsolatedCookieCopyCompleteForTesting()` is called on
+// a cloned handle in the non-test code, but in the tests it is called on the
+// original handle which is still used after this call. This can cause test-only
+// inconsistencies but so far the tests are passing.
+void PrefetchServingHandle::OnIsolatedCookieCopyStartForTesting() {
+  OnIsolatedCookieCopyStart();
+}
+
+void PrefetchServingHandle::
+    OnIsolatedCookiesReadCompleteAndWriteStartForTesting() {
+  OnIsolatedCookiesReadCompleteAndWriteStart();
+}
+
+void PrefetchServingHandle::OnIsolatedCookieCopyCompleteForTesting() {
+  OnIsolatedCookieCopyComplete();
+}
+
 void PrefetchServingHandle::OnInterceptorCheckCookieCopy() {
   if (!GetCurrentSingleRedirectHopToServe().cookie_copy_start_time_) {
     return;
