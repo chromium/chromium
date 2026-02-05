@@ -89,6 +89,50 @@ sync_pb::AutofillValuableSpecifics TestVehicleSpecifics() {
   return specifics;
 }
 
+TEST(EntitySyncUtilTest, CreateEntityDataFromEntityInstance) {
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromEntityInstance(vehicle_entity);
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      entity_data->specifics.autofill_valuable();
+  ASSERT_TRUE(entity_data->specifics.has_autofill_valuable());
+
+  const sync_pb::VehicleRegistration& vehicle_specifics =
+      specifics.vehicle_registration();
+
+  EXPECT_EQ(vehicle_entity.guid().value(), specifics.id());
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleMake))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_make()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleModel))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_model()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleYear))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_year()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.owner_name()));
+  EXPECT_EQ(
+      vehicle_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_license_plate()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_identification_number()));
+  EXPECT_EQ(vehicle_entity
+                .attribute(AttributeType(AttributeTypeName::kVehiclePlateState))
+                ->GetCompleteRawInfo(),
+            base::UTF8ToUTF16(vehicle_specifics.license_plate_region()));
+}
+
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly
 // deserializes the vehicle entity from its proto representation.
 TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Vehicle) {
@@ -403,6 +447,33 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_IsEditable) {
                      EntityInstance::AreAttributesReadOnly(true)}));
     EXPECT_FALSE(specifics.is_editable());
   }
+}
+
+TEST(EntitySyncUtilTest, CreateEntityDataFromEntityMetadata) {
+  EntityInstance::EntityMetadata metadata;
+  metadata.guid = EntityInstance::EntityId("test-valuable-id");
+  metadata.date_modified = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13379000000000000u));
+  metadata.use_count = 5;
+  metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13347400000000000u));
+
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromEntityMetadata(
+          metadata,
+          sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
+
+  EXPECT_EQ(entity_data->name, metadata.guid.value());
+  EXPECT_EQ(entity_data->specifics.autofill_valuable_metadata().valuable_id(),
+            metadata.guid.value());
+  EXPECT_EQ(entity_data->specifics.autofill_valuable_metadata()
+                .last_modified_date_unix_epoch_micros(),
+            metadata.date_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  EXPECT_EQ(entity_data->specifics.autofill_valuable_metadata()
+                .last_used_date_unix_epoch_micros(),
+            metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  EXPECT_EQ(entity_data->specifics.autofill_valuable_metadata().pass_type(),
+            sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
 }
 
 // Tests that the `CreateSpecificsFromEntityMetadata` function correctly

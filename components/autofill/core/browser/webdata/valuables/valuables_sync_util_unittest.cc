@@ -121,50 +121,6 @@ TEST(FlightReservationSyncUtilTest,
       0u);
 }
 
-TEST(EntityInstanceSyncUtilTest, CreateEntityDataFromEntityInstance) {
-  EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
-  std::unique_ptr<syncer::EntityData> entity_data =
-      CreateEntityDataFromEntityInstance(vehicle_entity);
-
-  sync_pb::AutofillValuableSpecifics specifics =
-      entity_data->specifics.autofill_valuable();
-  ASSERT_TRUE(entity_data->specifics.has_autofill_valuable());
-
-  const sync_pb::VehicleRegistration& vehicle_specifics =
-      specifics.vehicle_registration();
-
-  EXPECT_EQ(vehicle_entity.guid().value(), specifics.id());
-  EXPECT_EQ(
-      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleMake))
-          ->GetCompleteRawInfo(),
-      base::UTF8ToUTF16(vehicle_specifics.vehicle_make()));
-  EXPECT_EQ(
-      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleModel))
-          ->GetCompleteRawInfo(),
-      base::UTF8ToUTF16(vehicle_specifics.vehicle_model()));
-  EXPECT_EQ(
-      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleYear))
-          ->GetCompleteRawInfo(),
-      base::UTF8ToUTF16(vehicle_specifics.vehicle_year()));
-  EXPECT_EQ(
-      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
-          ->GetCompleteRawInfo(),
-      base::UTF8ToUTF16(vehicle_specifics.owner_name()));
-  EXPECT_EQ(
-      vehicle_entity
-          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
-          ->GetCompleteRawInfo(),
-      base::UTF8ToUTF16(vehicle_specifics.vehicle_license_plate()));
-  EXPECT_EQ(
-      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
-          ->GetCompleteRawInfo(),
-      base::UTF8ToUTF16(vehicle_specifics.vehicle_identification_number()));
-  EXPECT_EQ(vehicle_entity
-                .attribute(AttributeType(AttributeTypeName::kVehiclePlateState))
-                ->GetCompleteRawInfo(),
-            base::UTF8ToUTF16(vehicle_specifics.license_plate_region()));
-}
-
 TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
   ValuableMetadata metadata = TestValuableMetadata();
   std::unique_ptr<syncer::EntityData> entity_data =

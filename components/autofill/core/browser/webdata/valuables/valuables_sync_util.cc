@@ -56,20 +56,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
   return entity_data;
 }
 
-std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
-    EntityInstance entity) {
-  sync_pb::AutofillValuableSpecifics valuable_specifics =
-      CreateSpecificsFromEntityInstance(entity);
-  std::unique_ptr<syncer::EntityData> entity_data =
-      std::make_unique<syncer::EntityData>();
-  entity_data->name = valuable_specifics.id();
-  AutofillValuableSpecifics* specifics =
-      entity_data->specifics.mutable_autofill_valuable();
-  specifics->CopyFrom(valuable_specifics);
-
-  return entity_data;
-}
-
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
     const ValuableMetadata& metadata,
     const AutofillValuableMetadataSpecifics::PassType pass_type) {
