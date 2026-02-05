@@ -204,11 +204,6 @@ const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
                                                    "NtpComposeboxConfigParam",
                                                    "");
 
-const base::FeatureParam<bool> kShowComposeboxZps(
-    &kNtpComposebox,
-    "NtpComposeboxShowComposeboxZps",
-    false);
-
 const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
     &kNtpComposebox,
     "NtpComposeboxShowComposeboxTypedSuggest",
