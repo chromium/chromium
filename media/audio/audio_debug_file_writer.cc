@@ -160,21 +160,22 @@ void AudioDebugFileWriter::DoWrite(std::unique_ptr<AudioBus> data) {
     return;
 
   // Convert to 16 bit audio and write to file.
-  auto data_size =
+  const size_t total_samples =
       base::checked_cast<size_t>(data->frames() * data->channels());
-  if (!interleaved_data_ || interleaved_data_->size() < data_size) {
+  if (!interleaved_data_ || interleaved_data_->size() < total_samples) {
     // This buffer will be initialized fully by the ToInterleaved() call below.
-    interleaved_data_.emplace(base::HeapArray<int16_t>::Uninit(data_size));
+    interleaved_data_.emplace(base::HeapArray<int16_t>::Uninit(total_samples));
   }
-  data->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      data->frames(), interleaved_data_->data());
-  samples_ += data_size;
+  data->ToInterleaved<media::SignedInt16SampleTypeTraits>(*interleaved_data_);
+
+  samples_ += total_samples;
 
   // `interleaved_data_` is in little endian format, which is what we want
   // to write to the file.
   static_assert(ARCH_CPU_LITTLE_ENDIAN);
 
-  file_.WriteAtCurrentPos(base::as_bytes(interleaved_data_->as_span()));
+  file_.WriteAtCurrentPos(
+      base::as_bytes(interleaved_data_->first(total_samples)));
 
   // Cache the AudioBus for later use.
   audio_bus_pool_->InsertAudioBus(std::move(data));

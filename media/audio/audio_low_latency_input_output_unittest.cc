@@ -220,8 +220,8 @@ class FullDuplexAudioSinkSource
 
       // We should only have 16 bits per sample.
       DCHECK_EQ(frame_size_ / channels_, 2);
-      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
-          reinterpret_cast<const int16_t*>(source.data()), size / channels_);
+      dest->FromInterleavedBytes<SignedInt16SampleTypeTraits>(
+          source.first(size));
 
       buffer_->Seek(size);
       return size / frame_size_;

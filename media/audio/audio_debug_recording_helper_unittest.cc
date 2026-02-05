@@ -250,8 +250,7 @@ TEST_F(AudioDebugRecordingHelperTest, OnData) {
     source_data[i] = i * step;
   }
   std::unique_ptr<AudioBus> audio_bus = AudioBus::Create(params);
-  audio_bus->FromInterleaved<Float32SampleTypeTraits>(source_data.data(),
-                                                      number_of_frames);
+  audio_bus->FromInterleaved<Float32SampleTypeTraits>(source_data);
 
   std::unique_ptr<AudioDebugRecordingHelper> recording_helper =
       CreateRecordingHelper(params, base::OnceClosure());

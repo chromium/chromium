@@ -300,8 +300,10 @@ int BeepingSource::OnMoreData(base::TimeDelta /* delay */,
   if (should_beep || beep_generated_in_buffers_) {
     // Compute the number of frames to output high value. Then compute the
     // number of bytes based on channels.
-    int high_frames = beep_period_in_frames_ / 2;
-    int high_bytes = high_frames * params_.channels();
+    const size_t high_frames =
+        base::checked_cast<size_t>(beep_period_in_frames_ / 2);
+    const size_t high_bytes =
+        high_frames * base::checked_cast<size_t>(params_.channels());
 
     // Separate high and low with the same number of bytes to generate a
     // square wave.
@@ -319,8 +321,7 @@ int BeepingSource::OnMoreData(base::TimeDelta /* delay */,
   }
 
   last_callback_time_ = base::TimeTicks::Now();
-  dest->FromInterleaved<UnsignedInt8SampleTypeTraits>(buffer_.data(),
-                                                      dest->frames());
+  dest->FromInterleaved<UnsignedInt8SampleTypeTraits>(buffer_);
   return dest->frames();
 }
 
