@@ -73,7 +73,8 @@ void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
     engagement_tracker_->Dismissed(
         feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature);
   }
-  if (IsProfileEligibleForBwg() || IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsProfileEligibleForGemini() ||
+      IsProactiveSuggestionsFrameworkEnabled()) {
     Invalidate();
   }
 }
@@ -95,7 +96,8 @@ void ReaderModePanelItemConfiguration::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper,
     web::WebState* web_state,
     ReaderModeDeactivationReason reason) {
-  if (IsProfileEligibleForBwg() || IsProactiveSuggestionsFrameworkEnabled()) {
+  if (IsProfileEligibleForGemini() ||
+      IsProactiveSuggestionsFrameworkEnabled()) {
     Invalidate();
   }
 }
@@ -130,7 +132,7 @@ void ReaderModePanelItemConfiguration::Invalidate() {
   }
 }
 
-bool ReaderModePanelItemConfiguration::IsProfileEligibleForBwg() {
+bool ReaderModePanelItemConfiguration::IsProfileEligibleForGemini() {
   web::WebState* web_state = web_state_observation_.GetSource();
   if (!web_state || web_state->IsBeingDestroyed()) {
     return false;
@@ -138,7 +140,7 @@ bool ReaderModePanelItemConfiguration::IsProfileEligibleForBwg() {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   BwgService* bwg_service = BwgServiceFactory::GetForProfile(profile);
-  return bwg_service && bwg_service->IsProfileEligibleForBwg();
+  return bwg_service && bwg_service->IsProfileEligibleForGemini();
 }
 
 bool ReaderModePanelItemConfiguration::CanShowLargeEntrypointMessage() {

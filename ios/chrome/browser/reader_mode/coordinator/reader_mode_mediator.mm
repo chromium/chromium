@@ -88,7 +88,7 @@
 #pragma mark - Public
 
 - (BOOL)BWGAvailableForProfile {
-  return _BWGService && _BWGService->IsProfileEligibleForBwg();
+  return _BWGService && _BWGService->IsProfileEligibleForGemini();
 }
 
 - (void)disconnect {

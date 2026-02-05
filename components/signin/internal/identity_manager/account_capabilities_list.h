@@ -86,11 +86,9 @@ ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    "accountcapabilities/gezdsmbnmnqxa")
 #endif
 
-#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanUseGeminiInChromeCapabilityName,
                    CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
                    "accountcapabilities/giytmnrnmnqxa")
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,

@@ -261,7 +261,7 @@ const CGFloat kIconPointSize = 16.0;
           return BWGService->IsBwgAvailableForWebState(webState);
         }
 
-        return BWGService->IsProfileEligibleForBwg();
+        return BWGService->IsProfileEligibleForGemini();
       }
     }
   }

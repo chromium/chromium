@@ -65,7 +65,7 @@ void BwgService::Shutdown() {
 
 #pragma mark - Public
 
-bool BwgService::IsProfileEligibleForBwg() {
+bool BwgService::IsProfileEligibleForGemini() {
   if (!IsGeminiAvailableForManagedAccounts()) {
     if (auth_service_ && auth_service_->HasPrimaryIdentityManaged(
                              signin::ConsentLevel::kSignin)) {
@@ -80,15 +80,7 @@ bool BwgService::IsProfileEligibleForBwg() {
           ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
           .state() == GoogleServiceAuthError::NONE;
 
-  // If the account info was not found, the user is likely not authenticated.
-  bool has_account_info = !account_info.IsEmpty();
-
-  // Checks whether the account capabilities permit model execution.
-  bool can_use_model_execution =
-      has_account_info
-          ? account_info.capabilities.can_use_model_execution_features() ==
-                signin::Tribool::kTrue
-          : false;
+  const bool can_use_model_execution = CanUseGeminiModelExecution(account_info);
 
   // Checks the Chrome and Gemini Enterprise policies.
   // kGeminiEnabledByPolicy is 0 for allowed, 1 for disallowed.
@@ -105,7 +97,7 @@ bool BwgService::IsProfileEligibleForBwg() {
 }
 
 bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
-  if (!web_state || !IsProfileEligibleForBwg()) {
+  if (!web_state || !IsProfileEligibleForGemini()) {
     return false;
   }
 
@@ -169,6 +161,25 @@ void BwgService::CheckGeminiEnterpriseEligibility() {
       auth_service_, base::CallbackToBlock(base::BindOnce(
                          &BwgService::OnGeminiEligibilityResult,
                          eligibility_weak_ptr_factory_.GetWeakPtr())));
+}
+
+bool BwgService::CanUseGeminiModelExecution(const AccountInfo& account_info) {
+  // If the account info was not found, the user is likely not authenticated.
+  if (account_info.IsEmpty()) {
+    return false;
+  }
+
+  const AccountCapabilities capabilities =
+      account_info.GetAccountCapabilities();
+
+  // Checks whether the account capabilities permit model execution.
+  if (IsGeminiUpdatedEligibilityEnabled()) {
+    return signin::TriboolToBoolOr(capabilities.can_use_gemini_in_chrome(),
+                                   false);
+  }
+
+  return capabilities.can_use_model_execution_features() ==
+         signin::Tribool::kTrue;
 }
 
 void BwgService::ClearConsentPref() {

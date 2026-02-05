@@ -47,8 +47,8 @@ class ReaderModePanelItemConfiguration
   // Invalidates this configuration.
   void Invalidate();
 
-  // Helper which returns whether the profile is eligible for BWG.
-  bool IsProfileEligibleForBwg();
+  // Helper which returns whether the profile is eligible for Gemini.
+  bool IsProfileEligibleForGemini();
 
   // Returns true if the expanded omnibox message can be shown.
   bool CanShowLargeEntrypointMessage();

@@ -33,8 +33,8 @@ class BwgService : public KeyedService,
   ~BwgService() override;
   void Shutdown() override;
 
-  // Returns whether the current profile is eligible for BWG.
-  bool IsProfileEligibleForBwg();
+  // Returns whether the current profile is eligible for Gemini.
+  bool IsProfileEligibleForGemini();
 
   // Whether BWG is available for a given web state.
   bool IsBwgAvailableForWebState(web::WebState* web_state);
@@ -70,6 +70,9 @@ class BwgService : public KeyedService,
   // Checks if the account is eligible for Gemini Enterprise and populates
   // `is_disabled_by_gemini_policy_`.
   void CheckGeminiEnterpriseEligibility();
+
+  // Checks if the account has eligibility for executing the Gemini model.
+  bool CanUseGeminiModelExecution(const AccountInfo& account_info);
 
   // Clears the Gemini consent profile pref.
   void ClearConsentPref();
