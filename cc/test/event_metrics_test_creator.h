@@ -23,6 +23,8 @@ class EventMetricsTestCreator {
   struct EventParams {
     ui::EventType type = ui::EventType::kUnknown;
     base::TimeTicks timestamp = kDefaultTimestamp;
+    std::optional<base::TimeTicks> arrived_in_renderer_compositor_timestamp =
+        std::nullopt;
     std::optional<bool> caused_frame_update = std::nullopt;
   };
 
@@ -30,6 +32,8 @@ class EventMetricsTestCreator {
 
   struct ScrollEventParams {
     base::TimeTicks timestamp = kDefaultTimestamp;
+    std::optional<base::TimeTicks> arrived_in_renderer_compositor_timestamp =
+        std::nullopt;
     std::optional<bool> caused_frame_update = std::nullopt;
     std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args =
         std::nullopt;
@@ -44,6 +48,8 @@ class EventMetricsTestCreator {
 
   struct ScrollUpdateEventParams {
     base::TimeTicks timestamp = kDefaultTimestamp;
+    std::optional<base::TimeTicks> arrived_in_renderer_compositor_timestamp =
+        std::nullopt;
     float delta = 0.0f;
     std::optional<float> predicted_delta = std::nullopt;
     std::optional<bool> caused_frame_update = std::nullopt;

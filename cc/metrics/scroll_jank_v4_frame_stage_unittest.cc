@@ -10,7 +10,9 @@
 
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/test/event_metrics_test_creator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -736,6 +738,100 @@ TEST_F(ScrollJankV4FrameStageTest,
               .first_input_trace_id = TraceId(22),
           },
           /* synthetic= */ std::nullopt)}));
+}
+
+// Verifies that, when
+// `features::kOrderScrollJankV4EventMetricsByArrivedInRendererCompositor` is
+// disabled, `ScrollJankV4FrameStage::CalculateStages` orders scroll events
+// based on their input generation timestamp.
+//
+// Timestamp                1      2      3      4
+// Inertial scroll update:         IG----AiRC---------...
+// Inertial scroll end:     IG------------------AiRC--...
+// (IG = input generation, AiRC = arrived in renderer compositor)
+//
+// Since the IGSE's input generation timestamp (1 ms) is less than that of the
+// IGSU (2 ms), the expected ordering is [IGSE, IGSU].
+TEST_F(ScrollJankV4FrameStageTest,
+       OrdersEventsByGenerationTimestampWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kOrderScrollJankV4EventMetricsByArrivedInRendererCompositor);
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(2),
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(3),
+       .delta = 40,
+       .caused_frame_update = true,
+       .did_scroll = true,
+       .is_synthetic = false,
+       .trace_id = TraceId(111)}));
+  events_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(1),
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(4),
+       .caused_frame_update = false}));
+  auto stages = ScrollJankV4FrameStage::CalculateStages(events_metrics);
+  EXPECT_THAT(
+      stages,
+      ElementsAre(ScrollJankV4FrameStage{ScrollEnd{}},
+                  ScrollJankV4FrameStage{ScrollUpdates(
+                      Real{
+                          .first_input_generation_ts = MillisecondsTicks(2),
+                          .last_input_generation_ts = MillisecondsTicks(2),
+                          .has_inertial_input = true,
+                          .abs_total_raw_delta_pixels = 40,
+                          .max_abs_inertial_raw_delta_pixels = 40,
+                          .first_input_trace_id = TraceId(111),
+                      },
+                      /* synthetic= */ std::nullopt)}));
+}
+
+// Verifies that, when
+// `features::kOrderScrollJankV4EventMetricsByArrivedInRendererCompositor` is
+// enabled, `ScrollJankV4FrameStage::CalculateStages` orders scroll events
+// based on the timestamps of their arrival in the renderer compositor.
+//
+// Timestamp                1      2      3      4
+// Inertial scroll update:         IG----AiRC---------...
+// Inertial scroll end:     IG------------------AiRC--...
+// (IG = input generation, AiRC = arrived in renderer compositor)
+//
+// Since the IGSE's timestamp of arrival in the renderer compositor (4 ms) is
+// greater than that of the IGSU (3 ms), the expected ordering is [IGSU, IGSE].
+TEST_F(ScrollJankV4FrameStageTest,
+       OrdersEventsByArrivedInRendererCompositorWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kOrderScrollJankV4EventMetricsByArrivedInRendererCompositor);
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(2),
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(3),
+       .delta = 40,
+       .caused_frame_update = true,
+       .did_scroll = true,
+       .is_synthetic = false,
+       .trace_id = TraceId(111)}));
+  events_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(1),
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(4),
+       .caused_frame_update = false}));
+  auto stages = ScrollJankV4FrameStage::CalculateStages(events_metrics);
+  EXPECT_THAT(
+      stages,
+      ElementsAre(ScrollJankV4FrameStage{ScrollUpdates(
+                      Real{
+                          .first_input_generation_ts = MillisecondsTicks(2),
+                          .last_input_generation_ts = MillisecondsTicks(2),
+                          .has_inertial_input = true,
+                          .abs_total_raw_delta_pixels = 40,
+                          .max_abs_inertial_raw_delta_pixels = 40,
+                          .first_input_trace_id = TraceId(111),
+                      },
+                      /* synthetic= */ std::nullopt)},
+                  ScrollJankV4FrameStage{ScrollEnd{}}));
 }
 
 TEST_F(ScrollJankV4FrameStageTest, EmptyRealScrollUpdatesToOstream) {

@@ -52,7 +52,9 @@ std::unique_ptr<EventMetrics> EventMetricsTestCreator::CreateEventMetrics(
   // (`EventMetrics::DispatchStage::kGenerated` <
   // `EventMetrics::DispatchStage::kArrivedInBrowserMain` <
   // `EventMetrics::DispatchStage::kArrivedInRendererCompositor`).
-  test_tick_clock_.SetNowTicks(params.timestamp + base::Nanoseconds(2));
+  test_tick_clock_.SetNowTicks(
+      params.arrived_in_renderer_compositor_timestamp.value_or(
+          params.timestamp + base::Nanoseconds(2)));
 
   auto event = EventMetrics::CreateForTesting(
       params.type, params.timestamp,
@@ -117,7 +119,9 @@ EventMetricsTestCreator::CreateScrollEventMetrics(ui::EventType type,
                                                   ScrollEventParams params) {
   CHECK_EQ(GetEventMetricsTypeFor(type), EventMetricsType::kScrollEventMetrics);
   // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
-  test_tick_clock_.SetNowTicks(params.timestamp + base::Nanoseconds(2));
+  test_tick_clock_.SetNowTicks(
+      params.arrived_in_renderer_compositor_timestamp.value_or(
+          params.timestamp + base::Nanoseconds(2)));
   auto event = ScrollEventMetrics::CreateForTesting(
       type, ui::ScrollInputType::kTouchscreen, is_inertial, params.timestamp,
       /* arrived_in_browser_main_timestamp= */ params.timestamp +
@@ -138,7 +142,9 @@ EventMetricsTestCreator::CreateScrollUpdateEventMetrics(
     ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
     ScrollUpdateEventParams params) {
   // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
-  test_tick_clock_.SetNowTicks(params.timestamp + base::Nanoseconds(2));
+  test_tick_clock_.SetNowTicks(
+      params.arrived_in_renderer_compositor_timestamp.value_or(
+          params.timestamp + base::Nanoseconds(2)));
   auto event = ScrollUpdateEventMetrics::CreateForTesting(
       ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
       is_inertial, scroll_update_type, params.delta, params.timestamp,
