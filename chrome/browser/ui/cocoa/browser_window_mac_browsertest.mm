@@ -48,8 +48,9 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
   EXPECT_TRUE(window);
   EXPECT_TRUE(bookmark_menu_item);
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersAndQuit();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   EXPECT_EQ([bookmark_menu_item action], @selector(commandDispatch:));
 

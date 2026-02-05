@@ -305,10 +305,11 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
 
   // Delete the first profile and the glic launcher should not be in the
   // background since there are no profiles that are eligible to use glic.
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
       browser()->profile()->GetPath(), base::DoNothing(),
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
   EXPECT_FALSE(background_mode_manager->IsInBackgroundModeForTesting());
   EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
       prefs::kGlicLauncherEnabled));

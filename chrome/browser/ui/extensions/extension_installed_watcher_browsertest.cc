@@ -115,7 +115,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledWatcherBrowserTest,
   WaitFor(foo);
 
   // If the fix for https://crbug.com/1049190 regresses, this will crash:
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseWindow(browser());
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
   EXPECT_EQ(0, done_called_);
 }

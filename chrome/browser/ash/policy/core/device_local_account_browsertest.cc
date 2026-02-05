@@ -505,11 +505,13 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     }
   }
 
-  // Waits for the Browser to close and its NativeWidget to be destroyed.
-  void WaitForBrowserDestruction(Browser* browser) {
+  // Closes the Browser and waits for it to be destroyed.
+  void CloseBrowserAndVerifyDestruction(BrowserWindowInterface* browser) {
+    ui_test_utils::BrowserDestroyedObserver observer(browser);
     aura::test::WindowDestroyedWaiter waiter(
-        browser->window()->GetNativeWindow());
-    ui_test_utils::WaitForBrowserToClose(browser);
+        browser->GetWindow()->GetNativeWindow());
+    browser->GetWindow()->Close();
+    observer.Wait();
     waiter.Wait();
   }
 
@@ -1603,11 +1605,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   BrowserWindowInterface* browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
-  ui::BaseWindow* browser_window = browser->GetWindow();
-  ASSERT_TRUE(browser_window);
-  browser_window->Close();
-  WaitForBrowserDestruction(browser->GetBrowserForMigrationOnly());
-  browser_window = nullptr;
+  CloseBrowserAndVerifyDestruction(browser);
+  browser = nullptr;
   EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Verify that the logout confirmation dialog is not showing because an app
@@ -1634,11 +1633,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 
   // Close the first browser window.
-  browser_window = first_browser->GetWindow();
-  ASSERT_TRUE(browser_window);
-  browser_window->Close();
-  WaitForBrowserDestruction(first_browser->GetBrowserForMigrationOnly());
-  browser_window = nullptr;
+  CloseBrowserAndVerifyDestruction(first_browser);
   first_browser = nullptr;
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
@@ -1647,11 +1642,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_FALSE(IsLogoutConfirmationDialogShowing());
 
   // Close the second browser window.
-  browser_window = second_browser->GetWindow();
-  ASSERT_TRUE(browser_window);
-  browser_window->Close();
-  WaitForBrowserDestruction(second_browser->GetBrowserForMigrationOnly());
-  browser_window = nullptr;
+  CloseBrowserAndVerifyDestruction(second_browser);
   second_browser = nullptr;
   EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
@@ -1669,11 +1660,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Close the browser window.
-  browser_window = browser->GetWindow();
-  ASSERT_TRUE(browser_window);
-  browser_window->Close();
-  WaitForBrowserDestruction(browser->GetBrowserForMigrationOnly());
-  browser_window = nullptr;
+  CloseBrowserAndVerifyDestruction(browser);
   browser = nullptr;
   EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 

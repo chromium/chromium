@@ -130,9 +130,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, CleanupWhenBrowsersClosed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   OpenNewBrowserPage("/simple.html", WindowOpenDisposition::CURRENT_TAB);
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(GetActiveUserProfile(),
                                       /*skip_beforeunload=*/true);
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   ASSERT_EQ(1, GetHistorySize());

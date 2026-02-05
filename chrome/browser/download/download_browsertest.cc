@@ -1319,9 +1319,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownload) {
   ExpectWindowCountAfterDownload(2);
 
   // Close the Incognito window and don't crash.
+  ui_test_utils::BrowserDestroyedObserver observer(incognito);
   chrome::CloseWindow(incognito);
-
-  ui_test_utils::WaitForBrowserToClose(incognito);
+  observer.Wait();
   ExpectWindowCountAfterDownload(1);
 
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
@@ -5192,9 +5192,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_NewWindow) {
   EXPECT_TRUE(IsDownloadDetailedUiVisible(download_browser->window()));
 
   // Close the new window.
+  ui_test_utils::BrowserDestroyedObserver observer(download_browser);
   chrome::CloseWindow(download_browser);
-
-  ui_test_utils::WaitForBrowserToClose(download_browser);
+  observer.Wait();
   EXPECT_EQ(first_browser, browser());
   ExpectWindowCountAfterDownload(1);
 

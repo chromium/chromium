@@ -169,11 +169,12 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
 
   // Ask the app controller to stop handling our session request.
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   [session_handler cancelWebAuthenticationSessionRequest:request];
 
   // Expect the browser window to close.
 
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
   EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
 
   // Expect there to have been the user cancellation callback.
@@ -210,11 +211,12 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
 
   // Simulate the user closing the window.
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   browser->GetWindow()->Close();
 
   // Expect the browser window to close.
 
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
   EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
 
   // Expect there to have been the user cancellation callback.
@@ -328,6 +330,7 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessDirect) {
   // Simulate the user successfully logging in with a non-redirected load of
   // a URL with the expected scheme.
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   GURL success_url("makeitso://enterprise");
   browser->GetTabStripModel()->GetWebContentsAt(0)->GetController().LoadURL(
       success_url, content::Referrer(), ui::PAGE_TRANSITION_GENERATED,
@@ -335,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessDirect) {
 
   // Expect the browser window to close.
 
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
   EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
 
   // Expect there to have been the success callback.
@@ -390,13 +393,14 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessEventualRedirect) {
   // Simulate the user successfully logging in with a redirected load of a URL
   // with the expected scheme.
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   GURL url = embedded_test_server.GetURL("/something");
   browser->GetTabStripModel()->GetWebContentsAt(0)->GetController().LoadURL(
       url, content::Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
 
   // Expect the browser window to close.
 
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
   EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
 
   // Expect there to have been the success callback.
@@ -435,11 +439,12 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessInitialRedirect) {
   // Expect a browser window to be opened.
 
   BrowserWindowInterface* const browser = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   EXPECT_EQ(start_browser_count + 1, chrome::GetTotalBrowserCount());
 
   // Expect the browser window to close.
 
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
   EXPECT_EQ(start_browser_count, chrome::GetTotalBrowserCount());
 
   // Expect there to have been the success callback.

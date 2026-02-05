@@ -838,9 +838,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
 
   // Simulate profile destruction notification and wait for the auth popup to
   // close.
+  ui_test_utils::BrowserDestroyedObserver observer(popup);
   static_cast<ProfileObserver*>(web_auth_flow())
       ->OnProfileWillBeDestroyed(GetProfile());
-  ui_test_utils::WaitForBrowserToClose(popup);
+  observer.Wait();
   // Verify that WebAuthFlow closed the WebContents.
   EXPECT_TRUE(web_auth_flow());
   EXPECT_FALSE(web_auth_flow()->web_contents());

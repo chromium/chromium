@@ -584,14 +584,17 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
 // closing the passed in TabStripModel. This is used in the following test case.
 class WindowDestroyer : public content::WebContentsObserver {
  public:
-  WindowDestroyer(content::WebContents* web_contents, TabStripModel* model)
-      : content::WebContentsObserver(web_contents), tab_strip_model_(model) {}
+  WindowDestroyer(BrowserWindowInterface* browser,
+                  content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents),
+        tab_strip_model_(browser->GetTabStripModel()),
+        observer_(browser) {}
 
   WindowDestroyer(const WindowDestroyer&) = delete;
   WindowDestroyer& operator=(const WindowDestroyer&) = delete;
 
   // Wait for the browser window to be destroyed.
-  void Wait() { ui_test_utils::WaitForBrowserToClose(); }
+  void Wait() { observer_.Wait(); }
 
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
@@ -600,6 +603,7 @@ class WindowDestroyer : public content::WebContentsObserver {
 
  private:
   raw_ptr<TabStripModel> tab_strip_model_;
+  ui_test_utils::BrowserDestroyedObserver observer_;
 };
 
 // Test to ensure that while iterating through all listeners in
@@ -627,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
             wc2->GetPrimaryMainFrame()->GetProcess());
 
   // Create an object that will close the window on a process crash.
-  WindowDestroyer destroyer(wc1, browser()->tab_strip_model());
+  WindowDestroyer destroyer(browser(), wc1);
 
   // Kill the renderer process, simulating a crash. This should the ProcessDied
   // method to be called. Alternatively, RenderProcessHost::OnChannelError can

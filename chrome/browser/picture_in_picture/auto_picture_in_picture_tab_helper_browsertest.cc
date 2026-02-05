@@ -1583,8 +1583,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger metric recording.
   test_clock.Advance(base::Milliseconds(5000));
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   web_contents->ClosePage();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 
   // Verify expectations.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -1734,8 +1735,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
   EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   web_contents->ClosePage();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
@@ -2846,8 +2848,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 
   // Trigger metric recording.
   test_clock.Advance(base::Milliseconds(5000));
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   web_contents->ClosePage();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 
   // Verify expectations.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -3052,8 +3055,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
   EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   web_contents->ClosePage();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

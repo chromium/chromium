@@ -399,14 +399,16 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             0);
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* help_app_browser =
+      chrome::FindBrowserWithTab(web_contents);
+  ui_test_utils::BrowserDestroyedObserver observer(help_app_browser);
   // Close the web contents we just created to simulate what would happen in
   // production with a background page. This helps us ensure that our
   // notification shows up and can be interacted with even after the web ui
   // that triggered it has died.
   web_contents->Close();
   // Wait until the browser with the web contents closes.
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
   // Assert that the notification really is there.
   auto notifications = display_service->GetDisplayedNotificationsForType(
       NotificationHandler::Type::TRANSIENT);
@@ -900,8 +902,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
     // The Help app renderer process crashed. Close the browser window so that
     // we can relaunch it in another browser window.
+    ui_test_utils::BrowserDestroyedObserver observer(help_app_browser);
     chrome::CloseWindow(help_app_browser);
-    ui_test_utils::WaitForBrowserToClose(help_app_browser);
+    observer.Wait();
 
     // There should only be 1 regular browser.
     EXPECT_EQ(1u, chrome::GetTotalBrowserCount());

@@ -190,17 +190,19 @@ BrowserWindowInterface* FindBrowserForApp(const std::string& app_name) {
 
 // Close |app_browser| and wait until it's closed.
 void CloseAppBrowserWindow(BrowserWindowInterface* app_browser) {
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   app_browser->GetWindow()->Close();
-  ui_test_utils::WaitForBrowserToClose(app_browser);
+  observer.Wait();
 }
 
 // Close browsers from context menu
 void CloseBrowserWindow(Browser* browser,
                         ShelfContextMenu* menu,
                         int close_command) {
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   // Note that event_flag is never used inside function ExecuteCommand.
   menu->ExecuteCommand(close_command, ui::EF_NONE);
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
 }
 
 int64_t GetDisplayIdForBrowserWindow(ui::BaseWindow* window) {

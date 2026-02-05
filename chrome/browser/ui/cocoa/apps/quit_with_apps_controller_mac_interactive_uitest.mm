@@ -115,9 +115,10 @@ IN_PROC_BROWSER_TEST_F(QuitWithAppsControllerInteractiveTest, QuitBehavior) {
   // Get a reference to the open app window before the browser closes.
   extensions::AppWindow* app_window = GetFirstAppWindow();
 
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   // Quitting should not quit but close all browsers
   chrome_browser_application_mac::Terminate();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   EXPECT_TRUE(AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(0));

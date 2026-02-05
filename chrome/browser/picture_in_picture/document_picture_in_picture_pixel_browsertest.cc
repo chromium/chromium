@@ -5,6 +5,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
@@ -163,7 +164,11 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
   }
 
   void WaitForUserDismissal() override {
-    ui_test_utils::WaitForBrowserToClose();
+    BrowserWindowInterface* pip_browser =
+        chrome::FindBrowserWithTab(window_controller()->GetChildWebContents());
+    if (pip_browser) {
+      ui_test_utils::BrowserDestroyedObserver(pip_browser).Wait();
+    }
   }
 
  private:

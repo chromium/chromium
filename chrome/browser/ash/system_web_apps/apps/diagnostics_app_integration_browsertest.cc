@@ -101,8 +101,9 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest, UsageMetricsTest) {
 
   // Find system browser for diagnostics and close it to trigger usage metrics.
   EXPECT_TRUE(ash::IsSystemWebApp(system_app_browser));
+  ui_test_utils::BrowserDestroyedObserver observer(system_app_browser);
   chrome::CloseWindow(system_app_browser);
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   histogram_tester_.ExpectBucketCount(kDiagnosticsUmaFeatureFullPath,
                                       kUsedWithSuccess, 1);

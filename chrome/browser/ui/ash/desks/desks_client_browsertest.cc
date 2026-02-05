@@ -2531,11 +2531,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ASSERT_TRUE(desks_controller->active_desk()->ContainsAppWindows());
 
   // Now save the desk. This should close the desk.
+  ui_test_utils::BrowserDestroyedObserver observer;
   ClickSaveDeskForLaterMenuItem();
   ash::WaitForSavedDeskUI();
 
   // Wait for the browser to close.
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
 
   // Verify that we're back to one desk.
   EXPECT_EQ(1u, desks.size());
@@ -3006,8 +3007,9 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   {
     aura::test::WindowDestroyedWaiter waiter(
         browser()->window()->GetNativeWindow());
+    ui_test_utils::BrowserDestroyedObserver observer(browser());
     SendKey(ui::VKEY_RETURN);
-    ui_test_utils::WaitForBrowserToClose(browser());
+    observer.Wait();
     waiter.Wait();
   }
 

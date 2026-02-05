@@ -772,8 +772,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   // Close the current browser.
   Profile* profile = browser()->profile();
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Create an incognito browser and check that it is the last active browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
@@ -851,8 +852,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   // Close the current non-incognito browser.
   Profile* profile = browser()->profile();
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(
@@ -884,8 +886,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   // Close the current non-incognito browser.
   Profile* profile = browser()->profile();
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(
@@ -1228,8 +1231,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   // Close the current non-incognito browser.
   Profile* profile = browser()->profile();
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsers();
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(

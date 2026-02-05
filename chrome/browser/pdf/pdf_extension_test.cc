@@ -3631,9 +3631,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
 
   // Now, close Incognito and destroy its profile.  This is subtle: simply
   // closing the Incognito window and waiting for browser destruction (e.g.,
-  // with `ui_test_utils::WaitForBrowserToClose(incognito)`) will trigger
-  // asynchronous profile destruction which will allow the PDF task to run
-  // before profile destruction is complete, sidestepping the bug in
+  // with `ui_test_utils::BrowserDestroyedObserver(incognito).Wait()`) will
+  // trigger asynchronous profile destruction which will allow the PDF task to
+  // run before profile destruction is complete, sidestepping the bug in
   // https://crbug.com/1382761.  Instead, use the hard shutdown/restart logic
   // similar to that in `BrowserCloseManager::CloseBrowsers()`, which is used
   // by `chrome::ExitIgnoreUnloadHandlers() and forces the `Browser` and its
@@ -4405,9 +4405,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
   // Now, close Incognito and destroy its profile.  This is subtle: simply
   // closing the Incognito window and waiting for browser destruction (e.g.,
-  // with `ui_test_utils::WaitForBrowserToClose(incognito)`) will trigger
-  // asynchronous profile destruction which will allow the PDF task to run
-  // before profile destruction is complete, sidestepping the bug in
+  // with `ui_test_utils::BrowserDestroyedObserver(incognito).Wait()`) will
+  // trigger asynchronous profile destruction which will allow the PDF task to
+  // run before profile destruction is complete, sidestepping the bug in
   // https://crbug.com/1382761.  Instead, use the hard shutdown/restart logic
   // similar to that in `BrowserCloseManager::CloseBrowsers()`, which is used
   // by `chrome::ExitIgnoreUnloadHandlers() and forces the `Browser` and its

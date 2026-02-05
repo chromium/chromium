@@ -133,7 +133,7 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
 
   void WaitForUserDismissal() override {
     /* Block until the UI has been dismissed. */
-    ui_test_utils::WaitForBrowserToClose();
+    ui_test_utils::BrowserDestroyedObserver(browser()).Wait();
     if (bubble_) {
       bubble_->SetModel(nullptr);
       bubble_ = nullptr;

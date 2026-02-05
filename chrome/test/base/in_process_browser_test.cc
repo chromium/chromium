@@ -648,8 +648,9 @@ TabListInterface* InProcessBrowserTest::GetTabListInterface() const {
 
 void InProcessBrowserTest::CloseBrowserSynchronously(
     BrowserWindowInterface* browser) {
+  ui_test_utils::BrowserDestroyedObserver observer(browser);
   CloseBrowserAsynchronously(browser);
-  ui_test_utils::WaitForBrowserToClose(browser);
+  observer.Wait();
 }
 
 void InProcessBrowserTest::CloseBrowserAsynchronously(

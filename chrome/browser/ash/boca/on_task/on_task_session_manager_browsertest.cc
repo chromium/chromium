@@ -980,9 +980,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerCloseSWAOnSessionEndBrowserTest,
   ASSERT_TRUE(
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   // End the session.
+  ui_test_utils::BrowserDestroyedObserver observer(boca_app_browser);
   GetOnTaskSessionManager()->OnSessionEnded(kSessionId);
   // Wait until the browser actually gets closed.
-  ui_test_utils::WaitForBrowserToClose();
+  observer.Wait();
   VerifyNotificationShown(kOnTaskSessionEndNotificationId, true);
   VerifyNotificationShown(kOnTaskBundleContentAddedNotificationId, false);
   VerifyNotificationShown(kOnTaskBundleContentRemovedNotificationId, false);

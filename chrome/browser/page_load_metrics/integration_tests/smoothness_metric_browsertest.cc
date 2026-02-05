@@ -75,8 +75,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   ASSERT_TRUE(EvalJs(web_contents(), "runtest()").ExtractBool());
 
   // Finish session.
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   web_contents()->ClosePage();
-  ui_test_utils::WaitForBrowserToClose(browser());
+  observer.Wait();
 
   int64_t fsm_pdf_value;
   // FrameSequenceMetric export should show a value.
