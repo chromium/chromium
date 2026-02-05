@@ -147,6 +147,9 @@ BASE_FEATURE(kInstallPlatformExperienceHelperWin,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// Enables app-menu item for reporting an unsafe site to Google.
+BASE_FEATURE(kReportUnsafeSite, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When this feature is enabled, the network service will restart unsandboxed if
 // a previous attempt to launch it sandboxed failed.
 BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,

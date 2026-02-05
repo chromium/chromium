@@ -80,6 +80,8 @@ BASE_DECLARE_FEATURE(kRegisterOsUpdateHandlerWin);
 BASE_DECLARE_FEATURE(kInstallPlatformExperienceHelperWin);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+BASE_DECLARE_FEATURE(kReportUnsafeSite);
+
 BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
