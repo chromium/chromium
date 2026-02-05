@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/scene/ui/scene_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -99,9 +100,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 // The Browser for the current interface.
 @property(nonatomic, readonly) Browser* currentBrowser;
 
-// YES if the Settings view is being dismissed.
-@property(nonatomic, assign) BOOL dismissingSettings;
-
 @end
 
 @implementation SceneCoordinator {
@@ -136,6 +134,11 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       base::ScopedObservation<PolicyWatcherBrowserAgent,
                               PolicyWatcherBrowserAgentObserverBridge>>
       _policyWatcherObserver;
+  // YES if the Settings view is being dismissed.
+  BOOL _dismissingSettings;
+  // The view controller to use as a the rootViewController for this scene's
+  // window.
+  SceneViewController* _viewController;
 }
 
 - (instancetype)initWithSceneCommandsEndpoint:
@@ -162,12 +165,19 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   CHECK(_inactiveBrowser.get());
   CHECK(_incognitoBrowser);
 
+  if (IsUseSceneViewControllerEnabled()) {
+    _viewController = [[SceneViewController alloc] init];
+  }
   _tabGridCoordinator = [[TabGridCoordinator alloc]
-      initWithSceneCommandsEndpoint:_sceneCommandsEndpoint
-                     regularBrowser:_regularBrowser.get()
-                    inactiveBrowser:_inactiveBrowser.get()
-                   incognitoBrowser:_incognitoBrowser];
+      initWithBaseViewController:_viewController
+           sceneCommandsEndpoint:_sceneCommandsEndpoint
+                  regularBrowser:_regularBrowser.get()
+                 inactiveBrowser:_inactiveBrowser.get()
+                incognitoBrowser:_incognitoBrowser];
   _tabGridCoordinator.delegate = self.delegate;
+  if (IsUseSceneViewControllerEnabled()) {
+    self.sceneState.window.rootViewController = _viewController;
+  }
   [_tabGridCoordinator start];
 }
 
@@ -689,8 +699,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     }
   };
 
-  if (self.settingsNavigationController && !self.dismissingSettings) {
-    self.dismissingSettings = YES;
+  if (self.settingsNavigationController && !_dismissingSettings) {
+    _dismissingSettings = YES;
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
     // to be closed first.
@@ -698,7 +708,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     // happen when it is done animating.
     [self stopSigninCoordinatorWithCompletionAnimated:animated];
     [self stopSettingsAnimated:animated completion:resetAndDismiss];
-    self.dismissingSettings = NO;
+    _dismissingSettings = NO;
   } else {
     // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.

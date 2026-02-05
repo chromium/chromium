@@ -31,6 +31,7 @@ include_rules = [
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h",
+  "+ios/chrome/browser/scene/ui",
   "+ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator.h",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h",

@@ -33,6 +33,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/safari_data_import/coordinator",
     "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/scene/ui",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup",
     "//ios/chrome/browser/shared/coordinator/root_coordinator",

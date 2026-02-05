@@ -12,15 +12,17 @@
 @class BrowserLayoutViewController;
 class Browser;
 @protocol SceneCommands;
+@class SceneViewController;
 @protocol TabGridCoordinatorDelegate;
 
 @interface TabGridCoordinator : RootCoordinator
 
-- (instancetype)initWithSceneCommandsEndpoint:
-                    (id<SceneCommands>)sceneCommandsEndpoint
-                               regularBrowser:(Browser*)regularBrowser
-                              inactiveBrowser:(Browser*)inactiveBrowser
-                             incognitoBrowser:(Browser*)incognitoBrowser
+- (instancetype)
+    initWithBaseViewController:(SceneViewController*)baseViewController
+         sceneCommandsEndpoint:(id<SceneCommands>)sceneCommandsEndpoint
+                regularBrowser:(Browser*)regularBrowser
+               inactiveBrowser:(Browser*)inactiveBrowser
+              incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

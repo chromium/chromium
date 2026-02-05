@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/scene/ui/scene_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -139,6 +140,7 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -232,6 +234,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // Browser that contain tabs from the main pane (i.e. non-incognito).
 // TODO(crbug.com/40893775): Make regular ivar as incognito and inactive.
 @property(nonatomic, assign, readonly) Browser* regularBrowser;
+// The base view controller for the scene.
+@property(nonatomic, weak) SceneViewController* baseViewController;
 // The view controller for the Tab Grid.
 @property(nonatomic, strong) TabGridViewController* viewController;
 // Commad dispatcher used while this coordinator's view controller is active.
@@ -291,11 +295,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // Ivars are not auto-synthesized when accessors are overridden.
 @synthesize regularBrowser = _regularBrowser;
 
-- (instancetype)initWithSceneCommandsEndpoint:
-                    (id<SceneCommands>)sceneCommandsEndpoint
-                               regularBrowser:(Browser*)regularBrowser
-                              inactiveBrowser:(Browser*)inactiveBrowser
-                             incognitoBrowser:(Browser*)incognitoBrowser {
+@dynamic baseViewController;
+
+- (instancetype)
+    initWithBaseViewController:(SceneViewController*)baseViewController
+         sceneCommandsEndpoint:(id<SceneCommands>)sceneCommandsEndpoint
+                regularBrowser:(Browser*)regularBrowser
+               inactiveBrowser:(Browser*)inactiveBrowser
+              incognitoBrowser:(Browser*)incognitoBrowser {
   if ((self = [super init])) {
     CHECK(inactiveBrowser->IsInactive());
     CHECK(!regularBrowser->IsInactive());
@@ -315,6 +322,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     } else {
       _pageConfiguration = TabGridPageConfiguration::kAllPagesEnabled;
     }
+    self.baseViewController = baseViewController;
   }
   return self;
 }
@@ -1081,7 +1089,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.firstPresentation = YES;
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  sceneState.window.rootViewController = viewController;
+  if (IsUseSceneViewControllerEnabled()) {
+    SceneViewController* baseViewController = self.baseViewController;
+    CHECK(baseViewController);
+    [baseViewController addChildViewController:viewController];
+    [baseViewController.appContainer addSubview:viewController.view];
+    viewController.view.frame = baseViewController.appContainer.bounds;
+    [viewController didMoveToParentViewController:baseViewController];
+  } else {
+    sceneState.window.rootViewController = viewController;
+  }
 
   _mediator.regularPageMutator = _regularGridCoordinator.regularGridMediator;
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
