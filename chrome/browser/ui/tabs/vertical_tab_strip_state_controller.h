@@ -66,6 +66,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
       base::RepeatingCallback<void(VerticalTabStripStateController*)>;
   base::CallbackListSubscription RegisterOnCollapseChanged(
       StateChangedCallback callback);
+  base::CallbackListSubscription RegisterOnModeWillChange(
+      StateChangedCallback callback);
   base::CallbackListSubscription RegisterOnModeChanged(
       StateChangedCallback callback);
 
@@ -75,6 +77,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
  private:
   void NotifyCollapseChanged();
+  void NotifyModeWillChange();
   void NotifyModeChanged();
 
   // Updates the SessionService with the current state (collapsed status and
@@ -102,6 +105,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_collapse_changed_callback_list_;
+  base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
+      on_mode_will_change_callback_list_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_mode_changed_callback_list_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>

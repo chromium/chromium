@@ -6,7 +6,15 @@
 
 #include "ui/views/widget/widget.h"
 
-TabGroupEditorBubbleTracker::TabGroupEditorBubbleTracker() = default;
+TabGroupEditorBubbleTracker::TabGroupEditorBubbleTracker(
+    tabs::VerticalTabStripStateController* state_controller) {
+  if (state_controller) {
+    vertical_tab_mode_will_change_subscription_ =
+        state_controller->RegisterOnModeWillChange(base::BindRepeating(
+            &TabGroupEditorBubbleTracker::OnVerticalTabStripModeWillChange,
+            base::Unretained(this)));
+  }
+}
 
 TabGroupEditorBubbleTracker::~TabGroupEditorBubbleTracker() {
   if (is_open_ && widget_) {
@@ -45,4 +53,11 @@ void TabGroupEditorBubbleTracker::OnWidgetDestroying(
   widget_->RemoveObserver(this);
   widget_ = nullptr;
   on_bubble_closed_callback_list_.Notify();
+}
+
+void TabGroupEditorBubbleTracker::OnVerticalTabStripModeWillChange(
+    tabs::VerticalTabStripStateController* controller) {
+  if (widget_) {
+    widget_->CloseNow();
+  }
 }

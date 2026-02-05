@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
@@ -20,6 +21,7 @@ class TabGroup;
 
 namespace tabs {
 class TabInterface;
+class VerticalTabStripStateController;
 }
 
 namespace tab_groups {
@@ -64,6 +66,8 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   bool IsCollapsed() const;
 
   tab_groups::TabGroupSyncService* GetTabGroupSyncService();
+
+  tabs::VerticalTabStripStateController* GetStateController();
 
   TabContextMenuController* GetTabContextMenuController() {
     return context_menu_controller_.get();

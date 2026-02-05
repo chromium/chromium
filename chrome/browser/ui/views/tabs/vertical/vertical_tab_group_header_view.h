@@ -6,11 +6,16 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_HEADER_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
+
+namespace tabs {
+class VerticalTabStripStateController;
+}
 
 namespace tab_groups {
 class TabGroupVisualData;
@@ -45,6 +50,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
 
   VerticalTabGroupHeaderView(
       Delegate& delegate,
+      tabs::VerticalTabStripStateController* state_controller,
       const tab_groups::TabGroupVisualData* tab_group_visual_data);
   VerticalTabGroupHeaderView(const VerticalTabGroupHeaderView&) = delete;
   VerticalTabGroupHeaderView& operator=(const VerticalTabGroupHeaderView&) =

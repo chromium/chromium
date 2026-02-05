@@ -90,13 +90,15 @@ VerticalTabStripStateController::~VerticalTabStripStateController() {
 // static
 const VerticalTabStripStateController* VerticalTabStripStateController::From(
     const BrowserWindowInterface* browser_window) {
-  return Get(browser_window->GetUnownedUserDataHost());
+  return browser_window ? Get(browser_window->GetUnownedUserDataHost())
+                        : nullptr;
 }
 
 // static
 VerticalTabStripStateController* VerticalTabStripStateController::From(
     BrowserWindowInterface* browser_window) {
-  return Get(browser_window->GetUnownedUserDataHost());
+  return browser_window ? Get(browser_window->GetUnownedUserDataHost())
+                        : nullptr;
 }
 
 bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
@@ -104,6 +106,7 @@ bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
 }
 
 void VerticalTabStripStateController::SetVerticalTabsEnabled(bool enabled) {
+  NotifyModeWillChange();
   pref_service_->SetBoolean(prefs::kVerticalTabsEnabled, enabled);
 }
 
@@ -145,6 +148,12 @@ VerticalTabStripStateController::RegisterOnCollapseChanged(
 }
 
 base::CallbackListSubscription
+VerticalTabStripStateController::RegisterOnModeWillChange(
+    StateChangedCallback callback) {
+  return on_mode_will_change_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
 VerticalTabStripStateController::RegisterOnModeChanged(
     StateChangedCallback callback) {
   return on_mode_changed_callback_list_.Add(std::move(callback));
@@ -154,6 +163,10 @@ void VerticalTabStripStateController::NotifyCollapseChanged() {
   UpdateSessionService();
   UpdateCollapseActionItem();
   on_collapse_changed_callback_list_.Notify(this);
+}
+
+void VerticalTabStripStateController::NotifyModeWillChange() {
+  on_mode_will_change_callback_list_.Notify(this);
 }
 
 void VerticalTabStripStateController::NotifyModeChanged() {

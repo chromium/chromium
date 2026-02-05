@@ -74,6 +74,7 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
           *GetTabGroupFromNode(collection_node_)->visual_data()),
       group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
           *this,
+          collection_node_->GetController()->GetStateController(),
           &tab_group_visual_data_))),
       group_line_(AddChildView(std::make_unique<views::View>())),
       layout_manager_(*SetLayoutManager(

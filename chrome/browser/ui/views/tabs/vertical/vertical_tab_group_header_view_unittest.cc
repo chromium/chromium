@@ -47,8 +47,8 @@ TEST_F(VerticalTabGroupHeaderViewTest, TooltipText) {
   EXPECT_CALL(delegate, GetGroupContentString())
       .WillRepeatedly(testing::Return(u"3 tabs"));
 
-  auto header =
-      std::make_unique<VerticalTabGroupHeaderView>(delegate, &visual_data);
+  auto header = std::make_unique<VerticalTabGroupHeaderView>(delegate, nullptr,
+                                                             &visual_data);
 
   // Initialize with data
   header->OnDataChanged(&visual_data, false, false);

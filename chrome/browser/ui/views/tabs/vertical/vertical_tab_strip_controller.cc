@@ -239,6 +239,11 @@ VerticalTabStripController::GetTabGroupSyncService() {
       browser_view_->GetProfile());
 }
 
+tabs::VerticalTabStripStateController*
+VerticalTabStripController::GetStateController() {
+  return tabs::VerticalTabStripStateController::From(browser_view_->browser());
+}
+
 bool VerticalTabStripController::IsContextMenuCommandChecked(
     TabStripModel::ContextMenuCommand command_id) {
   return false;

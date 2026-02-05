@@ -101,6 +101,7 @@ END_METADATA
 
 VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
     Delegate& delegate,
+    tabs::VerticalTabStripStateController* state_controller,
     const tab_groups::TabGroupVisualData* tab_group_visual_data)
     : sync_icon_(AddChildView(std::make_unique<views::ImageView>())),
       group_header_label_(
@@ -110,7 +111,8 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
           base::BindRepeating(&VerticalTabGroupHeaderView::ShowEditorBubble,
                               base::Unretained(this))))),
       collapse_icon_(AddChildView(std::make_unique<views::ImageView>())),
-      delegate_(delegate) {
+      delegate_(delegate),
+      editor_bubble_tracker_(state_controller) {
   SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
   SetNotifyEnterExitOnChild(true);
 
