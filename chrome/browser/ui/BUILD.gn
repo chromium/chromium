@@ -5456,6 +5456,7 @@ static_library("ui") {
       "//chrome/browser/ai",
       "//chrome/browser/glic",
       "//chrome/browser/glic/fre",
+      "//chrome/browser/glic/public:features",
     ]
     allow_circular_includes_from += [ "//chrome/browser/glic/fre" ]
     if (!is_android) {

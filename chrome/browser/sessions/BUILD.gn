@@ -1,6 +1,7 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//chrome/common/features.gni")
 
 source_set("sessions") {
   sources = [
@@ -13,4 +14,9 @@ source_set("sessions") {
     "//components/sessions",
     "//ui/base:types",
   ]
+
+  deps = []
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }

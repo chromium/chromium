@@ -94,6 +94,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabRestoreHelperBrowserTest, PopulateAndRestore) {
   EXPECT_EQ(state.bound_instance.conversation_id, conversation_id);
   ASSERT_EQ(state.pinned_instances.size(), 1u);
   EXPECT_EQ(state.pinned_instances[0].instance_id, pinned_instance_id_str);
+
+  // Clean up to avoid dangling pointers since mock instances are on the stack.
+  helper->SetBoundInstance(nullptr);
+  helper->OnUnpinnedByInstance(&pinned_instance);
 }
 
 }  // namespace

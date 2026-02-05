@@ -56,6 +56,10 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_tab_restore_helper.h"
+#endif
+
 using content::NavigationController;
 using content::SessionStorageNamespace;
 using content::WebContents;
@@ -154,7 +158,14 @@ sessions::LiveTab* BrowserLiveTabContext::GetActiveLiveTab() const {
 
 std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     int index) const {
-  return std::map<std::string, std::string>();
+  std::map<std::string, std::string> extra_data;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::PopulateGlicExtraData(tab_strip_model_->GetWebContentsAt(index),
+                              &extra_data);
+#endif
+
+  return extra_data;
 }
 
 std::map<std::string, std::string>
