@@ -140,10 +140,12 @@ const base::FeatureParam<bool> kEnableExpandedComposeboxVoiceSearch(
     "ContextualTasksEnableExpandedComposeboxVoiceSearch",
     true);
 
+// TODO(b/481079194): Remove `kAutoSubmitVoiceSearchQuery` and the code that
+// respects its disabled state.
 const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
     &kContextualTasks,
     "ContextualTasksAutoSubmitVoiceSearchQuery",
-    false);
+    true);
 
 const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     &kContextualTasks,
