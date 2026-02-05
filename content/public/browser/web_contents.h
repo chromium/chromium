@@ -1708,7 +1708,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // - Returns `PrefetchHandle` to control prefetch resources. This can be
   //   nullptr when this function can't add `PrefetchContainer` to
   //   `PrefetchService`.
-  virtual std::unique_ptr<PrefetchHandle> StartPrefetch(
+  [[nodiscard]] virtual std::unique_ptr<PrefetchHandle> StartPrefetch(
       const GURL& prefetch_url,
       bool use_prefetch_proxy,
       const std::string& embedder_histogram_suffix,

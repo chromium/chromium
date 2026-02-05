@@ -998,7 +998,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool ShouldIgnoreUnresponsiveRenderer() override;
   bool IsGuest() override;
   std::optional<SkColor> GetBaseBackgroundColor() override;
-  std::unique_ptr<PrefetchHandle> StartPrefetch(
+  [[nodiscard]] std::unique_ptr<PrefetchHandle> StartPrefetch(
       const GURL& prefetch_url,
       bool use_prefetch_proxy,
       const std::string& embedder_histogram_suffix,
