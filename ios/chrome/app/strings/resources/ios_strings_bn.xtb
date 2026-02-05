@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">সংক্ষিপ্ত করুন</translation>
 <translation id="1227113644794103810">ইনঅ্যাক্টিভ ট্যাব</translation>
 <translation id="1231733316453485619">সিঙ্ক চালু করবেন?</translation>
+<translation id="1238794841176717085">এই পৃষ্ঠাটি শেয়ার করুন</translation>
 <translation id="1253032109800629289">"প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি পান" বিকল্প লুকান</translation>
 <translation id="1254424942107648268">পূর্ববর্তী খুঁজুন</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">ট্যাব সরিয়ে গ্রুপ মুছে ফেলবেন?</translation>
 <translation id="1698090540708020240">পাসওয়ার্ড ইমপোর্ট করুন…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
+<translation id="1702583479431863204">সাইট আনপিন করা হয়েছে</translation>
 <translation id="1709916727352927457">পাসকী মুছুন</translation>
 <translation id="1715515772563243997"><ph name="SITE" />-এর উপর ভরসা থাকলে, আপনি সেভ করা পাসওয়ার্ড সাইন-ইন করার জন্য ব্যবহার করতে পারেন।</translation>
 <translation id="1718835860248848330">শেষ ঘণ্টা</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">টর্চ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">ফ্যামিলি মেম্বারদের আমন্ত্রণ জানান</translation>
+<translation id="188177382966899059">ডিপ সার্চ</translation>
 <translation id="188237709236611317">স্মার্ট সর্ট মেনু বার</translation>
 <translation id="1883255238294161206">তালিকা সঙ্কুচিত করুন</translation>
 <translation id="1888854257756214946">পাসওয়ার্ড বেছে নিন…</translation>
@@ -2041,6 +2044,7 @@
 <translation id="8407831512155324054">আপনার পাসওয়ার্ডটি শক্তিশালী বলে মনে হচ্ছে</translation>
 <translation id="8414030140103493759">ফটো তুলুন বা ভিডিও করুন</translation>
 <translation id="8414283596511250978">আর কখনও পাসওয়ার্ড ভুলে যাবেন না</translation>
+<translation id="8415120635186642416">যেকোনও কিছু রিসার্চ করুন</translation>
 <translation id="842523302461531262">সেটিংসে গিয়ে ডিফল্ট হিসেবে সেট করুন…</translation>
 <translation id="8428045167754449968">নগর / ছোট শহর</translation>
 <translation id="8428213095426709021">সেটিংস</translation>

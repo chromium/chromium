@@ -249,6 +249,7 @@
 <translation id="1872096359983322073">టార్చ్</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">ఫ్యామిలీ మెంబర్‌లను ఆహ్వానించండి</translation>
+<translation id="188177382966899059">డీప్ సెర్చ్</translation>
 <translation id="188237709236611317">స్మార్ట్‌గా క్రమపద్ధతిలో అమర్చే మెనూ బార్</translation>
 <translation id="1883255238294161206">లిస్ట్‌ను కుదించు</translation>
 <translation id="1888854257756214946">పాస్‌వర్డ్‌ను ఎంచుకోండి…</translation>
@@ -349,6 +350,7 @@
 <translation id="2225701818156393674">మీ ట్రాక్ చేస్తోన్న ప్రోడక్ట్‌ల లిస్ట్‌కు ప్రోడక్ట్ జోడించబడింది.</translation>
 <translation id="2230173723195178503">వెబ్‌పేజీ లోడ్ అయ్యింది</translation>
 <translation id="2236949375853147973">నా యాక్టివిటీ</translation>
+<translation id="2237869114829007407">ఏదైనా పేజీ లేదా టాపిక్‌కు సంబంధించిన ఓవర్‌వ్యూను, కీలకమైన గణాంకాలను పొందండి</translation>
 <translation id="2240256190924001613">కాన్ఫిగరేషన్ ప్రొఫైల్ అందుబాటులో ఉంది</translation>
 <translation id="2244080985779413662">ఈ వెబ్‌సైట్ ఒక ఫైల్‌ను డౌన్‌లోడ్ చేసి మీ Walletలో తెరవాలనుకుంటోంది.</translation>
 <translation id="2245007488813216650">అనువదిస్తోంది…</translation>
@@ -623,6 +625,7 @@
 <translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3311748811247479259">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="3312300514034250578">మెరుగైన సురక్షిత బ్రౌజింగ్</translation>
+<translation id="3315786055700307152">మీ ఐటెమ్‌పై ఇప్పుడు 15% తగ్గింపు ఉంది</translation>
 <translation id="3324193307694657476">అడ్రస్‌ 2</translation>
 <translation id="3328801116991980348">సైట్ సమాచారం</translation>
 <translation id="333229797575847124">ఈ ఫీచర్‌ను ఎలా ఎనేబుల్ చేయాలి</translation>
@@ -638,6 +641,7 @@
 <translation id="3378214228000661758">కింది వాటి కోసం పాస్-కీని క్రియేట్ చేయండి</translation>
 <translation id="3380352560400387991">ఈ సైట్ యాప్‌ను తెరవడానికి ట్రై చేస్తోంది. ఇది మిమ్మల్ని అజ్ఞాత మోడ్ నుండి బయటకు తీసుకువెళుతుంది.</translation>
 <translation id="3385742921291399323">మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లు, ట్యాబ్‌లు, బుక్‌మార్క్‌లు, ఇంకా మరిన్నింటిని పొందండి.</translation>
+<translation id="3391765987934722383">ధర తగ్గింపును మిస్ కావద్దు</translation>
 <translation id="3392923070107623576">ట్యాబ్ గ్రూపులను క్రియేట్ చేయడం ద్వారా ఆర్గనైజ్డ్‌గా ఉండండి</translation>
 <translation id="3404232721752787413">Google Photosలో సేవ్ చేయండి</translation>
 <translation id="3406506285180498376">పేజీని షేర్ చేయండి…</translation>
@@ -786,6 +790,7 @@
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3955740319737378355">పూర్తయింది</translation>
 <translation id="3955822496205734389">మీ వద్ద బలహీనమైన పాస్‌వర్డ్‌లు ఉన్నాయి.</translation>
+<translation id="3957016963627617921">Chromeలో Geminiతో మరిన్ని పనులు చేయండి</translation>
 <translation id="3958312024468322930">దీన్ని మీ మొదటి స్క్రీన్ దిగువున ఉన్న డాక్‌కు లాగండి</translation>
 <translation id="3962326069546168954">సేవ్ చేయండి</translation>
 <translation id="3967327056943561740">బుక్‌మార్క్‌లు</translation>
@@ -2042,6 +2047,7 @@
 <translation id="8407831512155324054">మీ పాస్‌వర్డ్‌లు శక్తివంతమైనవిగా కనిపిస్తున్నాయి</translation>
 <translation id="8414030140103493759">ఫోటో లేదా వీడియోను తీయండి</translation>
 <translation id="8414283596511250978">మీ పాస్‌వర్డ్‌లను ఎప్పటికీ మర్చిపోకండి</translation>
+<translation id="8415120635186642416">దేన్నైనా రీసెర్చ్ చేయండి</translation>
 <translation id="842523302461531262">సెట్టింగ్‌లకు వెళ్లి దానిని 'ఆటోమేటిక్ సెట్టింగ్'గా సెట్ చేయండి…</translation>
 <translation id="8428045167754449968">నగరం / పట్టణం</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
@@ -2161,6 +2167,7 @@
 <translation id="8803639129939845298">సురక్షితం</translation>
 <translation id="8813277370772331957">నాకు తర్వాత గుర్తు చేయి</translation>
 <translation id="8814719628147284151">కొనసాగించండి</translation>
+<translation id="8817524703470045896">ధరలను ట్రాక్ చేయండి, ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు అలర్ట్‌లను పొందండి</translation>
 <translation id="8819155700324279105">ఆన్‌లైన్ అపాయాల నుండి సురక్షితంగా ఉండేలా అదనపు భద్రతను జోడించండి</translation>
 <translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
 <translation id="8822421075653507124">ఈ పరికరాన్ని సురక్షితంగా వినియోగించవచ్చని నిర్ధారించుకోవడానికి, దాని ఆపరేటింగ్ సిస్టమ్, బ్రౌజర్, సెట్టింగ్‌ల గురించిన సమాచారాన్ని, పరికరంలో ఏ సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేసి ఉంది అనే వాటిని మీ సంస్థ తెలుసుకోవాల్సి రావచ్చు.</translation>
@@ -2168,6 +2175,7 @@
 <translation id="8829809207373502270">ఈ పాస్-కీ ఇకపై పని చేయదు. అది <ph name="WEBSITE" /> నుండి తొలగించబడింది, అలాగే త్వరలో ఇక్కడి నుండి కూడా తొలగించబడుతుంది. <ph name="BEGIN_LINK" />పాస్-కీల సమాచారం<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ఇన్‌యాక్టివ్ ట్యాబ్‌లన్నింటినీ మూసివేయండి</translation>
 <translation id="8837654851594567190">పబ్లిషర్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
+<translation id="8844136307393039959">మీరు ట్రాక్ చేసిన ప్రోడక్ట్‌పై ధర తగ్గింపు</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" /> కోసం Google Photosలో ఇమేజ్‌ను సేవ్ చేస్తోంది…</translation>
 <translation id="8849001918648564819">దాచబడింది</translation>
 <translation id="8855242995793521265">మీ బ్రౌజర్ లేదా పరికర వేగాన్ని అంతగా తగ్గించదు.</translation>
@@ -2211,6 +2219,7 @@
 <translation id="8976382372951310360">సహాయం</translation>
 <translation id="8976414606286374109">కార్డ్‌లు మీ Google ఖాతాకు సేవ్ చేయబడ్డాయి.</translation>
 <translation id="8981454092730389528">Google కార్య‌క‌లాపాల నియంత్రణలు</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, పిన్ చేసిన సైట్</translation>
 <translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
 <translation id="9000532564152265066">అన్ని ట్యాబ్‌లు</translation>
 <translation id="9003677638446136377">మళ్లీ చెక్ చేయండి</translation>

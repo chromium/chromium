@@ -249,6 +249,7 @@
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Invita membros da familia</translation>
+<translation id="188177382966899059">Busca profunda</translation>
 <translation id="188237709236611317">Barra de menú con orde intelixente</translation>
 <translation id="1883255238294161206">Contraer lista</translation>
 <translation id="1888854257756214946">Seleccionar un contrasinal…</translation>
@@ -349,6 +350,7 @@
 <translation id="2225701818156393674">Engadiuse o artigo á lista de produtos seguidos.</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2236949375853147973">A miña actividade</translation>
+<translation id="2237869114829007407">Obtén un resumo e estatísticas clave de calquera páxina ou tema</translation>
 <translation id="2240256190924001613">Hai un perfil de configuración dispoñible</translation>
 <translation id="2244080985779413662">Este sitio web quere descargar un ficheiro e abrilo no teu Wallet.</translation>
 <translation id="2245007488813216650">Traducindo…</translation>
@@ -623,6 +625,7 @@
 <translation id="3305294846493618482">máis</translation>
 <translation id="3311748811247479259">Non</translation>
 <translation id="3312300514034250578">Goza dunha navegación segura mellorada</translation>
+<translation id="3315786055700307152">O artigo que queres agora ten un 15 % de desconto</translation>
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="333229797575847124">Como activar esta función</translation>
@@ -638,6 +641,7 @@
 <translation id="3378214228000661758">Crea unha clave de acceso para</translation>
 <translation id="3380352560400387991">Este sitio está tentando abrir unha aplicación. Con esta acción, sairás do modo de incógnito.</translation>
 <translation id="3385742921291399323">Accede aos contrasinais, as pestanas e os marcadores que teñas gardados, entre outras cousas.</translation>
+<translation id="3391765987934722383">Mantente ao tanto de todas as baixadas de prezo</translation>
 <translation id="3392923070107623576">Organízate creando grupos de pestanas</translation>
 <translation id="3404232721752787413">Gardar en Google Fotos</translation>
 <translation id="3406506285180498376">Compartir páxina…</translation>
@@ -786,6 +790,7 @@
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3955740319737378355">Feito</translation>
 <translation id="3955822496205734389">Tes contrasinais pouco seguros.</translation>
+<translation id="3957016963627617921">Atinxe moito máis con Gemini en Chrome</translation>
 <translation id="3958312024468322930">Arrastra a icona á barra de aplicacións que está na parte inferior da pantalla de inicio</translation>
 <translation id="3962326069546168954">Gardar</translation>
 <translation id="3967327056943561740">Marcadores</translation>
@@ -2042,6 +2047,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8407831512155324054">Os contrasinais son seguros</translation>
 <translation id="8414030140103493759">Tirar foto ou gravar vídeo</translation>
 <translation id="8414283596511250978">Non esquezas nunca os teus contrasinais</translation>
+<translation id="8415120635186642416">Pescuda calquera cousa</translation>
 <translation id="842523302461531262">Definir como opción predeterminada na configuración…</translation>
 <translation id="8428045167754449968">Cidade/localidade</translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -2161,6 +2167,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8813277370772331957">Lembrarmo máis tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
+<translation id="8817524703470045896">Fai un seguimento dos prezos e recibe alertas cando baixen en calquera sitio</translation>
 <translation id="8819155700324279105">Engade unha capa máis de protección contra as ameazas en liña</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8822421075653507124">Para garantir que este dispositivo se use de maneira segura, é posible que a túa organización necesite consultar a información sobre o seu sistema operativo, o navegador e a configuración, así como o software instalado no aparello.</translation>
@@ -2168,6 +2175,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8829809207373502270">Esta clave de acceso xa non funciona. Eliminouse de <ph name="WEBSITE" /> e dentro de pouco tamén se eliminará desta sección. <ph name="BEGIN_LINK" />Claves de acceso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Pechar todas as pestanas inactivas</translation>
 <translation id="8837654851594567190">Ordenar por editor</translation>
+<translation id="8844136307393039959">Baixada de prezo do produto seguido</translation>
 <translation id="8848286253339013170">Gardando imaxe de <ph name="USER_EMAIL" /> en Google Fotos…</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">Non retarda de forma significativa o teu navegador nin o teu dispositivo.</translation>
@@ -2211,6 +2219,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8976382372951310360">Axuda</translation>
 <translation id="8976414606286374109">As tarxetas gárdanse na túa Conta de Google.</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fixado</translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="9000532564152265066">Todas as pestanas</translation>
 <translation id="9003677638446136377">Comprobar de novo</translation>

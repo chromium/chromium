@@ -249,6 +249,7 @@
 <translation id="1872096359983322073">照明</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
 <translation id="1881621406744213161">ファミリー メンバーの招待</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">スマートソート メニューバー</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
 <translation id="1888854257756214946">パスワードを選択…</translation>
@@ -349,6 +350,7 @@
 <translation id="2225701818156393674">トラッキングしている商品のリストに商品が追加されました。</translation>
 <translation id="2230173723195178503">ウェブページを読み込みました</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
+<translation id="2237869114829007407">ページやトピックの概要と重要なインサイトを取得できます</translation>
 <translation id="2240256190924001613">設定プロファイルを使用できます</translation>
 <translation id="2244080985779413662">このウェブサイトがファイルをダウンロードしてウォレットで開く許可を求めています。</translation>
 <translation id="2245007488813216650">翻訳しています…</translation>
@@ -623,6 +625,7 @@
 <translation id="3305294846493618482">続き</translation>
 <translation id="3311748811247479259">オフ</translation>
 <translation id="3312300514034250578">セーフ ブラウジング保護強化機能</translation>
+<translation id="3315786055700307152">商品が 15% オフになりました</translation>
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328801116991980348">サイト情報</translation>
 <translation id="333229797575847124">この機能を有効にする方法</translation>
@@ -638,6 +641,7 @@
 <translation id="3378214228000661758">次のパスキーを作成</translation>
 <translation id="3380352560400387991">このサイトはアプリケーションを開こうとしています。シークレット モードを終了します。</translation>
 <translation id="3385742921291399323">保存したパスワード、タブ、ブックマーク、その他の設定にアクセスできます。</translation>
+<translation id="3391765987934722383">値下げ情報をチェック</translation>
 <translation id="3392923070107623576">タブグループを作成して情報を整理</translation>
 <translation id="3404232721752787413">Google フォトに保存</translation>
 <translation id="3406506285180498376">ページを共有…</translation>
@@ -786,6 +790,7 @@
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3955740319737378355">完了</translation>
 <translation id="3955822496205734389">脆弱なパスワードがあります。</translation>
+<translation id="3957016963627617921">Gemini in Chrome でもっと便利に</translation>
 <translation id="3958312024468322930">ホーム画面の下部にあるドックまでドラッグします</translation>
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">ブックマーク</translation>
@@ -2042,6 +2047,7 @@
 <translation id="8407831512155324054">安全なパスワードが使用されています</translation>
 <translation id="8414030140103493759">写真または動画を撮影</translation>
 <translation id="8414283596511250978">パスワードを覚える必要はありません</translation>
+<translation id="8415120635186642416">さまざまなことを調べる</translation>
 <translation id="842523302461531262">[設定] でデフォルトにする…</translation>
 <translation id="8428045167754449968">市区町村</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -2161,6 +2167,7 @@
 <translation id="8803639129939845298">この通信は保護されています</translation>
 <translation id="8813277370772331957">後で通知</translation>
 <translation id="8814719628147284151">続行</translation>
+<translation id="8817524703470045896">価格をトラッキングしたり、サイトで値下げがあった場合に通知を受け取ったりできます</translation>
 <translation id="8819155700324279105">オンラインの脅威に対する保護を強化</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8822421075653507124">デバイスを安全に使用できるようにするため、組織で必要に応じてオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認する場合があります。</translation>
@@ -2168,6 +2175,7 @@
 <translation id="8829809207373502270">このパスキーは利用できなくなりました。<ph name="WEBSITE" /> から削除され、まもなくここでも削除されます。<ph name="BEGIN_LINK" />パスキーについて<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">アクティブでないタブをすべて閉じる</translation>
 <translation id="8837654851594567190">パブリッシャーで並べ替え</translation>
+<translation id="8844136307393039959">トラッキングしている商品の値下げ情報</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" /> さんの Google フォトに画像を保存しています…</translation>
 <translation id="8849001918648564819">非表示</translation>
 <translation id="8855242995793521265">ブラウザやデバイスの動作が大幅に遅くなることはありません。</translation>
@@ -2211,6 +2219,7 @@
 <translation id="8976382372951310360">ヘルプ</translation>
 <translation id="8976414606286374109">カードは Google アカウントに保存されます。</translation>
 <translation id="8981454092730389528">Google アクティビティ管理</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />、固定されたサイト</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="9000532564152265066">すべてのタブ</translation>
 <translation id="9003677638446136377">もう一度確認</translation>

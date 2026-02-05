@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Хураангуйлах</translation>
 <translation id="1227113644794103810">Идэвхгүй табууд</translation>
 <translation id="1231733316453485619">Синк асаах уу?</translation>
+<translation id="1238794841176717085">Энэ хуудсыг хуваалцах</translation>
 <translation id="1253032109800629289">"Үнэ мөшгөх мэдэгдэл авах"-ыг нуух</translation>
 <translation id="1254424942107648268">Өмнөх мөрийг олох</translation>
 <translation id="1258491128795710625">Шинэ юм юу байна</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Табыг хасаж, бүлгийг устгах уу?</translation>
 <translation id="1698090540708020240">Нууц үг импортлох…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> сонгогдсон</translation>
+<translation id="1702583479431863204">Сайтыг бэхэлснийг болиулсан</translation>
 <translation id="1709916727352927457">Passkey-г устгах</translation>
 <translation id="1715515772563243997">Та <ph name="SITE" />-д итгэдэг бол нэвтрэхдээ хадгалсан нууц үгээ ашиглах боломжтой.</translation>
 <translation id="1718835860248848330">Сүүлийн цаг</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Чийдэн</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Гэр бүлийн гишүүдийг урих</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Ухаалгаар эрэмбэлэх цэсийн мөр</translation>
 <translation id="1883255238294161206">Нуух жагсаалт</translation>
 <translation id="1888854257756214946">Нууц үг сонгох…</translation>
@@ -2040,6 +2043,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8407831512155324054">Таны нууц үгнүүд сайн харагдаж байна</translation>
 <translation id="8414030140103493759">Зураг авах, видео бичих</translation>
 <translation id="8414283596511250978">Нууц үгээ хэзээ ч бүү мартаарай</translation>
+<translation id="8415120635186642416">Хүссэн зүйлээ судална уу</translation>
 <translation id="842523302461531262">Тохиргоонд өгөгдмөл болгох…</translation>
 <translation id="8428045167754449968">Хот / Тосгон</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>

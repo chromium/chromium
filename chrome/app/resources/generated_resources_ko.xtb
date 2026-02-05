@@ -1401,6 +1401,7 @@
 <translation id="192564025059434655">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Windows 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
 <translation id="1926339101652878330">이러한 설정은 엔터프라이즈 정책에 의해 관리됩니다. 자세한 정보는 관리자에게 문의하세요.</translation>
 <translation id="1926887872692564784">커서</translation>
+<translation id="1927075772688962338">읽기 모드 고정</translation>
 <translation id="1927632033341042996">지문 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">화면 잠금 PIN</translation>
 <translation id="192858925209436740">OneDrive를 Files 앱에 연결하여 Chromebook에서 저장된 문서를 관리하세요. Microsoft 계정으로 로그인해야 합니다.</translation>
@@ -3791,6 +3792,7 @@
 <translation id="3557101512409028104">Family Link를 사용해 웹사이트 제한사항 및 기기 사용 시간 제한 설정</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상적으로 종료되는지, 어떤 기능이 사용되었는지, 일반적으로 메모리가 얼마나 많이 사용되는지 등의 정보가 포함됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini가 작업을 진행 중입니다…</translation>
 <translation id="3559079791149580653"><ph name="DEVICE_NAME" />에 화면 전송 중지</translation>
 <translation id="3559262020195162408">기기에 정책을 설치하지 못했습니다.</translation>
 <translation id="3559533181353831840">약 <ph name="TIME_LEFT" /> 남음</translation>
@@ -4903,7 +4905,6 @@
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4281849573951338030">펜 버튼 맞춤설정</translation>
 <translation id="4282196459431406533">Smart Lock이 사용 설정됨</translation>
-<translation id="4283635301190260296">세로 탭 접기</translation>
 <translation id="4284903252249997120">ChromeVox 스크린 리더 및 텍스트 읽어주기</translation>
 <translation id="4285418559658561636">비밀번호 업데이트</translation>
 <translation id="4285498937028063278">고정 해제</translation>
@@ -10664,7 +10665,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8263228331881858381">패스키 저장됨</translation>
 <translation id="8263336784344783289">그룹 이름 지정</translation>
 <translation id="8264024885325823677">관리자가 관리하는 설정입니다.</translation>
-<translation id="826410575944953302">세로 탭 펼치기</translation>
 <translation id="8264195025773092348">지원되는 기기만 표시됩니다. 연결 해제될 때까지 더 이상 네이티브 앱에서 USB 기기를 사용할 수 없습니다.</translation>
 <translation id="8265018477030547118">이 기기에서만</translation>
 <translation id="826511437356419340">창 개요 모드를 시작했습니다. 이동하려면 스와이프하거나 키보드를 사용하는 경우에는 Tab 키를 누르세요.</translation>
@@ -10762,7 +10762,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8323518750352551353">방문 기록을 별도로 유지하시겠습니까?</translation>
 <translation id="8323744572398547859">다른 기기에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 사용 중인 모든 기기에서 비밀번호 등을 사용할 수도 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="8324158725704657629">다시 묻지 않음</translation>
-<translation id="8324264291265547520">세로 탭 펼치기</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
 <translation id="8327386430364625757">산술 글꼴</translation>
@@ -11838,7 +11837,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9032004780329249150">iOS 기기에서 비밀번호 사용</translation>
 <translation id="9032097289595078011">빠른 페어링 사용 안함</translation>
 <translation id="9032513103438497286">이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단합니다. 앱 또는 콘텐츠 다운로드를 제한하려면 Google Play 설정으로 이동하세요.</translation>
-<translation id="9033204084988490464">세로 탭 접기</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
 <translation id="903480517321259405">PIN 다시 입력</translation>
@@ -12205,6 +12203,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" />에서 휴대기기 정보를 가져오려고 합니다.</translation>
 <translation id="988320949174893488">가끔 멈춤</translation>
 <translation id="988978206646512040">암호를 빈칸으로 두어서는 안 됩니다.</translation>
+<translation id="989685714699739712">탭을 그룹화하여 정리하고 맞춤 이름과 색상으로 라벨을 지정하세요.</translation>
 <translation id="992032470292211616">확장 프로그램, 앱 및 테마는 기기를 손상시킬 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="992256792861109788">분홍색</translation>
 <translation id="992592832486024913">ChromeVox(음성 피드백) 사용 중지</translation>

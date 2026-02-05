@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Резимирај</translation>
 <translation id="1227113644794103810">Неактивне картице</translation>
 <translation id="1231733316453485619">Желите ли да укључите синхронизацију?</translation>
+<translation id="1238794841176717085">Дели ову страницу</translation>
 <translation id="1253032109800629289">Сакриј опцију Добијај обавештења о праћењу цена</translation>
 <translation id="1254424942107648268">Проналази претходно</translation>
 <translation id="1258491128795710625">Шта је ново</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Желите да уклоните картицу и избришете групу?</translation>
 <translation id="1698090540708020240">Увези лозинке…</translation>
 <translation id="1700629756560807968">Број изабраних ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1702583479431863204">Сајт је откачен</translation>
 <translation id="1709916727352927457">Избришите приступни кôд</translation>
 <translation id="1715515772563243997">Ако веб-сајт <ph name="SITE" /> сматрате поузданим, можете да користите сачувану лозинку за пријављивање.</translation>
 <translation id="1718835860248848330">Последњих сат времена</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Блиц</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Позовите чланове породице</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Трака менија паметног сортирања</translation>
 <translation id="1883255238294161206">Скупи листу</translation>
 <translation id="1888854257756214946">Изабери лозинку…</translation>
@@ -2040,6 +2043,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8407831512155324054">Лозинке изгледају јако</translation>
 <translation id="8414030140103493759">Сними слику или видео</translation>
 <translation id="8414283596511250978">Никада не заборавите лозинке</translation>
+<translation id="8415120635186642416">Истражујте било шта</translation>
 <translation id="842523302461531262">Подеси као подразумевано у Подешавањима…</translation>
 <translation id="8428045167754449968">Град/место</translation>
 <translation id="8428213095426709021">Подешавања</translation>

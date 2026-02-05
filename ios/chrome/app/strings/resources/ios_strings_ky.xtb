@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Корутундусун түзүү</translation>
 <translation id="1227113644794103810">Жигерсиз өтмөктөр</translation>
 <translation id="1231733316453485619">Шайкештирүү күйгүзүлсүнбү?</translation>
+<translation id="1238794841176717085">Бул баракты бөлүшүү</translation>
 <translation id="1253032109800629289">"Бааларга көз салуу билдирмелерин алуу" модулун жашыруу</translation>
 <translation id="1254424942107648268">Мурункуну табуу</translation>
 <translation id="1258491128795710625">Эмне жаңылык</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Өтмөктү алып салып, топту өчүрөсүзбү?</translation>
 <translation id="1698090540708020240">Сырсөздөрдү өткөрүп алуу…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> тандалды</translation>
+<translation id="1702583479431863204">Сайт бошотулду</translation>
 <translation id="1709916727352927457">Мүмкүндүк алуу ачкычын өчүрүү</translation>
 <translation id="1715515772563243997">Эгер <ph name="SITE" /> сайтына ишенсеңиз, кирүү үчүн сакталган сырсөзүңүздү колдоно бериңиз.</translation>
 <translation id="1718835860248848330">Акыркы бир саат</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Колчырак</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Үй-бүлө мүчөлөрүн чакыруу</translation>
+<translation id="188177382966899059">Терең издөө</translation>
 <translation id="188237709236611317">Меню тилкеси үчүн акылдуу иргөө</translation>
 <translation id="1883255238294161206">Тизмени жыйнап коюу</translation>
 <translation id="1888854257756214946">Сырсөз тандаңыз…</translation>
@@ -2040,6 +2043,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8407831512155324054">Сырсөздөрүңүз татаал көрүнөт</translation>
 <translation id="8414030140103493759">Сүрөт же видео тартуу</translation>
 <translation id="8414283596511250978">Сырсөздөрүңүздү эч качан унутпаңыз</translation>
+<translation id="8415120635186642416">Каалаган нерсени изилдеңиз</translation>
 <translation id="842523302461531262">Параметрлерде демейки катары коюу…</translation>
 <translation id="8428045167754449968">Шаар/Шаарча</translation>
 <translation id="8428213095426709021">Параметрлер</translation>

@@ -160,6 +160,7 @@
 <translation id="109647177154844434">解除安裝 Parallels Desktop 將會刪除您的 Windows 映像檔，包括其應用程式、設定和資料。您確定要繼續嗎？</translation>
 <translation id="1097016918605049747">翻譯唔到呢個頁面</translation>
 <translation id="1097658378307015415">請在登入前以訪客身分進入，啟用網絡 <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">為提供詐騙偵測等功能，Chrome 可以使用直接在裝置上執行的 AI 模型，而無需將資料傳送到 Google 伺服器。如果關閉設定，這些功能可能無法正常運作。<ph name="BEGIN_LINK" />進一步瞭解裝置內置 AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">從「<ph name="DEVICE_NAME" />」複製的圖片</translation>
 <translation id="1100504063505580045">目前圖示</translation>
 <translation id="1102759278139578486">無法下載主節點註釋檔案，請稍後再試。</translation>
@@ -1401,6 +1402,7 @@
 <translation id="192564025059434655">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Windows 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="1926339101652878330">這些設定受到公司政策管控。請聯絡您的管理員，以取得更多資料。</translation>
 <translation id="1926887872692564784">游標</translation>
+<translation id="1927075772688962338">固定閱讀模式</translation>
 <translation id="1927632033341042996">指紋 <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">螢幕鎖定 PIN</translation>
 <translation id="192858925209436740">將 OneDrive 連線至「檔案」應用程式，即可透過 Chromebook 管理已儲存的文件。請使用 Microsoft 帳戶登入。</translation>
@@ -3786,6 +3788,7 @@
 <translation id="3557101512409028104">透過 Family Link 設定網站限制和裝置使用時間限制</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini 正在處理工作…</translation>
 <translation id="3559079791149580653">停止投放畫面去 <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">無法在裝置上安裝政策。</translation>
 <translation id="3559533181353831840">大約剩餘 <ph name="TIME_LEFT" /></translation>
@@ -4897,7 +4900,6 @@
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4281849573951338030">自訂觸控筆按鈕</translation>
 <translation id="4282196459431406533">Smart Lock 已啟用</translation>
-<translation id="4283635301190260296">收合垂直分頁</translation>
 <translation id="4284903252249997120">ChromeVox 螢幕閱讀器和揀選朗讀內容</translation>
 <translation id="4285418559658561636">更新密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
@@ -5612,6 +5614,7 @@
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用你電子錢包中的個人資料。</translation>
 <translation id="4785719467058219317">您目前使用的安全密鑰並未在此網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
+<translation id="4786430656008801173">裝置內置 AI</translation>
 <translation id="4787471921443575924">修改以下使用者名稱嘅密鑰：<ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">請檢查你的網絡連線，然後再試一次。</translation>
 <translation id="4789348252524569426">無法安裝語音檔案，裝置需要更新。請重新開機，然後再試一次。</translation>
@@ -10649,7 +10652,6 @@
 <translation id="8263228331881858381">已儲存密鑰</translation>
 <translation id="8263336784344783289">為此群組命名</translation>
 <translation id="8264024885325823677">此設定由管理員管理。</translation>
-<translation id="826410575944953302">展開垂直分頁</translation>
 <translation id="8264195025773092348">只顯示支援的裝置。在解除連接之前，內置應用程式將無法使用 USB 裝置。</translation>
 <translation id="8265018477030547118">只儲存在此裝置上</translation>
 <translation id="826511437356419340">進入咗視窗概覽模式。掃一下就可以瀏覽。如果你用鍵盤，㩒一下 Tab 鍵就可以瀏覽。</translation>
@@ -10747,7 +10749,6 @@
 <translation id="8323518750352551353">要另外建立新個人檔案嗎？</translation>
 <translation id="8323744572398547859">如要查看其他裝置上的分頁，請登入並同步記錄。你也可在你的所有裝置上取得密碼和其他資料。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
-<translation id="8324264291265547520">展開垂直分頁</translation>
 <translation id="8325413836429495820">不允許查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
 <translation id="8327386430364625757">數學字型</translation>
@@ -11819,7 +11820,6 @@
 <translation id="9032004780329249150">在 iOS 裝置上使用密碼</translation>
 <translation id="9032097289595078011">停用「快速配對」</translation>
 <translation id="9032513103438497286">禁止在此 <ph name="DEVICE_TYPE" /> 安裝應用程式。如要限制下載應用程式或內容，請前往 Google Play 設定。</translation>
-<translation id="9033204084988490464">收合垂直分頁</translation>
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="9033857511263905942">貼上(&amp;P)</translation>
 <translation id="903480517321259405">重新輸入 PIN</translation>
@@ -12186,6 +12186,7 @@
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> 想索取你流動裝置上的資料</translation>
 <translation id="988320949174893488">時有間斷</translation>
 <translation id="988978206646512040">密碼短語欄位不得留空</translation>
+<translation id="989685714699739712">將分頁分組並使用自訂名稱和顏色標記，讓分頁更有條理</translation>
 <translation id="992032470292211616">擴充功能、應用程式和主題可能會損害您的裝置，您確定要繼續嗎？</translation>
 <translation id="992256792861109788">粉紅色</translation>
 <translation id="992592832486024913">停用 ChromeVox (互動朗讀)</translation>

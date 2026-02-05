@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Tóm tắt</translation>
 <translation id="1227113644794103810">Thẻ không hoạt động</translation>
 <translation id="1231733316453485619">Bật tính năng đồng bộ hóa?</translation>
+<translation id="1238794841176717085">Chia sẻ trang này</translation>
 <translation id="1253032109800629289">Ẩn lựa chọn "Nhận thông báo theo dõi giá"</translation>
 <translation id="1254424942107648268">Tìm nội dung khớp ở trước</translation>
 <translation id="1258491128795710625">Tính năng mới</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Loại bỏ thẻ và xoá nhóm?</translation>
 <translation id="1698090540708020240">Nhập mật khẩu…</translation>
 <translation id="1700629756560807968">Đã chọn <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang</translation>
+<translation id="1702583479431863204">Đã bỏ ghim trang web</translation>
 <translation id="1709916727352927457">Xoá khoá đăng nhập</translation>
 <translation id="1715515772563243997">Nếu tin tưởng <ph name="SITE" />, bạn có thể sử dụng mật khẩu đã lưu để đăng nhập.</translation>
 <translation id="1718835860248848330">1 giờ qua</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Đèn pin</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Mời thành viên gia đình</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Thanh trình đơn sắp xếp thông minh</translation>
 <translation id="1883255238294161206">Thu gọn danh sách</translation>
 <translation id="1888854257756214946">Chọn mật khẩu…</translation>
@@ -847,6 +850,7 @@
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4183350924949589798">Bạn muốn tăng cường bảo mật?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} mật khẩu yếu}other{{count} mật khẩu yếu}}</translation>
+<translation id="4196758674971560031">Các nhóm thẻ bạn đã tạo sẽ được lưu trong mục nhóm thẻ và cập nhật trên các thiết bị của bạn.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} dữ liệu chỉ được lưu trên thiết bị này. Để sử dụng dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu trong Tài khoản Google {email} của bạn.}other{{count} dữ liệu chỉ được lưu trên thiết bị này. Để sử dụng những dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu trong Tài khoản Google {email} của bạn.}}</translation>
 <translation id="4207873326995387292">Thông tin trình duyệt</translation>
 <translation id="421070604241073551">Khi bạn bật các lựa chọn này, dữ liệu sẽ được lưu vào Tài khoản Google của bạn. Khi bạn tắt các lựa chọn này, dữ liệu chỉ được lưu trên thiết bị này.</translation>
@@ -1507,6 +1511,7 @@
 <translation id="6494931198667773526">Kết thúc</translation>
 <translation id="6503077044568424649">Truy cập nhiều nhất</translation>
 <translation id="6503763061813913607">Thông báo của tính năng Kiểm tra an toàn</translation>
+<translation id="6504541289630702018">Dễ dàng truy cập vào các nhóm thẻ trên máy tính</translation>
 <translation id="6505334220040167806">Thu gọn nhóm thẻ.</translation>
 <translation id="6506996418997555004">Chia sẻ nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Đăng nhập để xem danh sách đọc trên tất cả thiết bị của bạn.</translation>
@@ -2038,6 +2043,7 @@
 <translation id="8407831512155324054">Mật khẩu của bạn có vẻ mạnh</translation>
 <translation id="8414030140103493759">Chụp ảnh hoặc quay video</translation>
 <translation id="8414283596511250978">Không bao giờ quên mật khẩu</translation>
+<translation id="8415120635186642416">Bạn có thể nghiên cứu về bất cứ chủ đề nào</translation>
 <translation id="842523302461531262">Đặt thành mặc định trong phần cài đặt…</translation>
 <translation id="8428045167754449968">Thành phố/thị trấn</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
@@ -2137,6 +2143,7 @@
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8731268612289859741">Mã bảo mật</translation>
 <translation id="87371078663613140">Khám phá các tuỳ chọn trong thanh trình đơn</translation>
+<translation id="8739546376441802490">Đã có trang web được ghim</translation>
 <translation id="8741627442233023406">{count,plural, =1{Xem lại thẻ…}other{Xem lại tất cả các thẻ…}}</translation>
 <translation id="8741995161408053644">Tài khoản Google có thể có các biểu mẫu nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Tạo đường liên kết</translation>

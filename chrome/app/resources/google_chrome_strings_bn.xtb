@@ -26,7 +26,7 @@
 <translation id="1158134713295836892">Chrome-এ Gemini</translation>
 <translation id="1184145431117212167">আপনার Windows-এর ভার্সনে কাজ করছে না তাই ইনস্টল করা যায়নি।</translation>
 <translation id="1194807384646768652">এই ধরনের ফাইল সাধারণত ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
-<translation id="1197860368385086056">পরেরবার আপনার <ph name="DEVICE_TYPE" />-এ যখন Chrome খুলবেন, প্রাইস ট্র্যাকিং অ্যালার্ট চালু করার জন্য আপনি প্রম্পট দেখতে পাবেন।</translation>
+<translation id="1197860368385086056">পরেরবার আপনার <ph name="DEVICE_TYPE" />-এ Chrome খোলার পর, আপনি প্রাইস ট্র্যাকিং অ্যালার্ট চালু করার প্রম্পট দেখতে পাবেন।</translation>
 <translation id="1203500561924088507">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই ব্রাউজার রিস্টার্ট করতে হবে।</translation>
 <translation id="1278833599417554002">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="1290883685122687410">সেট-আপ সংক্রান্ত সমস্যা: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
@@ -205,6 +205,7 @@
 <translation id="308397506772922478">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">আপনার Chrome প্রোফাইলের নাম লিখুন</translation>
 <translation id="310459126943037700">টাস্ক শেষ করা যায়নি।</translation>
+<translation id="3104828284009500087">পৃষ্ঠায় যা ইচ্ছা সার্চ করুন</translation>
 <translation id="3112458742631356345">এই ফাইলটি সাধারণত ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="3114643501466072395">আপনার অন্যান্য পাসওয়ার্ড ডেটার নিরাপত্তা লঙ্ঘন এবং অন্যান্য নিরাপত্তা সংক্রান্ত সমস্যা থেকে সুরক্ষিত কিনা তা চেক করতে <ph name="BEGIN_LINK" />Chrome-এ সাইন-ইন করুন<ph name="END_LINK" />।</translation>
 <translation id="3119573284443908657">Chrome এটি ডাউনলোড করা বন্ধ করে দিয়েছে কারণ আর্কাইভ করা ফাইলে অন্যান্য এমন ফাইল রয়েছে যেটি ম্যালওয়্যার গোপন করতে পারে</translation>
@@ -509,7 +510,7 @@
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" এক্সটেনশন ব্যবহার করতে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="6326175484149238433">Chrome থেকে সরান</translation>
 <translation id="6327105987658262776">কোনও আপডেট উপলভ্য নেই।</translation>
-<translation id="6333195756043503664">আমার কম্পিউটার চালু হলে Chrome খুলুন</translation>
+<translation id="6333195756043503664">আমার কম্পিউটার চালু হলে Chrome খুলবে</translation>
 <translation id="6334815226785304306">Google Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করে টাস্কবারে পিন করুন</translation>
 <translation id="63540178978900677">Chrome আর আপনার ডিফল্ট ব্রাউজার নেই। Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করবেন?</translation>
 <translation id="6360449101159168105">Chrome যাতে দ্রুত কাজ করে সেই জন্য এই ট্যাব বন্ধ থাকাকালীন মেমরি খালি করা হয়েছে। এই সাইটটি অ্যাক্টিভ রাখার বিকল্প সব সময় বেছে নিতে পারবেন।</translation>
@@ -620,7 +621,7 @@
 <translation id="7515191208480168435">সহজে অ্যাক্সেস করার জন্য আপনি Google Lens পিন করে রাখতে পারেন</translation>
 <translation id="7535429826459677826">Google Chrome ডেভেলপার</translation>
 <translation id="7543146567111253230">আপনার সব ডিভাইসে এই বুকমার্ক ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন</translation>
-<translation id="756134248912568991">পরেরবার আপনার <ph name="DEVICE_TYPE" />-এ Chrome যখন খুলবেন, ট্যাব গ্রুপ ব্যবহার করার জন্য আপনি প্রম্পট দেখতে পাবেন।</translation>
+<translation id="756134248912568991">পরেরবার আপনার <ph name="DEVICE_TYPE" />-এ Chrome খোলার পর, আপনি ট্যাব গ্রুপ ব্যবহার করার প্রম্পট দেখতে পাবেন।</translation>
 <translation id="756809126120519699">Chrome ডেটা সাফ হয়েছে</translation>
 <translation id="7572537927358445944">বন্ধ রয়েছে • Chrome এই এক্সটেনশনের সোর্স যাচাই করতে পারে না</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ইনস্টলার</translation>

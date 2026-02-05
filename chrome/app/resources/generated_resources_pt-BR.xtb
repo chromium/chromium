@@ -160,6 +160,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="109647177154844434">A desinstalação do Parallels Desktop excluirá sua imagem do Windows. Isso inclui os aplicativos, as configurações e os dados dele. Tem certeza de que quer continuar?</translation>
 <translation id="1097016918605049747">Não foi possível traduzir esta página</translation>
 <translation id="1097658378307015415">Antes de fazer login, entre como Visitante para ativar a rede <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Para recursos como a Detecção de Golpe funcionarem, o Chrome pode usar modelos de IA executados diretamente no dispositivo sem enviar seus dados para os servidores do Google. Se essa opção estiver desativada, talvez os recursos não funcionem. <ph name="BEGIN_LINK" />Saiba mais sobre a IA no dispositivo<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Imagem copiada de <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Ícone atual</translation>
 <translation id="1102759278139578486">Não foi possível baixar os arquivos de anotações do nó principal. Tente de novo mais tarde.</translation>
@@ -1402,6 +1403,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="192564025059434655">Depois de dezembro de 2022, não vai mais ser possível abrir as versões antigas dos apps do Chrome em dispositivos Windows. Verifique se há uma nova versão disponível.</translation>
 <translation id="1926339101652878330">Essas configurações são controladas pela política empresarial. Entre em contato com seu administrador para ter mais informações.</translation>
 <translation id="1926887872692564784">Cursor</translation>
+<translation id="1927075772688962338">Fixar o modo de leitura</translation>
 <translation id="1927632033341042996">Dedo <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN do bloqueio de tela</translation>
 <translation id="192858925209436740">Conecte o OneDrive ao app Arquivos para gerenciar seus documentos armazenados no Chromebook. Você precisará fazer login na sua conta da Microsoft.</translation>
@@ -3790,6 +3792,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3557101512409028104">Defina restrições de sites e limites de tempo de tela com o Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar nesse sistema. Esses relatórios podem incluir informações como falhas do ChromeOS, quais recursos foram usados e a quantidade de memória utilizada normalmente.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />É possível ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS da criança. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> — O Gemini está trabalhando na sua tarefa…</translation>
 <translation id="3559079791149580653">Parar de transmitir tela para <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">Falha ao instalar a política no dispositivo.</translation>
 <translation id="3559533181353831840">Tempo restante: <ph name="TIME_LEFT" /></translation>
@@ -4904,7 +4907,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="4281849573951338030">Personalizar botões da caneta</translation>
 <translation id="4282196459431406533">O Smart Lock está ativado</translation>
-<translation id="4283635301190260296">Fechar guias verticais</translation>
 <translation id="4284903252249997120">Leitor de tela ChromeVox e recurso Selecionar para Ouvir</translation>
 <translation id="4285418559658561636">Atualizar senha</translation>
 <translation id="4285498937028063278">Liberar guia</translation>
@@ -5619,6 +5621,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital.</translation>
 <translation id="4785719467058219317">Você está usando uma chave de segurança que não está registrada neste site</translation>
 <translation id="4785914069240823137">Cancelar corte</translation>
+<translation id="4786430656008801173">IA no dispositivo</translation>
 <translation id="4787471921443575924">Editar chave de acesso para o nome de usuário <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Verifique sua conexão de rede e tente novamente.</translation>
 <translation id="4789348252524569426">Não foi possível instalar arquivos de fala. Seu dispositivo precisa ser atualizado. Reinicie o dispositivo e tente novamente.</translation>
@@ -10667,7 +10670,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8263228331881858381">Chave de acesso salva</translation>
 <translation id="8263336784344783289">Dê um nome para este grupo</translation>
 <translation id="8264024885325823677">Essas configurações são gerenciadas pelo administrador.</translation>
-<translation id="826410575944953302">Abrir guias verticais</translation>
 <translation id="8264195025773092348">Apenas os aparelhos compatíveis são exibidos. Os dispositivos USB não vão mais estar disponíveis para apps nativos até que sejam desconectados.</translation>
 <translation id="8265018477030547118">Somente neste dispositivo</translation>
 <translation id="826511437356419340">Iniciado modo de visão geral da janela. Deslize para navegar ou pressione Tab se estiver usando um teclado.</translation>
@@ -10765,7 +10767,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8323518750352551353">Navegação separada?</translation>
 <translation id="8323744572398547859">Para acessar as guias dos seus outros dispositivos, faça login e sincronize o histórico. Você também terá acesso a senhas e muito mais em todos os seus aparelhos. É possível parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="8324158725704657629">Não perguntar novamente</translation>
-<translation id="8324264291265547520">Abrir guias verticais</translation>
 <translation id="8325413836429495820">Bloquear o acesso à área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
 <translation id="8327386430364625757">Fonte matemática</translation>
@@ -11842,7 +11843,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9032004780329249150">Usar suas senhas nos dispositivos iOS</translation>
 <translation id="9032097289595078011">Desativar pareamento rápido</translation>
 <translation id="9032513103438497286">Bloqueie apps instalados neste <ph name="DEVICE_TYPE" />. Para restringir o download de apps ou conteúdo, acesse as configurações do Google Play.</translation>
-<translation id="9033204084988490464">Fechar guias verticais</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">&amp;Colar</translation>
 <translation id="903480517321259405">Digite o PIN novamente</translation>
@@ -12209,6 +12209,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> quer acessar informações do seu dispositivo móvel</translation>
 <translation id="988320949174893488">Tem falhas intermitentes</translation>
 <translation id="988978206646512040">A senha longa não pode ficar em branco</translation>
+<translation id="989685714699739712">Organize as guias do navegador em grupos com nomes e cores diferentes</translation>
 <translation id="992032470292211616">Extensões, aplicativos e temas podem danificar seu dispositivo. Você quer mesmo continuar?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desativar ChromeVox (resposta falada)</translation>

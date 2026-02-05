@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Artinya, Chromium akan selalu meminta situs seluler.</translation>
 <translation id="1115463765356382667">Selesaikan tindakan yang disarankan berikut untuk mengoptimalkan penggunaan Chromium.</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
+<translation id="119044033865561140">Buka Chromium secara instan saat Anda menggunakan iPad</translation>
 <translation id="1211450393895337634">Buka Chromium lebih cepat saat Anda siap menjelajah di iPad.</translation>
 <translation id="1229234641991056119">Gunakan sandi, histori, bookmark, dan kartu kredit Safari Anda di Chromium</translation>
 <translation id="1257458525759135959">Untuk menyimpan gambar, ketuk Setelan untuk mengizinkan Chromium menambahkannya ke galeri foto Anda</translation>
 <translation id="1260702988262336471">Buka menu Chromium</translation>
 <translation id="12739128458173458">Untuk mengirim tab ini ke perangkat lain, login ke Chromium di kedua perangkat.</translation>
+<translation id="1279797561821266129">Akses Chromium lebih cepat dari dok</translation>
 <translation id="1361748954329991663">Versi Chromium sudah usang. Jika tidak tersedia update di <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mungkin saja perangkat Anda tidak lagi mendukung versi baru Chromium.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1423007117030725713">Mulai penelusuran di tab Chromium baru.</translation>
@@ -176,6 +178,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="4790638144988730920">Tetap gunakan data Chromium di Akun Google Anda.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
 <translation id="4856138222358683580">Tindakan Chromium</translation>
+<translation id="4869706986935301458">Buka Chromium secara instan saat Anda menggunakan iPhone</translation>
 <translation id="4904452304169763785">Notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chromium untuk Anda.</translation>
 <translation id="4908570938463711775">Pelajari dasar-dasar Chromium yang bermanfaat untuk membantu Anda memulai</translation>
 <translation id="4962295957157529683">Selesaikan yang Anda kerjakan di jendela Chromium lain yang terbuka.</translation>
@@ -295,6 +298,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="7395825497086981028">Sandi Anda akan disimpan ke Pengelola Sandi untuk <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Kunci sandi ini akan disimpan ke Pengelola Sandi untuk <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Buka Chromium</translation>
+<translation id="7507535968973352823">Tempatkan Chromium di area bawah untuk mengaksesnya kapan saja</translation>
 <translation id="7531461704633548377">Dari Chromium</translation>
 <translation id="7554983317097061001">Tips Chromium: Pindahkan Chromium ke dok</translation>
 <translation id="7576863740961052505">Kelola setelan Chromium</translation>

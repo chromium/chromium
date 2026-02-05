@@ -1277,6 +1277,7 @@
 <translation id="3052868890529250114">通常はサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
 <translation id="3056660797732519147">後払い決済のエラー画面。キーボードは非表示です。</translation>
+<translation id="3057844102210575426">旅行情報を管理</translation>
 <translation id="3061707000357573562">サービスへのパッチの適用</translation>
 <translation id="3062655045399308513">閲覧履歴データを削除...</translation>
 <translation id="3063453392496098461">VPN バックグラウンド サービスをインストールできませんでした。</translation>
@@ -2626,6 +2627,7 @@
 <translation id="5209670883520018268">トレイ 20</translation>
 <translation id="5212364581680288382">オートバイ レース</translation>
 <translation id="5214542134842513912">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します。大まかなカテゴリをオフにすると、その関連トピックもブロックされます。</translation>
+<translation id="52163492208010719">身分証明書を管理</translation>
 <translation id="521659676233207110">トレイ 13</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
 <translation id="5217759126664161410">プロトコルの形式が無効です。</translation>

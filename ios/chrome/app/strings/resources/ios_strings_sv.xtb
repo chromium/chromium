@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Sammanfatta</translation>
 <translation id="1227113644794103810">Inaktiva flikar</translation>
 <translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
+<translation id="1238794841176717085">Dela sidan</translation>
 <translation id="1253032109800629289">Dölj Få aviseringar om prisbevakning</translation>
 <translation id="1254424942107648268">Hitta föregående</translation>
 <translation id="1258491128795710625">Nyheter</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Vill du ta bort fliken och radera gruppen?</translation>
 <translation id="1698090540708020240">Importera lösenord …</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
+<translation id="1702583479431863204">Webbplatsen har lossats</translation>
 <translation id="1709916727352927457">Radera nyckel</translation>
 <translation id="1715515772563243997">Om du litar på <ph name="SITE" /> kan du använda ett sparat lösenord när du loggar in.</translation>
 <translation id="1718835860248848330">Senaste timmen</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Bjud in familjemedlemmar</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Menyrad med smart sortering</translation>
 <translation id="1883255238294161206">Komprimera lista</translation>
 <translation id="1888854257756214946">Välj lösenord …</translation>
@@ -347,6 +350,7 @@
 <translation id="2225701818156393674">Produkten har lagts till i listan med bevakade produkter.</translation>
 <translation id="2230173723195178503">Webbsidan har lästs in</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
+<translation id="2237869114829007407">Få en översikt och viktiga insikter för alla sidor eller ämnen</translation>
 <translation id="2240256190924001613">Tillgänglig konfigurationsprofil</translation>
 <translation id="2244080985779413662">Den här webbplatsen vill ladda ned en fil och öppna den i Wallet.</translation>
 <translation id="2245007488813216650">Översättning pågår …</translation>
@@ -621,6 +625,7 @@
 <translation id="3305294846493618482">mer</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3312300514034250578">Förbättrad säker webbsökning</translation>
+<translation id="3315786055700307152">Nu får du 15 % rabatt på varan</translation>
 <translation id="3324193307694657476">Adressrad 2</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="333229797575847124">Så här aktiverar du den här funktionen</translation>
@@ -636,6 +641,7 @@
 <translation id="3378214228000661758">Skapa en nyckel för</translation>
 <translation id="3380352560400387991">Den här webbplatsen försöker öppna en app. Du loggas ut från inkognitoläget.</translation>
 <translation id="3385742921291399323">Få dina sparade lösenord, flikar, bokmärken med mera.</translation>
+<translation id="3391765987934722383">Missa inte en prissänkning</translation>
 <translation id="3392923070107623576">Håll ordning genom att skapa flikgrupper</translation>
 <translation id="3404232721752787413">Spara i Google Foto</translation>
 <translation id="3406506285180498376">Dela sidan …</translation>
@@ -784,6 +790,7 @@
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3955740319737378355">Klar</translation>
 <translation id="3955822496205734389">Du har svaga lösenord.</translation>
+<translation id="3957016963627617921">Gör mer med Gemini i Chrome</translation>
 <translation id="3958312024468322930">Dra den till Dock längst ned på hemskärmen</translation>
 <translation id="3962326069546168954">Spara</translation>
 <translation id="3967327056943561740">Bokmärken</translation>
@@ -2040,6 +2047,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8407831512155324054">Lösenorden ser starka ut</translation>
 <translation id="8414030140103493759">Ta foto eller spela in video</translation>
 <translation id="8414283596511250978">Glöm aldrig dina lösenord</translation>
+<translation id="8415120635186642416">Gör research om vad som helst</translation>
 <translation id="842523302461531262">Använd som standard i Inställningar …</translation>
 <translation id="8428045167754449968">Ort</translation>
 <translation id="8428213095426709021">Inställningar</translation>
@@ -2159,6 +2167,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8803639129939845298">Säkert</translation>
 <translation id="8813277370772331957">Påminn mig senare</translation>
 <translation id="8814719628147284151">Fortsätt</translation>
+<translation id="8817524703470045896">Bevaka priser och få aviseringar när priset sänks på en webbplats</translation>
 <translation id="8819155700324279105">Lägg till ett extra skydd mot hot online</translation>
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="8822421075653507124">Organisationen behöver kanske se information om operativsystem, webbläsare och inställningar samt vilken mjukvara som är installerad på enheten för att säkerställa att enheten kan användas på ett säkert sätt.</translation>
@@ -2166,6 +2175,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8829809207373502270">Den här nyckeln fungerar inte längre. Den har raderats från <ph name="WEBSITE" /> och raderas snart härifrån. <ph name="BEGIN_LINK" />Om nycklar<ph name="END_LINK" />.</translation>
 <translation id="8831208860914609320">Stäng alla inaktiva</translation>
 <translation id="8837654851594567190">Sortera efter utgivare</translation>
+<translation id="8844136307393039959">Prissänkning på din bevakade produkt</translation>
 <translation id="8848286253339013170">Bilden sparas i Google Foto för <ph name="USER_EMAIL" /> …</translation>
 <translation id="8849001918648564819">Dold</translation>
 <translation id="8855242995793521265">Gör inte webbläsaren eller enheten märkbart långsammare.</translation>
@@ -2209,6 +2219,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8976382372951310360">Hjälp</translation>
 <translation id="8976414606286374109">Korten sparas i Google-kontot.</translation>
 <translation id="8981454092730389528">Googles aktivitetsinställningar</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fäst webbplats</translation>
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
 <translation id="9000532564152265066">Alla flikar</translation>
 <translation id="9003677638446136377">Kontrollera igen</translation>

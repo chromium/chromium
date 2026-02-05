@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1035560095760914532">Tempatkan Chrome di area bawah untuk mengaksesnya kapan saja</translation>
 <translation id="1076643793026027628">Chrome otomatis membuka link Samaran YouTube dalam mode Samaran.</translation>
 <translation id="1081114897601629648">Sandi berikut tidak diimpor ke Pengelola Sandi Google karena tidak sesuai dengan persyaratan.</translation>
 <translation id="1086486568852410168">Telusuri dengan Google Lens</translation>
@@ -89,6 +90,7 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="288992067439702510">Anda telah mencapai batas <ph name="LIMIT" /> bookmark Google Chrome, sehingga beberapa bookmark belum disimpan di Akun Google Anda.
 
 Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookmark. Jika Anda logout sekarang, bookmark yang belum disimpan akan dihapus.</translation>
+<translation id="2901621928549457170">Buka Chrome secara instan saat Anda menggunakan iPad</translation>
 <translation id="2922914028977213693">Ketuk di sini untuk mengoptimalkan penggunaan Chrome di iPad Anda.</translation>
 <translation id="292371311537977079">Setelan Chrome</translation>
 <translation id="2923827943290349720">Kunci tab Samaran saat Anda menutup Chrome</translation>
@@ -173,6 +175,8 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="5119391094379141756">Pilih Chrome</translation>
 <translation id="5123188916260706415">Telusuri dengan suara di Chrome</translation>
 <translation id="5162467219239570114">Versi Chrome sudah usang. Jika tidak tersedia update di <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mungkin saja perangkat Anda tidak lagi mendukung versi baru Chrome.</translation>
+<translation id="5172049865623113551">Buka Chrome secara instan saat Anda menggunakan iPhone</translation>
+<translation id="5179095426828744632">Akses Chrome lebih cepat dari dok</translation>
 <translation id="5184329579814168207">Buka di Chrome</translation>
 <translation id="5190139289262548459">Organisasi Anda, <ph name="DOMAIN" />, mengelola akun yang Anda gunakan untuk login dan cara Chrome digunakan.</translation>
 <translation id="5209238444239954363">Chrome tidak dapat memeriksa update. Coba lagi nanti.</translation>

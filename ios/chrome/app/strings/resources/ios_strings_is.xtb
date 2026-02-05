@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Samantekt</translation>
 <translation id="1227113644794103810">Óvirkir flipar</translation>
 <translation id="1231733316453485619">Kveikja á samstillingu?</translation>
+<translation id="1238794841176717085">Deila þessari síðu</translation>
 <translation id="1253032109800629289">Fela „Fá tilkynningar fyrir verðrakningu“</translation>
 <translation id="1254424942107648268">Finna fyrra</translation>
 <translation id="1258491128795710625">Nýjungar</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Fjarlægja flipa og eyða hópi?</translation>
 <translation id="1698090540708020240">Flytja inn aðgangsorð...</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
+<translation id="1702583479431863204">Vefsvæði var losað</translation>
 <translation id="1709916727352927457">Eyða aðgangslykli</translation>
 <translation id="1715515772563243997">Ef þú treystir <ph name="SITE" /> geturðu notað vistað aðgangsorð til að skrá þig inn.</translation>
 <translation id="1718835860248848330">Undanfarna klukkustund</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Ljós</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Bjóddu fjölskyldumeðlimum</translation>
+<translation id="188177382966899059">Djúpleit</translation>
 <translation id="188237709236611317">Valmyndarstika snjallflokkunar</translation>
 <translation id="1883255238294161206">Fella saman lista</translation>
 <translation id="1888854257756214946">Velja aðgangsorð…</translation>
@@ -1659,6 +1662,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Gera sjálfgefinn í stillingum…</translation>
 <translation id="7007970306646738803">Veldu hvað þú vilt gera við fyrirliggjandi vefskoðunargögn í þessu tæki, eins og flipa, feril og aðgangsorð.</translation>
+<translation id="7012978439516925343">Staðfestu að þetta sért þú til að búa til aðgangslykil</translation>
 <translation id="7015418667643980944">Skiptur skjár</translation>
 <translation id="7016070607649558507">Þú ert með 1 lélegt aðgangsorð. Lagfærðu það núna til að gæta öryggis.</translation>
 <translation id="7016958933495968912">Valkostir fyrir tillögur</translation>
@@ -2040,6 +2044,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8407831512155324054">Aðgangsorðin þín virðast traust</translation>
 <translation id="8414030140103493759">Taka mynd eða vídeó</translation>
 <translation id="8414283596511250978">Þú gleymir aldrei aðgangsorðunum þínum</translation>
+<translation id="8415120635186642416">Kanna hvað sem er</translation>
 <translation id="842523302461531262">Gera sjálfgefinn í stillingum…</translation>
 <translation id="8428045167754449968">Borg/bær</translation>
 <translation id="8428213095426709021">Stillingar</translation>

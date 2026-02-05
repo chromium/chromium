@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Resumir</translation>
 <translation id="1227113644794103810">Guias inativas</translation>
 <translation id="1231733316453485619">Ativar sincronização?</translation>
+<translation id="1238794841176717085">Compartilhar esta página</translation>
 <translation id="1253032109800629289">Ocultar "Receber notificações de monitoramento de preço"</translation>
 <translation id="1254424942107648268">Localizar anterior</translation>
 <translation id="1258491128795710625">O que há de novo</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Remover guia e excluir grupo?</translation>
 <translation id="1698090540708020240">Importar senhas…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
+<translation id="1702583479431863204">Site liberado</translation>
 <translation id="1709916727352927457">Excluir chave de acesso</translation>
 <translation id="1715515772563243997">Se você confia no site <ph name="SITE" />, pode fazer login com uma senha salva.</translation>
 <translation id="1718835860248848330">Última hora</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Convidar membros da família</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Barra de menus da ordenação inteligente</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
 <translation id="1888854257756214946">Selecionar senha…</translation>
@@ -347,6 +350,7 @@
 <translation id="2225701818156393674">O item foi adicionado à sua lista de produtos monitorados.</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
 <translation id="2236949375853147973">Minha atividade</translation>
+<translation id="2237869114829007407">Tenha uma visão geral e insights importantes sobre qualquer página ou tema</translation>
 <translation id="2240256190924001613">Perfil de configuração disponível</translation>
 <translation id="2244080985779413662">Esse site quer baixar e abrir um arquivo na sua Carteira.</translation>
 <translation id="2245007488813216650">Traduzindo…</translation>
@@ -621,6 +625,7 @@
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativada</translation>
 <translation id="3312300514034250578">Navegação segura com maior proteção</translation>
+<translation id="3315786055700307152">Agora seu item está com 15% de desconto</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="333229797575847124">Como ativar esse recurso</translation>
@@ -636,6 +641,7 @@
 <translation id="3378214228000661758">Crie uma chave de acesso para</translation>
 <translation id="3380352560400387991">O site está tentando abrir um aplicativo. Isso fará você sair da navegação anônima.</translation>
 <translation id="3385742921291399323">Acesse as senhas, guias, favoritos salvos e muito mais.</translation>
+<translation id="3391765987934722383">Não perca nenhuma redução no preço</translation>
 <translation id="3392923070107623576">Crie grupos de guias para manter a organização</translation>
 <translation id="3404232721752787413">Salvar no Google Fotos</translation>
 <translation id="3406506285180498376">Compartilhar página…</translation>
@@ -784,6 +790,7 @@
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3955740319737378355">OK</translation>
 <translation id="3955822496205734389">Você tem senhas fracas.</translation>
+<translation id="3957016963627617921">Faça mais com o Gemini no Chrome</translation>
 <translation id="3958312024468322930">Arraste até o Dock na parte de baixo da tela inicial</translation>
 <translation id="3962326069546168954">Salvar</translation>
 <translation id="3967327056943561740">Favoritos</translation>
@@ -2040,6 +2047,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8407831512155324054">Senhas fortes</translation>
 <translation id="8414030140103493759">Registrar foto ou vídeo</translation>
 <translation id="8414283596511250978">Nunca mais esqueça suas senhas</translation>
+<translation id="8415120635186642416">Pesquise sobre qualquer assunto</translation>
 <translation id="842523302461531262">Definir como padrão nas configurações…</translation>
 <translation id="8428045167754449968">Cidade</translation>
 <translation id="8428213095426709021">Configurações</translation>
@@ -2159,6 +2167,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
+<translation id="8817524703470045896">Monitore os preços e receba alertas quando houver redução em algum site</translation>
 <translation id="8819155700324279105">Adicione mais uma camada de proteção contra ameaças on-line</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8822421075653507124">Para garantir que o dispositivo seja usado com segurança, talvez sua organização precise verificar informações sobre sistema operacional, navegador e configurações, além de qual software está instalado no dispositivo.</translation>
@@ -2166,6 +2175,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8829809207373502270">Essa chave de acesso não funciona mais. Ela foi excluída de <ph name="WEBSITE" /> e será excluída daqui em breve. <ph name="BEGIN_LINK" />Sobre chaves de acesso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Fechar todas as guias inativas</translation>
 <translation id="8837654851594567190">Ordenar por publisher</translation>
+<translation id="8844136307393039959">Redução no preço do produto monitorado</translation>
 <translation id="8848286253339013170">Salvando imagem no Google Fotos de <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8855242995793521265">Não deixa o navegador ou dispositivo lento.</translation>
@@ -2209,6 +2219,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Os cartões são salvos na sua Conta do Google.</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixado</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
 <translation id="9000532564152265066">Todas as guias</translation>
 <translation id="9003677638446136377">Verificar novamente</translation>

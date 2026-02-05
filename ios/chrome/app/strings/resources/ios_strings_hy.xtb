@@ -249,6 +249,7 @@
 <translation id="1872096359983322073">Լապտեր</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />։</translation>
 <translation id="1881621406744213161">Հրավիրեք ընտանիքի անդամների</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Խելացի դասավորման ընտրացանկի գոտի</translation>
 <translation id="1883255238294161206">Ծալել ցանկը</translation>
 <translation id="1888854257756214946">Ընտրել գաղտնաբառ…</translation>
@@ -349,6 +350,7 @@
 <translation id="2225701818156393674">Ապրանք, որն ավելացվել է հետագծվող ապրանքների ձեր ցուցակում։</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2236949375853147973">Իմ գործողությունները</translation>
+<translation id="2237869114829007407">Ստացեք ցանկացած էջի կամ թեմայի մասին ընդհանուր տեղեկություններ և հիմնական վիճակագրական տվյալներ</translation>
 <translation id="2240256190924001613">Կազմաձևման պրոֆիլ է հասանելի</translation>
 <translation id="2244080985779413662">Այս կայքը ցանկանում է ներբեռնել ֆայլ և բացել այն ձեր դրամապանակում։</translation>
 <translation id="2245007488813216650">Թարգմանվում է…</translation>
@@ -623,6 +625,7 @@
 <translation id="3305294846493618482">ավելին</translation>
 <translation id="3311748811247479259">Անջատված է</translation>
 <translation id="3312300514034250578">Բարելավված Ապահով դիտարկում</translation>
+<translation id="3315786055700307152">Ձեր ապրանքն այժմ 15% զեղչված է</translation>
 <translation id="3324193307694657476">Հասցե 2</translation>
 <translation id="3328801116991980348">Տեղեկություններ կայքի մասին</translation>
 <translation id="333229797575847124">Ինչպես միացնել այս գործառույթը</translation>
@@ -638,6 +641,7 @@
 <translation id="3378214228000661758">Ստեղծեք մուտքի բանալի այս կայքի համար՝</translation>
 <translation id="3380352560400387991">Այս կայքը փորձում է հավելված բացել։ Դուք կվերաուղղորդվեք ինկոգնիտո պատուհան։</translation>
 <translation id="3385742921291399323">Օգտագործեք ձեր պահված գաղտնաբառերը, ներդիրները, էջանիշները և մյուս տվյալները։</translation>
+<translation id="3391765987934722383">Բաց մի թողեք գնիջեցումը</translation>
 <translation id="3392923070107623576">Եղեք կազմակերպված՝ ստեղծելով ներդիրների խմբեր</translation>
 <translation id="3404232721752787413">Պահել Google Լուսանկարներում</translation>
 <translation id="3406506285180498376">Կիսվել էջով…</translation>
@@ -786,6 +790,7 @@
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3955740319737378355">Պատրաստ է</translation>
 <translation id="3955822496205734389">Դուք ունեք թույլ գաղտնաբառեր։</translation>
+<translation id="3957016963627617921">Արեք ավելին Gemini-ի օգնությամբ Chrome-ում</translation>
 <translation id="3958312024468322930">Քաշեք պատկերակը Dock վահանակի վրա՝ հիմնական էկրանի ներքևում</translation>
 <translation id="3962326069546168954">Պահել</translation>
 <translation id="3967327056943561740">Էջանիշներ</translation>
@@ -2042,6 +2047,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8407831512155324054">Ձեր գաղտնաբառերը հուսալի են</translation>
 <translation id="8414030140103493759">Լուսանկարել կամ տեսագրել</translation>
 <translation id="8414283596511250978">Երբեք մի մոռացեք ձեր գաղտնաբառերը</translation>
+<translation id="8415120635186642416">Հետազոտեք ցանկացած բան</translation>
 <translation id="842523302461531262">Կարգավորումներում ընտրել որպես կանխադրված…</translation>
 <translation id="8428045167754449968">Քաղաք</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
@@ -2161,6 +2167,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8803639129939845298">Անվտանգ է</translation>
 <translation id="8813277370772331957">Հիշեցնել ավելի ուշ</translation>
 <translation id="8814719628147284151">Շարունակել</translation>
+<translation id="8817524703470045896">Հետևեք գներին և ստացեք ծանուցումներ, երբ որևէ կայքում ապրանքի գինն իջնի</translation>
 <translation id="8819155700324279105">Ավելացրեք առցանց վտանգներից պաշտպանության լրացուցիչ մակարդակ</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8822421075653507124">Անվտանգության նկատառումներից ելնելով՝ ձեր կազմակերպությունը կարող է տեսնել տեղեկություններ սարքի օպերացիոն համակարգի, դիտարկիչի և կարգավորումների մասին, ինչպես նաև՝ տվյալներ սարքում տեղադրված ծրագրերի մասին։</translation>
@@ -2168,6 +2175,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8829809207373502270">Այս մուտքի բանալին այլևս չի աշխատում։ Այն ջնջվել է <ph name="WEBSITE" /> էջից և շուտով կջնջվի նաև այստեղից։ <ph name="BEGIN_LINK" />Մուտքի բանալիներ<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Փակել բոլոր ոչ ակտիվ ներդիրները</translation>
 <translation id="8837654851594567190">Տեսակավորել ըստ հրատարակչի</translation>
+<translation id="8844136307393039959">Գնիջեցում ձեր հետագծվող ապրանքի համար</translation>
 <translation id="8848286253339013170">Պատկերը պահվում է <ph name="USER_EMAIL" /> հաշվի Google Լուսանկարներում…</translation>
 <translation id="8849001918648564819">Ոչ ոք</translation>
 <translation id="8855242995793521265">Չի հանգեցնում դիտարկիչի կամ սարքի աշխատանքի զգալի դանդաղեցմանը։</translation>
@@ -2211,6 +2219,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8976382372951310360">Օգնություն</translation>
 <translation id="8976414606286374109">Քարտերը պահվում են Google հաշվում։</translation>
 <translation id="8981454092730389528">Google-ի գործունեության կառավարներ</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ամրացված կայք</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
 <translation id="9000532564152265066">Բոլոր ներդիրները</translation>
 <translation id="9003677638446136377">Ստուգել նորից</translation>

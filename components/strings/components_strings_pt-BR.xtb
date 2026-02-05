@@ -1277,6 +1277,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3052868890529250114">A conexão com estes sites costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Tela de erro da opção Compre Agora, Pague Depois. Teclado oculto.</translation>
+<translation id="3057844102210575426">Gerenciar informações de viagem</translation>
 <translation id="3061707000357573562">Aplicar patch ao serviço</translation>
 <translation id="3062655045399308513">Excluir dados de navegação…</translation>
 <translation id="3063453392496098461">Falha na instalação dos serviços em segundo plano da VPN.</translation>
@@ -2626,6 +2627,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5209670883520018268">Bandeja 20</translation>
 <translation id="5212364581680288382">Corridas de moto</translation>
 <translation id="5214542134842513912">Escolha quais categorias amplas de temas podem ser usadas para personalizar anúncios. Desativar uma categoria mais ampla também vai bloquear os temas relacionados.</translation>
+<translation id="52163492208010719">Gerenciar documentos de identificação</translation>
 <translation id="521659676233207110">Bandeja 13</translation>
 <translation id="5216942107514965959">Última visita: hoje</translation>
 <translation id="5217759126664161410">Formato do protocolo inválido.</translation>

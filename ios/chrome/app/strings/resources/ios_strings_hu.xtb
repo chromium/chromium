@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Összegzés</translation>
 <translation id="1227113644794103810">Inaktív lapok</translation>
 <translation id="1231733316453485619">Bekapcsolja a szinkronizálást?</translation>
+<translation id="1238794841176717085">Oldal megosztása</translation>
 <translation id="1253032109800629289">Az „Árfigyelési értesítések fogadása” funkció elrejtése</translation>
 <translation id="1254424942107648268">Előző keresése</translation>
 <translation id="1258491128795710625">Újdonságok</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Eltávolítja a lapot és törli a csoportot?</translation>
 <translation id="1698090540708020240">Jelszavak importálása…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kiválasztva</translation>
+<translation id="1702583479431863204">Webhely kitűzése megszüntetve</translation>
 <translation id="1709916727352927457">Azonosítókulcs törlése</translation>
 <translation id="1715515772563243997">Ha megbízik a(z) <ph name="SITE" /> webhelyben, a bejelentkezéshez használhatja mentett jelszavát.</translation>
 <translation id="1718835860248848330">Az elmúlt órából</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Vaku</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Családtagok meghívása</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Menüsor intelligens rendezése</translation>
 <translation id="1883255238294161206">Lista bezárása</translation>
 <translation id="1888854257756214946">Jelszó kiválasztása…</translation>
@@ -2040,6 +2043,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8407831512155324054">Jelszavai erősnek tűnnek</translation>
 <translation id="8414030140103493759">Fotó vagy videó készítése</translation>
 <translation id="8414283596511250978">Soha nem felejti el jelszavait</translation>
+<translation id="8415120635186642416">Bármire rákereshet</translation>
 <translation id="842523302461531262">Beállítás alapértelmezettként a Beállításokban…</translation>
 <translation id="8428045167754449968">Város/helység</translation>
 <translation id="8428213095426709021">Beállítások</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1035560095760914532">Settu Chrome á neðsta svæðið til að hafa það ávallt við höndina</translation>
 <translation id="1076643793026027628">Chrome opnar YouTube-huliðstengla sjálfkrafa í huliðsstillingu.</translation>
 <translation id="1081114897601629648">Eftirfarandi aðgangsorð voru ekki flutt inn í Google-aðgangsorðastjórnun því þau uppfylla ekki skilyrðin.</translation>
 <translation id="1086486568852410168">Leita með Google linsu</translation>
@@ -89,6 +90,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="288992067439702510">Þú náðir hámarksfjölda bókamerkja í Chrome (<ph name="LIMIT" />) og því hafa sum bókamerkin þín ekki verið vistuð á Google-reikningnum enn sem komið er.
 
 Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyðir einhverjum. Ef þú skráir þig út núna verður óvistuðum bókamerkjum eytt.</translation>
+<translation id="2901621928549457170">Opnaðu Chrome samstundis þegar þú ert í iPad</translation>
 <translation id="2922914028977213693">Ýttu hér til að fá sem mest út úr Chrome í iPad.</translation>
 <translation id="292371311537977079">Stillingar Chrome</translation>
 <translation id="2923827943290349720">Læsa huliðsflipum um leið og þú lokar Chrome</translation>
@@ -173,6 +175,8 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="5119391094379141756">Veldu Chrome</translation>
 <translation id="5123188916260706415">Leita með röddinni í Chrome</translation>
 <translation id="5162467219239570114">Chrome er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chrome.</translation>
+<translation id="5172049865623113551">Opnaðu Chrome samstundis þegar þú ert í iPhone</translation>
+<translation id="5179095426828744632">Opnaðu Chrome hraðar úr dokkunni</translation>
 <translation id="5184329579814168207">Opna í Chrome</translation>
 <translation id="5190139289262548459">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert innskráð(ur) á og hvernig Chrome er notað.</translation>
 <translation id="5209238444239954363">Chrome gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>

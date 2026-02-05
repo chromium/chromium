@@ -63,6 +63,7 @@
 <translation id="1223498995510244364">Ringkasan</translation>
 <translation id="1227113644794103810">Tab tidak aktif</translation>
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
+<translation id="1238794841176717085">Bagikan Halaman Ini</translation>
 <translation id="1253032109800629289">Sembunyikan "Dapatkan Notifikasi Pemantauan Harga"</translation>
 <translation id="1254424942107648268">Temukan Sebelumnya</translation>
 <translation id="1258491128795710625">Yang Baru</translation>
@@ -197,6 +198,7 @@
 <translation id="169048873465870056">Hapus tab dan grup?</translation>
 <translation id="1698090540708020240">Impor sandi…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
+<translation id="1702583479431863204">Pin situs dilepas</translation>
 <translation id="1709916727352927457">Hapus kunci sandi</translation>
 <translation id="1715515772563243997">Jika Anda memercayai <ph name="SITE" />, Anda dapat menggunakan sandi tersimpan untuk login.</translation>
 <translation id="1718835860248848330">Sejam terakhir</translation>
@@ -247,6 +249,7 @@
 <translation id="1872096359983322073">Senter</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Undang anggota keluarga</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">Panel menu urutkan pintar</translation>
 <translation id="1883255238294161206">Ciutkan daftar</translation>
 <translation id="1888854257756214946">Pilih sandi…</translation>
@@ -1659,6 +1662,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Jadikan default di Setelan…</translation>
 <translation id="7007970306646738803">Pilih tindakan yang akan dilakukan pada data penjelajahan yang ada di perangkat ini, seperti tab, histori, dan sandi.</translation>
+<translation id="7012978439516925343">Verifikasi diri Anda untuk membuat kunci sandi</translation>
 <translation id="7015418667643980944">Tampilan terpisah</translation>
 <translation id="7016070607649558507">Anda memiliki 1 sandi lemah. Perbaiki sekarang agar tetap terlindungi.</translation>
 <translation id="7016958933495968912">Opsi untuk Discover</translation>
@@ -2040,6 +2044,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8407831512155324054">Sandi Anda tampak kuat</translation>
 <translation id="8414030140103493759">Ambil Foto atau Video</translation>
 <translation id="8414283596511250978">Jangan pernah melupakan sandi Anda</translation>
+<translation id="8415120635186642416">Riset apa saja</translation>
 <translation id="842523302461531262">Jadikan default di setelan…</translation>
 <translation id="8428045167754449968">Kota</translation>
 <translation id="8428213095426709021">Setelan</translation>

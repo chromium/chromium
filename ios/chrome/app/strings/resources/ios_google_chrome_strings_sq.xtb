@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1035560095760914532">Vendose Chrome në zonën e poshtme për t'u qasur në të në çdo kohë</translation>
 <translation id="1076643793026027628">Chrome i hap automatikisht lidhjet e modalitetit "I fshehtë" të YouTube në modalitetin "I fshehtë".</translation>
 <translation id="1081114897601629648">Fjalëkalimet e mëposhtme nuk u importuan te "Menaxheri i fjalëkalimeve i Google" pasi nuk përputhen me kërkesat.</translation>
 <translation id="1086486568852410168">Kërko me "Lenten e Google"</translation>
@@ -88,6 +89,7 @@ Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani,
 <translation id="288992067439702510">Ke arritur kufirin e Google Chrome prej <ph name="LIMIT" /> faqeshënuesish, prandaj disa nga faqeshënuesit e tu nuk janë ruajtur ende në "Llogarinë tënde të Google".
 
 Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish disa. Nëse del tani, faqeshënuesit e paruajtur do të fshihen.</translation>
+<translation id="2901621928549457170">Hap Chrome menjëherë kur je në iPad</translation>
 <translation id="2922914028977213693">Trokit këtu për të përfituar sa më shumë nga Chrome në iPad.</translation>
 <translation id="292371311537977079">Cilësimet e Chrome</translation>
 <translation id="2923827943290349720">Kyçi skedat "e fshehta" kur të mbyllësh Chrome</translation>
@@ -172,6 +174,8 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="5119391094379141756">Zgjidh Chrome</translation>
 <translation id="5123188916260706415">Kërko me zë në Chrome</translation>
 <translation id="5162467219239570114">Chrome është i papërditësuar Nëse nuk ofrohet një përditësim në <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ka mundësi që pajisja jote nuk i mbështet më versionet e reja të Chrome.</translation>
+<translation id="5172049865623113551">Hap Chrome menjëherë kur je në iPhone</translation>
+<translation id="5179095426828744632">Qasu më shpejt në Chrome nga stacioni</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5190139289262548459">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si përdoret Chrome.</translation>
 <translation id="5209238444239954363">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
