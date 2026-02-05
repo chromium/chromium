@@ -148,8 +148,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(2),
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false),
+                            /* closureTime= */ 0),
                     new InstanceInfo(
                             /* instanceId= */ 1,
                             /* taskId= */ 58,
@@ -161,8 +160,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(1),
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false),
+                            /* closureTime= */ 0),
                     new InstanceInfo(
                             /* instanceId= */ 2,
                             /* taskId= */ 59,
@@ -174,8 +172,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(0),
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false),
+                            /* closureTime= */ 0),
                     new InstanceInfo(
                             /* instanceId= */ 3,
                             /* taskId= */ -1,
@@ -187,8 +184,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(1),
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false),
+                            /* closureTime= */ 0),
                     new InstanceInfo(
                             /* instanceId= */ 4,
                             /* taskId= */ -1,
@@ -200,8 +196,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(3),
-                            /* closureTime= */ getDaysAgoMillis(2),
-                            /* markedForDeletion= */ false)
+                            /* closureTime= */ getDaysAgoMillis(2))
                 };
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -987,8 +982,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 3,
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false),
+                            /* closureTime= */ 0),
                     new InstanceInfo(
                             /* instanceId= */ 1,
                             /* taskId= */ 58,
@@ -1000,8 +994,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 2,
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false),
+                            /* closureTime= */ 0),
                     new InstanceInfo(
                             /* instanceId= */ 2,
                             /* taskId= */ 59,
@@ -1013,8 +1006,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 1,
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false)
+                            /* closureTime= */ 0)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         doAnswer(
@@ -1354,8 +1346,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 1,
                             /* isIncognitoSelected= */ true,
                             /* lastAccessedTime= */ 0,
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false)
+                            /* closureTime= */ 0)
                 };
         final CallbackHelper renameCallbackHelper = new CallbackHelper();
         final int renameCallbackCount = renameCallbackHelper.getCallCount();
@@ -2029,8 +2020,7 @@ public class InstanceSwitcherCoordinatorTest {
                         /* incognitoTabCount= */ 1,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ getDaysAgoMillis(0),
-                        /* closureTime= */ 0,
-                        /* markedForDeletion= */ false);
+                        /* closureTime= */ 0);
 
         // Create other active instances.
         for (int i = 1; i < numActiveInstances; i++) {
@@ -2046,8 +2036,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(i),
-                            /* closureTime= */ 0,
-                            /* markedForDeletion= */ false);
+                            /* closureTime= */ 0);
         }
 
         // Create inactive instances.
@@ -2064,8 +2053,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(i),
-                            /* closureTime= */ 3,
-                            /* markedForDeletion= */ false);
+                            /* closureTime= */ 3);
         }
 
         return instances;

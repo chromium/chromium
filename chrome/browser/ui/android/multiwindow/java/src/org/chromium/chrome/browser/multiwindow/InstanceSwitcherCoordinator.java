@@ -391,9 +391,6 @@ public class InstanceSwitcherCoordinator {
         InstanceInfo currentInstance = null;
         for (int i = 0; i < items.size(); ++i) {
             InstanceInfo instanceInfo = items.get(i);
-            // Do not show instances that are closed by user.
-            if (instanceInfo.markedForDeletion) continue;
-
             // Add the current instance to the front of the list after it is sorted by timestamp.
             if (instanceInfo.type == InstanceInfo.Type.CURRENT) {
                 currentInstance = instanceInfo;
@@ -872,8 +869,7 @@ public class InstanceSwitcherCoordinator {
                                         item.incognitoTabCount,
                                         item.isIncognitoSelected,
                                         item.lastAccessedTime,
-                                        item.closureTime,
-                                        item.markedForDeletion);
+                                        item.closureTime);
                         newTitle = mUiUtils.getItemTitle(updatedItem);
                     }
 

@@ -13,7 +13,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
@@ -212,7 +211,7 @@ public class RecentlyClosedEntriesManager {
 
     /** Clears the list of recently closed entries. */
     public void clearRecentlyClosedEntries() {
-        List<InstanceInfo> instanceInfoList = getAllInactiveInstances();
+        List<InstanceInfo> instanceInfoList = mMultiInstanceManager.getRecentlyClosedInstances();
         List<Integer> instanceIds = new ArrayList<>();
         for (InstanceInfo instanceInfo : instanceInfoList) {
             instanceIds.add(instanceInfo.instanceId);
@@ -315,14 +314,6 @@ public class RecentlyClosedEntriesManager {
         }
 
         mEntriesUpdatedCallback = null;
-    }
-
-    private List<InstanceInfo> getAllInactiveInstances() {
-        var instanceType = PersistedInstanceType.INACTIVE;
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            instanceType |= PersistedInstanceType.REGULAR;
-        }
-        return mMultiInstanceManager.getInstanceInfo(instanceType);
     }
 
     private void getRecentlyClosedTabsAndWindows(
@@ -444,7 +435,7 @@ public class RecentlyClosedEntriesManager {
     }
 
     private List<RecentlyClosedWindow> getRecentlyClosedWindows() {
-        List<InstanceInfo> instanceInfoList = getAllInactiveInstances();
+        List<InstanceInfo> instanceInfoList = mMultiInstanceManager.getRecentlyClosedInstances();
         List<RecentlyClosedWindow> recentlyClosedWindows = new ArrayList<>();
 
         for (InstanceInfo info : instanceInfoList) {

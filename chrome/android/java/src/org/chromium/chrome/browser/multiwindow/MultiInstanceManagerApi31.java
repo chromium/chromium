@@ -705,10 +705,27 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @Override
     public List<InstanceInfo> getInstanceInfo(@PersistedInstanceType int persistedInstanceType) {
+        return getInstanceInfo(persistedInstanceType, /* includeDeleted= */ false);
+    }
+
+    @Override
+    public List<InstanceInfo> getRecentlyClosedInstances() {
+        var instanceType = PersistedInstanceType.INACTIVE;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            instanceType |= PersistedInstanceType.REGULAR;
+        }
+        return getInstanceInfo(instanceType, /* includeDeleted= */ true);
+    }
+
+    private List<InstanceInfo> getInstanceInfo(
+            @PersistedInstanceType int persistedInstanceType, boolean includeDeleted) {
         removeInvalidInstanceData();
         List<InstanceInfo> result = new ArrayList<>();
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         for (int i : getPersistedInstanceIds(persistedInstanceType)) {
+            if (!includeDeleted && MultiInstancePersistentStore.readMarkedForDeletion(i)) {
+                continue;
+            }
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(i);
@@ -757,8 +774,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                             MultiInstancePersistentStore.readIncognitoTabCount(i),
                             MultiInstancePersistentStore.readIncognitoSelected(i),
                             lastAccessedTime,
-                            MultiInstancePersistentStore.readClosureTime(i),
-                            MultiInstancePersistentStore.readMarkedForDeletion(i)));
+                            MultiInstancePersistentStore.readClosureTime(i)));
         }
         return result;
     }
@@ -1520,8 +1536,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                             MultiInstancePersistentStore.readIncognitoTabCount(instanceId),
                             MultiInstancePersistentStore.readIncognitoSelected(instanceId),
                             MultiInstancePersistentStore.readLastAccessedTime(instanceId),
-                            MultiInstancePersistentStore.readClosureTime(instanceId),
-                            !isPermanentDeletion);
+                            MultiInstancePersistentStore.readClosureTime(instanceId));
             instanceInfoList.add(instanceInfo);
         }
 

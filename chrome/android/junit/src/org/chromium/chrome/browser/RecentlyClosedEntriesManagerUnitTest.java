@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
@@ -198,8 +197,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
         // Create two separate lists (windows and session entries) with chronologically interleaved
         // timestamps.
         int totalEntries = 0;
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(null);
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(null);
         createRecentlyClosedWindows(/* numOfWindows= */ totalEntries);
         when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt())).thenReturn(null);
 
@@ -451,8 +449,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
     @Test
     public void testOpenMostRecentlyClosedEntry_NoEntries() {
         when(mTabModel.getMostRecentClosureTime()).thenReturn(-1L);
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(new ArrayList<>());
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(new ArrayList<>());
 
         mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
         verify(mTabModel, never()).openMostRecentlyClosedEntry();
@@ -462,8 +459,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
     @Test
     public void testOpenMostRecentlyClosedEntry_NoWindowEntries() {
         when(mTabModel.getMostRecentClosureTime()).thenReturn(2L);
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(new ArrayList<>());
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(new ArrayList<>());
 
         mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
         verify(mTabModel).openMostRecentlyClosedEntry();
@@ -486,10 +482,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
+                        /* closureTime= */ 3));
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
         mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
                 NewWindowAppSource.KEYBOARD_SHORTCUT);
@@ -515,10 +509,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 2,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
+                        /* closureTime= */ 2));
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
         mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
         verify(mTabModel).openMostRecentlyClosedEntry();
@@ -545,10 +537,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
+                        /* closureTime= */ 3));
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
         mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
                 NewWindowAppSource.KEYBOARD_SHORTCUT);
@@ -577,10 +567,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
+                        /* closureTime= */ 3));
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
         mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
         verify(mTabModel).openMostRecentlyClosedEntry();
@@ -968,8 +956,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 2,
-                        /* markedForDeletion= */ true));
+                        /* closureTime= */ 2));
         instanceInfoList.add(
                 new InstanceInfo(
                         /* instanceId= */ 1,
@@ -982,10 +969,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
+                        /* closureTime= */ 3));
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
 
@@ -1014,8 +999,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 2,
-                        /* closureTime= */ 0,
-                        /* markedForDeletion= */ true));
+                        /* closureTime= */ 0));
         instanceInfoList.add(
                 new InstanceInfo(
                         /* instanceId= */ 1,
@@ -1028,8 +1012,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3,
-                        /* markedForDeletion= */ true));
+                        /* closureTime= */ 3));
         instanceInfoList.add(
                 new InstanceInfo(
                         /* instanceId= */ 2,
@@ -1042,10 +1025,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 1,
-                        /* markedForDeletion= */ true));
-        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE))
-                .thenReturn(instanceInfoList);
+                        /* closureTime= */ 1));
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
 
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
 
@@ -1111,13 +1092,12 @@ public class RecentlyClosedEntriesManagerUnitTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ closureTime - 1,
-                            closureTime,
-                            /* markedForDeletion= */ true);
+                            closureTime);
             instanceInfoList.add(0, instanceInfo);
             instanceId += 2;
             closureTime += 2;
         }
-        when(mMultiInstanceManager.getInstanceInfo(anyInt())).thenReturn(instanceInfoList);
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
     }
 
     private static long getDaysAgoMillis(int numDaysAgo) {

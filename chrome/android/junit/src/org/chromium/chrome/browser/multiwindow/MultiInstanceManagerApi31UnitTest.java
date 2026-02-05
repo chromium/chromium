@@ -321,8 +321,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 /* incognitoTabCount= */ 0,
                                 /* isIncognitoSelected= */ false,
                                 MultiInstancePersistentStore.readLastAccessedTime(instanceId),
-                                MultiInstancePersistentStore.readClosureTime(instanceId),
-                                /* markedForDeletion= */ false));
+                                MultiInstancePersistentStore.readClosureTime(instanceId)));
             }
         }
 
@@ -587,7 +586,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 INVALID_WINDOW_ID, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
 
         // Activity ID 1 gets removed from memory.
-        softCloseInstance(mActivityPool[1], 1);
+        softCloseInstance(mActivityPool[1]);
 
         // We allocated max number of instances already. Activity Id 1 is was removed but
         // remains mapped to a task still alive. No more new allocation is possible.
@@ -607,7 +606,7 @@ public class MultiInstanceManagerApi31UnitTest {
             assertEquals(index, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
         }
 
-        softCloseInstance(mActivityPool[1], 1);
+        softCloseInstance(mActivityPool[1]);
 
         // New instance is assigned the instance ID 1 again when the associated task is
         // brought foreground and attempts to recreate the activity.
@@ -789,7 +788,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Activity destroyed in the background due to memory constraint has no impact either.
-        softCloseInstance(mActivityTask57, TASK_ID_57);
+        softCloseInstance(mActivityTask57);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Closing an instance removes the entry.
@@ -817,7 +816,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Activity destroyed in the background due to memory constraint has no impact.
-        softCloseInstance(mActivityTask57, TASK_ID_57);
+        softCloseInstance(mActivityTask57);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Removing a task from recent screen cleans up the incognito window.
@@ -850,22 +849,85 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Trigger a soft closure on this window.
-        softCloseInstance(mActivityTask57, TASK_ID_57);
+        softCloseInstance(mActivityTask57);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
-        // Soft closing an instance does not remove the entry.
+        // Soft closing an instance does not delete persisted state for the entry.
         mMultiInstanceManager.closeWindows(
                 Collections.singletonList(1), CloseWindowAppSource.WINDOW_MANAGER);
         List<InstanceInfo> instanceInfoList =
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
-        assertEquals(3, instanceInfoList.size());
-        for (InstanceInfo instanceInfo : instanceInfoList) {
-            if (instanceInfo.instanceId == 1) {
-                assertTrue(instanceInfo.markedForDeletion);
-            } else {
-                assertFalse(instanceInfo.markedForDeletion);
-            }
-        }
+        assertEquals(2, instanceInfoList.size());
+        assertTrue(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 1));
+        assertFalse(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 0));
+        assertFalse(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 2));
+    }
+
+    @Test
+    public void testGetRecentlyClosedInstances() {
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+
+        // Make instance1 inactive, but still usable.
+        removeTaskOnRecentsScreen(mActivityTask57);
+
+        // Close instance2 from the window manager, this should make it inactive and unusable (ie.
+        // marked for deletion).
+        mMultiInstanceManager.closeWindows(List.of(2), CloseWindowAppSource.WINDOW_MANAGER);
+        destroyActivity(mActivityTask58);
+
+        // Verify #getInstanceInfo() lists.
+        List<InstanceInfo> activeInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
+        List<InstanceInfo> inactiveUsableInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE);
+        assertEquals(
+                "Total # of usable instances is incorrect.",
+                2,
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+        assertEquals("# of active instances is incorrect.", 1, activeInstances.size());
+        assertEquals(
+                "# of inactive, usable instances is incorrect.", 1, inactiveUsableInstances.size());
+        assertEquals("Instance 0 should be active.", 0, activeInstances.get(0).instanceId);
+        assertEquals(
+                "Instance 1 should be inactive.", 1, inactiveUsableInstances.get(0).instanceId);
+
+        // Verify #getRecentlyClosedInstances() list.
+        List<InstanceInfo> closedInstances = mMultiInstanceManager.getRecentlyClosedInstances();
+        assertEquals(2, closedInstances.size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testGetRecentlyClosedInstances_excludesIncognitoWindows() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(1, mActivityTask57));
+        MultiInstancePersistentStore.writeProfileType(1, SupportedProfileType.OFF_THE_RECORD);
+
+        // Make instance1 inactive, but still usable.
+        removeTaskOnRecentsScreen(mActivityTask57);
+
+        // Verify #getInstanceInfo() lists.
+        List<InstanceInfo> activeInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
+        List<InstanceInfo> inactiveUsableInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE);
+        assertEquals(
+                "Total # of usable instances is incorrect.",
+                2,
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+        assertEquals("# of active instances is incorrect.", 1, activeInstances.size());
+        assertEquals(
+                "# of inactive, usable instances is incorrect.", 1, inactiveUsableInstances.size());
+        assertEquals("Instance 0 should be active.", 0, activeInstances.get(0).instanceId);
+        assertEquals(
+                "Instance 1 should be inactive.", 1, inactiveUsableInstances.get(0).instanceId);
+
+        // Verify #getRecentlyClosedInstances() list.
+        List<InstanceInfo> closedInstances = mMultiInstanceManager.getRecentlyClosedInstances();
+        assertEquals("# of recently closed instances is incorrect.", 0, closedInstances.size());
     }
 
     @Test
@@ -885,10 +947,8 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.closeWindows(
                 Collections.singletonList(1), CloseWindowAppSource.WINDOW_MANAGER);
 
-        // Verify the soft-closed instance becomes an inactive instance.
-        assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE).size());
-        assertEquals(
-                1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE).size());
+        // Verify that the instance marked for deletion is not considered usable.
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Verify that closure time is updated.
         assertTrue(MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1) > initialTime);
@@ -901,19 +961,11 @@ public class MultiInstanceManagerApi31UnitTest {
         List<InstanceInfo> closedInstanceInfo = captor.getValue();
         assertEquals("There should be exactly 1 InstanceInfo.", 1, closedInstanceInfo.size());
         assertEquals("Instance ID should be 1.", 1, closedInstanceInfo.get(0).instanceId);
-        assertTrue(
-                "markedForDeletion should be true for soft closure.",
-                closedInstanceInfo.get(0).markedForDeletion);
 
-        // Verify the soft-closed instance is correctly marked for deletion.
-        for (InstanceInfo instanceInfo :
-                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY)) {
-            if (instanceInfo.instanceId == 1) {
-                assertTrue(instanceInfo.markedForDeletion);
-            } else {
-                assertFalse(instanceInfo.markedForDeletion);
-            }
-        }
+        // Verify the instance is correctly marked for deletion.
+        assertTrue(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 1));
+        assertFalse(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 0));
+        assertFalse(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 2));
 
         // Subsequent restoration should update `markedForDeletion` instance state.
         MultiWindowTestUtils.enableMultiInstance();
@@ -921,7 +973,7 @@ public class MultiInstanceManagerApi31UnitTest {
         List<InstanceInfo> instanceInfoList =
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(3, instanceInfoList.size());
-        assertFalse(instanceInfoList.get(1).markedForDeletion);
+        assertFalse(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 1));
     }
 
     @Test
@@ -997,13 +1049,13 @@ public class MultiInstanceManagerApi31UnitTest {
         inOrderVerifier.verify(mCurrentActivity).finishAndRemoveTask();
 
         // Verify that we have persisted state for all 3 instances, that are now marked for
-        // deletion.
+        // deletion and considered unusable.
         List<InstanceInfo> instances =
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
-        assertEquals(3, instances.size());
-        for (InstanceInfo info : instances) {
-            assertTrue("Instance should be marked for deletion.", info.markedForDeletion);
-        }
+        assertEquals(0, instances.size());
+        assertTrue(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 0));
+        assertTrue(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 1));
+        assertTrue(MultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 2));
 
         // Verify that subsequent id allocation uses a new id, not a persisted one marked for
         // deletion.
@@ -1585,7 +1637,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     // Simulate only an activity gets destroyed, leaving everything intact.
-    private void softCloseInstance(Activity activity, int ignored) {
+    private void softCloseInstance(Activity activity) {
         destroyActivity(activity);
     }
 
@@ -2046,8 +2098,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closureTime= */ 0,
-                        /* markedForDeletion= */ false);
+                        /* closureTime= */ 0);
         mMultiInstanceManager.moveTabsToWindow(
                 info,
                 Collections.singletonList(mTab1),
@@ -2088,8 +2139,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closureTime= */ 0,
-                        /* markedForDeletion= */ false);
+                        /* closureTime= */ 0);
         mMultiInstanceManager.moveTabsToWindow(
                 info, tabs, /* tabAtIndex= */ 0, NewWindowAppSource.OTHER);
 
@@ -2123,8 +2173,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closureTime= */ 0,
-                        /* markedForDeletion= */ false);
+                        /* closureTime= */ 0);
         mMultiInstanceManager.moveTabGroupToWindow(
                 info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
 

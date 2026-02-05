@@ -89,8 +89,7 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3,
-                        /* markedForDeletion= */ true);
+                        /* closureTime= */ 3);
         mTracker.onInstancesClosed(
                 Collections.singletonList(info), /* isPermanentDeletion= */ false);
 
@@ -118,8 +117,7 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 1,
-                        /* closureTime= */ 3,
-                        /* markedForDeletion= */ true);
+                        /* closureTime= */ 3);
         mTracker.onInstancesClosed(
                 Collections.singletonList(info), /* isPermanentDeletion= */ false);
         assertEquals(1, manager1.getRecentlyClosedEntries().size());

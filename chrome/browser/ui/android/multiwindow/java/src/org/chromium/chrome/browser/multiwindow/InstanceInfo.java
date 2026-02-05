@@ -71,12 +71,6 @@ public final class InstanceInfo {
      */
     public final long closureTime;
 
-    /**
-     * Whether this instance is marked for permanent deletion. This is relevant only for a
-     * non-active instance.
-     */
-    public final boolean markedForDeletion;
-
     public InstanceInfo(
             int instanceId,
             int taskId,
@@ -88,8 +82,7 @@ public final class InstanceInfo {
             int incognitoTabCount,
             boolean isIncognitoSelected,
             long lastAccessedTime,
-            long closureTime,
-            boolean markedForDeletion) {
+            long closureTime) {
         this.instanceId = instanceId;
         this.taskId = taskId;
         this.type = type;
@@ -101,7 +94,6 @@ public final class InstanceInfo {
         this.isIncognitoSelected = isIncognitoSelected;
         this.lastAccessedTime = lastAccessedTime;
         this.closureTime = closureTime;
-        this.markedForDeletion = markedForDeletion;
     }
 
     @Override

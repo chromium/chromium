@@ -334,10 +334,19 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * @return List of {@link InstanceInfo} structs with {@link PersistedInstanceType} {@param type}
-     *     for an activity that can be switched to, or newly launched.
+     * @return A list of {@link InstanceInfo} structs for the specified {@link
+     *     PersistedInstanceType}. This excludes unusable instances that are marked for deletion.
      */
     public List<InstanceInfo> getInstanceInfo(@PersistedInstanceType int type) {
+        return Collections.emptyList();
+    }
+
+    /**
+     * @return A list of {@link InstanceInfo} structs for inactive instances, including currently
+     *     unusable instances that are marked for deletion. This excludes {@link
+     *     PersistedInstanceType#OFF_THE_RECORD} type instances.
+     */
+    public List<InstanceInfo> getRecentlyClosedInstances() {
         return Collections.emptyList();
     }
 
