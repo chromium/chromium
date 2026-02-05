@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -648,11 +649,26 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     template_element->SetBooleanAttribute(html_names::kShadowrootclonableAttr,
                                           true);
   }
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      shadow_root->host().customElementRegistry() !=
-          shadow_root->customElementRegistry()) {
-    template_element->SetBooleanAttribute(
-        html_names::kShadowrootcustomelementregistryAttr, true);
+  // https://html.spec.whatwg.org/#serialising-html-fragments
+  // Step: 4.2.7
+  // The shadowrootcustomelementregistryattribute should be added unless
+  //   - both document and shadow root registry are null
+  //   - both document and shadow root registry are global registries
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    auto* document_registry =
+        shadow_root->GetDocument().customElementRegistry();
+    auto* shadow_registry = shadow_root->customElementRegistry();
+    bool should_append_registry_attribute = true;
+    if (document_registry == nullptr && shadow_registry == nullptr) {
+      should_append_registry_attribute = false;
+    } else if (document_registry && document_registry->IsGlobalRegistry() &&
+               shadow_registry && shadow_registry->IsGlobalRegistry()) {
+      should_append_registry_attribute = false;
+    }
+    if (should_append_registry_attribute) {
+      template_element->SetBooleanAttribute(
+          html_names::kShadowrootcustomelementregistryAttr, true);
+    }
   }
   return std::pair<ShadowRoot*, HTMLTemplateElement*>(shadow_root,
                                                       template_element);
