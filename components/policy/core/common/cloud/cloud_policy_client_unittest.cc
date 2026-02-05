@@ -2743,6 +2743,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(CloudPolicyClientTest,
        UploadSecurityEventReportDeprecatedNotRegistered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kUploadRealtimeReportingEventsUsingProto);
+
   ASSERT_FALSE(client_->is_registered());
 
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
@@ -2759,7 +2763,7 @@ TEST_F(CloudPolicyClientTest,
 TEST_F(CloudPolicyClientTest, UploadSecurityEventNotRegistered) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      policy::kUploadRealtimeReportingEventsUsingProto);
+      kUploadRealtimeReportingEventsUsingProto);
   ASSERT_FALSE(client_->is_registered());
 
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
@@ -2778,8 +2782,11 @@ class CloudPolicyClientUploadSecurityEventReportDeprecatedTest
       public testing::WithParamInterface<bool> {
  public:
   CloudPolicyClientUploadSecurityEventReportDeprecatedTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        policy::features::kEnhancedSecurityEventFields);
+    scoped_feature_list_
+        .InitWithFeatures(/*enabled_features=*/
+                          {policy::features::kEnhancedSecurityEventFields},
+                          /*disabled_features=*/{
+                              kUploadRealtimeReportingEventsUsingProto});
   }
   bool include_device_info() const { return GetParam(); }
 
@@ -2886,6 +2893,10 @@ TEST_P(CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
 }
 
 TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNoResponse) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kUploadRealtimeReportingEventsUsingProto);
+
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"");
@@ -2922,9 +2933,9 @@ class CloudPolicyClientUploadSecurityEventTest
  public:
   CloudPolicyClientUploadSecurityEventTest() {
     scoped_feature_list_.InitWithFeatures(
-        {policy::kUploadRealtimeReportingEventsUsingProto,
-         policy::features::kEnhancedSecurityEventFields},
-        {});
+        /*enabled_features=*/{kUploadRealtimeReportingEventsUsingProto,
+                              policy::features::kEnhancedSecurityEventFields},
+        /*disabled_features=*/{});
   }
   bool include_device_info() const { return GetParam(); }
 
@@ -2988,7 +2999,7 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, TestWithProtoFormat) {
 TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      policy::kUploadRealtimeReportingEventsUsingProto);
+      kUploadRealtimeReportingEventsUsingProto);
 
   auto config = std::make_unique<RealtimeReportingJobConfiguration>(
       client_.get(), service_.configuration()->GetRealtimeReportingServerUrl(),
@@ -3124,6 +3135,10 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReportNotRegistered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kUploadRealtimeReportingEventsUsingProto);
+
   ASSERT_FALSE(client_->is_registered());
 
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
@@ -3137,6 +3152,10 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportNotRegistered) {
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kUploadRealtimeReportingEventsUsingProto);
+
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
@@ -3155,6 +3174,10 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
 }
 
 TEST_F(CloudPolicyClientTest, CancelUploadAppInstallReport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kUploadRealtimeReportingEventsUsingProto);
+
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
@@ -3180,6 +3203,10 @@ TEST_F(CloudPolicyClientTest, CancelUploadAppInstallReport) {
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kUploadRealtimeReportingEventsUsingProto);
+
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
