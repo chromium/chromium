@@ -13,7 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -45,6 +45,17 @@ PrefetchCompleteCallbackForTesting& GetPrefetchCompleteCallbackForTesting() {
   static base::NoDestructor<PrefetchCompleteCallbackForTesting>
       get_prefetch_complete_callback_for_testing;
   return *get_prefetch_complete_callback_for_testing;
+}
+
+// Just to call to a `PrefetchServingHandle&&` method via `base::BindOnce()`.
+void OnGotPrefetchToServe(
+    FrameTreeNodeId frame_tree_node_id,
+    const GURL& url,
+    base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback,
+    PrefetchServingHandle serving_handle) {
+  std::move(serving_handle)
+      .OnGotPrefetchToServe(frame_tree_node_id, url,
+                            std::move(get_prefetch_callback));
 }
 
 }  // namespace
@@ -139,16 +150,17 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           std::nullopt);
     } else {
       TRACE_EVENT_END("loading");
-      OnGotPrefetchToServe(
-          frame_tree_node_id_, tentative_resource_request.url,
-          base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
-                         weak_factory_.GetWeakPtr(),
+      std::move(redirect_serving_handle_)
+          .OnGotPrefetchToServe(
+              frame_tree_node_id_, tentative_resource_request.url,
+              base::BindOnce(
+                  &PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
+                  weak_factory_.GetWeakPtr(),
 
-                         tentative_resource_request.url,
-                         ServiceWorkerMainResourceHandle::
-                             TopFrameOriginForInitializeForRequest(
-                                 tentative_resource_request)),
-          std::move(redirect_serving_handle_));
+                  tentative_resource_request.url,
+                  ServiceWorkerMainResourceHandle::
+                      TopFrameOriginForInitializeForRequest(
+                          tentative_resource_request)));
       return;
     }
   }

@@ -6,10 +6,18 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVING_HANDLE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 
 class GURL;
+
+namespace net {
+
+struct CookieWithAccessResult;
+
+}  // namespace net
 
 namespace content {
 
@@ -56,7 +64,8 @@ class CONTENT_EXPORT PrefetchServingHandle final {
 
   // Returns true if `this` is valid.
   // Do not call methods below if false.
-  explicit operator bool() const { return GetPrefetchContainer(); }
+  bool IsValid() const { return GetPrefetchContainer(); }
+  explicit operator bool() const { return IsValid(); }
 
   // Methods redirecting to `GetPrefetchContainer()`.
   PrefetchServableState GetServableState() const;
@@ -119,6 +128,14 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   bool MatchesCookieIndices(
       base::span<const std::pair<std::string, std::string>> cookies) const;
 
+  // Checks if `prefetch_container` can be used for the url of intercepted
+  // `tentative_resource_request`, and starts checking `PrefetchOriginProber` if
+  // needed.
+  void OnGotPrefetchToServe(
+      FrameTreeNodeId frame_tree_node_id,
+      const GURL& tentative_resource_request_url,
+      base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback) &&;
+
   using OnIsolatedCookieCopyStartCallbackForTesting =
       base::RepeatingCallback<void(const PrefetchServingHandle&)>;
   static void SetOnIsolatedCookieCopyStartCallbackForTesting(
@@ -131,6 +148,22 @@ class CONTENT_EXPORT PrefetchServingHandle final {
 
   // Returns the `SingleRedirectHop` to be served next.
   const PrefetchSingleRedirectHop& GetCurrentSingleRedirectHopToServe() const;
+
+  // Validation methods.
+  struct OnGotPrefetchToServeState;
+  void ContinueOnGotPrefetchToServe(
+      std::unique_ptr<OnGotPrefetchToServeState> state) &&;
+  void StartCookieValidation(
+      std::unique_ptr<OnGotPrefetchToServeState> state) &&;
+  void OnGotCookiesForValidation(
+      std::unique_ptr<OnGotPrefetchToServeState> state,
+      const std::vector<net::CookieWithAccessResult>& cookies,
+      const std::vector<net::CookieWithAccessResult>& excluded_cookies) &&;
+  void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
+                       base::TimeTicks probe_start_time,
+                       PrefetchProbeResult probe_result) &&;
+  void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
+                            base::TimeTicks cookie_copy_start_time) &&;
 
   base::WeakPtr<PrefetchContainer> prefetch_container_;
 

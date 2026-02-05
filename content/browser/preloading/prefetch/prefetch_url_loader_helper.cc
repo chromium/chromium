@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
-
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
@@ -13,6 +11,7 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
+#include "content/browser/preloading/prefetch/prefetch_single_redirect_hop.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_context.h"
@@ -21,6 +20,9 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
+
+// TODO(https://crbug.com/437416134): Move this file's contents to
+// `prefetch_serving_handle.cc`.
 
 namespace content {
 namespace {
@@ -44,14 +46,34 @@ void RecordCookieWaitTime(base::TimeDelta wait_time) {
       base::TimeDelta(), base::Seconds(5), 50);
 }
 
+// Helper for `base::BindOnce()` + rvalue ref-qualified member method.
+// TODO(crbug.com/40254119): Remove this helper when the issue is fixed.
+template <typename... UnboundArgs,
+          typename Method,
+          typename Receiver,
+          typename... BoundArgs>
+auto BindOnceForRvalueMemberMethod(Method method,
+                                   Receiver receiver,
+                                   BoundArgs&&... bound_args) {
+  return base::BindOnce(
+      [](Method method, std::decay_t<Receiver> receiver,
+         std::decay_t<BoundArgs>... bound_args, UnboundArgs... unbound_args) {
+        (std::move(receiver).*method)(
+            std::forward<BoundArgs>(bound_args)...,
+            std::forward<UnboundArgs>(unbound_args)...);
+      },
+      method, std::move(receiver), std::forward<BoundArgs>(bound_args)...);
+}
+
+}  // namespace
+
 // Stores state for the asynchronous work required to prepare a prefetch to
 // serve.
-struct OnGotPrefetchToServeState {
+struct PrefetchServingHandle::OnGotPrefetchToServeState final {
   // Inputs.
   const FrameTreeNodeId frame_tree_node_id;
   const GURL tentative_url;
   base::OnceCallback<void(PrefetchServingHandle)> callback;
-  PrefetchServingHandle serving_handle;
 
   // True if we've validated that cookies match (to the extent required).
   // False if they don't. Absent if we don't know yet.
@@ -68,43 +90,29 @@ struct OnGotPrefetchToServeState {
   bool cookie_copy_complete_if_required = false;
 };
 
-// Forward declarations are required for these to call each other while
-// appearing in the order they occur.
-void ContinueOnGotPrefetchToServe(
-    std::unique_ptr<OnGotPrefetchToServeState> state);
-void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState> state);
-void OnGotCookiesForValidation(
-    std::unique_ptr<OnGotPrefetchToServeState> state,
-    const std::vector<net::CookieWithAccessResult>& cookies,
-    const std::vector<net::CookieWithAccessResult>& excluded_cookies);
-void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
-                     base::TimeTicks probe_start_time,
-                     PrefetchProbeResult probe_result);
-void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
-                          base::TimeTicks cookie_copy_start_time);
-
 // Overall structure of asynchronous execution (in coroutine style).
 
-void ContinueOnGotPrefetchToServe(
-    std::unique_ptr<OnGotPrefetchToServeState> state) {
+void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
+    std::unique_ptr<OnGotPrefetchToServeState> state) && {
   // If the cookies need to be matched, fetch them and confirm that they're
   // correct.
   if (base::FeatureList::IsEnabled(features::kPrefetchCookieIndices)) {
     if (!state->cookies_matched.has_value()) {
       WebContents* web_contents =
           WebContents::FromFrameTreeNodeId(state->frame_tree_node_id);
-      if (!web_contents || !state->serving_handle) {
+      if (!web_contents || !IsValid()) {
         // We can't confirm that the cookies matched. But probably everything is
         // being torn down, anyway.
         state->cookies_matched = false;
-      } else if (!state->serving_handle.VariesOnCookieIndices()) {
+      } else if (!VariesOnCookieIndices()) {
         state->cookies_matched = true;
       } else {
-        StartCookieValidation(std::move(state));
+        std::move(*this).StartCookieValidation(std::move(state));
         // Fetching the cookies asynchronously. Continue later.
         return;
       }
     }
+
     CHECK(state->cookies_matched.has_value());
     if (!state->cookies_matched.value()) {
       // Cookies did not match, but needed to. We're done here.
@@ -127,13 +135,14 @@ void ContinueOnGotPrefetchToServe(
     }
 
     PrefetchOriginProber* prober = prefetch_service->GetPrefetchOriginProber();
-    if (state->serving_handle.IsIsolatedNetworkContextRequiredToServe() &&
+    if (IsIsolatedNetworkContextRequiredToServe() &&
         prober->ShouldProbeOrigins()) {
       GURL probe_url = url::SchemeHostPort(state->tentative_url).GetURL();
-      prober->Probe(
-          probe_url,
-          base::BindOnce(&OnProbeComplete, std::move(state),
-                         /*probe_start_time=*/base::TimeTicks::Now()));
+      prober->Probe(probe_url,
+                    BindOnceForRvalueMemberMethod<PrefetchProbeResult>(
+                        &PrefetchServingHandle::OnProbeComplete,
+                        std::move(*this), std::move(state),
+                        /*probe_start_time=*/base::TimeTicks::Now()));
       // The probe is happening asynchronously (it took ownership of |state|),
       // and this algorithm will continue later.
       return;
@@ -152,23 +161,33 @@ void ContinueOnGotPrefetchToServe(
   // Ensures that the cookies for prefetch are copied from its isolated
   // network context to the default network context.
   if (!state->cookie_copy_complete_if_required) {
-    if (state->serving_handle) {
-      if (!state->serving_handle.HasIsolatedCookieCopyStarted()) {
+    if (IsValid()) {
+      if (!HasIsolatedCookieCopyStarted()) {
         // Start the cookie copy for the next redirect hop.
         if (PrefetchService* prefetch_service =
                 PrefetchService::GetFromFrameTreeNodeId(
                     state->frame_tree_node_id)) {
-          prefetch_service->CopyIsolatedCookies(state->serving_handle);
+          prefetch_service->CopyIsolatedCookies(*this);
         }
       }
 
-      state->serving_handle.OnInterceptorCheckCookieCopy();
+      OnInterceptorCheckCookieCopy();
 
-      if (state->serving_handle.IsIsolatedCookieCopyInProgress()) {
+      if (IsIsolatedCookieCopyInProgress()) {
         // Cookie copy is happening and this function will continue later.
-        state->serving_handle.SetOnCookieCopyCompleteCallback(
-            base::BindOnce(&OnCookieCopyComplete, std::move(state),
-                           /*cookie_copy_start_time=*/base::TimeTicks::Now()));
+
+        // We first get a `current_redirect_hop` reference and then move out
+        // `*this` etc., to avoid use-after-move.
+        // TODO(https://crbug.com/437416134): Revamp this for better interfacing
+        // and fix potential bugs.
+        auto& current_redirect_hop = GetCurrentSingleRedirectHopToServe();
+        DUMP_WILL_BE_CHECK(
+            !current_redirect_hop.on_cookie_copy_complete_callback_);
+        current_redirect_hop.on_cookie_copy_complete_callback_ =
+            BindOnceForRvalueMemberMethod<>(
+                &PrefetchServingHandle::OnCookieCopyComplete, std::move(*this),
+                std::move(state),
+                /*cookie_copy_start_time=*/base::TimeTicks::Now());
         return;
       }
     }
@@ -183,12 +202,12 @@ void ContinueOnGotPrefetchToServe(
   CHECK(PrefetchProbeResultIsSuccess(state->probe_result.value()));
   CHECK(state->cookie_copy_complete_if_required);
 
-  if (!state->serving_handle) {
+  if (!IsValid()) {
     std::move(state->callback).Run({});
     return;
   }
 
-  switch (state->serving_handle.GetServableState()) {
+  switch (GetServableState()) {
     case PrefetchServableState::kNotServable:
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchServableState::kShouldBlockUntilHeadReceived:
@@ -200,22 +219,22 @@ void ContinueOnGotPrefetchToServe(
 
   // Delay updating the prefetch with the probe result in case it becomes not
   // servable.
-  state->serving_handle.OnPrefetchProbeResult(state->probe_result.value());
+  OnPrefetchProbeResult(state->probe_result.value());
 
   PrefetchServingPageMetricsContainer* serving_page_metrics_container =
       PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
           state->frame_tree_node_id);
   if (serving_page_metrics_container) {
-    serving_page_metrics_container->SetPrefetchStatus(
-        state->serving_handle.GetPrefetchStatus());
+    serving_page_metrics_container->SetPrefetchStatus(GetPrefetchStatus());
   }
 
-  std::move(state->callback).Run(std::move(state->serving_handle));
+  std::move(state->callback).Run(std::move(*this));
 }
 
 // COOKIE VALIDATION
 
-void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState> state) {
+void PrefetchServingHandle::StartCookieValidation(
+    std::unique_ptr<OnGotPrefetchToServeState> state) && {
   WebContents* web_contents =
       WebContents::FromFrameTreeNodeId(state->frame_tree_node_id);
   network::mojom::CookieManager* cookie_manager =
@@ -227,7 +246,7 @@ void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState> state) {
   // possible.
   CHECK(FrameTreeNode::GloballyFindByID(state->frame_tree_node_id)
             ->IsMainFrame());
-  const GURL& url = state->serving_handle.GetCurrentURLToServe();
+  const GURL& url = GetCurrentURLToServe();
   net::SchemefulSite site(url);
   cookie_manager->GetCookieList(
       url, net::CookieOptions::MakeAllInclusive(),
@@ -235,23 +254,25 @@ void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState> state) {
           net::CookiePartitionKey::FromNetworkIsolationKey(
               net::NetworkIsolationKey(site, site), net::SiteForCookies(site),
               site, /*main_frame_navigation=*/true)),
-      base::BindOnce(&OnGotCookiesForValidation, std::move(state)));
+      BindOnceForRvalueMemberMethod<
+          const std::vector<net::CookieWithAccessResult>&,
+          const std::vector<net::CookieWithAccessResult>&>(
+          &PrefetchServingHandle::OnGotCookiesForValidation, std::move(*this),
+          std::move(state)));
 }
 
-void OnGotCookiesForValidation(
+void PrefetchServingHandle::OnGotCookiesForValidation(
     std::unique_ptr<OnGotPrefetchToServeState> state,
     const std::vector<net::CookieWithAccessResult>& cookies,
-    const std::vector<net::CookieWithAccessResult>& excluded_cookies) {
+    const std::vector<net::CookieWithAccessResult>& excluded_cookies) && {
   std::vector<std::pair<std::string, std::string>> cookie_values;
   cookie_values.reserve(cookies.size());
   for (const net::CookieWithAccessResult& cookie : cookies) {
     cookie_values.emplace_back(cookie.cookie.Name(), cookie.cookie.Value());
   }
 
-  state->cookies_matched =
-      state->serving_handle &&
-      state->serving_handle.MatchesCookieIndices(cookie_values);
-  ContinueOnGotPrefetchToServe(std::move(state));
+  state->cookies_matched = IsValid() && MatchesCookieIndices(cookie_values);
+  std::move(*this).ContinueOnGotPrefetchToServe(std::move(state));
 }
 
 // ORIGIN PROBING
@@ -259,9 +280,10 @@ void OnGotCookiesForValidation(
 // Called when the `PrefetchOriginProber` check is done (if performed).
 // `probe_start_time` is used to calculate probe latency which is
 // reported to the tab helper.
-void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
-                     base::TimeTicks probe_start_time,
-                     PrefetchProbeResult probe_result) {
+void PrefetchServingHandle::OnProbeComplete(
+    std::unique_ptr<OnGotPrefetchToServeState> state,
+    base::TimeTicks probe_start_time,
+    PrefetchProbeResult probe_result) && {
   state->probe_result = probe_result;
 
   PrefetchServingPageMetricsContainer* serving_page_metrics_container =
@@ -272,59 +294,55 @@ void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
                                                     probe_start_time);
   }
 
-  if (!PrefetchProbeResultIsSuccess(probe_result) && state->serving_handle) {
-    state->serving_handle.OnPrefetchProbeResult(probe_result);
+  if (!PrefetchProbeResultIsSuccess(probe_result) && IsValid()) {
+    OnPrefetchProbeResult(probe_result);
     if (serving_page_metrics_container) {
-      serving_page_metrics_container->SetPrefetchStatus(
-          state->serving_handle.GetPrefetchStatus());
+      serving_page_metrics_container->SetPrefetchStatus(GetPrefetchStatus());
     }
   }
 
-  ContinueOnGotPrefetchToServe(std::move(state));
+  std::move(*this).ContinueOnGotPrefetchToServe(std::move(state));
 }
 
 // ISOLATED COOKIE COPYING
 
-void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
-                          base::TimeTicks cookie_copy_start_time) {
+void PrefetchServingHandle::OnCookieCopyComplete(
+    std::unique_ptr<OnGotPrefetchToServeState> state,
+    base::TimeTicks cookie_copy_start_time) && {
   base::TimeDelta wait_time = base::TimeTicks::Now() - cookie_copy_start_time;
   CHECK_GE(wait_time, base::TimeDelta());
   RecordCookieWaitTime(wait_time);
   state->cookie_copy_complete_if_required = true;
-  ContinueOnGotPrefetchToServe(std::move(state));
+  std::move(*this).ContinueOnGotPrefetchToServe(std::move(state));
 }
 
-}  // namespace
-
-void OnGotPrefetchToServe(
+void PrefetchServingHandle::OnGotPrefetchToServe(
     FrameTreeNodeId frame_tree_node_id,
     const GURL& tentative_resource_request_url,
-    base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback,
-    PrefetchServingHandle serving_handle) {
+    base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback) && {
   // TODO(crbug.com/40274818): With multiple prefetches matching, we should
   // move some of the checks here in `PrefetchService::ReturnPrefetchToServe`.
   // Why ? Because we might be able to serve a different prefetch if the
-  // prefetch in the `serving_handle` cannot be served.
+  // prefetch in the `*this` cannot be served.
 
   // The `tentative_resource_request_url` might be different from
   // `GetCurrentURLToServe()` because of No-Vary-Search non-exact url match.
 #if DCHECK_IS_ON()
-  if (serving_handle) {
+  if (IsValid()) {
     GURL::Replacements replacements;
     replacements.ClearRef();
     replacements.ClearQuery();
-    DCHECK_EQ(
-        tentative_resource_request_url.ReplaceComponents(replacements),
-        serving_handle.GetCurrentURLToServe().ReplaceComponents(replacements));
+    DCHECK_EQ(tentative_resource_request_url.ReplaceComponents(replacements),
+              GetCurrentURLToServe().ReplaceComponents(replacements));
   }
 #endif
 
-  if (!serving_handle) {
+  if (!IsValid()) {
     std::move(get_prefetch_callback).Run({});
     return;
   }
 
-  switch (serving_handle.GetServableState()) {
+  switch (GetServableState()) {
     case PrefetchServableState::kNotServable:
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchServableState::kShouldBlockUntilHeadReceived:
@@ -336,22 +354,22 @@ void OnGotPrefetchToServe(
 
   // We should not reach here if the cookies have changed. This should already
   // have been checked in one of the call sites:
-  // 1) PrefetchService::ReturnPrefetchToServe (in which case |serving_handle|
-  //    should be empty)
+  // 1) PrefetchService::ReturnPrefetchToServe (in which case |this| should be
+  //    empty)
   // 2) PrefetchURLLoaderInterceptor::MaybeCreateLoader (before serving the next
   //    next redirect hop)
-  CHECK(!serving_handle.HaveDefaultContextCookiesChanged());
+  CHECK(!HaveDefaultContextCookiesChanged());
 
   // Asynchronous activity begins here.
   // We allocate an explicit "coroutine state" for this and manage it manually.
   // While slightly verbose, this avoids duplication of logic later on in
   // control flow. This function will asynchronously call itself until it's
   // done.
-  ContinueOnGotPrefetchToServe(base::WrapUnique(new OnGotPrefetchToServeState{
-      .frame_tree_node_id = frame_tree_node_id,
-      .tentative_url = tentative_resource_request_url,
-      .callback = std::move(get_prefetch_callback),
-      .serving_handle = std::move(serving_handle)}));
+  std::move(*this).ContinueOnGotPrefetchToServe(
+      base::WrapUnique(new OnGotPrefetchToServeState{
+          .frame_tree_node_id = frame_tree_node_id,
+          .tentative_url = tentative_resource_request_url,
+          .callback = std::move(get_prefetch_callback)}));
 }
 
 }  // namespace content

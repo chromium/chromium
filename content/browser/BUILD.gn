@@ -1637,7 +1637,6 @@ source_set("browser") {
     "preloading/prefetch/prefetch_type.cc",
     "preloading/prefetch/prefetch_type.h",
     "preloading/prefetch/prefetch_url_loader_helper.cc",
-    "preloading/prefetch/prefetch_url_loader_helper.h",
     "preloading/prefetch/prefetch_url_loader_interceptor.cc",
     "preloading/prefetch/prefetch_url_loader_interceptor.h",
     "preloading/prefetcher.cc",
