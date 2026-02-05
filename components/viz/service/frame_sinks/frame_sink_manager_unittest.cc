@@ -192,9 +192,11 @@ class FrameSinkManagerTest : public testing::Test {
   void TearDown() override {
     // Make sure that all FrameSinkSourceMappings have been deleted.
     EXPECT_TRUE(manager_->frame_sink_source_map_.empty());
+    EXPECT_TRUE(manager_->sink_map_.empty());
 
     // Make sure test cleans up all [Root]CompositorFrameSinkImpls.
-    EXPECT_TRUE(manager_->support_map_.empty());
+    EXPECT_TRUE(manager_->root_sink_map_.empty());
+    EXPECT_TRUE(manager_->sink_map_.empty());
 
     // Make sure test has invalidated all registered FrameSinkIds.
     EXPECT_TRUE(manager_->frame_sink_data_.empty());
