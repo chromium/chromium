@@ -4355,6 +4355,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.NavigationTiming.ActualNavigationStartToNavigationCommitSent"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can begin before beforeunload handlers run to b) the time the navigation
+    commit request is sent to the renderer, excluding the time spent waiting for
+    user interaction in beforeunload dialogs. This includes the time spent
+    running beforeunload JavaScript handlers. This is recorded for each HTTP or
+    HTTPS page load.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.NavigationTiming.ActualNavigationStartToNavigationStart"
     units="ms" expires_after="2027-02-04">
   <owner>chikamune@chromium.org</owner>
@@ -4421,6 +4437,36 @@ chromium-metrics-reviews@google.com.
     be kUnknown (initial value), kHasPaidContent (paid content metadata found),
     or kNoPaidContentFound (no paid content metadata found), based on
     `isAccessibleForFree` document metadata.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.ActualNavigationStartToFirstContentfulPaint"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can begin before beforeunload handlers run to b) the first contentful paint,
+    excluding the time spent waiting for user interaction in beforeunload
+    dialogs. This includes the time spent running beforeunload JavaScript
+    handlers. This is recorded for each HTTP or HTTPS page load.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.ActualNavigationStartToLargestContentfulPaint"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can begin before beforeunload handlers run to b) the largest contentful
+    paint, excluding the time spent waiting for user interaction in beforeunload
+    dialogs. This includes the time spent running beforeunload JavaScript
+    handlers. This is recorded for each HTTP or HTTPS page load.
   </summary>
 </histogram>
 
@@ -4821,6 +4867,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from when the HTML parser started, to when the page first
     paints content.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.ParseTiming.ActualNavigationStartToParseStart"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can begin before beforeunload handlers run to b) the time the parser
+    started, excluding the time spent waiting for user interaction in
+    beforeunload dialogs. This includes the time spent running beforeunload
+    JavaScript handlers. This is recorded for each HTTP or HTTPS page load.
   </summary>
 </histogram>
 

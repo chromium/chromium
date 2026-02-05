@@ -92,6 +92,11 @@ extern const char kHistogramBackForwardCacheEvent[];
 extern const char kHistogramInteractionToNavigationStart[];
 extern const char kHistogramActualNavigationStartToNavigationStart[];
 
+extern const char kHistogramActualNavigationStartToNavigationCommitSent[];
+extern const char kHistogramActualNavigationStartToParseStart[];
+extern const char kHistogramActualNavigationStartToFirstContentfulPaint[];
+extern const char kHistogramActualNavigationStartToLargestContentfulPaint[];
+
 // Navigation metrics from the navigation start.
 extern const char
     kHistogramNavigationTimingNavigationStartToFirstRequestStart[];

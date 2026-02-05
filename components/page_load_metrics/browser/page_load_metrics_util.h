@@ -17,9 +17,17 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "url/gurl.h"
 
-// Up to 10 minutes, with 100 buckets.
+// 10 ms to 10 minutes, with 100 buckets.
 #define PAGE_LOAD_HISTOGRAM(name, sample)                             \
   base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(10), \
+                                base::Minutes(10), 100)
+
+// 1 ms to 10 minutes, with 100 buckets.
+// Used for metrics where we want to avoid sub-10ms values being rounded
+// to zero (falling into the underflow bucket), which occurs in the
+// standard PAGE_LOAD_HISTOGRAM.
+#define PAGE_LOAD_SUB_10MS_HISTOGRAM(name, sample)                   \
+  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(1), \
                                 base::Minutes(10), 100)
 
 // 1 ms to 1 minute, with 100 buckets.
