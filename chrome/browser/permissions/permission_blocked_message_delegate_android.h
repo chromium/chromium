@@ -58,7 +58,7 @@ class PermissionBlockedMessageDelegate
   };
 
   PermissionBlockedMessageDelegate(content::WebContents* web_contents,
-                                     std::unique_ptr<Delegate> delegate);
+                                   std::unique_ptr<Delegate> delegate);
   ~PermissionBlockedMessageDelegate() override;
 
  protected:
@@ -74,8 +74,15 @@ class PermissionBlockedMessageDelegate
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
 
+  virtual void ResolveWithOSPrompt(ContentSettingsType content_settings_type);
+
  private:
   friend class PermissionBlockedMessageDelegateAndroidTest;
+
+  enum class LoudUiSecondayMenuItems {
+    kDeny = 0,
+    kManage = 1,
+  };
 
   void InitializeLoudUI();
   void InitializeQuietUI();
@@ -84,6 +91,7 @@ class PermissionBlockedMessageDelegate
   void HandleManageClick();
   void HandleLoudPrimaryActionClick();
   void HandleLoudDismissCallback(messages::DismissReason reason);
+  void HandleLoudUiSecondayMenuItemClicked(int command_id);
 
   void DismissInternal();
 
@@ -92,11 +100,13 @@ class PermissionBlockedMessageDelegate
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<PermissionBlockedDialogController> dialog_controller_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  std::unique_ptr<Delegate> delegate_;
 
   // Whether we should re-show the dialog to users when users return to the tab.
   bool should_reshow_dialog_on_focus_ = false;
   bool has_interacted_with_dialog_ = false;
+
+ protected:
+  std::unique_ptr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_BLOCKED_MESSAGE_DELEGATE_ANDROID_H_

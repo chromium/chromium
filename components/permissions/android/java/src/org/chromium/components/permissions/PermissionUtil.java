@@ -268,6 +268,76 @@ public class PermissionUtil {
     }
 
     /**
+     * Handles the "Allow" action from a permission prompt (e.g. Message UI). Requests Android
+     * permission if needed, then resolves the site permission.
+     *
+     * @param window The WindowAndroid.
+     * @param webContents The WebContents.
+     * @param contentSettingsType The ContentSettingsType.
+     */
+    @CalledByNative
+    public static void handlePermissionPromptAllow(
+            WindowAndroid window,
+            WebContents webContents,
+            @ContentSettingsType.EnumType int contentSettingsType) {
+        requestAndResolveNotificationsPermissionRequest(
+                window,
+                webContents,
+                () -> {
+                    boolean granted = window.hasPermission(Manifest.permission.POST_NOTIFICATIONS);
+                    PermissionDialogController.showLoudClapperDialogResultIcon(
+                            window, granted ? ContentSetting.ALLOW : ContentSetting.BLOCK);
+                });
+    }
+
+    /**
+     * If necessary, requests a Android OS level notification permission and resolves the pending
+     * request based on the result.
+     *
+     * <p>This is used by the Clapper Loud code in the "Subscribe" button (PageInfo). If the Android
+     * permission was not granted on OS level, this method will asynchronously request the OS level
+     * permission using a dialog and run the callback when the user has made a decision. In case the
+     * OS level permission was already granted before, it accepts the notifications permission.
+     *
+     * @param window The WindowAndroid.
+     * @param webContents The WebContents.
+     * @param onResolved Callback runnable executed when the OS level permission is resolved
+     *     (granted or denied).
+     */
+    public static void requestAndResolveNotificationsPermissionRequest(
+            WindowAndroid window, WebContents webContents, Runnable onResolved) {
+        // Either returns directly in case the OS level notifications permission was already
+        // granted or asks for it asynchronously before granting/denying the request.
+        boolean requestSent =
+                AndroidPermissionRequester.requestAndroidPermissions(
+                        window,
+                        new int[] {ContentSettingsType.NOTIFICATIONS},
+                        new AndroidPermissionRequester.RequestDelegate() {
+                            @Override
+                            public void onAndroidPermissionAccepted() {
+                                PermissionUtilJni.get()
+                                        .resolveNotificationsPermissionRequest(
+                                                webContents, ContentSetting.ALLOW);
+                                onResolved.run();
+                            }
+
+                            @Override
+                            public void onAndroidPermissionCanceled() {
+                                PermissionUtilJni.get()
+                                        .dismissNotificationsPermissionRequest(webContents);
+                                onResolved.run();
+                            }
+                        });
+        // The OS level permission for notifications was already granted; therefore, the
+        // permission request can be allowed.
+        if (!requestSent) {
+            PermissionUtilJni.get()
+                    .resolveNotificationsPermissionRequest(webContents, ContentSetting.ALLOW);
+            onResolved.run();
+        }
+    }
+
+    /**
      * Grants a notifications permission if it is requested.
      *
      * <p>This method is called when the user clicks on the "Subscribe" button in the notifications

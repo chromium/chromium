@@ -141,6 +141,38 @@ public class PermissionDialogController {
     }
 
     /**
+     * Called by native code to show the loud permission icon.
+     *
+     * <p>This is part of the clapper loud permission prompt flow for notifications and triggers the
+     * omnibox icon after a permission request was decided via the message ui.
+     *
+     * @param window The {@link WindowAndroid} where the icon should be shown.
+     * @param result A ContentSetting type, indicating the result.
+     */
+    @CalledByNative
+    public static void showLoudClapperDialogResultIcon(
+            WindowAndroid window, @ContentSetting int result) {
+        PermissionDialogController.getInstance()
+                .notifyObservers(window, new int[] {ContentSettingsType.NOTIFICATIONS}, result);
+    }
+
+    /**
+     * Notifies observers of a permission result.
+     *
+     * @param window The {@link WindowAndroid} for the prompt that just finished.
+     * @param permissions An array of ContentSettingsType, indicating the permissions.
+     * @param result A ContentSetting type, indicating the result.
+     */
+    public void notifyObservers(
+            WindowAndroid window,
+            @ContentSettingsType.EnumType int[] permissions,
+            @ContentSetting int result) {
+        for (Observer obs : mObservers) {
+            obs.onDialogResult(window, permissions, result);
+        }
+    }
+
+    /**
      * Notifies observers that a quiet permission icon should be shown.
      *
      * @param window The {@link WindowAndroid} where the icon should be shown.

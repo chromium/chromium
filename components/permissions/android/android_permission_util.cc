@@ -218,6 +218,18 @@ base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
                                true);
 }
 
+void ResolvePermissionWithOSPrompt(content::WebContents* web_contents,
+                                   ContentSettingsType content_settings_type) {
+  DCHECK(web_contents);
+  auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
+  DCHECK(window_android);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PermissionUtil_handlePermissionPromptAllow(
+      env, window_android->GetJavaObject(), web_contents->GetJavaWebContents(),
+      static_cast<int>(content_settings_type));
+}
+
 namespace internal {
 
 void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,

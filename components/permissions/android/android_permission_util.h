@@ -116,6 +116,12 @@ void RequestLocationServices(content::WebContents* web_contents);
 // Called from tests to temporarily set system location settings enabled.
 base::AutoReset<bool> EnableSystemLocationSettingForTesting();
 
+// Resolves a permission request by first checking/requesting the Android
+// system permission. If granted, it accepts the request; otherwise, it
+// dismisses it.
+void ResolvePermissionWithOSPrompt(content::WebContents* web_contents,
+                                   ContentSettingsType content_settings_type);
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_ANDROID_ANDROID_PERMISSION_UTIL_H_

@@ -31,6 +31,15 @@ void PermissionDialogController::DismissPermissionClapperQuietIcon(
                                                                     window);
 }
 
+// static
+void PermissionDialogController::ShowLoudClapperDialogResultIcon(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& window,
+    int content_setting) {
+  Java_PermissionDialogController_showLoudClapperDialogResultIcon(
+      env, window, content_setting);
+}
+
 }  // namespace permissions
 
 DEFINE_JNI(PermissionDialogController)

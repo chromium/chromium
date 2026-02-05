@@ -71,6 +71,20 @@ class MockDelegate : public PermissionBlockedMessageDelegate::Delegate {
   MOCK_METHOD(ContentSettingsType, GetContentSettingsType, (), (override));
 };
 
+class TestPermissionBlockedMessageDelegate
+    : public PermissionBlockedMessageDelegate {
+ public:
+  TestPermissionBlockedMessageDelegate(content::WebContents* web_contents,
+                                       std::unique_ptr<Delegate> delegate)
+      : PermissionBlockedMessageDelegate(web_contents, std::move(delegate)) {}
+  ~TestPermissionBlockedMessageDelegate() override = default;
+
+  void ResolveWithOSPrompt(ContentSettingsType content_settings_type) override {
+    // Simulate Java callback calling Accept on native.
+    delegate_->Accept();
+  }
+};
+
 class PermissionBlockedMessageDelegateAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -91,7 +105,7 @@ class PermissionBlockedMessageDelegateAndroidTest
   }
 
   void ShowMessage(std::unique_ptr<MockDelegate> delegate) {
-    controller_ = std::make_unique<PermissionBlockedMessageDelegate>(
+    controller_ = std::make_unique<TestPermissionBlockedMessageDelegate>(
         web_contents(), std::move(delegate));
   }
 
@@ -120,8 +134,8 @@ class PermissionBlockedMessageDelegateAndroidTest
       std::unique_ptr<MockPermissionPromptAndroid>& prompt_storage,
       const std::vector<base::WeakPtr<permissions::PermissionRequest>>&
           requests) {
-    prompt_storage = std::make_unique<MockPermissionPromptAndroid>(
-        web_contents(), manager_);
+    prompt_storage =
+        std::make_unique<MockPermissionPromptAndroid>(web_contents(), manager_);
     EXPECT_CALL(*prompt_storage, Requests)
         .WillRepeatedly(testing::ReturnRef(requests));
 
@@ -289,7 +303,7 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest, LoudUI_Shown) {
   EXPECT_NE(std::u16string::npos, message->GetDescription().find(origin));
 
   // Verify Primary Button
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOTIFICATION_CTA_MESSAGE_UI),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
             message->GetPrimaryButtonText());
 }
 
@@ -312,20 +326,19 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest,
   EXPECT_CALL(*delegate, GetContentSettingsType)
       .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
 
+  // Expect Accept() to be called on primary action (Allow)
+  EXPECT_CALL(*delegate, Accept()).Times(1);
+
   ExpectEnqueued();
 
   // Show Message
   ShowMessage(std::move(delegate));
 
-  // Trigger Primary Action (Manage)
+  // Trigger Primary Action (Allow)
   TriggerLoudPrimaryAction();
 
   // Message should be dismissed
   EXPECT_EQ(nullptr, GetMessageWrapper());
-
-  // Verify Histogram
-  histogram_tester.ExpectBucketCount("Permissions.ClapperLoud.MessageUI.Manage",
-                                     true, 1);
 }
 
 TEST_F(PermissionBlockedMessageDelegateAndroidTest, LoudUI_DismissByGesture) {

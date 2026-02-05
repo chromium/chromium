@@ -13,8 +13,11 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/android/permission_prompt/permission_dialog_controller.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -24,8 +27,30 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+
+namespace {
+
+using PrimaryButtonBehavior =
+    QuietPermissionPromptModelAndroid::PrimaryButtonBehavior;
+using SecondaryButtonBehavior =
+    QuietPermissionPromptModelAndroid::SecondaryButtonBehavior;
+
+void ShowLoudClapperDialogResultIcon(content::WebContents* web_contents,
+                                     ContentSetting setting) {
+  ui::WindowAndroid* window = web_contents->GetTopLevelNativeWindow();
+  if (!window) {
+    return;
+  }
+
+  permissions::PermissionDialogController::ShowLoudClapperDialogResultIcon(
+      base::android::AttachCurrentThread(), window->GetJavaObject(),
+      static_cast<int>(setting));
+}
+
+}  // namespace
 
 PermissionBlockedMessageDelegate::PermissionBlockedMessageDelegate(
     content::WebContents* web_contents,
@@ -139,6 +164,20 @@ void PermissionBlockedMessageDelegate::InitializeLoudUI() {
       l10n_util::GetStringFUTF16(IDS_NOTIFICATION_DESCRIPTION_MESSAGE_UI,
                                  requesting_origin_string_formatted));
   message_->SetPrimaryButtonText(
+      l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+
+  message_->SetSecondaryIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
+
+  message_->SetSecondaryMenuItemSelectedCallback(base::BindRepeating(
+      &PermissionBlockedMessageDelegate::HandleLoudUiSecondayMenuItemClicked,
+      base::Unretained(this)));
+  message_->AddSecondaryMenuItem(
+      static_cast<int>(LoudUiSecondayMenuItems::kDeny),
+      /*resource_id=*/0, l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
+  message_->AddSecondaryMenuItem(
+      static_cast<int>(LoudUiSecondayMenuItems::kManage),
+      /*resource_id=*/0,
       l10n_util::GetStringUTF16(IDS_NOTIFICATION_CTA_MESSAGE_UI));
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
@@ -192,6 +231,30 @@ void PermissionBlockedMessageDelegate::HandleQuietPrimaryActionClick() {
   delegate_->Deny();
 }
 
+void PermissionBlockedMessageDelegate::HandleLoudUiSecondayMenuItemClicked(
+    int command_id) {
+  switch (static_cast<LoudUiSecondayMenuItems>(command_id)) {
+    case LoudUiSecondayMenuItems::kDeny:
+      ShowLoudClapperDialogResultIcon(web_contents_, CONTENT_SETTING_BLOCK);
+      delegate_->Deny();
+      break;
+    case LoudUiSecondayMenuItems::kManage:
+      if (!dialog_controller_) {
+        dialog_controller_ =
+            std::make_unique<PermissionBlockedDialogController>(
+                /*delegate=*/this, web_contents_);
+      }
+      dialog_controller_->ShowPageInfo();
+      if (message_) {
+        messages::MessageDispatcherBridge::Get()->DismissMessage(
+            message_.get(), messages::DismissReason::SECONDARY_ACTION);
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void PermissionBlockedMessageDelegate::HandleManageClick() {
   if (!dialog_controller_) {
     dialog_controller_ = std::make_unique<PermissionBlockedDialogController>(
@@ -227,26 +290,26 @@ void PermissionBlockedMessageDelegate::HandleQuietDismissCallback(
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
-  if (!dialog_controller_) {
-    dialog_controller_ = std::make_unique<PermissionBlockedDialogController>(
-        this, web_contents_);
-  }
-
-  base::UmaHistogramBoolean("Permissions.ClapperLoud.MessageUI.Manage", true);
-
-  dialog_controller_->ShowPageInfo();
   messages::MessageDispatcherBridge::Get()->DismissMessage(
       message_.get(), messages::DismissReason::PRIMARY_ACTION);
+
+  ResolveWithOSPrompt(GetContentSettingsType());
+}
+
+void PermissionBlockedMessageDelegate::ResolveWithOSPrompt(
+    ContentSettingsType content_settings_type) {
+  permissions::ResolvePermissionWithOSPrompt(web_contents_,
+                                             content_settings_type);
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
     messages::DismissReason reason) {
   message_.reset();
 
-  // There is no secondary action for the message UI for loud prompts.
-  // There is only the primary "Manage" action.
+  // When message is dismissed by secondary action, |permission_prompt_| should
+  // be reset when the dialog is dismissed.
   if (reason == messages::DismissReason::SECONDARY_ACTION) {
-    NOTREACHED();
+    return;
   }
 
   dialog_controller_.reset();
@@ -261,6 +324,7 @@ void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
     base::UmaHistogramBoolean("Permissions.ClapperLoud.MessageUI.Dismiss",
                               true);
 
+    ShowLoudClapperDialogResultIcon(web_contents_, CONTENT_SETTING_BLOCK);
     delegate_->Deny();
   }
 
