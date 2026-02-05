@@ -385,7 +385,8 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(appElement.hasAttribute('is-ai-page_'));
   });
 
-  test('copies source and aep params on new thread click', async () => {
+  // Disabled due to flakiness. See http://crbug.com/481936603.
+  test.skip('copies source and aep params on new thread click', async () => {
     const initialThreadUrl = new URL('http://example.com?q=initial');
     initialThreadUrl.searchParams.set('source', 'some-source');
     initialThreadUrl.searchParams.set('aep', 'some-aep');
