@@ -31,6 +31,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -85,6 +86,8 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kTextCopiedState);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kTextSelectedState);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kReplacedDataUpdatedState);
 const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
 const ui::Accelerator ctrl_v_accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN);
 }  // namespace
@@ -1273,13 +1276,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, BookmarkShortcutWithFindBarFocus) {
       WaitForShow(kBookmarkNameFieldId));
 }
 
-// TODO(crbug.com/481356529): Re-enable on Windows once the bug is fixed.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CopyBlockedByPolicy DISABLED_CopyBlockedByPolicy
-#else
-#define MAYBE_CopyBlockedByPolicy CopyBlockedByPolicy
-#endif
-IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, MAYBE_CopyBlockedByPolicy) {
+IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, CopyBlockedByPolicy) {
   const bool clipboard_restricted_by_policy = GetParam();
   if (clipboard_restricted_by_policy) {
     data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
@@ -1322,7 +1319,18 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, MAYBE_CopyBlockedByPolicy) {
             return base::EqualsASCII(clipboard_text, kExpectedText);
           }),
       WaitForState(kTextCopiedState, true),
-
+      // When copying to the clipboard is restricted, we have to wait for the
+      // internal data tracking to identify the sequence number that will need
+      // to be replaced before pasting.
+      PollState(
+          kReplacedDataUpdatedState,
+          [&]() {
+            return !clipboard_restricted_by_policy ||
+                   ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                       ui::ClipboardBuffer::kCopyPaste) ==
+                       data_controls::GetLastReplacedClipboardData().seqno;
+          }),
+      WaitForState(kReplacedDataUpdatedState, true),
       // Regardless of whether the copied data made it to the clipboard, pasting
       // it back into the FindBar will result in getting the original text back
       // as the current policy doesn't block it.
