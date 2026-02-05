@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
+#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"

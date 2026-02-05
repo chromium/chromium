@@ -18,7 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
-#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
+#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
