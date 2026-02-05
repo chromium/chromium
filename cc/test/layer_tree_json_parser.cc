@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "cc/layers/layer.h"
@@ -163,7 +163,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   if (transform_list->size() < 16)
     return nullptr;
 
-  float transform[16];
+  std::array<float, 16> transform;
   for (int i = 0; i < 16; ++i) {
     // GetDouble can implicitly convert from either double or int; however, it's
     // not clear if "is_double" is sufficient for this check. Given that int is
@@ -172,7 +172,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
       return nullptr;
     }
 
-    UNSAFE_TODO(transform[i]) = (*transform_list)[i].GetDouble();
+    transform[i] = (*transform_list)[i].GetDouble();
   }
 
   new_layer->SetTransform(gfx::Transform::ColMajorF(transform));

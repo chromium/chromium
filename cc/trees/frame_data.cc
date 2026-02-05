@@ -5,6 +5,7 @@
 #include "cc/trees/frame_data.h"
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/trace_event/traced_value.h"
@@ -20,8 +21,7 @@ FrameData::~FrameData() = default;
 void FrameData::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("has_no_damage", has_no_damage);
   const char* client_name = GetClientNameForMetrics();
-  bool is_renderer =
-      client_name && UNSAFE_TODO(strcmp(client_name, "Renderer")) == 0;
+  bool is_renderer = client_name && std::string_view(client_name) == "Renderer";
 
   bool quads_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("viz.quads"),

@@ -10,8 +10,8 @@
 #include <cmath>
 #include <cstring>
 #include <limits>
+#include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -42,7 +42,7 @@ void SetClientNameForMetrics(const char* client_name) {
 
   // If a different name is set, return nullptr from now on and log a warning.
   const char* old_client_name = g_client_name;
-  if (old_client_name && UNSAFE_TODO(strcmp(old_client_name, client_name))) {
+  if (old_client_name && (std::string_view(old_client_name) != client_name)) {
     g_client_name = nullptr;
     g_multiple_client_names_set = true;
     LOG(WARNING) << "Started multiple compositor clients (" << old_client_name

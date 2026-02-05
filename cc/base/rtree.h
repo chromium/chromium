@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <map>
 #include <optional>
@@ -16,7 +17,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
@@ -128,7 +128,7 @@ class RTree {
   struct Node {
     uint16_t num_children = 0;
     uint16_t level = 0;
-    Branch<U> children[kMaxChildren];
+    std::array<Branch<U>, kMaxChildren> children;
 
     explicit Node(uint16_t level) : level(level) {}
   };
@@ -309,7 +309,7 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, uint16_t level)
       right = std::max(right, bounds.right());
       bottom = std::max(bottom, bounds.bottom());
 
-      UNSAFE_TODO(node->children[k]) = (*branches)[current_branch];
+      node->children[k] = (*branches)[current_branch];
       ++node->num_children;
       ++current_branch;
     }
@@ -375,7 +375,7 @@ void RTree<T>::SearchRecursive(const Node<T>& node,
                                const gfx::Rect& query,
                                const ResultFunctor& result_handler) const {
   for (uint16_t i = 0; i < node.num_children; ++i) {
-    const auto& child = UNSAFE_TODO(node.children[i]);
+    const auto& child = node.children[i];
     if (query.Intersects(child.bounds)) {
       if (node.level == 0) {
         result_handler(child.payload, child.bounds);
@@ -396,7 +396,7 @@ void RTree<T>::SearchRecursiveFallback(
     const gfx::Rect& query,
     const ResultFunctor& result_handler) const {
   for (uint16_t i = 0; i < node.num_children; ++i) {
-    const auto& child = UNSAFE_TODO(node.children[i]);
+    const auto& child = node.children[i];
     if (node.level == 0) {
       if (query.Intersects(child.bounds)) {
         result_handler(child.payload, child.bounds);
@@ -430,7 +430,7 @@ template <typename T>
 void RTree<T>::GetAllBoundsRecursive(const Node<T>& node,
                                      std::map<T, gfx::Rect>* results) const {
   for (uint16_t i = 0; i < node.num_children; ++i) {
-    const auto& child = UNSAFE_TODO(node.children[i]);
+    const auto& child = node.children[i];
     if (node.level == 0) {
       (*results)[child.payload] = child.bounds;
     } else {

@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_EVENT_METRICS_H_
 #define CC_METRICS_EVENT_METRICS_H_
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -238,9 +239,8 @@ class CC_EXPORT EventMetrics {
   // Timestamps of different stages of event dispatch. Timestamps are set as the
   // event moves forward in the pipeline. In the end, some stages might not have
   // a timestamp which means the event did not pass those stages.
-  base::TimeTicks
-      dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kMaxValue) +
-                                 1];
+  std::array<base::TimeTicks, static_cast<int>(DispatchStage::kMaxValue) + 1>
+      dispatch_stage_timestamps_;
 
   // Determines whether a tracing event should be recorded for this object or
   // not. This is `true` by default and set to `false` after a tracing event is
