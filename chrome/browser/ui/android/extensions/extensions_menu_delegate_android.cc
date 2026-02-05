@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/android/extensions/extensions_menu_delegate_android.h"
 
+#include "base/android/jni_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image_skia.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsMenuBridge_jni.h"
@@ -25,6 +30,23 @@ ExtensionsMenuDelegateAndroid::~ExtensionsMenuDelegateAndroid() = default;
 
 void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
   delete this;
+}
+
+std::vector<std::string> ExtensionsMenuDelegateAndroid::GetActions(
+    JNIEnv* env) {
+  // TODO(crbug.com/473213114): Returning a flattened list of strings is a
+  // workaround until we introduce a proper type to hold action information.
+  std::vector<std::string> actions_list;
+  for (const auto& action_model : menu_model_->action_models()) {
+    actions_list.push_back(action_model->GetId());
+    actions_list.push_back(base::UTF16ToUTF8(action_model->GetActionName()));
+  }
+
+  return actions_list;
+}
+
+bool ExtensionsMenuDelegateAndroid::IsReady(JNIEnv* env) {
+  return menu_model_->is_populated();
 }
 
 std::unique_ptr<ExtensionActionViewModel>
@@ -59,7 +81,8 @@ void ExtensionsMenuDelegateAndroid::OnActionUpdated(
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionsInitialized() {
-  // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onReady(env, java_object_);
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestAdded(

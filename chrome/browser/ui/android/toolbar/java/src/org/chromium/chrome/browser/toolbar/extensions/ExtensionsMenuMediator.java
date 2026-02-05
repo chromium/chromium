@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -15,9 +14,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
-import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
-import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -30,36 +28,54 @@ import org.chromium.ui.widget.RectProvider;
  * extensions and updating the model accordingly.
  */
 @NullMarked
-class ExtensionsMenuMediator implements Destroyable {
-    private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
+class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observer {
+    private final ModelList mActionModels;
     private final Context mContext;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
+    private final ExtensionsMenuBridge mMenuBridge;
+    private final PropertyModel mMenuPropertyModel;
+    private final Runnable mOnReady;
     private final ChromeAndroidTask mTask;
-    private final Runnable mOnUpdateFinishedRunnable;
-    private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
     private final View mRootView;
 
+    /**
+     * @param context The context to use.
+     * @param task The task object.
+     * @param currentTabSupplier The supplier for the current tab.
+     * @param actionModels The model list to populate with extension actions.
+     * @param rootView The root view of the menu.
+     * @param onReady A runnable to run when the menu is ready to be shown.
+     */
     public ExtensionsMenuMediator(
             Context context,
             ChromeAndroidTask task,
             NullableObservableSupplier<Tab> currentTabSupplier,
-            ModelList extensionModels,
-            Runnable onUpdateFinishedRunnable,
-            View rootView) {
+            ModelList actionModels,
+            PropertyModel propertyModel,
+            View rootView,
+            Runnable onReady) {
+        mActionModels = actionModels;
+        mContext = context;
+        mCurrentTabSupplier = currentTabSupplier;
+        mOnReady = onReady;
+        mMenuPropertyModel = propertyModel;
+        mRootView = rootView;
         mTask = task;
 
-        mOnUpdateFinishedRunnable = onUpdateFinishedRunnable;
-        mContext = context;
-        mRootView = rootView;
-
-        mExtensionActionsUpdateHelper =
-                new ExtensionActionsUpdateHelper(
-                        extensionModels, task, currentTabSupplier, mActionsUpdateDelegate);
+        mMenuBridge = new ExtensionsMenuBridge(mTask, /* observer= */ this);
+        if (mMenuBridge.isReady()) {
+            onReady();
+        }
     }
 
     private static class RelativeViewRectProvider extends RectProvider {
         private final View mAnchorView;
         private final View mParentView;
 
+        /**
+         * @param anchorView The view to be used as an anchor.
+         * @param parentView The parent view to calculate relative coordinates.
+         */
         RelativeViewRectProvider(View anchorView, View parentView) {
             mAnchorView = anchorView;
             mParentView = parentView;
@@ -85,8 +101,14 @@ class ExtensionsMenuMediator implements Destroyable {
         }
     }
 
-    private void onPrimaryClick(ListMenuButton buttonView, String actionId) {
-        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+    /**
+     * Called when the context menu button for an extension is clicked.
+     *
+     * @param buttonView The button view that was clicked.
+     * @param actionId The ID of the extension action.
+     */
+    private void onContextMenuButtonClicked(ListMenuButton buttonView, String actionId) {
+        Tab currentTab = mCurrentTabSupplier.get();
         if (currentTab == null) {
             return;
         }
@@ -96,55 +118,52 @@ class ExtensionsMenuMediator implements Destroyable {
             return;
         }
 
-        ExtensionActionContextMenuBridge bridge =
+        ExtensionActionContextMenuBridge contextMenuBridge =
                 new ExtensionActionContextMenuBridge(
                         mTask, actionId, webContents, ContextMenuSource.MENU_ITEM);
 
         ExtensionActionContextMenuUtils.showContextMenu(
                 mContext,
                 buttonView,
-                bridge,
+                contextMenuBridge,
                 new RelativeViewRectProvider(buttonView, mRootView),
                 mRootView);
     }
 
+    /** Destroys the mediator. */
     @Override
     public void destroy() {
-        mExtensionActionsUpdateHelper.destroy();
+        mMenuBridge.destroy();
     }
 
-    private class ActionsUpdateDelegate
-            implements ExtensionActionsUpdateHelper.ActionsUpdateDelegate {
-        @Override
-        public void onUpdateStarted() {}
+    /**
+     * Called when the native side is ready with the menu data, which can happen on mediator
+     * construction or by an observer called originated from the native side. Populates the action
+     * models and updates the zero state visibility.
+     */
+    @Override
+    public void onReady() {
+        // TODO(crbug.com/473213114): Currently getActions is returning an array that contains both
+        // name and id, following [name1, id1, name2, id2, ...]. This is just an intermediary step
+        // until we introduce a type that holds all the action information.
+        String[] actions = mMenuBridge.getActions();
+        for (int i = 0; i < actions.length; i += 2) {
+            final String id = actions[i];
+            final String name = actions[i + 1];
 
-        @Override
-        public ListItem createActionModel(
-                ExtensionActionsBridge extensionActionsBridge, int tabId, String actionId) {
-            ExtensionAction action = extensionActionsBridge.getAction(actionId, tabId);
-            assert action != null;
-
-            Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
-            WebContents webContents = currentTab == null ? null : currentTab.getWebContents();
-
-            Bitmap icon =
-                    ExtensionActionIconUtil.getActionIcon(
-                            mContext, extensionActionsBridge, actionId, tabId, webContents);
-            assert icon != null;
-            return new ListItem(
-                    0,
+            PropertyModel model =
                     new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
-                            .with(ExtensionsMenuItemProperties.TITLE, action.getTitle())
-                            .with(ExtensionsMenuItemProperties.ICON, icon)
+                            .with(ExtensionsMenuItemProperties.TITLE, name)
                             .with(
                                     ExtensionsMenuItemProperties.CLICK_LISTENER,
-                                    (view) -> onPrimaryClick((ListMenuButton) view, actionId))
-                            .build());
+                                    (view) -> onContextMenuButtonClicked((ListMenuButton) view, id))
+                            .build();
+
+            mActionModels.add(new ListItem(0, model));
         }
 
-        @Override
-        public void onUpdateFinished() {
-            mOnUpdateFinishedRunnable.run();
-        }
+        boolean isZeroState = actions.length == 0;
+        mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
+        mOnReady.run();
     }
 }
