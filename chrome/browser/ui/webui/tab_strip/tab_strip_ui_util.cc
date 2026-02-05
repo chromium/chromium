@@ -33,7 +33,7 @@ namespace tab_strip_ui {
 
 std::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
     TabGroupModel* tab_group_model,
-    std::string group_id_string) {
+    const std::string& group_id_string) {
   if (!tab_group_model) {
     return std::nullopt;
   }
@@ -46,8 +46,9 @@ std::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
   return std::nullopt;
 }
 
-BrowserWindowInterface* GetBrowserWithGroupId(Profile* profile,
-                                              std::string group_id_string) {
+BrowserWindowInterface* GetBrowserWithGroupId(
+    Profile* profile,
+    const std::string& group_id_string) {
   BrowserWindowInterface* browser_with_group = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {

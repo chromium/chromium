@@ -23,13 +23,14 @@ namespace tab_strip_ui {
 
 std::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
     TabGroupModel* tab_group_model,
-    std::string group_id_string);
+    const std::string& group_id_string);
 
 // Find the browser containing the group with ID |group_id_string| or nullptr if
 // none. If the profile is not specified, find any browser containing the
 // |group_id|.
-BrowserWindowInterface* GetBrowserWithGroupId(Profile* profile,
-                                              std::string group_id_string);
+BrowserWindowInterface* GetBrowserWithGroupId(
+    Profile* profile,
+    const std::string& group_id_string);
 
 // Moves all the tabs in a group from `source_browser`to `target_browser` at
 // `to_index`. If the operation results in a split tab group in the destination
