@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_ORIGIN_CHECKER_H_
 
 #include "base/types/optional_ref.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
@@ -44,16 +45,18 @@ class OriginChecker {
   void RecordSizeMetrics() const;
 
  private:
-  // The set of origins which the browser is allowed to navigate to under actor
-  // control without needing to confirm the navigation with the web client. This
-  // set can have origins added to it by the server actions or by confirming the
-  // new origin with the model or user. Sensitive origins that are on the
-  // optimization guide blocklist are not exempt by this set.
-  absl::flat_hash_set<url::Origin> allowed_navigation_origins_;
+  struct OriginState {
+    // Whether the user has explicitly confirmed navigation to this origin.
+    bool is_user_confirmed = false;
+  };
 
-  // The set of origins that the user has manually confirmed the actor may
-  // interact with.
-  absl::flat_hash_set<url::Origin> user_confirmed_origins_;
+  // The set of origins which the browser is allowed to navigate to under actor
+  // control. Note that presence in this map does *not* imply that the actor may
+  // navigate without confirming with the user first. This set can have origins
+  // added to it by the server actions or by confirming the new origin with the
+  // model or user. Sensitive origins that are on the optimization guide
+  // blocklist are not exempt by this set.
+  absl::flat_hash_map<url::Origin, OriginState> allowed_navigation_origins_;
 };
 
 }  // namespace actor

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/map_util.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_util.h"
@@ -38,33 +39,45 @@ bool OriginChecker::IsNavigationAllowed(
   return (initiator_origin &&
           IsSameForNewOriginNavigationGating(*initiator_origin, url)) ||
          std::ranges::any_of(
-             allowed_navigation_origins_, [&](const auto& origin) {
+             allowed_navigation_origins_, [&](const auto& pair) {
+               const url::Origin& origin = pair.first;
                return IsSameForNewOriginNavigationGating(origin, url);
              });
 }
 
 bool OriginChecker::IsNavigationConfirmedByUser(
     const url::Origin& origin) const {
-  return user_confirmed_origins_.contains(origin);
+  const auto* state = base::FindOrNull(allowed_navigation_origins_, origin);
+  return state && state->is_user_confirmed;
 }
 
 void OriginChecker::AllowNavigationTo(url::Origin origin,
                                       bool is_user_confirmed) {
-  if (is_user_confirmed) {
-    user_confirmed_origins_.insert(origin);
+  const auto [it, inserted] = allowed_navigation_origins_.emplace(
+      origin, OriginState{is_user_confirmed});
+  if (!inserted) {
+    it->second.is_user_confirmed =
+        it->second.is_user_confirmed || is_user_confirmed;
   }
-  allowed_navigation_origins_.insert(std::move(origin));
 }
 
 void OriginChecker::AllowNavigationTo(
     const absl::flat_hash_set<url::Origin>& origins) {
-  std::ranges::copy(origins, std::inserter(allowed_navigation_origins_,
-                                           allowed_navigation_origins_.end()));
+  std::ranges::transform(
+      origins,
+      std::inserter(allowed_navigation_origins_,
+                    allowed_navigation_origins_.end()),
+      [](const auto& origin) {
+        return std::make_pair(origin, OriginState{/*is_user_confirmed=*/false});
+      });
 }
 
 void OriginChecker::RecordSizeMetrics() const {
-  RecordActorNavigationGatingListSize(allowed_navigation_origins_.size(),
-                                      user_confirmed_origins_.size());
+  RecordActorNavigationGatingListSize(
+      allowed_navigation_origins_.size(),
+      std::ranges::count_if(allowed_navigation_origins_, [](const auto& pair) {
+        return pair.second.is_user_confirmed;
+      }));
 }
 
 }  // namespace actor

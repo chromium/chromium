@@ -138,6 +138,20 @@ TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation) {
   EXPECT_TRUE(origin_checker.IsNavigationAllowed(std::nullopt, example));
 }
 
+TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation_RemembersConfirmation) {
+  const url::Origin example = url::Origin::Create(GURL("https://example.com"));
+
+  OriginChecker origin_checker;
+  origin_checker.AllowNavigationTo(example,
+                                   /*is_user_confirmed=*/false);
+  origin_checker.AllowNavigationTo(example,
+                                   /*is_user_confirmed=*/true);
+  origin_checker.AllowNavigationTo(example,
+                                   /*is_user_confirmed=*/false);
+
+  EXPECT_TRUE(origin_checker.IsNavigationConfirmedByUser(example));
+}
+
 TEST(OriginCheckerTest, RecordsHistograms) {
   base::HistogramTester histograms;
 
