@@ -14,7 +14,6 @@
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -24,9 +23,7 @@ namespace tabs {
 class TabInterface;
 }
 
-namespace views {
-class Widget;
-}  // namespace views
+class ConstrainedWebDialogDelegate;
 
 namespace glic {
 class GlicKeyedService;
@@ -39,8 +36,7 @@ class SkillsDialogDelegate;
 
 // A controller responsible for managing the skills dialog for the tab.
 class SkillsUiTabController : public SkillsUiTabControllerInterface,
-                              public SkillsDialogDelegate,
-                              public views::WidgetObserver {
+                              public SkillsDialogDelegate {
  public:
   explicit SkillsUiTabController(tabs::TabInterface& tab);
   ~SkillsUiTabController() override;
@@ -56,11 +52,12 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   void CloseDialog() override;
   void OnSkillSaved(const std::string& skill_id) override;
 
-  // views::WidgetObserver override:
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
   void SetOnDialogClosedCallbackForTesting(base::OnceClosure callback) {
     on_dialog_closed_callback_for_testing_ = std::move(callback);
+  }
+
+  ConstrainedWebDialogDelegate* GetDialogDelegateForTesting() {
+    return dialog_delegate_.get();
   }
 
   const std::string& GetPendingSkillIdForTesting() const {
@@ -87,6 +84,9 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   glic::GlicKeyedService* GetGlicService();
 
  private:
+  // Callback for when the dialog widget is closed by the user or system.
+  void OnDialogClosed(const std::string& json_retval);
+
   // Starts a process that will notify skill to invoke changed once the glic
   // panel is ready.
   void NotifySkillToInvokeChangedWhenReady();
@@ -100,7 +100,7 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   // The tab this controller belongs to.
   const raw_ref<tabs::TabInterface> tab_;
 
-  raw_ptr<views::Widget> dialog_widget_;
+  raw_ptr<ConstrainedWebDialogDelegate> dialog_delegate_ = nullptr;
 
   ::ui::ScopedUnownedUserData<SkillsUiTabController> scoped_unowned_user_data_;
 

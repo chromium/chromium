@@ -21,17 +21,16 @@ mojom("mojo_bindings") {
 
 source_set("skills") {
   public = [
+    "skills_dialog.h",
     "skills_dialog_delegate.h",
     "skills_dialog_handler.h",
-    "skills_dialog_view.h",
     "skills_page_handler.h",
     "skills_ui.h",
   ]
 
   sources = [
+    "skills_dialog.cc",
     "skills_dialog_handler.cc",
-    "skills_dialog_handler.h",
-    "skills_dialog_view.cc",
     "skills_page_handler.cc",
     "skills_ui.cc",
   ]
@@ -59,9 +58,6 @@ source_set("skills") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/base",
-    "//ui/base/interaction",
-    "//ui/views",
-    "//ui/views/controls/webview",
     "//ui/web_dialogs",
     "//ui/webui",
   ]
