@@ -454,6 +454,12 @@
         "Image"
       ],
     },
+    // If typedom_types include "Keyword", these keywords are the ones reified
+    // and accepted as CSSKeywordValue objects when set on StylePropertyMap.
+    // Defaults to the same as 'keywords'.
+    typedom_keywords: {
+    },
+
     separator: {
       valid_values: [",", " ", "/"],
     },
@@ -5023,7 +5029,8 @@
       style_builder_custom_functions: ["value"],
       field_group: "*",
       field_template: "external",
-      keywords: ["none", "flip-block", "flip-inline", "flip-start"],
+      keywords: ["none", "flip-block", "flip-inline", "flip-start", "flip-x", "flip-y"],
+      typedom_keywords: ["none"],
       typedom_types: ["Keyword"],
       include_paths: ["third_party/blink/renderer/core/style/position_try_fallbacks.h"],
       wrapper_pointer_name: "Member",
@@ -8493,6 +8500,7 @@
         "none", "top", "bottom", "center", "left", "right", "x-start", "x-end",
         "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
       ],
+      typedom_keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_position_try: true,
       valid_for_permission_element: true,

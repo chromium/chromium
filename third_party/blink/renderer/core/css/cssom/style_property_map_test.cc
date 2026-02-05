@@ -149,8 +149,6 @@ TEST_F(StylePropertyMapTest, CSSKeywordValuesTest) {
         case CSSPropertyID::kGridAutoRows:
         case CSSPropertyID::kGridLanesDirection:
         case CSSPropertyID::kOffsetRotate:
-        case CSSPropertyID::kPositionArea:
-        case CSSPropertyID::kPositionTryFallbacks:
         case CSSPropertyID::kScrollSnapType:
         case CSSPropertyID::kScrollbarGutter:
           // scrollbar-gutter:both-edges DCHECK fails for other reasons. Needs
