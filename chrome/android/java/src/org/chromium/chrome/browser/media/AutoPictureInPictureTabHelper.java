@@ -47,6 +47,17 @@ public class AutoPictureInPictureTabHelper implements UserData {
         return webContents.getOrSetUserData(USER_DATA_KEY, AutoPictureInPictureTabHelper::new);
     }
 
+    /**
+     * Retrieves the {@link AutoPictureInPictureTabHelper} for the given {@link WebContents} if it
+     * exists.
+     *
+     * @param webContents The WebContents to get the helper for.
+     * @return The {@link AutoPictureInPictureTabHelper} or null if it does not exist.
+     */
+    public static @Nullable AutoPictureInPictureTabHelper getIfPresent(WebContents webContents) {
+        return webContents.getOrSetUserData(USER_DATA_KEY, null);
+    }
+
     public AutoPictureInPictureTabHelper(WebContents webContents) {
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {

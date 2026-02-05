@@ -788,6 +788,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, true);
+    public static final CachedFlag sAutoDocPipPermissionPromptAndroid =
+            newCachedFlag(AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID, false);
     public static final CachedFlag sAutomotiveBackButtonBarStreamline =
             newCachedFlag(AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE, /* defaultValue= */ true);
     public static final CachedFlag sBackgroundThreadPoolFieldTrial =
@@ -1144,6 +1146,7 @@ public abstract class ChromeFeatureList {
                     sAppSpecificHistory,
                     sAppSpecificHistoryViewIntent,
                     sAsyncNotificationManager,
+                    sAutoDocPipPermissionPromptAndroid,
                     sAutomotiveBackButtonBarStreamline,
                     sBackgroundThreadPoolFieldTrial,
                     sBlockIntentsWhileLocked,

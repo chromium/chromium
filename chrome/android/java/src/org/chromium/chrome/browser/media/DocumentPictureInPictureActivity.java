@@ -263,7 +263,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents),
                         mParentWebContents.getVisibleUrl());
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID)) {
+        if (ChromeFeatureList.sAutoDocPipPermissionPromptAndroid.isEnabled()) {
             WebContents webContents = mParentWebContents;
             if (webContents != null
                     && AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(
@@ -345,6 +345,12 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         if (mWebContents != null) {
             mWebContents.destroy();
             mWebContents = null;
+        }
+
+        if (ChromeFeatureList.sAutoDocPipPermissionPromptAndroid.isEnabled()
+                && mParentWebContents != null
+                && !mParentWebContents.isDestroyed()) {
+            AutoPictureInPicturePermissionController.handleWindowDestruction(mParentWebContents);
         }
 
         if (mInitiatorTabObserver != null && mInitiatorTab != null) {

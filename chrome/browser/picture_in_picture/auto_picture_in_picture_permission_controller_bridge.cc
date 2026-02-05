@@ -80,6 +80,21 @@ void JNI_AutoPictureInPicturePermissionController_SetPermissionStatus(
       static_cast<ContentSetting>(status));
 }
 
+void JNI_AutoPictureInPicturePermissionController_OnPictureInPictureDismissed(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!web_contents) {
+    return;
+  }
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  if (tab_helper) {
+    tab_helper->OnPictureInPictureDismissed();
+  }
+}
+
 }  // namespace picture_in_picture
 
 DEFINE_JNI(AutoPictureInPicturePermissionController)

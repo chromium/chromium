@@ -309,6 +309,27 @@ public class AutoPictureInPicturePermissionControllerTest {
         Assert.assertEquals(2, rootView.getChildCount());
     }
 
+    @Test
+    public void testHandleWindowDestruction_CallsNativeMethodAndDismisses() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+
+        Assert.assertNotNull(mTabHelper.getPermissionController());
+
+        AutoPictureInPicturePermissionController.handleWindowDestruction(mWebContents);
+
+        verify(mNativeMock).onPictureInPictureDismissed(mWebContents);
+        Assert.assertNull(mTabHelper.getPermissionController());
+    }
+
+    @Test
+    public void testHandleWindowDestruction_NoActivePrompt_DoesNothing() {
+        AutoPictureInPicturePermissionController.handleWindowDestruction(mWebContents);
+
+        verify(mNativeMock, org.mockito.Mockito.never()).onPictureInPictureDismissed(mWebContents);
+    }
+
     private ButtonCompat findButton(AutoPipPermissionDialogView view, String text) {
         ViewGroup buttonContainer =
                 view.findViewById(org.chromium.chrome.R.id.auto_pip_button_container);

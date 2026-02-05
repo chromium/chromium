@@ -102,6 +102,27 @@ public class AutoPictureInPicturePermissionController {
                 .isAutoPictureInPictureInUse(webContents);
     }
 
+    /**
+     * Called when the picture-in-picture window is destroyed. Checks if a permission prompt was
+     * active and, if so, reports the dismissal and cleans up.
+     *
+     * @param webContents The WebContents that was in picture-in-picture.
+     */
+    public static void handleWindowDestruction(WebContents webContents) {
+        AutoPictureInPictureTabHelper helper =
+                AutoPictureInPictureTabHelper.getIfPresent(webContents);
+        if (helper == null) {
+            return;
+        }
+
+        AutoPictureInPicturePermissionController controller = helper.getPermissionController();
+        if (controller != null) {
+            AutoPictureInPicturePermissionControllerJni.get()
+                    .onPictureInPictureDismissed(webContents);
+            controller.dismiss();
+        }
+    }
+
     private AutoPictureInPicturePermissionController(
             WebContents webContents, Runnable closePipCallback) {
         mWebContents = webContents;
@@ -164,7 +185,7 @@ public class AutoPictureInPicturePermissionController {
             restoreContentAccessibility();
 
             AutoPictureInPictureTabHelper helper =
-                    AutoPictureInPictureTabHelper.fromWebContents(mWebContents);
+                    AutoPictureInPictureTabHelper.getIfPresent(mWebContents);
             if (helper != null && helper.getPermissionController() == this) {
                 helper.setPermissionController(null);
             }
@@ -250,5 +271,7 @@ public class AutoPictureInPicturePermissionController {
 
         boolean isAutoPictureInPictureInUse(
                 @JniType("content::WebContents*") WebContents webContents);
+
+        void onPictureInPictureDismissed(@JniType("content::WebContents*") WebContents webContents);
     }
 }
