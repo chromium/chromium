@@ -289,6 +289,11 @@ const base::FeatureParam<base::TimeDelta> kAdpfBoostRateLimitMinWait{
 // instead of Viz. The goal is to prevent Viz from blocking on a binder call.
 BASE_FEATURE(kEnableADPFAsyncSetThreads, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome ignores the time spent between swap throttled and the
+// next ScheduleBeginFrameDeadline when sending an ADPF(Android Dynamic
+// Performance Framework) timing report.
+BASE_FEATURE(kEnableADPFIgnoreThrottledTime, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we immediately send acks to clients when a viz surface
 // activates. This effectively removes back-pressure. This can result in wasted
 // work and contention, but should regularize the timing of client rendering.

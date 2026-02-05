@@ -345,6 +345,13 @@ bool DisplayScheduler::DrawAndSwap() {
     params.deadline = selected_deadline;
     params.preferred_deadline = deadlines.GetPreferredDeadline();
   }
+  if (current_begin_frame_args_.throttled_adjusted_frame_time !=
+      base::TimeTicks()) {
+    params.throttled_adjusted_frame_time =
+        current_begin_frame_args_.throttled_adjusted_frame_time;
+  } else if (current_begin_frame_args_.is_throttled) {
+    params.throttled_adjusted_frame_time = base::TimeTicks::Now();
+  }
   bool success = client_ && client_->DrawAndSwap(params);
   if (!success)
     return false;
@@ -632,6 +639,20 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
 
   // Determine the deadline we want to use.
   BeginFrameDeadlineMode deadline_mode = AdjustedBeginFrameDeadlineMode();
+
+  if (deadline_mode == BeginFrameDeadlineMode::kLate &&
+      pending_swaps_ >= MaxPendingSwaps()) {
+    current_begin_frame_args_.is_throttled = true;
+    current_begin_frame_args_.throttled_adjusted_frame_time = base::TimeTicks();
+  } else if (current_begin_frame_args_.is_throttled) {
+    // Chrome can re-enter ScheduleBeginFrameDeadline after being throttled.
+    // For example in a 30fps video scenario it can happen when all active
+    // surfaces are ready and the buffer is freed at that point.
+    current_begin_frame_args_.is_throttled = false;
+    current_begin_frame_args_.throttled_adjusted_frame_time =
+        base::TimeTicks::Now();
+  }
+
   base::TimeTicks desired_deadline =
       DesiredBeginFrameDeadlineTime(deadline_mode, current_begin_frame_args_);
 
