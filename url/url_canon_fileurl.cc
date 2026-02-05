@@ -35,15 +35,15 @@ size_t DoFindWindowsDriveLetter(
   // First guess the beginning of the drive letter.
   // If there is something that looks like a drive letter in the spec between
   // begin and end, store its position in drive_letter_pos.
-  int drive_letter_pos = DoesContainWindowsDriveSpecUntil(
-      path->data(), 0, path->length(), path->length());
-  if (drive_letter_pos < 0) {
+  size_t drive_letter_pos =
+      DoesContainWindowsDriveSpecUntil(*path, 0, path->length());
+  if (drive_letter_pos == string_view::npos) {
     return string_view::npos;
   }
 
   // Check if the path up to the drive letter candidate can be canonicalized as
   // "/".
-  Component sub_path = MakeRange(0, drive_letter_pos);
+  Component sub_path = MakeRange(0u, drive_letter_pos);
   RawCanonOutput<1024> output;
   Component output_path;
   bool success =
@@ -52,7 +52,7 @@ size_t DoFindWindowsDriveLetter(
     return string_view::npos;
   }
 
-  return static_cast<size_t>(drive_letter_pos);
+  return drive_letter_pos;
 }
 
 #ifdef WIN32

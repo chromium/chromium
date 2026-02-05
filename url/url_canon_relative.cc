@@ -60,8 +60,7 @@ bool DoesBeginSlashWindowsDriveSpec(std::basic_string_view<CHAR> spec,
     return false;
   }
   return IsSlashOrBackslash(spec[start_offset]) &&
-         DoesBeginWindowsDriveSpec(spec.data(), start_offset + 1,
-                                   spec.length());
+         DoesBeginWindowsDriveSpec(spec, start_offset + 1);
 }
 
 #endif  // WIN32
@@ -136,8 +135,7 @@ bool DoIsRelativeUrl(std::string_view base,
   //
   // We require strict backslashes when detecting UNC since two forward
   // slashes should be treated a a relative URL with a hostname.
-  if (DoesBeginWindowsDriveSpec(url.data(), 0, url.length()) ||
-      DoesBeginUncPath(url, 0, true)) {
+  if (DoesBeginWindowsDriveSpec(url, 0) || DoesBeginUncPath(url, 0, true)) {
     return true;
   }
 #endif  // WIN32
@@ -292,8 +290,7 @@ int CopyBaseDriveSpecIfNecessary(std::string_view base_url,
 
   // If the relative begins with a drive spec, don't do anything. The existing
   // drive spec in the base will be replaced.
-  if (DoesBeginWindowsDriveSpec(relative_url.data(), 0,
-                                relative_url.length())) {
+  if (DoesBeginWindowsDriveSpec(relative_url, 0)) {
     return base_path_begin;  // Relative URL path is "C:/foo"
   }
 
@@ -592,12 +589,12 @@ bool DoResolveRelativeUrl(std::string_view base_url,
   //
   // This assumes the absolute path resolver handles absolute URLs like this
   // properly. DoCanonicalize does this.
-  int after_slashes = relative_component.begin + num_slashes;
+  size_t after_slashes = relative_component.begin + num_slashes;
   if (DoesBeginUncPath(relative_component.AsViewOn(relative_url), 0,
                        !base_is_file) ||
       ((num_slashes == 0 || base_is_file) &&
-       DoesBeginWindowsDriveSpec(relative_url.data(), after_slashes,
-                                 relative_component.end()))) {
+       DoesBeginWindowsDriveSpec(
+           relative_url.substr(0, relative_component.end()), after_slashes))) {
     return DoResolveAbsoluteFile(relative_url_view, query_converter, output,
                                  out_parsed);
   }

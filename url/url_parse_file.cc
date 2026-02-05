@@ -122,7 +122,7 @@ Parsed DoParseFileUrl(std::basic_string_view<CharT> url) {
   // relative URL resolver when it determines there is an absolute URL, which
   // may give us input like "/c:/foo".
   after_slashes = begin + num_slashes;
-  if (DoesBeginWindowsDriveSpec(url.data(), after_slashes, url.length())) {
+  if (DoesBeginWindowsDriveSpec(url, after_slashes)) {
     // Windows path, don't try to extract the scheme (for example, "c:\foo").
     after_scheme = after_slashes;
   } else if (DoesBeginUncPath(url, begin, false)) {
@@ -159,8 +159,7 @@ Parsed DoParseFileUrl(std::basic_string_view<CharT> url) {
   // drive specs, but that's only at the very beginning to see if we have a
   // scheme at all. This test will be duplicated in that case, but will
   // additionally handle all cases with a real scheme such as "file:///C:/".
-  if (!DoesBeginWindowsDriveSpec(url.data(), after_slashes, url.length()) &&
-      num_slashes != 3) {
+  if (!DoesBeginWindowsDriveSpec(url, after_slashes) && num_slashes != 3) {
     // Anything not beginning with a drive spec ("c:\") on Windows is treated
     // as UNC, with the exception of three slashes which always means a file.
     // Even IE7 treats file:///foo/bar as "/foo/bar", which then fails.
