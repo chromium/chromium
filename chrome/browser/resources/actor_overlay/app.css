@@ -76,8 +76,8 @@
 #magicCursor {
   opacity: 0;
   position: fixed;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   background-image: url('magic_cursor.svg');
   background-size: contain;
   background-repeat: no-repeat;
