@@ -1813,6 +1813,12 @@ void HttpStreamPool::AttemptManager::OnJobDone(Job* job) {
 }
 
 bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
+  // Only SSL origins may have H2 sessions. This matches the behavior of
+  // HttpStreamPool::FindAvailableSpdySession().
+  if (!is_using_tls_) {
+    return false;
+  }
+
   // If the destination is marked as requiring HTTP/1.1, act as if there's no
   // available SPDY session. This matches the behavior of
   // HttpStreamPool::FindAvailableSpdySession().
