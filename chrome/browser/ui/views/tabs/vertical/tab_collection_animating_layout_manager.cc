@@ -85,7 +85,7 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
   // are not reflected in the target.
   gfx::Size target_preferred_size =
       target_layout_manager_->GetPreferredSize(host);
-  if (animate_host_size_ &&
+  if (animate_host_size_ && animation_.is_animating() &&
       (target_preferred_size.height() < current_layout_content_height_)) {
     target_preferred_size.set_height(current_layout_content_height_);
   }
@@ -100,7 +100,7 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
   // are not reflected in the target.
   gfx::Size target_preferred_size =
       target_layout_manager_->GetPreferredSize(host, available_size);
-  if (animate_host_size_ &&
+  if (animate_host_size_ && animation_.is_animating() &&
       (target_preferred_size.height() < current_layout_content_height_)) {
     target_preferred_size.set_height(current_layout_content_height_);
   }
