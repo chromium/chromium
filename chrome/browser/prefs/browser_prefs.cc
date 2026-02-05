@@ -1586,6 +1586,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(registry);
   webnn::RegisterLocalPrefs(registry);
   registry->RegisterBooleanPref(prefs::kForegroundLaunchOnLogin, false);
+  registry->RegisterTimePref(prefs::kStartupLaunchInfobarLastDeclinedTime,
+                             base::Time());
+  registry->RegisterIntegerPref(prefs::kStartupLaunchInfobarDeclinedCount, 0);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)

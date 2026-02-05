@@ -165,4 +165,14 @@ void StartupLaunchInfoBarManagerImpl::OnAccept() {
 
 void StartupLaunchInfoBarManagerImpl::OnDismiss() {
   did_user_interact_ = true;
+
+  auto* local_state = g_browser_process->local_state();
+
+  const int decline_count =
+      local_state->GetInteger(prefs::kStartupLaunchInfobarDeclinedCount);
+  local_state->SetInteger(prefs::kStartupLaunchInfobarDeclinedCount,
+                          decline_count + 1);
+
+  local_state->SetTime(prefs::kStartupLaunchInfobarLastDeclinedTime,
+                       base::Time::Now());
 }

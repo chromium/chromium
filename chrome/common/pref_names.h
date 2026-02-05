@@ -3349,6 +3349,16 @@ inline constexpr char kUiAutomationProviderEnabled[] =
 
 inline constexpr char kForegroundLaunchOnLogin[] =
     "launch_on_login.foreground.enabled";
+
+// base::Time containing time at which the startup launch infobar was last
+// dismissed by the user.
+inline constexpr char kStartupLaunchInfobarLastDeclinedTime[] =
+    "launch_on_login.infobar_last_declined_time";
+
+// Int representing the number of times the user has dismissed the startup
+// launch infobar.
+inline constexpr char kStartupLaunchInfobarDeclinedCount[] =
+    "launch_on_login.infobar_declined_count";
 #endif
 
 // A boolean pref which determines whether the QR Code generator feature is
