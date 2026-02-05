@@ -64,10 +64,16 @@ export class ToolbarAppElement extends CrLitElement {
     super.connectedCallback();
 
     this.metricsRecorder_.startObserving();
-    const reload = this.shadowRoot.querySelector<HTMLElement>('#reload');
+    const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
     if (reload) {
       this.trackedElementManager_.startTracking(
           reload, 'kReloadButtonElementId');
+    }
+    const splitTabs =
+        this.shadowRoot.querySelector<CrLitElement>('#split-tabs');
+    if (splitTabs) {
+      this.trackedElementManager_.startTracking(
+          splitTabs, 'kToolbarSplitTabsToolbarButtonElementId');
     }
   }
 
@@ -87,13 +93,19 @@ export class ToolbarAppElement extends CrLitElement {
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
+    const promises = [];
     const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
     if (reload) {
-      reload.updateComplete.then(
-          () => this.browserProxy_.handler.onPageInitialized());
-    } else {
-      this.browserProxy_.handler.onPageInitialized();
+      promises.push(reload.updateComplete);
     }
+    const splitTabs =
+        this.shadowRoot.querySelector<CrLitElement>('#split-tabs');
+    if (splitTabs) {
+      promises.push(splitTabs.updateComplete);
+    }
+    Promise.all(promises).then(() => {
+      this.browserProxy_.handler.onPageInitialized();
+    });
   }
 }
 

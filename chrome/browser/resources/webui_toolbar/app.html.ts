@@ -12,7 +12,7 @@ export function getHtml(this: ToolbarAppElement) {
 ${this.isReloadButtonEnabled_ ?
   html`<reload-button-app id="reload"></reload-button-app>` : ''}
 ${this.isSplitTabsButtonEnabled_ ?
-  html`<split-tabs-button-app></split-tabs-button-app>` : ''}
+  html`<split-tabs-button-app id="split-tabs"></split-tabs-button-app>` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

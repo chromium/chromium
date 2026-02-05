@@ -131,6 +131,7 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
     // All features for Webium Production should be included here.
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
+         features::kWebUISplitTabsButton,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2,
          features::kInitialWebUISyncNavStartToCommit},
@@ -319,6 +320,55 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   // Verify reload button background returns to transparent.
   EXPECT_EQ(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
+}
+
+// TODO(crbug.com/479341115): Failing on mac-bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CheckSplitTabsButtonColor DISABLED_CheckSplitTabsButtonColor
+#else
+#define MAYBE_CheckSplitTabsButtonColor CheckSplitTabsButtonColor
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       MAYBE_CheckSplitTabsButtonColor) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kToolbarSplitTabsToolbarButtonElementId,
+                                     &element, &webui_toolbar_view, &web_view));
+
+  WebUISplitTabsControl* split_tabs_control =
+      &webui_toolbar_view->split_tabs_control_;
+
+  gfx::Rect control_rect = element->GetScreenBounds();
+  gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
+  control_rect.Offset(-view_rect.OffsetFromOrigin());
+
+  // Sample a point in the background area (e.g. 5,5 from top-left).
+  gfx::Rect background_probe_rect(control_rect.x() + 5, control_rect.y() + 5, 1,
+                                  1);
+
+  // Verify initial state is transparent.
+  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
+            SK_ColorTRANSPARENT);
+
+  // Show context menu.
+  split_tabs_control->HandleContextMenu(
+      browser_controls_api::mojom::ContextMenuType::kSplitTabsContext,
+      element->GetScreenBounds().bottom_right(),
+      ui::mojom::MenuSourceType::kMouse);
+
+  // Verify background is highlighted (NOT transparent).
+  EXPECT_NE(GetCenterPixelColor(web_view, background_probe_rect),
+            SK_ColorTRANSPARENT);
+
+  // Close context menu.
+  split_tabs_control->menu_runner_->Cancel();
+
+  // Verify split tabs button background returns to transparent.
+  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
+            SK_ColorTRANSPARENT);
 }
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {

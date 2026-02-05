@@ -49,11 +49,15 @@ class WebUISplitTabsControl : public TabStripModelObserver {
     bool is_pinned = false;
   };
 
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
+                           CheckSplitTabsButtonColor);
+
   SplitTabsButtonState GetCurrentState() const;
   void UpdateVisibility(const SplitTabsButtonState& state);
   void UpdateTabSplitStatus();
   void UpdatePinState();
   void RunMenuAt(int x, int y);
+  void OnMenuClosed();
 
   raw_ptr<WebUIToolbarWebView> toolbar_view_;
   BooleanPrefMember pin_state_;
@@ -61,6 +65,8 @@ class WebUISplitTabsControl : public TabStripModelObserver {
 
   webui_toolbar::TabSplitStatus last_sent_tab_split_status_;
   bool last_sent_pin_state_ = false;
+  browser_controls_api::mojom::ContextMenuType current_menu_type_ =
+      browser_controls_api::mojom::ContextMenuType::kUnspecified;
 
   std::unique_ptr<ui::MenuModel> split_tab_menu_;
   std::unique_ptr<views::MenuRunner> menu_runner_;

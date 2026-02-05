@@ -64,6 +64,8 @@ class WebUIToolbarWebView
   views::WebView* GetWebViewForTesting() { return web_view_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
+                           CheckSplitTabsButtonColor);
   friend WebUIReloadControl;
   friend WebUISplitTabsControl;
 

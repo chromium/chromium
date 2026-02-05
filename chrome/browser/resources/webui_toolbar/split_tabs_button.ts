@@ -11,7 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
-import {ContextMenuType, SplitTabActiveLocation, ToolbarButtonType} from './browser_controls_api_data_model.mojom-webui.js';
+import {ContextMenuState, ContextMenuType, SplitTabActiveLocation, ToolbarButtonType} from './browser_controls_api_data_model.mojom-webui.js';
 import {type BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './split_tabs_button.css.js';
 import {getHtml} from './split_tabs_button.html.js';
@@ -34,12 +34,14 @@ export class SplitTabsButtonElement extends CrLitElement {
     return {
       isPinned: {type: Boolean},
       isSplit: {type: Boolean, reflect: true},
+      isMenuOpen: {type: Boolean, reflect: true},
       location_: {state: true, type: Number},
     };
   }
 
   protected accessor isPinned: boolean = false;
   protected accessor isSplit: boolean = false;
+  protected accessor isMenuOpen: boolean = false;
   private accessor location_: number = SplitTabActiveLocation.kStart;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -58,6 +60,16 @@ export class SplitTabsButtonElement extends CrLitElement {
                 return;
               }
               this.isPinned = isPinned;
+            }));
+
+    this.listenerIds_.push(
+        this.browserProxy_.callbackRouter.onContextMenuStateChanged.addListener(
+            (menuType: ContextMenuType, state: ContextMenuState) => {
+              if (menuType !== ContextMenuType.kSplitTabsAction &&
+                  menuType !== ContextMenuType.kSplitTabsContext) {
+                return;
+              }
+              this.isMenuOpen = state === ContextMenuState.kVisible;
             }));
 
     this.browserProxy_.handler.getTabSplitState().then(

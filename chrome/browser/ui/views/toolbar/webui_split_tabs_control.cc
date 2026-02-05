@@ -64,6 +64,13 @@ void WebUISplitTabsControl::HandleContextMenu(
     const gfx::Point& screen_location,
     ui::mojom::MenuSourceType source) {
   BrowserWindowInterface* browser = toolbar_view_->browser_;
+  current_menu_type_ = menu_type;
+  if (auto* webui_toolbar_ui = toolbar_view_->GetWebUIToolbarUI()) {
+    webui_toolbar_ui->OnContextMenuStateChanged(
+        current_menu_type_,
+        browser_controls_api::mojom::ContextMenuState::kVisible);
+  }
+
   if (menu_type ==
       browser_controls_api::mojom::ContextMenuType::kSplitTabsAction) {
     // Only show "Separate Views" menu if actually in split.
@@ -90,12 +97,24 @@ void WebUISplitTabsControl::HandleContextMenu(
 void WebUISplitTabsControl::RunMenuAt(int x, int y) {
   menu_runner_ = std::make_unique<views::MenuRunner>(
       split_tab_menu_.get(),
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
+      base::BindRepeating(&WebUISplitTabsControl::OnMenuClosed,
+                          base::Unretained(this)));
 
   menu_runner_->RunMenuAt(toolbar_view_->GetWidget(), nullptr,
                           gfx::Rect(gfx::Point(x, y), gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft,
                           ui::mojom::MenuSourceType::kMouse);
+}
+
+void WebUISplitTabsControl::OnMenuClosed() {
+  if (auto* webui_toolbar_ui = toolbar_view_->GetWebUIToolbarUI()) {
+    webui_toolbar_ui->OnContextMenuStateChanged(
+        current_menu_type_,
+        browser_controls_api::mojom::ContextMenuState::kHidden);
+  }
+  current_menu_type_ =
+      browser_controls_api::mojom::ContextMenuType::kUnspecified;
 }
 
 void WebUISplitTabsControl::OnTabStripModelChanged(

@@ -62,3 +62,7 @@ cr-icon-button {
   --cr-icon-button-fill-color: var(--color-toolbar-action-item-engaged,
       var(--google-blue-600));
 }
+
+:host([is-menu-open]) cr-icon-button {
+  background-color: var(--cr-active-background-color);
+}
