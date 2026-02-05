@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 #include <string_view>
-#include <unordered_set>
 #include <utility>
 
 #include "base/command_line.h"
@@ -32,6 +31,7 @@
 #include "components/drive/drive_api_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -317,7 +317,7 @@ void RemoveAllDescendantTrackers(int64_t root_tracker_id,
   }
 
   // Remove trackers in the reversed order.
-  std::unordered_set<std::string> affected_file_ids;
+  absl::flat_hash_set<std::string> affected_file_ids;
   for (int64_t tracker_id : base::Reversed(to_be_removed)) {
     FileTracker tracker;
     index->GetFileTracker(tracker_id, &tracker);
@@ -940,27 +940,28 @@ SyncStatusCode MetadataDatabase::PopulateFolderByChildList(
     return SYNC_STATUS_OK;
   }
 
-  std::unique_ptr<FileTracker> folder_tracker(new FileTracker);
+  std::unique_ptr<FileTracker> folder_tracker = std::make_unique<FileTracker>();
   if (!index_->GetFileTracker(trackers.active_tracker(),
                               folder_tracker.get())) {
     NOTREACHED();
   }
 
-  std::unordered_set<std::string> children(child_file_ids.begin(),
-                                           child_file_ids.end());
+  absl::flat_hash_set<std::string> children(child_file_ids.begin(),
+                                            child_file_ids.end());
 
   std::vector<int64_t> known_children =
       index_->GetFileTrackerIDsByParent(folder_tracker->tracker_id());
-  for (size_t i = 0; i < known_children.size(); ++i) {
+  for (const int64_t tracker_id : known_children) {
     FileTracker tracker;
-    if (!index_->GetFileTracker(known_children[i], &tracker)) {
+    if (!index_->GetFileTracker(tracker_id, &tracker)) {
       NOTREACHED();
     }
     children.erase(tracker.file_id());
   }
 
-  for (auto itr = children.begin(); itr != children.end(); ++itr)
-    CreateTrackerForParentAndFileID(*folder_tracker, *itr);
+  for (const std::string& file_id : children) {
+    CreateTrackerForParentAndFileID(*folder_tracker, file_id);
+  }
   folder_tracker->set_needs_folder_listing(false);
   if (folder_tracker->dirty() && !ShouldKeepDirty(*folder_tracker))
     folder_tracker->set_dirty(false);
