@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_playback_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playout_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
@@ -159,12 +160,13 @@ class MockPermissionService final : public mojom::blink::PermissionService {
   ~MockPermissionService() override = default;
 
   void BindRequest(mojo::ScopedMessagePipeHandle handle) {
-    receiver_.Bind(mojo::PendingReceiver<mojom::blink::PermissionService>(
-        std::move(handle)));
+    receivers_.Add(
+        this, mojo::PendingReceiver<mojom::blink::PermissionService>(
+                  std::move(handle)));
   }
 
   void Flush() {
-    receiver_.FlushForTesting();
+    receivers_.FlushForTesting();
     if (observer_.is_bound()) {
       observer_.FlushForTesting();
     }
@@ -227,7 +229,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
       mojom::blink::PermissionStatus::DENIED;
 
  private:
-  mojo::Receiver<mojom::blink::PermissionService> receiver_{this};
+  mojo::ReceiverSet<mojom::blink::PermissionService> receivers_;
   mojo::Remote<mojom::blink::PermissionObserver> observer_;
 };
 
@@ -537,6 +539,10 @@ class ContextRenderer : public GarbageCollected<ContextRenderer> {
     return static_cast<AudioContext*>(context_)->playoutStats();
   }
 
+  AudioPlaybackStats* GetPlaybackStats() {
+    return static_cast<AudioContext*>(context_)->playbackStats();
+  }
+
  private:
   void SetContextAudioThread() {
     static_cast<AudioContext*>(context_)
@@ -625,10 +631,43 @@ class AudioContextStatsTest : public AudioContextTest, public base::TickClock {
         << " LINE " << source_line;
   }
 
-  void RenderAndCheckIfStatsChanged(base::TimeDelta render_duration,
-                                    ContextRenderer* renderer,
-                                    ScriptState* script_state,
-                                    bool expect_change) {
+  void VerifyPlaybackStats(AudioPlaybackStats* playback_stats,
+                           ScriptState* script_state,
+                           int total_processed_frames,
+                           const media::AudioGlitchInfo& total_glitches,
+                           base::TimeDelta average_delay,
+                           base::TimeDelta min_delay,
+                           base::TimeDelta max_delay,
+                           int source_line) {
+    EXPECT_EQ(playback_stats->underrunEvents(script_state),
+              total_glitches.count)
+        << " LINE " << source_line;
+    EXPECT_FLOAT_EQ(playback_stats->underrunDuration(script_state),
+                    total_glitches.duration.InSecondsF())
+        << " LINE " << source_line;
+    EXPECT_FLOAT_EQ(playback_stats->averageLatency(script_state),
+                    average_delay.InSecondsF())
+        << " LINE " << source_line;
+    EXPECT_FLOAT_EQ(playback_stats->minimumLatency(script_state),
+                    min_delay.InSecondsF())
+        << " LINE " << source_line;
+    EXPECT_FLOAT_EQ(playback_stats->maximumLatency(script_state),
+                    max_delay.InSecondsF())
+        << " LINE " << source_line;
+    EXPECT_NEAR(
+        playback_stats->totalDuration(script_state),
+        (media::AudioTimestampHelper::FramesToTime(
+             total_processed_frames, platform()->AudioHardwareSampleRate()) +
+         total_glitches.duration)
+            .InSecondsF(),
+        0.00001)
+        << " LINE " << source_line;
+  }
+
+  void RenderAndCheckIfPlayoutStatsChanged(base::TimeDelta render_duration,
+                                           ContextRenderer* renderer,
+                                           ScriptState* script_state,
+                                           bool expect_change) {
     fake_time_now_ += render_duration;
 
     AudioPlayoutStats* playout_stats = renderer->GetPlayoutStats();
@@ -645,6 +684,31 @@ class AudioContextStatsTest : public AudioContextTest, public base::TickClock {
     int glitches_after = playout_stats->fallbackFramesEvents(script_state);
     double duration_after = playout_stats->totalFramesDuration(script_state);
     double latency_after = playout_stats->averageLatency(script_state);
+    EXPECT_EQ(glitches_before != glitches_after, expect_change);
+    EXPECT_EQ(duration_before != duration_after, expect_change);
+    EXPECT_EQ(latency_before != latency_after, expect_change);
+  }
+
+  void RenderAndCheckIfPlaybackStatsChanged(base::TimeDelta render_duration,
+                                            ContextRenderer* renderer,
+                                            ScriptState* script_state,
+                                            bool expect_change) {
+    fake_time_now_ += render_duration;
+
+    AudioPlaybackStats* playback_stats = renderer->GetPlaybackStats();
+    int glitches_before = playback_stats->underrunEvents(script_state);
+    double duration_before = playback_stats->totalDuration(script_state);
+    double latency_before = playback_stats->averageLatency(script_state);
+
+    renderer->Render(
+        1000,
+        base::Milliseconds(50) + (fake_time_now_ - base::TimeTicks()) / 10,
+        media::AudioGlitchInfo{.duration = base::Milliseconds(10), .count = 1});
+    ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+    int glitches_after = playback_stats->underrunEvents(script_state);
+    double duration_after = playback_stats->totalDuration(script_state);
+    double latency_after = playback_stats->averageLatency(script_state);
     EXPECT_EQ(glitches_before != glitches_after, expect_change);
     EXPECT_EQ(duration_before != duration_after, expect_change);
     EXPECT_EQ(latency_before != latency_after, expect_change);
@@ -882,6 +946,232 @@ TEST_F(AudioContextStatsTest, PlayoutStatsValues) {
                      max_delay, __LINE__);
 }
 
+TEST_F(AudioContextStatsTest, PlaybackStatsValues) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "AudioContextPlaybackStats", true);
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  audio_context->set_clock_for_testing(this);
+
+  constexpr int kNumberOfRenderEvents = 9;
+  std::array<uint32_t, kNumberOfRenderEvents> frames_to_process{
+      100, 200, 300, 10, 500, 120, 120, 30, 100};
+  std::array<base::TimeDelta, kNumberOfRenderEvents> playback_delay{
+      base::Milliseconds(10),  base::Milliseconds(20), base::Milliseconds(300),
+      base::Milliseconds(107), base::Milliseconds(17), base::Milliseconds(3),
+      base::Milliseconds(500), base::Milliseconds(10),
+      base::Milliseconds(112)};
+  const std::array<media::AudioGlitchInfo, kNumberOfRenderEvents> glitch_info{
+      media::AudioGlitchInfo{.duration = base::Milliseconds(5), .count = 1},
+      {},
+      {.duration = base::Milliseconds(60), .count = 3},
+      {},
+      {.duration = base::Milliseconds(600), .count = 20},
+      {.duration = base::Milliseconds(200), .count = 5},
+      {},
+      {.duration = base::Milliseconds(2), .count = 1},
+      {.duration = base::Milliseconds(15), .count = 5}};
+
+  media::AudioGlitchInfo total_glitches;
+  int total_processed_frames = 0;
+  int interval_processed_frames = 0;
+  base::TimeDelta interval_delay_sum;
+  base::TimeDelta last_delay;
+  base::TimeDelta max_delay;
+  base::TimeDelta min_delay = base::TimeDelta::Max();
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  AudioPlaybackStats* playback_stats = audio_context->playbackStats();
+
+  ContextRenderer* renderer =
+      MakeGarbageCollected<ContextRenderer>(audio_context);
+  renderer->Init();
+
+  // Empty stats in be beginning, all latencies are zero.
+  VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                      total_glitches, last_delay, last_delay, last_delay,
+                      __LINE__);
+
+  int i = 0;
+  for (; i < 3; ++i) {
+    fake_time_now_ += base::Seconds(1);
+    // Do some rendering.
+    renderer->Render(frames_to_process[i], playback_delay[i], glitch_info[i]);
+
+    total_glitches += glitch_info[i];
+    last_delay = playback_delay[i];
+    total_processed_frames += frames_to_process[i];
+    interval_processed_frames += frames_to_process[i];
+    interval_delay_sum += playback_delay[i] * frames_to_process[i];
+    max_delay = std::max<base::TimeDelta>(max_delay, playback_delay[i]);
+    min_delay = std::min<base::TimeDelta>(min_delay, playback_delay[i]);
+
+    // New execution cycle.
+    ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+    // Stats updated.
+    VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                        total_glitches,
+                        interval_delay_sum / interval_processed_frames,
+                        min_delay, max_delay, __LINE__);
+  }
+
+  // Same stats, since we are within the same execution cycle.
+  VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                      total_glitches,
+                      interval_delay_sum / interval_processed_frames, min_delay,
+                      max_delay, __LINE__);
+
+  // Reset stats.
+  playback_stats->resetLatency(script_state);
+
+  min_delay = base::TimeDelta::Max();
+  max_delay = base::TimeDelta();
+  interval_processed_frames = 0;
+  interval_delay_sum = base::TimeDelta();
+
+  // Getting reset stats.
+  VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                      total_glitches, last_delay, last_delay, last_delay,
+                      __LINE__);
+
+  // New execution cycle.
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  // Stats are still the same, since there have been no rendering yet.
+  VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                      total_glitches, last_delay, last_delay, last_delay,
+                      __LINE__);
+
+  for (; i < 4; ++i) {
+    fake_time_now_ += base::Seconds(1);
+    // Do some rendering after reset.
+    renderer->Render(frames_to_process[i], playback_delay[i], glitch_info[i]);
+
+    total_glitches += glitch_info[i];
+    last_delay = playback_delay[i];
+    total_processed_frames += frames_to_process[i];
+    interval_processed_frames += frames_to_process[i];
+    interval_delay_sum += playback_delay[i] * frames_to_process[i];
+    max_delay = std::max<base::TimeDelta>(max_delay, playback_delay[i]);
+    min_delay = std::min<base::TimeDelta>(min_delay, playback_delay[i]);
+
+    // New execution cycle.
+    ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+    // Stats reflect the state after the last reset.
+    VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                        total_glitches,
+                        interval_delay_sum / interval_processed_frames,
+                        min_delay, max_delay, __LINE__);
+  }
+
+  // Cache the current state: we'll be doing rendering several times without
+  // advancing to the next execution cycle.
+  const media::AudioGlitchInfo observed_total_glitches = total_glitches;
+  const int observed_total_processed_frames = total_processed_frames;
+  const base::TimeDelta observed_average_delay =
+      interval_delay_sum / interval_processed_frames;
+  const base::TimeDelta observed_max_delay = max_delay;
+  const base::TimeDelta observed_min_delay = min_delay;
+
+  VerifyPlaybackStats(playback_stats, script_state,
+                      observed_total_processed_frames, observed_total_glitches,
+                      observed_average_delay, observed_min_delay,
+                      observed_max_delay, __LINE__);
+
+  // Starting the execution cycle.
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  // Still same stats: there has been no new rendering.
+  VerifyPlaybackStats(playback_stats, script_state,
+                      observed_total_processed_frames, observed_total_glitches,
+                      observed_average_delay, observed_min_delay,
+                      observed_max_delay, __LINE__);
+
+  for (; i < 8; ++i) {
+    fake_time_now_ += base::Seconds(1);
+    // Render.
+    renderer->Render(frames_to_process[i], playback_delay[i], glitch_info[i]);
+
+    // Still same stats: we are in the same execution cycle.
+    VerifyPlaybackStats(playback_stats, script_state,
+                        observed_total_processed_frames,
+                        observed_total_glitches, observed_average_delay,
+                        observed_min_delay, observed_max_delay, __LINE__);
+
+    total_glitches += glitch_info[i];
+    last_delay = playback_delay[i];
+    total_processed_frames += frames_to_process[i];
+    interval_processed_frames += frames_to_process[i];
+    interval_delay_sum += playback_delay[i] * frames_to_process[i];
+    max_delay = std::max<base::TimeDelta>(max_delay, playback_delay[i]);
+    min_delay = std::min<base::TimeDelta>(min_delay, playback_delay[i]);
+  }
+
+  // New execution cycle.
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  // Stats are updated with all the new info.
+  VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                      total_glitches,
+                      interval_delay_sum / interval_processed_frames, min_delay,
+                      max_delay, __LINE__);
+
+  // Reset stats.
+  playback_stats->resetLatency(script_state);
+
+  // Cache the current state: we'll be doing rendering several times without
+  // advancing to the next execution cycle.
+  const media::AudioGlitchInfo reset_total_glitches = total_glitches;
+  const int reset_total_processed_frames = total_processed_frames;
+  const base::TimeDelta reset_average_delay = last_delay;
+  const base::TimeDelta reset_max_delay = last_delay;
+  const base::TimeDelta reset_min_delay = last_delay;
+
+  // Still same stats: we are in the same execution cycle.
+  VerifyPlaybackStats(
+      playback_stats, script_state, reset_total_processed_frames,
+      reset_total_glitches, reset_average_delay, reset_min_delay,
+      reset_max_delay, __LINE__);
+
+  min_delay = base::TimeDelta::Max();
+  max_delay = base::TimeDelta();
+  interval_processed_frames = 0;
+  interval_delay_sum = base::TimeDelta();
+
+  // Render while in the same execution cycle.
+  for (; i < kNumberOfRenderEvents; ++i) {
+    fake_time_now_ += base::Seconds(1);
+    renderer->Render(frames_to_process[i], playback_delay[i], glitch_info[i]);
+
+    // Still same stats we got after reset: we are in the same execution cycle.
+    VerifyPlaybackStats(playback_stats, script_state,
+                        reset_total_processed_frames, reset_total_glitches,
+                        reset_average_delay, reset_min_delay, reset_max_delay,
+                        __LINE__);
+
+    total_glitches += glitch_info[i];
+    last_delay = playback_delay[i];
+    total_processed_frames += frames_to_process[i];
+    interval_processed_frames += frames_to_process[i];
+    interval_delay_sum += playback_delay[i] * frames_to_process[i];
+    max_delay = std::max<base::TimeDelta>(max_delay, playback_delay[i]);
+    min_delay = std::min<base::TimeDelta>(min_delay, playback_delay[i]);
+  }
+
+  // New execution cycle.
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  // In the new execution cycle stats have all the info received after the last
+  // reset.
+  VerifyPlaybackStats(playback_stats, script_state, total_processed_frames,
+                      total_glitches,
+                      interval_delay_sum / interval_processed_frames, min_delay,
+                      max_delay, __LINE__);
+}
+
 TEST_F(AudioContextStatsTest, PlayoutStatsUpdateRateRestriction) {
   blink::WebRuntimeFeatures::EnableFeatureFromString("AudioContextPlayoutStats",
                                                      true);
@@ -897,16 +1187,16 @@ TEST_F(AudioContextStatsTest, PlayoutStatsUpdateRateRestriction) {
   renderer->Init();
 
   // 0.5s interval is too short for the stats to update.
-  RenderAndCheckIfStatsChanged(base::Seconds(0.5), renderer, script_state,
-                               /*expect_change=*/false);
+  RenderAndCheckIfPlayoutStatsChanged(
+      base::Seconds(0.5), renderer, script_state, /*expect_change=*/false);
 
   // 1s interval is long enough for the stats to update.
-  RenderAndCheckIfStatsChanged(base::Seconds(1), renderer, script_state,
-                               /*expect_change=*/true);
+  RenderAndCheckIfPlayoutStatsChanged(
+      base::Seconds(1), renderer, script_state, /*expect_change=*/true);
 
   // 0.5s interval is too short for the stats to update.
-  RenderAndCheckIfStatsChanged(base::Seconds(0.5), renderer, script_state,
-                               /*expect_change=*/false);
+  RenderAndCheckIfPlayoutStatsChanged(
+      base::Seconds(0.5), renderer, script_state, /*expect_change=*/false);
 }
 
 TEST_F(AudioContextStatsTest, PlayoutStatsVisibilityRestriction) {
@@ -924,24 +1214,24 @@ TEST_F(AudioContextStatsTest, PlayoutStatsVisibilityRestriction) {
   renderer->Init();
 
   // The page is visible by default.
-  RenderAndCheckIfStatsChanged(base::Seconds(1), renderer, script_state,
-                               /*expect_change=*/true);
+  RenderAndCheckIfPlayoutStatsChanged(base::Seconds(1), renderer, script_state,
+                                      /*expect_change=*/true);
 
   // Hide the page.
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                /*is_initial_state=*/false);
 
   // Now that the page is hidden, the stats will not be updated.
-  RenderAndCheckIfStatsChanged(base::Seconds(1), renderer, script_state,
-                               /*expect_change=*/false);
+  RenderAndCheckIfPlayoutStatsChanged(base::Seconds(1), renderer, script_state,
+                                      /*expect_change=*/false);
 
   // Make the page visible again.
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
                                /*is_initial_state=*/false);
 
-  // Now that the page is visible again, the stats will not be updated.
-  RenderAndCheckIfStatsChanged(base::Seconds(1), renderer, script_state,
-                               /*expect_change=*/true);
+  // Now that the page is visible again, the stats will be updated.
+  RenderAndCheckIfPlayoutStatsChanged(base::Seconds(1), renderer, script_state,
+                                      /*expect_change=*/true);
 }
 
 TEST_F(AudioContextStatsTest, PlayoutStatsMicrophoneRestrictionStartsDenied) {
@@ -964,8 +1254,8 @@ TEST_F(AudioContextStatsTest, PlayoutStatsMicrophoneRestrictionStartsDenied) {
                                /*is_initial_state=*/false);
 
   // There is no microphone permission, so stats will not be updated.
-  RenderAndCheckIfStatsChanged(base::Seconds(1), renderer, script_state,
-                               /*expect_change=*/false);
+  RenderAndCheckIfPlayoutStatsChanged(base::Seconds(1), renderer, script_state,
+                                      /*expect_change=*/false);
 
   mock_permission_service_->permission_ =
       mojom::blink::PermissionStatus::GRANTED;
@@ -973,8 +1263,8 @@ TEST_F(AudioContextStatsTest, PlayoutStatsMicrophoneRestrictionStartsDenied) {
   FlushPermissionService(audio_context);
 
   // Now that we have microphone permission, the stats will be updated.
-  RenderAndCheckIfStatsChanged(base::Seconds(1), renderer, script_state,
-                               /*expect_change=*/true);
+  RenderAndCheckIfPlayoutStatsChanged(base::Seconds(1), renderer, script_state,
+                                      /*expect_change=*/true);
 }
 
 TEST_F(AudioContextStatsTest, PlayoutStatsMicrophoneRestrictionStartsGranted) {
@@ -1002,8 +1292,134 @@ TEST_F(AudioContextStatsTest, PlayoutStatsMicrophoneRestrictionStartsGranted) {
                                /*is_initial_state=*/false);
 
   // Since we have microphone permission, the stats will be updated.
-  RenderAndCheckIfStatsChanged(base::Seconds(1), renderer, script_state,
-                               /*expect_change=*/true);
+  RenderAndCheckIfPlayoutStatsChanged(base::Seconds(1), renderer, script_state,
+                                      /*expect_change=*/true);
+}
+
+TEST_F(AudioContextStatsTest, PlaybackStatsUpdateRateRestriction) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "AudioContextPlaybackStats", true);
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  audio_context->set_clock_for_testing(this);
+  FlushPermissionService(audio_context);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ContextRenderer* renderer =
+      MakeGarbageCollected<ContextRenderer>(audio_context);
+  renderer->Init();
+
+  // 0.5s interval is too short for the stats to update.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(0.5), renderer,
+                                       script_state,
+                                       /*expect_change=*/false);
+
+  // 1s interval is long enough for the stats to update.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
+                                       /*expect_change=*/true);
+
+  // 0.5s interval is too short for the stats to update.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(0.5), renderer,
+                                       script_state,
+                                       /*expect_change=*/false);
+}
+
+TEST_F(AudioContextStatsTest, PlaybackStatsVisibilityRestriction) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "AudioContextPlaybackStats", true);
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  audio_context->set_clock_for_testing(this);
+  FlushPermissionService(audio_context);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ContextRenderer* renderer =
+      MakeGarbageCollected<ContextRenderer>(audio_context);
+  renderer->Init();
+
+  // The page is visible by default.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
+                                       /*expect_change=*/true);
+
+  // Hide the page.
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+
+  // Now that the page is hidden, the stats will not be updated.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
+                                       /*expect_change=*/false);
+
+  // Make the page visible again.
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+
+  // Now that the page is visible again, the stats will be updated.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
+                                       /*expect_change=*/true);
+}
+
+TEST_F(AudioContextStatsTest, PlaybackStatsMicrophoneRestrictionStartsDenied) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "AudioContextPlaybackStats", true);
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  audio_context->set_clock_for_testing(this);
+  FlushPermissionService(audio_context);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ContextRenderer* renderer =
+      MakeGarbageCollected<ContextRenderer>(audio_context);
+  renderer->Init();
+
+  // Since we want to test that the microphone permission allows stat updates,
+  // the page needs to be hidden.
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+
+  // There is no microphone permission, so stats will not be updated.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
+                                       /*expect_change=*/false);
+
+  mock_permission_service_->permission_ =
+      mojom::blink::PermissionStatus::GRANTED;
+  mock_permission_service_->NotifyObserver();
+  FlushPermissionService(audio_context);
+
+  // Now that we have microphone permission, the stats will be updated.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
+                                       /*expect_change=*/true);
+}
+
+TEST_F(AudioContextStatsTest, PlaybackStatsMicrophoneRestrictionStartsGranted) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "AudioContextPlaybackStats", true);
+  AudioContextOptions* options = AudioContextOptions::Create();
+
+  // Grant microphone permission before creating the AudioContext.
+  mock_permission_service_->permission_ =
+      mojom::blink::PermissionStatus::GRANTED;
+
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  audio_context->set_clock_for_testing(this);
+  FlushPermissionService(audio_context);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ContextRenderer* renderer =
+      MakeGarbageCollected<ContextRenderer>(audio_context);
+  renderer->Init();
+
+  // Since we want to test that the microphone permission allows stat updates,
+  // the page needs to be hidden.
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+
+  // Since we have microphone permission, the stats will be updated.
+  RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
+                                       /*expect_change=*/true);
 }
 
 TEST_F(AudioContextTest, ChannelCountRunning) {

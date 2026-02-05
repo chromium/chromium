@@ -38,6 +38,7 @@ namespace blink {
 
 class AudioContextOptions;
 class AudioTimestamp;
+class AudioPlaybackStats;
 class AudioPlayoutStats;
 class ExceptionState;
 class ExecutionContext;
@@ -206,7 +207,10 @@ class MODULES_EXPORT AudioContext final
   MediaStreamAudioDestinationNode* createMediaStreamDestination(
       ExceptionState&);
 
-  // https://wicg.github.io/web_audio_playout
+  // https://webaudio.github.io/web-audio-api/#AudioPlaybackStats
+  AudioPlaybackStats* playbackStats();
+
+  //  To be removed at M147.
   AudioPlayoutStats* playoutStats();
 
   // Cannot be called from the audio thread.
@@ -409,6 +413,7 @@ class MODULES_EXPORT AudioContext final
   // Protected by the graph lock.
   AudioFrameStatsAccumulator audio_frame_stats_;
 
+  Member<AudioPlaybackStats> audio_playback_stats_;
   Member<AudioPlayoutStats> audio_playout_stats_;
 
   // Whether a user gesture is required to start this AudioContext.

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_playback_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playout_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_sink_info.h"
 #include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_node.h"
@@ -728,8 +729,9 @@ AudioContext::~AudioContext() {
 
 void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(close_resolver_);
-  visitor->Trace(audio_playout_stats_);
   visitor->Trace(audio_context_manager_);
+  visitor->Trace(audio_playback_stats_);
+  visitor->Trace(audio_playout_stats_);
   visitor->Trace(permission_service_);
   visitor->Trace(permission_receiver_);
   visitor->Trace(set_sink_id_resolvers_);
@@ -1134,6 +1136,14 @@ double AudioContext::outputLatency() const {
 
   double factor = GetOutputLatencyQuantizingFactor();
   return std::round(output_position_.hardware_output_latency / factor) * factor;
+}
+
+AudioPlaybackStats* AudioContext::playbackStats() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  if (!audio_playback_stats_) {
+    audio_playback_stats_ = MakeGarbageCollected<AudioPlaybackStats>(this);
+  }
+  return audio_playback_stats_.Get();
 }
 
 AudioPlayoutStats* AudioContext::playoutStats() {
