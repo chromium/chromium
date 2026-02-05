@@ -58,10 +58,16 @@
 
 // Log the file and line number for assertions.
 #define SkDebugf(...) SkDebugf_FileLine(__FILE__, __LINE__, __VA_ARGS__)
+#define SkLog(...) SkLog_FileLine(__FILE__, __LINE__, __VA_ARGS__)
 SK_API void SkDebugf_FileLine(const char* file,
                               int line,
                               const char* format,
                               ...);
+SK_API void SkLog_FileLine(const char* file,
+                           int line,
+                           SkLogPriority priority,
+                           const char* format,
+                           ...);
 
 #define SK_ABORT(format, ...) SkAbort_FileLine(__FILE__, __LINE__, \
                                                format,##__VA_ARGS__)

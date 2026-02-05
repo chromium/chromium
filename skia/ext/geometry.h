@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "skia/config/SkUserConfig.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"

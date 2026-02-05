@@ -5,7 +5,6 @@
 #ifndef SKIA_EXT_DRAW_GAINMAP_IMAGE_H_
 #define SKIA_EXT_DRAW_GAINMAP_IMAGE_H_
 
-#include "skia/config/SkUserConfig.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 struct SkGainmapInfo;
