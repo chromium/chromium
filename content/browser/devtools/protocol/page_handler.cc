@@ -1990,6 +1990,8 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kSharedWorkerWithNoActiveClient:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           SharedWorkerWithNoActiveClient;
+    case Reason::kWebLocksContention:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebLocksContention;
   }
 }
 
@@ -2293,6 +2295,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
     case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
+    case Reason::kWebLocksContention:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
     case Reason::kUnknown:

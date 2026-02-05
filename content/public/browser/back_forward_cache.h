@@ -121,7 +121,8 @@ class CONTENT_EXPORT BackForwardCache {
     kCacheLimitPrunedOnCriticalMemoryPressure = 71,
     kSharedWorkerMessage = 72,
     kSharedWorkerWithNoActiveClient = 73,
-    kMaxValue = kSharedWorkerWithNoActiveClient,
+    kWebLocksContention = 74,
+    kMaxValue = kWebLocksContention,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:BackForwardCacheNotRestoredReason)
 

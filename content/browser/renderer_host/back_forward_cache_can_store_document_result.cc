@@ -206,6 +206,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::SHARED_WORKER_MESSAGE;
     case Reason::kSharedWorkerWithNoActiveClient:
       return ProtoEnum::SHARED_WORKER_WITH_NO_ACTIVE_CLIENT;
+    case Reason::kWebLocksContention:
+      return ProtoEnum::WEB_LOCKS_CONTENTION;
   }
   NOTREACHED();
 }
@@ -468,6 +470,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Pages with shared worker in bfcache received a message";
     case Reason::kSharedWorkerWithNoActiveClient:
       return "SharedWorker has no active clients";
+    case Reason::kWebLocksContention:
+      return "Pages with web locks in bfcache encountered a lock contention";
   }
 }
 
@@ -565,6 +569,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
       return "sharedworker-message";
     case Reason::kSharedWorkerWithNoActiveClient:
       return "sharedworker-with-no-active-client";
+    case Reason::kWebLocksContention:
+      return "weblocks-contention";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);
