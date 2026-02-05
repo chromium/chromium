@@ -385,7 +385,10 @@ class WebViewChromium
         ApiCall.GEOLOCATION_PERMISSIONS_CLEAR,
         ApiCall.GEOLOCATION_PERMISSIONS_CLEAR_ALL,
         ApiCall.GEOLOCATION_PERMISSIONS_GET_ALLOWED,
-        ApiCall.GEOLOCATION_PERMISSIONS_GET_ORIGINS
+        ApiCall.GEOLOCATION_PERMISSIONS_GET_ORIGINS,
+        ApiCall.WEBVIEW_CHROMIUM_CONSTRUCTOR,
+        ApiCall.WEBVIEW_CHROMIUM_INIT,
+        ApiCall.WEBVIEW_CHROMIUM_INIT_FOR_REAL,
     })
     @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
@@ -623,7 +626,10 @@ class WebViewChromium
         int GEOLOCATION_PERMISSIONS_CLEAR_ALL = 232;
         int GEOLOCATION_PERMISSIONS_GET_ALLOWED = 233;
         int GEOLOCATION_PERMISSIONS_GET_ORIGINS = 234;
-        int COUNT = 235;
+        int WEBVIEW_CHROMIUM_CONSTRUCTOR = 235;
+        int WEBVIEW_CHROMIUM_INIT = 236;
+        int WEBVIEW_CHROMIUM_INIT_FOR_REAL = 237;
+        int COUNT = 238;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:WebViewApiCall)
@@ -878,7 +884,10 @@ class WebViewChromium
         ApiCallUserAction.WEB_STORAGE_DELETE_ORIGIN,
         ApiCallUserAction.WEB_STORAGE_GET_ORIGINS,
         ApiCallUserAction.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN,
-        ApiCallUserAction.WEB_STORAGE_GET_USAGE_FOR_ORIGIN
+        ApiCallUserAction.WEB_STORAGE_GET_USAGE_FOR_ORIGIN,
+        ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_CONSTRUCTOR,
+        ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT,
+        ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT_FOR_REAL,
     })
     @interface ApiCallUserAction {
         String COOKIE_MANAGER_ACCEPT_COOKIE = "CookieManagerAcceptCookie";
@@ -1181,6 +1190,11 @@ class WebViewChromium
         String WEB_STORAGE_GET_ORIGINS = "WebStorageGetOrigins";
         String WEB_STORAGE_GET_QUOTA_FOR_ORIGIN = "WebStorageGetQuotaForOrigin";
         String WEB_STORAGE_GET_USAGE_FOR_ORIGIN = "WebStorageGetUsageForOrigin";
+        String WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_CONSTRUCTOR =
+                "WebViewInstanceWebViewChromiumConstructor";
+        String WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT = "WebViewInstanceWebViewChromiumInit";
+        String WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT_FOR_REAL =
+                "WebViewInstanceWebViewChromiumInitForReal";
     }
 
     // LINT.ThenChange(//tools/metrics/actions/actions.xml)
@@ -1250,6 +1264,9 @@ class WebViewChromium
             WebView webView,
             WebView.PrivateAccess webViewPrivate) {
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.constructor")) {
+            recordWebViewApiCall(
+                    ApiCall.WEBVIEW_CHROMIUM_CONSTRUCTOR,
+                    ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_CONSTRUCTOR);
             WebViewChromiumFactoryProvider.checkStorageIsNotDeviceProtected(webView.getContext());
             mWebView = webView;
             mWebViewPrivate = webViewPrivate;
@@ -1279,6 +1296,9 @@ class WebViewChromium
     // so is ignored. TODO: remove it from WebViewProvider.
     public void init(
             final Map<String, Object> javaScriptInterfaces, final boolean privateBrowsing) {
+        recordWebViewApiCall(
+                ApiCall.WEBVIEW_CHROMIUM_INIT,
+                ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT);
         long startTime = SystemClock.uptimeMillis();
         boolean wasChromiumAlreadyInitialized = mAwInit.isChromiumInitialized();
         boolean isFirstWebViewInstance = !sFirstWebViewInstanceCreated.getAndSet(true);
@@ -1401,6 +1421,9 @@ class WebViewChromium
 
     private void initForReal() {
         try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.initForReal")) {
+            recordWebViewApiCall(
+                    ApiCall.WEBVIEW_CHROMIUM_INIT_FOR_REAL,
+                    ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT_FOR_REAL);
             AwContentsStatics.setRecordFullDocument(
                     sRecordWholeDocumentEnabledByApi
                             || mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP);

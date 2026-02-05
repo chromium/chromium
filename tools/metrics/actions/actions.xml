@@ -5426,6 +5426,12 @@ should be able to be added at any place in this file.
         summary="WebView instance method `showFindDialog`"/>
     <variant name="WebViewInstanceStopLoading"
         summary="WebView instance method `stopLoading`"/>
+    <variant name="WebViewInstanceWebViewChromiumConstructor"
+        summary="WebViewChromium constructor"/>
+    <variant name="WebViewInstanceWebViewChromiumInit"
+        summary="WebViewChromium init"/>
+    <variant name="WebViewInstanceWebViewChromiumInitForReal"
+        summary="WebViewChromium initForReal"/>
     <variant name="WebViewInstanceZoomBy"
         summary="WebView instance method `zoomBy`"/>
     <variant name="WebViewInstanceZoomIn"
