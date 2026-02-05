@@ -76,7 +76,8 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   protected maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
-
+  protected showContextMenuHeaders_: boolean =
+      loadTimeData.getBoolean('ShowContextMenuHeaders');
   protected get supportedTools_(): Map<ToolMode, {
     id: string,
     icon: string,

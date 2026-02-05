@@ -247,6 +247,10 @@ const base::FeatureParam<bool> kShowModelPicker(&kNtpComposebox,
                                                 "NtpComposeboxShowModelPicker",
                                                 false);
 
+const base::FeatureParam<bool> kShowContextMenuHeaders(&kNtpComposebox,
+                                                       "ShowContextMenuHeaders",
+                                                       true);
+
 const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
     &kNtpComposebox,
     "ShowVoiceSearchInSteadyComposebox",

@@ -11,7 +11,7 @@ export function getHtml(this: ContextualActionMenuElement) {
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
       @close="${this.onMenuClose_}">
     ${this.tabSuggestions?.length > 0 && this.browserTabAllowed_ ? html`
-      <h4 id="tabHeader">${this.i18n('addTab')}</h4>
+      ${this.showContextMenuHeaders_ ? html`<h4 id="tabHeader">${this.i18n('addTab')}</h4>` : ''}
       ${this.tabSuggestions.map((tab, index) => html`
         <div class="suggestion-container">
           <button class="dropdown-item"
@@ -65,7 +65,8 @@ export function getHtml(this: ContextualActionMenuElement) {
       </button>` : '')}
     ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) ? html`
         <hr/>
-        <h4 id="modelHeader">${this.i18n('composeboxContextMenuGeminiModels')}</h4>` : ''}
+        ${this.showContextMenuHeaders_ ? html`
+        <h4 id="modelHeader">${this.i18n('composeboxContextMenuGeminiModels')}</h4>` : ''}` : ''}
     ${Array.from(this.supportedModels_.entries()).map(([mode, model]) => this.isModelAllowed_(mode) ? html`
       <button id="${model.id}" class="dropdown-item"
           data-model="${mode}"

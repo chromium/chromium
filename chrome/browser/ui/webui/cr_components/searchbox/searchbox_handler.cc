@@ -441,6 +441,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
           composebox_config.entry_point().num_page_load_animations());
   source->AddBoolean("contextualMenuShowModelPicker",
                      ntp_composebox::kShowModelPicker.Get());
+  source->AddBoolean("ShowContextMenuHeaders",
+                     ntp_composebox::kShowContextMenuHeaders.Get());
 }
 
 std::string SearchboxHandler::AutocompleteIconToResourceName(
