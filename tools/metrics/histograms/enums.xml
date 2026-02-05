@@ -1075,6 +1075,12 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="LE with random address"/>
 </enum>
 
+<enum name="BlurTransitionExitReason">
+  <int value="0" label="Finished"/>
+  <int value="1" label="NavigationInterrupted"/>
+  <int value="3" label="Cleanup"/>
+</enum>
+
 <enum name="BookmarkBarState">
   <int value="0" label="Bookmark bar hidden"/>
   <int value="1" label="Bookmark bar shown"/>
@@ -18635,6 +18641,7 @@ from previous Chrome versions.
   <int value="1453393588" label="DiscoverFeedMultiColumn:disabled"/>
   <int value="1453448177"
       label="ExposeOutOfProcessVideoDecodingToLacros:disabled"/>
+  <int value="1453903487" label="ReaderModeBlurTransitionAnimation:disabled"/>
   <int value="1454006695" label="BlinkHeapUnifiedGarbageCollection:disabled"/>
   <int value="1454028829" label="EnhancedProtectionPromoCard:disabled"/>
   <int value="1454143461" label="CaptureThumbnailOnNavigatingAway:disabled"/>
@@ -20167,6 +20174,7 @@ from previous Chrome versions.
   <int value="1969604362" label="enable-pinch-virtual-viewport"/>
   <int value="1970043159" label="AndroidBookmarkBarFastFollow:disabled"/>
   <int value="1970371579" label="UseNewEtc1Encoder:disabled"/>
+  <int value="1970576864" label="ReaderModeBlurTransitionAnimation:enabled"/>
   <int value="1971095607" label="TabBottomSheet:disabled"/>
   <int value="1971436110" label="PasswordsInCredMan:enabled"/>
   <int value="1971472561" label="CrostiniImeSupport:disabled"/>

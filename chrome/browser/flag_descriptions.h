@@ -5495,6 +5495,11 @@ inline constexpr char kProtectedTabsAndroidDescription[] =
 inline constexpr char kReadAloudName[] = "Read Aloud";
 inline constexpr char kReadAloudDescription[] =
     "Controls the Read Aloud feature";
+inline constexpr char kReaderModeBlurTransitionAnimationName[] =
+    "Reader Mode blur transition animation";
+inline constexpr char kReaderModeBlurTransitionAnimationDescription[] =
+    "Display a blur animation during reader mode navigations to "
+    "provide an enhanced transition experience.";
 inline constexpr char kReaderModeDistillInAppName[] =
     "Reader Mode distillation in app";
 inline constexpr char kReaderModeDistillInAppDescription[] =

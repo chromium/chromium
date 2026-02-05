@@ -15,7 +15,8 @@ Filter& Filter::operator=(const Filter&) = default;
 Filter::~Filter() = default;
 
 bool Filter::operator==(const Filter& other) const {
-  return type_ == other.type_ && amount_ == other.amount_;
+  return type_ == other.type_ && amount_ == other.amount_ &&
+         tile_mode_ == other.tile_mode_;
 }
 
 }  // namespace cc::slim

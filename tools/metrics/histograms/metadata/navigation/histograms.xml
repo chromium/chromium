@@ -880,6 +880,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.BlurTransitionAnimation.ExitReason"
+    enum="BlurTransitionExitReason" expires_after="2026-06-01">
+  <owner>evanluo@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the reason why the navigation blur transition (Android only) was
+    terminated. This helps track the success rate and failure modes of the
+    transition animation.
+  </summary>
+</histogram>
+
 <histogram
     name="Navigation.BrowserInitiated.DuplicateNavigationInputStartPresence"
     enum="InputStartPresence" expires_after="2026-12-01">

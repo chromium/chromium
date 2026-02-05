@@ -6,9 +6,13 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/dom_distiller/core/url_constants.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
@@ -24,6 +28,20 @@ ChromeWebContentsViewDelegateAndroid::GetDragDestDelegate() {
   // GetDragDestDelegate is a pure virtual method from WebContentsViewDelegate
   // and must have an implementation although android doesn't use it.
   NOTREACHED();
+}
+
+bool ChromeWebContentsViewDelegateAndroid::ShouldShowBlurTransitionAnimation(
+    content::NavigationHandle* navigation_handle) {
+  if (!base::FeatureList::IsEnabled(
+          dom_distiller::kReaderModeBlurTransitionAnimation)) {
+    return false;
+  }
+
+  // Check that the navigation is entering or exiting Reading Mode.
+  return navigation_handle->GetURL().SchemeIs(
+             dom_distiller::kDomDistillerScheme) ||
+         web_contents_->GetLastCommittedURL().SchemeIs(
+             dom_distiller::kDomDistillerScheme);
 }
 
 void ChromeWebContentsViewDelegateAndroid::ShowContextMenu(

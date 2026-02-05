@@ -3362,6 +3362,8 @@ source_set("browser") {
       "navigation_transitions/back_forward_transition_animation_manager_android.h",
       "navigation_transitions/back_forward_transition_animator.cc",
       "navigation_transitions/back_forward_transition_animator.h",
+      "navigation_transitions/blur_transition_animation_manager.cc",
+      "navigation_transitions/blur_transition_animation_manager.h",
       "navigation_transitions/physics_model.cc",
       "navigation_transitions/physics_model.h",
       "navigation_transitions/progress_bar.cc",

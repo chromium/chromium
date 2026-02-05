@@ -5785,6 +5785,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kOngoingProcesses)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID)
+    {"reader-mode-blur-transition-animation",
+     flag_descriptions::kReaderModeBlurTransitionAnimationName,
+     flag_descriptions::kReaderModeBlurTransitionAnimationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(dom_distiller::kReaderModeBlurTransitionAnimation)},
     {"reader-mode-distill-in-app",
      flag_descriptions::kReaderModeDistillInAppName,
      flag_descriptions::kReaderModeDistillInAppDescription, kOsAndroid,

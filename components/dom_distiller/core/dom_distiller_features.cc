@@ -92,6 +92,9 @@ BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
+BASE_FEATURE(kReaderModeBlurTransitionAnimation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReaderModeDistillInApp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReaderModeImprovements, base::FEATURE_DISABLED_BY_DEFAULT);

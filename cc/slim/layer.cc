@@ -34,6 +34,10 @@ cc::FilterOperations ToCcFilters(std::vector<cc::slim::Filter> filters) {
         cc_filters.Append(
             cc::FilterOperation::CreateSaturateFilter(slim_filter.amount()));
         break;
+      case cc::slim::Filter::kBlur:
+        cc_filters.Append(cc::FilterOperation::CreateBlurFilter(
+            slim_filter.amount(), slim_filter.tile_mode()));
+        break;
     }
   }
   return cc_filters;

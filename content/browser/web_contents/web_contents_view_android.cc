@@ -24,6 +24,7 @@
 #include "content/browser/android/select_popup.h"
 #include "content/browser/android/selection/selection_popup_controller.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
+#include "content/browser/navigation_transitions/blur_transition_animation_manager.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
@@ -136,7 +137,8 @@ void WebContentsViewAndroid::InstallCreateHookForTests(
 WebContentsViewAndroid::WebContentsViewAndroid(
     WebContentsImpl* web_contents,
     std::unique_ptr<WebContentsViewDelegate> delegate)
-    : web_contents_(web_contents),
+    : WebContentsObserver(web_contents),
+      web_contents_(web_contents),
       delegate_(std::move(delegate)),
       view_(ui::ViewAndroid::LayoutType::kNormal),
       synchronous_compositor_client_(nullptr) {
@@ -376,6 +378,24 @@ WebContentsViewAndroid::GetBackForwardTransitionAnimationManager() {
 
 void WebContentsViewAndroid::DestroyBackForwardTransitionAnimationManager() {
   back_forward_animation_manager_.reset();
+}
+
+void WebContentsViewAndroid::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  // Do nothing if the BlurTransitionAnimationManager is already instantiated.
+  if (BlurTransitionAnimationManager::FromWebContents(web_contents_)) {
+    return;
+  }
+
+  // Lazily instantiate the BlurTransitionAnimationManager.
+  if (ShouldShowBlurTransitionAnimation(navigation_handle)) {
+    BlurTransitionAnimationManager::CreateForWebContents(web_contents_);
+    // In this lazy instantiation flow, the ReadyToCommitNavigation notification
+    // was not received by the animation manager. We manually invoke to
+    // ensure we don't miss the animation.
+    BlurTransitionAnimationManager::FromWebContents(web_contents_)
+        ->ReadyToCommitNavigation(navigation_handle);
+  }
 }
 
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
@@ -973,6 +993,14 @@ void WebContentsViewAndroid::ShowInterestInElement(int nodeID) {
   if (rwhv) {
     rwhv->ShowInterestInElement(nodeID);
   }
+}
+
+bool WebContentsViewAndroid::ShouldShowBlurTransitionAnimation(
+    NavigationHandle* navigation_handle) {
+  if (delegate_) {
+    return delegate_->ShouldShowBlurTransitionAnimation(navigation_handle);
+  }
+  return false;
 }
 
 }  // namespace content
