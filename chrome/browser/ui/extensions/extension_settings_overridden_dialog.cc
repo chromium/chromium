@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/extensions/extensions_overrides/simple_overrides.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -181,10 +182,13 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
   }
 
   base::UmaHistogramEnumeration(params_.dialog_result_histogram_name, result);
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
-  if (hats_service) {
-    hats_service->LaunchSurvey(kHatsSurveyTriggerSEHijacking);
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
+    HatsService* hats_service = HatsServiceFactory::GetForProfile(
+        profile_, /*create_if_necessary=*/true);
+    if (hats_service) {
+      hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000);
+    }
   }
 }
 
