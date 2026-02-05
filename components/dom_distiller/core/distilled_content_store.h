@@ -7,13 +7,13 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace dom_distiller {
 
@@ -80,7 +80,7 @@ class InMemoryContentStore : public DistilledContentStore {
   typedef base::LRUCache<std::string,
                          std::unique_ptr<DistilledArticleProto, CacheDeletor>>
       ContentMap;
-  typedef std::unordered_map<std::string, std::string> UrlMap;
+  typedef absl::flat_hash_map<std::string, std::string> UrlMap;
 
   ContentMap cache_;
   UrlMap url_to_id_;
