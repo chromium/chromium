@@ -31,8 +31,7 @@ std::optional<UiCredential> GetBackupCredential(const PasswordForm& form,
   return std::nullopt;
 #else
   std::optional<std::u16string> backup_password = form.GetPasswordBackup();
-  if (!backup_password ||
-      !base::FeatureList::IsEnabled(features::kFillRecoveryPassword)) {
+  if (!backup_password) {
     return std::nullopt;
   }
   PasswordForm backup_form = form;

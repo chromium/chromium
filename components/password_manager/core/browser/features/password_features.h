@@ -109,11 +109,6 @@ BASE_DECLARE_FEATURE(kFillChangePasswordFormByTyping);
 // selection, rather than autofilling on page load, with highlighting of fields.
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 
-#if BUILDFLAG(IS_ANDROID)
-// Allows filling from a secondary recovery password saved as a backup.
-BASE_DECLARE_FEATURE(kFillRecoveryPassword);
-#endif
-
 #if BUILDFLAG(IS_IOS)
 
 // Enables the clean up of hanging form extraction requests made by the
@@ -177,10 +172,6 @@ BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 // Runs the Password Change flow (enabled by kImprovedPasswordChangeService
 // feature flag) in a user-visible background tab.
 BASE_DECLARE_FEATURE(kRunPasswordChangeInBackgroundTab);
-
-// Shows recovery password for the improved password change flow in the
-// management UI.
-BASE_DECLARE_FEATURE(kShowRecoveryPassword);
 
 // Shows a tab with password change instead of bubble/settings page after
 // successful password change.

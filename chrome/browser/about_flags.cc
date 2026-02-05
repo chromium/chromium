@@ -12088,12 +12088,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kSecurePaymentConfirmationUxRefresh)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"fill-recovery-password", flag_descriptions::kFillRecoveryPasswordName,
-     flag_descriptions::kFillRecoveryPasswordDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kFillRecoveryPassword)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"android-use-correct-display-work-area",
      flag_descriptions::kAndroidUseCorrectDisplayWorkAreaName,
      flag_descriptions::kAndroidUseCorrectDisplayWorkAreaDescription,

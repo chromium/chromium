@@ -163,15 +163,13 @@ void AppendSuggestionIfMatching(
 
 #if BUILDFLAG(IS_ANDROID)
     // Backup password is displayed every time on Android.
-    bool show_recovery_password =
-        base::FeatureList::IsEnabled(features::kFillRecoveryPassword);
+    bool show_recovery_password = true;
 #else
     // Backup password is displayed only after the first attempt to login on
     // Desktop.
     bool show_recovery_password =
         undo_password_change_controller.GetState(credential.username_value) ==
-            PasswordRecoveryState::kIncludeBackup &&
-        base::FeatureList::IsEnabled(features::kShowRecoveryPassword);
+        PasswordRecoveryState::kIncludeBackup;
 #endif
     if (credential.backup_password_value && show_recovery_password) {
       AppendBackupSuggestion(credential, suggestions);
@@ -201,8 +199,7 @@ void MaybeAppendTroubleSigningInSuggestion(
         if (login_data.backup_password_value &&
             undo_password_change_controller.GetState(
                 login_data.username_value) ==
-                PasswordRecoveryState::kTroubleSigningIn &&
-            base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
+                PasswordRecoveryState::kTroubleSigningIn) {
           AppendTroubleSigningInSuggestion(login_data, suggestions);
           return true;
         }

@@ -140,8 +140,6 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(CredentialCacheTest,
        StoresCredentialsSortedByOriginsAndUsernamesWithBackup) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kFillRecoveryPassword);
   Origin origin = Origin::Create(GURL(kExampleSite));
   std::vector<PasswordForm> matches = {
       CreateEntryWithBackupPassword("Berta", "30948", u"backuppassword",
@@ -334,9 +332,6 @@ TEST_F(CredentialCacheTest, StoresBackendErrorAndCredentials) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(CredentialCacheTest, SplitsCredentialsInMainAndBackupFlagEnabled) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kFillRecoveryPassword);
-
   Origin origin = Origin::Create(GURL(kExampleSite));
   PasswordForm match_with_backup = CreateEntry(
       "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact);
@@ -352,23 +347,6 @@ TEST_F(CredentialCacheTest, SplitsCredentialsInMainAndBackupFlagEnabled) {
           MakeUiCredential("Ben", "backuppassword", kExampleSite, kExampleSite,
                            password_manager_util::GetLoginMatchType::kExact,
                            IsBackupCredential(true))));
-}
-
-TEST_F(CredentialCacheTest, IgnoresBackupCredentialIfFlagDisabled) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(features::kFillRecoveryPassword);
-
-  Origin origin = Origin::Create(GURL(kExampleSite));
-  PasswordForm match_with_backup = CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact);
-  match_with_backup.SetPasswordBackupNote(u"backuppassword");
-  std::vector<PasswordForm> matches = {std::move(match_with_backup)};
-  cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), std::nullopt, origin);
-
-  EXPECT_THAT(
-      cache()->GetCredentialStore(origin).GetCredentials(),
-      testing::ElementsAre(MakeUiCredential("Ben", "S3cur3", kExampleSite)));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

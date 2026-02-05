@@ -1849,10 +1849,6 @@ inline constexpr char
         "to "
         "assistive technologies such as screen readers.";
 
-inline constexpr char kFillRecoveryPasswordName[] = "Fill recovery password";
-inline constexpr char kFillRecoveryPasswordDescription[] =
-    "Offers the previously saved recovery password for filling if one exists.";
-
 inline constexpr char kMemlogName[] = "Chrome heap profiler start mode.";
 inline constexpr char kMemlogDescription[] =
     "Starts heap profiling service that records sampled memory allocation "

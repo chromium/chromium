@@ -2051,9 +2051,6 @@ TEST_F(PasswordAccessoryControllerTest,
 }
 
 TEST_F(PasswordAccessoryControllerTest, LogBackupPasswordSelected) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      password_manager::features::kFillRecoveryPassword);
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
       "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};

@@ -1556,8 +1556,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_AppendsTroubleSigningInSuggestion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kShowRecoveryPassword);
   autofill::PasswordFormFillData fill_data =
       password_form_fill_data_with_backup();
   // Simulate selecting a credential with a backup password to trigger the
@@ -1587,12 +1585,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_AppendsBackupPasswordSuggestion) {
-  base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(IS_ANDROID)
-  feature_list.InitAndEnableFeature(features::kFillRecoveryPassword);
-#else
-  feature_list.InitAndEnableFeature(features::kShowRecoveryPassword);
-#endif
   autofill::PasswordFormFillData fill_data =
       password_form_fill_data_with_backup();
   autofill::PasswordAndMetadata additional_credential;
@@ -1642,8 +1634,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_GetProactiveRecoverySuggestion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kShowRecoveryPassword);
   const auto credential = password_form_fill_data_with_backup().preferred_login;
   const auto payload = PasswordAndMetadataToSuggestionDetails(credential);
 
@@ -1662,8 +1652,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_TroubleSigningInIsAppendedLast) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kShowRecoveryPassword);
   autofill::PasswordFormFillData fill_data =
       password_form_fill_data_with_backup();
   const autofill::PasswordAndMetadata credential = fill_data.preferred_login;
@@ -1702,8 +1690,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PasswordRecoveryFlow_NoRecoveryFlowForCredentialWithoutBackupPassword) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kShowRecoveryPassword);
   // Arrange: Use standard fill data which has no backup password.
   const autofill::PasswordFormFillData fill_data = password_form_fill_data();
 
@@ -1725,63 +1711,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
               SuggestionType::kPasswordEntry,
               fill_data.preferred_login.username_value,
               password_label(fill_data.preferred_login.password_value.size()),
-              /*realm_label=*/u"", favicon()),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePasswordsSuggestion()));
-}
-
-TEST_F(PasswordSuggestionGeneratorTest,
-       PasswordRecoveryFlow_RecoverySuggestionsAreNotShownWhenFlagIsOff) {
-  base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(IS_ANDROID)
-  feature_list.InitAndDisableFeature(features::kFillRecoveryPassword);
-#else
-  feature_list.InitAndDisableFeature(features::kShowRecoveryPassword);
-#endif  // BUILDFLAG(IS_ANDROID)
-  autofill::PasswordFormFillData fill_data =
-      password_form_fill_data_with_backup();
-  const autofill::PasswordAndMetadata cred_regular = fill_data.preferred_login;
-  autofill::PasswordAndMetadata cred_trouble;
-  cred_trouble.username_value = u"user1";
-  cred_trouble.password_value = u"password1";
-  cred_trouble.backup_password_value = u"backup1";
-  fill_data.additional_logins.push_back(cred_trouble);
-  const auto payload_trouble =
-      PasswordAndMetadataToSuggestionDetails(cred_trouble);
-  autofill::PasswordAndMetadata cred_backup;
-  cred_backup.username_value = u"user2";
-  cred_backup.password_value = u"password2";
-  cred_backup.backup_password_value = u"backup2";
-  fill_data.additional_logins.push_back(cred_backup);
-  const auto payload_backup =
-      PasswordAndMetadataToSuggestionDetails(cred_backup);
-  // Set the state for the "backup_user" to kIncludeBackup.
-  undo_controller().OnSuggestionSelected(cred_backup);
-  undo_controller().OnTroubleSigningInClicked(payload_backup);
-  undo_controller().OnSuggestionSelected(cred_backup);
-  // Set the state for the "trouble_user" to kTroubleSigningIn.
-  undo_controller().OnSuggestionSelected(cred_trouble);
-
-  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
-      undo_controller(), fill_data, favicon(), /*username_filter=*/u"",
-      OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false), ShowIdentityCredentials(false));
-
-  // Also verify that all original usernames are present as password entries.
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsDomainPasswordSuggestion(
-              SuggestionType::kPasswordEntry, cred_regular.username_value,
-              password_label(cred_regular.password_value.size()),
-              /*realm_label=*/u"", favicon()),
-          EqualsDomainPasswordSuggestion(
-              SuggestionType::kPasswordEntry, cred_trouble.username_value,
-              password_label(cred_trouble.password_value.size()),
-              /*realm_label=*/u"", favicon()),
-          EqualsDomainPasswordSuggestion(
-              SuggestionType::kPasswordEntry, cred_backup.username_value,
-              password_label(cred_backup.password_value.size()),
               /*realm_label=*/u"", favicon()),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
