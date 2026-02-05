@@ -3156,8 +3156,9 @@
       base_feature: "none",
     },
     {
+      // https://chromestatus.com/feature/5152834368700416
       name: "InstallElement",
-      status: "experimental"
+      status: {"Android": "", "default": "test"},
     },
     {
       name: "InstallOnDeviceSpeechRecognition",
@@ -4074,7 +4075,6 @@
       public: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
-      implied_by: ["InstallElement"],
     },
     {
       name: "Permissions",

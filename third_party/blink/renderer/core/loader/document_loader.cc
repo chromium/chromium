@@ -775,6 +775,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       RuntimeEnabledFeatures::GeolocationElementEnabled(
           frame_->DomWindow()->GetExecutionContext()) ||
       RuntimeEnabledFeatures::UserMediaElementEnabled(
+          frame_->DomWindow()->GetExecutionContext()) ||
+      RuntimeEnabledFeatures::InstallElementEnabled(
           frame_->DomWindow()->GetExecutionContext())) {
     params->initial_permission_statuses =
         ConvertPermissionStatusHashMapToFlatMap(
@@ -2725,6 +2727,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
        RuntimeEnabledFeatures::GeolocationElementEnabled(
            frame_->DomWindow()->GetExecutionContext()) ||
        RuntimeEnabledFeatures::UserMediaElementEnabled(
+           frame_->DomWindow()->GetExecutionContext()) ||
+       RuntimeEnabledFeatures::InstallElementEnabled(
            frame_->DomWindow()->GetExecutionContext()))) {
     CachedPermissionStatus::From(frame_->DomWindow())
         ->SetPermissionStatusMap(

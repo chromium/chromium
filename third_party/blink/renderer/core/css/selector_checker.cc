@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_install_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
@@ -2950,6 +2951,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
             RuntimeEnabledFeatures::GeolocationElementEnabled(
                 element.GetExecutionContext()) ||
             RuntimeEnabledFeatures::UserMediaElementEnabled(
+                element.GetExecutionContext()) ||
+            RuntimeEnabledFeatures::InstallElementEnabled(
                 element.GetExecutionContext()));
       auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
       return permission_element && permission_element->granted();

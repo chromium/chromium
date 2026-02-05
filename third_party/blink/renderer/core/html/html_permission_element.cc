@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_install_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_strings_map.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_utils.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -363,6 +364,8 @@ HTMLPermissionElement::HTMLPermissionElement(
         RuntimeEnabledFeatures::GeolocationElementEnabled(
             document.GetExecutionContext()) ||
         RuntimeEnabledFeatures::UserMediaElementEnabled(
+            document.GetExecutionContext()) ||
+        RuntimeEnabledFeatures::InstallElementEnabled(
             document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot();

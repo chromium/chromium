@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_install_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -797,6 +798,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
       !RuntimeEnabledFeatures::GeolocationElementEnabled(
           document ? document->GetExecutionContext() : nullptr) &&
       !RuntimeEnabledFeatures::UserMediaElementEnabled(
+          document ? document->GetExecutionContext() : nullptr) &&
+      !RuntimeEnabledFeatures::InstallElementEnabled(
           document ? document->GetExecutionContext() : nullptr)) {
     return CSSSelector::kPseudoUnknown;
   }
