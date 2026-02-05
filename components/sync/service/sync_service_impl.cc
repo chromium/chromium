@@ -572,12 +572,9 @@ void SyncServiceImpl::TryStart() {
                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 
   // One instance of Encryptor is needed for SyncServiceImpl and one for
-  // SyncEngine. Both use kEncryptSyncCompat for now to maintain backward
-  // compatibility.
-  os_crypt_async_->GetInstance(
-      barrier, os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
-  os_crypt_async_->GetInstance(
-      barrier, os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+  // SyncEngine.
+  os_crypt_async_->GetInstance(barrier);
+  os_crypt_async_->GetInstance(barrier);
 }
 
 void SyncServiceImpl::TryStartImpl(
