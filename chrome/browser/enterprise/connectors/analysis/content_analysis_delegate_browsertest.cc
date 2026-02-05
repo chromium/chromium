@@ -510,316 +510,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   content_analysis_run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Set up delegate and upload service.
-  EnableUploadsScanningAndReporting();
-
-  base::RunLoop content_analysis_run_loop;
-  ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
-                          content_analysis_run_loop.QuitClosure()));
-
-  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
-  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
-
-  // Create the files to be opened and scanned.
-  ContentAnalysisDelegate::Data data;
-  CreateFilesForTest({"ok.doc", "bad.exe"},
-                     {"ok file content", "bad file content"}, &data);
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
-
-  // The malware verdict means an event should be reported.
-  test::EventReportValidator validator(client());
-
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
-        expected_event;
-    expected_event.set_url("about:blank");
-    expected_event.set_tab_url("about:blank");
-    expected_event.set_source("");
-    expected_event.set_destination("");
-#if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("bad.exe");
-#else
-    machine_scope()
-        ? expected_event.set_file_name(created_file_paths()[1].AsUTF8Unsafe())
-        : expected_event.set_file_name("bad.exe");
-#endif
-    expected_event.set_content_size(16);
-    expected_event.set_download_digest_sha256(
-        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D");
-    expected_event.set_threat_type(
-        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
-            DANGEROUS);
-
-    expected_event.set_scan_id(kScanId2);
-    expected_event.set_trigger(
-        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
-
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
-
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url("about:blank");
-    *expected_event.add_referrers() = referrers;
-
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
-
-    validator.ExpectDangerousDownloadEvent(std::move(expected_event),
-                                           ExeMimeTypes());
-  } else {
-    validator.ExpectDangerousDeepScanningResult(
-        /*url*/ "about:blank",
-        /*tab_url*/ "about:blank",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/
-        machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "bad.exe",
-        // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
-        /*threat_type*/ "DANGEROUS",
-        /*trigger*/ kFileUploadDataTransferEventTrigger,
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("bad file content").size(),
-        /*result*/
-        EventResultToString(EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ kScanId2);
-  }
-
-  ContentAnalysisResponse ok_response;
-  ok_response.set_request_token(kScanId1);
-  auto* ok_result = ok_response.add_results();
-  ok_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-  ok_result->set_tag("malware");
-
-  ContentAnalysisResponse bad_response;
-  bad_response.set_request_token(kScanId2);
-  auto* bad_result = bad_response.add_results();
-  bad_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-  bad_result->set_tag("malware");
-  auto* bad_rule = bad_result->add_triggered_rules();
-  bad_rule->set_action(TriggeredRule::BLOCK);
-  bad_rule->set_rule_name("malware");
-
-  FakeBinaryUploadServiceStorage()->SetResponseForFile(
-      created_file_paths()[0].AsUTF8Unsafe(), ScanRequestUploadResult::kSuccess,
-      ok_response);
-  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-      kScanId1, ContentAnalysisAcknowledgement::ALLOW);
-  FakeBinaryUploadServiceStorage()->SetResponseForFile(
-      created_file_paths()[1].AsUTF8Unsafe(), ScanRequestUploadResult::kSuccess,
-      bad_response);
-  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-      kScanId2, ContentAnalysisAcknowledgement::BLOCK);
-
-  bool called = false;
-  base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
-
-  // Start test.
-  ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
-      base::BindLambdaForTesting(
-          [&called](const ContentAnalysisDelegate::Data& data,
-                    ContentAnalysisDelegate::Result& result) {
-            ASSERT_TRUE(result.text_results.empty());
-            ASSERT_EQ(result.paths_results.size(), 2u);
-            ASSERT_TRUE(result.paths_results[0]);
-            ASSERT_FALSE(result.paths_results[1]);
-            called = true;
-          }),
-      DeepScanAccessPoint::UPLOAD);
-
-  run_loop.Run();
-
-  EXPECT_TRUE(called);
-
-  // There should have been 1 request per file (2 files) and 1 for
-  // authentication.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
-
-  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
-  content_analysis_run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, ForFiles) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Set up delegate and upload service.
-  EnableUploadsScanningAndReporting();
-
-  base::RunLoop content_analysis_run_loop;
-  ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
-                          content_analysis_run_loop.QuitClosure()));
-
-  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
-  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
-
-  // Create the files to be opened and scanned.
-  ContentAnalysisDelegate::Data data;
-  CreateFilesForTest({"ok.doc", "bad.exe"},
-                     {"ok file content", "bad file content"}, &data);
-  // Create a subdirectory with a file to be expanded.
-  CreateFilesForTest({"fine.exe"}, {"fine file content"}, &data, "sub");
-
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
-
-  // The malware verdict means an event should be reported.
-  test::EventReportValidator validator(client());
-  if (use_proto_format()) {
-    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
-        expected_event;
-    expected_event.set_url("about:blank");
-    expected_event.set_tab_url("about:blank");
-    expected_event.set_source("");
-    expected_event.set_destination("");
-#if BUILDFLAG(IS_CHROMEOS)
-    expected_event.set_file_name("bad.exe");
-#else
-    machine_scope()
-        ? expected_event.set_file_name(created_file_paths()[1].AsUTF8Unsafe())
-        : expected_event.set_file_name("bad.exe");
-#endif
-    expected_event.set_content_size(16);
-    expected_event.set_download_digest_sha256(
-        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D");
-    expected_event.set_threat_type(
-        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
-            DANGEROUS);
-
-    expected_event.set_scan_id(kScanId2);
-    expected_event.set_trigger(
-        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
-
-    expected_event.set_event_result(
-        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
-    expected_event.set_clicked_through(false);
-
-    ::chrome::cros::reporting::proto::UrlInfo referrers;
-    referrers.set_url("about:blank");
-    *expected_event.add_referrers() = referrers;
-
-    expected_event.set_profile_identifier(GetProfileIdentifier());
-    expected_event.set_profile_user_name(kUserName);
-
-    validator.ExpectDangerousDownloadEvent(std::move(expected_event),
-                                           ExeMimeTypes());
-  } else {
-    validator.ExpectDangerousDeepScanningResult(
-        /*url*/ "about:blank",
-        /*tab_url*/ "about:blank",
-        /*source*/ "",
-        /*destination*/ "",
-        /*filename*/
-        machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "bad.exe",
-        // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
-        /*sha*/
-        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
-        /*threat_type*/ "DANGEROUS",
-        /*trigger*/ kFileUploadDataTransferEventTrigger,
-        /*mimetypes*/ ExeMimeTypes(),
-        /*size*/ std::string("bad file content").size(),
-        /*result*/
-        EventResultToString(EventResult::BLOCKED),
-        /*username*/ kUserName,
-        /*profile_identifier*/ GetProfileIdentifier(),
-        /*scan_id*/ kScanId2);
-  }
-
-  {
-    ContentAnalysisResponse ok_response;
-    ok_response.set_request_token(kScanId1);
-    auto* ok_result = ok_response.add_results();
-    ok_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-    ok_result->set_tag("malware");
-
-    FakeBinaryUploadServiceStorage()->SetResponseForFile(
-        created_file_paths()[0].AsUTF8Unsafe(),
-        ScanRequestUploadResult::kSuccess, ok_response);
-    FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-        kScanId1, ContentAnalysisAcknowledgement::ALLOW);
-  }
-
-  {
-    ContentAnalysisResponse bad_response;
-    bad_response.set_request_token(kScanId2);
-    auto* bad_result = bad_response.add_results();
-    bad_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-    bad_result->set_tag("malware");
-    auto* bad_rule = bad_result->add_triggered_rules();
-    bad_rule->set_action(TriggeredRule::BLOCK);
-    bad_rule->set_rule_name("malware");
-
-    FakeBinaryUploadServiceStorage()->SetResponseForFile(
-        created_file_paths()[1].AsUTF8Unsafe(),
-        ScanRequestUploadResult::kSuccess, bad_response);
-    FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-        kScanId2, ContentAnalysisAcknowledgement::BLOCK);
-  }
-
-  {
-    ContentAnalysisResponse ok_response;
-    ok_response.set_request_token(kScanId3);
-    auto* ok_result = ok_response.add_results();
-    ok_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-    ok_result->set_tag("malware");
-
-    FakeBinaryUploadServiceStorage()->SetResponseForFile(
-        created_file_paths()[2].AsUTF8Unsafe(),
-        ScanRequestUploadResult::kSuccess, ok_response);
-    FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-        kScanId3, ContentAnalysisAcknowledgement::ALLOW);
-  }
-
-  bool called = false;
-  base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
-
-  // Start test.
-  ContentAnalysisDelegate::CreateForFilesInWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
-      base::BindLambdaForTesting([&called](std::vector<base::FilePath> paths,
-                                           std::vector<bool> result) {
-        ASSERT_EQ(paths.size(), 3u);
-        ASSERT_EQ(paths[0].BaseName(),
-                  base::FilePath(FILE_PATH_LITERAL("ok.doc")));
-        ASSERT_EQ(paths[1].BaseName(),
-                  base::FilePath(FILE_PATH_LITERAL("bad.exe")));
-        ASSERT_EQ(paths[2].BaseName(),
-                  base::FilePath(FILE_PATH_LITERAL("sub")));
-
-        ASSERT_EQ(result.size(), 3u);
-        ASSERT_TRUE(result[0]);
-        ASSERT_FALSE(result[1]);
-        ASSERT_TRUE(result[2]);
-
-        called = true;
-      }),
-      DeepScanAccessPoint::UPLOAD);
-
-  run_loop.Run();
-  EXPECT_TRUE(called);
-
-  // There should have been 1 request per file (3 files) and 1 for
-  // authentication.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 4);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 3);
-
-  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
-  content_analysis_run_loop.Run();
-}
-
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // The reading of the browser DM token is blocking and happens in this test
   // when checking if the browser is enrolled.
@@ -2730,6 +2420,341 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
   // 2 request to retry authentication for each file.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+}
+
+// This class tests if ContentAnalysisDelegate handles file uploads correctly.
+class ContentAnalysisDelegateFilesBrowserTest
+    : public ContentAnalysisDelegateBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ContentAnalysisDelegateFilesBrowserTest()
+      : ContentAnalysisDelegateBrowserTestBase(std::get<0>(GetParam())) {
+    use_proto_format()
+        ? scoped_feature_list_.InitWithFeatures(
+              /*enabled_features=*/
+              {policy::kUploadRealtimeReportingEventsUsingProto},
+              /*disabled_features=*/{})
+        : scoped_feature_list_.InitWithFeatures(
+              /*enabled_features=*/{},
+              /*disabled_features=*/{
+                  policy::kUploadRealtimeReportingEventsUsingProto});
+  }
+  bool use_proto_format() const { return std::get<1>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysisDelegateFilesBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest, FilesUpload) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+
+  base::RunLoop content_analysis_run_loop;
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
+
+  // Create the files to be opened and scanned.
+  ContentAnalysisDelegate::Data data;
+  CreateFilesForTest({"ok.doc", "bad.exe"},
+                     {"ok file content", "bad file content"}, &data);
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
+
+  // The malware verdict means an event should be reported.
+  test::EventReportValidator validator(client());
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+        expected_event;
+    expected_event.set_url("about:blank");
+    expected_event.set_tab_url("about:blank");
+    expected_event.set_source("");
+    expected_event.set_destination("");
+#if BUILDFLAG(IS_CHROMEOS)
+    expected_event.set_file_name("bad.exe");
+#else
+    machine_scope()
+        ? expected_event.set_file_name(created_file_paths()[1].AsUTF8Unsafe())
+        : expected_event.set_file_name("bad.exe");
+#endif
+    expected_event.set_content_size(16);
+    expected_event.set_download_digest_sha256(
+        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D");
+    expected_event.set_threat_type(
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            DANGEROUS);
+
+    expected_event.set_scan_id(kScanId2);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+    expected_event.set_clicked_through(false);
+
+    ::chrome::cros::reporting::proto::UrlInfo referrers;
+    referrers.set_url("about:blank");
+    *expected_event.add_referrers() = referrers;
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectDangerousDownloadEvent(std::move(expected_event),
+                                           ExeMimeTypes());
+  } else {
+    validator.ExpectDangerousDeepScanningResult(
+        /*url*/ "about:blank",
+        /*tab_url*/ "about:blank",
+        /*source*/ "",
+        /*destination*/ "",
+        /*filename*/
+        machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "bad.exe",
+        // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
+        /*sha*/
+        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
+        /*threat_type*/ "DANGEROUS",
+        /*trigger*/ kFileUploadDataTransferEventTrigger,
+        /*mimetypes*/ ExeMimeTypes(),
+        /*size*/ std::string("bad file content").size(),
+        /*result*/
+        EventResultToString(EventResult::BLOCKED),
+        /*username*/ kUserName,
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ kScanId2);
+  }
+
+  ContentAnalysisResponse ok_response;
+  ok_response.set_request_token(kScanId1);
+  auto* ok_result = ok_response.add_results();
+  ok_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  ok_result->set_tag("malware");
+
+  ContentAnalysisResponse bad_response;
+  bad_response.set_request_token(kScanId2);
+  auto* bad_result = bad_response.add_results();
+  bad_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  bad_result->set_tag("malware");
+  auto* bad_rule = bad_result->add_triggered_rules();
+  bad_rule->set_action(TriggeredRule::BLOCK);
+  bad_rule->set_rule_name("malware");
+
+  FakeBinaryUploadServiceStorage()->SetResponseForFile(
+      created_file_paths()[0].AsUTF8Unsafe(), ScanRequestUploadResult::kSuccess,
+      ok_response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId1, ContentAnalysisAcknowledgement::ALLOW);
+  FakeBinaryUploadServiceStorage()->SetResponseForFile(
+      created_file_paths()[1].AsUTF8Unsafe(), ScanRequestUploadResult::kSuccess,
+      bad_response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId2, ContentAnalysisAcknowledgement::BLOCK);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&called](const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.text_results.empty());
+            ASSERT_EQ(result.paths_results.size(), 2u);
+            ASSERT_TRUE(result.paths_results[0]);
+            ASSERT_FALSE(result.paths_results[1]);
+            called = true;
+          }),
+      DeepScanAccessPoint::UPLOAD);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(called);
+
+  // There should have been 1 request per file (2 files) and 1 for
+  // authentication.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest,
+                       FilesAndDirUpload) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+
+  base::RunLoop content_analysis_run_loop;
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
+
+  // Create the files to be opened and scanned.
+  ContentAnalysisDelegate::Data data;
+  CreateFilesForTest({"ok.doc", "bad.exe"},
+                     {"ok file content", "bad file content"}, &data);
+  // Create a subdirectory with a file to be expanded.
+  CreateFilesForTest({"fine.exe"}, {"fine file content"}, &data, "sub");
+
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
+
+  // The malware verdict means an event should be reported.
+  test::EventReportValidator validator(client());
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
+        expected_event;
+    expected_event.set_url("about:blank");
+    expected_event.set_tab_url("about:blank");
+    expected_event.set_source("");
+    expected_event.set_destination("");
+#if BUILDFLAG(IS_CHROMEOS)
+    expected_event.set_file_name("bad.exe");
+#else
+    machine_scope()
+        ? expected_event.set_file_name(created_file_paths()[1].AsUTF8Unsafe())
+        : expected_event.set_file_name("bad.exe");
+#endif
+    expected_event.set_content_size(16);
+    expected_event.set_download_digest_sha256(
+        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D");
+    expected_event.set_threat_type(
+        chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent::
+            DANGEROUS);
+
+    expected_event.set_scan_id(kScanId2);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+    expected_event.set_clicked_through(false);
+
+    ::chrome::cros::reporting::proto::UrlInfo referrers;
+    referrers.set_url("about:blank");
+    *expected_event.add_referrers() = referrers;
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectDangerousDownloadEvent(std::move(expected_event),
+                                           ExeMimeTypes());
+  } else {
+    validator.ExpectDangerousDeepScanningResult(
+        /*url*/ "about:blank",
+        /*tab_url*/ "about:blank",
+        /*source*/ "",
+        /*destination*/ "",
+        /*filename*/
+        machine_scope() ? created_file_paths()[1].AsUTF8Unsafe() : "bad.exe",
+        // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
+        /*sha*/
+        "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
+        /*threat_type*/ "DANGEROUS",
+        /*trigger*/ kFileUploadDataTransferEventTrigger,
+        /*mimetypes*/ ExeMimeTypes(),
+        /*size*/ std::string("bad file content").size(),
+        /*result*/
+        EventResultToString(EventResult::BLOCKED),
+        /*username*/ kUserName,
+        /*profile_identifier*/ GetProfileIdentifier(),
+        /*scan_id*/ kScanId2);
+  }
+
+  {
+    ContentAnalysisResponse ok_response;
+    ok_response.set_request_token(kScanId1);
+    auto* ok_result = ok_response.add_results();
+    ok_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+    ok_result->set_tag("malware");
+
+    FakeBinaryUploadServiceStorage()->SetResponseForFile(
+        created_file_paths()[0].AsUTF8Unsafe(),
+        ScanRequestUploadResult::kSuccess, ok_response);
+    FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+        kScanId1, ContentAnalysisAcknowledgement::ALLOW);
+  }
+
+  {
+    ContentAnalysisResponse bad_response;
+    bad_response.set_request_token(kScanId2);
+    auto* bad_result = bad_response.add_results();
+    bad_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+    bad_result->set_tag("malware");
+    auto* bad_rule = bad_result->add_triggered_rules();
+    bad_rule->set_action(TriggeredRule::BLOCK);
+    bad_rule->set_rule_name("malware");
+
+    FakeBinaryUploadServiceStorage()->SetResponseForFile(
+        created_file_paths()[1].AsUTF8Unsafe(),
+        ScanRequestUploadResult::kSuccess, bad_response);
+    FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+        kScanId2, ContentAnalysisAcknowledgement::BLOCK);
+  }
+
+  {
+    ContentAnalysisResponse ok_response;
+    ok_response.set_request_token(kScanId3);
+    auto* ok_result = ok_response.add_results();
+    ok_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+    ok_result->set_tag("malware");
+
+    FakeBinaryUploadServiceStorage()->SetResponseForFile(
+        created_file_paths()[2].AsUTF8Unsafe(),
+        ScanRequestUploadResult::kSuccess, ok_response);
+    FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+        kScanId3, ContentAnalysisAcknowledgement::ALLOW);
+  }
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForFilesInWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting([&called](std::vector<base::FilePath> paths,
+                                           std::vector<bool> result) {
+        ASSERT_EQ(paths.size(), 3u);
+        ASSERT_EQ(paths[0].BaseName(),
+                  base::FilePath(FILE_PATH_LITERAL("ok.doc")));
+        ASSERT_EQ(paths[1].BaseName(),
+                  base::FilePath(FILE_PATH_LITERAL("bad.exe")));
+        ASSERT_EQ(paths[2].BaseName(),
+                  base::FilePath(FILE_PATH_LITERAL("sub")));
+
+        ASSERT_EQ(result.size(), 3u);
+        ASSERT_TRUE(result[0]);
+        ASSERT_FALSE(result[1]);
+        ASSERT_TRUE(result[2]);
+
+        called = true;
+      }),
+      DeepScanAccessPoint::UPLOAD);
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // There should have been 1 request per file (3 files) and 1 for
+  // authentication.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 4);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 3);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
 }
 
 }  // namespace enterprise_connectors
