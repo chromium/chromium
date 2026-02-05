@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -101,6 +102,9 @@ class MockOpenTabsUIDelegate : public OpenTabsUIDelegate {
       GetAllForeignSessions,
       bool(std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
                sessions));
+
+  MOCK_CONST_METHOD0(GetAllForeignSessionLastModifiedTimes,
+                     base::flat_map<std::string, base::Time>());
 
   MOCK_METHOD3(GetForeignTab,
                bool(const std::string& tag,

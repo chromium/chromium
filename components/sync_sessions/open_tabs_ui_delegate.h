@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/time/time.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
@@ -25,6 +27,10 @@ class OpenTabsUIDelegate {
   virtual bool GetAllForeignSessions(
       std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
           sessions) = 0;
+
+  // Returns the timestamp of each foreign session, keyed by its session tag.
+  virtual base::flat_map<std::string, base::Time>
+  GetAllForeignSessionLastModifiedTimes() const = 0;
 
   // Looks up the foreign tab identified by |tab_id| and belonging to foreign
   // session |tag|. Caller does NOT own the SessionTab object.

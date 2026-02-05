@@ -62,7 +62,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   entry1.set_title(u"title1");
   session_tracker_.GetTab(kSessionTag1, kTabId1)->navigations.push_back(entry1);
   session_tracker_.GetSession(kSessionTag1)
-      ->SetModifiedTime(kTime0 + base::Seconds(3));
+      ->SetModifiedTime(kTime0 - base::Seconds(3));
 
   session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
   session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
@@ -72,7 +72,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   entry2.set_title(u"title2");
   session_tracker_.GetTab(kSessionTag2, kTabId2)->navigations.push_back(entry2);
   session_tracker_.GetSession(kSessionTag2)
-      ->SetModifiedTime(kTime0 + base::Seconds(1));
+      ->SetModifiedTime(kTime0 - base::Seconds(1));
 
   session_tracker_.PutWindowInSession(kSessionTag3, kWindowId3);
   session_tracker_.PutTabInWindow(kSessionTag3, kWindowId3, kTabId3);
@@ -82,13 +82,13 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   entry3.set_title(u"title3");
   session_tracker_.GetTab(kSessionTag3, kTabId3)->navigations.push_back(entry3);
   session_tracker_.GetSession(kSessionTag3)
-      ->SetModifiedTime(kTime0 + base::Seconds(2));
+      ->SetModifiedTime(kTime0 - base::Seconds(2));
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
-  EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag1);
+  EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
   EXPECT_EQ(sessions[1]->GetSessionTag(), kSessionTag3);
-  EXPECT_EQ(sessions[2]->GetSessionTag(), kSessionTag2);
+  EXPECT_EQ(sessions[2]->GetSessionTag(), kSessionTag1);
 }
 
 TEST_F(OpenTabsUIDelegateImplTest, ShouldSortTabs) {
@@ -142,6 +142,45 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonPresentable) {
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
+}
+
+TEST_F(OpenTabsUIDelegateImplTest, GetAllForeignSessionLastModifiedTimes) {
+  const base::Time kTime0 = base::Time::Now();
+
+  // Create two sessions, with one window and tab each.
+  session_tracker_.PutWindowInSession(kSessionTag1, kWindowId1);
+  session_tracker_.PutTabInWindow(kSessionTag1, kWindowId1, kTabId1);
+  sessions::SerializedNavigationEntry entry1 =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  entry1.set_virtual_url(GURL("http://url1"));
+  entry1.set_title(u"title1");
+  session_tracker_.GetTab(kSessionTag1, kTabId1)->navigations.push_back(entry1);
+  session_tracker_.GetSession(kSessionTag1)
+      ->SetModifiedTime(kTime0 - base::Seconds(3));
+
+  session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
+  session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
+  sessions::SerializedNavigationEntry entry2 =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  entry2.set_virtual_url(GURL("http://url2"));
+  entry2.set_title(u"title2");
+  session_tracker_.GetTab(kSessionTag2, kTabId2)->navigations.push_back(entry2);
+  session_tracker_.GetSession(kSessionTag2)
+      ->SetModifiedTime(kTime0 - base::Seconds(1));
+
+  // Create a third session that is not presentable (no navigations).
+  session_tracker_.PutWindowInSession(kSessionTag3, kWindowId3);
+  session_tracker_.PutTabInWindow(kSessionTag3, kWindowId3, kTabId3);
+  session_tracker_.GetTab(kSessionTag3, kTabId3);
+  session_tracker_.GetSession(kSessionTag3)
+      ->SetModifiedTime(kTime0 - base::Seconds(2));
+
+  base::flat_map<std::string, base::Time> timestamps =
+      delegate_.GetAllForeignSessionLastModifiedTimes();
+  EXPECT_EQ(timestamps.size(), 2u);
+  EXPECT_EQ(timestamps[kSessionTag1], kTime0 - base::Seconds(3));
+  EXPECT_EQ(timestamps[kSessionTag2], kTime0 - base::Seconds(1));
+  EXPECT_FALSE(timestamps.contains(kSessionTag3));
 }
 
 TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {

@@ -16,6 +16,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -188,6 +189,17 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
                       });
 
     return !sessions->empty();
+  }
+
+  base::flat_map<std::string, base::Time>
+  GetAllForeignSessionLastModifiedTimes() const override {
+    std::vector<std::pair<std::string, base::Time>> timestamps;
+    timestamps.reserve(foreign_sessions_.size());
+    for (const auto& session : foreign_sessions_) {
+      timestamps.emplace_back(session->GetSessionTag(),
+                              session->GetModifiedTime());
+    }
+    return base::flat_map<std::string, base::Time>(std::move(timestamps));
   }
 
   MOCK_METHOD1(GetLocalSession,

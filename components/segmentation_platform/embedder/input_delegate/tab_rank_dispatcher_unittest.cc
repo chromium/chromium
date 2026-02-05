@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
+
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -106,6 +108,17 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
                       });
 
     return !sessions->empty();
+  }
+
+  base::flat_map<std::string, base::Time>
+  GetAllForeignSessionLastModifiedTimes() const override {
+    std::vector<std::pair<std::string, base::Time>> timestamps;
+    timestamps.reserve(foreign_sessions_.size());
+    for (const auto& session : foreign_sessions_) {
+      timestamps.emplace_back(session->GetSessionTag(),
+                              session->GetModifiedTime());
+    }
+    return base::flat_map<std::string, base::Time>(std::move(timestamps));
   }
 
   bool GetLocalSession(

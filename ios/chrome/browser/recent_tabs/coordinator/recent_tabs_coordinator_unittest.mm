@@ -103,6 +103,8 @@ class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
   MOCK_METHOD1(GetAllForeignSessions,
                bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
                                         VectorExperimental>>* sessions));
+  MOCK_CONST_METHOD0(GetAllForeignSessionLastModifiedTimes,
+                     base::flat_map<std::string, base::Time>());
   MOCK_METHOD3(GetForeignTab,
                bool(const std::string& tag,
                     const SessionID tab_id,

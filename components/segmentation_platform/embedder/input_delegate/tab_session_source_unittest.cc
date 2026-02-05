@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -94,6 +95,17 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
                       });
 
     return !sessions->empty();
+  }
+
+  base::flat_map<std::string, base::Time>
+  GetAllForeignSessionLastModifiedTimes() const override {
+    std::vector<std::pair<std::string, base::Time>> timestamps;
+    timestamps.reserve(foreign_sessions_.size());
+    for (const auto& session : foreign_sessions_) {
+      timestamps.emplace_back(session->GetSessionTag(),
+                              session->GetModifiedTime());
+    }
+    return base::flat_map<std::string, base::Time>(std::move(timestamps));
   }
 
   bool GetLocalSession(

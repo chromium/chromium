@@ -6,7 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
@@ -31,6 +34,20 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
       *sessions, std::greater(),
       [](const SyncedSession* session) { return session->GetModifiedTime(); });
   return !sessions->empty();
+}
+
+base::flat_map<std::string, base::Time>
+OpenTabsUIDelegateImpl::GetAllForeignSessionLastModifiedTimes() const {
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions =
+      session_tracker_->LookupAllForeignSessions(
+          SyncedSessionTracker::PRESENTABLE);
+  std::vector<std::pair<std::string, base::Time>> timestamps;
+  timestamps.reserve(sessions.size());
+  for (const SyncedSession* session : sessions) {
+    timestamps.emplace_back(session->GetSessionTag(),
+                            session->GetModifiedTime());
+  }
+  return base::flat_map<std::string, base::Time>(std::move(timestamps));
 }
 
 std::vector<const sessions::SessionWindow*>
