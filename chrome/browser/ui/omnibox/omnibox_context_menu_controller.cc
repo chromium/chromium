@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -49,6 +50,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/strings/grit/components_strings.h"
@@ -119,7 +121,8 @@ OmniboxContextMenuController::OmniboxContextMenuController(
   next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
   auto* composebox_handler =
       GetOmniboxPopupUI() ? GetOmniboxPopupUI()->composebox_handler() : nullptr;
-  if (composebox_handler && ntp_composebox::kShowModelPicker.Get()) {
+  if (composebox_handler &&
+      base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     composebox_handler->GetInputState(
         base::BindOnce(&OmniboxContextMenuController::OnGetInputState,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -130,31 +133,21 @@ OmniboxContextMenuController::OmniboxContextMenuController(
 OmniboxContextMenuController::~OmniboxContextMenuController() = default;
 
 void OmniboxContextMenuController::BuildMenu() {
-  if (ntp_composebox::kShowModelPicker.Get()) {
-    bool is_browser_tab_allowed =
-        IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
-    bool is_contextual_input_allowed =
-        IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_LENS_IMAGE) ||
-        IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_LENS_FILE);
-    if (is_browser_tab_allowed) {
+  if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    if (IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
       AddRecentTabItems(/*add_separator=*/false);
-      if (is_contextual_input_allowed) {
-        AddSeparator();
-      }
     }
-    if (is_contextual_input_allowed) {
+    if (IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_LENS_IMAGE) ||
+        IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_LENS_FILE)) {
+      AddSeparator();
       AddContextualInputItems();
-      if (!input_state_.allowed_tools.empty()) {
-        AddSeparator();
-      }
     }
     if (!input_state_.allowed_tools.empty()) {
+      AddSeparator();
       AddToolItems(/*add_separator=*/false);
-      if (!input_state_.allowed_models.empty()) {
-        AddSeparator();
-      }
     }
     if (!input_state_.allowed_models.empty()) {
+      AddSeparator();
       AddModelPickerItems();
     }
   } else {
@@ -246,7 +239,7 @@ void OmniboxContextMenuController::AddToolItems(bool add_separator) {
       IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
   AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
                              IDS_NTP_COMPOSE_CREATE_IMAGES, create_images_icon);
-  if (ntp_composebox::kShowModelPicker.Get()) {
+  if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     auto canvas_icon =
         ui::ImageModel::FromVectorIcon(kDraftSparkIcon, ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize);
@@ -590,7 +583,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     auto* input_state_model =
         composebox_handler ? composebox_handler->input_state_model() : nullptr;
     bool use_input_state_model =
-        ntp_composebox::kShowModelPicker.Get() && input_state_model;
+        base::FeatureList::IsEnabled(omnibox::kAimUsePecApi) &&
+        input_state_model;
 
     // All context actions will eventually log a histogram, but those that open
     // a dialog do so only after the dialog is closed.
@@ -714,7 +708,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     return false;
   }
 
-  if (ntp_composebox::kShowModelPicker.Get()) {
+  if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     // Command ID corresponds to "Most recent tabs" menu item.
     if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
         command_id < next_command_id_) {
@@ -773,7 +767,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   // Command ID corresponds to "Most recent tabs" menu item.
   if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
       command_id < next_command_id_) {
-    return ntp_composebox::kShowModelPicker.Get()
+    return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
                ? IsInputTypeAllowed(GetInputTypeForCommandId(command_id))
                : true;
   }
@@ -797,15 +791,15 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
 
     if (command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
         command_id == IDC_OMNIBOX_CONTEXT_ADD_FILE) {
-      return ntp_composebox::kShowModelPicker.Get()
+      return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
                  ? IsInputTypeAllowed(GetInputTypeForCommandId(command_id))
                  : IsContentSharingEnabled();
     } else if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH) {
-      return ntp_composebox::kShowModelPicker.Get()
+      return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
                  ? IsToolAllowed(GetToolModeForCommandId(command_id))
                  : omnibox::IsDeepSearchEnabled(profile);
     } else if (command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
-      return ntp_composebox::kShowModelPicker.Get()
+      return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
                  ? IsToolAllowed(GetToolModeForCommandId(command_id))
                  : omnibox::IsCreateImagesEnabled(profile);
     } else if (command_id == IDC_OMNIBOX_CONTEXT_CANVAS) {
