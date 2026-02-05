@@ -15,10 +15,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/features.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/internal/test_helpers.h"
 #include "net/cert/x509_certificate.h"
@@ -121,6 +123,11 @@ class TrustStoreWinTest : public testing::Test {
     return TrustStoreWin::CreateForTesting(std::move(stores_));
   }
 
+ protected:
+  // Task environment required for CertDatabase::Observer registration
+  // This provides the SequencedTaskRunner that ObserverListThreadSafe needs
+  base::test::TaskEnvironment task_environment_;
+
   // The cert stores that will be used to create the trust store. These handles
   // will be null after CreateTrustStoreWin() is called.
   TrustStoreWin::CertStores stores_ =
@@ -128,6 +135,46 @@ class TrustStoreWinTest : public testing::Test {
 
   std::shared_ptr<const bssl::ParsedCertificate> a_by_b_, b_by_c_, b_by_f_,
       c_by_d_, c_by_e_, d_by_d_, e_by_e_, f_by_e_;
+};
+
+// Observer class for tracking CertDatabase events in tests
+class CertStoreNotificationObserver : public CertDatabase::Observer {
+ public:
+  CertStoreNotificationObserver() {
+    CertDatabase::GetInstance()->AddObserver(this);
+  }
+
+  ~CertStoreNotificationObserver() override {
+    CertDatabase::GetInstance()->RemoveObserver(this);
+  }
+
+  CertStoreNotificationObserver(const CertStoreNotificationObserver&) = delete;
+  CertStoreNotificationObserver& operator=(
+      const CertStoreNotificationObserver&) = delete;
+
+  // CertDatabase::Observer implementation:
+  void OnTrustStoreChanged() override {
+    trust_store_notifications_++;
+    if (on_notification_callback_) {
+      std::move(on_notification_callback_).Run();
+    }
+  }
+
+  void OnClientCertStoreChanged() override {}
+
+  int trust_store_notifications() const { return trust_store_notifications_; }
+
+  void reset_counters() { trust_store_notifications_ = 0; }
+
+  // Sets a callback to be invoked when a notification is received.
+  // The callback is cleared after being invoked once.
+  void set_on_notification_callback(base::OnceClosure callback) {
+    on_notification_callback_ = std::move(callback);
+  }
+
+ private:
+  int trust_store_notifications_ = 0;
+  base::OnceClosure on_notification_callback_;
 };
 
 TEST_F(TrustStoreWinTest, GetTrustInitializationError) {
@@ -417,6 +464,19 @@ TEST_F(TrustStoreWinTest, GetAllUserAddedCerts) {
 // certificate stores when certificates are added or removed at the system
 // level. This ensures dynamic updates without restarting the process.
 //
+// This test validates the complete event-driven certificate monitoring
+// pipeline:
+// 1. CERT_STORE_CTRL_NOTIFY_CHANGE API integration for Windows store changes
+// 2. RegisterWaitForSingleObject with WT_EXECUTEONLYONCE for one-shot callbacks
+// 3. CertDatabase::Observer notification propagation to Chrome components
+// 4. Explicit re-registration after resync to detect subsequent modifications
+// 5. Cache invalidation and resync behavior for all public API methods
+//
+// The test performs certificate addition and removal operations while
+// monitoring the notification count to ensure each Windows API store change
+// triggers exactly one callback, followed by explicit re-registration in
+// EnsureStoresAreSynced() for the next change detection cycle.
+//
 // WARNING: This test modifies the OS trust store. If it fails to clean up
 // after itself, your system may be left in an insecure state. To verify it
 // cleaned up after itself, make sure certificates that begin with
@@ -433,29 +493,15 @@ TEST_F(TrustStoreWinTest, GetAllUserAddedCerts) {
 // Run this after substantial changes to the Windows trust store integration
 // to validate end-to-end synchronization behavior.
 TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
-  // Create a test certificate using CertBuilder with a random private key
-  // that gets discarded after the test, making it safer if cleanup fails.
-  auto cert_builder = std::make_unique<net::CertBuilder>(nullptr, nullptr);
-  cert_builder->SetSubjectCommonName(base::StrCat(
-      {"Chromium Test Cert - ", net::CertBuilder::MakeRandomHexString(12)}));
+  // Create notification observer to track CertDatabase events triggered by
+  // CertStoreChangeNotifier's CERT_STORE_CTRL_NOTIFY_CHANGE callbacks.
+  CertStoreNotificationObserver notification_observer;
 
-  cert_builder->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
-
-  // Set validity period for the certificate
-  base::Time not_before = base::Time::Now() - base::Days(1);
-  base::Time not_after = base::Time::Now() + base::Days(30);
-  cert_builder->SetValidity(not_before, not_after);
-
-  // Parse the generated certificate for use with TrustStoreWin
-  bssl::CertErrors errors;
-  std::shared_ptr<const bssl::ParsedCertificate> test_cert =
-      bssl::ParsedCertificate::Create(
-          cert_builder->DupCertBuffer(),
-          x509_util::DefaultParseCertificateOptions(), &errors);
-  ASSERT_TRUE(test_cert) << "Failed to parse generated test certificate: "
-                         << errors.ToDebugString();
-
-  // Create a real TrustStoreWin that connects to actual Windows system stores
+  // Create a real TrustStoreWin that connects to actual Windows system stores.
+  // This sets up certificate monitoring with CERT_STORE_CTRL_NOTIFY_CHANGE
+  // and RegisterWaitForSingleObject using WT_EXECUTEONLYONCE, which fires
+  // exactly one callback per registration and requires explicit re-registration
+  // after each change is processed.
   auto trust_store_win = std::make_unique<TrustStoreWin>();
   trust_store_win->InitializeStores();
 
@@ -467,53 +513,156 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
   crypto::ScopedHCERTSTORE system_root_store(CertOpenStore(
       CERT_STORE_PROV_SYSTEM_REGISTRY_W, 0, NULL, flags, L"ROOT"));
 
-  if (!system_root_store.get()) {
-    EXPECT_NE(nullptr, system_root_store.get());
+  ASSERT_NE(nullptr, system_root_store.get());
+
+  // Set validity period for all test certificates.
+  base::Time not_before = base::Time::Now() - base::Days(1);
+  base::Time not_after = base::Time::Now() + base::Days(30);
+
+  // Reset notification counters to establish baseline.
+  notification_observer.reset_counters();
+  EXPECT_EQ(0, notification_observer.trust_store_notifications());
+
+  // This test twice performs operations that should trigger notifications.
+  // After each change, EnsureStoresAreSynced() is called which:
+  // 1. Resets the manual-reset event
+  // 2. Calls CERT_STORE_CTRL_RESYNC to sync stores
+  // 3. Re-registers via RegisterWaitForChangeNotification() for the next change
+  // This verifies the complete lifecycle works across multiple iterations.
+  for (int iteration = 0; iteration < 2; ++iteration) {
+    int notifications_before_cert_add =
+        notification_observer.trust_store_notifications();
+
+    // Create multiple test certificates to test debouncing behavior.
+    // Adding multiple certs before accessing the trust store should result
+    // in only one notification due to WT_EXECUTEONLYONCE.
+    constexpr int kNumCertsToAdd = 3;
+    std::vector<std::shared_ptr<const bssl::ParsedCertificate>> test_certs;
+    std::vector<crypto::ScopedPCCERT_CONTEXT> test_cert_contexts;
+
+    for (int cert_index = 0; cert_index < kNumCertsToAdd; ++cert_index) {
+      auto cert_builder = std::make_unique<net::CertBuilder>(nullptr, nullptr);
+      cert_builder->SetSubjectCommonName(base::StrCat(
+          {"Chromium Test Cert - Iteration ", base::NumberToString(iteration),
+           " - Cert ", base::NumberToString(cert_index)}));
+      cert_builder->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+      cert_builder->SetValidity(not_before, not_after);
+
+      bssl::CertErrors errors;
+      std::shared_ptr<const bssl::ParsedCertificate> test_cert =
+          bssl::ParsedCertificate::Create(
+              cert_builder->DupCertBuffer(),
+              x509_util::DefaultParseCertificateOptions(), &errors);
+      ASSERT_TRUE(test_cert);
+
+      crypto::ScopedPCCERT_CONTEXT test_cert_context(
+          CertCreateCertificateContext(
+              X509_ASN_ENCODING, CRYPTO_BUFFER_data(test_cert->cert_buffer()),
+              CRYPTO_BUFFER_len(test_cert->cert_buffer())));
+      ASSERT_NE(nullptr, test_cert_context.get());
+
+      // Verify certificate is NOT trusted initially.
+      EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+                trust_store_win->GetTrust(test_cert.get()).ToDebugString());
+
+      test_certs.push_back(std::move(test_cert));
+      test_cert_contexts.push_back(std::move(test_cert_context));
+    }
+
+    // Set up RunLoop to wait for the notification callback.
+    base::RunLoop add_run_loop;
+    notification_observer.set_on_notification_callback(
+        add_run_loop.QuitClosure());
+
+    // Add all certificates. Due to WT_EXECUTEONLYONCE, only one notification
+    // should be triggered regardless of how many certs are added before
+    // accessing the trust store.
+    for (int cert_index = 0; cert_index < kNumCertsToAdd; ++cert_index) {
+      BOOL add_result = CertAddCertificateContextToStore(
+          system_root_store.get(), test_cert_contexts[cert_index].get(),
+          CERT_STORE_ADD_NEW, nullptr);
+
+      if (!add_result) {
+        // Clean up any certs we already added before skipping.
+        for (int cleanup_index = 0; cleanup_index < cert_index;
+             ++cleanup_index) {
+          crypto::ScopedPCCERT_CONTEXT cert_to_delete(
+              CertFindCertificateInStore(
+                  system_root_store.get(), X509_ASN_ENCODING, 0,
+                  CERT_FIND_EXISTING, test_cert_contexts[cleanup_index].get(),
+                  nullptr));
+          if (cert_to_delete) {
+            CertDeleteCertificateFromStore(cert_to_delete.release());
+          }
+        }
+        GTEST_SKIP()
+            << "Could not add certificate to system store in iteration "
+            << iteration << ", cert " << cert_index
+            << ", error: " << GetLastError();
+      }
+    }
+
+    // Wait for the notification to be received.
+    add_run_loop.Run();
+
+    // Verify exactly one notification was received despite adding multiple
+    // certs. This tests the WT_EXECUTEONLYONCE debouncing behavior.
+    EXPECT_EQ(notification_observer.trust_store_notifications(),
+              notifications_before_cert_add + 1)
+        << "Expected exactly 1 notification from WT_EXECUTEONLYONCE callback "
+        << "despite adding " << kNumCertsToAdd << " certificates";
+
+    // Verify all certificates are trusted via GetTrust (validates cache
+    // invalidation and auto-sync). This is the first access after the store
+    // changes, so it triggers EnsureStoresAreSynced() which resets the event,
+    // resyncs via CERT_STORE_CTRL_RESYNC, and re-registers the wait callback.
+    for (const auto& test_cert : test_certs) {
+      EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
+                trust_store_win->GetTrust(test_cert.get()).ToDebugString());
+    }
+
+    // Test removal (validates that re-registration worked).
+    // The wait callback was re-registered after the add operation above, so
+    // removing certs should trigger exactly one more notification.
+    int notifications_before_cert_remove =
+        notification_observer.trust_store_notifications();
+
+    // Set up RunLoop to wait for the removal notification.
+    base::RunLoop remove_run_loop;
+    notification_observer.set_on_notification_callback(
+        remove_run_loop.QuitClosure());
+
+    // Remove all test certificates.
+    for (int cert_index = 0; cert_index < kNumCertsToAdd; ++cert_index) {
+      crypto::ScopedPCCERT_CONTEXT cert_to_delete(CertFindCertificateInStore(
+          system_root_store.get(), X509_ASN_ENCODING, 0, CERT_FIND_EXISTING,
+          test_cert_contexts[cert_index].get(), nullptr));
+
+      BOOL delete_result =
+          CertDeleteCertificateFromStore(cert_to_delete.release());
+      ASSERT_TRUE(delete_result);
+    }
+
+    // Wait for the notification to be received.
+    remove_run_loop.Run();
+
+    // Verify exactly one notification was received despite removing multiple
+    // certs.
+    EXPECT_EQ(notification_observer.trust_store_notifications(),
+              notifications_before_cert_remove + 1)
+        << "Expected exactly 1 notification from WT_EXECUTEONLYONCE callback "
+        << "despite removing " << kNumCertsToAdd << " certificates";
+
+    // Verify certificates are no longer trusted after removal and resync.
+    for (const auto& test_cert : test_certs) {
+      EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+                trust_store_win->GetTrust(test_cert.get()).ToDebugString());
+    }
   }
 
-  // Load the certificate.
-  crypto::ScopedPCCERT_CONTEXT test_cert_context(CertCreateCertificateContext(
-      X509_ASN_ENCODING, CRYPTO_BUFFER_data(test_cert->cert_buffer()),
-      CRYPTO_BUFFER_len(test_cert->cert_buffer())));
-
-  if (!test_cert_context.get()) {
-    EXPECT_NE(nullptr, test_cert_context.get());
-  }
-
-  // Verify certificate is NOT trusted initially.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(test_cert.get()).ToDebugString())
-      << "Certificate should not be trusted initially";
-
-  // Add certificate to the actual Windows system ROOT store.
-  BOOL add_result = CertAddCertificateContextToStore(
-      system_root_store.get(), test_cert_context.get(), CERT_STORE_ADD_NEW,
-      nullptr);
-
-  if (!add_result) {
-    GTEST_SKIP() << "Could not add certificate to system store, error: "
-                 << GetLastError();
-  }
-
-  // Test auto-sync: Certificate should be immediately trusted without restart.
-  EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
-            trust_store_win->GetTrust(test_cert.get()).ToDebugString())
-      << "Auto-sync should allow immediate detection of newly added "
-         "certificate";
-
-  // Cleanup: Remove the test certificate.
-  crypto::ScopedPCCERT_CONTEXT cert_to_delete(CertFindCertificateInStore(
-      system_root_store.get(), X509_ASN_ENCODING, 0, CERT_FIND_EXISTING,
-      test_cert_context.get(), nullptr));
-
-  if (cert_to_delete.get()) {
-    CertDeleteCertificateFromStore(cert_to_delete.release());
-  }
-
-  // Verify cleanup: Certificate should no longer be trusted.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(test_cert.get()).ToDebugString())
-      << "Certificate should not be trusted after removal";
+  int total_notifications = notification_observer.trust_store_notifications();
+  EXPECT_EQ(total_notifications, 4)
+      << "Expected 4 notifications (2 batch adds + 2 batch removes)";
 }
 
 }  // namespace
