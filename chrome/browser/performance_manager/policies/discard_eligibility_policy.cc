@@ -202,8 +202,6 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
 
   // Don't discard tabs that don't have a main frame (restored tab which is not
   // loaded yet, discarded tab, crashed tab).
-  // TODO(crbug.com/463291982): Add test to verify crashed page cannot be
-  // discarded.
   if (!page_node->GetMainFrameNode()) {
     add_reason(CannotDiscardReason::kNoMainFrame);
     return CanDiscardResult::kDisallowed;
