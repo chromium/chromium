@@ -196,22 +196,28 @@ class CommunicationDeviceListener {
             return false;
         }
 
-        boolean btClassicHeadsetConnected =
-                btAdapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.HEADSET)
-                        == android.bluetooth.BluetoothAdapter.STATE_CONNECTED;
+        boolean btClassicHeadsetConnected = false;
+        try {
+            btClassicHeadsetConnected =
+                    btAdapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.HEADSET)
+                            == android.bluetooth.BluetoothAdapter.STATE_CONNECTED;
+        } catch (Exception e) {
+            Log.w(TAG, "hasBluetoothHeadset: failed to query HEADSET connection state");
+        }
 
         boolean btLeHeadsetConnected = false;
         if (mIsBluetoothLeAudioSupported) {
-            btLeHeadsetConnected =
-                    btAdapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.LE_AUDIO)
-                            == android.bluetooth.BluetoothAdapter.STATE_CONNECTED;
+            try {
+                btLeHeadsetConnected =
+                        btAdapter.getProfileConnectionState(
+                                        android.bluetooth.BluetoothProfile.LE_AUDIO)
+                                == android.bluetooth.BluetoothAdapter.STATE_CONNECTED;
+            } catch (Exception e) {
+                Log.w(TAG, "hasBluetoothHeadset: failed to query LE_AUDIO connection state");
+            }
         }
 
-        // Ensure that Bluetooth is enabled and that a device which supports the
-        // headset and handsfree profile is connected.
-        // TODO(henrika): it is possible that btAdapter.isEnabled() is
-        // redundant. It might be sufficient to only check the profile state.
-        return btAdapter.isEnabled() && (btClassicHeadsetConnected || btLeHeadsetConnected);
+        return btClassicHeadsetConnected || btLeHeadsetConnected;
     }
 
     /**
