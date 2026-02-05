@@ -683,15 +683,6 @@ class LensOverlayController : public OverlayBaseController,
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
 
-  // ViewObserver:
-  void OnViewBoundsChanged(views::View* observed_view) override;
-
-  // views::WidgetObserver:
-#if BUILDFLAG(IS_MAC)
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-#endif
-  void OnWidgetDestroying(views::Widget* widget) override;
-
   // OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override {}
   void OnOmniboxInputInProgress(bool in_progress) override {}

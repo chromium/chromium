@@ -98,6 +98,16 @@ class OverlayBaseController : public content::WebContentsDelegate,
     return preselection_widget_.get();
   }
 
+ private:
+  // ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
+  // views::WidgetObserver:
+#if BUILDFLAG(IS_MAC)
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+#endif
+  void OnWidgetDestroying(views::Widget* widget) override;
+
  protected:
   // Owns the this class via TabFeatures.
   raw_ptr<tabs::TabInterface> tab_;
@@ -164,7 +174,7 @@ class OverlayBaseController : public content::WebContentsDelegate,
   PrefChangeRegistrar pref_change_registrar_;
 
   // --------------------Browser window scoped state: END---------------------
-
+ private:
   // Must be the last member.
   base::WeakPtrFactory<OverlayBaseController> weak_factory_{this};
 };
