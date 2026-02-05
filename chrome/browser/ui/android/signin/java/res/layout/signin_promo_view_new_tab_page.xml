@@ -12,6 +12,6 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/content_suggestions_card_bottom_margin"
     android:paddingTop="16dp"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+    android:paddingStart="@dimen/signin_promo_lateral_paddings"
+    android:paddingEnd="@dimen/signin_promo_lateral_paddings"
     />
