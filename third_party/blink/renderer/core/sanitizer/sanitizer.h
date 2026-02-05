@@ -134,7 +134,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
 
   // Helper methods for SanitizeSafe/Unsafe:
   void Sanitize(Node* node, bool safe) const;
-  void SanitizeElement(Element* element) const;
+  void SanitizeElement(Element* element, bool safe) const;
   void SanitizeJavascriptNavigationAttributes(Element* element,
                                               bool safe) const;
   void SanitizeTemplate(Node* node, bool safe) const;

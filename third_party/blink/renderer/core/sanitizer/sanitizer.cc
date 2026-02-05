@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -624,21 +625,34 @@ bool Sanitizer::RemoveAttribute(const QualifiedName& name) {
   // with attribute. Step 2: If configuration["attributes"] exists:
   if (allow_attrs_) {
     // Step 2.1: Comment: If we have a global allow-list, we need to add
-    // attribute. Step 2.2: If configuration["attributes"] does not contain
-    // attribute:
-    if (!allow_attrs_->Contains(name)) {
-      // Step 2.2.1: Return false.
-      return false;
-    }
+    // attribute.
+    // Step 2.2: Set |modified| to the result of remove attribute  from
+    // |configuration|["{{SanitizerConfig/attributes}}"].
+    bool modified = allow_attrs_->Contains(name);
     // Step 2.3: Comment: Fix-up per-element allow and remove lists.
     // Step 2.4: If configuration["elements"] exists:
     if (allow_elements_) {
       // Step 2.4.1: For each element in configuration["elements"]:
-      // Step 2.4.1.1: If element["removeAttributes"] with default « » contains
-      // attribute: Step 2.4.1.1.1: Remove attribute from
-      // element["removeAttributes"].
-      for (const auto& item : remove_attrs_per_element_) {
+      for (const auto& item : allow_attrs_per_element_) {
+        // Step 2.4.1.1: If element["attributes"] with default «» contains
+        // attribute:
         if (item.value.Contains(name)) {
+          // Step 2.4.1.1.1: Set modified to true.
+          modified = true;
+          // Step 2.4.1.1.2: Remove attribute from element["attributes"].
+          SanitizerNameSet attrs(item.value);
+          attrs.erase(name);
+          allow_attrs_per_element_.Set(item.key, attrs);
+        }
+      }
+      // ALso Step 2.4.1, For each element in configuration["elements"]
+      for (const auto& item : remove_attrs_per_element_) {
+        // Step 2.4.1.2: If element["removeAttributes"] with default «» contains
+        // attribute:
+        if (item.value.Contains(name)) {
+          // Step 2.4.1.2.1: Assert: modified is true.
+          DCHECK(modified);
+          // Step 2.4.1.2.2: Remove attribute from element["removeAttributes"].
           SanitizerNameSet attrs(item.value);
           attrs.erase(name);
           remove_attrs_per_element_.Set(item.key, attrs);
@@ -648,7 +662,7 @@ bool Sanitizer::RemoveAttribute(const QualifiedName& name) {
     // Step 2.5: Remove attribute from configuration["attributes"].
     allow_attrs_->erase(name);
     // Step 2.6: Return true.
-    return true;
+    return modified;
   } else {
     // Step 3: Otherwise:
     DCHECK(remove_attrs_);
@@ -689,7 +703,7 @@ bool Sanitizer::RemoveAttribute(const QualifiedName& name) {
   }
 }
 
-void Sanitizer::SanitizeElement(Element* element) const {
+void Sanitizer::SanitizeElement(Element* element, bool safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core, Step 1.5.8 + 1.5.9.1-4
   //
   // The sanitize-core algorithm is fairly long. This implements the steps to
@@ -727,6 +741,21 @@ void Sanitizer::SanitizeElement(Element* element) const {
     if (!keep) {
       element->removeAttribute(name);
     }
+
+    if (keep && safe) {
+      // This is an overly conservative CHECK to prevent another bug like
+      // 477643913. Presumably, we can remove this check at some point.
+      CHECK(name.NamespaceURI() ||
+            !TrustedTypePolicyFactory::IsEventHandlerAttributeName(
+                name.LocalName()));
+    }
+  }
+
+  if (safe) {
+    // This is an overly conservative CHECK to prevent another bug like
+    // 477643913. Presumably, we can remove this check at some point.
+    CHECK_NE(element->TagQName(), html_names::kScriptTag);
+    CHECK_NE(element->TagQName(), svg_names::kScriptTag);
   }
 }
 
@@ -865,7 +894,7 @@ Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
 }
 
 void Sanitizer::ProcessElement(Element* element, bool safe) const {
-  SanitizeElement(element);
+  SanitizeElement(element, safe);
   SanitizeJavascriptNavigationAttributes(element, safe);
 }
 

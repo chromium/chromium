@@ -172,28 +172,28 @@ test(() => {
     elements: [{ name: "div", attributes: ["class"], removeAttributes: ["title"] }],
   });
 
-  assert_false(s.removeAttribute("class"));
+  assert_true(s.removeAttribute("class"));
   assert_config(s.get(), {
     attributes: ["id", "title"],
-    elements: [{ name: "div", attributes: ["class"], removeAttributes: ["title"] }],
+    elements: [{ name: "div", attributes: [], removeAttributes: ["title"] }],
   });
 
   assert_true(s.removeAttribute("id"));
   assert_config(s.get(), {
     attributes: ["title"],
-    elements: [{ name: "div", attributes: ["class"], removeAttributes: ["title"] }],
+    elements: [{ name: "div", attributes: [], removeAttributes: ["title"] }],
   });
 
   assert_false(s.removeAttribute("id"));
   assert_config(s.get(), {
     attributes: ["title"],
-    elements: [{ name: "div", attributes: ["class"], removeAttributes: ["title"] }],
+    elements: [{ name: "div", attributes: [], removeAttributes: ["title"] }],
   });
 
   assert_true(s.removeAttribute("title"));
   assert_config(s.get(), {
     attributes: [],
-    elements: [{ name: "div", attributes: ["class"], removeAttributes: [] }],
+    elements: [{ name: "div", attributes: [], removeAttributes: [] }],
   });
 }, "sanitizer.removeAttribute() with global attributes and elements");
 
