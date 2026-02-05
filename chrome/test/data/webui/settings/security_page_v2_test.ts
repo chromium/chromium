@@ -435,12 +435,24 @@ suite('Main', function() {
   });
 
   test('AdvancedProtectionProgramTextLinkClick', async function() {
-    page.shadowRoot!
-        .querySelector<HTMLElement>(
-            '#advancedProtectionProgramLinkRow')!.querySelector('a')!.click();
+    // Click Advanced Protection Program link.
+    const linkRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#advancedProtectionProgramLinkRow');
+    assertTrue(!!linkRow, 'Link row should exist.');
 
+    const linkElement = linkRow.querySelector('a');
+    assertTrue(!!linkElement, 'Link element should exist.');
+
+    const event = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    });
+    linkElement.dispatchEvent(event);
+
+    // Verify that the default action of link navigation was ignored.
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('advancedProtectionURL'));
+    assertTrue(event.defaultPrevented);
   });
 
   test('SecureDnsV2HiddenWhenFlagDisabled', function() {
