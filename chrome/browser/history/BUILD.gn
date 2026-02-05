@@ -3,11 +3,22 @@
 # found in the LICENSE file.
 
 source_set("history") {
-  sources = [ "history_service_factory.h" ]
+  sources = [
+    "history_service_factory.h",
+    "web_history_service_factory.cc",
+    "web_history_service_factory.h",
+  ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+  ]
+  deps = [
+    "//chrome/browser/signin",
+    "//chrome/browser/sync:factories",
+    "//components/history/core/browser",
+    "//components/sync/service",
+    "//content/public/browser",
   ]
 }
 

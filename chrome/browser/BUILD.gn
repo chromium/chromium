@@ -530,8 +530,6 @@ static_library("browser") {
     "history/profile_based_browsing_history_driver.h",
     "history/top_sites_factory.cc",
     "history/top_sites_factory.h",
-    "history/web_history_service_factory.cc",
-    "history/web_history_service_factory.h",
     "history_clusters/history_clusters_metrics_logger.cc",
     "history_clusters/history_clusters_metrics_logger.h",
     "history_clusters/history_clusters_service_factory.cc",
