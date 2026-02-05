@@ -27,8 +27,6 @@ using ItemBlock = void (^)(id idResponse, NSError* error);
 
 namespace {
 
-const CGFloat kShareSheetCornerRadius = 20;
-
 const CGFloat kShareImageTargetHeight = 1024;
 const CGFloat kShareImageTargetWidth = 1024;
 
@@ -118,13 +116,6 @@ const NSUInteger kSearchCharacterLimit = 1000;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.shareSheet];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-  UISheetPresentationController* presentationController =
-      _navigationController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.detents = @[
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-  presentationController.preferredCornerRadius = kShareSheetCornerRadius;
   if (@available(iOS 26, *)) {
     [self addChildViewController:_navigationController];
   }
