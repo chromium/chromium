@@ -11,15 +11,16 @@
 #include "media/base/video_codecs.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 
 namespace blink {
 
-String PLATFORM_EXPORT WebrtcCodecNameFromMimeType(const String& mime_type,
-                                                   const char* prefix);
+StringView PLATFORM_EXPORT
+WebrtcCodecNameFromMimeType(const StringView& mime_type,
+                            const StringView& prefix);
 std::map<std::string, std::string> PLATFORM_EXPORT
 ConvertToSdpVideoFormatParameters(
     const ParsedContentHeaderFieldParameters& parameters);

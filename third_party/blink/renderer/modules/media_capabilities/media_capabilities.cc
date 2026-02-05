@@ -464,7 +464,7 @@ webrtc::SdpAudioFormat ToSdpAudioFormat(
   // Convert audio_configuration to SdpAudioFormat.
   ParsedContentType parsed_content_type(configuration->contentType());
   DCHECK(parsed_content_type.IsValid());
-  const String codec_name =
+  const StringView codec_name =
       WebrtcCodecNameFromMimeType(parsed_content_type.MimeType(), "audio");
   // TODO(https://crbug.com/1187565): Deal with the special case where the clock
   // rate is not the same as the sample rate.
@@ -482,7 +482,7 @@ webrtc::SdpVideoFormat ToSdpVideoFormat(
   // Convert video_configuration to SdpVideoFormat.
   ParsedContentType parsed_content_type(configuration->contentType());
   DCHECK(parsed_content_type.IsValid());
-  const String codec_name =
+  const StringView codec_name =
       WebrtcCodecNameFromMimeType(parsed_content_type.MimeType(), "video");
   const std::map<std::string, std::string> parameters =
       ConvertToSdpVideoFormatParameters(parsed_content_type.GetParameters());
