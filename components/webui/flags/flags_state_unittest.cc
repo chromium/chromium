@@ -93,13 +93,13 @@ const FeatureEntry::FeatureParam kTestVariationOther3[] = {
 };
 
 const FeatureEntry::FeatureVariation kTestVariations1[] = {
-    {"dummy description 1", kTestVariationOther1, 1, nullptr}};
+    {"dummy description 1", kTestVariationOther1, nullptr}};
 const FeatureEntry::FeatureVariation kTestVariations2[] = {
-    {"dummy description 2", kTestVariationOther2, 1, nullptr}};
+    {"dummy description 2", kTestVariationOther2, nullptr}};
 const FeatureEntry::FeatureVariation kTestVariations3[] = {
-    {"dummy description 1", kTestVariationOther1, 1, nullptr},
-    {"dummy description 2", kTestVariationOther2, 1, nullptr},
-    {"dummy description 3", kTestVariationOther3, 2, "t123456"}};
+    {"dummy description 1", kTestVariationOther1, nullptr},
+    {"dummy description 2", kTestVariationOther2, nullptr},
+    {"dummy description 3", kTestVariationOther3, "t123456"}};
 
 const char kTestVariation3Cmdline[] =
     "FeatureName3:param1/value/param%3A%2F3/value";

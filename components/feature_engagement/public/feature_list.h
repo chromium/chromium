@@ -38,9 +38,8 @@ inline constexpr char kIPHDemoModeFeatureChoiceParam[] = "chosen_feature";
 // Defines a single flags_ui::FeatureEntry::FeatureVariation entry, fully
 // enclosed. This is intended to be used with the declaration of
 // |kIPHDemoModeChoiceVariations| below.
-#define VARIATION_ENTRY(base_feature)                               \
-  {base_feature##Variation[0].param_value, base_feature##Variation, \
-   std::size(base_feature##Variation), nullptr}
+#define VARIATION_ENTRY(base_feature) \
+  {base_feature##Variation[0].param_value, base_feature##Variation, nullptr}
 
 // Defines a flags_ui::FeatureEntry::FeatureParam for each feature.
 DEFINE_VARIATION_PARAM(kIPHDummyFeature, "IPH_Dummy");

@@ -148,11 +148,10 @@ struct FeatureEntry {
     // get translated. The other parts here use ids for historical reasons and
     // can realistically also be moved to direct description_texts.
     const char* description_text;
-    // This is not a raw_ptr because every instance of FeatureParam is
+    // This is not a raw_span because every instance of FeatureParam is
     // statically-allocated at namespace scope, so pointers to them can never
     // dangle.
-    RAW_PTR_EXCLUSION const FeatureParam* params;
-    int num_params;
+    RAW_PTR_EXCLUSION base::span<const FeatureParam> params;
     // A variation id number in the format of
     // VariationsIdsProvider::ForceVariationIds() or nullptr if you do
     // not need to set any variation_id for this feature variation.

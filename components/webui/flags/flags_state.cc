@@ -630,14 +630,12 @@ std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
 
           // The selected variation is non-default, collect its params & id.
 
-          for (int i = 0; i < variation->num_params; ++i) {
+          for (const auto& param : variation->params) {
             auto insert_result = params_by_trial_name[trial_name].insert(
-                std::make_pair(UNSAFE_TODO(variation->params[i]).param_name,
-                               UNSAFE_TODO(variation->params[i]).param_value));
+                std::make_pair(param.param_name, param.param_value));
             DCHECK(insert_result.second)
                 << "Multiple values for the same parameter '"
-                << UNSAFE_TODO(variation->params[i]).param_name
-                << "' are specified in chrome://flags!";
+                << param.param_name << "' are specified in chrome://flags!";
           }
           if (variation->variation_id) {
             variation_ids.push_back(variation->variation_id);
@@ -1067,11 +1065,11 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
             std::string variation_id;
             if (variation) {
               feature_name.append(":");
-              for (int i = 0; i < variation->num_params; ++i) {
-                std::string param_name = variations::EscapeValue(
-                    UNSAFE_TODO(variation->params[i]).param_name);
-                std::string param_value = variations::EscapeValue(
-                    UNSAFE_TODO(variation->params[i]).param_value);
+              for (const auto& param : variation->params) {
+                std::string param_name =
+                    variations::EscapeValue(param.param_name);
+                std::string param_value =
+                    variations::EscapeValue(param.param_value);
                 params_value.push_back(
                     param_name.append("/").append(param_value));
               }
@@ -1171,9 +1169,7 @@ void FlagsState::SetFlags(
           // feature_name is mapped to an empty map in feature_params.
           continue;
         }
-        for (int i = 0; i < feature_variations->num_params; i++) {
-          FeatureEntry::FeatureParam feature_param =
-              UNSAFE_TODO(feature_variations->params[i]);
+        for (const auto& feature_param : feature_variations->params) {
           std::string param_name = std::string(feature_param.param_name);
           std::string param_value = std::string(feature_param.param_value);
           cur_feature_params[param_name] = param_value;

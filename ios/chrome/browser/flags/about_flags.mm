@@ -161,20 +161,15 @@ const FeatureEntry::FeatureParam kNTPMIAEntrypointAIMInQuickActions[] = {
 
 const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
     {"A: Contained in Omnibox, single button",
-     kNTPMIAEntrypointOmniboxContainedSingleButton,
-     std::size(kNTPMIAEntrypointOmniboxContainedSingleButton), nullptr},
+     kNTPMIAEntrypointOmniboxContainedSingleButton, nullptr},
     {"B: Contained in Omnibox, inline with Voice and Lens",
-     kNTPMIAEntrypointOmniboxContainedInline,
-     std::size(kNTPMIAEntrypointOmniboxContainedInline), nullptr},
+     kNTPMIAEntrypointOmniboxContainedInline, nullptr},
     {"C: Contained in Omnibox, enlarged fakebox",
-     kNTPMIAEntrypointOmniboxContainedEnlargedFakebox,
-     std::size(kNTPMIAEntrypointOmniboxContainedEnlargedFakebox), nullptr},
+     kNTPMIAEntrypointOmniboxContainedEnlargedFakebox, nullptr},
     {"D: Contained in enlarged fakebox, without incognito shortcut",
-     kNTPMIAEntrypointEnlargedFakeboxNoIncognito,
-     std::size(kNTPMIAEntrypointEnlargedFakeboxNoIncognito), nullptr},
+     kNTPMIAEntrypointEnlargedFakeboxNoIncognito, nullptr},
     {"E: AIM entry point in quick actions, enlarged fakebox",
-     kNTPMIAEntrypointAIMInQuickActions,
-     std::size(kNTPMIAEntrypointAIMInQuickActions), nullptr},
+     kNTPMIAEntrypointAIMInQuickActions, nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -188,11 +183,9 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureVariation kBottomOmniboxEvolutionVariations[] = {
     {"A: Follows the same position in edit state as the steady state.",
-     kBottomOmniboxEvolutionEditStateFollowSteadyState,
-     std::size(kBottomOmniboxEvolutionEditStateFollowSteadyState), nullptr},
+     kBottomOmniboxEvolutionEditStateFollowSteadyState, nullptr},
     {"B: Forces the bottom omnibox position for the edit state",
-     kBottomOmniboxEvolutionForceBottomOmniboxEditState,
-     std::size(kBottomOmniboxEvolutionForceBottomOmniboxEditState), nullptr},
+     kBottomOmniboxEvolutionForceBottomOmniboxEditState, nullptr},
 };
 
 const FeatureEntry::FeatureParam kComposeboxTabPickerVariationCachedAPC[] = {
@@ -205,10 +198,9 @@ const FeatureEntry::FeatureParam kComposeboxTabPickerVariationOnFlightAPC[] = {
 
 const FeatureEntry::FeatureVariation kComposeboxTabPickerVariationVariations[] =
     {
-        {"A) Use Cached APC", kComposeboxTabPickerVariationCachedAPC,
-         std::size(kComposeboxTabPickerVariationCachedAPC), nullptr},
+        {"A) Use Cached APC", kComposeboxTabPickerVariationCachedAPC, nullptr},
         {"B) Use On flight APC", kComposeboxTabPickerVariationOnFlightAPC,
-         std::size(kComposeboxTabPickerVariationOnFlightAPC), nullptr},
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam kDisableKeyboardAccessoryOnlySymbolsParam[] = {
@@ -222,12 +214,11 @@ const FeatureEntry::FeatureParam kDisableKeyboardAccessoryCompletelyParam[] = {
 
 const FeatureEntry::FeatureVariation kDisableKeyboardAccessoryVariations[] = {
     {"A) only show symbols", kDisableKeyboardAccessoryOnlySymbolsParam,
-     std::size(kDisableKeyboardAccessoryOnlySymbolsParam), nullptr},
+     nullptr},
     {"B) only show lens and voice search",
-     kDisableKeyboardAccessoryOnlyFeaturesParam,
-     std::size(kDisableKeyboardAccessoryOnlyFeaturesParam), nullptr},
+     kDisableKeyboardAccessoryOnlyFeaturesParam, nullptr},
     {"C) disable completely", kDisableKeyboardAccessoryCompletelyParam,
-     std::size(kDisableKeyboardAccessoryCompletelyParam), nullptr}};
+     nullptr}};
 
 const FeatureEntry::FeatureParam
     kIOSKeyboardAccessoryTwoBubbleWithKeyboardIcon[] = {
@@ -240,9 +231,9 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation
     kIOSKeyboardAccessoryTwoBubbleVariations[] = {
         {"With Keyboard Icon", kIOSKeyboardAccessoryTwoBubbleWithKeyboardIcon,
-         std::size(kIOSKeyboardAccessoryTwoBubbleWithKeyboardIcon), nullptr},
+         nullptr},
         {"With Checkmark Icon", kIOSKeyboardAccessoryTwoBubbleWithCheckmarkIcon,
-         std::size(kIOSKeyboardAccessoryTwoBubbleWithCheckmarkIcon), nullptr}};
+         nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
@@ -261,20 +252,13 @@ const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches12[] = {
 
 const FeatureEntry::FeatureVariation
     kOmniboxUIMaxAutocompleteMatchesVariations[] = {
-        {"3 matches", kOmniboxUIMaxAutocompleteMatches3,
-         std::size(kOmniboxUIMaxAutocompleteMatches3), nullptr},
-        {"4 matches", kOmniboxUIMaxAutocompleteMatches4,
-         std::size(kOmniboxUIMaxAutocompleteMatches4), nullptr},
-        {"5 matches", kOmniboxUIMaxAutocompleteMatches5,
-         std::size(kOmniboxUIMaxAutocompleteMatches5), nullptr},
-        {"6 matches", kOmniboxUIMaxAutocompleteMatches6,
-         std::size(kOmniboxUIMaxAutocompleteMatches6), nullptr},
-        {"8 matches", kOmniboxUIMaxAutocompleteMatches8,
-         std::size(kOmniboxUIMaxAutocompleteMatches8), nullptr},
-        {"10 matches", kOmniboxUIMaxAutocompleteMatches10,
-         std::size(kOmniboxUIMaxAutocompleteMatches10), nullptr},
-        {"12 matches", kOmniboxUIMaxAutocompleteMatches12,
-         std::size(kOmniboxUIMaxAutocompleteMatches12), nullptr}};
+        {"3 matches", kOmniboxUIMaxAutocompleteMatches3, nullptr},
+        {"4 matches", kOmniboxUIMaxAutocompleteMatches4, nullptr},
+        {"5 matches", kOmniboxUIMaxAutocompleteMatches5, nullptr},
+        {"6 matches", kOmniboxUIMaxAutocompleteMatches6, nullptr},
+        {"8 matches", kOmniboxUIMaxAutocompleteMatches8, nullptr},
+        {"10 matches", kOmniboxUIMaxAutocompleteMatches10, nullptr},
+        {"12 matches", kOmniboxUIMaxAutocompleteMatches12, nullptr}};
 
 const FeatureEntry::FeatureParam kContentPushNotificationsEnabledPromo[] = {
     {kContentPushNotificationsExperimentType, "1"}};
@@ -293,20 +277,16 @@ const FeatureEntry::FeatureParam
         {kContentPushNotificationsExperimentType, "7"}};
 
 const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
-    {"Promo", kContentPushNotificationsEnabledPromo,
-     std::size(kContentPushNotificationsEnabledPromo), nullptr},
-    {"Set up list", kContentPushNotificationsEnabledSetupLists,
-     std::size(kContentPushNotificationsEnabledSetupLists), nullptr},
+    {"Promo", kContentPushNotificationsEnabledPromo, nullptr},
+    {"Set up list", kContentPushNotificationsEnabledSetupLists, nullptr},
     {"Provisional Notification", kContentPushNotificationsEnabledProvisional,
-     std::size(kContentPushNotificationsEnabledProvisional), nullptr},
+     nullptr},
     {"Promo Registeration Only", kContentPushNotificationsPromoRegistrationOnly,
-     std::size(kContentPushNotificationsPromoRegistrationOnly), nullptr},
+     nullptr},
     {"Provisional Notification Registeration Only",
-     kContentPushNotificationsProvisionalRegistrationOnly,
-     std::size(kContentPushNotificationsProvisionalRegistrationOnly), nullptr},
+     kContentPushNotificationsProvisionalRegistrationOnly, nullptr},
     {"Set up list Registeration Only",
-     kContentPushNotificationsSetUpListRegistrationOnly,
-     std::size(kContentPushNotificationsSetUpListRegistrationOnly), nullptr}};
+     kContentPushNotificationsSetUpListRegistrationOnly, nullptr}};
 
 const FeatureEntry::FeatureParam kEnableDefaultModel[] = {
     {segmentation_platform::kDefaultModelEnabledParam, "true"}};
@@ -314,7 +294,7 @@ const FeatureEntry::FeatureParam kEnableDefaultModel[] = {
 const FeatureEntry::FeatureVariation
     kSegmentationPlatformIosModuleRankerVariations[]{
         {"Enabled With Default Model Parameter (Must Set this!)",
-         kEnableDefaultModel, std::size(kEnableDefaultModel), nullptr},
+         kEnableDefaultModel, nullptr},
     };
 
 const FeatureEntry::FeatureParam
@@ -328,9 +308,9 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation kIOSReactivationNotificationsVariations[] =
     {
         {"(10s trigger)", kIOSReactivationNotifications10SecondTrigger,
-         std::size(kIOSReactivationNotifications10SecondTrigger), nullptr},
+         nullptr},
         {"(30s trigger)", kIOSReactivationNotifications30SecondTrigger,
-         std::size(kIOSReactivationNotifications30SecondTrigger), nullptr},
+         nullptr},
 };
 
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
@@ -379,23 +359,19 @@ const FeatureEntry::FeatureParam kServerDrivenSixHourMaxAgeRecurring[] = {
 // Feed Background Refresh Feature Variations.
 const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
     {"1hr Interval 1hr Max Age Once", kOneHourIntervalOneHourMaxAgeOnce,
-     std::size(kOneHourIntervalOneHourMaxAgeOnce), nullptr},
+     nullptr},
     {"4hr Interval 6hr Max Age Once", kFourHourIntervalSixHourMaxAgeOnce,
-     std::size(kFourHourIntervalSixHourMaxAgeOnce), nullptr},
+     nullptr},
     {"1hr Interval 1hr Max Age Recurring",
-     kOneHourIntervalOneHourMaxAgeRecurring,
-     std::size(kOneHourIntervalOneHourMaxAgeRecurring), nullptr},
+     kOneHourIntervalOneHourMaxAgeRecurring, nullptr},
     {"4hr Interval 6hr Max Age Recurring",
-     kFourHourIntervalSixHourMaxAgeRecurring,
-     std::size(kFourHourIntervalSixHourMaxAgeRecurring), nullptr},
-    {"Server Driven 1hr Max Age Once", kServerDrivenOneHourMaxAgeOnce,
-     std::size(kServerDrivenOneHourMaxAgeOnce), nullptr},
+     kFourHourIntervalSixHourMaxAgeRecurring, nullptr},
+    {"Server Driven 1hr Max Age Once", kServerDrivenOneHourMaxAgeOnce, nullptr},
     {"Server Driven 1hr Max Age Recurring", kServerDrivenOneHourMaxAgeRecurring,
-     std::size(kServerDrivenOneHourMaxAgeRecurring), nullptr},
-    {"Server Driven 6hr Max Age Once", kServerDrivenSixHourMaxAgeOnce,
-     std::size(kServerDrivenSixHourMaxAgeOnce), nullptr},
+     nullptr},
+    {"Server Driven 6hr Max Age Once", kServerDrivenSixHourMaxAgeOnce, nullptr},
     {"Server Driven 6hr Max Age Recurring", kServerDrivenSixHourMaxAgeRecurring,
-     std::size(kServerDrivenSixHourMaxAgeRecurring), nullptr},
+     nullptr},
 };
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 
@@ -406,10 +382,8 @@ const FeatureEntry::FeatureParam kDownloadListDefaultUIParam[] = {
 const FeatureEntry::FeatureParam kDownloadListCustomUIParam[] = {
     {kDownloadListUITypeParam, "1"}};
 const FeatureEntry::FeatureVariation kDownloadListVariations[] = {
-    {"Default UI", kDownloadListDefaultUIParam,
-     std::size(kDownloadListDefaultUIParam), nullptr},
-    {"Custom UI", kDownloadListCustomUIParam,
-     std::size(kDownloadListCustomUIParam), nullptr},
+    {"Default UI", kDownloadListDefaultUIParam, nullptr},
+    {"Custom UI", kDownloadListCustomUIParam, nullptr},
 };
 
 // Default browser promo refresh feature flag parameters.
@@ -425,14 +399,11 @@ const FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm3[] = {
 const FeatureEntry::FeatureVariation
     kDefaultBrowserPictureInPictureVariations[] = {
         {"Picture-in-picture instructions.",
-         kDefaultBrowserPictureInPictureArm1,
-         std::size(kDefaultBrowserPictureInPictureArm1), nullptr},
+         kDefaultBrowserPictureInPictureArm1, nullptr},
         {"No picture in picture, default apps destination.",
-         kDefaultBrowserPictureInPictureArm2,
-         std::size(kDefaultBrowserPictureInPictureArm2), nullptr},
+         kDefaultBrowserPictureInPictureArm2, nullptr},
         {"Picture-in-picture instructions, default apps destination.",
-         kDefaultBrowserPictureInPictureArm3,
-         std::size(kDefaultBrowserPictureInPictureArm3), nullptr},
+         kDefaultBrowserPictureInPictureArm3, nullptr},
 };
 
 const FeatureEntry::FeatureParam kIOSDockingPromoV2Header1[] = {
@@ -445,12 +416,10 @@ const FeatureEntry::FeatureParam kIOSDockingPromoV2Header3[] = {
     {kIOSDockingPromoV2VariationParam, kIOSDockingPromoV2VariationHeader3}};
 
 const FeatureEntry::FeatureVariation kIOSDockingPromoV2Variations[] = {
-    {"Display Header #1", kIOSDockingPromoV2Header1,
-     std::size(kIOSDockingPromoV2Header1), nullptr},
-    {"Display Header #2", kIOSDockingPromoV2Header2,
-     std::size(kIOSDockingPromoV2Header2), nullptr},
+    {"Display Header #1", kIOSDockingPromoV2Header1, nullptr},
+    {"Display Header #2", kIOSDockingPromoV2Header2, nullptr},
     {"Display Header #3 without Subheader", kIOSDockingPromoV2Header3,
-     std::size(kIOSDockingPromoV2Header3), nullptr}};
+     nullptr}};
 
 const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAfterFRE[] = {
     {kIOSDockingPromoExperimentType, "0"}};
@@ -460,12 +429,10 @@ const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedDuringFRE[] = {
     {kIOSDockingPromoExperimentType, "2"}};
 
 const FeatureEntry::FeatureVariation kIOSDockingPromoVariations[] = {
-    {"Display promo after FRE", kIOSDockingPromoDisplayedAfterFRE,
-     std::size(kIOSDockingPromoDisplayedAfterFRE), nullptr},
+    {"Display promo after FRE", kIOSDockingPromoDisplayedAfterFRE, nullptr},
     {"Display promo at app launch", kIOSDockingPromoDisplayedAtAppLaunch,
-     std::size(kIOSDockingPromoDisplayedAtAppLaunch), nullptr},
-    {"Display promo during FRE", kIOSDockingPromoDisplayedDuringFRE,
-     std::size(kIOSDockingPromoDisplayedDuringFRE), nullptr}};
+     nullptr},
+    {"Display promo during FRE", kIOSDockingPromoDisplayedDuringFRE, nullptr}};
 
 // Uses int values from Lens filters ablation mode enum.
 const FeatureEntry::FeatureParam kLensFiltersAblationModeDisabled[] = {
@@ -478,14 +445,10 @@ const FeatureEntry::FeatureParam kLensFiltersAblationModeAlways[] = {
     {kLensFiltersAblationMode, "3"}};
 
 const FeatureEntry::FeatureVariation kLensFiltersAblationModeVariations[] = {
-    {"(Disabled)", kLensFiltersAblationModeDisabled,
-     std::size(kLensFiltersAblationModeDisabled), nullptr},
-    {"(Post Capture)", kLensFiltersAblationModePostCapture,
-     std::size(kLensFiltersAblationModePostCapture), nullptr},
-    {"(LVF)", kLensFiltersAblationModeLVF,
-     std::size(kLensFiltersAblationModeLVF), nullptr},
-    {"(Always)", kLensFiltersAblationModeAlways,
-     std::size(kLensFiltersAblationModeAlways), nullptr}};
+    {"(Disabled)", kLensFiltersAblationModeDisabled, nullptr},
+    {"(Post Capture)", kLensFiltersAblationModePostCapture, nullptr},
+    {"(LVF)", kLensFiltersAblationModeLVF, nullptr},
+    {"(Always)", kLensFiltersAblationModeAlways, nullptr}};
 
 // Uses int values from Lens translate toggle mode enum.
 const FeatureEntry::FeatureParam kLensTranslateToggleModeDisabled[] = {
@@ -498,14 +461,10 @@ const FeatureEntry::FeatureParam kLensTranslateToggleModeAlways[] = {
     {kLensTranslateToggleMode, "3"}};
 
 const FeatureEntry::FeatureVariation kLensTranslateToggleModeVariations[] = {
-    {"(Disabled)", kLensTranslateToggleModeDisabled,
-     std::size(kLensTranslateToggleModeDisabled), nullptr},
-    {"(Post Capture)", kLensTranslateToggleModePostCapture,
-     std::size(kLensTranslateToggleModePostCapture), nullptr},
-    {"(LVF)", kLensTranslateToggleModeLVF,
-     std::size(kLensTranslateToggleModeLVF), nullptr},
-    {"(Always)", kLensTranslateToggleModeAlways,
-     std::size(kLensTranslateToggleModeAlways), nullptr}};
+    {"(Disabled)", kLensTranslateToggleModeDisabled, nullptr},
+    {"(Post Capture)", kLensTranslateToggleModePostCapture, nullptr},
+    {"(LVF)", kLensTranslateToggleModeLVF, nullptr},
+    {"(Always)", kLensTranslateToggleModeAlways, nullptr}};
 
 const FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0[] = {
@@ -546,22 +505,22 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation
     kMlUrlPiecewiseMappedSearchBlendingVariations[] = {
         {"adjusted by 0", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0), nullptr},
+         nullptr},
         {"demoted by 50", kMlUrlPiecewiseMappedSearchBlendingDemotedBy50,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingDemotedBy50), nullptr},
+         nullptr},
         {"promoted by 50", kMlUrlPiecewiseMappedSearchBlendingPromotedBy50,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingPromotedBy50), nullptr},
+         nullptr},
         {"promoted by 100", kMlUrlPiecewiseMappedSearchBlendingPromotedBy100,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingPromotedBy100), nullptr},
+         nullptr},
         {"mobile mapping", kMlUrlPiecewiseMappedSearchBlendingMobileMapping,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingMobileMapping), nullptr},
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam kOmniboxMiaZpsEnabledWithHistoryAblation[] = {
     {OmniboxFieldTrial::kSuppressPsuggestBackfillWithMIAParam, "true"}};
 const FeatureEntry::FeatureVariation kOmniboxMiaZpsVariations[] = {
     {"with History Ablation", kOmniboxMiaZpsEnabledWithHistoryAblation,
-     std::size(kOmniboxMiaZpsEnabledWithHistoryAblation), nullptr}};
+     nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
     {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
@@ -584,14 +543,11 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
 };
 
 const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
-    {"Enabled with fixes", kOmniboxMlUrlScoringEnabledWithFixes,
-     std::size(kOmniboxMlUrlScoringEnabledWithFixes), nullptr},
+    {"Enabled with fixes", kOmniboxMlUrlScoringEnabledWithFixes, nullptr},
     {"unlimited suggestion candidates",
-     kOmniboxMlUrlScoringUnlimitedNumCandidates,
-     std::size(kOmniboxMlUrlScoringUnlimitedNumCandidates), nullptr},
+     kOmniboxMlUrlScoringUnlimitedNumCandidates, nullptr},
     {"Increase provider max limit to 10",
-     kOmniboxMlUrlScoringMaxMatchesByProvider10,
-     std::size(kOmniboxMlUrlScoringMaxMatchesByProvider10), nullptr},
+     kOmniboxMlUrlScoringMaxMatchesByProvider10, nullptr},
 };
 
 const FeatureEntry::FeatureParam kMlUrlSearchBlendingStable[] = {
@@ -619,19 +575,17 @@ const FeatureEntry::FeatureParam kMlUrlSearchBlendingMappedAggressiveUrls[] = {
 };
 
 const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
-    {"Stable", kMlUrlSearchBlendingStable,
-     std::size(kMlUrlSearchBlendingStable), nullptr},
+    {"Stable", kMlUrlSearchBlendingStable, nullptr},
     {"Mapped conservative urls", kMlUrlSearchBlendingMappedConservativeUrls,
-     std::size(kMlUrlSearchBlendingMappedConservativeUrls), nullptr},
-    {"Mapped moderate urls", kMlUrlSearchBlendingMappedModerateUrls,
-     std::size(kMlUrlSearchBlendingMappedModerateUrls), nullptr},
+     nullptr},
+    {"Mapped moderate urls", kMlUrlSearchBlendingMappedModerateUrls, nullptr},
     {"Mapped aggressive urls", kMlUrlSearchBlendingMappedAggressiveUrls,
-     std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
+     nullptr},
 };
 
 const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
-    {"Small model", nullptr, 0, "3379590"},
-    {"Full model", nullptr, 0, "3380197"},
+    {"Small model", {}, "3379590"},
+    {"Full model", {}, "3380197"},
 };
 
 const FeatureEntry::FeatureParam kPriceTrackingPromoForceShowArm[] = {
@@ -776,104 +730,82 @@ const FeatureEntry::FeatureParam kDefaultBrowserPromoForceHideArm[] = {
 
 // ShopCard experiment arms
 const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
-    {"Card 3 Price Drop on Tab Resumption", kPriceDropOnTabArm,
-     std::size(kPriceDropOnTabArm), nullptr},
+    {"Card 3 Price Drop on Tab Resumption", kPriceDropOnTabArm, nullptr},
     {"Card 4 Price Trackable on Tab Resumption", kPriceTrackableProductOnTabArm,
-     std::size(kPriceTrackableProductOnTabArm), nullptr},
+     nullptr},
     {"Card 5 Tab Resumption with Impression Limits",
-     kTabResumptionWithImpressionLimitsArm,
-     std::size(kTabResumptionWithImpressionLimitsArm), nullptr},
+     kTabResumptionWithImpressionLimitsArm, nullptr},
     {"Card 3 Price Drop on Tab Resumption at front of magic stack",
-     kPriceDropOnTabFront, std::size(kPriceDropOnTabFront), nullptr},
+     kPriceDropOnTabFront, nullptr},
     {"Card 4 Price Trackable on Tab Resumption at front of magic stack",
-     kPriceTrackableProductOnTabFront,
-     std::size(kPriceTrackableProductOnTabFront), nullptr},
+     kPriceTrackableProductOnTabFront, nullptr},
     {"Card 5 Tab Resumption with Impression Limits at front of magic stack",
-     kTabResumptionWithImpressionLimitsFront,
-     std::size(kTabResumptionWithImpressionLimitsFront), nullptr},
+     kTabResumptionWithImpressionLimitsFront, nullptr},
     {"Card 6 Price Drop on Tab Resumption with delayed data acquisition",
-     kPriceDropOnTabDelayedDataAcquisition,
-     std::size(kPriceDropOnTabDelayedDataAcquisition), nullptr},
+     kPriceDropOnTabDelayedDataAcquisition, nullptr},
     {"Card 6 Price Drop on Tab Resumption with delayed data acquisition at "
      "front of magic stack",
-     kPriceDropOnTabDelayedDataAcquisitionFront,
-     std::size(kPriceDropOnTabDelayedDataAcquisitionFront), nullptr},
+     kPriceDropOnTabDelayedDataAcquisitionFront, nullptr},
 };
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
         {"- Force Show Price Tracking Notification",
-         kPriceTrackingPromoForceShowArm,
-         std::size(kPriceTrackingPromoForceShowArm), nullptr},
+         kPriceTrackingPromoForceShowArm, nullptr},
         {"- Force Hide Price Tracking Notification",
-         kPriceTrackingPromoForceHideArm,
-         std::size(kPriceTrackingPromoForceHideArm), nullptr},
+         kPriceTrackingPromoForceHideArm, nullptr},
 
         // Address Bar Position
         {"- Force Show Address Bar Position Tip",
-         kTipsAddressBarPositionForceShowArm,
-         std::size(kTipsAddressBarPositionForceShowArm), nullptr},
+         kTipsAddressBarPositionForceShowArm, nullptr},
         {"- Force Hide Address Bar Position Tip",
-         kTipsAddressBarPositionForceHideArm,
-         std::size(kTipsAddressBarPositionForceHideArm), nullptr},
+         kTipsAddressBarPositionForceHideArm, nullptr},
 
         // Autofill Passwords
         {"- Force Show Autofill Passwords Tip",
-         kTipsAutofillPasswordsForceShowArm,
-         std::size(kTipsAutofillPasswordsForceShowArm), nullptr},
+         kTipsAutofillPasswordsForceShowArm, nullptr},
         {"- Force Hide Autofill Passwords Tip",
-         kTipsAutofillPasswordsForceHideArm,
-         std::size(kTipsAutofillPasswordsForceHideArm), nullptr},
+         kTipsAutofillPasswordsForceHideArm, nullptr},
 
         // Enhanced Safe Browsing
         {"- Force Show Enhanced Safe Browsing Tip",
-         kTipsEnhancedSafeBrowsingForceShowArm,
-         std::size(kTipsEnhancedSafeBrowsingForceShowArm), nullptr},
+         kTipsEnhancedSafeBrowsingForceShowArm, nullptr},
         {"- Force Hide Enhanced Safe Browsing Tip",
-         kTipsEnhancedSafeBrowsingForceHideArm,
-         std::size(kTipsEnhancedSafeBrowsingForceHideArm), nullptr},
+         kTipsEnhancedSafeBrowsingForceHideArm, nullptr},
 
         // Lens Search
-        {"- Force Show Lens Search Tip", kTipsLensSearchForceShowArm,
-         std::size(kTipsLensSearchForceShowArm), nullptr},
-        {"- Force Hide Lens Search Tip", kTipsLensSearchForceHideArm,
-         std::size(kTipsLensSearchForceHideArm), nullptr},
+        {"- Force Show Lens Search Tip", kTipsLensSearchForceShowArm, nullptr},
+        {"- Force Hide Lens Search Tip", kTipsLensSearchForceHideArm, nullptr},
 
         // Lens Shop
-        {"- Force Show Lens Shop Tip", kTipsLensShopForceShowArm,
-         std::size(kTipsLensShopForceShowArm), nullptr},
-        {"- Force Hide Lens Shop Tip", kTipsLensShopForceHideArm,
-         std::size(kTipsLensShopForceHideArm), nullptr},
+        {"- Force Show Lens Shop Tip", kTipsLensShopForceShowArm, nullptr},
+        {"- Force Hide Lens Shop Tip", kTipsLensShopForceHideArm, nullptr},
 
         // Lens Translate
         {"- Force Show Lens Translate Tip", kTipsLensTranslateForceShowArm,
-         std::size(kTipsLensTranslateForceShowArm), nullptr},
+         nullptr},
         {"- Force Hide Lens Translate Tip", kTipsLensTranslateForceHideArm,
-         std::size(kTipsLensTranslateForceHideArm), nullptr},
+         nullptr},
 
         // Save Passwords
         {"- Force Show Save Passwords Tip", kTipsSavePasswordsForceShowArm,
-         std::size(kTipsSavePasswordsForceShowArm), nullptr},
+         nullptr},
         {"- Force Hide Save Passwords Tip", kTipsSavePasswordsForceHideArm,
-         std::size(kTipsSavePasswordsForceHideArm), nullptr},
+         nullptr},
 
         // Send Tab Promo.
-        {"- Force Show Send Tab Promo", kSendTabPromoForceShowArm,
-         std::size(kSendTabPromoForceShowArm), nullptr},
-        {"- Force Hide Send Tab Promo", kSendTabPromoForceHideArm,
-         std::size(kSendTabPromoForceHideArm), nullptr},
+        {"- Force Show Send Tab Promo", kSendTabPromoForceShowArm, nullptr},
+        {"- Force Hide Send Tab Promo", kSendTabPromoForceHideArm, nullptr},
 
         // App Bundle Promo.
-        {"- Force Show App Bundle Promo", kAppBundlePromoForceShowArm,
-         std::size(kAppBundlePromoForceShowArm), nullptr},
-        {"- Force Hide App Bundle Promo", kAppBundlePromoForceHideArm,
-         std::size(kAppBundlePromoForceHideArm), nullptr},
+        {"- Force Show App Bundle Promo", kAppBundlePromoForceShowArm, nullptr},
+        {"- Force Hide App Bundle Promo", kAppBundlePromoForceHideArm, nullptr},
 
         // Default Browser Promo.
         {"- Force Show Default Browser Promo", kDefaultBrowserPromoForceShowArm,
-         std::size(kDefaultBrowserPromoForceShowArm), nullptr},
+         nullptr},
         {"- Force Hide Default Browser Promo", kDefaultBrowserPromoForceHideArm,
-         std::size(kDefaultBrowserPromoForceHideArm), nullptr},
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -890,12 +822,10 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
     {
         {"With Magic Stack Card",
-         kSendTabIOSPushNotificationsWithMagicStackCard,
-         std::size(kSendTabIOSPushNotificationsWithMagicStackCard), nullptr},
-        {"With URL Image", kSendTabIOSPushNotificationsWithURLImage,
-         std::size(kSendTabIOSPushNotificationsWithURLImage), nullptr},
+         kSendTabIOSPushNotificationsWithMagicStackCard, nullptr},
+        {"With URL Image", kSendTabIOSPushNotificationsWithURLImage, nullptr},
         {"With Tab Reminders", kSendTabIOSPushNotificationsWithTabReminders,
-         std::size(kSendTabIOSPushNotificationsWithTabReminders), nullptr},
+         nullptr},
 };
 
 // Soft Lock
@@ -904,8 +834,7 @@ const FeatureEntry::FeatureParam kIOSSoftLockNoDelay[] = {
 };
 
 const FeatureEntry::FeatureVariation kIOSSoftLockVariations[] = {
-    {" - No delay", kIOSSoftLockNoDelay, std::size(kIOSSoftLockNoDelay),
-     nullptr}};
+    {" - No delay", kIOSSoftLockNoDelay, nullptr}};
 
 constexpr flags_ui::FeatureEntry::FeatureParam
     kAutofillThrottleDocFormScanShortPeriodParam[] = {{"period-ms", "250"}};
@@ -915,12 +844,10 @@ constexpr flags_ui::FeatureEntry::FeatureParam
     kAutofillThrottleDocFormScanLongPeriodParam[] = {{"period-ms", "1000"}};
 constexpr flags_ui::FeatureEntry::FeatureVariation
     kAutofillThrottleDocFormScanVariations[] = {
-        {"Short period", kAutofillThrottleDocFormScanShortPeriodParam,
-         std::size(kAutofillThrottleDocFormScanShortPeriodParam), nullptr},
+        {"Short period", kAutofillThrottleDocFormScanShortPeriodParam, nullptr},
         {"Medium period", kAutofillThrottleDocFormScanMediumPeriodParam,
-         std::size(kAutofillThrottleDocFormScanMediumPeriodParam), nullptr},
-        {"Long period", kAutofillThrottleDocFormScanLongPeriodParam,
-         std::size(kAutofillThrottleDocFormScanLongPeriodParam), nullptr}};
+         nullptr},
+        {"Long period", kAutofillThrottleDocFormScanLongPeriodParam, nullptr}};
 
 constexpr flags_ui::FeatureEntry::FeatureParam
     kAutofillThrottleFilteredDocFormScanShortPeriodParam[] = {
@@ -934,13 +861,10 @@ constexpr flags_ui::FeatureEntry::FeatureParam
 constexpr flags_ui::FeatureEntry::FeatureVariation
     kAutofillThrottleFilteredDocFormScanVariations[] = {
         {"Short period", kAutofillThrottleFilteredDocFormScanShortPeriodParam,
-         std::size(kAutofillThrottleFilteredDocFormScanShortPeriodParam),
          nullptr},
         {"Medium period", kAutofillThrottleFilteredDocFormScanMediumPeriodParam,
-         std::size(kAutofillThrottleFilteredDocFormScanMediumPeriodParam),
          nullptr},
         {"Long period", kAutofillThrottleFilteredDocFormScanLongPeriodParam,
-         std::size(kAutofillThrottleFilteredDocFormScanLongPeriodParam),
          nullptr}};
 
 const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm1[] = {
@@ -951,13 +875,11 @@ const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm3[] = {
     {first_run::kUpdatedFirstRunSequenceParam, "3"}};
 
 const FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] = {
-    {" - Default browser promo first", kUpdatedFirstRunSequenceArm1,
-     std::size(kUpdatedFirstRunSequenceArm1), nullptr},
+    {" - Default browser promo first", kUpdatedFirstRunSequenceArm1, nullptr},
     {" - Remove sign in & sync conditionally", kUpdatedFirstRunSequenceArm2,
-     std::size(kUpdatedFirstRunSequenceArm2), nullptr},
+     nullptr},
     {" - DB promo first and remove sign in & sync",
-     kUpdatedFirstRunSequenceArm3, std::size(kUpdatedFirstRunSequenceArm3),
-     nullptr}};
+     kUpdatedFirstRunSequenceArm3, nullptr}};
 
 const FeatureEntry::FeatureParam kSlowFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "0"}};
@@ -967,12 +889,9 @@ const FeatureEntry::FeatureParam kFastFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "2"}};
 
 const FeatureEntry::FeatureVariation kFullscreenTransitionVariations[] = {
-    {"Slow speed", kSlowFullscreenTransitionSpeed,
-     std::size(kSlowFullscreenTransitionSpeed), nullptr},
-    {"Default speed", kDefaultFullscreenTransitionSpeed,
-     std::size(kDefaultFullscreenTransitionSpeed), nullptr},
-    {"Fast speed", kFastFullscreenTransitionSpeed,
-     std::size(kFastFullscreenTransitionSpeed), nullptr}};
+    {"Slow speed", kSlowFullscreenTransitionSpeed, nullptr},
+    {"Default speed", kDefaultFullscreenTransitionSpeed, nullptr},
+    {"Fast speed", kFastFullscreenTransitionSpeed, nullptr}};
 
 const FeatureEntry::FeatureParam kFullscreenScrollThreshold1[] = {
     {web::features::kFullscreenScrollThresholdAmount, "1"}};
@@ -983,14 +902,10 @@ const FeatureEntry::FeatureParam kFullscreenScrollThreshold10[] = {
 const FeatureEntry::FeatureParam kFullscreenScrollThreshold20[] = {
     {web::features::kFullscreenScrollThresholdAmount, "20"}};
 const FeatureEntry::FeatureVariation kFullscreenScrollThresholdVariations[] = {
-    {"1px", kFullscreenScrollThreshold1, std::size(kFullscreenScrollThreshold1),
-     nullptr},
-    {"5px", kFullscreenScrollThreshold5, std::size(kFullscreenScrollThreshold5),
-     nullptr},
-    {"10px", kFullscreenScrollThreshold10,
-     std::size(kFullscreenScrollThreshold10), nullptr},
-    {"20px", kFullscreenScrollThreshold20,
-     std::size(kFullscreenScrollThreshold20), nullptr}};
+    {"1px", kFullscreenScrollThreshold1, nullptr},
+    {"5px", kFullscreenScrollThreshold5, nullptr},
+    {"10px", kFullscreenScrollThreshold10, nullptr},
+    {"20px", kFullscreenScrollThreshold20, nullptr}};
 
 const FeatureEntry::FeatureParam kAnimatedDBPInFREWithActionButtons[] = {
     {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "0"}};
@@ -1001,15 +916,10 @@ const FeatureEntry::FeatureParam kAnimatedDBPInFREWithInstructions[] = {
 
 const FeatureEntry::FeatureVariation
     kAnimatedDefaultBrowserPromoInFREVariations[] = {
-        {" - with Action Buttons", kAnimatedDBPInFREWithActionButtons,
-         std::size(kAnimatedDBPInFREWithActionButtons), nullptr},
-        {" - with Show Me How", kAnimatedDBPInFREWithShowMeHow,
-         std::size(kAnimatedDBPInFREWithShowMeHow), nullptr},
-        {" - with Instructions", kAnimatedDBPInFREWithInstructions,
-         std::size(kAnimatedDBPInFREWithInstructions), nullptr}};
+        {" - with Action Buttons", kAnimatedDBPInFREWithActionButtons, nullptr},
+        {" - with Show Me How", kAnimatedDBPInFREWithShowMeHow, nullptr},
+        {" - with Instructions", kAnimatedDBPInFREWithInstructions, nullptr}};
 
-const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm1[] = {
-    {first_run::kBestFeaturesScreenInFirstRunParam, "1"}};
 const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};
 const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
@@ -1023,22 +933,17 @@ const FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm6[] = {
 
 const FeatureEntry::FeatureVariation kBestFeaturesScreenInFirstRunVariations[] =
     {{" - Variant A: General screen, after DB promo",
-      kUpdatedFirstRunSequenceArm1,
-      std::size(kBestFeaturesScreenInFirstRunArm1), nullptr},
+      kUpdatedFirstRunSequenceArm1, nullptr},
      {" - Variant B: General screen, before DB promo",
-      kBestFeaturesScreenInFirstRunArm2,
-      std::size(kBestFeaturesScreenInFirstRunArm2), nullptr},
+      kBestFeaturesScreenInFirstRunArm2, nullptr},
      {" - Variant C: General screen with passwords item",
-      kBestFeaturesScreenInFirstRunArm3,
-      std::size(kBestFeaturesScreenInFirstRunArm3), nullptr},
+      kBestFeaturesScreenInFirstRunArm3, nullptr},
      {" - Variant D: Shopping users screen, variant C as fallback",
-      kBestFeaturesScreenInFirstRunArm4,
-      std::size(kBestFeaturesScreenInFirstRunArm4), nullptr},
+      kBestFeaturesScreenInFirstRunArm4, nullptr},
      {" - Variant E: Show screen to signed-in users only",
-      kBestFeaturesScreenInFirstRunArm5,
-      std::size(kBestFeaturesScreenInFirstRunArm5), nullptr},
+      kBestFeaturesScreenInFirstRunArm5, nullptr},
      {" - Variant F: Show address bar promo", kBestFeaturesScreenInFirstRunArm6,
-      std::size(kBestFeaturesScreenInFirstRunArm6), nullptr}};
+      nullptr}};
 
 const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionCrossValidate[] = {
     {kIOSOneTapMiniMapRestrictionCrossValidateParamName, "true"}};
@@ -1055,20 +960,17 @@ const FeatureEntry::FeatureParam kIOSOneTapMiniMapRestrictionMinAlphaNum60[] = {
 
 const FeatureEntry::FeatureVariation kIOSOneTapMiniMapRestrictionsVariations[] =
     {{"Revalidate with NSDataDetector",
-      kIOSOneTapMiniMapRestrictionCrossValidate,
-      std::size(kIOSOneTapMiniMapRestrictionCrossValidate), nullptr},
+      kIOSOneTapMiniMapRestrictionCrossValidate, nullptr},
      {"Confidence Level (0.999)", kIOSOneTapMiniMapRestrictionThreshold999,
-      std::size(kIOSOneTapMiniMapRestrictionThreshold999), nullptr},
+      nullptr},
      {"Minimum address length (20 chars)",
-      kIOSOneTapMiniMapRestrictionMinLength20,
-      std::size(kIOSOneTapMiniMapRestrictionMinLength20), nullptr},
+      kIOSOneTapMiniMapRestrictionMinLength20, nullptr},
      {"Maximum sections (6)", kIOSOneTapMiniMapRestrictionMaxSections6,
-      std::size(kIOSOneTapMiniMapRestrictionMaxSections6), nullptr},
+      nullptr},
      {"Longest word length (4)", kIOSOneTapMiniMapRestrictionLongWords4,
-      std::size(kIOSOneTapMiniMapRestrictionLongWords4), nullptr},
+      nullptr},
      {"Proportion of alnum chars (60%)",
-      kIOSOneTapMiniMapRestrictionMinAlphaNum60,
-      std::size(kIOSOneTapMiniMapRestrictionMinAlphaNum60), nullptr}};
+      kIOSOneTapMiniMapRestrictionMinAlphaNum60, nullptr}};
 
 const FeatureEntry::FeatureParam kFeedSwipeInProductHelpStaticInFirstRun[] = {
     {kFeedSwipeInProductHelpArmParam, "1"}};
@@ -1079,12 +981,10 @@ const FeatureEntry::FeatureParam kFeedSwipeInProductHelpAnimated[] = {
 
 const FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
     {" - Static IPH after the FRE", kFeedSwipeInProductHelpStaticInFirstRun,
-     std::size(kFeedSwipeInProductHelpStaticInFirstRun), nullptr},
+     nullptr},
     {"- Static IPH after the second run",
-     kFeedSwipeInProductHelpStaticInSecondRun,
-     std::size(kFeedSwipeInProductHelpStaticInSecondRun), nullptr},
-    {"- Animated IPH", kFeedSwipeInProductHelpAnimated,
-     std::size(kFeedSwipeInProductHelpAnimated), nullptr}};
+     kFeedSwipeInProductHelpStaticInSecondRun, nullptr},
+    {"- Animated IPH", kFeedSwipeInProductHelpAnimated, nullptr}};
 
 // LINT.IfChange(AutofillVcnEnrollStrikeExpiryTime)
 const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_120Days[] =
@@ -1098,12 +998,9 @@ const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_30Days[] = {
 
 const FeatureEntry::FeatureVariation
     kAutofillVcnEnrollStrikeExpiryTimeOptions[] = {
-        {"120 days", kAutofillVcnEnrollStrikeExpiryTime_120Days,
-         std::size(kAutofillVcnEnrollStrikeExpiryTime_120Days), nullptr},
-        {"60 days", kAutofillVcnEnrollStrikeExpiryTime_60Days,
-         std::size(kAutofillVcnEnrollStrikeExpiryTime_60Days), nullptr},
-        {"30 days", kAutofillVcnEnrollStrikeExpiryTime_30Days,
-         std::size(kAutofillVcnEnrollStrikeExpiryTime_30Days), nullptr}};
+        {"120 days", kAutofillVcnEnrollStrikeExpiryTime_120Days, nullptr},
+        {"60 days", kAutofillVcnEnrollStrikeExpiryTime_60Days, nullptr},
+        {"30 days", kAutofillVcnEnrollStrikeExpiryTime_30Days, nullptr}};
 // LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollStrikeExpiryTime)
 
 const FeatureEntry::FeatureParam kWelcomeBackArm1[] = {
@@ -1116,14 +1013,11 @@ const FeatureEntry::FeatureParam kWelcomeBackArm4[] = {
     {kWelcomeBackParam, "4"}};
 
 const FeatureEntry::FeatureVariation kWelcomeBackVariations[] = {
-    {" - Variant A: Basics with Locked Incognito", kWelcomeBackArm1,
-     std::size(kWelcomeBackArm1), nullptr},
+    {" - Variant A: Basics with Locked Incognito", kWelcomeBackArm1, nullptr},
     {" - Variant B: Basics with Save & Autofill Passwords", kWelcomeBackArm2,
-     std::size(kWelcomeBackArm2), nullptr},
-    {" - Variant C: Productivity & Shopping", kWelcomeBackArm3,
-     std::size(kWelcomeBackArm3), nullptr},
-    {" - Variant D: Sign-in Benefits", kWelcomeBackArm4,
-     std::size(kWelcomeBackArm4), nullptr},
+     nullptr},
+    {" - Variant C: Productivity & Shopping", kWelcomeBackArm3, nullptr},
+    {" - Variant D: Sign-in Benefits", kWelcomeBackArm4, nullptr},
 };
 
 const FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
@@ -1134,14 +1028,11 @@ const FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
     {"manual_upload_uma", "true"}};
 
 const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
-    {" - Variant A: Lens Interactive Promo", kBestOfAppFREArm1,
-     std::size(kBestOfAppFREArm1), nullptr},
-    {" - Variant A: Lens Animated Promo", kBestOfAppFREArm2,
-     std::size(kBestOfAppFREArm2), nullptr},
-    {" - Variant D: Guided Tour", kBestOfAppFREArm4,
-     std::size(kBestOfAppFREArm4), nullptr},
+    {" - Variant A: Lens Interactive Promo", kBestOfAppFREArm1, nullptr},
+    {" - Variant A: Lens Animated Promo", kBestOfAppFREArm2, nullptr},
+    {" - Variant D: Guided Tour", kBestOfAppFREArm4, nullptr},
     {" - Variant D: Guided Tour with manual metric upload",
-     kBestOfAppFREArm4Upload, std::size(kBestOfAppFREArm4Upload), nullptr},
+     kBestOfAppFREArm4Upload, nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1150,7 +1041,7 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation
     kInvalidateSearchEngineChoiceOnRestoreVariations[] = {
         {"(retroactive)", kInvalidateChoiceOnRestoreIsRetroactiveOption,
-         std::size(kInvalidateChoiceOnRestoreIsRetroactiveOption), nullptr}};
+         nullptr}};
 
 const FeatureEntry::FeatureParam kSingleScreenForBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "1"}};
@@ -1165,23 +1056,18 @@ const FeatureEntry::FeatureParam kSkipNewUserDelay[] = {
 
 const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Single screen for BWG Promo Consent Flow",
-     kSingleScreenForBWGPromoConsent,
-     std::size(kSingleScreenForBWGPromoConsent), nullptr},
+     kSingleScreenForBWGPromoConsent, nullptr},
     {"Double screen for BWG Promo Consent Flow",
-     kDoubleScreenForBWGPromoConsent,
-     std::size(kDoubleScreenForBWGPromoConsent), nullptr},
-    {"Skip FRE", kSkipBWGPromoConsent, std::size(kSkipBWGPromoConsent),
-     nullptr},
-    {"Force FRE", kForceBWGFirstTimeRun, std::size(kForceBWGFirstTimeRun),
-     nullptr},
-    {"Skip new user delay", kSkipNewUserDelay, std::size(kSkipNewUserDelay)}};
+     kDoubleScreenForBWGPromoConsent, nullptr},
+    {"Skip FRE", kSkipBWGPromoConsent, nullptr},
+    {"Force FRE", kForceBWGFirstTimeRun, nullptr},
+    {"Skip new user delay", kSkipNewUserDelay, nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxMobileParityEnableFeedForGoogleOnly[] =
     {{OmniboxFieldTrial::kMobileParityEnableFeedForGoogleOnly.name, "true"}};
 const FeatureEntry::FeatureVariation kOmniboxMobileParityVariations[] = {
     {"- feed only when searching with Google",
-     kOmniboxMobileParityEnableFeedForGoogleOnly,
-     std::size(kOmniboxMobileParityEnableFeedForGoogleOnly), nullptr}};
+     kOmniboxMobileParityEnableFeedForGoogleOnly, nullptr}};
 
 const FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
     {kPageActionMenuDirectEntryPointParam, "true"},
@@ -1189,11 +1075,9 @@ const FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
 const FeatureEntry::FeatureParam kPageActionMenuBWGSessionValidityDuration[] = {
     {kBWGSessionValidityDurationParam, "1"}};
 const FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
-    {"Direct Entry Point", kPageActionMenuDirectEntryPoint,
-     std::size(kPageActionMenuDirectEntryPoint), nullptr},
+    {"Direct Entry Point", kPageActionMenuDirectEntryPoint, nullptr},
     {"1 min session validity duration",
-     kPageActionMenuBWGSessionValidityDuration,
-     std::size(kPageActionMenuBWGSessionValidityDuration), nullptr},
+     kPageActionMenuBWGSessionValidityDuration, nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1202,7 +1086,7 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation
     kProactiveSuggestionsFrameworkVariations[] = {
         {"Popup Blocker", kProactiveSuggestionsFrameworkPopupBlockerParam,
-         std::size(kProactiveSuggestionsFrameworkPopupBlockerParam), nullptr}};
+         nullptr}};
 
 const FeatureEntry::FeatureParam kAskGeminiChipIgnoreCriteriaVariation[] = {
     {kAskGeminiChipIgnoreCriteria, "true"},
@@ -1220,14 +1104,12 @@ const FeatureEntry::FeatureParam
 };
 const FeatureEntry::FeatureVariation kAskGeminiChipVariations[] = {
     {"Ignore FET and Time Criteria", kAskGeminiChipIgnoreCriteriaVariation,
-     std::size(kAskGeminiChipIgnoreCriteriaVariation), nullptr},
-    {"Prepopulate Floaty", kAskGeminiChipPrepopulateFloatyVariation,
-     std::size(kAskGeminiChipPrepopulateFloatyVariation), nullptr},
+     nullptr},
+    {"Prepopulate Floaty", kAskGeminiChipPrepopulateFloatyVariation, nullptr},
     {"Prepopulate Floaty and Ignore Criteria",
-     kAskGeminiChipPrepopulateAndIgnoreCriteriaVariation,
-     std::size(kAskGeminiChipPrepopulateAndIgnoreCriteriaVariation), nullptr},
+     kAskGeminiChipPrepopulateAndIgnoreCriteriaVariation, nullptr},
     {"Allow non-consented users", kAskGeminiChipAllowNonconsentedUsersVariation,
-     std::size(kAskGeminiChipAllowNonconsentedUsersVariation), nullptr},
+     nullptr},
 };
 
 // LINT.IfChange(DataSharingVersioningChoices)
@@ -1251,12 +1133,9 @@ const FeatureEntry::FeatureParam kComposeboxDevToolsSlowUpload[] = {
     {kUploadDelayMsParam, "3000"}};
 
 const FeatureEntry::FeatureVariation kComposeboxDevToolsVariations[] = {
-    {"Force Failure", kComposeboxDevToolsForceFailure,
-     std::size(kComposeboxDevToolsForceFailure), nullptr},
-    {"Slow Load (1s)", kComposeboxDevToolsSlowLoad,
-     std::size(kComposeboxDevToolsSlowLoad), nullptr},
-    {"Slow Upload (3s)", kComposeboxDevToolsSlowUpload,
-     std::size(kComposeboxDevToolsSlowUpload), nullptr}};
+    {"Force Failure", kComposeboxDevToolsForceFailure, nullptr},
+    {"Slow Load (1s)", kComposeboxDevToolsSlowLoad, nullptr},
+    {"Slow Upload (3s)", kComposeboxDevToolsSlowUpload, nullptr}};
 
 const FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "1"},
@@ -1291,30 +1170,21 @@ const FeatureEntry::FeatureParam
         {kMobilePromoOnDesktopNotificationParam, "true"}};
 
 const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
-    {" - Lens Promo", kMobilePromoOnDesktopLens,
-     std::size(kMobilePromoOnDesktopLens), nullptr},
+    {" - Lens Promo", kMobilePromoOnDesktopLens, nullptr},
     {" - Lens Promo with push notification",
-     kMobilePromoOnDesktopLensNotification,
-     std::size(kMobilePromoOnDesktopLensNotification), nullptr},
-    {" - ESB", kMobilePromoOnDesktopESB, std::size(kMobilePromoOnDesktopESB),
-     nullptr},
+     kMobilePromoOnDesktopLensNotification, nullptr},
+    {" - ESB", kMobilePromoOnDesktopESB, nullptr},
     {" - ESB with push notification", kMobilePromoOnDesktopESBNotification,
-     std::size(kMobilePromoOnDesktopESBNotification), nullptr},
-    {" - PW Autofill", kMobilePromoOnDesktopAutofill,
-     std::size(kMobilePromoOnDesktopAutofill), nullptr},
+     nullptr},
+    {" - PW Autofill", kMobilePromoOnDesktopAutofill, nullptr},
     {" - PW Autofill with push notification",
-     kMobilePromoOnDesktopAutofillNotification,
-     std::size(kMobilePromoOnDesktopAutofillNotification), nullptr},
-    {" - Tab Groups", kMobilePromoOnDesktopTabGroups,
-     std::size(kMobilePromoOnDesktopTabGroups), nullptr},
+     kMobilePromoOnDesktopAutofillNotification, nullptr},
+    {" - Tab Groups", kMobilePromoOnDesktopTabGroups, nullptr},
     {" - Tab Groups with push notification",
-     kMobilePromoOnDesktopTabGroupsNotification,
-     std::size(kMobilePromoOnDesktopTabGroupsNotification), nullptr},
-    {" - Price Tracking", kMobilePromoOnDesktopPriceTracking,
-     std::size(kMobilePromoOnDesktopPriceTracking), nullptr},
+     kMobilePromoOnDesktopTabGroupsNotification, nullptr},
+    {" - Price Tracking", kMobilePromoOnDesktopPriceTracking, nullptr},
     {" - Price Tracking with push notification",
-     kMobilePromoOnDesktopPriceTrackingNotification,
-     std::size(kMobilePromoOnDesktopPriceTrackingNotification), nullptr},
+     kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
 };
 
 const FeatureEntry::FeatureParam kDefaultBrowserMagicStackIosDeviceSettings[] =
@@ -1324,9 +1194,9 @@ const FeatureEntry::FeatureParam kDefaultBrowserMagicStackIosInAppSettings[] = {
 
 const FeatureEntry::FeatureVariation kDefaultBrowserMagicStackIosVariations[] =
     {{" - Tap to Device Settings", kDefaultBrowserMagicStackIosDeviceSettings,
-      std::size(kDefaultBrowserMagicStackIosDeviceSettings), nullptr},
+      nullptr},
      {" - Tap to In App Settings", kDefaultBrowserMagicStackIosInAppSettings,
-      std::size(kDefaultBrowserMagicStackIosInAppSettings), nullptr}};
+      nullptr}};
 
 const FeatureEntry::FeatureParam kTaiyakiChoiceScreenSurfaceParamAll[] = {
     {"choice_screen_surface", "all"}};
@@ -1334,10 +1204,8 @@ const FeatureEntry::FeatureParam kTaiyakiChoiceScreenSurfaceParamFREOnly[] = {
     {"choice_screen_surface", "fre_only"}};
 
 const FeatureEntry::FeatureVariation kTaiyakiChoiceScreenSurfaceVariations[] = {
-    {"all", kTaiyakiChoiceScreenSurfaceParamAll,
-     std::size(kTaiyakiChoiceScreenSurfaceParamAll), nullptr},
-    {"FRE only", kTaiyakiChoiceScreenSurfaceParamFREOnly,
-     std::size(kTaiyakiChoiceScreenSurfaceParamFREOnly), nullptr},
+    {"all", kTaiyakiChoiceScreenSurfaceParamAll, nullptr},
+    {"FRE only", kTaiyakiChoiceScreenSurfaceParamFREOnly, nullptr},
 };
 
 // Tips Notifications alternative strings.
@@ -1350,12 +1218,9 @@ const FeatureEntry::FeatureParam kTipsNotificationsAlternative3[] = {
 
 const FeatureEntry::FeatureVariation
     kTipsNotificationsAlternativeStringVariation[] = {
-        {" - 1", kTipsNotificationsAlternative1,
-         std::size(kTipsNotificationsAlternative1), nullptr},
-        {" - 2", kTipsNotificationsAlternative2,
-         std::size(kTipsNotificationsAlternative2), nullptr},
-        {" - 3", kTipsNotificationsAlternative3,
-         std::size(kTipsNotificationsAlternative3), nullptr}};
+        {" - 1", kTipsNotificationsAlternative1, nullptr},
+        {" - 2", kTipsNotificationsAlternative2, nullptr},
+        {" - 3", kTipsNotificationsAlternative3, nullptr}};
 
 const FeatureEntry::FeatureParam kZeroStateSuggestionsPlacementAIHubParam[] = {
     {kZeroStateSuggestionsPlacementAIHub, "true"}};
@@ -1373,20 +1238,16 @@ const FeatureEntry::FeatureParam
         {kGeminiImageRemixToolShowBelowSearchImage, "true"}};
 
 const FeatureEntry::FeatureVariation kGeminiImageRemixToolVariations[] = {
-    {"(Show FRE Row)", kGeminiImageRemixToolShowFRERowParam,
-     std::size(kGeminiImageRemixToolShowFRERowParam), nullptr},
+    {"(Show FRE Row)", kGeminiImageRemixToolShowFRERowParam, nullptr},
     {"(Show Above Search Image)",
-     kGeminiImageRemixToolShowAboveSearchImageParam,
-     std::size(kGeminiImageRemixToolShowAboveSearchImageParam), nullptr},
+     kGeminiImageRemixToolShowAboveSearchImageParam, nullptr},
     {"(Show Below Search Image)",
-     kGeminiImageRemixToolShowBelowSearchImageParam,
-     std::size(kGeminiImageRemixToolShowBelowSearchImageParam), nullptr}};
+     kGeminiImageRemixToolShowBelowSearchImageParam, nullptr}};
 
 const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
-    {"AI Hub", kZeroStateSuggestionsPlacementAIHubParam,
-     std::size(kZeroStateSuggestionsPlacementAIHubParam), nullptr},
+    {"AI Hub", kZeroStateSuggestionsPlacementAIHubParam, nullptr},
     {"Ask Gemini Overlay", kZeroStateSuggestionsPlacementAskGeminiParam,
-     std::size(kZeroStateSuggestionsPlacementAskGeminiParam), nullptr},
+     nullptr},
 };
 
 const char kFRESignInHeaderTextUpdateParamName[] =
@@ -1397,10 +1258,8 @@ const FeatureEntry::FeatureParam kFRESignInHeaderTextUpdateArm1[] = {
     {kFRESignInHeaderTextUpdateParamName, "Arm1"}};
 
 const FeatureEntry::FeatureVariation kFRESignInHeaderTextUpdateVariations[] = {
-    {"Header variation #1", kFRESignInHeaderTextUpdateArm0,
-     std::size(kFRESignInHeaderTextUpdateArm0), nullptr},
-    {"Header variation #2", kFRESignInHeaderTextUpdateArm1,
-     std::size(kFRESignInHeaderTextUpdateArm1), nullptr},
+    {"Header variation #1", kFRESignInHeaderTextUpdateArm0, nullptr},
+    {"Header variation #2", kFRESignInHeaderTextUpdateArm1, nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1426,18 +1285,13 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureVariation kPersistTabContextVariations[] = {
     {"FileSystem, On Tab Hide, APC + Inner Text",
-     kPersistTabContextFileSystem_WasHidden_FullContext,
-     std::size(kPersistTabContextFileSystem_WasHidden_FullContext), nullptr},
+     kPersistTabContextFileSystem_WasHidden_FullContext, nullptr},
     {"SQLite, On Tab Hide, APC + Inner Text",
-     kPersistTabContextSqlite_WasHidden_FullContext,
-     std::size(kPersistTabContextSqlite_WasHidden_FullContext), nullptr},
+     kPersistTabContextSqlite_WasHidden_FullContext, nullptr},
     {"SQLite, On Tab Hide & Page Load, APC + Inner Text",
-     kPersistTabContextSqlite_WasHiddenPageLoad_FullContext,
-     std::size(kPersistTabContextSqlite_WasHiddenPageLoad_FullContext),
-     nullptr},
+     kPersistTabContextSqlite_WasHiddenPageLoad_FullContext, nullptr},
     {"SQLite, On Tab Hide, Inner Text",
-     kPersistTabContextSqlite_WasHidden_InnerTextOnly,
-     std::size(kPersistTabContextSqlite_WasHidden_InnerTextOnly), nullptr}};
+     kPersistTabContextSqlite_WasHidden_InnerTextOnly, nullptr}};
 
 const FeatureEntry::FeatureParam kIOSExpandedSetupListSafariImport[] = {
     {kIOSExpandedSetupListVariationParam,
@@ -1448,25 +1302,18 @@ const FeatureEntry::FeatureParam
         {kIOSExpandedSetupListVariationParam,
          kIOSExpandedSetupListVariationParamBackgroundCustomization}};
 
-const FeatureEntry::FeatureParam kIOSExpandedSetupListAllExceptCPE[] = {
-    {kIOSExpandedSetupListVariationParam,
-     kIOSExpandedSetupListVariationParamAllExceptCPE}};
-
 const FeatureEntry::FeatureParam kIOSExpandedSetupListAll[] = {
     {kIOSExpandedSetupListVariationParam,
      kIOSExpandedSetupListVariationParamAll}};
 
 const FeatureEntry::FeatureVariation kIOSExpandedSetupListVariations[] = {
-    {"Safari Data Import", kIOSExpandedSetupListSafariImport,
-     std::size(kIOSExpandedSetupListSafariImport), nullptr},
+    {"Safari Data Import", kIOSExpandedSetupListSafariImport, nullptr},
     {"Home Background Customization",
-     kIOSExpandedSetupListBackgroundCustomization,
-     std::size(kIOSExpandedSetupListBackgroundCustomization), nullptr},
+     kIOSExpandedSetupListBackgroundCustomization, nullptr},
     {"Safari Data Import & Home Background Customization (without CPE)",
-     kIOSExpandedSetupListAll, std::size(kIOSExpandedSetupListAllExceptCPE),
-     nullptr},
+     kIOSExpandedSetupListAll, nullptr},
     {"Safari Data Import, Home Background Customization, CPE",
-     kIOSExpandedSetupListAll, std::size(kIOSExpandedSetupListAll), nullptr}};
+     kIOSExpandedSetupListAll, nullptr}};
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the

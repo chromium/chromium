@@ -74,7 +74,7 @@ BASE_FEATURE(kExpiredFlagTestFeature,
 const flags_ui::FeatureEntry::FeatureParam kTestVariationOther2[] = {
     {"Param1", "Value"}};
 const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
-    {"Description", kTestVariationOther2, 1, nullptr}};
+    {"Description", kTestVariationOther2, nullptr}};
 
 std::vector<LabInfo> TestLabInfo() {
   std::vector<LabInfo> test_feature_info;
