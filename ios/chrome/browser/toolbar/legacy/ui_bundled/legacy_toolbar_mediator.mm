@@ -250,8 +250,6 @@
     return;
   }
 
-  [self.omniboxConsumer setKeyboardAttachedBottomOmniboxHeight:
-                            self.delegate.keyboardAttachedBottomOmniboxHeight];
   [self.omniboxConsumer setPreferredOmniboxPosition:_preferredOmniboxPosition];
 
   self.omniboxPosition = [self omniboxPositionInCurrentState];

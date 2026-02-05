@@ -205,8 +205,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [super viewDidLayoutSubviews];
   [_inputViewController.view layoutIfNeeded];
   _fadeGradient.frame = _progressiveBlurEffect.bounds;
-  [_presenter
-      setKeyboardAttachedBottomOmniboxHeight:_inputViewController.inputHeight];
 
   [self computeScrollInsets];
 

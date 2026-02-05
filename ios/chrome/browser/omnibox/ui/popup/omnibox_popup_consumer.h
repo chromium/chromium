@@ -27,10 +27,6 @@
 /// results from its data source `AutocompleteResultDataSource`.
 - (void)newResultsAvailable;
 
-/// Sets the height of the bottom omnibox when it is attached to the keyboard.
-- (void)setKeyboardAttachedBottomOmniboxHeight:
-    (CGFloat)keyboardAttachedBottomOmniboxHeight;
-
 - (void)setUseBottomOmniboxInPopup:(BOOL)useBottomOmniboxInPopup;
 
 @end
