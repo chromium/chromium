@@ -28,7 +28,7 @@ bool AreWindowsSoftwareKeysEnabled() {
   return base::FeatureList::IsEnabled(kWindowsSoftwareKeysEnabled);
 }
 
-BASE_FEATURE(kWindowsTpmTls13Check, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWindowsTpmTls13Check, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsWindowsTpmTls13CheckEnabled() {
   return base::FeatureList::IsEnabled(kWindowsTpmTls13Check);
