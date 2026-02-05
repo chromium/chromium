@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
@@ -95,7 +96,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   archive_file->SetLength(size);
-  archive_file->Write(0, reinterpret_cast<const char*>(data), size);
+  archive_file->Write(0, base::span(data, size));
 
   Delegate delegate;
 
