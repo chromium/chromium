@@ -2199,17 +2199,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.EdgeToEdge.Eligible" enum="Boolean"
-    expires_after="2026-07-26">
+<histogram name="Android.EdgeToEdge.Eligible2" enum="Boolean"
+    expires_after="2026-07-05">
   <owner>lazzzis@google.com</owner>
   <owner>edge-to-edge@chromium.org</owner>
   <summary>
-    Records whether the current session is eligible for drawing any content edge
-    to edge. Recorded on ChromeActivity launch.
+    Records if the current activity is eligible for drawing any content edge to
+    edge based on the device configuration. Recorded on ChromeActivity launch.
   </summary>
 </histogram>
 
-<histogram name="Android.EdgeToEdge.IneligibilityReason"
+<histogram name="Android.EdgeToEdge.Eligible2.OnCreateController"
+    enum="Boolean" expires_after="2026-07-05">
+  <owner>lazzzis@google.com</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records if the current activity is eligible for drawing any content edge to
+    edge based on the device configuration. Recorded when the
+    EdgeToEdgeController is created.
+  </summary>
+</histogram>
+
+<histogram name="Android.EdgeToEdge.IneligibilityReason2"
     enum="IneligibilityReason" expires_after="2026-07-05">
   <owner>lazzzis@google.com</owner>
   <owner>edge-to-edge@chromium.org</owner>
@@ -2217,6 +2228,17 @@ chromium-metrics-reviews@google.com.
     Records the reason of why the current session is not eligibile for drawing
     any content edge to edge. Multiple reasons might be record for a single
     session. Recorded on ChromeActivity launch.
+  </summary>
+</histogram>
+
+<histogram name="Android.EdgeToEdge.IneligibilityReason2.OnCreateController"
+    enum="IneligibilityReason" expires_after="2026-07-05">
+  <owner>lazzzis@google.com</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records the reason of why the current session is not eligibile for drawing
+    any content edge to edge. Multiple reasons might be record for a single
+    session. Recorded when the EdgeToEdgeController is created.
   </summary>
 </histogram>
 
