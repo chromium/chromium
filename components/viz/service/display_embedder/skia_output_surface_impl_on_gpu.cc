@@ -1571,7 +1571,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
         SkISize size(plane_surfaces[i]->width(), plane_surfaces[i]->height());
         SkImageInfo dst_info = SkImageInfo::Make(
-            size, (i == 0) ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType,
+            size, (i == 0) ? kR8_unorm_SkColorType : kR8G8_unorm_SkColorType,
             kUnpremul_SkAlphaType);
 
         auto context =

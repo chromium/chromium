@@ -419,7 +419,8 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
   const int width = fake_device_state_->format.frame_size.width();
   const int height = fake_device_state_->format.frame_size.height();
 
-  SkColorType colorspace = kAlpha_8_SkColorType;
+  SkColorType colorspace = kUnknown_SkColorType;
+  SkColor4f draw_color = SkColors::kTransparent;
   switch (pixel_format_) {
     case Format::I420:
     case Format::NV12:
@@ -432,19 +433,25 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
       //
       // NV12 has the same Y plane dimension as I420 and we don't touch UV
       // plane.
-      colorspace = kAlpha_8_SkColorType;
+      colorspace = kR8_unorm_SkColorType;
+      draw_color = SkColors::kRed;
       break;
     case Format::SK_N32:
       // SkColorType is RGBA on some platforms and BGRA on others.
       colorspace = kN32_SkColorType;
+      draw_color = SkColors::kGreen;
       break;
     case Format::Y16:
       // Skia doesn't support painting in Y16. Instead, paint an 8bpp monochrome
       // image to the beginning of |target_buffer|. Later, move the 8bit pixel
       // values to a position corresponding to the high byte values of 16bit
       // pixel values (assuming the byte order is little-endian).
-      colorspace = kAlpha_8_SkColorType;
+      colorspace = kR16_unorm_SkColorType;
+      // Draw 1.0 to the red channel.
+      draw_color = SkColors::kRed;
       break;
+    default:
+      NOTREACHED();
   }
 
   const SkImageInfo info =
@@ -454,6 +461,7 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
   bitmap.setPixels(target_buffer);
   SkPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
+  paint.setColor(draw_color);
   SkFont font = skia::DefaultFont();
   font.setEdging(SkFont::Edging::kAlias);
   SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
@@ -475,7 +483,6 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
     const SkRect full_frame = SkRect::MakeWH(width, height);
     paint.setARGB(255, 0, 127, 0);
     canvas.drawRect(full_frame, paint);
-    paint.setColor(SkColors::kGreen);
   }
 
   // Draw a sweeping circle to show an animation.

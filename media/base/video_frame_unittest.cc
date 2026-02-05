@@ -1155,21 +1155,21 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm_y.addr(), frame->visible_data(VideoFrame::Plane::kY));
     EXPECT_EQ(pm_y.rowBytes(),
               static_cast<size_t>(frame->stride(VideoFrame::Plane::kY)));
-    EXPECT_EQ(pm_y.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_y.colorType(), kR8_unorm_SkColorType);
 
     EXPECT_EQ(pm_u.width(), kVisibleRect.width() / 2);
     EXPECT_EQ(pm_u.height(), kVisibleRect.height() / 2);
     EXPECT_EQ(pm_u.addr(), frame->visible_data(VideoFrame::Plane::kU));
     EXPECT_EQ(pm_u.rowBytes(),
               static_cast<size_t>(frame->stride(VideoFrame::Plane::kU)));
-    EXPECT_EQ(pm_u.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_u.colorType(), kR8_unorm_SkColorType);
 
     EXPECT_EQ(pm_v.width(), kVisibleRect.width() / 2);
     EXPECT_EQ(pm_v.height(), kVisibleRect.height() / 2);
     EXPECT_EQ(pm_v.addr(), frame->visible_data(VideoFrame::Plane::kV));
     EXPECT_EQ(pm_v.rowBytes(),
               static_cast<size_t>(frame->stride(VideoFrame::Plane::kV)));
-    EXPECT_EQ(pm_v.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_v.colorType(), kR8_unorm_SkColorType);
   }
 
   {
@@ -1191,7 +1191,7 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm_y.width(), kVisibleRect.width());
     EXPECT_EQ(pm_y.height(), kVisibleRect.height());
     EXPECT_EQ(pm_y.addr(), frame->visible_data(VideoFrame::Plane::kY));
-    EXPECT_EQ(pm_y.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_y.colorType(), kR8_unorm_SkColorType);
 
     EXPECT_EQ(pm_uv.width(), kVisibleRect.width() / 2);
     EXPECT_EQ(pm_uv.height(), kVisibleRect.height() / 2);
@@ -1220,22 +1220,22 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm_y.width(), kVisibleRect.width());
     EXPECT_EQ(pm_y.height(), kVisibleRect.height());
     EXPECT_EQ(pm_y.addr(), frame->visible_data(VideoFrame::Plane::kY));
-    EXPECT_EQ(pm_y.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_y.colorType(), kR8_unorm_SkColorType);
 
     EXPECT_EQ(pm_u.width(), kVisibleRect.width() / 2);
     EXPECT_EQ(pm_u.height(), kVisibleRect.height() / 2);
     EXPECT_EQ(pm_u.addr(), frame->visible_data(VideoFrame::Plane::kU));
-    EXPECT_EQ(pm_u.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_u.colorType(), kR8_unorm_SkColorType);
 
     EXPECT_EQ(pm_v.width(), kVisibleRect.width() / 2);
     EXPECT_EQ(pm_v.height(), kVisibleRect.height() / 2);
     EXPECT_EQ(pm_v.addr(), frame->visible_data(VideoFrame::Plane::kV));
-    EXPECT_EQ(pm_v.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_v.colorType(), kR8_unorm_SkColorType);
 
     EXPECT_EQ(pm_a.width(), kVisibleRect.width());
     EXPECT_EQ(pm_a.height(), kVisibleRect.height());
     EXPECT_EQ(pm_a.addr(), frame->visible_data(VideoFrame::Plane::kA));
-    EXPECT_EQ(pm_a.colorType(), kAlpha_8_SkColorType);
+    EXPECT_EQ(pm_a.colorType(), kR8_unorm_SkColorType);
   }
 
   {

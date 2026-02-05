@@ -156,7 +156,7 @@ class ImageTransferCacheEntryTest
     return SkImages::BorrowTextureFrom(
         gr_context, allocated_texture, kTopLeft_GrSurfaceOrigin,
         texture_format == GL_RG8_EXT ? kR8G8_unorm_SkColorType
-                                     : kAlpha_8_SkColorType,
+                                     : kR8_unorm_SkColorType,
         kOpaque_SkAlphaType, nullptr /* colorSpace */, MarkTextureAsReleased,
         released);
   }

@@ -64,20 +64,20 @@ void BlitRGBAToYUVA(SkImage* src_image,
 
   // Permutation matrices to select the appropriate YUVA channels for each
   // output plane.
-  constexpr SkColorMatrix xxxY(0, 0, 0, 0, 0,  //
+  constexpr SkColorMatrix Yxx1(1, 0, 0, 0, 0,  //
                                0, 0, 0, 0, 0,  //
                                0, 0, 0, 0, 0,  //
-                               1, 0, 0, 0, 0);
+                               0, 0, 0, 0, 1);
   constexpr SkColorMatrix UVx1(0, 1, 0, 0, 0,  //
                                0, 0, 1, 0, 0,  //
                                0, 0, 0, 0, 0,  //
-                               0, 0, 0, 1, 0);
+                               0, 0, 0, 0, 1);
 
   // Only Y_UV has been tested.
   std::array<SkColorMatrix, SkYUVAInfo::kMaxPlanes> permutation_matrices;
   switch (dst_yuva_info.planeConfig()) {
     case SkYUVAInfo::PlaneConfig::kY_UV:
-      permutation_matrices[0] = xxxY;
+      permutation_matrices[0] = Yxx1;
       permutation_matrices[1] = UVx1;
       break;
     default:

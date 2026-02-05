@@ -224,7 +224,8 @@ bool WrappedSkImageBackingFactory::IsSupported(
       // extensions available and we'll have to match that format when we record
       // DDLs. To avoid matching logic here, fallback to other backings (e.g
       // GLTextureImageBacking) where we control what format was used.
-      if (color_type == kAlpha_8_SkColorType &&
+      if ((color_type == kAlpha_8_SkColorType ||
+           color_type == kR8_unorm_SkColorType) &&
           context_state_->feature_info()->workarounds().r8_egl_images_broken) {
         return false;
       }

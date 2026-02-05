@@ -164,7 +164,7 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
 
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   // SkColorType is always Alpha8 for I420 8 bit video frames.
-  auto color_type = kAlpha_8_SkColorType;
+  auto color_type = kR8_unorm_SkColorType;
   SkImageInfo y_info = SkImageInfo::Make(
       coded_size.width(), coded_size.height(), color_type, kPremul_SkAlphaType);
   pixmaps[0] = SkPixmap(y_info, y_pixels.data(), y_info.minRowBytes());
@@ -250,7 +250,7 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   SkImageInfo y_info =
       SkImageInfo::Make(coded_size.width(), coded_size.height(),
-                        kAlpha_8_SkColorType, kPremul_SkAlphaType);
+                        kR8_unorm_SkColorType, kPremul_SkAlphaType);
   pixmaps[0] = SkPixmap(y_info, y_pixels.data(), y_info.minRowBytes());
   SkImageInfo uv_info =
       SkImageInfo::Make(uv_size.width(), uv_size.height(),

@@ -771,22 +771,21 @@ SkColorType SkColorTypeForPlaneNoCheck(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:
-      // kGray_8_SkColorType would make more sense but doesn't work on Windows.
-      return kAlpha_8_SkColorType;
+      return kR8_unorm_SkColorType;
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV24:
-      return plane == VideoFrame::Plane::kY ? kAlpha_8_SkColorType
+      return plane == VideoFrame::Plane::kY ? kR8_unorm_SkColorType
                                             : kR8G8_unorm_SkColorType;
     case PIXEL_FORMAT_NV12A:
       return plane == VideoFrame::Plane::kY ||
                      plane == VideoFrame::Plane::kATriPlanar
-                 ? kAlpha_8_SkColorType
+                 ? kR8_unorm_SkColorType
                  : kR8G8_unorm_SkColorType;
     case PIXEL_FORMAT_P010LE:
     case PIXEL_FORMAT_P210LE:
     case PIXEL_FORMAT_P410LE:
-      return plane == VideoFrame::Plane::kY ? kA16_unorm_SkColorType
+      return plane == VideoFrame::Plane::kY ? kR16_unorm_SkColorType
                                             : kR16G16_unorm_SkColorType;
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_ABGR:

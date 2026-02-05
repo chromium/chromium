@@ -156,9 +156,9 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
     return kRGBA_1010102_SkColorType;
 
   } else if (format == SinglePlaneFormat::kR_8) {
-    return kAlpha_8_SkColorType;
+    return kR8_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kR_16) {
-    return kA16_unorm_SkColorType;
+    return kR16_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_1616) {
     return kR16G16_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
@@ -185,10 +185,11 @@ SkColorType ToClosestSkColorType(SharedImageFormat format, int plane_index) {
   DCHECK_LE(num_channels, 2);
   switch (format.channel_format()) {
     case SharedImageFormat::ChannelFormat::k8:
-      return num_channels == 1 ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType;
+      return num_channels == 1 ? kR8_unorm_SkColorType
+                               : kR8G8_unorm_SkColorType;
     case SharedImageFormat::ChannelFormat::k10:
     case SharedImageFormat::ChannelFormat::k16:
-      return num_channels == 1 ? kA16_unorm_SkColorType
+      return num_channels == 1 ? kR16_unorm_SkColorType
                                : kR16G16_unorm_SkColorType;
     case SharedImageFormat::ChannelFormat::k16F:
       return num_channels == 1 ? kA16_float_SkColorType
@@ -217,11 +218,14 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
       return SinglePlaneFormat::kRGBA_1010102;
     case kBGRA_1010102_SkColorType:
       return SinglePlaneFormat::kBGRA_1010102;
+    case kR8_unorm_SkColorType:
+      return SinglePlaneFormat::kR_8;
     case kR8G8_unorm_SkColorType:
       return SinglePlaneFormat::kRG_88;
     case kA16_float_SkColorType:
       return SinglePlaneFormat::kR_F16;
     case kA16_unorm_SkColorType:
+    case kR16_unorm_SkColorType:
       return SinglePlaneFormat::kR_16;
     case kR16G16_unorm_SkColorType:
       return SinglePlaneFormat::kRG_1616;

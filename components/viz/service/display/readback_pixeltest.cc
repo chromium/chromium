@@ -112,7 +112,7 @@ struct ReadbackTextureInfo {
 size_t GetRowBytesForColorType(int width, SkColorType color_type) {
   size_t row_bytes = width;
   switch (color_type) {
-    case kAlpha_8_SkColorType:
+    case kR8_unorm_SkColorType:
       break;
     case kR8G8_unorm_SkColorType:
       row_bytes *= 2;
@@ -217,7 +217,7 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
                                   .get();
 
         std::vector<ReadbackTextureInfo> texture_infos;
-        texture_infos.emplace_back(texture_size, kAlpha_8_SkColorType,
+        texture_infos.emplace_back(texture_size, kR8_unorm_SkColorType,
                                    out_luma_plane);
         texture_infos.emplace_back(
             gfx::Size(texture_size.width() / 2, texture_size.height() / 2),
@@ -983,7 +983,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
     pixels[i] = (i == 0) ? GeneratePixels(plane_size_in_bytes, luma_pattern)
                          : GeneratePixels(plane_size_in_bytes, chromas_pattern);
 
-    auto color_type = i == 0 ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType;
+    auto color_type = i == 0 ? kR8_unorm_SkColorType : kR8G8_unorm_SkColorType;
     size_t row_bytes = plane_size.width() * (i == 0 ? 1 : 2);
     pixmaps[i] =
         SkPixmap(SkImageInfo::Make(plane_size.width(), plane_size.height(),
