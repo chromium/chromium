@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 
 namespace tabs {
 class TabInterface;
@@ -40,6 +41,10 @@ class GlicSkillsManager {
   virtual void LaunchSkillsDialog(Profile* profile,
                                   skills::Skill skill,
                                   base::OnceCallback<void(bool)> callback) = 0;
+
+  // Get a contextual skill for the given tab.
+  virtual glic::mojom::SkillPtr GetContextualSkill(
+      std::string_view skill_id) = 0;
 };
 
 }  // namespace glic

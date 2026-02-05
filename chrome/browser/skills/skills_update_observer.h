@@ -46,8 +46,7 @@ class SkillsUpdateObserver : public content::WebContentsObserver {
     return contextual_skills_.get();
   }
 
-  // Retrieves the current list of skill previews.
-  std::vector<glic::mojom::SkillPreviewPtr> GetContextualSkills() const;
+  std::vector<glic::mojom::SkillPtr> GetContextualSkills() const;
 
  private:
   void OnOptimizationGuideDecision(

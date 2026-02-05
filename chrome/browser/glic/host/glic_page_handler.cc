@@ -2298,6 +2298,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
+    glic::mojom::SkillPtr contextual_skill =
+        host().skills_manager().GetContextualSkill(skill_id);
+    if (contextual_skill) {
+      return contextual_skill;
+    }
     if (!skills_service_) {
       return nullptr;
     }

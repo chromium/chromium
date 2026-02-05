@@ -20,22 +20,26 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
-std::vector<glic::mojom::SkillPreviewPtr> ConvertSkillsListToSkillPreviews(
+std::vector<glic::mojom::SkillPtr> ConvertSkillsListToSkills(
     const skills::proto::SkillsList* skills_list) {
-  std::vector<glic::mojom::SkillPreviewPtr> skill_previews;
+  std::vector<glic::mojom::SkillPtr> skills;
   if (!skills_list) {
-    return skill_previews;
+    return skills;
   }
-  for (const skills::proto::Skill& skill : skills_list->skills()) {
+  for (const skills::proto::Skill& skill_proto : skills_list->skills()) {
     glic::mojom::SkillPreviewPtr skill_preview =
         glic::mojom::SkillPreview::New();
-    skill_preview->id = skill.id();
-    skill_preview->name = skill.name();
-    skill_preview->icon = skill.icon();
+    skill_preview->id = skill_proto.id();
+    skill_preview->name = skill_proto.name();
+    skill_preview->icon = skill_proto.icon();
     skill_preview->source = glic::mojom::SkillSource::kFirstParty;
-    skill_previews.push_back(std::move(skill_preview));
+
+    glic::mojom::SkillPtr skill = glic::mojom::Skill::New();
+    skill->preview = std::move(skill_preview);
+    skill->prompt = skill_proto.prompt();
+    skills.push_back(std::move(skill));
   }
-  return skill_previews;
+  return skills;
 }
 }  // namespace
 
@@ -114,9 +118,9 @@ void SkillsUpdateObserver::MaybeUpdateContextualSkills() {
   }
 }
 
-std::vector<glic::mojom::SkillPreviewPtr>
+std::vector<glic::mojom::SkillPtr>
 SkillsUpdateObserver::GetContextualSkills() const {
-  return ConvertSkillsListToSkillPreviews(contextual_skills_.get());
+  return ConvertSkillsListToSkills(contextual_skills_.get());
 }
 
 }  // namespace skills

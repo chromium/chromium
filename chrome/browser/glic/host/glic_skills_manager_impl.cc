@@ -44,7 +44,17 @@ void GlicSkillsManagerImpl::UpdateSkillPreviews(
   if (!observer) {
     return;
   }
-  host_->NotifyContextualSkillsChanged(observer->GetContextualSkills());
+  auto new_contextual_skills = observer->GetContextualSkills();
+  if (mojo::Equals(contextual_skills_, new_contextual_skills)) {
+    return;
+  }
+  contextual_skills_ = std::move(new_contextual_skills);
+
+  std::vector<mojom::SkillPreviewPtr> skill_previews;
+  for (const auto& skill : contextual_skills_) {
+    skill_previews.push_back(skill->preview.Clone());
+  }
+  host_->NotifyContextualSkillsChanged(std::move(skill_previews));
 }
 
 tabs::TabInterface* GlicSkillsManagerImpl::EnsureTabForSkills() {
@@ -97,6 +107,16 @@ void GlicSkillsManagerImpl::WebUiStateChanged(mojom::WebUiState state) {
   if (state == mojom::WebUiState::kReady) {
     UpdateSkillPreviews(std::nullopt);
   }
+}
+
+glic::mojom::SkillPtr GlicSkillsManagerImpl::GetContextualSkill(
+    std::string_view skill_id) {
+  for (const auto& skill : contextual_skills_) {
+    if (skill->preview->id == skill_id) {
+      return skill.Clone();
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace glic
