@@ -145,9 +145,10 @@ TEST_F(InputStateModelCompatibilityTest, SelectTool) {
       UnorderedElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
                            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO));
 
-  // All other tools should be disabled.
+  // All other tools should be disabled (including Deep Search itself).
   EXPECT_THAT(new_state.disabled_tools,
-              UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+              UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
                                    omnibox::ToolMode::TOOL_MODE_CANVAS));
 
   // All inputs disabled.
