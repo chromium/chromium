@@ -22,7 +22,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -357,8 +356,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     }
 
     private static void launchNewWindowIntent(Intent intent, Rect initialBounds) {
-        MultiInstanceManager.onMultiInstanceModeStarted();
-
         var context = ContextUtils.getApplicationContext();
         if (initialBounds.isEmpty()) {
             context.startActivity(intent);

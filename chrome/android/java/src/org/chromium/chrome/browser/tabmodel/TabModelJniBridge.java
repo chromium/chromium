@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -382,7 +381,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         Tab tab = warmupManager.takeSpareTab(profile, /* initiallyHidden= */ false, launchType);
         tab.loadUrl(loadParams);
 
-        MultiInstanceManager.onMultiInstanceModeStarted();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         parentTab.getContext(),

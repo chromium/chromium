@@ -519,7 +519,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             boolean openAdjacently,
             boolean addTrustedIntentExtras,
             @NewWindowAppSource int source) {
-        onMultiInstanceModeStarted();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity,
@@ -540,7 +539,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             boolean openAdjacently,
             boolean addTrustedIntentExtras,
             @NewWindowAppSource int source) {
-        onMultiInstanceModeStarted();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity,
@@ -638,7 +636,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         intent.setClassName(appContext, ChromeTabbedActivity.class.getName());
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(
                 intent, mActivity, targetActivity.getClass());
-        onMultiInstanceModeStarted();
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
 
         if (tabAtIndex != TabList.INVALID_TAB_INDEX) {
@@ -699,7 +696,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         Intent intent = createNewWindowIntent(incognito);
         assert intent != null : "The Intent to open a new window must not be null";
 
-        onMultiInstanceModeStarted();
         mActivity.startActivity(intent);
         RecordHistogram.recordEnumeratedHistogram(
                 MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
@@ -1398,7 +1394,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
         }
 
-        onMultiInstanceModeStarted();
         // If not in multi-window mode, this will be determined by shouldOpenInAdjacentWindow().
         boolean openAdjacently =
                 !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
