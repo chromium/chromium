@@ -138,6 +138,8 @@ const char* kIncognitoIconResourceName =
     "//resources/cr_components/searchbox/icons/incognito.svg";
 const char* kJourneysIconResourceName =
     "//resources/cr_components/searchbox/icons/journeys.svg";
+const char* kNotesSparkIconResourceName =
+    "//resources/cr_components/searchbox/icons/notes_spark.svg";
 const char* kPageIconResourceName =
     "//resources/cr_components/searchbox/icons/page.svg";
 const char* kPedalsIconResourceName = "//theme/current-channel-logo";
@@ -498,6 +500,8 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
     return kJourneysIconResourceName;
   } else if (icon.name == omnibox::kJourneysIcon.name) {
     return kJourneysIconResourceName;
+  } else if (icon.name == omnibox::kNotesSparkIcon.name) {
+    return kNotesSparkIconResourceName;
   } else if (icon.name == omnibox::kPageChromeRefreshIcon.name) {
     return kPageIconResourceName;
   } else if (icon.name == omnibox::kProductChromeRefreshIcon.name) {

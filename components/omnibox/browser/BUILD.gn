@@ -64,6 +64,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "install_desktop.icon",
     "journeys.icon",
     "journeys_chrome_refresh.icon",
+    "notes_spark.icon",
     "offline_pin.icon",
     "page_chrome_refresh.icon",
     "price_tracking_disabled.icon",

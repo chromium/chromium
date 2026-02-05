@@ -93,6 +93,21 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 // TODO(crbug.com/437177158): Replace with the correct symbol when it's available.
                 return R.drawable.ic_suggestion_magnifier;
 
+            case SuggestTemplateInfo.IconType.GLOBE_WITH_SEARCH_LOUPE_VALUE:
+                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
+                return R.drawable.ic_suggestion_magnifier;
+
+            case SuggestTemplateInfo.IconType.BANANA_VALUE:
+                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
+                return R.drawable.ic_suggestion_magnifier;
+
+            case SuggestTemplateInfo.IconType.FAVICON_VALUE:
+                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
+                return R.drawable.ic_suggestion_magnifier;
+
+            case SuggestTemplateInfo.IconType.NOTES_SPARK_VALUE:
+                return R.drawable.notes_spark;
+
             default: // Icon type is specified, but not recognized
                 assert false : "Unrecognized IconType: " + iconType;
                 return 0;

@@ -516,13 +516,15 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
   if (suggest_template.has_value() && suggest_template->has_type_icon()) {
     // Update this assertion and the switch below whenever values are added.
     static_assert(omnibox::SuggestTemplateInfo::IconType_MAX ==
-                  omnibox::SuggestTemplateInfo::SUB_ARROW_RIGHT);
+                  omnibox::SuggestTemplateInfo::NOTES_SPARK);
     switch (suggest_template->type_icon()) {
       case omnibox::SuggestTemplateInfo::ICON_TYPE_UNSPECIFIED:
         // When not specified, fall back on regular match icon logic below.
         break;
       case omnibox::SuggestTemplateInfo::HISTORY:
         return vector_icons::kHistoryChromeRefreshIcon;
+      case omnibox::SuggestTemplateInfo::NOTES_SPARK:
+        return omnibox::kNotesSparkIcon;
       case omnibox::SuggestTemplateInfo::SEARCH_LOOP:
         return vector_icons::kSearchChromeRefreshIcon;
       case omnibox::SuggestTemplateInfo::SEARCH_LOOP_WITH_SPARKLE:

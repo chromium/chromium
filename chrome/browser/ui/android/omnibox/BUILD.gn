@@ -335,6 +335,7 @@ android_resources("java_resources") {
     "java/res/drawable/navattach_item_background.xml",
     "java/res/drawable/north_east_24dp.xml",
     "java/res/drawable/north_west_24dp.xml",
+    "java/res/drawable/notes_spark.xml",
     "java/res/drawable/oval_baseline_primary_50.xml",
     "java/res/drawable/oval_baseline_translucent_70.xml",
     "java/res/drawable/search_box_icon_background_opaque.xml",

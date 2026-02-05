@@ -57,6 +57,10 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
       symbol_name = kMagnifyingglassSparkSymbol;
       default_symbol = false;
       break;
+    case OmniboxSuggestionIconType::kNotesSpark:
+      symbol_name = kLineThreeSparkSymbol;
+      default_symbol = false;
+      break;
     case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
   }
