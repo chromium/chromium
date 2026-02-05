@@ -576,6 +576,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.ClapperLoud.MessageUI.Allow" enum="Boolean"
+    expires_after="2026-07-19">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the allow action whenever the user clicks on the Allow button in the
+    message UI for the loud notification permission prompt. This action will
+    accept the current notifications permission prompt.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.ClapperLoud.MessageUI.Deny" enum="Boolean"
+    expires_after="2026-07-19">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the deny action whenever the user clicks on the Don't Allow menu
+    item in the message UI for the loud notification permission prompt. This
+    action will deny the current notifications permission prompt.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.ClapperLoud.MessageUI.Dismiss" enum="Boolean"
     expires_after="2026-07-19">
   <owner>elklm@chromium.org</owner>
@@ -593,10 +617,10 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records when the user clicks on the Manage action in the message UI for the
-    loud notification permission prompt. This action redirects the user to the
-    PageInfo Permissions subpage where the user can grant or deny the permission
-    prompt.
+    Records when the user clicks on the Manage menu item in the message UI for
+    the loud notification permission prompt. This action redirects the user to
+    the PageInfo Permissions subpage where the user can grant or deny the
+    permission prompt.
   </summary>
 </histogram>
 
@@ -619,7 +643,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the OS-level notification permission prompt was granted or
     denied when the user clicked on the Subscribe button in the PageInfo
-    Permissions subpage.
+    Permissions subpage or on the Allow button in the message UI.
   </summary>
 </histogram>
 

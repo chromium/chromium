@@ -339,6 +339,10 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest,
 
   // Message should be dismissed
   EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  // Verify Histogram
+  histogram_tester.ExpectBucketCount("Permissions.ClapperLoud.MessageUI.Allow",
+                                     true, 1);
 }
 
 TEST_F(PermissionBlockedMessageDelegateAndroidTest, LoudUI_DismissByGesture) {

@@ -12,6 +12,7 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -315,6 +316,8 @@ public class PermissionUtil {
                         new AndroidPermissionRequester.RequestDelegate() {
                             @Override
                             public void onAndroidPermissionAccepted() {
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Permissions.ClapperLoud.PageInfo.OsPromptResolved", true);
                                 PermissionUtilJni.get()
                                         .resolveNotificationsPermissionRequest(
                                                 webContents, ContentSetting.ALLOW);
@@ -323,6 +326,8 @@ public class PermissionUtil {
 
                             @Override
                             public void onAndroidPermissionCanceled() {
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Permissions.ClapperLoud.PageInfo.OsPromptResolved", false);
                                 PermissionUtilJni.get()
                                         .dismissNotificationsPermissionRequest(webContents);
                                 onResolved.run();

@@ -235,10 +235,13 @@ void PermissionBlockedMessageDelegate::HandleLoudUiSecondayMenuItemClicked(
     int command_id) {
   switch (static_cast<LoudUiSecondayMenuItems>(command_id)) {
     case LoudUiSecondayMenuItems::kDeny:
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.MessageUI.Deny", true);
       ShowLoudClapperDialogResultIcon(web_contents_, CONTENT_SETTING_BLOCK);
       delegate_->Deny();
       break;
     case LoudUiSecondayMenuItems::kManage:
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.MessageUI.Manage",
+                                true);
       if (!dialog_controller_) {
         dialog_controller_ =
             std::make_unique<PermissionBlockedDialogController>(
@@ -290,6 +293,7 @@ void PermissionBlockedMessageDelegate::HandleQuietDismissCallback(
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
+  base::UmaHistogramBoolean("Permissions.ClapperLoud.MessageUI.Allow", true);
   messages::MessageDispatcherBridge::Get()->DismissMessage(
       message_.get(), messages::DismissReason::PRIMARY_ACTION);
 
