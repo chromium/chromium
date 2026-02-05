@@ -18,6 +18,9 @@ namespace tabs {
 class TabInterface;
 }
 
+namespace skills {
+struct Skill;
+}  // namespace skills
 namespace glic {
 
 class FocusedTabData;
@@ -35,7 +38,13 @@ class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
   void UpdateSkillPreviews(
       std::optional<tabs::TabInterface*> updated_tab) override;
 
+  void LaunchSkillsDialog(Profile* profile,
+                          skills::Skill skill,
+                          base::OnceCallback<void(bool)> callback) override;
+
  private:
+  tabs::TabInterface* EnsureTabForSkills();
+
   // The function corresponding to our subscription.
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
 

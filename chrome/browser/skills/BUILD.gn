@@ -32,11 +32,13 @@ source_set("skills") {
 
 source_set("public") {
   sources = [
+    "skills_dialog_launcher.h",
     "skills_ui_tab_controller_interface.cc",
     "skills_ui_tab_controller_interface.h",
   ]
   deps = [
     "//base",
+    "//components/skills/public",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
   ]
@@ -44,6 +46,7 @@ source_set("public") {
 
 source_set("ui") {
   sources = [
+    "skills_dialog_launcher.cc",
     "skills_ui_tab_controller.cc",
     "skills_ui_tab_controller.h",
     "skills_ui_window_controller.cc",
@@ -88,6 +91,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "skills_dialog_launcher_browsertest.cc",
     "skills_ui_tab_controller_browsertest.cc",
     "skills_ui_window_controller_browsertest.cc",
   ]

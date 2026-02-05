@@ -1339,19 +1339,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "CreateSkill cannot be called without Skills enabled.");
       return;
     }
-    const auto& ftd = sharing_manager().GetFocusedTabData();
-    tabs::TabInterface* tab = ftd.focus() ? ftd.focus() : ftd.unfocused_tab();
-    if (!tab) {
-      return;
-    }
-    if (auto* controller = skills::SkillsUiTabControllerInterface::From(tab)) {
-      // Pass empty strings for id, name, and icon.
-      skills::Skill skill(/*id=*/"",
-                          /*name=*/"",
-                          /*icon=*/"", request->prompt);
-      controller->ShowDialog(std::move(skill));
-      std::move(scoped_callback).Run(true);
-    }
+    // Pass empty strings for id, name, and icon.
+    skills::Skill skill(/*id=*/"",
+                        /*name=*/"",
+                        /*icon=*/"", request->prompt);
+    host().skills_manager().LaunchSkillsDialog(profile_, std::move(skill),
+                                               std::move(scoped_callback));
 #else
     receiver_.ReportBadMessage("CreateSkill isn't supported on Android.");
 #endif  //  !BUILDFLAG(IS_ANDROID)

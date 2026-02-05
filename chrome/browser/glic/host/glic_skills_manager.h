@@ -7,10 +7,16 @@
 
 #include <optional>
 
+#include "base/functional/callback_forward.h"
+
 namespace tabs {
 class TabInterface;
 }
 
+class Profile;
+namespace skills {
+struct Skill;
+}  // namespace skills
 namespace glic {
 
 // This is a host-scoped object that is responsible for sending skills to the
@@ -28,6 +34,12 @@ class GlicSkillsManager {
   // contextual skill previews.
   virtual void UpdateSkillPreviews(
       std::optional<tabs::TabInterface*> updated_tab) = 0;
+
+  // Orchestrates the launch of a Skills dialog. If `tab` is null, it will
+  // attempt to create a new tab/window for the given profile.
+  virtual void LaunchSkillsDialog(Profile* profile,
+                                  skills::Skill skill,
+                                  base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace glic
