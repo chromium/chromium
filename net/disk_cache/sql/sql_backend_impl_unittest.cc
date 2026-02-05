@@ -2318,7 +2318,8 @@ TEST_F(SqlBackendImplTest, WriteBuffering) {
   feature_list.InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment,
       {{net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "10240"},
-       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"}});
+       {net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.name, "1024"},
+       {net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "250"}});
 
   auto backend = CreateBackendAndInit();
 
@@ -2345,21 +2346,22 @@ TEST_F(SqlBackendImplTest, WriteBuffering) {
   EXPECT_EQ(backend->GetWriteBufferTotalSize(),
             buffer1->size() + buffer2->size());
 
-  // Write exceeding per-entry limit, should trigger flush of previous buffer
-  // and write new data.
+  // Write exceeding per-entry limit, should trigger flush of previous buffer.
+  // The new data is too large to buffer, so it should be written directly.
   std::string large_data(2000, 'c');
   auto buffer3 = base::MakeRefCounted<net::StringIOBuffer>(large_data);
   net::TestCompletionCallback cb_write;
   int rv = entry->WriteData(1, 200, buffer3.get(), buffer3->size(),
                             cb_write.callback(), false);
-  // It should be synchronous because of optimistic writing (2000 + 200 <= 4096
-  // default).
-  EXPECT_EQ(rv, static_cast<int>(buffer3->size()));
-
-  // Buffer should be empty now.
+  EXPECT_EQ(rv, net::ERR_IO_PENDING);
   EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
 
+  EXPECT_EQ(cb_write.WaitForResult(), static_cast<int>(buffer3->size()));
+
   entry->Close();
+
+  FlushQueue(*backend);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
@@ -2397,6 +2399,9 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadFromBuffer) {
   EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
 
   entry->Close();
+
+  FlushQueue(*backend);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingReadOverlapFlush) {
@@ -2481,6 +2486,10 @@ TEST_F(SqlBackendImplTest, WriteBufferingGlobalLimit) {
 
   entry1->Close();
   entry2->Close();
+
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 60);
+  FlushQueue(*backend);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
 }
 
 TEST_F(SqlBackendImplTest, WriteBufferingFlushOnClose) {
@@ -2506,7 +2515,10 @@ TEST_F(SqlBackendImplTest, WriteBufferingFlushOnClose) {
   EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
 
   entry->Close();
-  // Closing should flush buffer.
+
+  // Closing should asynchronously flush buffer.
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), data.size());
+  FlushQueue(*backend);
   EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
 
   // Verify data on disk by opening again.
@@ -2554,27 +2566,45 @@ TEST_F(SqlBackendImplTest, WriteBufferingOptimisticBoundary) {
 
   // 2. Write 600 bytes. 500 + 600 > 1000.
   // Should flush buffer (500) -> Optimistic (size 500).
-  // Then write new data (600) -> Optimistic (size 600).
-  // Total optimistic usage: 1100.
+  // Then write new data (600) to the new buffer.
   auto buffer2 =
       base::MakeRefCounted<net::StringIOBuffer>(std::string(600, 'b'));
   EXPECT_EQ(entry->WriteData(1, 500, buffer2.get(), buffer2->size(),
                              base::DoNothing(), false),
             buffer2->size());
-  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
-  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 1100);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 600);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 500);
 
   // 3. Write 2000 bytes. 2000 > 1000.
-  // Direct write.
-  // Optimistic check: 1100 + 2000 = 3100 > 3000.
-  // Should be pending.
+  // Since 2000 > 1000 (entry limit), it CANNOT be buffered.
+  // It flushes the previous buffer (600) -> Optimistic: 500 + 600 = 1100 <=
+  // 3000. Then writes 2000 bytes directly (async).
   auto buffer3 =
       base::MakeRefCounted<net::StringIOBuffer>(std::string(2000, 'c'));
-  net::TestCompletionCallback cb_write;
-  int rv = entry->WriteData(1, 1100, buffer3.get(), buffer3->size(),
-                            cb_write.callback(), false);
-  EXPECT_EQ(rv, net::ERR_IO_PENDING);
-  EXPECT_EQ(cb_write.WaitForResult(), buffer3->size());
+  net::TestCompletionCallback cb_write3;
+  EXPECT_EQ(entry->WriteData(1, 1100, buffer3.get(), buffer3->size(),
+                             cb_write3.callback(), false),
+            net::ERR_IO_PENDING);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 1100);
+  EXPECT_EQ(cb_write3.WaitForResult(), 2000);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
+
+  // 4. Write 9000 bytes.
+  // Total buffer usage: 0 + 9000.
+  // Cannot buffer because 9000 > 1000 (entry limit).
+  // Writes 9000 bytes directly.
+  // Optimistic check for new write: 0 + 9000 > 3000. Non-optimistic write.
+  // Should be pending.
+  auto buffer4 =
+      base::MakeRefCounted<net::StringIOBuffer>(std::string(9000, 'd'));
+  net::TestCompletionCallback cb_write4;
+  EXPECT_EQ(entry->WriteData(1, 3100, buffer4.get(), buffer4->size(),
+                             cb_write4.callback(), false),
+            net::ERR_IO_PENDING);
+  EXPECT_EQ(cb_write4.WaitForResult(), static_cast<int>(buffer4->size()));
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
+  EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
 
   entry->Close();
 }
@@ -2620,6 +2650,9 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadAcrossChunks) {
   EXPECT_EQ(backend->GetWriteBufferTotalSize(), data1.size() + data2.size());
 
   entry->Close();
+
+  FlushQueue(*backend);
+  EXPECT_EQ(backend->GetWriteBufferTotalSize(), 0);
 }
 
 TEST_F(SqlBackendImplTest, CombinedWriteAndMetadataUpdate) {

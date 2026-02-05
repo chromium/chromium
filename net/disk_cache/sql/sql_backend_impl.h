@@ -138,7 +138,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       base::Time last_used,
       const std::optional<MemoryEntryDataHints>& new_hints,
       scoped_refptr<net::GrowableIOBuffer> head_buffer,
-      int64_t header_size_delta);
+      int64_t header_size_delta,
+      CompletionOnceCallback callback);
 
   // Writes data to an entry's body (stream 1). This can be used to write new
   // data, overwrite existing data, or append to the entry. The operation is
@@ -220,6 +221,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   int64_t GetOptimisticWriteBufferTotalSizeForTesting() {
     return optimistic_write_buffer_total_size_;
   }
+
+  base::WeakPtr<SqlBackendImpl> GetWeakPtr();
 
  private:
   class IteratorImpl;
@@ -377,6 +380,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       scoped_refptr<net::GrowableIOBuffer> head_buffer,
       int64_t header_size_delta,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+      SqlPersistentStore::ErrorCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for a non-optimistic write operation. This method

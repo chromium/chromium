@@ -987,16 +987,27 @@ void SqlBackendImpl::WriteEntryDataAndMetadata(
     base::Time last_used,
     const std::optional<MemoryEntryDataHints>& new_hints,
     scoped_refptr<net::GrowableIOBuffer> head_buffer,
-    int64_t header_size_delta) {
+    int64_t header_size_delta,
+    CompletionOnceCallback callback) {
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
-      key, base::BindOnce(
-               &SqlBackendImpl::HandleWriteEntryDataAndMetadataOperation,
-               weak_factory_.GetWeakPtr(), key, db_handle, old_body_end,
-               std::move(buffer), last_used, new_hints, std::move(head_buffer),
-               header_size_delta,
-               PushInFlightEntryModification(
-                   key, InFlightEntryModification(db_handle, last_used,
-                                                  head_buffer, body_end))));
+      key,
+      base::BindOnce(&SqlBackendImpl::HandleWriteEntryDataAndMetadataOperation,
+                     weak_factory_.GetWeakPtr(), key, db_handle, old_body_end,
+                     std::move(buffer), last_used, new_hints,
+                     std::move(head_buffer), header_size_delta,
+                     PushInFlightEntryModification(
+                         key, InFlightEntryModification(db_handle, last_used,
+                                                        head_buffer, body_end)),
+                     base::BindOnce(
+                         [](CompletionOnceCallback callback,
+                            SqlPersistentStore::Error result) {
+                           std::move(callback).Run(
+                               result == SqlPersistentStore::Error::kOk
+                                   ? net::OK
+                                   : net::ERR_FAILED);
+                         },
+                         WrapCallbackWithAbortError<int>(std::move(callback),
+                                                         net::ERR_ABORTED))));
 }
 
 void SqlBackendImpl::HandleWriteEntryDataAndMetadataOperation(
@@ -1009,17 +1020,19 @@ void SqlBackendImpl::HandleWriteEntryDataAndMetadataOperation(
     scoped_refptr<net::GrowableIOBuffer> head_buffer,
     int64_t header_size_delta,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
+    SqlPersistentStore::ErrorCallback callback,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
   CHECK(db_handle->IsFinished());
   if (db_handle->GetError().has_value()) {
     // Fail the operation for entries that previously failed a speculative
     // creation or optimistic write.
+    std::move(callback).Run(*db_handle->GetError());
     return;
   }
   store_->WriteEntryDataAndMetadata(
       key, *db_handle->GetResId(), old_body_end, std::move(buffer), last_used,
       new_hints, std::move(head_buffer), header_size_delta,
-      base::BindOnce([](SqlPersistentStore::Error error) {})
+      std::move(callback)
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
           .Then(OnceClosureWithBoundArgs(std::move(handle))));
@@ -1420,6 +1433,10 @@ void SqlBackendImpl::EnableStrictCorruptionCheckForTesting() {
 void SqlBackendImpl::ReportWriteBufferChange(int delta) {
   write_buffer_total_size_ += delta;
   CHECK_GE(write_buffer_total_size_, 0);
+}
+
+base::WeakPtr<SqlBackendImpl> SqlBackendImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(

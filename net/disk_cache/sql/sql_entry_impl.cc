@@ -38,8 +38,9 @@ SqlEntryImpl::~SqlEntryImpl() {
 
   std::optional<int64_t> old_body_end;
   EntryWriteBuffer buffer;
+  base::ScopedClosureRunner buffer_change_reporter;
 
-  if (auto write_buffer = TakeWriteBuffer()) {
+  if (auto write_buffer = TakeWriteBuffer(buffer_change_reporter)) {
     old_body_end = write_buffer->offset;
     buffer = std::move(*write_buffer);
   }
@@ -59,7 +60,8 @@ SqlEntryImpl::~SqlEntryImpl() {
   if (old_body_end.has_value() || metadata_update_needed) {
     backend_->WriteEntryDataAndMetadata(
         key_, db_handle_, old_body_end, body_end_, std::move(buffer),
-        last_used_, new_hints_, std::move(head_to_send), header_size_delta);
+        last_used_, new_hints_, std::move(head_to_send), header_size_delta,
+        base::DoNothingWithBoundArgs(std::move(buffer_change_reporter)));
   }
 
   backend_->ReleaseActiveEntry(*this);
@@ -314,9 +316,12 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
         net::features::kSqlDiskCacheMaxWriteBufferTotalSize.Get();
     const int entry_limit =
         net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.Get();
+    if (buf_len <= entry_limit &&
+        backend_->GetWriteBufferTotalSize() + buf_len <= total_limit) {
+      if (write_buffer_.size + buf_len > entry_limit) {
+        FlushBuffer();
+      }
 
-    if (backend_->GetWriteBufferTotalSize() + buf_len <= total_limit &&
-        write_buffer_.size + buf_len <= entry_limit) {
       if (write_buffer_.buffers.empty()) {
         write_buffer_.offset = offset;
       } else {
@@ -362,33 +367,34 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
 
 void SqlEntryImpl::FlushBuffer() {
   CHECK(backend_);
-  auto write_buffer = TakeWriteBuffer();
+  base::ScopedClosureRunner buffer_change_reporter;
+  auto write_buffer = TakeWriteBuffer(buffer_change_reporter);
   if (!write_buffer) {
     return;
   }
-
   const int64_t offset = write_buffer->offset;
 
-  // We use base::DoNothing() as the callback because we don't need to wait for
-  // completion. The backend will serialize this operation.
+  // Passing `buffer_change_reporter` to release the write buffer usage.
   // We pass copy_buffer_for_optimistic_write=false because we are passing
   // ownership of the write buffer to the backend.
   backend_->WriteEntryData(
       key_, db_handle_, /*old_body_end=*/offset,
       /*body_end=*/body_end_, std::move(*write_buffer), /*truncate=*/false,
-      /*copy_buffer_for_optimistic_write=*/false, base::DoNothing());
+      /*copy_buffer_for_optimistic_write=*/false,
+      base::DoNothingWithBoundArgs(std::move(buffer_change_reporter)));
 }
 
-std::optional<EntryWriteBuffer> SqlEntryImpl::TakeWriteBuffer() {
+std::optional<EntryWriteBuffer> SqlEntryImpl::TakeWriteBuffer(
+    base::ScopedClosureRunner& buffer_change_reporter) {
   if (write_buffer_.buffers.empty()) {
     return std::nullopt;
   }
 
-  const int buf_len = write_buffer_.size;
-  backend_->ReportWriteBufferChange(-buf_len);
-
   EntryWriteBuffer buffer_to_flush = std::move(write_buffer_);
   write_buffer_ = EntryWriteBuffer();
+  buffer_change_reporter = base::ScopedClosureRunner(
+      base::BindOnce(&SqlBackendImpl::ReportWriteBufferChange,
+                     backend_->GetWeakPtr(), -buffer_to_flush.size));
   return buffer_to_flush;
 }
 

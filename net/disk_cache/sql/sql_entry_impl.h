@@ -8,6 +8,7 @@
 #include <queue>
 #include <variant>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/disk_cache/buildflags.h"
@@ -127,7 +128,8 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
 
   // Consolidates the write buffer and returns it, clearing the internal buffer
   // state. Returns std::nullopt if the buffer is empty.
-  std::optional<EntryWriteBuffer> TakeWriteBuffer();
+  std::optional<EntryWriteBuffer> TakeWriteBuffer(
+      base::ScopedClosureRunner& buffer_change_reporter);
 
   base::WeakPtr<SqlBackendImpl> backend_;
 
