@@ -6125,5 +6125,134 @@ class TestFileNamesTest(unittest.TestCase):
         self.assertEqual(0, len(results))
 
 
+class TestCheckSettingsChanges(unittest.TestCase):
+
+    def setUp(self):
+        self.mock_input = MockInputApi()
+        self.mock_output = MockOutputApi()
+        self.mock_input.os_path.join = lambda *args: "/".join(args)
+        self.mock_input.PresubmitLocalPath = lambda: "root"
+
+    def testHeuristicAndRegistryDetection(self):
+        # No provider.
+        content_a = [
+            'public class MyFeature extends GenericSettingsBaseFragment {}'
+        ]
+        # Has a provider, but not registered.
+        content_b = [
+            'public class MyScreen extends PreferenceFragmentCompat {',
+            '    public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER = ',
+            '        new BaseSearchIndexProvider() {};', '}'
+        ]
+
+        registry_content = ['OldSettings.SEARCH_INDEX_DATA_PROVIDER,']
+
+        self.mock_input.files = [
+            MockFile('path/MyFeature.java', content_a, action='A'),
+            MockFile('path/MyScreen.java', content_b, action='A'),
+            MockFile(
+                'root/java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java',
+                registry_content)
+        ]
+
+        results = PRESUBMIT.CheckSettingsChanges(self.mock_input,
+                                                 self.mock_output)
+
+        # MyFeature should have 2 warnings: Missing Field and Not Registered
+        # MyScreen should have 1 warning: Not Registered
+        # Total results: 3
+        self.assertEqual(len(results), 1)
+        self.assertEqual(len(results[0].items), 3)
+        self.assertEqual(self.mock_output.more_cc,
+                         ['jinsukkim@chromium.org', 'adelm@google.com'])
+        errors = results[0].items
+        self.assertTrue(any("MyFeature.java" in e and "Missing SEARCH_INDEX_DATA_PROVIDER" in e for e in errors))
+        self.assertTrue(any("MyScreen.java" in e and "Provider not registered" in e for e in errors))
+
+    def testParityLogicMismatch(self):
+        java_content = [
+            'public class MySettings extends ChromeBaseSettingsFragment {',
+            '    public void init() {',
+            '        mPref.setSummary("Dynamic Summary");',  # Trigger 1
+            '        mOther.setVisible(false);',  # Trigger 2
+            '        getArguments().getInt("node_id");',  # Trigger 3
+            '    }',
+            '    public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =',
+            '        new BaseSearchIndexProvider() {',
+            '            // Missing updateDynamicPreferences and getExtras',
+            '        };',
+            '}'
+        ]
+        mock_file = MockFile('MySettings.java', java_content, action='A')
+
+        mock_file._changed_contents = [(3, java_content[2]),
+                                       (4, java_content[3]),
+                                       (5, java_content[4])]
+
+        self.mock_input.files = [
+            mock_file,
+            MockFile(
+                'root/java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java',
+                ['MySettings.SEARCH_INDEX_DATA_PROVIDER,'])
+        ]
+
+        results = PRESUBMIT.CheckSettingsChanges(self.mock_input,
+                                                 self.mock_output)
+
+        # Should produce a Parity Mismatch warning containing all 3 failed triggers
+        self.assertEqual(len(results), 1)
+        self.assertEqual(len(results[0].items), 3)
+        self.assertEqual(self.mock_output.more_cc,
+                         ['jinsukkim@chromium.org', 'adelm@google.com'])
+        self.assertIn("Potential Search Index Issues", results[0].message)
+        actual_errors = "\n".join(results[0].items)
+        self.assertIn("updateEntrySummaryForKey", actual_errors)
+        self.assertIn("removeEntryForKey()", actual_errors)
+        self.assertIn("getExtras()", actual_errors)
+
+    def testParityLogicSuccess(self):
+        java_content = [
+            'public class MySettings extends ChromeBaseSettingsFragment {',
+            '    public void update() { mPref.setSummary("hi"); }',
+            '    public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =',
+            '        new BaseSearchIndexProvider() {',
+            '            @Override',
+            '            public void updateDynamicPreferences(Context c, SettingsIndexData d) {',
+            '                d.updateEntrySummaryForKey(F, "key", "summary");',  # Satisfies summary
+            '            }',
+            '        };',
+            '}'
+        ]
+        mock_file = MockFile('MySettings.java', java_content, action='A')
+        mock_file._changed_contents = [(2, java_content[1])]
+        self.mock_input.files = [
+            mock_file,
+            MockFile(
+                'root/java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java',
+                ['MySettings.SEARCH_INDEX_DATA_PROVIDER,'])
+        ]
+
+        results = PRESUBMIT.CheckSettingsChanges(self.mock_input,
+                                                 self.mock_output)
+
+        self.assertEqual(len(results), 0)
+
+    def testAbstractAndNonSettingsIgnored(self):
+        self.mock_input.files = [
+            MockFile('AbstractBase.java', [
+                'public abstract class AbstractBase extends ChromeBaseSettingsFragment {}'
+            ]),
+            MockFile('NormalClass.java',
+                     ['public class NormalClass { void test() {} }'])
+        ]
+
+        results = PRESUBMIT.CheckSettingsChanges(self.mock_input,
+                                                 self.mock_output)
+
+        self.assertEqual(len(results), 0)
+        # Non-settings file shouldn't trigger a CC
+        self.assertEqual(len(self.mock_output.more_cc), 0)
+
+
 if __name__ == '__main__':
     unittest.main()
