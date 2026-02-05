@@ -194,7 +194,8 @@ CGFloat const kAvatarImageDimension = 30.0;
 - (void)setUpBottomSheetDetents {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  presentationController.detents = @[ self.customDetent ];
+  presentationController.detents =
+      @[ self.customDetent, UISheetPresentationControllerDetent.largeDetent ];
   presentationController.selectedDetentIdentifier =
       self.customDetent.identifier;
 }
