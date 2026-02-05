@@ -84,6 +84,11 @@ class MockTabRestoreService : public sessions::TabRestoreService {
 
   MOCK_METHOD(void, RemoveEntryById, (SessionID id), (override));
 
+  MOCK_METHOD(void,
+              RemoveLeastRecentlyUsedEntries,
+              (int num_to_remove),
+              (override));
+
   MOCK_METHOD(std::vector<sessions::LiveTab*>,
               RestoreEntryById,
               (sessions::LiveTabContext * context,

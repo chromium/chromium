@@ -52,6 +52,7 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   std::vector<LiveTab*> RestoreMostRecentEntry(
       LiveTabContext* context) override;
   void RemoveEntryById(SessionID id) override;
+  void RemoveLeastRecentlyUsedEntries(int num_to_remove) override;
   std::vector<LiveTab*> RestoreEntryById(
       LiveTabContext* context,
       SessionID id,

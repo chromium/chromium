@@ -380,13 +380,7 @@ void RecentlyClosedTabsBridge::ClearLeastRecentlyUsedClosedEntries(
     int32_t num_to_remove) {
   EnsureTabRestoreService();
   if (tab_restore_service_) {
-    for (int i = 0; i < num_to_remove; i++) {
-      if (tab_restore_service_->entries().empty()) {
-        break;
-      }
-      SessionID id = tab_restore_service_->entries().back()->id;
-      tab_restore_service_->RemoveEntryById(id);
-    }
+    tab_restore_service_->RemoveLeastRecentlyUsedEntries(num_to_remove);
   }
 }
 

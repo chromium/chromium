@@ -108,6 +108,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   // Removes the Entry with id |id|. The entry could be a Tab, Group, or Window.
   virtual void RemoveEntryById(SessionID id) = 0;
 
+  // Bulk removes the least recently used |num_to_remove| entries.
+  virtual void RemoveLeastRecentlyUsedEntries(int num_to_remove) = 0;
+
   // Restores an entry by id. If there is no entry with an id matching |id|,
   // this does nothing. If |context| is NULL, this creates a new window for the
   // entry. |disposition| is respected, but the attributes (tabstrip index,

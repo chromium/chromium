@@ -454,6 +454,19 @@ void TabRestoreServiceHelper::RemoveEntryById(SessionID id) {
   NotifyEntriesChanged();
 }
 
+void TabRestoreServiceHelper::RemoveLeastRecentlyUsedEntries(
+    int num_to_remove) {
+  if (num_to_remove <= 0 || entries_.empty()) {
+    return;
+  }
+
+  size_t count = std::min(entries_.size(), static_cast<size_t>(num_to_remove));
+  auto start_it = std::prev(entries_.end(), count);
+  entries_.erase(start_it, entries_.end());
+
+  NotifyEntriesChanged();
+}
+
 LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
     Window& window,
     SessionID id,

@@ -1617,6 +1617,10 @@ void TabRestoreServiceImpl::RemoveEntryById(SessionID id) {
   helper_.RemoveEntryById(id);
 }
 
+void TabRestoreServiceImpl::RemoveLeastRecentlyUsedEntries(int num_to_remove) {
+  helper_.RemoveLeastRecentlyUsedEntries(num_to_remove);
+}
+
 std::vector<LiveTab*> TabRestoreServiceImpl::RestoreEntryById(
     LiveTabContext* context,
     SessionID id,
