@@ -51,7 +51,7 @@ class BWGSessionHandlerTest : public PlatformTest {
     // Set up mock handlers.
     mock_bwg_handler_ = OCMProtocolMock(@protocol(BWGCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
-    session_handler_.BWGHandler = mock_bwg_handler_;
+    session_handler_.geminiHandler = mock_bwg_handler_;
     session_handler_.settingsHandler = mock_settings_handler_;
 
     AddWebState();

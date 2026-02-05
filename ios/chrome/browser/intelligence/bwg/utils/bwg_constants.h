@@ -48,7 +48,8 @@ enum class FloatyUpdateSource {
   ForcedFromFullscreen = 6,
   Overlay = 7,
   IneligibleSite = 8,
-  kMaxValue = IneligibleSite,
+  ForcedFromQueryResponse = 9,
+  kMaxValue = ForcedFromQueryResponse,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFloatyUpdateSource)
 

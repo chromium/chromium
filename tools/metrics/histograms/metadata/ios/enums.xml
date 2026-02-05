@@ -829,6 +829,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Forced From Fullscreen"/>
   <int value="7" label="Overlay"/>
   <int value="8" label="IneligibleSite"/>
+  <int value="9" label="Forced From Query Response"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:FloatyUpdateSource) -->

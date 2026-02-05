@@ -26,8 +26,8 @@ class WebStateList;
 // Delegate for view state changes.
 @property(nonatomic, weak) id<GeminiViewStateDelegate> geminiViewStateDelegate;
 
-// The BWG commands handler used by this session handler.
-@property(nonatomic, weak) id<BWGCommands> BWGHandler;
+// The Gemini commands handler used by this session handler.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
 
 // The settings commands handler used by this session handler.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;

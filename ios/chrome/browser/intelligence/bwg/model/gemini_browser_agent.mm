@@ -546,6 +546,7 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   RecordGeminiViewStateHiddenToShown(last_shown_view_state_);
   RecordFloatyShownFromSource(source);
   is_floaty_temporarily_hidden_ = false;
+  fullscreen_controller_->ExitFullscreen();
 
   CGFloat offset =
       GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
@@ -740,6 +741,7 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   ios::provider::StartBwgOverlay(config);
   gemini_tab_helper->SetBwgUiShowing(true);
   if (IsGeminiCopresenceEnabled()) {
+    fullscreen_controller_->ExitFullscreen();
     last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
     is_floaty_invoked_ = true;
   }
@@ -806,11 +808,11 @@ void GeminiBrowserAgent::OnPageContextReady(
 void GeminiBrowserAgent::SetSessionCommandHandlers() {
   id<SettingsCommands> settings_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SettingsCommands);
-  id<BWGCommands> bwg_handler =
+  id<BWGCommands> gemini_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
 
   bwg_session_handler_.settingsHandler = settings_handler;
-  bwg_session_handler_.BWGHandler = bwg_handler;
+  bwg_session_handler_.geminiHandler = gemini_handler;
 }
 
 void GeminiBrowserAgent::OnPageContentPrefChanged() {

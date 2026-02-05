@@ -109,6 +109,10 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID;
 
+// Called when floaty starts receiving response for a query.
+- (void)startReceivingResponseWithSessionID:(NSString*)sessionID
+                             conversationID:(NSString*)conversationID;
+
 // Called when a response is received from Gemini, including metadata about the
 // response.
 - (void)responseReceivedWithClientID:(NSString*)clientID
@@ -158,6 +162,7 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 - (void)imageActionButtonTapped:(NSString*)actionButtonType
                       sessionID:(NSString*)sessionID
                  conversationID:(NSString*)conversationID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SESSION_DELEGATE_H_

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -161,7 +162,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID {
-  [_BWGHandler dismissGeminiFlowWithCompletion:nil];
+  [_geminiHandler dismissGeminiFlowWithCompletion:nil];
   [self setSessionActive:NO clientID:clientID];
 
   web::WebState* webState = [self webStateWithClientID:clientID];
@@ -204,6 +205,14 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // Record prompt counts for the session.
   RecordSessionPromptCount(_totalPromptsInSession);
   RecordSessionFirstPrompt(_hasSubmittedFirstPrompt);
+}
+
+- (void)startReceivingResponseWithSessionID:(NSString*)sessionID
+                             conversationID:(NSString*)conversationID {
+  [self.geminiHandler
+      updateFloatyVisibilityIfEligibleAnimated:NO
+                                    fromSource:gemini::FloatyUpdateSource::
+                                                   ForcedFromQueryResponse];
 }
 
 - (void)responseReceivedWithClientID:(NSString*)clientID
