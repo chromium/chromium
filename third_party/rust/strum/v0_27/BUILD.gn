@@ -38,11 +38,6 @@ cargo_crate("lib") {
     "strum_macros",
   ]
 
-  # Only for usage from third-party crates. Add the crate to
-  # //third_party/rust/chromium_crates_io/Cargo.toml to use
-  # it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
 
