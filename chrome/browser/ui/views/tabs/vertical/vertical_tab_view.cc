@@ -754,7 +754,9 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
   }
 
   // Hide the interactive close button while the tab is animating out.
-  close_button_->SetVisible(false);
+  if (close_button_) {
+    close_button_->SetVisible(false);
+  }
 }
 
 void VerticalTabView::RecordMousePressedInTab() {
