@@ -518,6 +518,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 progressBarChangeRunnable.run();
             }
         } else {
+            // When the toolbar is at bottom, it shouldn't add any top inset. Calling
+            // onToEdgeChange() immediately to remove the top padding of Toolbar if exists.
+            onToEdgeChange(/* systemTopInset= */ 0, /* consumeTopInset= */ false);
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
             mLayerVisibility = LayerVisibility.VISIBLE;
             CoordinatorLayout.LayoutParams progressBarLayoutParams =
