@@ -1851,7 +1851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.Qwac.1Qwac" enum="NetCertVerifier1QwacResult"
-    expires_after="2026-03-18">
+    expires_after="2026-11-16">
   <owner>mattm@chromium.org</owner>
   <owner>nharper@chromium.org</owner>
   <summary>
@@ -1865,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.Qwac.2QwacBinding"
-    enum="NetCertVerifier2QwacBindingResult" expires_after="2026-03-18">
+    enum="NetCertVerifier2QwacBindingResult" expires_after="2026-11-16">
   <owner>mattm@chromium.org</owner>
   <owner>nharper@chromium.org</owner>
   <summary>
@@ -1881,7 +1881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.Qwac.2QwacLinkProcessing"
-    enum="NetCertVerifier2QwacLinkProcessingResult" expires_after="2026-03-18">
+    enum="NetCertVerifier2QwacLinkProcessingResult" expires_after="2026-11-16">
   <owner>mattm@chromium.org</owner>
   <owner>nharper@chromium.org</owner>
   <owner>src/net/cert/OWNERS</owner>
