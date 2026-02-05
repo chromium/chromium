@@ -2793,6 +2793,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kDisableComposeboxFromAIMNTPName,
      flag_descriptions::kDisableComposeboxFromAIMNTPDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDisableComposeboxFromAIMNTP)},
+    {"ios-save-to-drive-signed-out",
+     flag_descriptions::kIOSSaveToDriveSignedOutName,
+     flag_descriptions::kIOSSaveToDriveSignedOutDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSSaveToDriveSignedOut)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

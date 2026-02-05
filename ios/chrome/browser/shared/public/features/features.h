@@ -280,6 +280,9 @@ BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 // Feature flag enabling the client folder implementation of Save to Drive.
 BASE_DECLARE_FEATURE(kIOSSaveToDriveClientFolder);
 
+// Feature flag enabling the save to drive feature for signed out users.
+BASE_DECLARE_FEATURE(kIOSSaveToDriveSignedOut);
+
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);

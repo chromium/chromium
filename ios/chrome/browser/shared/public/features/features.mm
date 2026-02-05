@@ -214,6 +214,8 @@ BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
 
 BASE_FEATURE(kIOSSaveToDriveClientFolder, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSSaveToDriveSignedOut, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableFeedBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFeedAblation, base::FEATURE_DISABLED_BY_DEFAULT);
