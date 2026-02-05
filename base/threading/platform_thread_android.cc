@@ -261,8 +261,7 @@ bool CanSetThreadTypeToRealtimeAudio() {
 }
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint,
-                              bool may_change_affinity) {
+                              MessagePumpType pump_type_hint) {
   // We set the Audio priority through JNI as the Java setThreadPriority will
   // put it into a preferable cgroup, whereas the "normal" C++ call wouldn't.
   // However, with
@@ -284,7 +283,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     SetThreadNiceFromType(PlatformThread::CurrentId(), thread_type);
   }
 
-  if (may_change_affinity && IsEligibleForBigCoreAffinityChange() &&
+  if (IsEligibleForBigCoreAffinityChange() &&
       base::FeatureList::IsEnabled(kRestrictBigCoreThreadAffinity)) {
     SetCanRunOnBigCore(PlatformThread::CurrentId(),
                        thread_type >= ThreadType::kPresentation);

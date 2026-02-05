@@ -460,8 +460,7 @@ void SetThreadQualityOfService(PlatformThreadHandle thread_handle,
 namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint,
-                              bool may_change_affinity) {
+                              MessagePumpType pump_type_hint) {
   PlatformThreadHandle thread_handle = PlatformThread::CurrentHandle();
   SetThreadPriority(thread_handle, thread_type);
   SetThreadQualityOfService(thread_handle, thread_type);

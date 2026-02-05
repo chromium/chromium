@@ -70,6 +70,8 @@ class BASE_EXPORT ScopedBoostPriority {
 
  private:
   std::optional<ThreadType> original_thread_type_;
+  internal::PlatformPriorityOverride priority_override_handle_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 // Allows another thread to temporarily boost the current thread's priority to

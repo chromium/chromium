@@ -76,23 +76,29 @@ TEST_F(ScopedThreadPriorityTest, BasicTest) {
       Thread thread("ScopedThreadPriorityTest");
       thread.StartWithOptions(Thread::Options(from));
       thread.WaitUntilThreadStarted();
+
+      bool will_boost_priority =
+          from < to && PlatformThread::CanChangeThreadType(from, to) &&
+          PlatformThread::CanChangeThreadType(to, from);
       thread.task_runner()->PostTask(
-          FROM_HERE,
-          BindOnce(
-              [](ThreadType from, ThreadType to) {
-                EXPECT_EQ(PlatformThread::GetCurrentThreadType(), from);
-                {
-                  ScopedBoostPriority scoped_boost_priority(to);
-                  bool will_boost_priority =
-                      from < to &&
-                      PlatformThread::CanChangeThreadType(from, to) &&
-                      PlatformThread::CanChangeThreadType(to, from);
-                  EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
-                            will_boost_priority ? to : from);
-                }
-                EXPECT_EQ(PlatformThread::GetCurrentThreadType(), from);
-              },
-              from, to));
+          FROM_HERE, BindLambdaForTesting([&]() {
+            EXPECT_EQ(PlatformThread::GetCurrentThreadType(), from);
+            {
+              ScopedBoostPriority scoped_boost_priority(to);
+              if (will_boost_priority) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+                // Apple priority boost doesn't reflect in the effective
+                // ThreadType.
+                EXPECT_EQ(
+                    PlatformThread::GetCurrentEffectiveThreadTypeForTest(), to);
+#endif
+              }
+            }
+            EXPECT_EQ(PlatformThread::GetCurrentThreadType(), from);
+            EXPECT_EQ(PlatformThread::GetCurrentEffectiveThreadTypeForTest(),
+                      from);
+          }));
+      thread.FlushForTesting();
     }
   }
 }

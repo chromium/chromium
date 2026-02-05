@@ -310,8 +310,7 @@ bool PlatformThreadBase::CanChangeThreadType(ThreadType from, ThreadType to) {
 namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint,
-                              bool may_change_affinity) {
+                              MessagePumpType pump_type_hint) {
   std::optional<qos_class_t> qos_class = ThreadTypeToQoSClass(thread_type);
 
   if (qos_class) {

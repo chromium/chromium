@@ -110,8 +110,7 @@ bool CanSetThreadTypeToRealtimeAudio() {
 }
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint,
-                              bool may_change_affinity) {
+                              MessagePumpType pump_type_hint) {
   const PlatformThreadId thread_id = PlatformThread::CurrentId();
 
   if (g_thread_type_delegate &&
@@ -138,13 +137,25 @@ std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
 PlatformPriorityOverride SetThreadTypeOverride(
     PlatformThreadHandle thread_handle,
     ThreadType thread_type) {
-  return false;
+  if (!thread_handle.is_equal(PlatformThread::CurrentHandle()) ||
+      g_thread_type_delegate) {
+    return false;
+  }
+  internal::SetThreadType(getpid(), PlatformThread::CurrentId(), thread_type);
+  return true;
 }
 
 void RemoveThreadTypeOverride(
     PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType initial_thread_type) {}
+    ThreadType initial_thread_type) {
+  if (!priority_override_handle) {
+    return;
+  }
+  DCHECK(thread_handle.is_equal(PlatformThread::CurrentHandle()));
+  internal::SetThreadType(getpid(), PlatformThread::CurrentId(),
+                          initial_thread_type);
+}
 
 }  // namespace internal
 

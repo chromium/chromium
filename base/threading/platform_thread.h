@@ -140,7 +140,11 @@ class PlatformThreadHandle {
   explicit constexpr PlatformThreadHandle(Handle handle) : handle_(handle) {}
 
   bool is_equal(const PlatformThreadHandle& other) const {
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    return pthread_equal(handle_, other.handle_);
+#else
     return handle_ == other.handle_;
+#endif
   }
 
   bool is_null() const { return !handle_; }
@@ -310,13 +314,7 @@ class BASE_EXPORT PlatformThreadBase {
   // Declares the type of work running on the current thread. This will affect
   // things like thread priority and thread QoS (Quality of Service) to the best
   // of the current platform's abilities.
-  //
-  // The `may_change_affinity` parameter determines whether this call can change
-  // the thread CPU affinity on platforms where it is available. It should only
-  // be used in cases where e.g. a temporary thread boost should not change
-  // placement.
-  static void SetCurrentThreadType(ThreadType thread_type,
-                                   bool may_change_affinity = true);
+  static void SetCurrentThreadType(ThreadType thread_type);
 
   // Get the last `thread_type` set by SetCurrentThreadType, no matter if the
   // underlying priority successfully changed or not.
@@ -456,8 +454,7 @@ void RemoveThreadTypeOverride(
     ThreadType initial_thread_type);
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint,
-                              bool may_change_affinity);
+                              MessagePumpType pump_type_hint);
 
 }  // namespace internal
 
