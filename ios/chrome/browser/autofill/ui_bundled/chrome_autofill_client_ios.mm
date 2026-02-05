@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
+#import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -301,6 +302,12 @@ const signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager()
 
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
+}
+
+const GoogleGroupsManager* ChromeAutofillClientIOS::GetGoogleGroupsManager()
+    const {
+  return GoogleGroupsManagerFactory::GetForProfile(
+      profile_->GetOriginalProfile());
 }
 
 payments::IOSChromePaymentsAutofillClient*

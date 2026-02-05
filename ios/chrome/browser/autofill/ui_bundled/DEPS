@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/history/model/history_service_factory.h",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h",
+  "+ios/chrome/browser/metrics/model/google_groups_manager_factory.h",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/passwords/model",
