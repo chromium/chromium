@@ -138,7 +138,7 @@ export function getHtml(this: SearchboxElement) {
       <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
       </search-animated-glow>
       ${compactLayout ? html`
-        <div id="inputInnerContainer">
+        <div id="inputInnerContainer" ?inert="${this.errorMessage_}">
           <div class="contextualEntrypointContainer contextualEntrypointContainerCompact">
             ${contextualEntrypoint}
           </div>
@@ -147,7 +147,7 @@ export function getHtml(this: SearchboxElement) {
           ${lensSearchButton}
           ${composeButton}
         </div>
-        <div class="dropdownContainer">
+        <div class="dropdownContainer" ?inert="${this.errorMessage_}">
           ${dropdown}
           ${this.recentTabForChip_ && this.dropdownIsVisible && this.isInputEmpty() ? html`
           <div id="recentTabChipContainer">
@@ -159,11 +159,11 @@ export function getHtml(this: SearchboxElement) {
           ` : nothing}
         </div>
       ` : html`
-        <div id="inputInnerContainer">
+        <div id="inputInnerContainer" ?inert="${this.errorMessage_}">
           ${inputContent}
           ${composeButton}
         </div>
-        <div id="inputInnerBottomContainer">
+        <div id="inputInnerBottomContainer" ?inert="${this.errorMessage_}">
           <div class="contextualEntrypointContainer">
             ${contextualEntrypoint}
           </div>
