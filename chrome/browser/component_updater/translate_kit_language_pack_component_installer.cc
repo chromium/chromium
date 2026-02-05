@@ -208,25 +208,23 @@ void RegisterTranslateKitLanguagePackComponentsForAutoDownload(
   }
 
   base::flat_set<LanguagePackKey> keys_to_register;
-  for (const std::string& pair :
-       base::SplitString(language_pairs_str, ",", base::TRIM_WHITESPACE,
-                         base::SPLIT_WANT_NONEMPTY)) {
-    std::vector<std::string> languages = base::SplitString(
+  for (const std::string_view& pair :
+       base::SplitStringPiece(language_pairs_str, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    std::vector<std::string_view> languages = base::SplitStringPiece(
         pair, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (languages.size() != 2) {
       continue;
     }
+
+    auto language1 = on_device_translation::ToSupportedLanguage(languages[0]);
+    auto language2 = on_device_translation::ToSupportedLanguage(languages[1]);
     for (const auto& [key, config] :
          on_device_translation::kLanguagePackComponentConfigMap) {
-      if ((on_device_translation::ToLanguageCode(config->language1) ==
-               languages[0] &&
-           on_device_translation::ToLanguageCode(config->language2) ==
-               languages[1]) ||
-          (on_device_translation::ToLanguageCode(config->language1) ==
-               languages[1] &&
-           on_device_translation::ToLanguageCode(config->language2) ==
-               languages[0])) {
+      if ((language1 == config->language1 && language2 == config->language2) ||
+          (language1 == config->language2 && language2 == config->language1)) {
         keys_to_register.insert(key);
+        break;
       }
     }
   }
