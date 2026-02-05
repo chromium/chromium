@@ -122,6 +122,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       hideEntrypointButton: {type: Boolean},
       inComposebox: {type: Boolean},
       showModelPicker: {type: Boolean},
+      fileUploadsComplete: {
+        type: Boolean,
+        reflect: true,
+      },
 
       // =========================================================================
       // Protected properties
@@ -132,10 +136,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       pendingFiles_: {type: Object},
       addedTabsIds_: {type: Object},
       imageFileTypes_: {type: Array},
-      inputsDisabled_: {
-        reflect: true,
-        type: Boolean,
-      },
       composeboxShowPdfUpload_: {
         reflect: true,
         type: Boolean,
@@ -154,9 +154,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      uploadButtonDisabled_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
+  accessor fileUploadsComplete: boolean = true;
   accessor showDropdown: boolean = false;
   accessor showLensSearchChip: boolean = false;
   accessor searchboxLayoutMode: string = '';
@@ -183,7 +188,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       new Map();
   protected accessor imageFileTypes_: string[] =
       loadTimeData.getString('composeboxImageFileTypes').split(',');
-  protected accessor inputsDisabled_: boolean = false;
+  protected accessor uploadButtonDisabled_: boolean = false;
   protected accessor composeboxShowPdfUpload_: boolean =
       loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected contextMenuDescriptionEnabled_: boolean =
@@ -196,6 +201,25 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor submitButtonShown: boolean = false;
   protected accessor hideEntrypointButton: boolean = false;
+
+  computeUploadButtonDisabled(): boolean {
+    // If only 1 image is uploaded and the create image tool is enabled, we
+    // don't want to disable the context menu entrypoint because the user
+    // should still be able to use the tool within the context menu.
+    const isCreateImageToolAvailableWithImages = this.createImageModeEnabled_ &&
+        this.hasImageFiles() && this.files_.size === 1;
+    // Only return true if:
+    //   1. The max number of files is reached, and the create image tool button
+    //      is not available.
+    //   2. The user has an image uploaded and is in create image mode.
+    //   3. The user is in deep search mode.
+    return (this.activeTool_ === ComposeboxToolMode.kDeepSearch) ||
+        (this.files_.size >= this.maxFileCount_ &&
+         !isCreateImageToolAvailableWithImages) ||
+        (this.hasImageFiles() &&
+         this.activeTool_ === ComposeboxToolMode.kImageGen) ||
+        !this.fileUploadsComplete;
+  }
 
   hasAutomaticActiveTabChipToken(): boolean {
     return this.automaticActiveTabChipToken_ !== null;
@@ -306,26 +330,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('fileUploadsComplete')) {
+      this.uploadButtonDisabled_ = this.computeUploadButtonDisabled();
+    }
     if (changedPrivateProperties.has('files_') ||
         changedPrivateProperties.has(`activeTool_`)) {
-      // If only 1 image is uploaded and the create image tool is enabled, we
-      // don't want to disable the context menu entrypoint because the user
-      // should still be able to use the tool within the context menu.
-      const isCreateImageToolAvailableWithImages =
-          this.createImageModeEnabled_ && this.hasImageFiles() &&
-          this.files_.size === 1;
-      // `inputsDisabled_` decides whether or not the context menu entrypoint is
-      // shown to the user. Only set `inputsDisabled_` to true if
-      // 1. The max number of files is reached, and the create image tool button
-      //    is not available.
-      // 2. The user has an image uploaded and is in create image mode.
-      // 3. The user is in deep search mode.
-      this.inputsDisabled_ =
-          (this.activeTool_ === ComposeboxToolMode.kDeepSearch) ||
-          (this.files_.size >= this.maxFileCount_ &&
-           !isCreateImageToolAvailableWithImages) ||
-          (this.hasImageFiles() &&
-           this.activeTool_ === ComposeboxToolMode.kImageGen);
+      // `uploadButtonDisabled_` decides whether or not the context menu
+      // entrypoint is shown to the user.
+      this.uploadButtonDisabled_ = this.computeUploadButtonDisabled();
       this.showFileCarousel_ = this.files_.size > 0;
       this.fire('on-context-files-changed', {files: this.files_.size});
     }
@@ -463,7 +475,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   resetModes() {
     const previousTool = this.activeTool_;
     this.activeTool_ = ComposeboxToolMode.kUnspecified;
-    this.inputsDisabled_ = false;
+    this.uploadButtonDisabled_ = false;
 
     if (previousTool !== ComposeboxToolMode.kUnspecified) {
       this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;

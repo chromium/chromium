@@ -789,7 +789,7 @@ suite('NewTabPageComposeboxTest', () => {
             ADD_FILE_CONTEXT_FN,
             {token: {low: BigInt(1), high: BigInt(2)}});
 
-        // Upload a PDF file. `inputsDisabled` should be true.
+        // Upload a PDF file. `uploadButtonDisabled` should be true.
         const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(pdfFile);
@@ -799,21 +799,21 @@ suite('NewTabPageComposeboxTest', () => {
 
         await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
         await microtasksFinished();
-        assertTrue(composeboxElement.$.context['inputsDisabled_']);
+        assertTrue(composeboxElement.$.context['uploadButtonDisabled_']);
 
-        // Delete the file. `inputsDisabled` should be false.
+        // Delete the file. `uploadButtonDisabled` should be false.
         const deletedId = composeboxElement.$.context.$.carousel.files[0]!.uuid;
         composeboxElement.$.context.$.carousel.dispatchEvent(new CustomEvent(
             'delete-file',
             {detail: {uuid: deletedId}, bubbles: true, composed: true}));
         await microtasksFinished();
-        assertFalse(composeboxElement.$.context['inputsDisabled_']);
+        assertFalse(composeboxElement.$.context['uploadButtonDisabled_']);
         searchboxHandler.resetResolver(ADD_FILE_CONTEXT_FN);
         searchboxHandler.setPromiseResolveFor(
             ADD_FILE_CONTEXT_FN,
             {token: {low: BigInt(3), high: BigInt(4)}});
 
-        // Upload an image file. `inputsDisabled` should be false.
+        // Upload an image file. `uploadButtonDisabled` should be false.
         const imageFile = new File(['foo'], 'foo.png', {type: 'image/png'});
         const dataTransfer2 = new DataTransfer();
         dataTransfer2.items.add(imageFile);
@@ -824,19 +824,19 @@ suite('NewTabPageComposeboxTest', () => {
 
         await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
         await microtasksFinished();
-        assertFalse(composeboxElement.$.context['inputsDisabled_']);
+        assertFalse(composeboxElement.$.context['uploadButtonDisabled_']);
 
-        // Enter create image mode. `inputsDisabled` should be true.
+        // Enter create image mode. `uploadButtonDisabled` should be true.
         composeboxElement.$.context['activeTool_'] =
             ComposeboxToolMode.kImageGen;
         await composeboxElement.$.context.updateComplete;
-        assertTrue(composeboxElement.$.context['inputsDisabled_']);
+        assertTrue(composeboxElement.$.context['uploadButtonDisabled_']);
 
-        // Exit create image mode. `inputsDisabled` should be false.
+        // Exit create image mode. `uploadButtonDisabled` should be false.
         composeboxElement.$.context['activeTool_'] =
             ComposeboxToolMode.kUnspecified;
         await composeboxElement.$.context.updateComplete;
-        assertFalse(composeboxElement.$.context['inputsDisabled_']);
+        assertFalse(composeboxElement.$.context['uploadButtonDisabled_']);
       });
 
   test('session abandoned on esc click', async () => {
@@ -1379,7 +1379,7 @@ suite('NewTabPageComposeboxTest', () => {
         ComposeboxToolMode.kImageGen,
         searchboxHandler.getArgs('setActiveToolMode')[0]);
 
-    // Upload an image file. `inputsDisabled` should be false.
+    // Upload an image file. `uploadButtonDisabled` should be false.
     const id = generateZeroId();
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));

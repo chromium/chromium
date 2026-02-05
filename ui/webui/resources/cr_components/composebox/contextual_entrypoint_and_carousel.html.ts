@@ -126,7 +126,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             .disabledTabIds="${this.addedTabsIds_}"
             .fileNum="${this.files_.size}"
             .searchboxLayoutMode="${this.searchboxLayoutMode}"
-            ?inputs-disabled="${this.inputsDisabled_}"
+            ?upload-button-disabled="${this.uploadButtonDisabled_}"
             ?show-context-menu-description="${showDescription}"
             glif-animation-state="${this.contextMenuGlifAnimationState}">
         </cr-composebox-context-menu-entrypoint>`}
@@ -181,7 +181,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
               id="imageUploadButton"
               iron-icon="composebox:imageUpload"
               title="${this.i18n('composeboxImageUploadButtonTitle')}"
-              .disabled="${this.inputsDisabled_}"
+              .disabled="${this.uploadButtonDisabled_}"
               @click="${this.openImageUpload_}">
           </cr-icon-button>
           ${this.composeboxShowPdfUpload_ ? html`
@@ -190,7 +190,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
               id="fileUploadButton"
               iron-icon="composebox:fileUpload"
               title="${this.i18n('composeboxPdfUploadButtonTitle')}"
-              .disabled="${this.inputsDisabled_}"
+              .disabled="${this.uploadButtonDisabled_}"
               @click="${this.openFileUpload_}">
           </cr-icon-button>
           `: ''}

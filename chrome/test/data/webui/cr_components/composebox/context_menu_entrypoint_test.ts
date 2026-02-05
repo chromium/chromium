@@ -343,7 +343,7 @@ suite('ContextMenuEntrypoint', () => {
     // Simulate parent component behavior of listening for event and changing
     // property.
     entrypoint.addEventListener('deep-search-click', () => {
-      entrypoint.inputsDisabled = !entrypoint.inputsDisabled;
+      entrypoint.uploadButtonDisabled = !entrypoint.uploadButtonDisabled;
     });
     await entrypoint.updateComplete;
 
@@ -352,7 +352,7 @@ suite('ContextMenuEntrypoint', () => {
     // Assert entrypoint is enabled initially.
     const deepSearchButton = $$<HTMLButtonElement>(entrypoint, '#deepSearch');
     assertTrue(!!deepSearchButton);
-    assertFalse(entrypoint.inputsDisabled);
+    assertFalse(entrypoint.uploadButtonDisabled);
 
     // Click deep search button.
     const eventFired = eventToPromise('deep-search-click', entrypoint);
@@ -362,14 +362,14 @@ suite('ContextMenuEntrypoint', () => {
 
     // Assert menu is closed and entrypoint is disabled.
     assertFalse(entrypoint.$.menu.open);
-    assertTrue(entrypoint.inputsDisabled);
+    assertTrue(entrypoint.uploadButtonDisabled);
 
     // Toggle deep search button.
     entrypoint['onDeepSearchClick_']();
     await entrypoint.updateComplete;
 
     // Assert entrypoint is enabled again.
-    assertFalse(entrypoint.inputsDisabled);
+    assertFalse(entrypoint.uploadButtonDisabled);
   });
 
   test('image upload is disabled based on state', async () => {

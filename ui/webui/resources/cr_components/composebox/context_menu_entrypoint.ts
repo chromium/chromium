@@ -68,7 +68,7 @@ export class ContextMenuEntrypointElement extends
       // =========================================================================
       // Public properties
       // =========================================================================
-      inputsDisabled: {type: Boolean},
+      uploadButtonDisabled: {type: Boolean},
       fileNum: {type: Number},
       showContextMenuDescription: {type: Boolean},
       inCreateImageMode: {
@@ -109,7 +109,7 @@ export class ContextMenuEntrypointElement extends
     };
   }
 
-  accessor inputsDisabled: boolean = false;
+  accessor uploadButtonDisabled: boolean = false;
   accessor fileNum: number = 0;
   accessor showContextMenuDescription: boolean = false;
   accessor inCreateImageMode: boolean = false;
