@@ -180,6 +180,7 @@ interface AudioContext : BaseAudioContext
     getter onerror
     getter onsinkchange
     getter outputLatency
+    getter playbackStats
     getter playoutStats
     getter sinkId
     method close
@@ -292,6 +293,17 @@ interface AudioParamMap
     method has
     method keys
     method values
+interface AudioPlaybackStats
+    attribute @@toStringTag
+    getter averageLatency
+    getter maximumLatency
+    getter minimumLatency
+    getter totalDuration
+    getter underrunDuration
+    getter underrunEvents
+    method constructor
+    method resetLatency
+    method toJSON
 interface AudioPlayoutStats
     attribute @@toStringTag
     getter averageLatency

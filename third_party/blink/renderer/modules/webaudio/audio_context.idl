@@ -53,7 +53,8 @@ dictionary AudioSinkOptions {
     [RaisesException, MeasureAs=AudioContextCreateMediaElementSource] MediaElementAudioSourceNode createMediaElementSource(HTMLMediaElement mediaElement);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamSource] MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamDestination] MediaStreamAudioDestinationNode createMediaStreamDestination();
-
-    // https://wicg.github.io/web_audio_playout
+    // https://webaudio.github.io/web-audio-api/#AudioPlaybackStats
+    [RuntimeEnabled=AudioContextPlaybackStats, MeasureAs=AudioContextPlaybackStats, SameObject] readonly attribute AudioPlaybackStats playbackStats;
+    // This interface will be removed after M147.
     [RuntimeEnabled=AudioContextPlayoutStats, MeasureAs=AudioContextPlayoutStats, SameObject] readonly attribute AudioPlayoutStats playoutStats;
 };

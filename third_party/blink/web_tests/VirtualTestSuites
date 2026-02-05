@@ -6023,6 +6023,16 @@
     ],
     "expires": "never"
   },
+  {
+    "prefix": "webaudio-playback-stats",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-playbackstats.html"
+    ],
+    "args": ["--enable-blink-features=AudioContextPlaybackStats"],
+    "owners": ["hongchan@chromium.org"],
+    "expires": "Jan 1, 2027"
+  },
   "Currently, XSLT is disabled on ToT for tests, via the",
   "fieldtrial_testing_config.json file which enables the XSLTSpecialTrial",
   "flag and disables the XSLT flag. The `xslt-enabled` virtual suite just",

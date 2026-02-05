@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[RuntimeEnabled=AudioContextPlaybackStats, Exposed=Window, SecureContext
+] interface AudioPlaybackStats {
+    [CallWith=ScriptState] readonly attribute double underrunDuration;
+    [CallWith=ScriptState] readonly attribute unsigned long underrunEvents;
+    [CallWith=ScriptState] readonly attribute double totalDuration;
+    [CallWith=ScriptState] readonly attribute double averageLatency;
+    [CallWith=ScriptState] readonly attribute double minimumLatency;
+    [CallWith=ScriptState] readonly attribute double maximumLatency;
+    [CallWith=ScriptState] void resetLatency();
+    [CallWith=ScriptState] object toJSON();
+};
