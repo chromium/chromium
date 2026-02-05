@@ -32,6 +32,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api_activity_monitor.h"
@@ -46,6 +47,7 @@
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
@@ -232,9 +234,10 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
     return;
   }
 
-  WorkerId worker_id{params->extension_id, render_process_id,
-                     params->service_worker_version_id,
-                     params->worker_thread_id};
+  WorkerId worker_id{
+      params->extension_id,
+      content::ChildProcessId::FromUnsafeValue(render_process_id),
+      params->service_worker_version_id, params->worker_thread_id};
   // Ignore if the worker has already stopped.
   if (!ProcessManager::Get(browser_context_)->HasServiceWorker(worker_id)) {
     std::move(callback).Run(/*kFailed=*/true, base::ListValue(), "No SW",
@@ -585,7 +588,8 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     WorkerId worker_id;
     worker_id.thread_id = params_without_args.worker_thread_id;
     worker_id.version_id = params_without_args.service_worker_version_id;
-    worker_id.render_process_id = requesting_process_id;
+    worker_id.render_process_id =
+        content::ChildProcessId::FromUnsafeValue(requesting_process_id);
     worker_id.extension_id = extension->id();
     function->set_worker_id(std::move(worker_id));
   } else {

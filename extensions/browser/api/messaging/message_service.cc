@@ -53,6 +53,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension.h"
@@ -385,10 +386,11 @@ class MessageServiceFactory
         absl::Overload{
             [&](const WorkerId& worker) {
               return ChannelEndpoint(
-                  context, worker.render_process_id,
-                  PortContext::ForWorker(worker.thread_id, worker.version_id,
-                                         worker.render_process_id,
-                                         worker.extension_id));
+                  context, worker.render_process_id.GetUnsafeValue(),
+                  PortContext::ForWorker(
+                      worker.thread_id, worker.version_id,
+                      worker.render_process_id.GetUnsafeValue(),
+                      worker.extension_id));
             },
             [&](const content::RenderFrameHost* render_frame_host) {
               return ChannelEndpoint(

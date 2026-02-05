@@ -34,8 +34,9 @@ class WorkerIdSet {
   bool Contains(const WorkerId& worker_id) const;
   std::vector<WorkerId> GetAllForExtension(
       const ExtensionId& extension_id) const;
-  std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
-                                           int render_process_id) const;
+  std::vector<WorkerId> GetAllForExtension(
+      const ExtensionId& extension_id,
+      content::ChildProcessId render_process_id) const;
   std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
                                            int64_t worker_version_id) const;
 

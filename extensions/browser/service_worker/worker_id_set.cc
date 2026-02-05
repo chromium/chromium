@@ -15,6 +15,7 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_running_info.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
@@ -127,8 +128,10 @@ std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
   // Construct a key that is guaranteed to be smaller than any key given a
   // |render_process_id|. This facilitates the usage of lower_bound to achieve
   // lg(n) runtime.
-  WorkerId lowest_id{extension_id, kSmallestRenderProcessId, kSmallestVersionId,
-                     kSmallestThreadId};
+  WorkerId lowest_id{
+      extension_id,
+      content::ChildProcessId::FromUnsafeValue(kSmallestRenderProcessId),
+      kSmallestVersionId, kSmallestThreadId};
   auto begin_range = workers_.lower_bound(lowest_id);
   if (begin_range == workers_.end() ||
       begin_range->extension_id != extension_id) {
@@ -160,7 +163,7 @@ bool WorkerIdSet::Contains(const WorkerId& worker_id) const {
 
 std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
     const ExtensionId& extension_id,
-    int render_process_id) const {
+    content::ChildProcessId render_process_id) const {
   // See other GetAllForExtension's notes for |id| construction.
   WorkerId id{extension_id, render_process_id, kSmallestVersionId,
               kSmallestThreadId};

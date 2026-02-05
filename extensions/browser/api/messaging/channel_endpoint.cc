@@ -7,6 +7,7 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 
@@ -50,7 +51,8 @@ content::RenderFrameHost* ChannelEndpoint::GetRenderFrameHost() const {
 
 WorkerId ChannelEndpoint::GetWorkerId() const {
   DCHECK(port_context_.is_for_service_worker());
-  return {port_context_.worker->extension_id, render_process_id_,
+  return {port_context_.worker->extension_id,
+          content::ChildProcessId::FromUnsafeValue(render_process_id_),
           port_context_.worker->version_id, port_context_.worker->thread_id};
 }
 

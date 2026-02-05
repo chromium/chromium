@@ -17,6 +17,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -247,7 +248,7 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
   std::vector<WorkerId> all_worker_ids =
       process_manager->GetServiceWorkersForExtension(extension_id);
   for (const WorkerId& worker_id : all_worker_ids) {
-    if (worker_id.render_process_id != listener_rph_id) {
+    if (worker_id.render_process_id.GetUnsafeValue() != listener_rph_id) {
       continue;
     }
 
@@ -316,7 +317,7 @@ void AutomationEventRouter::RemoveAutomationListener(
       process_manager->GetServiceWorkersForExtension(extension_id);
 
   for (const WorkerId& worker_id : all_worker_ids) {
-    if (worker_id.render_process_id != rph_id) {
+    if (worker_id.render_process_id.GetUnsafeValue() != rph_id) {
       continue;
     }
     const auto& request_uuid_iter =

@@ -10,6 +10,7 @@
 #include <optional>
 #include <ostream>
 
+#include "content/public/common/child_process_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -20,18 +21,18 @@ struct WorkerId {
   WorkerId();
 
   WorkerId(const ExtensionId& extension_id,
-           int render_process_id,
+           content::ChildProcessId render_process_id,
            int64_t version_id,
            int thread_id);
 
   WorkerId(const ExtensionId& extension_id,
-           int render_process_id,
+           content::ChildProcessId render_process_id,
            int64_t version_id,
            int thread_id,
            const blink::ServiceWorkerToken& start_token);
 
   ExtensionId extension_id;
-  int render_process_id;
+  content::ChildProcessId render_process_id;
   int64_t version_id;
   int thread_id;
 

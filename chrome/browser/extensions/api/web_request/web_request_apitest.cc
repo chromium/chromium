@@ -80,6 +80,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webui_config_map.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
@@ -7630,7 +7631,8 @@ IN_PROC_BROWSER_TEST_F(
   // it's active listeners should be removed.
   EventRouterInterceptorForStopListenerRemoval
       event_listener_removal_on_stop_interceptor(
-          profile(), previous_service_worker_id->render_process_id);
+          profile(),
+          previous_service_worker_id->render_process_id.GetUnsafeValue());
 
   // Stop the extension's service worker. The worker listener, due to the
   // interceptor, will stay registered as an active listener. However,

@@ -6,7 +6,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 
@@ -127,7 +129,9 @@ void ServiceWorkerState::DidStartWorkerForScope(
       << "Worker was already loaded";
 
   const ExtensionId& extension_id = context_id.extension_id;
-  const WorkerId worker_id = {extension_id, process_id, version_id, thread_id};
+  const WorkerId worker_id = {
+      extension_id, content::ChildProcessId::FromUnsafeValue(process_id),
+      version_id, thread_id};
 
   // HACK: The service worker layer might invoke this callback with an ID for a
   // RenderProcessHost that has already terminated. This isn't the right fix for
@@ -137,7 +141,7 @@ void ServiceWorkerState::DidStartWorkerForScope(
   // The proper fix here is that the service worker layer shouldn't be invoking
   // this callback with stale processes.
   // https://crbug.com/1335821.
-  if (!content::RenderProcessHost::FromID(process_id)) {
+  if (!content::RenderProcessHost::FromID(worker_id.render_process_id)) {
     // This is definitely hit, and often enough that we can't NOTREACHED(),
     // CHECK(), or DumpWithoutCrashing(). Instead, log an error and gracefully
     // return.

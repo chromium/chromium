@@ -20,6 +20,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/service_worker/sequenced_context_id.h"
@@ -183,7 +184,7 @@ class ServiceWorkerTaskQueue
   // Called once an extension Service Worker context was initialized but not
   // necessarily started executing its JavaScript.
   void RendererDidInitializeServiceWorkerContext(
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       const ExtensionId& extension_id,
       int64_t service_worker_version_id,
       int thread_id,
@@ -192,7 +193,7 @@ class ServiceWorkerTaskQueue
   // This can be thought as "loadstop", i.e. the global JS script of the worker
   // has completed executing.
   void RendererDidStartServiceWorkerContext(
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,
@@ -200,7 +201,7 @@ class ServiceWorkerTaskQueue
       int thread_id);
   // Called once an extension Service Worker was destroyed.
   void RendererDidStopServiceWorkerContext(
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,

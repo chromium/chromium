@@ -91,7 +91,7 @@ api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
 InspectableViewsFinder::View InspectableViewsFinder::ConstructView(
     const GURL& url,
     int render_process_id,
-    int render_frame_id,
+    int render_view_id,
     bool incognito,
     bool is_iframe,
     api::developer_private::ViewType type) {
@@ -100,7 +100,7 @@ InspectableViewsFinder::View InspectableViewsFinder::ConstructView(
   view.render_process_id = render_process_id;
   // NOTE(devlin): This is called "render_view_id" in the api for legacy
   // reasons, but it's not a high priority to change.
-  view.render_view_id = render_frame_id;
+  view.render_view_id = render_view_id;
   view.incognito = incognito;
   view.is_iframe = is_iframe;
   view.type = type;
@@ -206,7 +206,9 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
   for (const WorkerId& service_worker_id : service_worker_ids) {
     result->push_back(ConstructView(
         BackgroundInfo::GetBackgroundServiceWorkerScriptURL(&extension),
-        service_worker_id.render_process_id, -1, is_incognito, false,
+        service_worker_id.render_process_id.GetUnsafeValue(),
+        /*render_view_id=*/-1, is_incognito,
+        /*is_iframe=*/false,
         api::developer_private::ViewType::kExtensionServiceWorkerBackground));
   }
 }

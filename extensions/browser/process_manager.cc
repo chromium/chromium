@@ -47,6 +47,7 @@
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -974,13 +975,12 @@ void ProcessManager::StartTrackingServiceWorkerRunningInstance(
   worker_context_ids_[worker_id] = base::Uuid::GenerateRandomV4();
 
   // Observe the RenderProcessHost for cleaning up on process shutdown.
-  int render_process_id = worker_id.render_process_id;
-  bool inserted = worker_process_to_extension_ids_[render_process_id]
+  bool inserted = worker_process_to_extension_ids_[worker_id.render_process_id]
                       .insert(worker_id.extension_id)
                       .second;
   if (inserted) {
     content::RenderProcessHost* render_process_host =
-        content::RenderProcessHost::FromID(render_process_id);
+        content::RenderProcessHost::FromID(worker_id.render_process_id);
     DCHECK(render_process_host);
     if (!process_observations_.IsObservingSource(render_process_host)) {
       // These will be cleaned up in RenderProcessExited().
@@ -996,7 +996,7 @@ void ProcessManager::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   DCHECK(process_observations_.IsObservingSource(host));
   process_observations_.RemoveObservation(host);
-  const int render_process_id = host->GetDeprecatedID();
+  const content::ChildProcessId render_process_id = host->GetID();
   // Look up and then clean up the entries that are affected by
   // |render_process_id| destruction.
   //

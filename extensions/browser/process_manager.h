@@ -25,6 +25,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/service_worker_external_request_timeout_type.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -416,7 +417,8 @@ class ProcessManager : public KeyedService,
       process_observations_{this};
   // Maps render render_process_id -> extension_id for all Service Workers this
   // ProcessManager manages.
-  std::map<int, std::set<ExtensionId>> worker_process_to_extension_ids_;
+  std::map<content::ChildProcessId, std::set<ExtensionId>>
+      worker_process_to_extension_ids_;
 
   // A map of the active service worker keepalives.
   ServiceWorkerKeepaliveDataMap service_worker_keepalives_;

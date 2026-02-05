@@ -15,7 +15,7 @@ namespace extensions {
 WorkerId::WorkerId() = default;
 
 WorkerId::WorkerId(const ExtensionId& extension_id,
-                   int render_process_id,
+                   content::ChildProcessId render_process_id,
                    int64_t version_id,
                    int thread_id)
     : extension_id(extension_id),
@@ -24,7 +24,7 @@ WorkerId::WorkerId(const ExtensionId& extension_id,
       thread_id(thread_id) {}
 
 WorkerId::WorkerId(const ExtensionId& extension_id,
-                   int render_process_id,
+                   content::ChildProcessId render_process_id,
                    int64_t version_id,
                    int thread_id,
                    const blink::ServiceWorkerToken& start_token)
@@ -56,7 +56,7 @@ bool WorkerId::operator!=(const WorkerId& other) const {
 
 std::ostream& operator<<(std::ostream& out, const WorkerId& id) {
   return out << "WorkerId{extension_id: " << id.extension_id
-             << ", process_id: " << id.render_process_id
+             << ", process_id: " << id.render_process_id.GetUnsafeValue()
              << ", service_worker_version_id: " << id.version_id
              << ", thread_id: " << id.thread_id << "}";
 }

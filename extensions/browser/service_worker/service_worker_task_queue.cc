@@ -38,6 +38,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_task_queue_factory.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -122,7 +123,7 @@ bool ServiceWorkerTaskQueue::IsStartWorkerFailureUnexpected(
 }
 
 void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     const ExtensionId& extension_id,
     int64_t service_worker_version_id,
     int thread_id,
@@ -142,8 +143,8 @@ void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
   // active.
   CHECK(process_host);
 
-  util::InitializeFileSchemeAccessForExtension(render_process_id, extension_id,
-                                               browser_context_);
+  util::InitializeFileSchemeAccessForExtension(
+      render_process_id.GetUnsafeValue(), extension_id, browser_context_);
   // TODO(jlulejian): Do we need to start tracking this in initialization or
   // could we start in `RendererDidStartServiceWorkerContext()` instead since
   // this is for a running (started) worker?
@@ -160,7 +161,7 @@ void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
 }
 
 void ServiceWorkerTaskQueue::RendererDidStartServiceWorkerContext(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
     const GURL& service_worker_scope,
@@ -189,7 +190,7 @@ void ServiceWorkerTaskQueue::RenderProcessForWorkerExited(
 }
 
 void ServiceWorkerTaskQueue::RendererDidStopServiceWorkerContext(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
     const GURL& service_worker_scope,

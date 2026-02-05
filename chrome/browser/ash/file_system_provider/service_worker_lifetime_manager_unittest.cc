@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,10 +91,11 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchOneTarget) {
       .service_worker_version_id = 2,
       .worker_thread_id = 3,
   };
-  const extensions::WorkerId kWorkerId(/*extension_id=*/"ext1",
-                                       /*render_process_id=*/1,
-                                       /*version_id=*/2,
-                                       /*thread_id=*/3);
+  const extensions::WorkerId kWorkerId(
+      /*extension_id=*/"ext1",
+      /*render_process_id=*/content::ChildProcessId::FromUnsafeValue(1),
+      /*version_id=*/2,
+      /*thread_id=*/3);
 
   // Simple case: a single request is dispatched and completed.
 
@@ -125,7 +127,8 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleTargets) {
   auto worker = [](int version_id) {
     return extensions::WorkerId(
         /*extension_id=*/"ext1",
-        /*render_process_id=*/1000, version_id,
+        /*render_process_id=*/content::ChildProcessId::FromUnsafeValue(1000),
+        version_id,
         /*thread_id=*/3);
   };
 
@@ -188,12 +191,12 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleEvents) {
   };
   const extensions::WorkerId kWorkerId1(
       /*extension_id=*/"ext1",
-      /*render_process_id=*/1000,
+      /*render_process_id=*/content::ChildProcessId::FromUnsafeValue(1000),
       /*version_id=*/2,
       /*thread_id=*/3);
   const extensions::WorkerId kWorkerId2(
       /*extension_id=*/"ext2",
-      /*render_process_id=*/1001,
+      /*render_process_id=*/content::ChildProcessId::FromUnsafeValue(1001),
       /*version_id=*/4,
       /*thread_id=*/5);
 

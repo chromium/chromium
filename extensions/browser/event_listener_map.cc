@@ -309,8 +309,7 @@ void EventListenerMap::RemoveActiveServiceWorkerListenersForExtension(
              EventListener* listener) {
             return listener->extension_id() == worker_id.extension_id &&
                    listener->is_for_service_worker() && !listener->IsLazy() &&
-                   listener->process()->GetDeprecatedID() ==
-                       worker_id.render_process_id;
+                   listener->process()->GetID() == worker_id.render_process_id;
           },
           worker_id));
 }

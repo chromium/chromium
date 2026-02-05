@@ -29,6 +29,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/api_activity_monitor.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/event_router_factory.h"
@@ -268,7 +269,7 @@ void EventRouter::DispatchEventToSender(
     callback = base::BindOnce(
         &EventRouter::DecrementInFlightEventsForServiceWorker,
         weak_factory_.GetWeakPtr(),
-        WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetDeprecatedID(),
+        WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetID(),
                  service_worker_version_id, worker_thread_id},
         event_id);
   } else if (BackgroundInfo::HasBackgroundPage(extension)) {
@@ -1107,7 +1108,7 @@ void EventRouter::DispatchEventToProcess(
     callback =
         base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
                        weak_factory_.GetWeakPtr(),
-                       WorkerId{extension_id, process->GetDeprecatedID(),
+                       WorkerId{extension_id, process->GetID(),
                                 service_worker_version_id, worker_thread_id},
                        event_id);
   } else if (BackgroundInfo::HasBackgroundPage(extension)) {
@@ -1456,8 +1457,8 @@ void EventRouter::OnStoppedTrackingServiceWorkerInstance(
       storage_partition ? storage_partition->GetServiceWorkerContext()
                         : nullptr;
   event_ack_data_.ClearUnackedEventsForWorker(
-      service_worker_context, worker_id.render_process_id, worker_id.version_id,
-      worker_id.thread_id);
+      service_worker_context, worker_id.render_process_id.GetUnsafeValue(),
+      worker_id.version_id, worker_id.thread_id);
 }
 
 void EventRouter::AddLazyEventListenerImpl(

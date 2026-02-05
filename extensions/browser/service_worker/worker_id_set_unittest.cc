@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +26,10 @@ constexpr char kIdF[] = "ffffffffffffffffffffffffffffffff";
 constexpr char kIdG[] = "gggggggggggggggggggggggggggggggg";
 constexpr char kIdX[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
+content::ChildProcessId Id(int id) {
+  return content::ChildProcessId::FromUnsafeValue(id);
+}
+
 // A vector based implementation of WorkerIdSet.
 // GetAllForExtension()/Contains() are O(n).
 class VectorWorkerIdListImpl {
@@ -37,8 +42,9 @@ class VectorWorkerIdListImpl {
 
   ~VectorWorkerIdListImpl() = default;
 
-  std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
-                                           int render_process_id) const {
+  std::vector<WorkerId> GetAllForExtension(
+      const ExtensionId& extension_id,
+      content::ChildProcessId render_process_id) const {
     std::vector<WorkerId> matching_workers;
     for (const WorkerId& worker_id : workers_) {
       if (worker_id.extension_id == extension_id &&
@@ -59,12 +65,13 @@ class VectorWorkerIdListImpl {
 
 std::vector<WorkerId> GenerateWorkerIds(
     const std::vector<ExtensionId>& extension_ids,
-    const std::vector<int>& render_process_ids,
+    const std::vector<content::ChildProcessId>& render_process_ids,
     const std::vector<int64_t>& worker_version_ids,
     const std::vector<int>& worker_thread_ids) {
   std::vector<WorkerId> worker_ids;
   for (const ExtensionId& extension_id : extension_ids) {
-    for (int render_process_id : render_process_ids) {
+    for (const content::ChildProcessId& render_process_id :
+         render_process_ids) {
       for (int64_t worker_version_id : worker_version_ids) {
         for (int worker_thread_id : worker_thread_ids) {
           worker_ids.push_back(WorkerId({extension_id, render_process_id,
@@ -114,48 +121,50 @@ class WorkerIdSetTest : public ExtensionsTest {
 };
 
 TEST_F(WorkerIdSetTest, GetAllForExtension) {
-  std::unique_ptr<WorkerIdSet> workers = CreateWorkerIdSet({{kIdA, 1, 100, 1},
-                                                            {kIdA, 1, 101, 2},
-                                                            {kIdA, 1, 102, 1},
-                                                            {kIdA, 1, 103, 3},
-                                                            {kIdB, 2, 100, 3},
-                                                            {kIdB, 2, 100, 4},
-                                                            {kIdC, 2, 110, 5},
-                                                            {kIdA, 9, 100, 4}});
+  std::unique_ptr<WorkerIdSet> workers =
+      CreateWorkerIdSet({{kIdA, Id(1), 100, 1},
+                         {kIdA, Id(1), 101, 2},
+                         {kIdA, Id(1), 102, 1},
+                         {kIdA, Id(1), 103, 3},
+                         {kIdB, Id(2), 100, 3},
+                         {kIdB, Id(2), 100, 4},
+                         {kIdC, Id(2), 110, 5},
+                         {kIdA, Id(9), 100, 4}});
 
-  EXPECT_TRUE(AreWorkerIdsEqual({{kIdA, 1, 100, 1},
-                                 {kIdA, 1, 101, 2},
-                                 {kIdA, 1, 102, 1},
-                                 {kIdA, 1, 103, 3}},
-                                workers->GetAllForExtension(kIdA, 1)));
-  EXPECT_TRUE(AreWorkerIdsEqual({{kIdB, 2, 100, 4}, {kIdB, 2, 100, 3}},
-                                workers->GetAllForExtension(kIdB, 2)));
-  EXPECT_TRUE(AreWorkerIdsEqual({{kIdC, 2, 110, 5}},
-                                workers->GetAllForExtension(kIdC, 2)));
-  EXPECT_TRUE(AreWorkerIdsEqual({{kIdA, 9, 100, 4}},
-                                workers->GetAllForExtension(kIdA, 9)));
+  EXPECT_TRUE(AreWorkerIdsEqual({{kIdA, Id(1), 100, 1},
+                                 {kIdA, Id(1), 101, 2},
+                                 {kIdA, Id(1), 102, 1},
+                                 {kIdA, Id(1), 103, 3}},
+                                workers->GetAllForExtension(kIdA, Id(1))));
+  EXPECT_TRUE(AreWorkerIdsEqual({{kIdB, Id(2), 100, 4}, {kIdB, Id(2), 100, 3}},
+                                workers->GetAllForExtension(kIdB, Id(2))));
+  EXPECT_TRUE(AreWorkerIdsEqual({{kIdC, Id(2), 110, 5}},
+                                workers->GetAllForExtension(kIdC, Id(2))));
+  EXPECT_TRUE(AreWorkerIdsEqual({{kIdA, Id(9), 100, 4}},
+                                workers->GetAllForExtension(kIdA, Id(9))));
 
   // No matches.
-  EXPECT_TRUE(workers->GetAllForExtension(kIdX, 1).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdB, 1).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdA, 2).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdX, 2).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdB, 9).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdC, 9).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdX, 9).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdA, 10).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdB, 10).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdC, 10).empty());
-  EXPECT_TRUE(workers->GetAllForExtension(kIdX, 10).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdX, Id(1)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdB, Id(1)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdA, Id(2)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdX, Id(2)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdB, Id(9)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdC, Id(9)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdX, Id(9)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdA, Id(10)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdB, Id(10)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdC, Id(10)).empty());
+  EXPECT_TRUE(workers->GetAllForExtension(kIdX, Id(10)).empty());
 }
 
 TEST_F(WorkerIdSetTest, RemoveAllForExtension) {
   // Some worker ids with multiple workers pointing to same extension(s).
   std::vector<WorkerId> workers_vector = {
-      {kIdA, 10, 1, 2}, {kIdA, 10, 3, 4}, {kIdA, 11, 1, 2}, {kIdA, 12, 1, 2},
-      {kIdB, 10, 1, 2}, {kIdB, 14, 1, 2}, {kIdB, 15, 1, 2}, {kIdB, 16, 1, 2},
-      {kIdC, 20, 7, 3}, {kIdD, 20, 7, 3}, {kIdD, 20, 8, 2}, {kIdD, 21, 7, 1},
-      {kIdD, 22, 9, 9}};
+      {kIdA, Id(10), 1, 2}, {kIdA, Id(10), 3, 4}, {kIdA, Id(11), 1, 2},
+      {kIdA, Id(12), 1, 2}, {kIdB, Id(10), 1, 2}, {kIdB, Id(14), 1, 2},
+      {kIdB, Id(15), 1, 2}, {kIdB, Id(16), 1, 2}, {kIdC, Id(20), 7, 3},
+      {kIdD, Id(20), 7, 3}, {kIdD, Id(20), 8, 2}, {kIdD, Id(21), 7, 1},
+      {kIdD, Id(22), 9, 9}};
   std::unique_ptr<WorkerIdSet> worker_id_set =
       CreateWorkerIdSet(workers_vector);
   EXPECT_EQ(workers_vector.size(), worker_id_set->count_for_testing());
@@ -219,15 +228,16 @@ TEST_F(WorkerIdSetTest, RemoveAllForExtension) {
 
 // Tests parity of WorkerIdSet methods with a std::vector implementation.
 TEST_F(WorkerIdSetTest, ExtensiveCases) {
-  std::vector<WorkerId> worker_ids_vector =
-      GenerateWorkerIds({kIdA, kIdC, kIdE, kIdG}, {1, 3, 5, 7, 9},
-                        {10, 30, 50, 70}, {100, 300, 500, 700});
+  std::vector<WorkerId> worker_ids_vector = GenerateWorkerIds(
+      {kIdA, kIdC, kIdE, kIdG}, {Id(1), Id(3), Id(5), Id(7), Id(9)},
+      {10, 30, 50, 70}, {100, 300, 500, 700});
   VectorWorkerIdListImpl test_impl(worker_ids_vector);
   std::unique_ptr<WorkerIdSet> impl = CreateWorkerIdSet(worker_ids_vector);
 
   // Worker ids that we're going to use to test |worker_ids_vector|.
   std::vector<WorkerId> test_case_worker_ids_vector = GenerateWorkerIds(
-      {kIdA, kIdB, kIdC, kIdD, kIdE, kIdF, kIdG}, {1, 2, 3, 4, 5, 6, 7, 8, 9},
+      {kIdA, kIdB, kIdC, kIdD, kIdE, kIdF, kIdG},
+      {Id(1), Id(2), Id(3), Id(4), Id(5), Id(6), Id(7), Id(8), Id(9)},
       {10, 20, 30, 40, 50, 60, 70, 80, 90},
       {100, 200, 300, 400, 500, 600, 700, 800, 900});
 

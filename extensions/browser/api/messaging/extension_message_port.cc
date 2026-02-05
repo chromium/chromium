@@ -33,6 +33,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_id.h"
@@ -538,16 +539,16 @@ void ExtensionMessagePort::DispatchOnConnect(
           "ForWorker",
           channel_type);
 
-      PortContext port_context =
-          PortContext::ForWorker(worker.thread_id, worker.version_id,
-                                 worker.render_process_id, worker.extension_id);
+      PortContext port_context = PortContext::ForWorker(
+          worker.thread_id, worker.version_id,
+          worker.render_process_id.GetUnsafeValue(), worker.extension_id);
       auto& receiver = service_workers_[worker];
       receiver.Bind(message_port.InitWithNewEndpointAndPassRemote());
       receiver.set_disconnect_handler(base::BindOnce(
           &ExtensionMessagePort::Prune, base::Unretained(this), port_context,
           open_channel_dispatch_for_worker_tracking_id));
       AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
-                  worker.render_process_id, port_context);
+                  worker.render_process_id.GetUnsafeValue(), port_context);
 
       pending_contexts_to_respond_.insert(port_context);
 
@@ -808,7 +809,7 @@ void ExtensionMessagePort::UnregisterWorker(int render_process_id,
   // worker we are interested in. Since there will only be a handful of such
   // workers, this is OK.
   for (auto iter = service_workers_.begin(); iter != service_workers_.end();) {
-    if (iter->first.render_process_id == render_process_id &&
+    if (iter->first.render_process_id.GetUnsafeValue() == render_process_id &&
         iter->first.thread_id == worker_thread_id) {
       service_workers_.erase(iter);
       break;
