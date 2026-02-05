@@ -302,7 +302,10 @@
     "prefix": "connection-allowlist",
     "owners": [ "mkwst@chromium.org" ],
     "platforms": [ "Linux" ],
-    "bases": [ "external/wpt/connection-allowlist" ],
+    "bases": [
+      "external/wpt/connection-allowlist",
+      "http/tests/inspector-protocol/issues/connection-allowlists"
+    ],
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=ConnectionAllowlists" ],
     "expires": "Jul 1, 2026"

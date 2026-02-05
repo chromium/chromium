@@ -63,6 +63,8 @@ component("cpp") {
     "avail_language_header_parser.h",
     "browsing_topics_parser.cc",
     "browsing_topics_parser.h",
+    "connection_allowlist_parser.cc",
+    "connection_allowlist_parser.h",
     "constants.cc",
     "constants.h",
     "content_decoding_interceptor.cc",
@@ -284,8 +286,6 @@ component("connection_allowlist") {
     "connection_allowlist.h",
     "connection_allowlist_mojom_traits.cc",
     "connection_allowlist_mojom_traits.h",
-    "connection_allowlist_parser.cc",
-    "connection_allowlist_parser.h",
   ]
   deps = [
     ":flags_and_switches",

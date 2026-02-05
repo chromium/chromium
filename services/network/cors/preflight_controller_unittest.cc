@@ -416,6 +416,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const GURL& url,
       network::mojom::UnencodedDigestIssue issue) override {}
 
+  void OnConnectionAllowlistIssue(
+      const std::string& devtool_request_id,
+      const GURL& url,
+      network::mojom::ConnectionAllowlistIssue issue) override {}
+
   void OnCorsError(const std::optional<std::string>& devtool_request_id,
                    const std::optional<::url::Origin>& initiator_origin,
                    mojom::ClientSecurityStatePtr client_security_state,

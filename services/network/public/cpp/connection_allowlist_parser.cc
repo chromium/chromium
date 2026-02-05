@@ -7,6 +7,7 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/mojom/connection_allowlist.mojom-shared.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -111,6 +112,32 @@ ConnectionAllowlists ParseConnectionAllowlistsFromHeaders(
   }
 
   return result;
+}
+
+void ReportConnectionAllowlistIssuesToDevtools(
+    const ConnectionAllowlists& allowlists,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    const std::string& devtools_request_id,
+    const GURL& request_url) {
+  if (!devtools_observer || devtools_request_id.empty()) {
+    return;
+  }
+
+  if (allowlists.enforced) {
+    for (const mojom::ConnectionAllowlistIssue issue :
+         allowlists.enforced->issues) {
+      devtools_observer->OnConnectionAllowlistIssue(devtools_request_id,
+                                                    request_url, issue);
+    }
+  }
+
+  if (allowlists.report_only) {
+    for (const mojom::ConnectionAllowlistIssue issue :
+         allowlists.report_only->issues) {
+      devtools_observer->OnConnectionAllowlistIssue(devtools_request_id,
+                                                    request_url, issue);
+    }
+  }
 }
 
 }  // namespace network

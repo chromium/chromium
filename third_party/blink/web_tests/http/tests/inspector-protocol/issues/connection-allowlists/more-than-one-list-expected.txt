@@ -1,0 +1,16 @@
+Verifies issue creation for a `Connection-Allowlist` header with more than one list.
+Issue reported: {
+    issue : {
+        code : ConnectionAllowlistIssue
+        details : {
+            connectionAllowlistIssueDetails : {
+                error : MoreThanOneList
+                request : {
+                    requestId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/connection-allowlist-test.php?enforced=(%22https://a.example%22),%20(%22https://b.example%22)
+                }
+            }
+        }
+    }
+}
+

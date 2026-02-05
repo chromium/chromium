@@ -31,6 +31,8 @@
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/network_context.h"
 #include "services/network/pervasive_resources/shared_resource_checker.h"
+#include "services/network/public/cpp/connection_allowlist.h"
+#include "services/network/public/cpp/connection_allowlist_parser.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/data_element.h"
@@ -734,6 +736,10 @@ mojom::URLResponseHeadPtr BuildResponseHead(
     ReportUnencodedDigestIssuesToDevtools(
         response->unencoded_digests, devtools_observer, devtools_request_id,
         url_request.url());
+
+    ReportConnectionAllowlistIssuesToDevtools(
+        response->parsed_headers->connection_allowlists, devtools_observer,
+        devtools_request_id, url_request.url());
   }
 
   return response;

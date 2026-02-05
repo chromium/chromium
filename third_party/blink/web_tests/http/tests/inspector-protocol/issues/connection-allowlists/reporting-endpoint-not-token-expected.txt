@@ -1,0 +1,16 @@
+Verifies issue creation for a `Connection-Allowlist` header with a report-to parameter that is not a token.
+Issue reported: {
+    issue : {
+        code : ConnectionAllowlistIssue
+        details : {
+            connectionAllowlistIssueDetails : {
+                error : ReportingEndpointNotToken
+                request : {
+                    requestId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/connection-allowlist-test.php?enforced=();report-to=%22endpoint%22
+                }
+            }
+        }
+    }
+}
+

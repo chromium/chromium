@@ -6,8 +6,10 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CONNECTION_ALLOWLIST_PARSER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/connection_allowlist.h"
+#include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 
 class GURL;
 
@@ -23,10 +25,17 @@ namespace network {
 // allowlist.
 //
 // https://github.com/mikewest/anti-exfil
-COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST)
+COMPONENT_EXPORT(NETWORK_CPP)
 ConnectionAllowlists ParseConnectionAllowlistsFromHeaders(
     const net::HttpResponseHeaders& headers,
     const GURL& response_url);
+
+COMPONENT_EXPORT(NETWORK_CPP)
+void ReportConnectionAllowlistIssuesToDevtools(
+    const ConnectionAllowlists& allowlists,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    const std::string& devtools_request_id,
+    const GURL& request_url);
 
 }  // namespace network
 

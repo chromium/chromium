@@ -1,0 +1,16 @@
+Verifies issue creation for a `Connection-Allowlist` header with an invalid item type.
+Issue reported: {
+    issue : {
+        code : ConnectionAllowlistIssue
+        details : {
+            connectionAllowlistIssueDetails : {
+                error : InvalidAllowlistItemType
+                request : {
+                    requestId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/connection-allowlist-test.php?enforced=(1)
+                }
+            }
+        }
+    }
+}
+

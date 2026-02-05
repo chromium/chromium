@@ -1,0 +1,16 @@
+Verifies issue creation for an invalid `Connection-Allowlist` header.
+Issue reported: {
+    issue : {
+        code : ConnectionAllowlistIssue
+        details : {
+            connectionAllowlistIssueDetails : {
+                error : InvalidHeader
+                request : {
+                    requestId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/connection-allowlist-test.php?enforced=dictionary=value
+                }
+            }
+        }
+    }
+}
+

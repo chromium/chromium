@@ -1,0 +1,16 @@
+Verifies issue creation for a `Connection-Allowlist` header that is not an inner list.
+Issue reported: {
+    issue : {
+        code : ConnectionAllowlistIssue
+        details : {
+            connectionAllowlistIssueDetails : {
+                error : ItemNotInnerList
+                request : {
+                    requestId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/connection-allowlist-test.php?enforced=%22not-a-list%22
+                }
+            }
+        }
+    }
+}
+
