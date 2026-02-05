@@ -2,7 +2,6 @@ caption: Enable adaptive charging model to hold charging process to extend batte
   life
 deprecated: true
 default: true
-default_for_enterprise_users: false
 desc: |-
   Specifies whether an adaptive charging model is allowed to hold charging process to extend battery life.
 
