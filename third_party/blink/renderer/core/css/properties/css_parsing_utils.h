@@ -177,13 +177,6 @@ CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
     const CSSParserContext&,
     CSSParserLocalContext&,
     std::optional<WebFeature> unitless_zero_feature);
-CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
-    CSSParserTokenStream&,
-    const CSSParserContext&,
-    CSSParserLocalContext&,
-    std::optional<WebFeature> unitless_zero_feature,
-    double minimum_value,
-    double maximum_value);
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenStream&,
                                const CSSParserContext&,
                                CSSParserLocalContext&,

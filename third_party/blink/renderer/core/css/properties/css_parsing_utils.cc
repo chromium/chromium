@@ -1499,38 +1499,6 @@ static CSSPrimitiveValue* ConsumeNumericLiteralAngle(
   return nullptr;
 }
 
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream>
-static CSSPrimitiveValue* ConsumeMathFunctionAngle(
-    T& stream,
-    const CSSParserContext& context,
-    CSSParserLocalContext& local_context,
-    double minimum_value,
-    double maximum_value) {
-  MathFunctionParser math_parser(stream, context, local_context,
-                                 CSSPrimitiveValue::ValueRange::kAll,
-                                 CSSMathExpressionNode::Flags());
-  if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
-    if (calculation->Category() != kCalcAngle) {
-      return nullptr;
-    }
-  }
-  if (CSSMathFunctionValue* result = math_parser.ConsumeValue()) {
-    auto* numeric_result =
-        DynamicTo<CSSMathExpressionNumericLiteral>(result->ExpressionNode());
-    if (numeric_result && numeric_result->DoubleValue() < minimum_value) {
-      return CSSNumericLiteralValue::Create(
-          minimum_value, CSSPrimitiveValue::UnitType::kDegrees);
-    }
-    if (numeric_result && numeric_result->DoubleValue() > maximum_value) {
-      return CSSNumericLiteralValue::Create(
-          maximum_value, CSSPrimitiveValue::UnitType::kDegrees);
-    }
-    return result;
-  }
-  return nullptr;
-}
-
 static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1544,21 +1512,6 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     }
   }
   return math_parser.ConsumeValue();
-}
-
-CSSPrimitiveValue* ConsumeAngle(CSSParserTokenStream& stream,
-                                const CSSParserContext& context,
-                                CSSParserLocalContext& local_context,
-                                std::optional<WebFeature> unitless_zero_feature,
-                                double minimum_value,
-                                double maximum_value) {
-  if (auto* result =
-          ConsumeNumericLiteralAngle(stream, context, unitless_zero_feature)) {
-    return result;
-  }
-
-  return ConsumeMathFunctionAngle(stream, context, local_context, minimum_value,
-                                  maximum_value);
 }
 
 CSSPrimitiveValue* ConsumeAngle(
@@ -6133,8 +6086,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
       ConsumeIdent<CSSValueID::kOblique>(stream);
 
   CSSPrimitiveValue* start_angle =
-      ConsumeAngle(stream, context, local_context, std::nullopt,
-                   kMinObliqueValue, kMaxObliqueValue);
+      ConsumeAngle(stream, context, local_context, std::nullopt);
   if (!start_angle) {
     return oblique_identifier;
   }
@@ -6154,8 +6106,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
   }
 
   CSSPrimitiveValue* end_angle =
-      ConsumeAngle(stream, context, local_context, std::nullopt,
-                   kMinObliqueValue, kMaxObliqueValue);
+      ConsumeAngle(stream, context, local_context, std::nullopt);
   if (!end_angle || !IsAngleWithinLimits(end_angle)) {
     return nullptr;
   }

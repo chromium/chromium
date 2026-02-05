@@ -1075,7 +1075,8 @@ CSSPrimitiveValue* ComputedStyleUtils::ValueForFontStretch(
 }
 
 CSSValue* ComputedStyleUtils::ValueForFontStyle(const ComputedStyle& style) {
-  FontSelectionValue angle = style.GetFontDescription().Style();
+  FontSelectionValue angle =
+      style.GetFontDescription().Style().ClampToObliqueRange();
   if (angle == kNormalSlopeValue) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }

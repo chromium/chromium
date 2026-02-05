@@ -66,6 +66,7 @@ class PLATFORM_EXPORT FontSelectionValue {
     return backing_ / static_cast<float>(fractionalEntropy);
   }
 
+  constexpr FontSelectionValue ClampToObliqueRange() const;
   constexpr FontSelectionValue operator+(const FontSelectionValue& other) const;
   constexpr FontSelectionValue operator-(const FontSelectionValue& other) const;
   constexpr FontSelectionValue operator*(const FontSelectionValue& other) const;
@@ -172,6 +173,11 @@ inline constexpr FontSelectionValue kItalicSlopeValue = FontSelectionValue(14);
 inline constexpr FontSelectionValue kMaxObliqueValue = FontSelectionValue(90);
 
 inline constexpr FontSelectionValue kMinObliqueValue = FontSelectionValue(-90);
+
+inline constexpr FontSelectionValue FontSelectionValue::ClampToObliqueRange()
+    const {
+  return std::clamp(*this, kMinObliqueValue, kMaxObliqueValue);
+}
 
 inline constexpr FontSelectionValue kBoldThreshold = FontSelectionValue(600);
 
