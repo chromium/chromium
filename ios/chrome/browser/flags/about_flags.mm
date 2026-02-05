@@ -2797,6 +2797,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSSaveToDriveSignedOutName,
      flag_descriptions::kIOSSaveToDriveSignedOutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSaveToDriveSignedOut)},
+    {"autofill-enable-bottom-sheet-scan-card-and-fill",
+     flag_descriptions::kAutofillEnableBottomSheetScanCardAndFillName,
+     flag_descriptions::kAutofillEnableBottomSheetScanCardAndFillDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableBottomSheetScanCardAndFill)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -45,6 +45,13 @@ BASE_FEATURE(kAutofillEnableAmountExtraction,
 BASE_FEATURE(kAutofillEnableAmountExtractionTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, users are given the bottom sheet suggestion to scan credit
+// card, and save and fill the card information.
+BASE_FEATURE(kAutofillEnableBottomSheetScanCardAndFill,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, buy now pay later (BNPL) in Autofill will be offered.
 BASE_FEATURE(kAutofillEnableBuyNowPayLater,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

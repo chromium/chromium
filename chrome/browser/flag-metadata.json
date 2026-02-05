@@ -767,6 +767,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-enable-bottom-sheet-scan-card-and-fill",
+    "owners": [ "qihuizhao@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "autofill-enable-buy-now-pay-later",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150

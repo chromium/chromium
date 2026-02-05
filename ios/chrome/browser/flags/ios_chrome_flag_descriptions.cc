@@ -90,6 +90,12 @@ const char kAutofillDisableSilentProfileUpdatesDescription[] =
     "When enabled, Autofill will not apply silent updates to address profiles. "
     "For testing purposes.";
 
+const char kAutofillEnableBottomSheetScanCardAndFillName[] =
+    "Enable scan card BottomSheet, then save and fill of the credit card";
+const char kAutofillEnableBottomSheetScanCardAndFillDescription[] =
+    "When enabled, offers a card scanning BottomSheet and allows users to "
+    "save and autofill credit cards in autofill forms.";
+
 const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
     "Enable showing American Express card benefits";
 const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =
