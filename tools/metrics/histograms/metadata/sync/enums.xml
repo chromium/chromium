@@ -825,6 +825,9 @@ chromium-metrics-reviews@google.com.
   <int value="100373" label="iOSTabGroupsPromoLastImpressionTimestamp"/>
   <int value="100374" label="iOSTabGroupsPromoImpressionsCounter"/>
   <int value="100375" label="iOSTabGroupsPromoOptOut"/>
+  <int value="100376" label="iOSPriceTrackingPromoLastImpressionTimestamp"/>
+  <int value="100377" label="iOSPriceTrackingPromoImpressionsCounter"/>
+  <int value="100378" label="iOSPriceTrackingPromoOptOut"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

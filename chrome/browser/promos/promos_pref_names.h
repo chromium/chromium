@@ -122,6 +122,22 @@ inline constexpr char kDesktopToiOSTabGroupsPromoImpressionsCounter[] =
 inline constexpr char kDesktopToiOSTabGroupsPromoOptOut[] =
     "promos.ios_tab_groups_opt_out";
 
+// iOS Price Tracking promo prefs.
+// Int64 that keeps track of the last impressions timestamp of the "iOS Price
+// Tracking promo bubble on desktop" for a given user.
+inline constexpr char kDesktopToiOSPriceTrackingPromoLastImpressionTimestamp[] =
+    "promos.ios_price_tracking_last_impression_timestamp";
+
+// Integer that keeps track of impressions of the "iOS Price Tracking promo
+// bubble on desktop" shown to a given user.
+inline constexpr char kDesktopToiOSPriceTrackingPromoImpressionsCounter[] =
+    "promos.ios_price_tracking_impressions_counter";
+
+// Boolean that keeps track whether a given user has opted-out of seeing the
+// "iOS Price Tracking promo bubble on desktop" again.
+inline constexpr char kDesktopToiOSPriceTrackingPromoOptOut[] =
+    "promos.ios_price_tracking_opt_out";
+
 }  // namespace promos_prefs
 
 #endif  // CHROME_BROWSER_PROMOS_PROMOS_PREF_NAMES_H_
