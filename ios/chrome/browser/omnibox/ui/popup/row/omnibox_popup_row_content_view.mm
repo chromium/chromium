@@ -209,11 +209,6 @@ const CGFloat kTopGradientColorOpacity = 0.85;
       [_textStackView.leadingAnchor
           constraintEqualToAnchor:_leadingIconView.trailingAnchor
                          constant:kTextIconSpace],
-
-      // Trailing button constraints.
-      [_trailingButton.heightAnchor
-          constraintEqualToAnchor:_trailingButton.widthAnchor],
-
       [_trailingButton.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
       _trailingButtonTrailingConstraint,
