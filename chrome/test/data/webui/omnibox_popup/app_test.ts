@@ -39,6 +39,18 @@ class TestSearchboxBrowserProxy extends TestBrowserProxy {
     this.callbackRouter = new PageCallbackRouter();
     this.handler = TestMock.fromClass(PageHandlerRemote);
     this.handler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+    this.handler.setResultFor('getInputState', Promise.resolve({
+      state: {
+        allowed_models: [],
+        allowed_tools: [],
+        allowed_input_types: [],
+        active_model: 0,  // kUnspecified
+        active_tool: 0,   // kUnspecified
+        disabled_models: [],
+        disabled_tools: [],
+        disabled_input_types: [],
+      },
+    }));
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
 
@@ -57,7 +69,7 @@ suite('AppTest', function() {
   let app: OmniboxPopupAppElement;
   let testProxy: TestSearchboxBrowserProxy;
 
-  setup(() => {
+  setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -65,6 +77,8 @@ suite('AppTest', function() {
 
     app = document.createElement('omnibox-popup-app');
     document.body.appendChild(app);
+
+    await microtasksFinished();
   });
 
   test('ContextMenuPrevented', async function() {

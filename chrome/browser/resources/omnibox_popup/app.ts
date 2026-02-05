@@ -18,6 +18,7 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -95,6 +96,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       isAimEligible_: {type: Boolean},
       isRecentTabChipEnabled_: {type: Boolean},
       tabSuggestions_: {type: Array},
+      inputState_: {type: Object},
+      showModelPicker_: {type: Boolean},
     };
   }
 
@@ -117,6 +120,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor isLensSearchEligible_: boolean = false;
   protected accessor isAimEligible_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
+  protected accessor inputState_: InputState|null = null;
+  protected accessor showModelPicker_: boolean =
+      loadTimeData.getBoolean('contextualMenuShowModelPicker');
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_ = new EventTracker();
@@ -131,7 +137,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     ColorChangeUpdater.forDocument().start();
   }
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
     // TODO(b:468113419): the handlers and their definitions are not ordered the
     // same as the
@@ -162,7 +168,12 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           (enabled: boolean) => {
             this.isContentSharingEnabled_ = enabled;
           }),
+      this.callbackRouter_.onInputStateChanged.addListener(
+          (inputState: InputState) => {
+            this.inputState_ = inputState;
+          }),
     ];
+    this.inputState_ = (await this.pageHandler_.getInputState()).state;
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
 

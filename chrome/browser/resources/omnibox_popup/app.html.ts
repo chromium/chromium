@@ -37,6 +37,8 @@ ${this.showContextEntrypoint_ ? html`
         this.isContentSharingEnabled_ && this.isLensSearchEligible_}"
       ?show-recent-tab-chip="${
         this.isContentSharingEnabled_ && this.computeShowRecentTabChip_()}"
+      .inputState="${this.inputState_}"
+      ?show-model-picker="${this.showModelPicker_}"
       @add-tab-context="${this.addTabContext_}"
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
       @lens-search-click="${this.onLensSearchChipClicked_}">
