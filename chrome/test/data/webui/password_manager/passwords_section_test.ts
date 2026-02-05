@@ -4,7 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import type {AddPasswordDialogElement, AuthTimedOutDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {AddPasswordDialogElement, AuthTimedOutDialogElement, MovePasswordsDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -76,6 +77,8 @@ suite('PasswordsSectionTest', function() {
   }
 
   setup(function() {
+    loadTimeData.overrideValues({'passwordUploadUiUpdate': true});
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
@@ -545,9 +548,153 @@ suite('PasswordsSectionTest', function() {
         assertEquals(query, Router.getInstance().currentRoute.queryParameters);
       });
 
-  test('Should not show local credentials icon', async function() {
-    passwordManager.data.isAccountStorageActive = true;
+  test('Should not show upload icon for account passwords', async function() {
+    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, inAccountStore: true}),
+        createPasswordEntry(
+            {id: 1, inAccountStore: true, inProfileStore: true}),
+      ],
+    })];
 
+    const section = await createPasswordsSection();
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+    assertFalse(isVisible(
+        section.shadowRoot!.querySelector<HTMLElement>('#cloudUploadButton')));
+  });
+
+  test(
+      'Should not show upload icon with account storage disabled',
+      async function() {
+        passwordManager.setAccountStorageEnabled(false);
+        passwordManager.data.groups = [createCredentialGroup({
+          name: 'test.com',
+          credentials: [
+            createPasswordEntry({id: 0, inProfileStore: true}),
+          ],
+        })];
+
+        const section = await createPasswordsSection();
+        const listEntry = section.shadowRoot!.querySelector<HTMLElement>(
+            'password-list-item');
+        assertTrue(!!listEntry);
+        assertFalse(isVisible(listEntry.shadowRoot!.querySelector<HTMLElement>(
+            '#cloudUploadButton')));
+      });
+
+  test('Should show upload icon', async function() {
+    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, inProfileStore: true}),
+      ],
+    })];
+
+    const section = await createPasswordsSection();
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+    assertTrue(isVisible(listEntry.shadowRoot!.querySelector<HTMLElement>(
+        '#cloudUploadButton')));
+  });
+
+  test('Clicking upload icon opens dialog', async function() {
+    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, inProfileStore: true}),
+      ],
+    })];
+    passwordManager.setRequestCredentialsDetailsResponse(
+        passwordManager.data.groups[0]!.entries.slice());
+
+    const section = await createPasswordsSection();
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+
+    // Initially, the dialog should not exist.
+    assertFalse(
+        !!listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
+            '#movePasswordsDialog'));
+
+    // Click the button to open the dialog.
+    const cloudUploadButton =
+        listEntry.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#cloudUploadButton');
+    assertTrue(!!cloudUploadButton);
+    cloudUploadButton.click();
+    await flushTasks();
+
+    // Now the dialog should have opened.
+    const movePasswordsDialog =
+        listEntry.shadowRoot!.querySelector<MovePasswordsDialogElement>(
+            '#movePasswordsDialog');
+    assertTrue(!!movePasswordsDialog);
+    assertTrue(movePasswordsDialog.$.dialog.open);
+  });
+
+  test('Upload icon tooltip text', async function() {
+    passwordManager.setAccountStorageEnabled(true);
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'bar.com',
+        credentials: [
+          createPasswordEntry({id: 0, inProfileStore: true}),
+        ],
+      }),
+    ];
+
+    const section = await createPasswordsSection();
+    const listEntry =
+        section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
+    assertTrue(!!listEntry);
+    assertEquals(
+        listEntry.shadowRoot!.querySelector<HTMLElement>(
+                                 'cr-tooltip')!.innerHTML,
+        'Save in your Google Account');
+  });
+});
+
+suite('PasswordsSectionWithoutUploadUiUpdateTest', function() {
+  let passwordManager: TestPasswordManagerProxy;
+  let pluralString: TestPluralStringProxy;
+  let syncProxy: TestSyncBrowserProxy;
+
+  async function createPasswordsSection(): Promise<PasswordsSectionElement> {
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getCredentialGroups');
+    await flushTasks();
+
+    return section;
+  }
+
+  setup(function() {
+    loadTimeData.overrideValues({'passwordUploadUiUpdate': false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    passwordManager = new TestPasswordManagerProxy();
+    PasswordManagerImpl.setInstance(passwordManager);
+    pluralString = new TestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralString);
+    syncProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncProxy);
+
+    Router.getInstance().updateRouterParams(new URLSearchParams());
+    passwordManager.setAccountStorageEnabled(true);
+
+    return flushTasks();
+  });
+
+  test('Should not show local credentials icon', async function() {
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [
@@ -566,7 +713,6 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Should show local credentials icon', async function() {
-    passwordManager.data.isAccountStorageActive = true;
     syncProxy.syncInfo = {
       isSyncingPasswords: false,
     };
