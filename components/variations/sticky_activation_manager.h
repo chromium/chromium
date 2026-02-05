@@ -10,7 +10,11 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -26,8 +30,7 @@ namespace variations {
 // previous session (including from stickiness on startup) and its group
 // selection did not change (i.e. due to a change to its config or something
 // external like the client's randomization inputs).
-class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager
-    : public base::FieldTrialList::Observer {
+class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager {
  public:
   // Map from trial name to group name. We use std::map since sorted order is
   // useful for deterministic serialization to string.
@@ -44,7 +47,7 @@ class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager
   StickyActivationManager(const StickyActivationManager&) = delete;
   StickyActivationManager& operator=(const StickyActivationManager&) = delete;
 
-  ~StickyActivationManager() override;
+  ~StickyActivationManager();
 
   // Registers the prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple& registry);
@@ -61,13 +64,21 @@ class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager
   // once.
   void StartMonitoring();
 
+  // Called when a field trial group is finalized to update the internal state
+  // of active sticky trials. This is intended to be called only by the
+  // internal Observer class.
+  void OnFieldTrialGroupFinalized(base::PassKey<StickyActivationManager>,
+                                  const std::string& trial_name,
+                                  const std::string& group_name);
+
  private:
-  // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
-                                  const std::string& group_name) override;
+  class Observer;
+  friend class Observer;
 
   // Updates the pref based on `active_sticky_trials_`.
   void UpdatePref();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<PrefService> local_state_;
 
@@ -82,6 +93,13 @@ class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager
   // The currently active trials, for persistence to prefs. Updated via calls to
   // ShouldActivate() and observer callbacks to OnFieldTrialGroupFinalized().
   TrialNameToGroupNameMap active_sticky_trials_;
+
+  // The observer is stored as an inner class to hide the implementation details
+  // of the observer from the header.
+  scoped_refptr<Observer> observer_;
+
+  // Weak pointer factory for this instance. Must be the last member.
+  base::WeakPtrFactory<StickyActivationManager> weak_factory_{this};
 };
 
 }  // namespace variations
