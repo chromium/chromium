@@ -32,7 +32,7 @@ import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/o
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode, InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -1324,6 +1324,14 @@ export class SearchboxElement extends SearchboxElementBase implements
     return loadTimeData.valueExists('composeboxShowRecentTabChip') &&
         loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
         this.result_?.input.length === 0;
+  }
+
+  protected shouldShowRecentTabChipInDropdown_(): boolean {
+    const isBrowserTabAllowed = !this.showModelPicker_ ||
+        (!!this.inputState_ &&
+         this.inputState_.allowedInputTypes.includes(InputType.kBrowserTab));
+    return !!this.recentTabForChip_ && this.dropdownIsVisible &&
+        this.isInputEmpty() && isBrowserTabAllowed;
   }
 
   protected computePlaceholderText_(placeholderText: string): string {
