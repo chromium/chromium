@@ -24,6 +24,8 @@ enum class SchedulerClientType {
   kTest2 = -2,
   kTest3 = -3,
 
+  kMinValue = kTest3,
+
   // Default value of client type.
   kUnknown = 0,
   // Client used in chrome://notifications-internals for debugging.
