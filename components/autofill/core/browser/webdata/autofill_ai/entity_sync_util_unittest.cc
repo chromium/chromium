@@ -457,12 +457,13 @@ TEST(EntitySyncUtilTest, CreateEntityMetadataFromSpecifics) {
 
 // Tests that the `EntityTypeNameToPassType` function correctly maps
 // EntityTypeName to AutofillValuableMetadataSpecifics::PassType.
-TEST(EntitySyncUtilTest, EntityTypeNameToPassType) {
-  EXPECT_EQ(EntityTypeNameToPassType(EntityTypeName::kFlightReservation),
+TEST(EntitySyncUtilTest, EntityTypeToPassType) {
+  using enum EntityTypeName;
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kFlightReservation)),
             sync_pb::AutofillValuableMetadataSpecifics::FLIGHT_RESERVATION);
-  EXPECT_EQ(EntityTypeNameToPassType(EntityTypeName::kVehicle),
+  EXPECT_EQ(EntityTypeToPassType(EntityType(kVehicle)),
             sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION);
-  EXPECT_FALSE(EntityTypeNameToPassType(EntityTypeName::kPassport).has_value());
+  EXPECT_FALSE(EntityTypeToPassType(EntityType(kPassport)).has_value());
 }
 
 }  // namespace

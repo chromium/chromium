@@ -410,8 +410,8 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
 }
 
 std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
-EntityTypeNameToPassType(EntityTypeName entity_type_name) {
-  switch (entity_type_name) {
+EntityTypeToPassType(EntityType entity_type) {
+  switch (entity_type.name()) {
     case EntityTypeName::kFlightReservation:
       return sync_pb::AutofillValuableMetadataSpecifics::FLIGHT_RESERVATION;
     case EntityTypeName::kVehicle:

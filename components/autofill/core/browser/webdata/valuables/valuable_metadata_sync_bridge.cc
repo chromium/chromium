@@ -485,11 +485,7 @@ EntityTable* ValuableMetadataSyncBridge::GetEntityTable() {
 std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
 ValuableMetadataSyncBridge::GetPassTypeForEntityId(
     const EntityInstance::EntityId& guid) {
-  if (std::optional<EntityTypeName> entity_type_name =
-          GetEntityTable()->GetEntityTypeName(guid)) {
-    return EntityTypeNameToPassType(*entity_type_name);
-  }
-  return std::nullopt;
+  return GetEntityTable()->GetEntityType(guid).and_then(EntityTypeToPassType);
 }
 
 const EntityTable* ValuableMetadataSyncBridge::GetEntityTable() const {

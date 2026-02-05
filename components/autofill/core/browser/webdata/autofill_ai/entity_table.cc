@@ -522,7 +522,7 @@ std::optional<EntityInstance::EntityMetadata> EntityTable::GetEntityMetadata(
                                         .use_date = use_date};
 }
 
-std::optional<EntityTypeName> EntityTable::GetEntityTypeName(
+std::optional<EntityType> EntityTable::GetEntityType(
     const EntityInstance::EntityId& guid) const {
   sql::Statement s;
   SelectBuilder(db(), s, entities::kTableName, {entities::kEntityType},
@@ -531,10 +531,7 @@ std::optional<EntityTypeName> EntityTable::GetEntityTypeName(
   if (!s.Step()) {
     return std::nullopt;
   }
-  if (std::optional<EntityType> type = StringToEntityType(s.ColumnString(0))) {
-    return type->name();
-  }
-  return std::nullopt;
+  return StringToEntityType(s.ColumnString(0));
 }
 
 std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>

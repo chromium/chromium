@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/sync/protocol/entity_data.h"
 
 namespace sync_pb {
@@ -19,6 +18,7 @@ class AutofillValuableSpecifics;
 namespace autofill {
 
 class EntityInstance;
+class EntityType;
 
 // For a given `EntityInstance`, returns the corresponding
 // `sync_pb::AutofillValuableSpecifics`. It is assumed that the entity passed to
@@ -48,7 +48,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
 
 // Converts the given `entity_type_name` to the corresponding `PassType`.
 std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
-EntityTypeNameToPassType(EntityTypeName entity_type_name);
+EntityTypeToPassType(EntityType entity_type);
 
 }  // namespace autofill
 

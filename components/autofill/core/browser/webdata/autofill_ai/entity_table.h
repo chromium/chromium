@@ -123,7 +123,7 @@ class EntityTable : public WebDatabaseTable {
       const EntityInstance::EntityId& guid) const;
 
   // Returns the entity type name for the given `guid`.
-  std::optional<EntityTypeName> GetEntityTypeName(
+  std::optional<EntityType> GetEntityType(
       const EntityInstance::EntityId& guid) const;
 
   // Returns the valid entity instances; ignores invalid instances.
