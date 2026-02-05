@@ -1041,6 +1041,10 @@ class TemplateURL {
   // by an Enterprise policy that doesn't define the Default Search Provider.
   bool CanPolicyBeOverridden() const;
 
+  // Gets text shown in the chip at the front of the omnibox when the
+  // user has selected the keyword.
+  std::u16string GetFullName() const;
+
  private:
   // Resizes the |url_refs_| vector, which always holds the search URL as the
   // last item.
