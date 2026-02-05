@@ -662,6 +662,9 @@
                     "enable_features": [
                         "EnableAdpfEfficiencyMode",
                         "UsePerformanceHelper"
+                    ],
+                    "disable_features": [
+                        "RestrictBigCoreThreadAffinity"
                     ]
                 }
             ]
@@ -22538,22 +22541,6 @@
                     },
                     "enable_features": [
                         "RestrictAbusePortsOnLocalhost"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RestrictMainThreadBigCoreAffinity": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RestrictBigCoreThreadAffinity",
-                        "RestrictMainThreadBigCoreAffinity"
                     ]
                 }
             ]
