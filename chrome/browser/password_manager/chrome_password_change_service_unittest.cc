@@ -370,8 +370,7 @@ TEST_P(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
                   base::Bucket(PasswordChangeAvailability::kAvailable, 1),
                   base::Bucket(PasswordChangeAvailability::kThrottled, 1)));
 
-  AdvanceClock(password_manager::features::kPasswordChangeThrottleTime.Get() +
-               base::Seconds(1));
+  AdvanceClock(base::Days(14) + base::Seconds(1));
 
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
       url, autofill::LanguageCode("en")));

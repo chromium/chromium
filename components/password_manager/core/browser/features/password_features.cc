@@ -166,10 +166,6 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 #endif
 );
 
-BASE_FEATURE(kStopLoginCheckOnFailedLogin, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kThrottlePasswordChangeDialog, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -419,8 +419,6 @@ TEST_F(LoginStateCheckerTest, NoRequestWithEmptyCachedPageContent) {
 }
 
 TEST_F(LoginStateCheckerTest, FailsAfterErrorInTheResponse) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kStopLoginCheckOnFailedLogin);
   base::test::TestFuture<LoginCheckResult> future;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(&PostResponse<ResponseType::kUnexpected>));

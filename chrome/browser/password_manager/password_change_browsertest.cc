@@ -161,9 +161,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     scoped_feature_list_.InitWithFeatures(
         // kShowDomNodeIDs is required in order to extract the dom_node_id for
         // the submission step.
-        {autofill::features::debug::kShowDomNodeIDs,
-         password_manager::features::kStopLoginCheckOnFailedLogin},
-        {});
+        {autofill::features::debug::kShowDomNodeIDs}, {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

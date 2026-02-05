@@ -200,9 +200,7 @@ void LoginStateChecker::OnExecutionResponseCallback(
   }
 
   // Terminate the flow immediately in case of an error.
-  if (response->is_logged_in_data().error_case() != kNoError &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kStopLoginCheckOnFailedLogin)) {
+  if (response->is_logged_in_data().error_case() != kNoError) {
     TerminateLoginChecks();
     return;
   }

@@ -190,13 +190,6 @@ BASE_DECLARE_FEATURE(kShowTabWithPasswordChangeOnSuccess);
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
-// Immediately terminates password change whenever the model detects login
-// failed due to incorrect password.
-BASE_DECLARE_FEATURE(kStopLoginCheckOnFailedLogin);
-
-// Adds throttling logic to password change dialog.
-BASE_DECLARE_FEATURE(kThrottlePasswordChangeDialog);
-
 // Starts passwords resync when undecryptable passwords are detected.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 
@@ -222,10 +215,6 @@ BASE_DECLARE_FEATURE(kUserInterventionForPasswordChange);
 BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kPasswordChangeThrottleTime{&kThrottlePasswordChangeDialog,
-                                "PasswordChangeThrottleTime", base::Days(14)};
 
 // All features parameters in alphabetical order.
 
