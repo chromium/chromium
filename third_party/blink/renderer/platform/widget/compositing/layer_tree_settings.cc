@@ -404,6 +404,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       cmd.HasSwitch(::switches::kShowFPSCounter);
   settings.initial_debug_state.show_layer_animation_bounds_rects =
       cmd.HasSwitch(::switches::kShowLayerAnimationBounds);
+  settings.initial_debug_state.show_contentful_paint_rects =
+      cmd.HasSwitch(switches::kShowContentfulPaintRects);
   settings.initial_debug_state.show_paint_rects =
       cmd.HasSwitch(switches::kShowPaintRects);
   settings.initial_debug_state.show_layout_shift_regions =

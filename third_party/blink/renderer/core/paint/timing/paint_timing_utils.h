@@ -9,6 +9,14 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 
+namespace cc {
+class HeadsUpDisplayLayer;
+}
+
+namespace blink {
+class LocalFrameView;
+}  // namespace blink
+
 namespace blink::paint_timing {
 
 // Returns the `Node` causing the image to be generated. For pseudo elements,
@@ -29,6 +37,12 @@ inline bool CORE_EXPORT IsImageType(const LayoutObject& object) {
 inline bool CORE_EXPORT IsTextType(const Node& node) {
   return node.IsTextNode();
 }
+
+CORE_EXPORT cc::HeadsUpDisplayLayer* GetHUDLayerIfContentfulPaintRectsEnabled(
+    LocalFrameView* frame_view);
+
+CORE_EXPORT cc::HeadsUpDisplayLayer* GetHUDLayerIfLayoutShiftRectsEnabled(
+    LocalFrameView* frame_view);
 
 }  // namespace blink::paint_timing
 

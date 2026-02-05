@@ -52,6 +52,8 @@ enum class DebugRectType {
   kRasterInducingScroll,
   kAnimationBounds,
   kLayoutShift,
+  kInteractionContentfulPaint,
+  kNavigationContentfulPaint,
 };
 
 struct DebugRect {

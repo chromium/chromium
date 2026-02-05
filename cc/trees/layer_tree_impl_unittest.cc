@@ -2317,6 +2317,33 @@ TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithoutHud) {
   EXPECT_EQ(0u, history->debug_rects().size());
 }
 
+TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithHud) {
+  LayerTreeDebugState state;
+  state.show_layout_shift_regions = true;
+
+  auto* hud = AddLayerInActiveTree<HeadsUpDisplayLayerImpl>(std::string());
+  hud->SetBounds(gfx::Size(200, 200));
+  hud->SetWebVitalsDebugRects(
+      {{WebVitalMetricType::kLayoutShift, gfx::Rect(10, 10, 50, 50)}});
+
+  host_impl().active_tree()->set_hud_layer(hud);
+  CopyProperties(root_layer(), hud);
+  UpdateDrawProperties(host_impl().active_tree());
+
+  // HUD rects should start with one value
+  EXPECT_EQ(1u, hud->WebVitalsDebugRects().size());
+
+  auto history = DebugRectHistory::Create();
+  history->SaveDebugRectsForCurrentFrame(host_impl().active_tree(), hud,
+                                         RenderSurfaceList{}, state);
+
+  // HUD rects should be moved to debug rect history after saving current frame
+  EXPECT_EQ(0u, hud->WebVitalsDebugRects().size());
+  ASSERT_EQ(1u, history->debug_rects().size());
+  EXPECT_EQ(DebugRectType::kLayoutShift, history->debug_rects()[0].type);
+  EXPECT_EQ(gfx::Rect(10, 10, 50, 50), history->debug_rects()[0].rect);
+}
+
 namespace {
 
 class PersistentSwapPromise final : public SwapPromise {

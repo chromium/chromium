@@ -29,6 +29,7 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool show_fps_counter = false;
   DebugBorderTypes show_debug_borders = false;
 
+  bool show_contentful_paint_rects = false;
   bool show_layout_shift_regions = false;
   bool show_paint_rects = false;
   bool show_property_changed_rects = false;

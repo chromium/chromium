@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -874,19 +875,15 @@ void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
 
 void LayoutShiftTracker::SendLayoutShiftRectsToHud(
     const Vector<gfx::Rect>& int_rects) {
-  // Store the layout shift rects in the HUD layer.
-  auto* cc_layer = frame_view_->RootCcLayer();
-  if (cc_layer && cc_layer->layer_tree_host()) {
-    if (!cc_layer->layer_tree_host()->GetDebugState().show_layout_shift_regions)
-      return;
-    if (auto* hud_layer = cc_layer->layer_tree_host()->hud_layer()) {
-      cc::Region blink_region;
-      for (const gfx::Rect& rect : int_rects)
-        blink_region.Union(rect);
-      for (gfx::Rect rect : blink_region) {
-        hud_layer->AddWebVitalsDebugRect(
-            {cc::WebVitalMetricType::kLayoutShift, rect});
-      }
+  if (auto* hud_layer =
+          paint_timing::GetHUDLayerIfLayoutShiftRectsEnabled(frame_view_)) {
+    cc::Region blink_region;
+    for (const gfx::Rect& rect : int_rects) {
+      blink_region.Union(rect);
+    }
+    for (gfx::Rect rect : blink_region) {
+      hud_layer->AddWebVitalsDebugRect(
+          {cc::WebVitalMetricType::kLayoutShift, rect});
     }
   }
 }

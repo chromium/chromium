@@ -13,6 +13,7 @@ struct LayerTreeDebugState {
   bool show_layer_borders;
   bool show_layout_shift_regions;
   bool show_paint_rects;
+  bool show_contentful_paint_rects;
   bool show_property_changed_rects;
   bool show_surface_damage_rects;
   bool show_screen_space_rects;

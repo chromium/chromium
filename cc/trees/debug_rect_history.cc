@@ -58,7 +58,8 @@ void DebugRectHistory::SaveDebugRectsForCurrentFrame(
     SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
         tree_impl, DebugRectType::kRasterInducingScroll);
   }
-  if (debug_state.show_layout_shift_regions) {
+  if (debug_state.show_contentful_paint_rects ||
+      debug_state.show_layout_shift_regions) {
     SaveWebVitalsDebugRects(hud_layer);
   }
   if (debug_state.show_paint_rects) {
@@ -85,6 +86,12 @@ void DebugRectHistory::SaveWebVitalsDebugRects(HeadsUpDisplayLayerImpl* hud) {
     switch (web_vital_rect.type) {
       case WebVitalMetricType::kLayoutShift:
         type = DebugRectType::kLayoutShift;
+        break;
+      case WebVitalMetricType::kInteractionContentfulPaint:
+        type = DebugRectType::kInteractionContentfulPaint;
+        break;
+      case WebVitalMetricType::kNavigationContentfulPaint:
+        type = DebugRectType::kNavigationContentfulPaint;
         break;
     }
 

@@ -278,6 +278,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
                                 const PropertyTreeStateOrAlias&,
                                 const LayoutObject&,
                                 const MediaTiming&);
+  void SendRectsToHud();
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() const;
 

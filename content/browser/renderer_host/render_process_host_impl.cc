@@ -3769,6 +3769,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       blink::switches::kMaxUntiledLayerWidth,
       blink::switches::kMaxUntiledLayerHeight,
       blink::switches::kNetworkQuietTimeout,
+      blink::switches::kShowContentfulPaintRects,
       blink::switches::kShowLayoutShiftRegions,
       blink::switches::kShowPaintRects,
       blink::switches::kTouchTextSelectionStrategy,

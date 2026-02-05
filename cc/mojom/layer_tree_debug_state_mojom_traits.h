@@ -28,6 +28,10 @@ struct StructTraits<cc::mojom::LayerTreeDebugStateDataView,
   static bool show_layer_borders(const cc::LayerTreeDebugState& state) {
     return state.show_debug_borders[cc::DebugBorderType::LAYER];
   }
+  static bool show_contentful_paint_rects(
+      const cc::LayerTreeDebugState& state) {
+    return state.show_contentful_paint_rects;
+  }
   static bool show_layout_shift_regions(const cc::LayerTreeDebugState& state) {
     return state.show_layout_shift_regions;
   }
@@ -99,6 +103,7 @@ struct StructTraits<cc::mojom::LayerTreeDebugStateDataView,
         data.show_layer_borders();
     out->show_layout_shift_regions = data.show_layout_shift_regions();
     out->show_paint_rects = data.show_paint_rects();
+    out->show_contentful_paint_rects = data.show_contentful_paint_rects();
     out->show_property_changed_rects = data.show_property_changed_rects();
     out->show_surface_damage_rects = data.show_surface_damage_rects();
     out->show_screen_space_rects = data.show_screen_space_rects();

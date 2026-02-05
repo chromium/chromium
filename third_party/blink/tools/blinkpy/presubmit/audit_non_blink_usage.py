@@ -662,6 +662,7 @@ _CONFIG = [
             'gfx::SelectionBound',
 
             # cc::Layers.
+            'cc::HeadsUpDisplayLayer',
             'cc::Layer',
             'cc::LayerClient',
             'cc::LayerTreeDebugState',

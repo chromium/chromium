@@ -70,6 +70,14 @@ class CC_DEBUG_EXPORT DebugColors {
   static int LayoutShiftRectBorderWidth();
   static SkColor4f LayoutShiftRectFillColor(int step);
 
+  static SkColor4f InteractionContentfulPaintRectBorderColor(int step);
+  static int InteractionContentfulPaintRectBorderWidth();
+  static SkColor4f InteractionContentfulPaintRectFillColor(int step);
+
+  static SkColor4f NavigationContentfulPaintRectBorderColor(int step);
+  static int NavigationContentfulPaintRectBorderWidth();
+  static SkColor4f NavigationContentfulPaintRectFillColor(int step);
+
   static SkColor4f PropertyChangedRectBorderColor();
   static int PropertyChangedRectBorderWidth();
   static SkColor4f PropertyChangedRectFillColor();

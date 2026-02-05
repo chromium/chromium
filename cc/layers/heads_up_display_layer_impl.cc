@@ -928,12 +928,26 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
     std::string label_text;
 
     switch (debug_rect.type) {
+      case DebugRectType::kInteractionContentfulPaint:
+        stroke_color = DebugColors::InteractionContentfulPaintRectBorderColor(
+            debug_rect.fade_step);
+        fill_color = DebugColors::InteractionContentfulPaintRectFillColor(
+            debug_rect.fade_step);
+        stroke_width = DebugColors::InteractionContentfulPaintRectBorderWidth();
+        break;
       case DebugRectType::kLayoutShift:
         stroke_color =
             DebugColors::LayoutShiftRectBorderColor(debug_rect.fade_step);
         fill_color =
             DebugColors::LayoutShiftRectFillColor(debug_rect.fade_step);
         stroke_width = DebugColors::LayoutShiftRectBorderWidth();
+        break;
+      case DebugRectType::kNavigationContentfulPaint:
+        stroke_color = DebugColors::NavigationContentfulPaintRectBorderColor(
+            debug_rect.fade_step);
+        fill_color = DebugColors::NavigationContentfulPaintRectFillColor(
+            debug_rect.fade_step);
+        stroke_width = DebugColors::NavigationContentfulPaintRectBorderWidth();
         break;
       case DebugRectType::kPaint:
         stroke_color = DebugColors::PaintRectBorderColor(debug_rect.fade_step);

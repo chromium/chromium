@@ -19,6 +19,8 @@ namespace cc {
 
 enum class WebVitalMetricType {
   kLayoutShift,
+  kInteractionContentfulPaint,
+  kNavigationContentfulPaint,
 };
 
 struct WebVitalsDebugRect {
