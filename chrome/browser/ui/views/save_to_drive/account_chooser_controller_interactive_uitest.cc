@@ -353,13 +353,22 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
       Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
 }
 
+// TODO(481839673): Re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RemoveOneAccountFromMultipleAccounts \
+  DISABLED_RemoveOneAccountFromMultipleAccounts
+#else
+#define MAYBE_RemoveOneAccountFromMultipleAccounts \
+  RemoveOneAccountFromMultipleAccounts
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Steps:
 // 1. Call GetAccount with multiple accounts.
 // 2. Remove an account.
 // 3. Verify the account chooser is shown.
 // 4. Verify the account is selected.
 IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
-                       RemoveOneAccountFromMultipleAccounts) {
+                       MAYBE_RemoveOneAccountFromMultipleAccounts) {
   std::vector<AccountInfo> accounts =
       GetTestAccounts({"pothos", "fern"}, "test.com");
   // Populate the persisted accounts with two empty accounts so it is legal to
@@ -394,6 +403,9 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
       Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
 }
 
+// This test doesn't make sense for ChromeOS. ChromeOS requires at least one
+// account.
+#if !BUILDFLAG(IS_CHROMEOS)
 // Steps:
 // 1. Call GetAccount with one account.
 // 2. Remove the account.
@@ -412,6 +424,7 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
           &persisted_account),
       VerifyPopupOpened());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Steps:
 // 1. Call GetAccount with a signed out primary account.
