@@ -76,6 +76,10 @@ class TestCrossDevicePrefTracker
     return base::android::ScopedJavaLocalRef<jobject>();
   }
 
+  int GetServiceStatus(JNIEnv* env) const override {
+    return static_cast<int>(GetServiceStatus());
+  }
+
   base::android::ScopedJavaLocalRef<jobjectArray> GetValues(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& pref_name,

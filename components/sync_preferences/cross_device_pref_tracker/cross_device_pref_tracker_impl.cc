@@ -1156,6 +1156,10 @@ ScopedJavaLocalRef<jobject> CrossDevicePrefTrackerImpl::GetJavaObject() {
 }
 
 // Java versions of query methods.
+int CrossDevicePrefTrackerImpl::GetServiceStatus(JNIEnv* env) const {
+  return static_cast<int>(GetServiceStatus());
+}
+
 ScopedJavaLocalRef<jobjectArray> CrossDevicePrefTrackerImpl::GetValues(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& pref_name,

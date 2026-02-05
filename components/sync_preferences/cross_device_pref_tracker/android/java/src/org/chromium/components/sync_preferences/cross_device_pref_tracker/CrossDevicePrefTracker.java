@@ -73,6 +73,12 @@ public class CrossDevicePrefTracker {
         mObservers.removeObserver(observer);
     }
 
+    /** Returns the current status of the service ({@link ServiceStatus}). */
+    public @ServiceStatus int getServiceStatus() {
+        if (mNativePtr == 0) return ServiceStatus.DEVICE_INFO_TRACKER_MISSING;
+        return CrossDevicePrefTrackerJni.get().getServiceStatus(mNativePtr);
+    }
+
     @CalledByNative
     private void onRemotePrefChanged(
             @JniType("std::string") String prefName,
@@ -134,6 +140,9 @@ public class CrossDevicePrefTracker {
 
     @NativeMethods
     interface Natives {
+        @ServiceStatus
+        int getServiceStatus(long nativeCrossDevicePrefTracker);
+
         TimestampedPrefValue[] getValues(
                 long nativeCrossDevicePrefTracker,
                 String prefName,

@@ -80,6 +80,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
 #if BUILDFLAG(IS_ANDROID)
   // Return the java object that allows access to the SyncService.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
+  int GetServiceStatus(JNIEnv* env) const override;
   // Java versions of query methods.
   base::android::ScopedJavaLocalRef<jobjectArray> GetValues(
       JNIEnv* env,

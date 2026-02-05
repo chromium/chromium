@@ -125,6 +125,8 @@ class CrossDevicePrefTracker : public KeyedService {
 #if BUILDFLAG(IS_ANDROID)
   // Return the Java object that allows access to the CrossDevicePrefTracker.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
+  // Returns the current status of the service.
+  virtual int GetServiceStatus(JNIEnv* env) const = 0;
   // Java versions of query methods.
   // `pref_name` can be either the tracked pref name or the cross-device pref
   // name.
