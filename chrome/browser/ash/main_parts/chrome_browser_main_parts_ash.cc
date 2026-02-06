@@ -535,13 +535,11 @@ class DBusServices {
             std::make_unique<ArcCroshServiceProvider>()));
 
 #if BUILDFLAG(PLATFORM_CUTTLEFISH)
-    if (features::IsFjordOobeEnabled()) {
-      fjord_oobe_service_ = CrosDBusService::Create(
-          system_bus, chromeos::kFjordOobeServiceName,
-          dbus::ObjectPath(chromeos::kFjordOobeServicePath),
-          CrosDBusService::CreateServiceProviderList(
-              std::make_unique<FjordOobeServiceProvider>()));
-    }
+    fjord_oobe_service_ = CrosDBusService::Create(
+        system_bus, chromeos::kFjordOobeServiceName,
+        dbus::ObjectPath(chromeos::kFjordOobeServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<FjordOobeServiceProvider>()));
 #endif
 
     // Initialize PowerDataCollector after DBusThreadManager is initialized.
