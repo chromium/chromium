@@ -7889,11 +7889,19 @@ auto GraphBuilderTflite::SerializeScatterND(const mojom::ScatterND& scatter_nd)
                    SerializeInputTensorInfo(scatter_nd.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
                    SerializeInputTensorInfo(scatter_nd.indices_operand_id));
+
+  CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
+  // The values in `indices` are computed at runtime, so they can exceed the
+  // boundary of the input. Clamp the values in `indices` to be in range of
+  // [-N, N-1] and transform negative indices to positive as TFLite doesn't
+  // support negative indexing, the logic is the same as GatherND.
+  ASSIGN_OR_RETURN(
+      const TensorIndex indices_tensor_index,
+      SerializeGatherIndices<int32_t>(indices_tensor_info, input_tensor_info));
   const TensorIndex output_tensor_index =
       SerializeOutputTensorInfo(scatter_nd.output_operand_id).index;
   return SerializeWebNNScatterND(input_tensor_info, updates_tensor_info,
-                                 indices_tensor_info.index,
-                                 output_tensor_index);
+                                 indices_tensor_index, output_tensor_index);
 }
 
 auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
