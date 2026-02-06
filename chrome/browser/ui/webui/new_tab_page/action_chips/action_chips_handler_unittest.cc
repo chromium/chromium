@@ -464,6 +464,72 @@ TEST_P(ActionChipsHandlerTabSelectionTest,
       expected_call_count);
 }
 
+TEST_F(
+    ActionChipsHandlerTest,
+    StartActionChipsRetrievalRecordsAnyShownTrueWhenMultipleChipsAreReturned) {
+  // Arrange
+  std::vector<ActionChipPtr> actual_chips;
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnActionChipsChanged(_))
+      .WillOnce(
+          [&actual_chips, &run_loop](std::vector<ActionChipPtr> action_chips) {
+            actual_chips = std::move(action_chips);
+            run_loop.Quit();
+          });
+  std::vector<action_chips::mojom::ActionChipPtr> chips;
+  chips.push_back(action_chips::mojom::ActionChip::New(
+      "title1", "subtitle1", "suggention1",
+      action_chips::mojom::ChipType::kDeepSearch, nullptr));
+  chips.push_back(action_chips::mojom::ActionChip::New(
+      "title2", "subtitle2", "suggention2",
+      action_chips::mojom::ChipType::kDeepSearch, nullptr));
+  EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+      .WillOnce(
+          [&chips](
+              base::optional_ref<const tabs::TabInterface>,
+              base::OnceCallback<void(
+                  std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+            std::move(callback).Run(std::move(chips));
+          });
+
+  // Act
+  handler().StartActionChipsRetrieval();
+  run_loop.Run();
+
+  // Assert
+  histogram_tester_.ExpectUniqueSample("NewTabPage.ActionChips.AnyShown", true,
+                                       1);
+}
+
+TEST_F(ActionChipsHandlerTest,
+       StartActionChipsRetrievalRecordsAnyShownFalseWhenNoChipIsReturned) {
+  // Arrange
+  std::vector<ActionChipPtr> actual_chips;
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnActionChipsChanged(_))
+      .WillOnce(
+          [&actual_chips, &run_loop](std::vector<ActionChipPtr> action_chips) {
+            actual_chips = std::move(action_chips);
+            run_loop.Quit();
+          });
+  EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+      .WillOnce(
+          [](base::optional_ref<const tabs::TabInterface>,
+             base::OnceCallback<void(
+                 std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+            // Return no chip
+            std::move(callback).Run(std::vector<ActionChipPtr>());
+          });
+
+  // Act
+  handler().StartActionChipsRetrieval();
+  run_loop.Run();
+
+  // Assert
+  histogram_tester_.ExpectUniqueSample("NewTabPage.ActionChips.AnyShown", false,
+                                       1);
+}
+
 TEST_F(ActionChipsHandlerTest,
        StartActionChipsRetrievalSendsAnEmptyListWhenThereAreLessThanTwoChips) {
   std::vector<ActionChipPtr> actual_chips;

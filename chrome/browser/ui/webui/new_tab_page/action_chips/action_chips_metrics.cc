@@ -51,12 +51,15 @@ void RecordActionChipsRequestStatus(
              result.error());
 }
 
-// Helper method to record impression metrics for the generated chips.
 void RecordImpressionMetrics(
     const std::vector<action_chips::mojom::ActionChipPtr>& chips) {
   for (const auto& chip : chips) {
     base::UmaHistogramEnumeration("NewTabPage.ActionChips.Shown", chip->type);
   }
+}
+
+void RecordActionChipsAnyShown(bool any_shown) {
+  base::UmaHistogramBoolean("NewTabPage.ActionChips.AnyShown", any_shown);
 }
 
 // Helper method to record latency metrics for action chips retrieval.
