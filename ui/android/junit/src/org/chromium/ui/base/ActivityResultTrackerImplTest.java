@@ -31,11 +31,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.List;
 
 /** Unit tests for {@link ActivityResultTrackerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -47,8 +50,9 @@ public class ActivityResultTrackerImplTest {
 
     @Mock private ActivityResultTracker.Registry mRegistry;
     @Mock private ActivityResultLauncher<Intent> mLauncher;
-    @Mock private ActivityResultCallback<ActivityResult> mCallback;
+    @Mock private ActivityResultTracker.ResultListener mListener;
     @Captor private ArgumentCaptor<ActivityResultCallback<ActivityResult>> mCallbackCaptor;
+    @Captor private ArgumentCaptor<String> mUniqueKeyCaptor;
 
     private ActivityResultTrackerImpl mTracker;
     private final Intent mIntent = new Intent();
@@ -58,41 +62,42 @@ public class ActivityResultTrackerImplTest {
     public void setup() {
         mTracker = new ActivityResultTrackerImpl(mRegistry);
         doReturn(mLauncher).when(mRegistry).register(anyString(), notNull(), notNull());
+        doReturn(KEY).when(mListener).getRestorationKey();
     }
 
     @Test
     public void testStartActivity_throwIfNoLauncher() {
         Assert.assertThrows(
-                IllegalStateException.class, () -> mTracker.startActivity(KEY, mIntent));
+                IllegalStateException.class, () -> mTracker.startActivity(mListener, mIntent));
     }
 
     @Test
     public void testStartActivity_throwIfNoRegistrationAfterRecreation() {
-        mTracker.register(KEY, mCallback);
+        mTracker.register(mListener);
         recreateTracker();
         Assert.assertThrows(
-                IllegalStateException.class, () -> mTracker.startActivity(KEY, mIntent));
+                IllegalStateException.class, () -> mTracker.startActivity(mListener, mIntent));
     }
 
     @Test
     public void testRegisterAndStartActivity() {
-        mTracker.register(KEY, mCallback);
+        mTracker.register(mListener);
         verify(mRegistry).register(anyString(), any(), any());
 
-        mTracker.startActivity(KEY, mIntent);
+        mTracker.startActivity(mListener, mIntent);
         verify(mLauncher).launch(mIntent);
     }
 
     @Test
     public void testRegister_noPendingResult() {
-        mTracker.register(KEY, mCallback);
-        verify(mCallback, never()).onActivityResult(any());
+        mTracker.register(mListener);
+        verify(mListener, never()).onActivityResult(any());
     }
 
     @Test
     public void testRegister_withPendingResult() {
-        mTracker.register(KEY, mCallback);
-        mTracker.startActivity(KEY, mIntent);
+        mTracker.register(mListener);
+        mTracker.startActivity(mListener, mIntent);
         recreateTracker();
 
         // Verify that the registration happens again after recreation.
@@ -100,41 +105,67 @@ public class ActivityResultTrackerImplTest {
 
         // Simulate activity result's return before new callback is registered.
         mCallbackCaptor.getValue().onActivityResult(mResult);
-        mTracker.register(KEY, mCallback);
+        mTracker.register(mListener);
 
         // Verify that the new callback is called immediately with the pending result.
-        verify(mCallback).onActivityResult(mResult);
+        verify(mListener).onActivityResult(mResult);
+    }
+
+    @Test
+    public void testRegister_keyDuplicated() {
+        ActivityResultTracker.ResultListener listenerWithSameKey =
+                Mockito.mock(ActivityResultTracker.ResultListener.class);
+        doReturn(KEY).when(listenerWithSameKey).getRestorationKey();
+
+        mTracker.register(mListener);
+        mTracker.register(listenerWithSameKey);
+
+        // Verify that the registration happens again after recreation.
+        verify(mRegistry, times(2)).register(anyString(), any(), mCallbackCaptor.capture());
+
+        mTracker.startActivity(mListener, mIntent);
+
+        // Simulate the case where activity result is returned to the second listener.
+        mCallbackCaptor.getValue().onActivityResult(mResult);
+
+        // Verify that the new callback is called immediately with the pending result.
+        verify(listenerWithSameKey).onActivityResult(mResult);
+        verify(mListener, never()).onActivityResult(any());
     }
 
     @Test
     public void testRecreation_inflightActivitiesRegisteredInOrder() {
-        // Keys are not in natural alphabetical order on purpose to avoid false positives. (e.g.
-        // avoid interferences with default ordering rules of collections used in the tracker's
-        // implementation)
-        String[] keys = new String[] {"key0", "key3", "key1"};
-        for (String key : keys) {
-            mTracker.register(key, mCallback);
-        }
+        ActivityResultTracker.ResultListener listener2 =
+                Mockito.mock(ActivityResultTracker.ResultListener.class);
+        ActivityResultTracker.ResultListener listener3 =
+                Mockito.mock(ActivityResultTracker.ResultListener.class);
+
+        mTracker.register(mListener);
+        mTracker.register(listener2);
+        mTracker.register(listener3);
+
+        verify(mRegistry, times(3)).register(mUniqueKeyCaptor.capture(), any(), any());
+        List<String> uniqueKeys = mUniqueKeyCaptor.getAllValues();
 
         // Reset the mock to clear the history of the initial register calls.
         reset(mRegistry);
 
         // Start activities in reversed registration order.
-        for (int i = keys.length - 1; i > -1; i--) {
-            mTracker.startActivity(keys[i], mIntent);
-        }
+        mTracker.startActivity(listener3, mIntent);
+        mTracker.startActivity(listener2, mIntent);
+        mTracker.startActivity(mListener, mIntent);
 
         recreateTracker();
 
         InOrder inOrder = inOrder(mRegistry);
-        for (String key : keys) {
+        for (String key : uniqueKeys) {
             inOrder.verify(mRegistry).register(eq(key), any(), any());
         }
     }
 
     @Test
     public void testOnDestroy() {
-        mTracker.register(KEY, mCallback);
+        mTracker.register(mListener);
         mTracker.onDestroy();
         verify(mLauncher).unregister();
     }

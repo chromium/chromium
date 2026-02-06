@@ -12,7 +12,6 @@ import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
 
 import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
@@ -30,7 +29,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -55,17 +53,14 @@ public class ActivityResultTrackerIntegrationTest {
     private Instrumentation mInstrumentation;
     private ActivityMonitor mResultActivityMonitor;
 
-    private static class ActivityResultTester {
+    private static class ActivityResultTester implements ActivityResultTracker.ResultListener {
         private final CallbackHelper mResultCallbackHelper = new CallbackHelper();
-        private final ActivityResultCallback<ActivityResult> mCallback =
-                (result) -> {
-                    mReceivedResult = result;
-                    mResultCallbackHelper.notifyCalled();
-                };
+        private final String mKey;
         private ActivityResult mReceivedResult;
 
         ActivityResultTester(ActivityResultTracker tracker, String key) {
-            tracker.register(key, mCallback);
+            mKey = key;
+            tracker.register(this);
         }
 
         void waitForCallback() throws TimeoutException {
@@ -86,6 +81,19 @@ public class ActivityResultTrackerIntegrationTest {
                     "Result code is not correct.",
                     expectedResultCode,
                     mReceivedResult.getResultCode());
+        }
+
+        /** Implements {@link ActivityResultTracker.ResultListener} */
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            mReceivedResult = result;
+            mResultCallbackHelper.notifyCalled();
+        }
+
+        /** Implements {@link ActivityResultTracker.ResultListener} */
+        @Override
+        public String getRestorationKey() {
+            return mKey;
         }
     }
 
@@ -113,14 +121,26 @@ public class ActivityResultTrackerIntegrationTest {
     @SmallTest
     public void testStartActivity_withoutRegister() {
         Intent intent = new Intent(mBaseActivity, BlankUiTestActivity.class);
-        Assert.assertThrows(IllegalStateException.class, () -> mTracker.startActivity(KEY, intent));
+        ActivityResultTracker.ResultListener emptyListener =
+                new ActivityResultTracker.ResultListener() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {}
+
+                    @Override
+                    public String getRestorationKey() {
+                        return "";
+                    }
+                };
+
+        Assert.assertThrows(
+                IllegalStateException.class, () -> mTracker.startActivity(emptyListener, intent));
     }
 
     @Test
     @SmallTest
     public void testStartActivity_withResultOk() throws TimeoutException {
         ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
-        startResultActivity(KEY);
+        startResultActivity(tester);
         finishResultActivity(Activity.RESULT_OK);
 
         tester.waitForCallback();
@@ -131,7 +151,7 @@ public class ActivityResultTrackerIntegrationTest {
     @SmallTest
     public void testStartActivity_withResultCanceled() throws TimeoutException {
         ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
-        startResultActivity(KEY);
+        startResultActivity(tester);
         finishResultActivity(Activity.RESULT_CANCELED);
 
         tester.waitForCallback();
@@ -146,7 +166,7 @@ public class ActivityResultTrackerIntegrationTest {
         ActivityResultTester tester1 = new ActivityResultTester(mTracker, KEY);
         ActivityResultTester tester2 = new ActivityResultTester(mTracker, key2);
 
-        startResultActivity(KEY);
+        startResultActivity(tester1);
         finishResultActivity(Activity.RESULT_OK);
         tester1.waitForCallback();
         tester1.assertReceivedResult(Activity.RESULT_OK);
@@ -155,7 +175,7 @@ public class ActivityResultTrackerIntegrationTest {
         mInstrumentation.removeMonitor(mResultActivityMonitor);
         mResultActivityMonitor =
                 mInstrumentation.addMonitor(BlankUiTestActivity.class.getName(), null, false);
-        startResultActivity(key2);
+        startResultActivity(tester2);
         finishResultActivity(Activity.RESULT_OK);
         tester2.waitForCallback();
         tester2.assertReceivedResult(Activity.RESULT_OK);
@@ -164,20 +184,43 @@ public class ActivityResultTrackerIntegrationTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/437039516")
-    // TODO(https://crbug.com/437039516): Find a solution for when the same component is reused
-    // multiple times in the same activity.
-    public void testRegister_throwIfKeyDuplicated() throws TimeoutException {
-        new ActivityResultTester(mTracker, KEY);
-        Assert.assertThrows(
-                IllegalStateException.class, () -> new ActivityResultTester(mTracker, KEY));
+    public void testRegister_keyDuplicated() throws TimeoutException {
+        ActivityResultTester tester1 = new ActivityResultTester(mTracker, KEY);
+        ActivityResultTester tester2 = new ActivityResultTester(mTracker, KEY);
+        startResultActivity(tester1);
+        finishResultActivity(Activity.RESULT_OK);
+
+        tester1.waitForCallback();
+        tester1.assertReceivedResult(Activity.RESULT_OK);
+        tester2.assertCallbackCallCount(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testRegister_keyDuplicated_activityKilled() throws TimeoutException {
+        ActivityResultTester tester1 = new ActivityResultTester(mTracker, KEY);
+        ActivityResultTester tester2 = new ActivityResultTester(mTracker, KEY);
+        startResultActivity(tester1);
+        recreateBaseActivity();
+        finishResultActivity(Activity.RESULT_OK);
+
+        // After the activity is recreated, the old `tester`'s callback is unregistered.
+        // A new tester needs to be created to listen to the result.
+        ActivityResultTester testerAfterRecreation1 = new ActivityResultTester(mTracker, KEY);
+        ActivityResultTester testerAfterRecreation2 = new ActivityResultTester(mTracker, KEY);
+
+        tester1.assertCallbackCallCount(0);
+        tester2.assertCallbackCallCount(0);
+        testerAfterRecreation2.assertCallbackCallCount(0);
+        testerAfterRecreation1.waitForCallback();
+        testerAfterRecreation1.assertReceivedResult(Activity.RESULT_OK);
     }
 
     @Test
     @SmallTest
     public void testStartActivity_activityKilled_withResultOk() throws TimeoutException {
         ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
-        startResultActivity(KEY);
+        startResultActivity(tester);
         recreateBaseActivity();
         finishResultActivity(Activity.RESULT_OK);
 
@@ -194,7 +237,7 @@ public class ActivityResultTrackerIntegrationTest {
     @SmallTest
     public void testStartActivity_activityKilled_withResultCanceled() throws TimeoutException {
         ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
-        startResultActivity(KEY);
+        startResultActivity(tester);
         recreateBaseActivity();
         finishResultActivity(Activity.RESULT_CANCELED);
         // After the activity is recreated, the old `tester`'s callback is unregistered.
@@ -212,7 +255,7 @@ public class ActivityResultTrackerIntegrationTest {
         String key2 = "key2";
         ActivityResultTester tester1 = new ActivityResultTester(mTracker, KEY);
         ActivityResultTester tester2 = new ActivityResultTester(mTracker, key2);
-        startResultActivity(KEY);
+        startResultActivity(tester1);
         recreateBaseActivity();
         finishResultActivity(Activity.RESULT_OK);
 
@@ -228,12 +271,12 @@ public class ActivityResultTrackerIntegrationTest {
         testerAfterRecreation1.assertReceivedResult(Activity.RESULT_OK);
     }
 
-    private void startResultActivity(String key) {
+    private void startResultActivity(ActivityResultTracker.ResultListener listener) {
         Intent intent = new Intent(mBaseActivity, BlankUiTestActivity.class);
         waitForActivityWithClass(
                 BlankUiTestActivity.class,
                 Stage.RESUMED,
-                () -> mTracker.startActivity(key, intent));
+                () -> mTracker.startActivity(listener, intent));
     }
 
     private void finishResultActivity(int resultCode) {

@@ -76,18 +76,43 @@ public interface ActivityResultTracker {
     }
 
     /**
-     * Registers a callback to handle the result of the activity started with the given {@String
-     * key}. Must be called before starting the new activity. A same key should not be used twice to
-     * register different callbacks.
+     * Listener for activity results.
      *
-     * <p>The callback needs to be registered again after the base activity's recreation, to receive
-     * any result that may have been returned before the activity was recreated. The callback will
-     * be invoked with the given result immediately if such pending result exists.
-     *
-     * @param key A key to identify the activity to be started.
-     * @param callback The callback to be invoked with the result returned by the started activity.
+     * <p>The listener is identified by a restoration key, which is used to restore the listener
+     * after the base activity's recreation.
      */
-    void register(String key, ActivityResultCallback<ActivityResult> callback);
+    interface ResultListener {
+
+        /**
+         * Called when an activity returns a result.
+         *
+         * @param result The result returned by the activity.
+         */
+        void onActivityResult(ActivityResult result);
+
+        /**
+         * Returns a key that identifies this listener across activity recreation. It's preferable
+         * to not reuse the same key for different instances that co-exist, otherwise, if in-flight
+         * activity returns after the base activity is recreated, an arbitrary listener using the
+         * given restoration key will be chosen to handle the returned result.
+         *
+         * <p>This key is used to capture and cache started activity's result after the base
+         * activity's recreation.
+         */
+        String getRestorationKey();
+    }
+
+    /**
+     * Registers a listener to handle the result of the activity started with the given listener.
+     * Must be called before using starting the new activity.
+     *
+     * <p>The listener needs to be registered again after the base activity's recreation, to receive
+     * any result that may have been returned before the activity was recreated. The callback will
+     * be invoked with the given result immediately if such pending result is cached.
+     *
+     * @param listener The {@link ResultListener} to be registered.
+     */
+    void register(ResultListener listener);
 
     /**
      * Starts an activity for result. The result handling callback must be registered before calling
@@ -96,5 +121,5 @@ public interface ActivityResultTracker {
      * @param key The key that was used to register the launcher.
      * @param intent The intent to start the activity.
      */
-    void startActivity(String key, Intent intent);
+    void startActivity(ResultListener listener, Intent intent);
 }
