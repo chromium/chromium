@@ -3532,8 +3532,18 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     layer->UpdateFilterReferenceBox();
   }
 
-  if (!object_.IsBox())
+  if (!object_.IsBox()) {
+    // We could check the change of the clip-path bounding box, but checking
+    // layout change is much simpler and good enough for the rare cases of
+    // clip-path on LayoutInline.
+    if (object_.IsLayoutInline() &&
+        object_.ShouldCheckLayoutForPaintInvalidation() &&
+        object_.HasClipPath()) {
+      object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
+    }
+
     return;
+  }
 
   const LayoutBox& box = To<LayoutBox>(object_);
 
