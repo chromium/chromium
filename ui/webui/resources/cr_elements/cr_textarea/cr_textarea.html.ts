@@ -13,12 +13,6 @@ export function getHtml(this: CrTextareaElement) {
   ${this.label}
 </div>
 <div id="input-container">
-  <!-- The mirror div is used to take up the required space when autogrow is
-       set. -->
-  <div id="mirror">${this.calculateMirror_()}</div>
-  <!-- The textarea is limited to |rows| height. If the content exceeds the
-       bounds, it scrolls by default unless autogrow is set. No space or
-       comments are allowed before the closing tag. -->
   <div id="hover-layer"></div>
   <textarea id="input" ?autofocus="${this.autofocus}" .rows="${this.rows}"
      .value="${this.internalValue_}" aria-label="${this.label}"

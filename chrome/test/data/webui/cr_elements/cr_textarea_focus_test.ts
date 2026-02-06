@@ -106,4 +106,39 @@ suite('cr-textarea-focus-test', function() {
     assertEquals('1', getComputedStyle(underline).opacity);
     assertNotEquals(currentColor, getComputedStyle(firstFooter).color);
   });
+
+  test('autogrows', async () => {
+    let currentHeight = crTextarea.$.input.offsetHeight;
+    crTextarea.autogrow = true;
+    await microtasksFinished();
+
+    crTextarea.rows = 1;
+    await microtasksFinished();
+    assertTrue(
+        currentHeight > crTextarea.$.input.offsetHeight,
+        'decreasing rows decreases the min-height');
+    currentHeight = crTextarea.$.input.offsetHeight;
+
+    crTextarea.value = '\n\n\n\n\n';
+    await microtasksFinished();
+    assertTrue(
+        currentHeight < crTextarea.$.input.offsetHeight,
+        'textarea grows in height');
+    currentHeight = crTextarea.$.input.offsetHeight;
+
+    crTextarea.value = '\n\n\n\n\n\n\n';
+    await microtasksFinished();
+    assertTrue(
+        currentHeight < crTextarea.$.input.offsetHeight,
+        'textarea continues to grow');
+
+    const textareaStyle = crTextarea.$.input.computedStyleMap();
+    const paddingBlock =
+        (textareaStyle.get('padding-top') as CSSUnitValue).value +
+        (textareaStyle.get('padding-bottom') as CSSUnitValue).value;
+    crTextarea.style.setProperty('--cr-textarea-autogrow-max-height', '60px');
+    assertEquals(
+        60 + paddingBlock, crTextarea.$.input.offsetHeight,
+        'sets the max-height');
+  });
 });

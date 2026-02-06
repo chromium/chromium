@@ -25,12 +25,6 @@ textarea {
   background-color: var(--cr-input-background-color);
 }
 
-:host([autogrow][has-max-height]) #input-container {
-  box-sizing: content-box;
-  max-height: var(--cr-textarea-autogrow-max-height);
-  min-height: 1lh;
-}
-
 :host([invalid]) #underline {
   border-color: var(--cr-input-error-color);
 }
@@ -40,6 +34,7 @@ textarea {
   padding-inline-end: var(--cr-input-padding-end);
   padding-inline-start: var(--cr-input-padding-start);
   padding-top: var(--cr-input-padding-top);
+  scroll-padding-bottom: var(--cr-input-padding-end);
 }
 
 #footerContainer {
@@ -61,43 +56,11 @@ textarea {
   color: var(--cr-input-error-color);
 }
 
-#mirror {
-  display: none;
-
-  /* Must match textarea. */
-  font-size: 12px;
-  line-height: 16px;
-}
-
-:host([autogrow]) #mirror {
-  display: block;
-  visibility: hidden;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-:host([autogrow]) #mirror,
-:host([autogrow]) textarea {
-  border: 0;
-  box-sizing: border-box;
-  padding-bottom: var(--cr-input-padding-bottom, 6px);
-  padding-inline-end: var(--cr-input-padding-end, 8px);
-  padding-inline-start: var(--cr-input-padding-start, 8px);
-  padding-top: var(--cr-input-padding-top, 6px);
-}
-
-:host([autogrow]) textarea {
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  position: absolute;
-  resize: none;
-  top: 0;
-  width: 100%;
-}
-
-:host([autogrow][has-max-height]) #mirror,
-:host([autogrow][has-max-height]) textarea {
-  overflow-x: hidden;
-  overflow-y: auto;
+:host([autogrow]) #input {
+  box-sizing: content-box;
+  field-sizing: content;
+  min-height: calc(1lh * attr(rows number));
+  max-height: var(--cr-textarea-autogrow-max-height, none);
+  max-width: calc(
+      100% - var(--cr-input-padding-start) - var(--cr-input-padding-end));
 }

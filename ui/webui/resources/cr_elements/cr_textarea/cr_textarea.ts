@@ -84,11 +84,6 @@ export class CrTextareaElement extends CrLitElement {
       /** Caption of the text area. */
       label: {type: String},
 
-      /**
-       * Text inside the text area. If the text exceeds the bounds of the text
-       * area, i.e. if it has more than |rows| lines, a scrollbar is shown by
-       * default when autogrow is not set.
-       */
       value: {
         type: String,
         notify: true,
@@ -106,15 +101,6 @@ export class CrTextareaElement extends CrLitElement {
 
       /** Whether the textarea can auto-grow vertically or not. */
       autogrow: {
-        type: Boolean,
-        reflect: true,
-      },
-
-      /**
-       * Attribute to enable limiting the maximum height of a autogrow textarea.
-       * Use --cr-textarea-autogrow-max-height to set the height.
-       */
-      hasMaxHeight: {
         type: Boolean,
         reflect: true,
       },
@@ -149,7 +135,6 @@ export class CrTextareaElement extends CrLitElement {
   accessor value: string = '';
   accessor placeholder: string = '';
   accessor autogrow: boolean = false;
-  accessor hasMaxHeight: boolean = false;
   accessor invalid: boolean = false;
   accessor firstFooter: string = '';
   accessor secondFooter: string = '';
@@ -188,20 +173,6 @@ export class CrTextareaElement extends CrLitElement {
     // Ensure that |value| has been updated before re-firing 'change'.
     await this.updateComplete;
     this.fire('change', {sourceEvent: e});
-  }
-
-  protected calculateMirror_(): string {
-    if (!this.autogrow) {
-      return '';
-    }
-    // Browsers do not render empty divs. The extra space is used to render the
-    // div when empty.
-    const tokens = this.value ? this.value.split('\n') : [''];
-
-    while (this.rows > 0 && tokens.length < this.rows) {
-      tokens.push('');
-    }
-    return tokens.join('\n') + '&nbsp;';
   }
 
   protected onInput_(e: Event) {
