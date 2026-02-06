@@ -30,6 +30,29 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+// Whether Choose From Drive is available.
+BOOL IsChooseFromDriveAvailable(Browser* browser,
+                                bool allowsDirectorySelection) {
+  if (!browser || allowsDirectorySelection) {
+    return NO;
+  }
+  web::WebState* activeWebState =
+      browser->GetWebStateList()->GetActiveWebState();
+  ProfileIOS* profile = browser->GetProfile();
+  CHECK(profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetInstance()->GetForProfile(profile);
+  drive::DriveService* driveService =
+      drive::DriveServiceFactory::GetForProfile(profile);
+  return drive::IsChooseFromDriveAvailable(
+      activeWebState, profile->IsOffTheRecord(), identityManager, driveService,
+      profile->GetPrefs());
+}
+
+}  // namespace
+
 @interface FileUploadPanelCoordinator () <
     UIContextMenuInteractionDelegate,
     UINavigationControllerDelegate,
@@ -78,18 +101,6 @@
       initWithChooseFileController:chooseFileController];
   _mediator.fileUploadPanelHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), FileUploadPanelCommands);
-
-  if (!_mediator.allowsDirectorySelection) {
-    ProfileIOS* profile = self.browser->GetProfile();
-    CHECK(profile);
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetInstance()->GetForProfile(profile);
-    drive::DriveService* driveService =
-        drive::DriveServiceFactory::GetForProfile(profile);
-    _isChooseFromDriveAvailable = drive::IsChooseFromDriveAvailable(
-        activeWebState, profile->IsOffTheRecord(), identityManager,
-        driveService, profile->GetPrefs());
-  }
 
   if (_mediator.shouldShowCamera) {
     base::UmaHistogramEnumeration("IOS.FileUploadPanel.EntryPointVariant",
@@ -478,7 +489,8 @@
 }
 
 - (UIAction*)driveFilePickerAction {
-  if (!_isChooseFromDriveAvailable) {
+  if (!IsChooseFromDriveAvailable(self.browser,
+                                  _mediator.allowsDirectorySelection)) {
     return nil;
   }
   if (!_driveFilePickerAction) {
@@ -507,6 +519,12 @@
 }
 
 - (void)showDriveFilePicker {
+  if (!IsChooseFromDriveAvailable(self.browser,
+                                  _mediator.allowsDirectorySelection)) {
+    //  If the user gets signed-out, the feature may become unavailable during
+    // usage.
+    return;
+  }
   id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   [driveFilePickerCommands showDriveFilePicker];
