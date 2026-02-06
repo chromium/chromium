@@ -425,9 +425,9 @@ void MaybeDismissNotification() {
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId")];
   // Close the promo.
-  id<GREYMatcher> noThanksButton =
-      chrome_test_util::ButtonStackSecondaryButton();
-  [ChromeEarlGrey waitForAndTapButton:noThanksButton];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
 }
 
 @end

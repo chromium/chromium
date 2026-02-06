@@ -93,7 +93,27 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   self.mediator.tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.actionHandler = self;
-  self.viewController.presentationController.delegate = self;
+
+  UIViewController* viewControllerToPresent = self.viewController;
+
+  // Add the "Done" button to the navigation item if the promo was triggered by
+  // a Tips Notification.
+  if (trigger == CredentialProviderPromoTrigger::TipsNotification) {
+    UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector
+                             (confirmationAlertSecondaryAction)];
+    self.viewController.navigationItem.rightBarButtonItem = dismissButton;
+
+    UINavigationController* navigationController =
+        [[UINavigationController alloc]
+            initWithRootViewController:self.viewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    navigationController.presentationController.delegate = self;
+    viewControllerToPresent = navigationController;
+  }
+
   self.promoContext = [self promoContextFromTrigger:trigger];
   [self.mediator configureConsumerWithTrigger:trigger
                                       context:self.promoContext];
@@ -101,7 +121,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   UIViewController* topViewController =
       top_view_controller::TopPresentedViewControllerFrom(
           self.baseViewController);
-  [topViewController presentViewController:self.viewController
+  [topViewController presentViewController:viewControllerToPresent
                                   animated:YES
                                 completion:nil];
   self.promoSeenInCurrentSession = YES;

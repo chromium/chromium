@@ -179,7 +179,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
         constraintEqualToAnchor:self.view.centerYAnchor];
   } else {
     self.alertScreenTopAnchorConstraint = [self.alertScreen.view.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor];
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor];
   }
   self.alertScreenTopAnchorConstraint.active = YES;
 }
@@ -226,7 +226,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
     [wrapper.animationView.rightAnchor
         constraintEqualToAnchor:self.view.rightAnchor],
     [wrapper.animationView.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [wrapper.animationView.bottomAnchor
         constraintEqualToAnchor:self.view.centerYAnchor],
   ]];
