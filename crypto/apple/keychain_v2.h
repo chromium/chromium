@@ -27,6 +27,8 @@ namespace crypto::apple {
 // TODO(https://crbug.com/441317288): Unify with Keychain.
 class CRYPTO_EXPORT KeychainV2 {
  public:
+  KeychainV2();
+
   static KeychainV2& GetInstance();
 
   KeychainV2(const KeychainV2&) = delete;
@@ -89,7 +91,6 @@ class CRYPTO_EXPORT KeychainV2 {
 #endif  // !BUILDFLAG(IS_IOS_TVOS)
 
  protected:
-  KeychainV2();
   virtual ~KeychainV2();
 
  protected:

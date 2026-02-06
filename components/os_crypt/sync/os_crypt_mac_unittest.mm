@@ -9,7 +9,7 @@
 
 #include "base/strings/string_view_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "crypto/apple/mock_keychain.h"
+#include "crypto/apple/fake_keychain_v2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class OSCryptMacTest : public ::testing::Test {
@@ -45,7 +45,8 @@ TEST_F(OSCryptMacTest, KnownAnswers) {
   // derivation method are ever changed the known answers need to be recomputed.
   // This assert is here to avoid having a difficult-to-debug decryption failure
   // later in the test in this case.
-  ASSERT_EQ(crypto::apple::MockKeychain().GetEncryptionPassword(),
+  ASSERT_EQ(crypto::apple::FakeKeychainV2("test-access-group")
+                .GetEncryptionPassword(),
             "mock_password")
       << "Mock keychain password is different than expected. If you changed it,"
          " you need to recompute the known answers in this test.";
@@ -59,7 +60,8 @@ TEST_F(OSCryptMacTest, KnownAnswers) {
             base::as_byte_span(ciphertext));
 
   std::string plaintext;
-  ASSERT_TRUE(OSCryptImpl::GetInstance()->DecryptString(ciphertext, &plaintext));
+  ASSERT_TRUE(
+      OSCryptImpl::GetInstance()->DecryptString(ciphertext, &plaintext));
   EXPECT_EQ(base::as_byte_span(kPlaintext), base::as_byte_span(plaintext));
 }
 
@@ -68,9 +70,9 @@ TEST_F(OSCryptMacTest, SetAndGetRaw) {
   OSCryptImpl oscrypt2;
 
   oscrypt1.SetKeychainForTesting(
-      std::make_unique<crypto::apple::MockKeychain>());
+      std::make_unique<crypto::apple::FakeKeychainV2>("test-access-group"));
   oscrypt2.SetKeychainForTesting(
-      std::make_unique<crypto::apple::MockKeychain>());
+      std::make_unique<crypto::apple::FakeKeychainV2>("test-access-group"));
 
   oscrypt2.SetRawEncryptionKey(oscrypt1.GetRawEncryptionKey());
   EXPECT_GT(oscrypt1.GetRawEncryptionKey().size(), 0u);

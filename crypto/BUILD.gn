@@ -173,14 +173,28 @@ if (is_apple) {
   # TODO(https://crbug.com/431952820): move this into a crypto/apple/BUILD.gn
   source_set("mock_apple_keychain") {
     sources = [
+      "apple/fake_keychain_v2.h",
+      "apple/fake_keychain_v2.mm",
       "apple/mock_keychain.cc",
       "apple/mock_keychain.h",
+      "apple/scoped_fake_keychain_v2.h",
+      "apple/scoped_fake_keychain_v2.mm",
     ]
 
     deps = [
       ":crypto",
       "//base",
     ]
+
+    frameworks = [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+      "Security.framework",
+    ]
+
+    if (is_mac || (is_ios && target_platform != "tvos")) {
+      frameworks += [ "LocalAuthentication.framework" ]
+    }
   }
 }
 

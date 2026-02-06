@@ -56,9 +56,9 @@ class OSCryptAsyncTest : public ::testing::Test {
         []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
     return std::nullopt;
 #elif BUILDFLAG(IS_APPLE)
-    OSCrypt::SetKeychainForTesting(OSCrypt::MockLockedKeychain());
+    OSCryptMocker::SetBackendLocked(true);
     return base::ScopedClosureRunner(
-        base::BindOnce([]() { OSCrypt::SetKeychainForTesting(nullptr); }));
+        base::BindOnce([]() { OSCryptMocker::TearDown(); }));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     OSCrypt::SetEncryptionAvailableForTesting(/*available=*/false);
     return base::ScopedClosureRunner(base::BindOnce([]() {

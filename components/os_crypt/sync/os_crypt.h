@@ -19,12 +19,9 @@
 #include "crypto/subtle_passkey.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "crypto/apple/mock_keychain.h"
-#endif
-
-#if BUILDFLAG(IS_APPLE)
 namespace crypto::apple {
-class Keychain;
+class FakeKeychainV2;
+class KeychainV2;
 }
 #endif
 
@@ -79,8 +76,8 @@ InitResult InitWithExistingKey(PrefService* local_state);
 enum MockLockedKeychain {};
 COMPONENT_EXPORT(OS_CRYPT)
 void SetKeychainForTesting(
-    std::variant<std::unique_ptr<crypto::apple::Keychain>, MockLockedKeychain>
-        test_keychain);
+    std::variant<std::unique_ptr<crypto::apple::FakeKeychainV2>,
+                 MockLockedKeychain> test_keychain);
 #endif  // BUILDFLAG(IS_APPLE)
 COMPONENT_EXPORT(OS_CRYPT)
 std::string GetRawEncryptionKey();
@@ -184,7 +181,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
   // This is used for testing purposes only. It allows a test to inject a mock
   // keychain or specify that the keychain should be locked.
   void SetKeychainForTesting(
-      std::variant<std::unique_ptr<crypto::apple::Keychain>,
+      std::variant<std::unique_ptr<crypto::apple::FakeKeychainV2>,
                    OSCrypt::MockLockedKeychain> test_keychain);
 #endif
 
@@ -237,7 +234,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
  private:
 #if BUILDFLAG(IS_APPLE)
   // Return the keychain to use for accessing the encryption key.
-  std::unique_ptr<crypto::apple::Keychain> GetKeychain();
+  crypto::apple::KeychainV2* GetKeychain();
 
   // Derives an encryption key from data stored in the keychain if necessary.
   // Returns true if there is an encryption key available and false otherwise.
@@ -307,7 +304,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
   std::optional<std::array<uint8_t, kDerivedKeySize>> key_;
 
   // Mock keychain only used for testing.
-  std::unique_ptr<crypto::apple::Keychain> test_keychain_;
+  std::unique_ptr<crypto::apple::FakeKeychainV2> test_keychain_;
 #endif
 };
 

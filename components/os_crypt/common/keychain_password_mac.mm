@@ -19,9 +19,10 @@
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "crypto/apple/keychain.h"
+#include "crypto/apple/keychain_v2.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
-using crypto::apple::Keychain;
+using crypto::apple::KeychainV2;
 
 #if defined(ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE)
 using KeychainNameContainerType = base::NoDestructor<std::string>;
@@ -59,7 +60,7 @@ std::atomic<OSStatus> g_last_keychain_error{noErr};
 // is returned from the function.  If an error occurs, the OSStatus is
 // returned.
 base::expected<std::string, OSStatus> AddRandomPasswordToKeychain(
-    const Keychain& keychain,
+    KeychainV2& keychain,
     const std::string& service_name,
     const std::string& account_name) {
   // Generate a password with 128 bits of randomness.
@@ -78,7 +79,7 @@ base::expected<std::string, OSStatus> AddRandomPasswordToKeychain(
 }
 
 base::expected<std::string, OSStatus> GetPasswordImpl(
-    const Keychain& keychain,
+    KeychainV2& keychain,
     const std::string& service_name,
     const std::string& account_name) {
   FindGenericPasswordResult uma_result;
@@ -120,7 +121,7 @@ KeychainPassword::KeychainNameType& KeychainPassword::GetAccountName() {
   return *account_name;
 }
 
-KeychainPassword::KeychainPassword(const Keychain& keychain)
+KeychainPassword::KeychainPassword(KeychainV2& keychain)
     : keychain_(keychain) {}
 
 KeychainPassword::~KeychainPassword() = default;

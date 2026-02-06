@@ -13,7 +13,7 @@
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "crypto/apple/mock_keychain.h"
+#include "crypto/apple/fake_keychain_v2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace os_crypt_async {
@@ -24,7 +24,7 @@ class KeychainKeyProviderCompatTest : public ::testing::Test {
 
   void TearDown() override { OSCryptMocker::TearDown(); }
 
-  Encryptor GetEncryptor(crypto::apple::Keychain* keychain) {
+  Encryptor GetEncryptor(crypto::apple::KeychainV2* keychain) {
     std::vector<
         std::pair<OSCryptAsync::Precedence, std::unique_ptr<KeyProvider>>>
         providers;
@@ -44,7 +44,7 @@ class KeychainKeyProviderCompatTest : public ::testing::Test {
 };
 
 TEST_F(KeychainKeyProviderCompatTest, EncryptOldDecryptNew) {
-  crypto::apple::MockKeychain mock_keychain;
+  crypto::apple::FakeKeychainV2 mock_keychain("test-access-group");
   mock_keychain.set_find_generic_result(noErr);
 
   // 1. Encrypt with old sync backend.
@@ -62,7 +62,7 @@ TEST_F(KeychainKeyProviderCompatTest, EncryptOldDecryptNew) {
 }
 
 TEST_F(KeychainKeyProviderCompatTest, EncryptNewDecryptOld) {
-  crypto::apple::MockKeychain mock_keychain;
+  crypto::apple::FakeKeychainV2 mock_keychain("test-access-group");
   mock_keychain.set_find_generic_result(noErr);
 
   // 1. Get an encryptor from the new async interface.

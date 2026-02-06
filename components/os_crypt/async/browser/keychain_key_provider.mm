@@ -15,8 +15,8 @@
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/common/keychain_password_mac.h"
 #include "components/os_crypt/common/os_crypt_switches.h"
-#include "crypto/apple/keychain.h"
-#include "crypto/apple/mock_keychain.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 #include "crypto/kdf.h"
 #include "crypto/subtle_passkey.h"
 
@@ -34,19 +34,21 @@ constexpr size_t kIterations = 1003;
 // This function runs on a worker thread and performs blocking Keychain IO.
 base::expected<Encryptor::Key, KeyProvider::KeyError> GetKeyTask(
     crypto::SubtlePassKey subtle_passkey,
-    crypto::apple::Keychain* keychain_for_testing) {
-  std::unique_ptr<crypto::apple::Keychain> default_keychain;
-  if (!keychain_for_testing) {
+    crypto::apple::KeychainV2* keychain_for_testing) {
+  std::unique_ptr<crypto::apple::FakeKeychainV2> scoped_fake_keychain;
+  crypto::apple::KeychainV2* keychain_to_use = keychain_for_testing;
+  if (!keychain_to_use) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             os_crypt::switches::kUseMockKeychain)) {
-      default_keychain = std::make_unique<crypto::apple::MockKeychain>();
+      scoped_fake_keychain =
+          std::make_unique<crypto::apple::FakeKeychainV2>("test-access-group");
+      keychain_to_use = scoped_fake_keychain.get();
     } else {
-      default_keychain = crypto::apple::Keychain::DefaultKeychain();
+      keychain_to_use = &crypto::apple::KeychainV2::GetInstance();
     }
   }
 
-  KeychainPassword keychain_password(
-      keychain_for_testing ? *keychain_for_testing : *default_keychain);
+  KeychainPassword keychain_password(*keychain_to_use);
   std::string password = keychain_password.GetPassword();
 
   // `password` can be an empty string if keychain access is denied by the user
@@ -68,7 +70,7 @@ base::expected<Encryptor::Key, KeyProvider::KeyError> GetKeyTask(
 KeychainKeyProvider::KeychainKeyProvider() = default;
 
 KeychainKeyProvider::KeychainKeyProvider(
-    crypto::apple::Keychain* keychain_for_testing)
+    crypto::apple::KeychainV2* keychain_for_testing)
     : keychain_for_testing_(keychain_for_testing) {}
 
 KeychainKeyProvider::~KeychainKeyProvider() = default;

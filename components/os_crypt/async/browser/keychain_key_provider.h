@@ -11,7 +11,7 @@
 #include "components/os_crypt/async/browser/key_provider.h"
 
 namespace crypto::apple {
-class Keychain;
+class KeychainV2;
 }
 
 namespace os_crypt_async {
@@ -34,14 +34,14 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) KeychainKeyProvider
   FRIEND_TEST_ALL_PREFIXES(KeychainKeyProviderTest, GetKey_Failure_OtherError);
 
   // For testing.
-  explicit KeychainKeyProvider(crypto::apple::Keychain* keychain);
+  explicit KeychainKeyProvider(crypto::apple::KeychainV2* keychain);
 
   // os_crypt_async::KeyProvider interface.
   void GetKey(KeyCallback callback) override;
   bool UseForEncryption() override;
   bool IsCompatibleWithOsCryptSync() override;
 
-  raw_ptr<crypto::apple::Keychain> keychain_for_testing_ = nullptr;
+  raw_ptr<crypto::apple::KeychainV2> keychain_for_testing_ = nullptr;
 };
 
 }  // namespace os_crypt_async

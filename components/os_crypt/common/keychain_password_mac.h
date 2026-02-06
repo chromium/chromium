@@ -10,7 +10,7 @@
 #include "base/memory/raw_ref.h"
 
 namespace crypto::apple {
-class Keychain;
+class KeychainV2;
 }
 
 class KeychainPassword {
@@ -21,7 +21,7 @@ class KeychainPassword {
   using KeychainNameType = const std::string;
 #endif
 
-  explicit KeychainPassword(const crypto::apple::Keychain& keychain);
+  explicit KeychainPassword(crypto::apple::KeychainV2& keychain);
 
   KeychainPassword(const KeychainPassword&) = delete;
   KeychainPassword& operator=(const KeychainPassword&) = delete;
@@ -41,7 +41,7 @@ class KeychainPassword {
   static KeychainNameType& GetAccountName();
 
  private:
-  const raw_ref<const crypto::apple::Keychain> keychain_;
+  raw_ref<crypto::apple::KeychainV2> keychain_;
 };
 
 #endif  // COMPONENTS_OS_CRYPT_COMMON_KEYCHAIN_PASSWORD_MAC_H_

@@ -24,8 +24,8 @@
 #include "components/os_crypt/common/os_crypt_switches.h"
 #include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "crypto/aes_cbc.h"
-#include "crypto/apple/keychain.h"
-#include "crypto/apple/mock_keychain.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/keychain_v2.h"
 #include "crypto/kdf.h"
 #include "crypto/subtle_passkey.h"
 
@@ -61,8 +61,8 @@ bool DecryptString(const std::string& ciphertext, std::string* plaintext) {
   return OSCryptImpl::GetInstance()->DecryptString(ciphertext, plaintext);
 }
 void SetKeychainForTesting(
-    std::variant<std::unique_ptr<crypto::apple::Keychain>, MockLockedKeychain>
-        keychain) {
+    std::variant<std::unique_ptr<crypto::apple::FakeKeychainV2>,
+                 MockLockedKeychain> keychain) {
   OSCryptImpl::GetInstance()->SetKeychainForTesting(std::move(keychain));
 }
 std::string GetRawEncryptionKey() {
@@ -85,24 +85,26 @@ OSCryptImpl* OSCryptImpl::GetInstance() {
 OSCryptImpl::OSCryptImpl() = default;
 OSCryptImpl::~OSCryptImpl() = default;
 
-std::unique_ptr<crypto::apple::Keychain> OSCryptImpl::GetKeychain() {
+crypto::apple::KeychainV2* OSCryptImpl::GetKeychain() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           os_crypt::switches::kUseMockKeychain)) {
-    return std::make_unique<crypto::apple::MockKeychain>();
+    test_keychain_ =
+        std::make_unique<crypto::apple::FakeKeychainV2>("test-access-group");
+    return test_keychain_.get();
   }
 
   if (test_keychain_) {
-    return std::move(test_keychain_);
+    return test_keychain_.get();
   }
-  return crypto::apple::Keychain::DefaultKeychain();
+  return &crypto::apple::KeychainV2::GetInstance();
 }
 
 void OSCryptImpl::SetKeychainForTesting(
-    std::variant<std::unique_ptr<crypto::apple::Keychain>,
+    std::variant<std::unique_ptr<crypto::apple::FakeKeychainV2>,
                  OSCrypt::MockLockedKeychain> keychain) {
   key_.reset();
 
-  if (std::holds_alternative<std::unique_ptr<crypto::apple::Keychain>>(
+  if (std::holds_alternative<std::unique_ptr<crypto::apple::FakeKeychainV2>>(
           keychain)) {
     test_keychain_ = std::move(std::get<0>(keychain));
     try_keychain_ = true;
@@ -129,7 +131,7 @@ bool OSCryptImpl::DeriveKey() {
   }
 
   // Do the actual key derivation.
-  auto keychain = GetKeychain();
+  crypto::apple::KeychainV2* keychain = GetKeychain();
   KeychainPassword encryptor_password(*keychain);
   std::string password = encryptor_password.GetPassword();
 

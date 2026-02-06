@@ -5,12 +5,14 @@
 #include "components/os_crypt/common/keychain_password_mac.h"
 
 #include "build/build_config.h"
-#include "crypto/apple/mock_keychain.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-using crypto::apple::MockKeychain;
+using crypto::apple::FakeKeychainV2;
+using crypto::apple::ScopedFakeKeychainV2;
 
 // An environment for KeychainPassword which initializes mock keychain with
 // the given value that is going to be returned when accessing the Keychain.
@@ -24,22 +26,23 @@ class KeychainPasswordEnvironment {
   KeychainPasswordEnvironment(KeychainPasswordEnvironment&) = delete;
   KeychainPasswordEnvironment& operator=(KeychainPasswordEnvironment&) = delete;
 
-  MockKeychain& keychain() { return keychain_; }
+  FakeKeychainV2& keychain() { return *scoped_keychain_.keychain(); }
 
   std::string GetPassword() const { return keychain_password_->GetPassword(); }
 
  private:
-  MockKeychain keychain_;
+  ScopedFakeKeychainV2 scoped_keychain_;
   std::unique_ptr<KeychainPassword> keychain_password_;
 };
 
 KeychainPasswordEnvironment::KeychainPasswordEnvironment(
-    OSStatus keychain_find_generic_result) {
+    OSStatus keychain_find_generic_result)
+    : scoped_keychain_("test") {
   // Set the value that keychain is going to return.
-  keychain_.set_find_generic_result(keychain_find_generic_result);
+  scoped_keychain_.SetFindGenericResult(keychain_find_generic_result);
 
   // Initialize keychain password.
-  keychain_password_ = std::make_unique<KeychainPassword>(keychain_);
+  keychain_password_ = std::make_unique<KeychainPassword>(keychain());
 }
 
 // Test that if we have an existing password in the Keychain and we are
@@ -76,10 +79,13 @@ TEST(KeychainPasswordTest, FindPasswordOtherError) {
 
 // Test that subsequent additions to the keychain give different passwords.
 TEST(KeychainPasswordTest, PasswordsDiffer) {
-  KeychainPasswordEnvironment environment1(errSecItemNotFound);
-  std::string password1 = environment1.GetPassword();
-  EXPECT_FALSE(password1.empty());
-  EXPECT_TRUE(environment1.keychain().called_add_generic());
+  std::string password1;
+  {
+    KeychainPasswordEnvironment environment1(errSecItemNotFound);
+    password1 = environment1.GetPassword();
+    EXPECT_FALSE(password1.empty());
+    EXPECT_TRUE(environment1.keychain().called_add_generic());
+  }
 
   KeychainPasswordEnvironment environment2(errSecItemNotFound);
   std::string password2 = environment2.GetPassword();

@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "crypto/apple/mock_keychain.h"
+#include "crypto/apple/fake_keychain_v2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace os_crypt_async {
@@ -22,7 +22,7 @@ class KeychainKeyProviderTest : public ::testing::Test {
 };
 
 TEST_F(KeychainKeyProviderTest, GetKey_Success) {
-  crypto::apple::MockKeychain mock_keychain;
+  crypto::apple::FakeKeychainV2 mock_keychain("test-access-group");
   mock_keychain.set_find_generic_result(noErr);
 
   KeychainKeyProvider provider(&mock_keychain);
@@ -45,7 +45,7 @@ TEST_F(KeychainKeyProviderTest, GetKey_Success) {
 }
 
 TEST_F(KeychainKeyProviderTest, GetKey_NotFound) {
-  crypto::apple::MockKeychain mock_keychain;
+  crypto::apple::FakeKeychainV2 mock_keychain("test-access-group");
   mock_keychain.set_find_generic_result(errSecItemNotFound);
 
   KeychainKeyProvider provider(&mock_keychain);
@@ -61,7 +61,7 @@ TEST_F(KeychainKeyProviderTest, GetKey_NotFound) {
 }
 
 TEST_F(KeychainKeyProviderTest, GetKey_Failure_AuthFailed) {
-  crypto::apple::MockKeychain mock_keychain;
+  crypto::apple::FakeKeychainV2 mock_keychain("test-access-group");
   mock_keychain.set_find_generic_result(errSecAuthFailed);
 
   KeychainKeyProvider provider(&mock_keychain);
@@ -78,7 +78,7 @@ TEST_F(KeychainKeyProviderTest, GetKey_Failure_AuthFailed) {
 }
 
 TEST_F(KeychainKeyProviderTest, GetKey_Failure_OtherError) {
-  crypto::apple::MockKeychain mock_keychain;
+  crypto::apple::FakeKeychainV2 mock_keychain("test-access-group");
   mock_keychain.set_find_generic_result(errSecNotAvailable);
 
   KeychainKeyProvider provider(&mock_keychain);
