@@ -51,6 +51,7 @@ sync_pb::SkillSpecifics SkillToSpecifics(
   specifics.set_name(skill.name);
   specifics.set_icon(skill.icon);
   specifics.mutable_simple_skill()->set_prompt(skill.prompt);
+  specifics.mutable_simple_skill()->set_description(skill.description);
   specifics.set_creation_time_windows_epoch_micros(
       ToWindowsEpochMicros(skill.creation_time));
   specifics.set_last_update_time_windows_epoch_micros(
@@ -64,11 +65,12 @@ std::unique_ptr<Skill> SpecificsToSkill(
     const sync_pb::SkillSpecifics& specifics) {
   CHECK(base::Uuid::ParseLowercase(specifics.guid()).is_valid());
 
-  auto skill =
-      std::make_unique<Skill>(/*id=*/specifics.guid(),
-                              /*name=*/specifics.name(),
-                              /*icon=*/specifics.icon(),
-                              /*prompt=*/specifics.simple_skill().prompt());
+  auto skill = std::make_unique<Skill>(
+      /*id=*/specifics.guid(),
+      /*name=*/specifics.name(),
+      /*icon=*/specifics.icon(),
+      /*prompt=*/specifics.simple_skill().prompt(),
+      /*description=*/specifics.simple_skill().description());
 
   skill->creation_time =
       FromWindowsEpochMicros(specifics.creation_time_windows_epoch_micros());
@@ -153,6 +155,7 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
         const Skill* skill = skills_service_->AddOrUpdateSkillFromSync(
             skill_specifics.guid(), skill_specifics.name(),
             skill_specifics.icon(), skill_specifics.simple_skill().prompt(),
+            skill_specifics.simple_skill().description(),
             FromWindowsEpochMicros(
                 skill_specifics.creation_time_windows_epoch_micros()),
             FromWindowsEpochMicros(
@@ -270,6 +273,7 @@ SkillsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 
   if (trimmed_specifics.has_simple_skill()) {
     trimmed_specifics.mutable_simple_skill()->clear_prompt();
+    trimmed_specifics.mutable_simple_skill()->clear_description();
 
     if (trimmed_specifics.simple_skill().ByteSizeLong() == 0) {
       trimmed_specifics.clear_simple_skill();

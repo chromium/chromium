@@ -79,6 +79,7 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
     std::string_view name,
     std::string_view icon,
     std::string_view prompt,
+    std::string_view description,
     base::Time creation_time,
     base::Time last_update_time,
     sync_pb::SkillSource source) {
@@ -86,13 +87,14 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
 
   if (Skill* skill = GetMutableSkillById(skill_id)) {
     // Skill already exists, update its fields.
-    UpdateSkillImpl(skill, name, icon, prompt, last_update_time,
+    UpdateSkillImpl(skill, name, icon, prompt, description, last_update_time,
                     UpdateSource::kSync);
     return skill;
   }
 
   auto skill = std::make_unique<Skill>(std::string(skill_id), std::string(name),
-                                       std::string(icon), std::string(prompt));
+                                       std::string(icon), std::string(prompt),
+                                       std::string(description));
   // Use the creation and last update time from sync to keep them in sync with
   // other clients.
   skill->creation_time = creation_time;
@@ -121,7 +123,7 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
   CHECK_EQ(skill->source, sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED)
       << "Skill does not belong to the user. Cannot update skill.";
 
-  UpdateSkillImpl(skill, name, icon, prompt,
+  UpdateSkillImpl(skill, name, icon, prompt, /*description=*/"",
                   /*update_time=*/base::Time::Now(), UpdateSource::kLocal);
   return skill;
 }
@@ -262,6 +264,7 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
                                         std::string_view name,
                                         std::string_view icon,
                                         std::string_view prompt,
+                                        std::string_view description,
                                         base::Time update_time,
                                         UpdateSource update_source) {
   CHECK(skill);
@@ -278,6 +281,10 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
   }
   if (skill->prompt != prompt) {
     skill->prompt = prompt;
+    is_changed = true;
+  }
+  if (skill->description != description) {
+    skill->description = description;
     is_changed = true;
   }
 

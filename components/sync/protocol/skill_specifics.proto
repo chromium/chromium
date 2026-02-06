@@ -54,5 +54,8 @@ message SkillSpecifics {
 message SimpleSkill {
   // The core prompt text that instructs the model.
   optional string prompt = 1;
+
+  // The description of the skill.
+  optional string description = 2;
 }
 // LINT.ThenChange(//components/skills/internal/skills_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

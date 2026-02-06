@@ -110,6 +110,7 @@ class SkillsService : public KeyedService {
       std::string_view name,
       std::string_view icon,
       std::string_view prompt,
+      std::string_view description,
       base::Time creation_time,
       base::Time last_update_time,
       sync_pb::SkillSource source) = 0;

@@ -2239,6 +2239,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SkillSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::SimpleSkill& proto) {
   VISIT(prompt);
+  VISIT(description);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::GeminiThreadSpecifics& proto) {
