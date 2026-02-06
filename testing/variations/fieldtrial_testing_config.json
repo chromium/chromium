@@ -29671,6 +29671,21 @@
             ]
         }
     ],
+    "WebViewMetricsAsyncMetricLogging": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260206",
+                    "enable_features": [
+                        "AndroidMetricsAsyncMetricLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewMoveWorkToProviderInit": [
         {
             "platforms": [
