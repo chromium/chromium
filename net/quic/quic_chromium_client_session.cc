@@ -3202,9 +3202,10 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
         ssl_config_service_->GetSSLContextConfig().mtc_trust_anchor_ids;
     int64_t mtc_update_time_seconds =
         ssl_config_service_->GetSSLContextConfig().mtc_update_time_seconds;
-    LogMTCCertVerifyMetrics(
-        client_mtc_tais, server_tais, verify_details_chromium,
-        crypto_stream_->IsResumption(), mtc_update_time_seconds);
+    bool is_resumption = SSL_session_reused(crypto_stream_->GetSsl());
+    LogMTCCertVerifyMetrics(client_mtc_tais, server_tais,
+                            verify_details_chromium, is_resumption,
+                            mtc_update_time_seconds);
   }
 }
 
