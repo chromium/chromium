@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TEST_UTIL_H_
 
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -17,8 +18,8 @@ namespace webauthn {
 inline constexpr char kRpId[] = "example.com";
 inline constexpr char kFakeRequestId[] = "1effd8f52a067c8d3a01762d3c41dfd9";
 
-// Converts an std::string to a uint8_t vector.
-std::vector<uint8_t> AsByteVector(std::string str);
+// Converts an std::string_view to a uint8_t vector.
+std::vector<uint8_t> AsByteVector(std::string_view str);
 
 // Creates a test passkey using the default rp id.
 sync_pb::WebauthnCredentialSpecifics GetTestPasskey(

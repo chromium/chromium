@@ -20,6 +20,7 @@ bool FakeIOSPasskeyClient::PerformUserVerification() {
 
 void FakeIOSPasskeyClient::FetchKeys(ReauthenticatePurpose purpose,
                                      KeysFetchedCallback callback) {
+  fetch_keys_called_ = true;
   if (!callback.is_null()) {
     std::move(callback).Run({}, nil);
   }
@@ -47,6 +48,10 @@ bool FakeIOSPasskeyClient::DidShowSuggestionBottomSheet() const {
 
 bool FakeIOSPasskeyClient::DidShowCreationBottomSheet() const {
   return show_creation_bottom_sheet_called_;
+}
+
+bool FakeIOSPasskeyClient::DidFetchKeys() const {
+  return fetch_keys_called_;
 }
 
 IOSWebAuthnCredentialsDelegate* FakeIOSPasskeyClient::delegate() {

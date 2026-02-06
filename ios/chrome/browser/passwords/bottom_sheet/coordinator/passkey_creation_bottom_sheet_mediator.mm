@@ -91,9 +91,9 @@
 
   if (!shouldPerformUserVerification.has_value()) {
     // TODO(crbug.com/479249845): This should not happen. The correct behavior
-    // is to report an error to the user, and dismiss the passkey creation.
-    // For now, we defer to the renderer.
-    [self deferPasskeyCreationToRenderer];
+    // is to, optionally, report an error to the user, and cancel the passkey
+    // creation. We will discuss to see if this is the best approach.
+    [self cancelPasskeyCreation];
     [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
@@ -134,10 +134,8 @@
     // fails (e.g., was canceled) should be to fail the request.
     // We could allow a certain number of retries. However, given that a user
     // can trigger passkey creation from the web later, dismissing passkey
-    // creation isn't an irreversible action. We need to add code on the
-    // JavaScript side to cancel the passkey creation process, and then invoke
-    // it to cancel the process instead of deferring to the renderer.
-    [self deferPasskeyCreationToRenderer];
+    // creation isn't an irreversible action.
+    [self cancelPasskeyCreation];
     [_mediatorDelegate dismissPasskeyCreation];
   }
 }
@@ -159,6 +157,15 @@
   }
 
   passkeyTabHelper->DeferPendingRequestToRenderer(_requestID);
+}
+
+- (void)cancelPasskeyCreation {
+  webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
+  if (!passkeyTabHelper) {
+    return;
+  }
+
+  passkeyTabHelper->RejectPendingRequest(_requestID);
 }
 
 #pragma mark - Accessors

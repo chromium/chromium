@@ -9,7 +9,7 @@
 
 namespace webauthn {
 
-std::vector<uint8_t> AsByteVector(std::string str) {
+std::vector<uint8_t> AsByteVector(std::string_view str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
 

@@ -4,16 +4,20 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client_app_interface.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -42,6 +46,9 @@ id<GREYMatcher> CreatePasskeyButton() {
   // Make sure the fake passkey keychain provider bridge is set.
   [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProviderBridge];
 
+  // Make sure the mock reauthentication module is set and will return success.
+  [IOSChromePasskeyClientAppInterface setUpMockReauthenticationModule];
+
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
 
@@ -52,6 +59,7 @@ id<GREYMatcher> CreatePasskeyButton() {
 }
 
 - (void)tearDownHelper {
+  [IOSChromePasskeyClientAppInterface removeMockReauthenticationModule];
   [super tearDownHelper];
 }
 

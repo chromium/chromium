@@ -30,12 +30,14 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
 
   bool DidShowSuggestionBottomSheet() const;
   bool DidShowCreationBottomSheet() const;
+  bool DidFetchKeys() const;
   IOSWebAuthnCredentialsDelegate* delegate();
 
  private:
   IOSWebAuthnCredentialsDelegate delegate_;
   bool show_creation_bottom_sheet_called_ = false;
   bool show_suggestion_bottom_sheet_called_ = false;
+  bool fetch_keys_called_ = false;
 };
 
 }  // namespace webauthn

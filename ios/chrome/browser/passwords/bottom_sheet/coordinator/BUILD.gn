@@ -61,6 +61,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/tips_manager/model:tips_manager",
+    "//ios/chrome/browser/webauthn/model:common",
     "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon:favicon_constants",
@@ -75,7 +76,10 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "credential_suggestion_bottom_sheet_mediator_unittest.mm" ]
+  sources = [
+    "credential_suggestion_bottom_sheet_mediator_unittest.mm",
+    "passkey_creation_bottom_sheet_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//components/autofill/ios/browser",
@@ -86,6 +90,12 @@ source_set("unit_tests") {
     "//components/password_manager/ios:password_manager_feature_header",
     "//components/password_manager/ios:test_support",
     "//components/prefs:test_support",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:test_support",
+    "//components/webauthn/ios",
+    "//components/webauthn/ios:passkey_types",
+    "//components/webauthn/ios:test_support",
+    "//device/fido/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/favicon/model",
@@ -98,6 +108,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/common/ui/reauthentication",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

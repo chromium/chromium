@@ -58,10 +58,14 @@ source_set("common") {
   sources = [
     "scoped_passkey_keychain_provider_override.h",
     "scoped_passkey_keychain_provider_override.mm",
+    "scoped_passkey_reauth_module_override.h",
+    "scoped_passkey_reauth_module_override.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_header",
+    "//ios/chrome/common/ui/reauthentication",
   ]
 }
 
@@ -77,6 +81,8 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_chrome",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//testing/gmock",
   ]
 }
@@ -89,7 +95,10 @@ source_set("eg_test_support+eg2") {
     "ios_chrome_passkey_client_app_interface.h",
     "ios_chrome_passkey_client_app_interface_stub.mm",
   ]
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }
 
 source_set("eg2_tests") {
@@ -104,8 +113,10 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
     "//net:test_support",
     "//ui/base",
   ]
