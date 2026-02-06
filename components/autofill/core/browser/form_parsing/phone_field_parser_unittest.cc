@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -174,11 +175,22 @@ TEST_F(PhoneFieldParserTest, ParseOneLinePhoneWithDefaultToCityAndNumber) {
   }
 }
 
-TEST_F(PhoneFieldParserTest, ParseTwoLinePhone) {
+TEST_F(PhoneFieldParserTest, ParseTwoLinePhone_CityCode) {
   for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Area Code", u"area code", PHONE_HOME_CITY_CODE},
          {field_type, u"Phone", u"phone", PHONE_HOME_NUMBER}});
+  }
+}
+
+TEST_F(PhoneFieldParserTest, ParseTwoLinePhone_CountryCode) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillImprovePhoneFieldParser};
+  for (FormControlType field_type : kFieldTypes) {
+    RunParsingTest(
+        {{field_type, u"Country Code", u"country code",
+          PHONE_HOME_COUNTRY_CODE},
+         {field_type, u"Phone", u"phone", PHONE_HOME_CITY_AND_NUMBER}});
   }
 }
 

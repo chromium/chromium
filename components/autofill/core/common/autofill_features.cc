@@ -682,6 +682,13 @@ BASE_FEATURE(kAutofillIgnoreCheckableElements,
 BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a new grammar for phone numbers is considered and we get
+// slightly better at detecting cases where the generic regex for
+// PHONE_COUNTRY_CODE matches a field that should not actually be classified as
+// such.
+BASE_FEATURE(kAutofillImprovePhoneFieldParser,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/346507576): Remove once the experiment is over.
 // When enabled, makes autocomplete label sensitive.
 BASE_FEATURE(kAutofillLabelSensitiveAutocomplete,

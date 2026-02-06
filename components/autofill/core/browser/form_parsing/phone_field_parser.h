@@ -114,7 +114,8 @@ class PhoneFieldParser : public FormFieldParser {
   static bool ParseGrammar(ParsingContext& context,
                            const PhoneGrammar& grammar,
                            ParsedPhoneFields& parsed_fields,
-                           AutofillScanner& scanner);
+                           AutofillScanner& scanner,
+                           bool improve_phone_field_parser_experiment_enabled);
 
   // Returns true if |scanner| points to a <select> field that appears to be the
   // phone country code by looking at its option contents.

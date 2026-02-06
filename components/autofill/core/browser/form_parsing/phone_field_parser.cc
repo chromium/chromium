@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -48,9 +49,40 @@ constexpr int kMinCandidatePercentageForCountryCode = 90;
 // of country code like options.
 constexpr int kHeuristicThresholdForCountryCode = 10;
 
-// The biggest used PhoneGrammar ID so far during metric logging. Increment this
-// number when adding a new grammar and give it the new number as ID.
-constexpr size_t kMaxPhoneGrammarId = 14;
+// The smallest available PhoneGrammar ID to be used as the upper bound during
+// metric logging. Use this number as PhoneGrammar::id when adding a new grammar
+// and increment it.
+constexpr size_t kMaxPhoneGrammarId = 15;
+
+// This function is called on fields that are to be classified as
+// `PHONE_HOME_COUNTRY_CODE`.
+//
+// The reason is that `REGEX_COUNTRY` contains patterns like `country.*code`
+// that are quite generic, not phone-specific, and can in particular match
+// fields that should rather be classified as `ADDRESS_HOME_COUNTRY`.
+//
+// In order to avoid getting huge amounts of false positives of that kind, this
+// function tries filtering out some cases that might match the regex without
+// being actual `PHONE_HOME_COUNTRY_CODE` fields.
+bool LikelyNotPhoneCountryCode(const FormFieldData& field) {
+  // We don't have heuristics to reject a field as a phone country code if the
+  // field is not a <select> element.
+  if (field.form_control_type() != FormControlType::kSelectOne) {
+    return false;
+  }
+
+  // If the number of options exceeds the number of countries that are assigned
+  // a phone country code, this is likely not a phone country code field.
+  if (field.options().size() >= kMaxSelectOptionsForCountryCode) {
+    return true;
+  }
+
+  // If none of the options contain a digit, the field is probably not meant to
+  // be a `PHONE_HOME_COUNTRY`.
+  return std::ranges::none_of(field.options(), [](const SelectOption& option) {
+    return std::ranges::any_of(option.text, &base::IsAsciiDigit<char16_t>);
+  });
+}
 
 }  // namespace
 
@@ -178,6 +210,10 @@ PhoneFieldParser::GetPhoneGrammars() {
       PhoneGrammar(
           {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
           /*id=*/12),
+      // Country Code: <cc> Phone: <phone>
+      PhoneGrammar(
+          {{REGEX_COUNTRY, FIELD_COUNTRY_CODE}, {REGEX_PHONE, FIELD_PHONE}},
+          /*id=*/15),
       // Phone: <ac> - <phone>
       PhoneGrammar({{REGEX_PHONE, FIELD_AREA_CODE},
                     {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
@@ -258,10 +294,15 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
 }
 
 // static
-bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
-                                    const PhoneGrammar& grammar,
-                                    ParsedPhoneFields& parsed_fields,
-                                    AutofillScanner& scanner) {
+bool PhoneFieldParser::ParseGrammar(
+    ParsingContext& context,
+    const PhoneGrammar& grammar,
+    ParsedPhoneFields& parsed_fields,
+    AutofillScanner& scanner,
+    bool improve_phone_field_parser_experiment_enabled) {
+  if (grammar.id == 15 && !improve_phone_field_parser_experiment_enabled) {
+    return false;
+  }
   for (const auto& rule : grammar.rules) {
     const bool is_country_code_field = rule.phone_part == FIELD_COUNTRY_CODE;
 
@@ -279,6 +320,15 @@ bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
     }
 
     const FormFieldData& field = *parsed_fields[rule.phone_part]->field;
+
+    if (is_country_code_field && LikelyNotPhoneCountryCode(field) &&
+        improve_phone_field_parser_experiment_enabled) {
+      // REGEX_COUNTRY matches patterns like "country_code", which are very
+      // generic, it can be the case that this is referring to an
+      // ADDRESS_HOME_COUNTRY instead of a PHONE_HOME_COUNTRY_CODE.
+      return false;
+    }
+
     if (rule.max_length != 0 &&
         (field.max_length() == 0 || field.max_length() > rule.max_length)) {
       return false;
@@ -295,10 +345,13 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
     return nullptr;
   }
   const AutofillScanner::Position start_cursor = scanner.GetPosition();
+  const bool improve_phone_field_parser =
+      base::FeatureList::IsEnabled(features::kAutofillImprovePhoneFieldParser);
 
   for (const PhoneGrammar& grammar : GetPhoneGrammars()) {
     ParsedPhoneFields parsed_fields;
-    if (ParseGrammar(context, grammar, parsed_fields, scanner)) {
+    if (ParseGrammar(context, grammar, parsed_fields, scanner,
+                     improve_phone_field_parser)) {
       base::UmaHistogramExactLinear(
           "Autofill.FieldPrediction.PhoneNumberGrammarUsage2", grammar.id,
           /*exclusive_max=*/kMaxPhoneGrammarId + 1);

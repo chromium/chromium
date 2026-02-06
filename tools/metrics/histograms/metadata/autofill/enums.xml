@@ -4171,6 +4171,7 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="Phone: [cc]:3 [phone]"/>
   <int value="13" label="Phone: [ac] - [phone]"/>
   <int value="14" label="Phone: [phone]"/>
+  <int value="15" label="Country code: [cc] Phone: [phone]"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/form_parsing/phone_field_parser.cc:PhoneNumberGrammars) -->

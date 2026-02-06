@@ -20,6 +20,6 @@ ADDRESS_HOME_CITY | INTLCity | City |  | -default
 ADDRESS_HOME_STATE | INTLCounty | County |  | -default
 ADDRESS_HOME_ZIP | INTLPostal | Postal Code |  | -default
 PHONE_HOME_CITY_AND_NUMBER | phone1 | Daytime Phone Number (optional) |  | personTitle_1
-PHONE_HOME_CITY_AND_NUMBER | intlPhone1Prefix | International Country Code |  | -default
-PHONE_HOME_CITY_AND_NUMBER | intlPhone1 | Daytime Phone Number |  | -default
+PHONE_HOME_COUNTRY_CODE | intlPhone1Prefix | International Country Code |  | -default
+PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX | intlPhone1 | Daytime Phone Number |  | -default
 UNKNOWN_TYPE | giftMsg | Message |  | -default

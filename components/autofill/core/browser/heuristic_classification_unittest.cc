@@ -609,6 +609,7 @@ std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
       {features::kAutofillFixCivilStateMisclassificationForESPT, true},
       {features::kAutofillAddressImproveBuildingNumberRegex, true},
       {features::kAutofillNewRegexForPhoneCountryCode, true},
+      {features::kAutofillImprovePhoneFieldParser, true},
       // TODO(crbug.com/320965828): Understand the changes to the expectations
       // caused by this feature.
       {features::kAutofillBetterLocalHeuristicPlaceholderSupport, false},
