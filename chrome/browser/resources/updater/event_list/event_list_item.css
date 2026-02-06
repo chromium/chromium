@@ -139,7 +139,8 @@ cr-expand-button {
   margin-top: 4px;
 }
 
-pre, code {
+pre,
+code {
   white-space: pre-wrap;
   word-break: break-all;
   background: var(--code-background-color);

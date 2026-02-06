@@ -141,7 +141,9 @@ a[href] {
   justify-content: space-between;
 }
 
-.url-card-container, .cr-left-card-container, .card {
+.url-card-container,
+.cr-left-card-container,
+.card {
   box-shadow: var(--cr-card-shadow);
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);

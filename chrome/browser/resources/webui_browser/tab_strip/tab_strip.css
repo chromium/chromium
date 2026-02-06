@@ -8,28 +8,29 @@
  * #css_wrapper_metadata_end */
 
 #tabstrip {
-    /* Make the window frame draggable.
-    * Children elements need to use "app-region: no-drag" to
-    * be excluded from the dragging area */
-    -webkit-app-region: drag;
+  /* Make the window frame draggable.
+  * Children elements need to use "app-region: no-drag" to
+  * be excluded from the dragging area */
+  -webkit-app-region: drag;
 
-    display: flex;
-    align-items: end;
-    margin-left: 12px;
-    margin-top: 7px;
+  display: flex;
+  align-items: end;
+  margin-left: 12px;
+  margin-top: 7px;
 }
 
 #tabstrip.nodrag {
-    -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;
 }
 
-#newTabButton, webui-browser-tab {
-    -webkit-app-region: no-drag;
+#newTabButton,
+webui-browser-tab {
+  -webkit-app-region: no-drag;
 }
 
 #newTabButton {
-    margin: 3px 10px;
-    --cr-icon-button-icon-size: 18px;
-    --cr-icon-button-size: 28px;
-    --cr-icon-button-margin-end: 8px;
+  margin: 3px 10px;
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-size: 28px;
+  --cr-icon-button-margin-end: 8px;
 }

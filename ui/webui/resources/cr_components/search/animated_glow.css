@@ -80,7 +80,9 @@
   z-index: var(--search-animated-glow-drag-drop-placeholder-z-index, 4);
 }
 
-.gradient, .double-gradient, .double-gradient-mask {
+.gradient,
+.double-gradient,
+.double-gradient-mask {
   border-radius: inherit;
   contain: paint;
   inset: 0;
@@ -99,7 +101,8 @@
   }
 }
 
-.gradient::before, .double-gradient::before {
+.gradient::before,
+.double-gradient::before {
   /*
   * The actual gradient border and inner glow. In
   * its raw form without .background's effects, it's a

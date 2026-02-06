@@ -11,7 +11,8 @@
  * #include=cr-shared-style cr-nav-menu-item-style md-select
  * #css_wrapper_metadata_end */
 
-h1, h2 {
+h1,
+h2 {
   color: var(--cr-primary-text-color);
   font-weight: 500;
   padding-inline-start: 24px;

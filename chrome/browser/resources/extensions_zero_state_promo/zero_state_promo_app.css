@@ -59,7 +59,8 @@
   width: 272px;
 }
 
-#labelContainer, #buttonContainer {
+#labelContainer,
+#buttonContainer {
   display: flex;
   flex-direction: row;
   gap: var(--container-gap);
@@ -70,7 +71,9 @@
   padding: 0;
 }
 
-.v1Chip, .v2Chip, .v3Chip {
+.v1Chip,
+.v2Chip,
+.v3Chip {
   border-radius: var(--zero-state-promo-chip-border-radius);
   padding: 0;
   gap: 0;
@@ -83,7 +86,8 @@
   --color-chip-icon: var(--color-sys-inverse-primary);
 }
 
-.v2Chip, .v3Chip  {
+.v2Chip,
+.v3Chip  {
   background-color: var(--zero-state-promo-foreground-color);
   --color-chip-foreground: var(--zero-state-promo-background-color);
   --color-chip-icon: var(--zero-state-promo-background-color);

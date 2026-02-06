@@ -54,11 +54,13 @@
   z-index: 2;
 }
 
-#backButton, #backHoverLayer {
+#backButton,
+#backHoverLayer {
   left: var(--horizontal-carousel-button-margin);
 }
 
-#forwardButton, #forwardHoverLayer {
+#forwardButton,
+#forwardHoverLayer {
   right: var(--horizontal-carousel-button-margin);
 }
 

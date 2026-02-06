@@ -40,12 +40,13 @@ table table {
   border-style: hidden;
   border-collapse: collapse;
 
-  td, th {
-    padding: 2px;
-    border: solid 2px var(--nested-table-border-color);
-  }
-
+  td,
   th {
+     padding: 2px;
+     border: solid 2px var(--nested-table-border-color);
+   }
+
+   th {
     font-size: .8em;
   }
 }

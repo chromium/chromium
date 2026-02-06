@@ -31,7 +31,8 @@ table {
   font-size: 14px;
 }
 
-td, th {
+td,
+th {
   border: 1px solid gray;
   text-align: left;
   padding: 8px;

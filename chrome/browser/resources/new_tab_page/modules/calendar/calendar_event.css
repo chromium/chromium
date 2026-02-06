@@ -102,7 +102,9 @@
   padding: 4px 0;
 }
 
-#attachments, #attachmentList, #location {
+#attachments,
+#attachmentList,
+#location {
   column-gap: 8px;
   display: flex;
   width: 100%;

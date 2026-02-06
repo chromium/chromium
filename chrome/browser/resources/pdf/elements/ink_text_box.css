@@ -33,7 +33,8 @@
   z-index: 1;
 }
 
-:host([text-rotations_='1']), :host([text-rotations_='3']) {
+:host([text-rotations_='1']),
+:host([text-rotations_='3']) {
   /* Flip the padding values, since the text is oriented vertically. */
   --textarea-padding-inline: calc(8px - var(--border-padding));
   --textarea-padding-vert: calc(10px - var(--border-padding));

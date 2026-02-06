@@ -97,11 +97,13 @@
   overflow-wrap: break-word;
 }
 
-.retracted, .error {
+.retracted,
+.error {
   background-color: var(--google-red-100);
 }
 
-.image-error, .audio-error {
+.image-error,
+.audio-error {
   color: var(--cr-fallback-color-error);
   margin-bottom: 3px;
 }

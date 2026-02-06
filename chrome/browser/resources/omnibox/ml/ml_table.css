@@ -58,7 +58,8 @@ select:active {
   border-color: var(--theme);
 }
 
-.th:only-child, .td:only-child {
+.th:only-child,
+.td:only-child {
   grid-column: 1 / -1;
 }
 

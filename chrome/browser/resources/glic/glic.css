@@ -14,7 +14,8 @@
   --color--surface-container: light-dark(#F0F4F9, #282A2C);
 }
 
-html, body {
+html,
+body {
   margin: 0;
   height: 100%;
 }

@@ -26,7 +26,8 @@
   flex: 1;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -148,7 +149,8 @@ np-object {
   flex-direction: column;
 }
 
-#logType, #logFilters {
+#logType,
+#logFilters {
   width: 50%;
   display: flex;
   flex-direction: column;

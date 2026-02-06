@@ -60,7 +60,8 @@ cr-toolbar:not([narrow]) {
   flex: 1;
 }
 
-#left, #right {
+#left,
+#right {
   height: 100%;
   position: sticky;
   top: 0;

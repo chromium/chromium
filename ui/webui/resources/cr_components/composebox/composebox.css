@@ -314,9 +314,10 @@ search-animated-glow {
 }
 
 @keyframes color-change {
-  0%, 100%   { caret-color: var(--google-blue-500); }
+  0%,
+  100% { caret-color: var(--google-blue-500); }
   25% { caret-color: var(--google-red-500); }
-  50%  { caret-color: var(--google-yellow-500); }
+  50% { caret-color: var(--google-yellow-500); }
   75% { caret-color: var(--google-green-500); }
 }
 
