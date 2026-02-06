@@ -28,12 +28,20 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class Action {
+    kKeep,
+    kKeepElement,
+    kDrop,
+    kReplaceWithChildren,
+  };
+  enum class Mode { kSafe, kUnsafe };
+
   // Called by WebIDL for Sanitizer constructor, new Sanitizer(xxx).
   static Sanitizer* Create(const V8UnionSanitizerConfigOrSanitizerPresets*,
                            ExceptionState&);
 
   // Called by Sanitizer API, to implement setHTML / setHTMLUnsafe & friends.
-  static Sanitizer* Create(const SanitizerConfig*, bool safe, ExceptionState&);
+  static Sanitizer* Create(const SanitizerConfig*, Mode safe, ExceptionState&);
   static Sanitizer* Create(const V8SanitizerPresets::Enum, ExceptionState&);
 
   static Sanitizer* CreateEmpty();
@@ -106,38 +114,31 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
     return comments_ == SanitizerBoolWithAbsence::kTrue;
   }
 
-  enum class Action {
-    kKeep,
-    kKeepElement,
-    kDrop,
-    kReplaceWithChildren,
-  };
-
   Action ActionForNode(Node* node, Node* root) const;
   // Sanitizes a node insertion operation. Can modify element attributes, change
   // the insertion target, or discard the element. Returns the adjusted
   // insertion target, or null if the element is to be discarded.
   // This is used for streaming.
-  bool SanitizeSingleNode(Node* node, bool safe) const;
+  bool SanitizeSingleNode(Node* node, Mode safe) const;
 
   bool ShouldReplaceNodeWithChildren(Node* node) const;
 
   // Helper for Create: Convert from IDL representation to internal.
-  bool setFrom(const SanitizerConfig*, bool safe);
+  bool setFrom(const SanitizerConfig*, bool allowCommentsAndDataAttributes);
   // Helper for constructors: Copy from other Sanitizer.
   void setFrom(const Sanitizer&);
 
  private:
   enum class SanitizerBoolWithAbsence { kAbsent, kTrue, kFalse };
 
-  void ProcessElement(Element* element, bool safe) const;
+  void ProcessElement(Element* element, Mode safe) const;
 
   // Helper methods for SanitizeSafe/Unsafe:
-  void Sanitize(Node* node, bool safe) const;
-  void SanitizeElement(Element* element, bool safe) const;
+  void Sanitize(Node* node, Mode safe) const;
+  void SanitizeElement(Element* element, Mode safe) const;
   void SanitizeJavascriptNavigationAttributes(Element* element,
-                                              bool safe) const;
-  void SanitizeTemplate(Node* node, bool safe) const;
+                                              Mode safe) const;
+  void SanitizeTemplate(Node* node, Mode safe) const;
 
   // Helpers for get(): Convert from internal to IDL representation.
   QualifiedName getFrom(const String& name, const String& namespaceURI) const;

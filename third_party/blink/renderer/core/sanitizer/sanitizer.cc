@@ -35,9 +35,9 @@ Sanitizer* Sanitizer::Create(
     const V8UnionSanitizerConfigOrSanitizerPresets* config_or_preset,
     ExceptionState& exception_state) {
   if (!config_or_preset) {
-    return Create(nullptr, /*safe*/ false, exception_state);
+    return Create(nullptr, Mode::kUnsafe, exception_state);
   } else if (config_or_preset->IsSanitizerConfig()) {
-    return Create(config_or_preset->GetAsSanitizerConfig(), /*safe*/ false,
+    return Create(config_or_preset->GetAsSanitizerConfig(), Mode::kUnsafe,
                   exception_state);
   } else if (config_or_preset->IsSanitizerPresets()) {
     return Create(config_or_preset->GetAsSanitizerPresets().AsEnum(),
@@ -48,18 +48,19 @@ Sanitizer* Sanitizer::Create(
 }
 
 Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
-                             bool safe,
+                             Mode safe,
                              ExceptionState& exception_state) {
   Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
   if (!sanitizer_config) {
     // Default case: Set from builtin Sanitizer.
-    sanitizer->setFrom(*(safe ? SanitizerBuiltins::GetDefaultSafe()
-                              : SanitizerBuiltins::GetDefaultUnsafe()));
+    sanitizer->setFrom(*(safe == Mode::kSafe
+                             ? SanitizerBuiltins::GetDefaultSafe()
+                             : SanitizerBuiltins::GetDefaultUnsafe()));
     DCHECK(sanitizer->isValid());
     return sanitizer;
   }
 
-  bool success = sanitizer->setFrom(sanitizer_config, !safe);
+  bool success = sanitizer->setFrom(sanitizer_config, safe != Mode::kSafe);
   if (!success) {
     exception_state.ThrowTypeError("Invalid Sanitizer configuration.");
     return nullptr;
@@ -651,7 +652,7 @@ bool Sanitizer::RemoveAttribute(const QualifiedName& name) {
         // attribute:
         if (item.value.Contains(name)) {
           // Step 2.4.1.2.1: Assert: modified is true.
-          DCHECK(modified);
+          CHECK(modified);
           // Step 2.4.1.2.2: Remove attribute from element["removeAttributes"].
           SanitizerNameSet attrs(item.value);
           attrs.erase(name);
@@ -703,7 +704,7 @@ bool Sanitizer::RemoveAttribute(const QualifiedName& name) {
   }
 }
 
-void Sanitizer::SanitizeElement(Element* element, bool safe) const {
+void Sanitizer::SanitizeElement(Element* element, Mode safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core, Step 1.5.8 + 1.5.9.1-4
   //
   // The sanitize-core algorithm is fairly long. This implements the steps to
@@ -742,7 +743,7 @@ void Sanitizer::SanitizeElement(Element* element, bool safe) const {
       element->removeAttribute(name);
     }
 
-    if (keep && safe) {
+    if (keep && safe == Mode::kSafe) {
       // This is an overly conservative CHECK to prevent another bug like
       // 477643913. Presumably, we can remove this check at some point.
       CHECK(name.NamespaceURI() ||
@@ -751,7 +752,7 @@ void Sanitizer::SanitizeElement(Element* element, bool safe) const {
     }
   }
 
-  if (safe) {
+  if (safe == Mode::kSafe) {
     // This is an overly conservative CHECK to prevent another bug like
     // 477643913. Presumably, we can remove this check at some point.
     CHECK_NE(element->TagQName(), html_names::kScriptTag);
@@ -776,10 +777,10 @@ void RemoveAttributeIfValueIsHref(Element* element,
 }
 
 void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
-                                                       bool safe) const {
+                                                       Mode safe) const {
   // Special treatment of javascript: URLs when used for navigation.
   // https://wicg.github.io/sanitizer-api/#sanitize-core, Steps 1.5.9.5
-  if (!safe) {
+  if (safe == Mode::kUnsafe) {
     return;
   }
 
@@ -809,7 +810,7 @@ void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
   }
 }
 
-void Sanitizer::SanitizeTemplate(Node* node, bool safe) const {
+void Sanitizer::SanitizeTemplate(Node* node, Mode safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core,
   // Step 1.5.5: Recurse into template content.
   if (IsA<HTMLTemplateElement>(node)) {
@@ -834,12 +835,12 @@ void Sanitizer::SanitizeSafe(Node* root) const {
   Sanitizer* safe = MakeGarbageCollected<Sanitizer>();
   safe->setFrom(*this);
   safe->removeUnsafe();
-  safe->Sanitize(root, /*safe*/ true);
+  safe->Sanitize(root, Mode::kSafe);
 }
 
 void Sanitizer::SanitizeUnsafe(Node* root) const {
   CHECK(!root->GetDocument().IsActive());
-  Sanitize(root, /*safe*/ false);
+  Sanitize(root, Mode::kUnsafe);
 }
 
 Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
@@ -893,12 +894,12 @@ Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
   }
 }
 
-void Sanitizer::ProcessElement(Element* element, bool safe) const {
+void Sanitizer::ProcessElement(Element* element, Mode safe) const {
   SanitizeElement(element, safe);
   SanitizeJavascriptNavigationAttributes(element, safe);
 }
 
-void Sanitizer::Sanitize(Node* root, bool safe) const {
+void Sanitizer::Sanitize(Node* root, Mode safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core
   // This is structured a little differently than the spec, for better
   // readability. For step 1.5, we may call into helper methods.
@@ -945,7 +946,7 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
   }
 }
 
-bool Sanitizer::SanitizeSingleNode(Node* node, bool safe) const {
+bool Sanitizer::SanitizeSingleNode(Node* node, Mode safe) const {
   Action action = ActionForNode(node, node);
   if (action == Action::kKeepElement) {
     ProcessElement(To<Element>(node), safe);

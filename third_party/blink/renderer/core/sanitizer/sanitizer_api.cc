@@ -26,7 +26,7 @@ const Sanitizer* SanitizerFromSafeOptions(SetHTMLOptions* options,
                                           ExceptionState& exception_state) {
   if (!options || !options->hasSanitizer()) {
     // Default case: No dictionary, or dictionary without 'sanitizer' member.
-    return Sanitizer::Create(nullptr, /*safe*/ true, exception_state);
+    return Sanitizer::Create(nullptr, Sanitizer::Mode::kSafe, exception_state);
   }
 
   if (options->sanitizer()->IsSanitizer()) {
@@ -37,7 +37,7 @@ const Sanitizer* SanitizerFromSafeOptions(SetHTMLOptions* options,
   if (options->sanitizer()->IsSanitizerConfig()) {
     // We need to create a Sanitizer from a given config.
     return Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
-                             /*safe*/ true, exception_state);
+                             Sanitizer::Mode::kSafe, exception_state);
   }
 
   if (options->sanitizer()->IsSanitizerPresets()) {
@@ -48,13 +48,14 @@ const Sanitizer* SanitizerFromSafeOptions(SetHTMLOptions* options,
   }
 
   // Default case: Dictionary with 'sanitizer' member but no (valid) value.
-  return Sanitizer::Create(nullptr, /*safe*/ true, exception_state);
+  return Sanitizer::Create(nullptr, Sanitizer::Mode::kSafe, exception_state);
 }
 const Sanitizer* SanitizerFromUnsafeOptions(const SetHTMLUnsafeOptions* options,
                                             ExceptionState& exception_state) {
   if (!options || !options->hasSanitizer()) {
     // Default case: No dictionary, or dictionary without 'sanitizer' member.
-    return Sanitizer::Create(nullptr, /*safe*/ false, exception_state);
+    return Sanitizer::Create(nullptr, Sanitizer::Mode::kUnsafe,
+                             exception_state);
   }
 
   if (options->sanitizer()->IsSanitizer()) {
@@ -65,7 +66,7 @@ const Sanitizer* SanitizerFromUnsafeOptions(const SetHTMLUnsafeOptions* options,
   if (options->sanitizer()->IsSanitizerConfig()) {
     // We need to create a Sanitizer from a given config.
     return Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
-                             /*safe*/ false, exception_state);
+                             Sanitizer::Mode::kUnsafe, exception_state);
   }
 
   if (options->sanitizer()->IsSanitizerPresets()) {
@@ -76,7 +77,7 @@ const Sanitizer* SanitizerFromUnsafeOptions(const SetHTMLUnsafeOptions* options,
   }
 
   // Default case: Dictionary with 'sanitizer' member but not (valid) value.
-  return Sanitizer::Create(nullptr, /*safe*/ false, exception_state);
+  return Sanitizer::Create(nullptr, Sanitizer::Mode::kUnsafe, exception_state);
 }
 
 void SanitizerAPI::SanitizeSafeInternal(const ContainerNode* context_element,

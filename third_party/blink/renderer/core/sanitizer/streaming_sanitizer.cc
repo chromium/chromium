@@ -33,7 +33,8 @@ bool StreamingSanitizer::ShouldReplaceWithChildren(Node* target) {
 }
 
 bool StreamingSanitizer::Sanitize(Node* target) {
-  return sanitizer_->SanitizeSingleNode(target, safe_);
+  return sanitizer_->SanitizeSingleNode(
+      target, safe_ ? Sanitizer::Mode::kSafe : Sanitizer::Mode::kUnsafe);
 }
 
 void StreamingSanitizer::Trace(Visitor* visitor) const {
