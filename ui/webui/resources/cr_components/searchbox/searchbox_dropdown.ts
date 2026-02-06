@@ -299,6 +299,10 @@ export class SearchboxDropdownElement extends CrLitElement {
     return !!this.headerForGroup_(groupId);
   }
 
+  protected getAriaDescribedByForGroup_(groupId: number): string {
+    return this.hasHeaderForGroup_(groupId) ? `hg_${groupId}` : '';
+  }
+
   /**
    * @returns The header for the given suggestion group ID, if any.
    */
