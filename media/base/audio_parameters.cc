@@ -352,10 +352,6 @@ int AudioParameters::GetBytesPerFrame(SampleFormat fmt) const {
   return channels() * SampleFormatToBytesPerChannel(fmt);
 }
 
-double AudioParameters::GetMicrosecondsPerFrame() const {
-  return static_cast<double>(base::Time::kMicrosecondsPerSecond) / sample_rate_;
-}
-
 base::TimeDelta AudioParameters::GetBufferDuration() const {
   return base::Microseconds(static_cast<int64_t>(
       frames_per_buffer_ * base::Time::kMicrosecondsPerSecond /
