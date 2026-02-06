@@ -53,7 +53,7 @@ WTF_EXPORT bool Base64Decode(
     Vector<uint8_t>&,
     Base64DecodePolicy policy = Base64DecodePolicy::kNoPaddingValidation);
 
-WTF_EXPORT bool Base64UnpaddedURLDecode(const String& in, Vector<uint8_t>&);
+WTF_EXPORT bool Base64UnpaddedUrlDecode(const String& in, Vector<uint8_t>&);
 
 // Given an encoding in either base64 or base64url, returns a normalized
 // encoding in plain base64.

@@ -42,7 +42,7 @@ namespace {
 
 std::optional<DOMArrayBuffer*> WebAuthnBase64UrlDecode(const String& in) {
   VectorOf<uint8_t> out;
-  if (!Base64UnpaddedURLDecode(in, out)) {
+  if (!Base64UnpaddedUrlDecode(in, out)) {
     return std::nullopt;
   }
   return DOMArrayBuffer::Create(base::as_byte_span(out));

@@ -35,7 +35,7 @@ Vector<uint8_t> BufferSourceToVector(
       input = application_server_key->GetAsArrayBufferView()->ByteSpan();
       break;
     case V8UnionBufferSourceOrString::ContentType::kString:
-      if (!Base64UnpaddedURLDecode(application_server_key->GetAsString(),
+      if (!Base64UnpaddedUrlDecode(application_server_key->GetAsString(),
                                    decoded_application_server_key)) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kInvalidCharacterError,

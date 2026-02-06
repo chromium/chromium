@@ -309,7 +309,7 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalUnknownCredential(
   auto promise = resolver->Promise();
 
   Vector<uint8_t> decoded_cred_id;
-  if (!Base64UnpaddedURLDecode(options->credentialId(), decoded_cred_id)) {
+  if (!Base64UnpaddedUrlDecode(options->credentialId(), decoded_cred_id)) {
     resolver->RejectWithTypeError("Invalid base64url string for credentialId.");
     return promise;
   }
@@ -341,14 +341,14 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalAllAcceptedCredentials(
 
   for (String credential_id : options->allAcceptedCredentialIds()) {
     Vector<uint8_t> decoded_cred_id;
-    if (!Base64UnpaddedURLDecode(credential_id, decoded_cred_id)) {
+    if (!Base64UnpaddedUrlDecode(credential_id, decoded_cred_id)) {
       resolver->RejectWithTypeError(
           "Invalid base64url string for allAcceptedCredentialIds.");
       return promise;
     }
   }
   Vector<uint8_t> decoded_user_id;
-  if (!Base64UnpaddedURLDecode(options->userId(), decoded_user_id)) {
+  if (!Base64UnpaddedUrlDecode(options->userId(), decoded_user_id)) {
     resolver->RejectWithTypeError("Invalid base64url string for userId.");
     return promise;
   }
@@ -379,7 +379,7 @@ ScriptPromise<IDLUndefined> PublicKeyCredential::signalCurrentUserDetails(
   auto promise = resolver->Promise();
 
   Vector<uint8_t> decoded_user_id;
-  if (!Base64UnpaddedURLDecode(options->userId(), decoded_user_id)) {
+  if (!Base64UnpaddedUrlDecode(options->userId(), decoded_user_id)) {
     resolver->RejectWithTypeError("Invalid base64url string for userId.");
     return promise;
   }

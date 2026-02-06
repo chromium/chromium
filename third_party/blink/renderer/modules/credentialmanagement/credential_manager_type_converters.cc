@@ -150,7 +150,7 @@ bool SortPRFValuesByCredentialId(const PRFValuesPtr& a, const PRFValuesPtr& b) {
 blink::Vector<uint8_t> Base64UnpaddedURLDecodeOrCheck(
     const blink::String& encoded) {
   blink::Vector<uint8_t> decoded;
-  CHECK(blink::Base64UnpaddedURLDecode(encoded, decoded));
+  CHECK(blink::Base64UnpaddedUrlDecode(encoded, decoded));
   return decoded;
 }
 
