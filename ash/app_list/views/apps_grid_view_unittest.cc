@@ -382,6 +382,11 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     haptics_tracker_.reset();
+    apps_grid_view_ = nullptr;
+    paged_apps_grid_view_ = nullptr;
+    search_box_view_ = nullptr;
+    app_list_folder_view_ = nullptr;
+    app_list_view_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -750,16 +755,15 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   // May be a PagedAppsGridView in tablet mode or a ScrollableAppsGridView in
   // clamshell mode.
-  raw_ptr<AppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView> apps_grid_view_ = nullptr;
 
   // May be owned by different parent views depending on tablet mode.
-  raw_ptr<AppListFolderView, DanglingUntriaged> app_list_folder_view_ = nullptr;
-  raw_ptr<SearchBoxView, DanglingUntriaged> search_box_view_ = nullptr;
+  raw_ptr<AppListFolderView> app_list_folder_view_ = nullptr;
+  raw_ptr<SearchBoxView> search_box_view_ = nullptr;
 
   // These views exist in tablet mode.
-  raw_ptr<PagedAppsGridView, DanglingUntriaged> paged_apps_grid_view_ = nullptr;
-  raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
-      nullptr;  // Owned by native widget.
+  raw_ptr<PagedAppsGridView> paged_apps_grid_view_ = nullptr;
+  raw_ptr<AppListView> app_list_view_ = nullptr;  // Owned by native widget.
 
   std::unique_ptr<AppsGridViewTestApi> test_api_;
 
