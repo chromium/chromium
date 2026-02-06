@@ -441,10 +441,16 @@ export class FreAppController {
     webview.setAttribute('partition', this.partitionString);
     webview.setAttribute('autosize', 'true');
     if (this.shouldSizeForDialog) {
+      // Relax the min/max wiidth constraints on the `<webview>`. For
+      // certain device scale factors, when converting back and forth between
+      // DIPs and pixels, we can have rounding errors which can break the auto
+      // resizing FRE dialog. (See b:480783053 for more details)
       webview.setAttribute(
-          'minwidth', loadTimeData.getInteger('freInitialWidth').toString());
+          'minwidth',
+          (loadTimeData.getInteger('freInitialWidth') - 1).toString());
       webview.setAttribute(
-          'maxwidth', loadTimeData.getInteger('freInitialWidth').toString());
+          'maxwidth',
+          (loadTimeData.getInteger('freInitialWidth') + 1).toString());
       webview.setAttribute('minheight', MIN_HEIGHT.toString());
       webview.setAttribute('maxheight', window.screen.availHeight.toString());
     }
