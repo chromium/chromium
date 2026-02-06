@@ -340,9 +340,9 @@ void VerticalTabGroupView::UpdateLayoutForDrag() {
 }
 
 void VerticalTabGroupView::HandleTabDragInContainer(
-    const gfx::Point& point_in_container) {
-  views::View* view_at_point =
-      GetViewAtPoint(layout_manager_->target_layout(), point_in_container);
+    const gfx::Rect& dragged_tab_bounds) {
+  views::View* view_at_point = GetViewForDragBounds(
+      layout_manager_->target_layout(), dragged_tab_bounds);
   const TabCollectionNode* node = collection_node_;
   if (auto* tab_view = views::AsViewClass<VerticalTabView>(view_at_point)) {
     node = tab_view->collection_node();

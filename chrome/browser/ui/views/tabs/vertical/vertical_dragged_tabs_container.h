@@ -63,6 +63,15 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // ViewObserver
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+  // Whether this container is currently handling a drag.
+  bool IsHandlingDrag() const;
+
+  // Returns the bounds of the box containing all dragged views, adjusted to
+  // the point `point_in_container`. The returned bounds are not clamped to
+  // the container bounds.
+  gfx::Rect GetDraggingViewsBoundsAtPoint(
+      const gfx::Point& point_in_container) const;
+
  protected:
   struct DraggedViewVisualData {
     gfx::Vector2d offset;
@@ -74,15 +83,21 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   std::optional<DraggedViewVisualData> GetVisualDataForDraggedView(
       const views::View& view) const;
 
-  // Returns the bounds of the box containing all dragged views, adjusted to
-  // the point `point_in_container`, and clamped to the bounds of the
-  // container.
-  gfx::Rect GetDraggingViewsBoundsAtPoint(
-      const gfx::Point& point_in_container) const;
+  // Helper for getting the target view for the given drag bounds, excluding
+  // dragged views.
+  views::View* GetViewForDragBounds(const views::ProposedLayout& layout,
+                                    const gfx::Rect& dragged_tab_bounds);
 
-  // Helper for getting the view at a given point, excluding dragged views.
-  views::View* GetViewAtPoint(const views::ProposedLayout& layout,
-                              const gfx::Point& point);
+  // Returns whether the two rects overlap by at least the provided minimums for
+  // each axis.
+  // E.g, if only `min_x_overlap` is provided, then this will return true
+  // iff the range of [a.x(), a.right()] overlaps with the range [b.x(),
+  // b.right()]. If both axes are specified, then this must be true for each
+  // respective axis.
+  bool HasMinimumOverlap(const gfx::Rect& a,
+                         const gfx::Rect& b,
+                         std::optional<int> min_x_overlap,
+                         std::optional<int> min_y_overlap) const;
 
  private:
   virtual VerticalTabDragHandler& GetDragHandler() = 0;
@@ -100,7 +115,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Handles a dragged tab that is parented within this target.
   // `point_in_container` is a point relative to this target's view.
   virtual void HandleTabDragInContainer(
-      const gfx::Point& point_in_container) = 0;
+      const gfx::Rect& dragged_tab_bounds) = 0;
 
   // Updates state related to dragging tabs, to be used when this container
   // starts handling a drag.
@@ -123,6 +138,13 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   void UpdateDraggingViewTransforms(const gfx::Point& point_in_container);
 
   bool IsHorizontalDragSupported() const;
+
+  // Returns the bounds of the box containing all dragged views, adjusted to
+  // the point `point_in_container` and clamped to the bounds of the
+  // scroll view, which should be used for visual representation of the dragged
+  // views.
+  gfx::Rect GetDraggingViewsBoundsAtPointClamped(
+      const gfx::Point& point_in_container) const;
 
   const raw_ref<const views::View> host_view_;
   int tab_strip_padding_;

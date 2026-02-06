@@ -67,6 +67,9 @@ class VerticalTabGroupView
   const TabCollectionNode* collection_node() const { return collection_node_; }
 
   VerticalTabGroupHeaderView* group_header() { return group_header_; }
+  const VerticalTabGroupHeaderView* group_header() const {
+    return group_header_;
+  }
 
  private:
   // VerticalDraggedTabsContainer:
@@ -75,7 +78,7 @@ class VerticalTabGroupView
   bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
-  void HandleTabDragInContainer(const gfx::Point& point_in_container) override;
+  void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
   void OnTabDragExited(const gfx::Point& point_in_screen) override;
 
   void ResetCollectionNode();

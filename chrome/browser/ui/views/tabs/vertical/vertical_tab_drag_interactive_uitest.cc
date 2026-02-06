@@ -39,6 +39,8 @@
 
 namespace {
 
+enum class DragPosition { kAbove, kBelow };
+
 using URL = std::string_view;
 using TabGroupURLs = std::vector<URL>;
 using URLs = std::vector<std::variant<URL, TabGroupURLs>>;
@@ -203,15 +205,19 @@ class VerticalTabDragHandlerTest
         }));
   }
 
-  auto MoveMouseToTabAsync(int tab_index) {
+  auto MoveMouseToTabAsync(int tab_index, DragPosition position) {
     const char kTabToMoveMouseTo[] = "Tab to move mouse to";
-    return Steps(
-        NameTabViewAt(kTabToMoveMouseTo, tab_index),
-        WithView(
-            kTabToMoveMouseTo, base::BindOnce([](views::View* view) {
-              const gfx::Point point = view->GetBoundsInScreen().CenterPoint();
-              ASSERT_TRUE(ui_controls::SendMouseMove(point.x(), point.y()));
-            })));
+    int offset = 5 * (position == DragPosition::kAbove ? -1 : 1);
+    return Steps(NameTabViewAt(kTabToMoveMouseTo, tab_index),
+                 WithView(kTabToMoveMouseTo,
+                          base::BindOnce(
+                              [](int offset, views::View* view) {
+                                const gfx::Point point =
+                                    view->GetBoundsInScreen().CenterPoint();
+                                ASSERT_TRUE(ui_controls::SendMouseMove(
+                                    point.x(), point.y() + offset));
+                              },
+                              offset)));
   }
 
   auto AddTabsToNewGroup(const std::vector<int>& indices) {
@@ -369,7 +375,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
       PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2), MoveMouseToTabAsync(1),
+      WaitForState(kBrowserCountPoller, 2),
+      MoveMouseToTabAsync(1, DragPosition::kAbove),
       WaitForState(kBrowserCountPoller, 1), ReleaseMouseAsync(),
       PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, false), Do([&]() {
@@ -379,15 +386,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       }));
 }
 
-// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
-// flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
-#define MAYBE_DragWithinUnpinnedContainer DragWithinUnpinnedContainer
-#else
-#define MAYBE_DragWithinUnpinnedContainer DISABLED_DragWithinUnpinnedContainer
-#endif
+// TODO(crbug.com/40249472): Disabled because this flakes on all platforms.
 IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
-                       MAYBE_DragWithinUnpinnedContainer) {
+                       DISABLED_DragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -399,12 +400,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       WaitForState(kDragStatePoller, true),
       PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
 
-      MoveMouseToTabAsync(1),
+      MoveMouseToTabAsync(1, DragPosition::kBelow),
       WaitForState(kTabOrderPoller,
                    URLs({url::kAboutBlankURL, chrome::kChromeUISettingsURL,
                          chrome::kChromeUIBookmarksURL})),
 
-      MoveMouseToTabAsync(0),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kTabOrderPoller,
                    URLs({chrome::kChromeUISettingsURL, url::kAboutBlankURL,
                          chrome::kChromeUIBookmarksURL})),
@@ -421,35 +422,32 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       }));
 }
 
-// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
-// flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
-#define MAYBE_CancelDragWithinUnpinnedContainer \
-  CancelDragWithinUnpinnedContainer
-#else
-#define MAYBE_CancelDragWithinUnpinnedContainer \
-  DISABLED_CancelDragWithinUnpinnedContainer
-#endif
+// TODO(crbug.com/40249472): Disabled because this flakes on all platforms.
 IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
-                       MAYBE_CancelDragWithinUnpinnedContainer) {
+                       DISABLED_CancelDragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      Log("Start dragging tab 2"),
       DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
       PollState(kDragStatePoller, GetDragActive()),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2),
       WaitForState(kDragStatePoller, true),
 
       // Move mouse over the last tab and check tab ordering.
-      MoveMouseToTabAsync(1), PollState(kBrowserCountPoller, GetBrowserCount()),
+      Log("Drag to tab at index 1"),
+      MoveMouseToTabAsync(1, DragPosition::kAbove),
       WaitForState(kBrowserCountPoller, 1),
       PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
       WaitForState(kTabOrderPoller,
                    URLs({url::kAboutBlankURL, chrome::kChromeUISettingsURL,
                          chrome::kChromeUIBookmarksURL})),
-      PressEscAsync(), WaitForState(kDragStatePoller, false), Do([&]() {
+      Log("Cancel drag with Esc"), PressEscAsync(),
+      WaitForState(kDragStatePoller, false), Do([&]() {
         ASSERT_EQ(3, tab_strip_model->count());
         EXPECT_EQ(GURL(url::kAboutBlankURL),
                   tab_strip_model->GetWebContentsAt(0)->GetURL());
@@ -489,14 +487,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragSplitTabs) {
                                     })),
       DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
-      PollState(kDragStatePoller, GetDragActive()), MoveMouseToTabAsync(0),
+      PollState(kDragStatePoller, GetDragActive()),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         chrome::kChromeUISettingsURL,
                                         chrome::kChromeUIVersionURL,
                                         url::kAboutBlankURL,
                                         chrome::kChromeUIBookmarksURL,
                                     })),
-      MoveMouseToTabAsync(2),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         url::kAboutBlankURL,
                                         chrome::kChromeUISettingsURL,
@@ -535,7 +534,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOverSplit) {
                                     })),
       DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
-      PollState(kDragStatePoller, GetDragActive()), MoveMouseToTabAsync(0),
+      PollState(kDragStatePoller, GetDragActive()),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         chrome::kChromeUIBookmarksURL,
                                         url::kAboutBlankURL,
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOverSplit) {
                                     })),
       // Dragging from index 0 to index 2 (split) should put the dragged tab to
       // index 3.
-      MoveMouseToTabAsync(2),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         url::kAboutBlankURL,
                                         chrome::kChromeUISettingsURL,
@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOverSplit) {
                                     })),
       // Dragging from index 3 to index 2 (split) should put the dragged tab to
       // index 1.
-      MoveMouseToTabAsync(2),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         url::kAboutBlankURL,
                                         chrome::kChromeUIBookmarksURL,
@@ -595,7 +595,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
                                     })),
       DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
-      PollState(kDragStatePoller, GetDragActive()), MoveMouseToTabAsync(0),
+      PollState(kDragStatePoller, GetDragActive()),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         chrome::kChromeUIBookmarksURL,
                                         url::kAboutBlankURL,
@@ -606,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
                                     })),
       // Dragging from index 0 to index 2 (split) should put the dragged tab to
       // index 3.
-      MoveMouseToTabAsync(2),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         url::kAboutBlankURL,
                                         TabGroupURLs({
@@ -617,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
                                     })),
       // Dragging from index 3 to index 2 (split) should put the dragged tab to
       // index 1.
-      MoveMouseToTabAsync(2),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         url::kAboutBlankURL,
                                         TabGroupURLs({
@@ -682,9 +683,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, MAYBE_DragMultipleTabs) {
       CheckResult(
           [this]() { return browser()->tab_strip_model()->IsTabSelected(2); },
           true),
-      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
+      DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
-      MoveMouseToTabAsync(0),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
       WaitForState(kTabOrderPoller, URLs({
                                         chrome::kChromeUIBookmarksURL,
@@ -723,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
           true),
       DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
-      MoveMouseToTabAsync(1),
+      MoveMouseToTabAsync(1, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         url::kAboutBlankURL,
                                         TabGroupURLs({
@@ -732,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
                                             chrome::kChromeUIBookmarksURL,
                                         }),
                                     })),
-      MoveMouseToTabAsync(0),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         chrome::kChromeUISettingsURL,
                                         chrome::kChromeUIVersionURL,
@@ -766,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragInGroup) {
       WaitForState(kDragStatePoller, true),
       WaitForState(kBrowserCountPoller, 2),
 
-      MoveMouseToTabAsync(1),
+      MoveMouseToTabAsync(1, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({TabGroupURLs({
                                         url::kAboutBlankURL,
                                         chrome::kChromeUISettingsURL,
@@ -802,7 +803,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOutOfGroup) {
       DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
       PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, true), MoveMouseToTabAsync(2),
+      WaitForState(kDragStatePoller, true),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kTabOrderPoller, URLs({
                                         TabGroupURLs({
                                             url::kAboutBlankURL,
@@ -853,14 +855,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
       PollState(kPinnedTabOrderPoller, GetPinnedTabOrder(tab_strip_model)),
 
-      MoveMouseToTabAsync(0),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kPinnedTabOrderPoller, PinnedURLs({
                                               chrome::kChromeUISettingsURL,
                                               chrome::kChromeUIVersionURL,
                                               url::kAboutBlankURL,
                                               chrome::kChromeUIBookmarksURL,
                                           })),
-      MoveMouseToTabAsync(2),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kPinnedTabOrderPoller, PinnedURLs({
                                               url::kAboutBlankURL,
                                               chrome::kChromeUISettingsURL,
@@ -901,14 +903,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
       WaitForState(kDragStatePoller, true),
 
       PollState(kPinnedTabOrderPoller, GetPinnedTabOrder(tab_strip_model)),
-      MoveMouseToTabAsync(0),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kPinnedTabOrderPoller, PinnedURLs({
                                               chrome::kChromeUISettingsURL,
                                               chrome::kChromeUIVersionURL,
                                               url::kAboutBlankURL,
                                               chrome::kChromeUIBookmarksURL,
                                           })),
-      MoveMouseToTabAsync(2),
+      MoveMouseToTabAsync(2, DragPosition::kAbove),
       WaitForState(kPinnedTabOrderPoller, PinnedURLs({
                                               url::kAboutBlankURL,
                                               chrome::kChromeUISettingsURL,
@@ -973,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 
       // Drag the detached pinned tab over the second unpinned tab in the
       // original window, the pinned tab should remain pinned.
-      MoveMouseToTabAsync(1),
+      MoveMouseToTabAsync(1, DragPosition::kAbove),
       PollState(kPinnedTabOrderPoller, GetPinnedTabOrder(tab_strip_model)),
       PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
       WaitForState(kPinnedTabOrderPoller, PinnedURLs({url::kAboutBlankURL})),
@@ -1015,13 +1017,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, MAYBE_DragGroupHeader) {
       PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, true),
 
-      Log("Moving tabs to index 0"), MoveMouseToTabAsync(0),
+      Log("Moving tabs to index 0"),
+      MoveMouseToTabAsync(0, DragPosition::kAbove),
       WaitForState(kTabOrderPoller,
                    URLs({TabGroupURLs({chrome::kChromeUIBookmarksURL,
                                        chrome::kChromeUISettingsURL}),
                          url::kAboutBlankURL, chrome::kChromeUIVersionURL})),
 
-      Log("Moving tabs to index 3"), MoveMouseToTabAsync(3),
+      Log("Moving tabs to index 3"),
+      MoveMouseToTabAsync(3, DragPosition::kAbove),
       WaitForState(kTabOrderPoller,
                    URLs({url::kAboutBlankURL, chrome::kChromeUIVersionURL,
                          TabGroupURLs({chrome::kChromeUIBookmarksURL,

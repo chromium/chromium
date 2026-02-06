@@ -15,6 +15,7 @@
 
 class TabCollectionNode;
 class VerticalTabDragHandler;
+class VerticalTabGroupView;
 
 // The view class that represents the unpinned tab region for the
 // vertical tab strip. It manages the layout of the all the unpinned tabs and
@@ -53,7 +54,13 @@ class VerticalUnpinnedTabContainerView
   bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
-  void HandleTabDragInContainer(const gfx::Point& point_in_container) override;
+  void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
+
+  // Returns whether a drag that is currently being handled by the given
+  // `group_view` should continue being handled by it.
+  bool ShouldDragRemainInGroup(const VerticalTabGroupView& group_view,
+                               const gfx::Rect& proposed_group_bounds,
+                               const gfx::Point& point_in_screen) const;
 
   void ResetCollectionNode();
 
