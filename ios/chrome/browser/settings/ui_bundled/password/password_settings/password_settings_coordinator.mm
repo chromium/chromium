@@ -16,6 +16,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_coordinator.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
@@ -78,11 +79,6 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 // The user action for when the delete all saved data button is clicked.
 constexpr const char* kDeleteAllSavedDataButtonClicked =
     "IOS.PasswordManager.Settings.DeleteAllSavedData.Clicked";
-
-// Represents the code of an error returned when the user dismisses the update
-// GPM Pin flow by clicking the "Cancel" button. This should not be treated as
-// an actual error.
-const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
 }  // namespace
 
@@ -888,7 +884,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 // user dismissing the flow by clicking "Cancel", presents the error alert.
 // Otherwise, dismisses the UI.
 - (void)updateGPMPinFinishedWithError:(NSError*)error {
-  if (error && error.code != kErrorUserDismissedUpdateGPMPinFlow) {
+  if (error && error.code != webauthn::kErrorUserDismissedGPMPinFlow) {
     [self startUpdateGPMPinErrorCoordinator];
   } else {
     [self dismissUpdateGPMPinViewController];

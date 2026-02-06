@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -37,11 +38,9 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
-#import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
-#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
-#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -54,7 +53,7 @@
     DataImportCredentialConflictResolutionViewControllerDelegate,
     LocalReauthenticationCoordinatorDelegate,
     PasskeyKeychainProviderBridgeDelegate,
-    PasskeyWelcomeScreenViewControllerDelegate>
+    PasskeyWelcomeScreenCoordinatorDelegate>
 @end
 
 @implementation CredentialImportCoordinator {
@@ -86,6 +85,9 @@
 
   // Coordinator for displaying alerts in the import flow.
   AlertCoordinator* _alertCoordinator;
+
+  // Coordinator for displaying welcome screen for fetching trusted vault keys.
+  PasskeyWelcomeScreenCoordinator* _passkeyWelcomeScreenCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -212,9 +214,9 @@
                                purpose:webauthn::ReauthenticatePurpose::kEncrypt
                             completion:^(NSArray<NSData*>* trustedVaultKeys,
                                          NSError* error) {
-                              // TODO(crbug.com/445889307): Handle error.
                               [weakSelf
-                                  onTrustedVaultKeysFetched:trustedVaultKeys];
+                                  onTrustedVaultKeysFetched:trustedVaultKeys
+                                                      error:error];
                             }];
       break;
     }
@@ -289,46 +291,57 @@
             (webauthn::PasskeyWelcomeScreenPurpose)purpose
                           completion:
                               (webauthn::PasskeyWelcomeScreenAction)completion {
-  if (!_navigationController) {
-    // Presenting welcome screen requires a valid navigation controller, return
-    // early if this view was dismissed before.
-    return;
-  }
-  CreateAndPresentPasskeyWelcomeScreen(purpose, _navigationController,
-                                       /*delegate=*/self, completion,
-                                       _userEmail);
+  _passkeyWelcomeScreenCoordinator = [[PasskeyWelcomeScreenCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+                         purpose:purpose
+                      completion:completion];
+  _passkeyWelcomeScreenCoordinator.delegate = self;
+  [_passkeyWelcomeScreenCoordinator start];
 }
 
 - (void)providerDidCompleteReauthentication {
   // TODO(crbug.com/450982128): Implement if needed.
 }
 
-#pragma mark - PasskeyWelcomeScreenViewControllerDelegate
+#pragma mark - PasskeyWelcomeScreenCoordinatorDelegate
 
-- (void)passkeyWelcomeScreenViewControllerShouldBeDismissed:
-    (PasskeyWelcomeScreenViewController*)passkeyWelcomeScreenViewController {
-  [_navigationController popToViewController:_viewController animated:YES];
+- (void)passkeyWelcomeScreenCoordinatorWantsToBeDismissed:
+    (PasskeyWelcomeScreenCoordinator*)coordinator {
+  CHECK_EQ(_passkeyWelcomeScreenCoordinator, coordinator);
+  [self dismissPasskeyWelcomeScreenWithCompletion:nil];
 }
 
 #pragma mark - Private
 
-// Called when fetching trusted vault keys for passkeys finishes. Dismisses
-// screens that were presented for the fetching (if any). Informs mediator to
-// start importing credentials.
-- (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys {
-  if (trustedVaultKeys.count == 0) {
-    // TODO(crbug.com/445889307): Do not display alert if the welcome screen
-    // was cancelled by the user.
+// Called when fetching trusted vault keys for passkeys finishes. If there are
+// no unexpected errors and the keys are present, informs the mediator to start
+// importing credentials.
+- (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys
+                            error:(NSError*)error {
+  // First, dismiss welcome screens if there are any presented.
+  if (_viewController.presentedViewController) {
+    __weak __typeof(self) weakSelf = self;
+    [self dismissPasskeyWelcomeScreenWithCompletion:^{
+      [weakSelf onTrustedVaultKeysFetched:trustedVaultKeys error:error];
+    }];
+    return;
+  }
+
+  // Display an alert if there is a real error (not just user cancellation).
+  if (trustedVaultKeys.count != 0 && error &&
+      error.code != webauthn::kErrorUserDismissedGPMPinFlow) {
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
     [self showAlertWithTitle:title
                      message:nil
-          baseViewController:_viewController.presentedViewController];
+          baseViewController:_viewController];
     return;
   }
 
-  [_navigationController popToViewController:_viewController animated:YES];
-  [_mediator startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
+  if (trustedVaultKeys.count > 0) {
+    [_mediator startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
+  }
 }
 
 // Presents the invalid credentials view for `credentials` with `type`.
@@ -382,6 +395,13 @@
                 }
                  style:UIAlertActionStyleCancel];
   [_alertCoordinator start];
+}
+
+// Dismisses the passkey welcome screen with `completion`.
+- (void)dismissPasskeyWelcomeScreenWithCompletion:(ProceduralBlock)completion {
+  [_passkeyWelcomeScreenCoordinator stopWithCompletion:completion];
+  _passkeyWelcomeScreenCoordinator.delegate = nil;
+  _passkeyWelcomeScreenCoordinator = nil;
 }
 
 @end

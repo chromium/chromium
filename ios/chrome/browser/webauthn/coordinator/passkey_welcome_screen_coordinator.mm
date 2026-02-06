@@ -40,6 +40,8 @@
   PasskeyWelcomeScreenViewController* _viewController;
 }
 
+#pragma mark - ChromeCoordinator
+
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
@@ -81,9 +83,15 @@
 }
 
 - (void)stop {
+  [self stopWithCompletion:nil];
+}
+
+#pragma mark - Public
+
+- (void)stopWithCompletion:(ProceduralBlock)completion {
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
-                         completion:nil];
+                         completion:completion];
   _viewController = nil;
   _navigationController = nil;
   _completion = nil;

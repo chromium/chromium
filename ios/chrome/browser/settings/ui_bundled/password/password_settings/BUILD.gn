@@ -32,6 +32,7 @@ source_set("password_settings") {
     "//components/strings",
     "//components/sync/base",
     "//components/sync/service",
+    "//components/webauthn/ios:passkey_types",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/credential_exchange/coordinator:export_coordinator",

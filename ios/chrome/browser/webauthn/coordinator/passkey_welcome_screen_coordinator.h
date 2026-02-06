@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEBAUTHN_COORDINATOR_PASSKEY_WELCOME_SCREEN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_WEBAUTHN_COORDINATOR_PASSKEY_WELCOME_SCREEN_COORDINATOR_H_
 
+#import "base/ios/block_types.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -37,6 +38,9 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Dismisses the view with a `completion` block before stopping the coordinator.
+- (void)stopWithCompletion:(ProceduralBlock)completion;
 
 @end
 
