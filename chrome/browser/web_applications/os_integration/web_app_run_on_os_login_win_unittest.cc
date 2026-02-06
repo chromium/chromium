@@ -30,6 +30,7 @@ namespace web_app {
 namespace {
 
 constexpr char16_t kAppTitle[] = u"app";
+constexpr char kAppId[] = "app-id";
 }  // namespace
 
 class WebAppRunOnOsLoginWinTest : public WebAppTest {
@@ -45,7 +46,7 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
 
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     auto shortcut_info = std::make_unique<ShortcutInfo>();
-    shortcut_info->app_id = "app-id";
+    shortcut_info->app_id = kAppId;
     shortcut_info->title = kAppTitle;
     shortcut_info->profile_path = profile()->GetPath();
 
@@ -67,8 +68,8 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
   }
 
   std::vector<base::FilePath> GetShortcuts() {
-    return internals::FindAppShortcutsByProfileAndTitle(
-        GetStartupFolder(), profile()->GetPath(), kAppTitle);
+    return internals::FindAppShortcutsByProfileAppIdAndTitle(
+        GetStartupFolder(), profile()->GetPath(), kAppTitle, kAppId);
   }
 
   void VerifyShortcutCreated() {

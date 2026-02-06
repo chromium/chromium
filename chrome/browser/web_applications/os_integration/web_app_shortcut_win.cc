@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -125,25 +126,6 @@ bool ShouldUpdateIcon(const base::FilePath& icon_file,
   return persisted_image_checksum != downloaded_image_checksum;
 }
 
-// Returns true if |shortcut_file_name| matches profile |profile_path|, and has
-// an --app-id flag.
-bool IsAppShortcutForProfile(const base::FilePath& shortcut_file_name,
-                             const base::FilePath& profile_path) {
-  std::wstring cmd_line_string;
-  if (base::win::ResolveShortcut(shortcut_file_name, nullptr,
-                                 &cmd_line_string)) {
-    cmd_line_string = L"program " + cmd_line_string;
-    base::CommandLine shortcut_cmd_line =
-        base::CommandLine::FromString(cmd_line_string);
-    return shortcut_cmd_line.HasSwitch(switches::kProfileDirectory) &&
-           shortcut_cmd_line.GetSwitchValuePath(switches::kProfileDirectory) ==
-               profile_path.BaseName() &&
-           shortcut_cmd_line.HasSwitch(switches::kAppId);
-  }
-
-  return false;
-}
-
 // Creates application shortcuts in a given set of paths.
 // |shortcut_paths| is a list of directories in which shortcuts should be
 // created. If |creation_reason| is SHORTCUT_CREATION_AUTOMATED and there is an
@@ -196,8 +178,9 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     if (creation_reason == SHORTCUT_CREATION_AUTOMATED) {
       // Check whether there is an existing shortcut to this app.
       std::vector<base::FilePath> shortcut_files =
-          FindAppShortcutsByProfileAndTitle(
-              shortcut_path, shortcut_info.profile_path, shortcut_info.title);
+          FindAppShortcutsByProfileAppIdAndTitle(
+              shortcut_path, shortcut_info.profile_path, shortcut_info.title,
+              shortcut_info.app_id);
       if (!shortcut_files.empty())
         continue;
     }
@@ -252,14 +235,15 @@ void DeleteShortcuts(std::vector<base::FilePath> all_shortcuts,
   std::move(result_callback).Run(result);
 }
 
-// Returns a vector of shortcuts that match |app_title| and the profile name
-// specified in |profile_path|.
-// If |web_app_path| is not empty, it will also search in the web app install
-// dir.
+// Returns a vector of shortcuts that match `app_title` belonging to app
+// `app_id`, with the profile name specified in `profile_path`. If `app_title`
+// is empty, it will try to find all shortucts in a `profile_path`. If
+// |web_app_path| is not empty, it will also search in the web app install dir.
 std::vector<base::FilePath> FindMatchingShortcuts(
     const base::FilePath& web_app_path,
     const base::FilePath& profile_path,
-    const std::u16string& app_title) {
+    std::optional<std::u16string> app_title,
+    std::optional<webapps::AppId> app_id) {
   // Get all possible locations for shortcuts.
   ShortcutLocations all_shortcut_locations;
   all_shortcut_locations.in_quick_launch_bar = true;
@@ -277,7 +261,8 @@ std::vector<base::FilePath> FindMatchingShortcuts(
   std::vector<base::FilePath> matching_shortcuts;
   for (const auto& path : all_paths) {
     std::vector<base::FilePath> shortcut_files =
-        FindAppShortcutsByProfileAndTitle(path, profile_path, app_title);
+        FindAppShortcutsByProfileAppIdAndTitle(path, profile_path, app_title,
+                                               app_id);
     matching_shortcuts.insert(matching_shortcuts.end(), shortcut_files.begin(),
                               shortcut_files.end());
   }
@@ -312,7 +297,8 @@ void UpdateToastActivationForShortcut(const base::FilePath& shortcut) {
 }
 
 Result UpdateAppMenuShortcuts(const base::FilePath& profile_path,
-                              const std::u16string& app_title) {
+                              const std::u16string& app_title,
+                              const webapps::AppId& app_id) {
   // Empty titles match all shortcuts, which we don't want, so if we somehow
   // get an empty app title, ignore the update.
   if (app_title.empty()) {
@@ -326,8 +312,8 @@ Result UpdateAppMenuShortcuts(const base::FilePath& profile_path,
           ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
           ShellUtil::CURRENT_USER, &chrome_apps_dir)) {
     const std::vector<base::FilePath> shortcut_files =
-        FindAppShortcutsByProfileAndTitle(chrome_apps_dir, profile_path,
-                                          app_title);
+        FindAppShortcutsByProfileAppIdAndTitle(chrome_apps_dir, profile_path,
+                                               app_title, app_id);
     app_menu_shortcuts.insert(app_menu_shortcuts.end(), shortcut_files.begin(),
                               shortcut_files.end());
   }
@@ -351,8 +337,8 @@ Result UpdateShortcuts(const base::FilePath& web_app_path,
   if (old_app_title.empty())
     return Result::kOk;
 
-  const std::vector<base::FilePath> all_shortcuts =
-      FindMatchingShortcuts(web_app_path, profile_path, old_app_title);
+  const std::vector<base::FilePath> all_shortcuts = FindMatchingShortcuts(
+      web_app_path, profile_path, old_app_title, shortcut_info.app_id);
 
   const bool title_change = old_app_title != shortcut_info.title;
   Result result = Result::kOk;
@@ -392,8 +378,9 @@ Result UpdateShortcuts(const base::FilePath& web_app_path,
   base::FilePath taskbar_pins_dir;
   if (base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pins_dir)) {
     const std::vector<base::FilePath> shortcut_files =
-        FindAppShortcutsByProfileAndTitle(taskbar_pins_dir, profile_path,
-                                          old_app_title);
+        FindAppShortcutsByProfileAppIdAndTitle(taskbar_pins_dir, profile_path,
+                                               old_app_title,
+                                               shortcut_info.app_id);
     pinned_shortcuts.insert(pinned_shortcuts.end(), shortcut_files.begin(),
                             shortcut_files.end());
   }
@@ -407,8 +394,8 @@ Result UpdateShortcuts(const base::FilePath& web_app_path,
     for (base::FilePath directory = directory_enum.Next(); !directory.empty();
          directory = directory_enum.Next()) {
       const std::vector<base::FilePath> shortcut_files =
-          FindAppShortcutsByProfileAndTitle(directory, profile_path,
-                                            old_app_title);
+          FindAppShortcutsByProfileAppIdAndTitle(
+              directory, profile_path, old_app_title, shortcut_info.app_id);
       pinned_shortcuts.insert(pinned_shortcuts.end(), shortcut_files.begin(),
                               shortcut_files.end());
     }
@@ -466,10 +453,11 @@ Result UpdateShortcuts(const base::FilePath& web_app_path,
 void GetShortcutLocationsAndDeleteShortcuts(
     const base::FilePath& web_app_path,
     const base::FilePath& profile_path,
-    const std::u16string& title,
+    std::optional<std::u16string> title,
+    std::optional<webapps::AppId> app_id,
     DeleteShortcutsCallback result_callback) {
   const std::vector<base::FilePath> all_shortcuts =
-      FindMatchingShortcuts(web_app_path, profile_path, title);
+      FindMatchingShortcuts(web_app_path, profile_path, title, app_id);
 
   if (all_shortcuts.empty()) {
     std::move(result_callback).Run(/*shortcut_deleted=*/true);
@@ -512,17 +500,17 @@ void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
 // Looks for a shortcut at "|shortcut_path|/|sanitized_shortcut_name|.lnk", plus
 // any duplicates of it (i.e., ending in (1), (2), etc.). Appends any that are
 // app shortcuts for the profile at |profile_path| to |shortcut_paths|.
-void AppendShortcutsMatchingName(
-    std::vector<base::FilePath>& shortcut_paths,
-    const base::FilePath& shortcut_path,
-    const base::FilePath& profile_path,
-    const base::FilePath& sanitized_shortcut_name) {
+void AppendShortcutsMatchingName(std::vector<base::FilePath>& shortcut_paths,
+                                 const base::FilePath& shortcut_path,
+                                 const base::FilePath& profile_path,
+                                 const base::FilePath& sanitized_shortcut_name,
+                                 std::optional<webapps::AppId> app_id) {
   const base::FilePath shortcut_filename =
       sanitized_shortcut_name.AddExtension(FILE_PATH_LITERAL(".lnk"));
   const base::FilePath shortcut_file_path =
       shortcut_path.Append(shortcut_filename);
   if (base::PathExists(shortcut_file_path) &&
-      IsAppShortcutForProfile(shortcut_file_path, profile_path)) {
+      IsAppShortcutForProfile(shortcut_file_path, profile_path, app_id)) {
     shortcut_paths.push_back(shortcut_file_path);
   }
 
@@ -532,8 +520,9 @@ void AppendShortcutsMatchingName(
           .value());
   base::FilePath shortcut_file = files.Next();
   while (!shortcut_file.empty()) {
-    if (IsAppShortcutForProfile(shortcut_file, profile_path))
+    if (IsAppShortcutForProfile(shortcut_file, profile_path, app_id)) {
       shortcut_paths.push_back(shortcut_file);
+    }
     shortcut_file = files.Next();
   }
 }
@@ -655,28 +644,30 @@ base::FilePath GetSanitizedFileName(const std::u16string& name) {
   return base::FilePath(file_name);
 }
 
-std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
+std::vector<base::FilePath> FindAppShortcutsByProfileAppIdAndTitle(
     const base::FilePath& shortcut_path,
     const base::FilePath& profile_path,
-    const std::u16string& shortcut_name) {
+    std::optional<std::u16string> shortcut_name,
+    std::optional<webapps::AppId> app_id) {
   std::vector<base::FilePath> shortcut_paths;
 
-  if (shortcut_name.empty()) {
+  if (!shortcut_name.has_value()) {
     // Find all shortcuts for this profile.
     base::FileEnumerator files(shortcut_path, false,
                                base::FileEnumerator::FILES,
                                FILE_PATH_LITERAL("*.lnk"));
     base::FilePath shortcut_file = files.Next();
     while (!shortcut_file.empty()) {
-      if (IsAppShortcutForProfile(shortcut_file, profile_path))
+      if (IsAppShortcutForProfile(shortcut_file, profile_path, app_id)) {
         shortcut_paths.push_back(shortcut_file);
+      }
       shortcut_file = files.Next();
     }
   } else {
     // Find all shortcuts matching |shortcut_name|. Includes duplicates, if any
     // exist (e.g., "|shortcut_name| (2).lnk").
     AppendShortcutsMatchingName(shortcut_paths, shortcut_path, profile_path,
-                                GetSanitizedFileName(shortcut_name));
+                                GetSanitizedFileName(*shortcut_name), app_id);
   }
   return shortcut_paths;
 }
@@ -789,7 +780,8 @@ void UpdatePlatformShortcuts(
     // add toast activation clsids to the shortcuts in the app menu. If future
     // version changes happen, we may want to use the apps.shortcuts_arch pref
     // to decide what shortcuts to update.
-    UpdateAppMenuShortcuts(shortcut_info.profile_path, shortcut_info.title);
+    UpdateAppMenuShortcuts(shortcut_info.profile_path, shortcut_info.title,
+                           shortcut_info.app_id);
     success_updating_icon = true;
   }
   Result result = (success_updating_icon ? Result::kOk : Result::kError);
@@ -809,9 +801,9 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   desktop.on_desktop = true;
   auto shortcut_paths = GetShortcutPaths(desktop);
   if (!shortcut_paths.empty() &&
-      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
-                                         shortcut_info.profile_path,
-                                         shortcut_info.title)
+      !FindAppShortcutsByProfileAppIdAndTitle(
+           shortcut_paths.front(), shortcut_info.profile_path,
+           shortcut_info.title, shortcut_info.app_id)
            .empty()) {
     result.on_desktop = true;
   }
@@ -820,9 +812,9 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   app_menu.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
   shortcut_paths = GetShortcutPaths(app_menu);
   if (!shortcut_paths.empty() &&
-      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
-                                         shortcut_info.profile_path,
-                                         shortcut_info.title)
+      !FindAppShortcutsByProfileAppIdAndTitle(
+           shortcut_paths.front(), shortcut_info.profile_path,
+           shortcut_info.title, shortcut_info.app_id)
            .empty()) {
     result.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
   }
@@ -831,9 +823,9 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   quick_launch.in_quick_launch_bar = true;
   shortcut_paths = GetShortcutPaths(quick_launch);
   if (!shortcut_paths.empty() &&
-      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
-                                         shortcut_info.profile_path,
-                                         shortcut_info.title)
+      !FindAppShortcutsByProfileAppIdAndTitle(
+           shortcut_paths.front(), shortcut_info.profile_path,
+           shortcut_info.title, shortcut_info.app_id)
            .empty()) {
     result.in_quick_launch_bar = true;
   }
@@ -842,9 +834,9 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   start_up.in_startup = true;
   shortcut_paths = GetShortcutPaths(start_up);
   if (!shortcut_paths.empty() &&
-      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
-                                         shortcut_info.profile_path,
-                                         shortcut_info.title)
+      !FindAppShortcutsByProfileAppIdAndTitle(
+           shortcut_paths.front(), shortcut_info.profile_path,
+           shortcut_info.title, shortcut_info.app_id)
            .empty()) {
     result.in_startup = true;
   }
@@ -882,6 +874,7 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
       OsIntegrationTestOverride::Get();
   GetShortcutLocationsAndDeleteShortcuts(
       web_app_path, shortcut_info.profile_path, shortcut_info.title,
+      shortcut_info.app_id,
       base::BindOnce(&FinishDeletingPlatformShortcuts, web_app_path,
                      std::move(result_runner), std::move(callback)));
 }
@@ -905,7 +898,8 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
   GetShortcutLocationsAndDeleteShortcuts(
-      base::FilePath(), profile_path, std::u16string(),
+      base::FilePath(), profile_path, /*title=*/std::nullopt,
+      /*app_id=*/std::nullopt,
       base::BindOnce(&FinishDeletingAllShortcutsForProfile));
 }
 
@@ -948,6 +942,31 @@ base::FilePath GetIconFilePath(const base::FilePath& web_app_path,
                                const std::u16string& title) {
   return web_app_path.Append(GetSanitizedFileName(title))
       .AddExtension(FILE_PATH_LITERAL(".ico"));
+}
+
+bool IsAppShortcutForProfile(const base::FilePath& shortcut_file_name,
+                             const base::FilePath& profile_path,
+                             std::optional<webapps::AppId> app_id) {
+  std::wstring cmd_line_string;
+  if (base::win::ResolveShortcut(shortcut_file_name, nullptr,
+                                 &cmd_line_string)) {
+    cmd_line_string = L"program " + cmd_line_string;
+    base::CommandLine shortcut_cmd_line =
+        base::CommandLine::FromString(cmd_line_string);
+    bool valid_command_line =
+        shortcut_cmd_line.HasSwitch(switches::kProfileDirectory) &&
+        shortcut_cmd_line.GetSwitchValuePath(switches::kProfileDirectory) ==
+            profile_path.BaseName() &&
+        shortcut_cmd_line.HasSwitch(switches::kAppId);
+    if (app_id.has_value()) {
+      valid_command_line =
+          valid_command_line &&
+          shortcut_cmd_line.GetSwitchValueUTF8(switches::kAppId) == app_id;
+    }
+    return valid_command_line;
+  }
+
+  return false;
 }
 
 }  // namespace internals

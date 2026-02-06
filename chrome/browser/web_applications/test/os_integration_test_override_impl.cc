@@ -81,6 +81,7 @@
 #include "base/win/shortcut.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/win/jumplist_updater.h"
@@ -99,18 +100,6 @@ namespace {
 #if BUILDFLAG(IS_WIN)
 constexpr wchar_t kUninstallRegistryKey[] =
     L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\";
-
-base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
-  base::FilePath shortcut_profile;
-  std::wstring cmd_line_string;
-  if (base::win::ResolveShortcut(shortcut_path, nullptr, &cmd_line_string)) {
-    base::CommandLine shortcut_cmd_line =
-        base::CommandLine::FromString(L"program " + cmd_line_string);
-    shortcut_profile =
-        shortcut_cmd_line.GetSwitchValuePath(switches::kProfileDirectory);
-  }
-  return shortcut_profile;
-}
 
 std::vector<std::wstring> GetFileExtensionsForProgId(
     const std::wstring& file_handler_prog_id) {
@@ -524,9 +513,10 @@ base::FilePath OsIntegrationTestOverrideImpl::GetShortcutPath(
     const std::string narrowed_filename =
         base::WideToUTF8(enumerator.GetInfo().GetName().value());
     if (re2::RE2::FullMatch(narrowed_filename, app_name + "(.*).lnk")) {
-      base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
-      if (GetShortcutProfile(shortcut_path) == profile->GetBaseName()) {
-        return shortcut_path;
+      base::FilePath shortcut_file = shortcut_dir.Append(shortcut_filename);
+      if (internals::IsAppShortcutForProfile(shortcut_file,
+                                             profile->GetBaseName(), app_id)) {
+        return shortcut_file;
       }
     }
   }

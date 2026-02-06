@@ -32,13 +32,15 @@
 namespace web_app::internals {
 namespace {
 
-constexpr char kWebAppId[] = "123";
+constexpr char kWebAppId[] = "random_id1";
+constexpr char kWebAppId2[] = "random_id2";
 
 bool CreateTestAppShortcut(const base::FilePath& shortcut_path,
-                           const base::FilePath::StringType& profile_name) {
+                           const base::FilePath::StringType& profile_name,
+                           webapps::AppId app_id = kWebAppId) {
   base::CommandLine args_cl(base::CommandLine::NO_PROGRAM);
   args_cl.AppendSwitchNative(switches::kProfileDirectory, profile_name);
-  args_cl.AppendSwitchASCII(switches::kAppId, kWebAppId);
+  args_cl.AppendSwitchASCII(switches::kAppId, app_id);
 
   base::win::ShortcutProperties shortcut_properties;
   shortcut_properties.set_arguments(args_cl.GetArgumentsString());
@@ -62,8 +64,10 @@ void CreateAndVerifyTestAppShortcut(
       GetShortcutPath(shortcut_dir, shortcut_name);
   EXPECT_TRUE(
       CreateTestAppShortcut(shortcut_path, profile_path.BaseName().value()));
-  const std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
-      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  const std::vector<base::FilePath> result =
+      FindAppShortcutsByProfileAppIdAndTitle(shortcut_dir, profile_path,
+                                             base::WideToUTF16(shortcut_name),
+                                             kWebAppId);
   EXPECT_EQ(1u, result.size());
 }
 
@@ -148,7 +152,7 @@ TEST_F(WebAppShortcutWinTest, CheckAndSaveIcon) {
                                /*refresh_shell_icon_cache=*/false));
 }
 
-TEST_F(WebAppShortcutWinTest, FindAppShortcutsByProfileAndTitle) {
+TEST_F(WebAppShortcutWinTest, FindAppShortcutsByProfileAppIdAndTitle) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath shortcut_dir = temp_dir.GetPath();
@@ -176,8 +180,8 @@ TEST_F(WebAppShortcutWinTest, FindAppShortcutsByProfileAndTitle) {
 
   // Find |shortcut_name| by name. The specified shortcut and its duplicate
   // should be found.
-  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
-      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name), kWebAppId);
   EXPECT_EQ(2u, result.size());
   EXPECT_TRUE(std::ranges::contains(result, shortcut_path));
   EXPECT_TRUE(std::ranges::contains(result, duplicate_shortcut_path));
@@ -186,7 +190,9 @@ TEST_F(WebAppShortcutWinTest, FindAppShortcutsByProfileAndTitle) {
 
   // Find all shortcuts for |profile_name|. The shortcuts matching that profile
   // should be found.
-  result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path, u"");
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, /*shortcut_name=*/std::nullopt,
+      /*app_id=*/std::nullopt);
   EXPECT_EQ(3u, result.size());
   EXPECT_TRUE(std::ranges::contains(result, shortcut_path));
   EXPECT_TRUE(std::ranges::contains(result, duplicate_shortcut_path));
@@ -194,8 +200,77 @@ TEST_F(WebAppShortcutWinTest, FindAppShortcutsByProfileAndTitle) {
   EXPECT_FALSE(std::ranges::contains(result, other_profile_shortcut_path));
 }
 
+// Tests for crbug.com/481747254.
+TEST_F(WebAppShortcutWinTest, FindAppShortcutsSameNameMultipleApps) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath shortcut_dir = temp_dir.GetPath();
+
+  const base::FilePath::StringType shortcut_name =
+      FILE_PATH_LITERAL("test shortcut");
+  const base::FilePath::StringType shortcut_name_dupe =
+      FILE_PATH_LITERAL("test shortcut (2)");
+  const base::FilePath::StringType shortcut_name_five =
+      FILE_PATH_LITERAL("test shortcut (5)");
+  const base::FilePath shortcut_path =
+      GetShortcutPath(shortcut_dir, shortcut_name);
+  const base::FilePath shortcut_path_dupe =
+      GetShortcutPath(shortcut_dir, shortcut_name_dupe);
+  const base::FilePath shortcut_path_five =
+      GetShortcutPath(shortcut_dir, shortcut_name_five);
+
+  const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/path"));
+  const base::FilePath::StringType profile_name =
+      profile_path.BaseName().value();
+
+  // Create shortcuts for the same name but for 2 different app_ids.
+  // Note: This does end up overwriting the old created shortcut if it has the
+  // same name, so it can't really test the "core" issue of crbug.com/481747254.
+  // We can still test some extra use-cases that is not in the test:
+  // `FindAppShortcutsByProfileAppIdAndTitle`, so still nice to keep this
+  // around.
+  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path, profile_name, kWebAppId));
+  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path, profile_name, kWebAppId2));
+  ASSERT_TRUE(
+      CreateTestAppShortcut(shortcut_path_dupe, profile_name, kWebAppId));
+  ASSERT_TRUE(
+      CreateTestAppShortcut(shortcut_path_dupe, profile_name, kWebAppId2));
+
+  // Create one extra shortcut just for kWebAppId for testing.
+  ASSERT_TRUE(
+      CreateTestAppShortcut(shortcut_path_five, profile_name, kWebAppId));
+
+  // Try to find the shortcut for the base name, but with no app_id specified.
+  // It should return all 3 shortcuts created.
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name),
+      /*app_id=*/std::nullopt);
+  EXPECT_EQ(3u, result.size());
+  EXPECT_TRUE(std::ranges::contains(result, shortcut_path));
+  EXPECT_TRUE(std::ranges::contains(result, shortcut_path_dupe));
+  EXPECT_TRUE(std::ranges::contains(result, shortcut_path_five));
+
+  // Try to find the duplicated shortcut for the same name, but for the 2nd app.
+  // It should return just one value that is not a shortcut for `kWebAppId`.
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name_dupe),
+      kWebAppId2);
+  EXPECT_EQ(1u, result.size());
+  EXPECT_TRUE(IsAppShortcutForProfile(result[0], profile_path, kWebAppId2));
+  EXPECT_FALSE(IsAppShortcutForProfile(result[0], profile_path, kWebAppId));
+
+  // Try to find the shortcut for `kWebAppId`. There should only be one
+  // remaining.
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name), kWebAppId);
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ(shortcut_path_five, result[0]);
+  EXPECT_TRUE(IsAppShortcutForProfile(result[0], profile_path, kWebAppId));
+  EXPECT_FALSE(IsAppShortcutForProfile(result[0], profile_path, kWebAppId2));
+}
+
 TEST_F(WebAppShortcutWinTest,
-       FindAppShortcutsByProfileAndTitleIllegalCharacters) {
+       FindAppShortcutsByProfileAppIdAndTitleIllegalCharacters) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath shortcut_dir = temp_dir.GetPath();
@@ -213,8 +288,8 @@ TEST_F(WebAppShortcutWinTest,
 
   // Find shortcuts matching `shortcut_name`. A shortcut with the sanitized name
   // should be found.
-  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
-      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name), kWebAppId);
   EXPECT_EQ(1u, result.size());
   EXPECT_TRUE(std::ranges::contains(result, sanitized_shortcut_path));
 }
@@ -273,25 +348,26 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
                           new_shortcut_info);
   // The shortcut with the old title should be deleted from the shortcut
   // dir, the taskbar dir, and the implicit apps subdir.
-  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
-      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name), kWebAppId);
   EXPECT_EQ(0u, result.size());
-  result = FindAppShortcutsByProfileAndTitle(taskbar_dir, profile_path,
-                                             base::WideToUTF16(shortcut_name));
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      taskbar_dir, profile_path, base::WideToUTF16(shortcut_name), kWebAppId);
   EXPECT_EQ(0u, result.size());
-  result = FindAppShortcutsByProfileAndTitle(
-      implicit_apps_sub_dir, profile_path, base::WideToUTF16(shortcut_name));
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      implicit_apps_sub_dir, profile_path, base::WideToUTF16(shortcut_name),
+      kWebAppId);
   EXPECT_EQ(0u, result.size());
   // The shortcut with the new title should be found in the shortcut dir, the
   // taskbar dir, and the implicit_apps subdir.
-  result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path,
-                                             new_shortcut_info.title);
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, new_shortcut_info.title, kWebAppId);
   EXPECT_EQ(1u, result.size());
-  result = FindAppShortcutsByProfileAndTitle(taskbar_dir, profile_path,
-                                             new_shortcut_info.title);
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      taskbar_dir, profile_path, new_shortcut_info.title, kWebAppId);
   EXPECT_EQ(1u, result.size());
-  result = FindAppShortcutsByProfileAndTitle(
-      implicit_apps_sub_dir, profile_path, new_shortcut_info.title);
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      implicit_apps_sub_dir, profile_path, new_shortcut_info.title, kWebAppId);
   EXPECT_EQ(1u, result.size());
 }
 
@@ -333,8 +409,8 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcutsAppIdentityChange) {
                           new_shortcut_info);
 
   // The shortcut with the old title should have been deleted.
-  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
-      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name), kWebAppId);
   EXPECT_EQ(0u, result.size());
 
   // When an app changes both title and icons, the icon file and shortcuts
@@ -345,8 +421,8 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcutsAppIdentityChange) {
       icon_file.ReplaceExtension(FILE_PATH_LITERAL(".ico.md5")))));
 
   // The shortcut with the new title should now be in the shortcut dir.
-  result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path,
-                                             new_shortcut_info.title);
+  result = FindAppShortcutsByProfileAppIdAndTitle(
+      shortcut_dir, profile_path, new_shortcut_info.title, kWebAppId);
   EXPECT_EQ(1u, result.size());
 
   // A new icon file (and checksum) should have been created.

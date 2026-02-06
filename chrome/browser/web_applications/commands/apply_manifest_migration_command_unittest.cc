@@ -359,15 +359,11 @@ TEST_F(ApplyManifestMigrationCommandTest,
       destination_app_id,
       WebAppFilter::InstalledInOperatingSystemForTesting()));
   if (IsOsIntegrationSupported()) {
-// TODO(crbug.com/339024222): Windows does not update app icons on OS
-// integration. Needs fixing.
-#if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
         profile(), destination_app_id, base::UTF16ToUTF8(source_app_name)));
     EXPECT_EQ(source_color,
               GetShortcutColor(destination_app_id,
                                base::UTF16ToUTF8(source_app_name)));
-#endif  // BUILDFLAG(IS_WIN)
   }
 }
 
@@ -448,15 +444,11 @@ TEST_F(ApplyManifestMigrationCommandTest,
       destination_app_id,
       WebAppFilter::InstalledInOperatingSystemForTesting()));
   if (IsOsIntegrationSupported()) {
-    // TODO(crbug.com/339024222): Windows does not update app icons on OS
-    // integration. Needs fixing.
-#if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
         profile(), destination_app_id, base::UTF16ToUTF8(source_app_name)));
     EXPECT_EQ(source_color,
               GetShortcutColor(destination_app_id,
                                base::UTF16ToUTF8(source_app_name)));
-#endif  // BUILDFLAG(IS_WIN)
   }
 }
 

@@ -41,7 +41,8 @@ Result UnregisterRunOnOsLogin(const std::string& app_id,
   for (const auto& path : all_paths) {
     // Find all app's shortcuts in Startup folder to delete.
     std::vector<base::FilePath> shortcut_files =
-        FindAppShortcutsByProfileAndTitle(path, profile_path, shortcut_title);
+        FindAppShortcutsByProfileAppIdAndTitle(path, profile_path,
+                                               shortcut_title, app_id);
     for (const auto& shortcut_file : shortcut_files) {
       if (!base::DeleteFile(shortcut_file))
         result = Result::kError;
