@@ -2394,6 +2394,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.Camera.Settings.GeminiCameraPermissionToggled"
+    enum="Boolean" expires_after="2027-02-06">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records that the user toggled the Camera setting on (true) or off (false) in
+    the Gemini settings UI.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.CameraFlow.CameraPicker.Result"
     enum="IOSGeminiCameraPickerResult" expires_after="2027-01-28">
   <owner>joepeplowski@google.com</owner>
