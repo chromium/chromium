@@ -113,12 +113,12 @@ void MachineLevelUserCloudPolicyManager::Init(SchemaRegistry* registry) {
     extension_install_store()->AddObserver(this);
   }
 
-  // Load the policy from disk synchronously once the manager is initalized
+  // Load the policy from disk synchronously once the manager is initialized
   // during Chrome launch if the cache and the global dm token exist.
   store()->LoadImmediately();
-  if (extension_install_store()) {
-    extension_install_store()->LoadImmediately();
-  }
+
+  // TODO(crbug.com/482004732): Load extension install policy from disk synchronously once
+  // the feature is launched.
 }
 
 void MachineLevelUserCloudPolicyManager::Shutdown() {

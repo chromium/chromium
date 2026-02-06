@@ -72,7 +72,7 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
 TEST_F(MachineLevelUserCloudPolicyManagerTest, InitManager) {
   EXPECT_CALL(*store_, LoadImmediately());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_CALL(*extension_install_store_, LoadImmediately());
+  EXPECT_CALL(*extension_install_store_, LoadImmediately()).Times(0);
 #endif
   manager_->Init(&schema_registry_);
   ::testing::Mock::VerifyAndClearExpectations(store_);
