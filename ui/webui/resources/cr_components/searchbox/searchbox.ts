@@ -1278,6 +1278,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         contextFiles: uploads,
         mode: mode,
         model: model,
+        inputState: this.inputState_,
       },
       bubbles: true,
       composed: true,

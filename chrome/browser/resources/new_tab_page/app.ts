@@ -33,6 +33,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
@@ -452,6 +453,7 @@ export class AppElement extends AppElementBase {
   private pendingComposeboxText_: string = '';
   private pendingComposeboxMode_: ToolMode = ToolMode.kUnspecified;
   private pendingComposeboxModel_: ModelMode = ModelMode.kUnspecified;
+  private pendingComposeboxInputState_: InputState|null = null;
   private pendingAutoRemovalToasts_:
       Array<{message: string, undo: () => void}> = [];
 
@@ -857,15 +859,17 @@ export class AppElement extends AppElementBase {
   protected onComposeboxInitialized_(e: CustomEvent<{
     initializeComposeboxState:
         (text: string, files: ContextualUpload[], mode: ToolMode,
-         model: number) => void,
+         model: number, inputState: InputState|null) => void,
   }>) {
     e.detail.initializeComposeboxState(
         this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
-        this.pendingComposeboxMode_, this.pendingComposeboxModel_);
+        this.pendingComposeboxMode_, this.pendingComposeboxModel_,
+        this.pendingComposeboxInputState_);
     this.pendingComposeboxContextFiles_ = [];
     this.pendingComposeboxText_ = '';
     this.pendingComposeboxMode_ = ToolMode.kUnspecified;
     this.pendingComposeboxModel_ = ModelMode.kUnspecified;
+    this.pendingComposeboxInputState_ = null;
   }
 
   protected openComposebox_(e: CustomEvent<{
@@ -873,6 +877,7 @@ export class AppElement extends AppElementBase {
     contextFiles: ContextualUpload[],
     mode: ToolMode,
     model: ModelMode,
+    inputState: InputState|null,
   }>) {
     if (e.detail.searchboxText) {
       this.pendingComposeboxText_ = e.detail.searchboxText;
@@ -882,6 +887,7 @@ export class AppElement extends AppElementBase {
     }
     this.pendingComposeboxMode_ = e.detail.mode;
     this.pendingComposeboxModel_ = e.detail.model;
+    this.pendingComposeboxInputState_ = e.detail.inputState;
     this.toggleComposebox_();
   }
 
