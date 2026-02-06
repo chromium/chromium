@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -97,6 +99,14 @@ VerticalSeparator::VerticalSeparator() {
 BEGIN_METADATA(VerticalSeparator)
 END_METADATA
 
+std::u16string GetBadgeString(ui::NewBadgeType new_badge_type) {
+  switch (new_badge_type) {
+    case ui::NewBadgeType::kNew:
+      return l10n_util::GetStringUTF16(IDS_NEW_BADGE);
+    case ui::NewBadgeType::kPreview:
+      return l10n_util::GetStringUTF16(IDS_PREVIEW_BADGE);
+  }
+}
 }  // namespace
 
 // MenuItemView ---------------------------------------------------------------
@@ -285,7 +295,7 @@ bool MenuItemView::IsBubble(MenuAnchorPosition anchor) {
 std::u16string MenuItemView::GetAccessibleNameForMenuItem(
     const std::u16string& item_text,
     const std::u16string& minor_text,
-    bool is_new_feature) {
+    std::optional<ui::NewBadgeType> new_badge_type) {
   std::u16string accessible_name = item_text;
 
   // Filter out the "&" for accessibility clients.
@@ -308,9 +318,19 @@ std::u16string MenuItemView::GetAccessibleNameForMenuItem(
     accessible_name.append(minor_text);
   }
 
-  if (is_new_feature) {
+  if (new_badge_type.has_value()) {
     accessible_name.push_back(' ');
-    accessible_name.append(GetNewBadgeAccessibleDescription());
+
+    switch (new_badge_type.value()) {
+      case ui::NewBadgeType::kNew:
+        accessible_name.append(
+            l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE));
+        break;
+      case ui::NewBadgeType::kPreview:
+        accessible_name.append(
+            l10n_util::GetStringUTF16(IDS_PREVIEW_BADGE_SCREEN_READER_MESSAGE));
+        break;
+    }
   }
 
   return accessible_name;
@@ -876,10 +896,6 @@ void MenuItemView::SetAlerted() {
   SchedulePaint();
 }
 
-bool MenuItemView::ShouldShowNewBadge() const {
-  return is_new_;
-}
-
 bool MenuItemView::IsTraversableByKeyboard() const {
   bool ignore_enabled =
       ui::AXPlatform::GetInstance().GetMode().has_mode(ui::AXMode::kNativeAPIs);
@@ -892,10 +908,6 @@ int MenuItemView::GetItemHorizontalBorder() const {
   return (controller && controller->use_ash_system_ui_layout())
              ? config.ash_item_horizontal_border_padding
              : config.item_horizontal_border_padding;
-}
-
-std::u16string MenuItemView::GetNewBadgeAccessibleDescription() {
-  return l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE);
 }
 
 MenuItemView::MenuItemView(MenuItemView* parent,
@@ -1129,12 +1141,12 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
                                     colors.minor_fg_color, text_bounds, flags);
   }
 
-  if (ShouldShowNewBadge()) {
-    BadgePainter::PaintBadge(canvas, this,
-                             label_start +
-                                 gfx::GetStringWidth(title(), font_list) +
-                                 BadgePainter::kBadgeHorizontalMargin,
-                             top_margin, new_badge_text_, font_list);
+  if (new_badge_type_.has_value()) {
+    BadgePainter::PaintBadge(
+        canvas, this,
+        label_start + gfx::GetStringWidth(title(), font_list) +
+            BadgePainter::kBadgeHorizontalMargin,
+        top_margin, GetBadgeString(new_badge_type_.value()), font_list);
   }
 
   PaintMinorIconAndText(canvas, colors.minor_fg_color);
@@ -1323,8 +1335,9 @@ std::u16string MenuItemView::CalculateAccessibleName() const {
   } else {
     item_text = title_;
   }
+
   return GetAccessibleNameForMenuItem(item_text, GetMinorText(),
-                                      ShouldShowNewBadge());
+                                      new_badge_type_);
 }
 
 void MenuItemView::DestroyAllMenuHosts() {
@@ -1399,10 +1412,12 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     dimensions.standard_width += LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   }
-  if (ShouldShowNewBadge()) {
+  if (new_badge_type_.has_value()) {
     dimensions.standard_width +=
         BadgePainter::kBadgeHorizontalMargin +
-        views::BadgePainter::GetBadgeSize(new_badge_text_, font_list).width();
+        views::BadgePainter::GetBadgeSize(
+            GetBadgeString(new_badge_type_.value()), font_list)
+            .width();
   }
 
   if (use_ash_system_ui_layout) {

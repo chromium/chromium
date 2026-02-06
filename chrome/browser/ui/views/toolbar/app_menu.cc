@@ -288,8 +288,8 @@ std::u16string GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
                            .GetShortcutText();
   }
 
-  return MenuItemView::GetAccessibleNameForMenuItem(accessible_name,
-                                                    accelerator_text, false);
+  return MenuItemView::GetAccessibleNameForMenuItem(
+      accessible_name, accelerator_text, /*badge_type=*/std::nullopt);
 }
 
 // A button that lives inside a menu item.
@@ -450,7 +450,7 @@ void AddSignedInChipToProfileMenuItem(
   // account for the profile chip.
   item->GetViewAccessibility().SetName(
       views::MenuItemView::GetAccessibleNameForMenuItem(
-          item->title(), GetSigninStatusChipString(profile), false));
+          item->title(), GetSigninStatusChipString(profile), std::nullopt));
 }
 
 // AppMenuView is a view that can contain label buttons.

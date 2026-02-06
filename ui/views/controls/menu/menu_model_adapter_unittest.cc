@@ -5,6 +5,7 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -87,6 +88,11 @@ class MenuModelBase : public ui::MenuModel {
     return items_[index].new_feature;
   }
 
+  std::optional<ui::NewBadgeType> GetNewBadgeTypeAt(
+      size_t index) const override {
+    return items_[index].new_badge_type;
+  }
+
   MenuModel* GetSubmenuModelAt(size_t index) const override {
     return items_[index].submenu;
   }
@@ -128,6 +134,7 @@ class MenuModelBase : public ui::MenuModel {
     bool visible = true;
     bool alerted = false;
     bool new_feature = false;
+    std::optional<ui::NewBadgeType> new_badge_type = std::nullopt;
   };
 
   const Item& GetItemDefinition(size_t index) { return items_[index]; }
@@ -173,6 +180,7 @@ class ActionableSubmenuModel final : public MenuModelBase {
     items_.emplace_back(TYPE_COMMAND, "actionable submenu item 0", nullptr);
     items_.emplace_back(TYPE_COMMAND, "actionable submenu item 1", nullptr);
     items_[1].new_feature = true;
+    items_[1].new_badge_type = ui::NewBadgeType::kNew;
   }
 
   ActionableSubmenuModel(const ActionableSubmenuModel&) = delete;
@@ -285,7 +293,9 @@ void CheckSubmenu(const RootModel& model,
     EXPECT_EQ(model_item.alerted, item->is_alerted());
 
     // Check new feature flag.
-    EXPECT_EQ(model_item.new_feature, item->is_new());
+    const bool is_new = item->new_badge_type().has_value() &&
+                        (item->new_badge_type() == ui::NewBadgeType::kNew);
+    EXPECT_EQ(model_item.new_feature, is_new);
 
     // Check activation.
     static_cast<views::MenuDelegate*>(delegate)->ExecuteCommand(id);
@@ -369,7 +379,9 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
     EXPECT_EQ(model_item.alerted, item->is_alerted());
 
     // Check new feature flag.
-    EXPECT_EQ(model_item.new_feature, item->is_new());
+    const bool is_new = item->new_badge_type().has_value() &&
+                        (item->new_badge_type() == ui::NewBadgeType::kNew);
+    EXPECT_EQ(model_item.new_feature, is_new);
 
     // Check activation.
     static_cast<views::MenuDelegate*>(&delegate)->ExecuteCommand(id);

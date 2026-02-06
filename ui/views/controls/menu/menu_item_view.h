@@ -37,6 +37,10 @@ namespace gfx {
 class FontList;
 }  // namespace gfx
 
+namespace ui {
+enum class NewBadgeType;
+}  // namespace ui
+
 namespace views {
 
 namespace internal {
@@ -150,7 +154,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   static std::u16string GetAccessibleNameForMenuItem(
       const std::u16string& item_text,
       const std::u16string& accelerator_text,
-      bool is_new_feature);
+      std::optional<ui::NewBadgeType> badge_type);
 
   // Hides and cancels the menu. This does nothing if the menu is not open.
   void Cancel();
@@ -316,8 +320,12 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Returns the command id of this item.
   int GetCommand() const { return command_; }
 
-  void set_is_new(bool is_new) { is_new_ = is_new; }
-  bool is_new() const { return is_new_; }
+  void set_new_badge_type(std::optional<ui::NewBadgeType> new_badge_type) {
+    new_badge_type_ = new_badge_type;
+  }
+  std::optional<ui::NewBadgeType> new_badge_type() const {
+    return new_badge_type_;
+  }
 
   void set_may_have_mnemonics(bool may_have_mnemonics) {
     may_have_mnemonics_ = may_have_mnemonics;
@@ -412,9 +420,6 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   void SetAlerted();
   bool is_alerted() const { return is_alerted_; }
 
-  // Returns whether or not a "new" badge should be shown on this menu item.
-  bool ShouldShowNewBadge() const;
-
   // Returns whether keyboard navigation through the menu should stop on this
   // item.
   bool IsTraversableByKeyboard() const;
@@ -437,8 +442,6 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   bool last_paint_as_selected_for_testing() const {
     return last_paint_as_selected_;
   }
-
-  static std::u16string GetNewBadgeAccessibleDescription();
 
  protected:
   // Creates a MenuItemView. This is used by the various AddXXX methods.
@@ -646,6 +649,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // feature for users.
   bool is_new_ = false;
 
+  std::optional<ui::NewBadgeType> new_badge_type_ = std::nullopt;
+
   // Whether the menu item contains user-created text.
   bool may_have_mnemonics_ = true;
 
@@ -737,9 +742,6 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // `update_selection_based_state_in_view_herarchy_changed_` is set to false
   // and SetIconView() explicitly calls UpdateSelectionBasedStateIfChanged().
   bool update_selection_based_state_in_view_herarchy_changed_ = true;
-
-  const std::u16string new_badge_text_ =
-      l10n_util::GetStringUTF16(IDS_NEW_BADGE);
 
   std::optional<ui::ColorId> foreground_color_id_;
   std::optional<MenuItemBackground> menu_item_background_;

@@ -236,8 +236,10 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   // Sets whether the item at |index| is visible.
   void SetVisibleAt(size_t index, bool visible);
 
-  // Sets whether the item at |index| is new.
-  void SetIsNewFeatureAt(size_t index, IsNewFeatureAtValue is_new_feature);
+  // Sets whether the item at |index| should have a new badge.
+  void SetIsNewFeatureAt(size_t index,
+                         IsNewFeatureAtValue is_new_feature,
+                         NewBadgeType new_badge_type = NewBadgeType::kNew);
 
   // Sets whether the item at |index| is may have mnemonics.
   void SetMayHaveMnemonicsAt(size_t index, bool may_have_mnemonics);
@@ -293,6 +295,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   bool IsVisibleAt(size_t index) const override;
   bool IsAlertedAt(size_t index) const override;
   bool IsNewFeatureAt(size_t index) const override;
+  std::optional<NewBadgeType> GetNewBadgeTypeAt(size_t index) const override;
   bool MayHaveMnemonicsAt(size_t index) const override;
   std::u16string GetAccessibleNameAt(size_t index) const override;
   ElementIdentifier GetElementIdentifierAt(size_t index) const override;
@@ -330,7 +333,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
     MenuSeparatorType separator_type = NORMAL_SEPARATOR;
     bool enabled = true;
     bool visible = true;
-    bool is_new_feature = false;
+    std::optional<NewBadgeType> new_badge_type = std::nullopt;
     bool may_have_mnemonics = true;
     bool force_show_accelerator_for_item = false;
     std::u16string accessible_name;

@@ -478,9 +478,10 @@ void SubmenuView::SetSelectedRow(std::optional<size_t> row) {
 }
 
 std::u16string SubmenuView::GetTextForRow(size_t row) {
+  MenuItemView* const menu_item_view = GetMenuItemAt(row);
   return MenuItemView::GetAccessibleNameForMenuItem(
-      GetMenuItemAt(row)->title(), std::u16string(),
-      GetMenuItemAt(row)->ShouldShowNewBadge());
+      menu_item_view->title(), std::u16string(),
+      menu_item_view->new_badge_type());
 }
 
 bool SubmenuView::IsShowing() const {

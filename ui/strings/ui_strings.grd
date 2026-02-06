@@ -437,6 +437,13 @@ need to be translated for each locale.-->
                desc="Message appended to screen reader description of UI elements which have the 'New' badge">
         This is a new feature
       </message>
+      <message name="IDS_PREVIEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting features that are currently in preview, in uppercase">
+        PREVIEW
+      </message>
+      <message name="IDS_PREVIEW_BADGE_SCREEN_READER_MESSAGE" is_accessibility_with_no_ui="true"
+               desc="Message appended to screen reader description of UI elements which have the 'PREVIEW' badge">
+        This is a feature in preview
+      </message>
 
       <!-- General application strings -->
       <message name="IDS_SENTENCE_END" desc="The symbol that is used to end a sentence.">

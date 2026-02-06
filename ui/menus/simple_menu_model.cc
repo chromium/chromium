@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -377,8 +379,10 @@ void SimpleMenuModel::SetVisibleAt(size_t index, bool visible) {
 }
 
 void SimpleMenuModel::SetIsNewFeatureAt(size_t index,
-                                        IsNewFeatureAtValue is_new_feature) {
-  items_[ValidateItemIndex(index)].is_new_feature = is_new_feature;
+                                        IsNewFeatureAtValue is_new_feature,
+                                        NewBadgeType new_badge_type) {
+  items_[ValidateItemIndex(index)].new_badge_type =
+      is_new_feature ? std::make_optional(new_badge_type) : std::nullopt;
 }
 
 void SimpleMenuModel::SetMayHaveMnemonicsAt(size_t index,
@@ -555,7 +559,15 @@ bool SimpleMenuModel::IsAlertedAt(size_t index) const {
 }
 
 bool SimpleMenuModel::IsNewFeatureAt(size_t index) const {
-  return items_[ValidateItemIndex(index)].is_new_feature;
+  std::optional<NewBadgeType> new_badge_type =
+      items_[ValidateItemIndex(index)].new_badge_type;
+  return new_badge_type.has_value() &&
+         (new_badge_type.value() == NewBadgeType::kNew);
+}
+
+std::optional<NewBadgeType> SimpleMenuModel::GetNewBadgeTypeAt(
+    size_t index) const {
+  return items_[ValidateItemIndex(index)].new_badge_type;
 }
 
 bool SimpleMenuModel::MayHaveMnemonicsAt(size_t index) const {

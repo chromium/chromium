@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/badge.h"
 #include "ui/views/controls/button/button.h"
@@ -44,7 +45,7 @@ void BadgeExample::CreateExampleView(View* container) {
     menu_item_view->AppendMenuItem(2, GetStringUTF16(IDS_BADGE_MENU_ITEM_2));
     // Enable the "New" Badge.
     menu_item_view->AppendMenuItem(3, GetStringUTF16(IDS_BADGE_MENU_ITEM_3))
-        ->set_is_new(true);
+        ->set_new_badge_type(ui::NewBadgeType::kNew);
 
     example->menu_runner_ =
         std::make_unique<MenuRunner>(std::move(menu_item_view), 0);
