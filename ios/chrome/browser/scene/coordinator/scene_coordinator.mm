@@ -877,9 +877,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
                                  completion:nil];
 }
 
-- (void)showBWGSettings {
+- (void)showGeminiSettings {
   if (self.settingsNavigationController) {
-    [self.settingsNavigationController showBWGSettings];
+    [self.settingsNavigationController showGeminiSettings];
     return;
   }
 

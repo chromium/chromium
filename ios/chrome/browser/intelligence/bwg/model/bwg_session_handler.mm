@@ -240,7 +240,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 }
 
 - (void)didTapGeminiSettingsButton {
-  [self.settingsHandler showBWGSettings];
+  [self.settingsHandler showGeminiSettings];
 }
 
 - (void)didSendQueryWithInputType:(BWGInputType)inputType

@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/default_browser/default_browser_settings_table_view_controller.h"
@@ -83,7 +83,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 @interface SettingsNavigationController () <
     AutofillProfileEditCoordinatorDelegate,
-    BWGSettingsCoordinatorDelegate,
+    GeminiSettingsCoordinatorDelegate,
     ContentSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     ManageAccountsCoordinatorDelegate,
@@ -124,8 +124,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 @property(nonatomic, strong)
     AutofillProfileEditCoordinator* autofillProfileEditCoordinator;
 
-// BWG settings coordinator.
-@property(nonatomic, strong) BWGSettingsCoordinator* BWGSettingsCoordinator;
+// Gemini settings coordinator.
+@property(nonatomic, strong)
+    GeminiSettingsCoordinator* geminiSettingsCoordinator;
 
 // Safety Check coordinator.
 @property(nonatomic, strong) SafetyCheckCoordinator* safetyCheckCoordinator;
@@ -232,7 +233,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  [navigationController showBWGSettingsPage];
+  [navigationController showGeminiSettingsPage];
   return navigationController;
 }
 
@@ -710,7 +711,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopPasswordDetailsCoordinator];
   [self stopAutofillProfileEditCoordinator];
   [self stopNotificationsCoordinator];
-  [self stopBWGSettingsCoordinator];
+  [self stopGeminiSettingsCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
@@ -744,20 +745,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 #pragma mark - Private
 
-- (void)showBWGSettingsPage {
+- (void)showGeminiSettingsPage {
   CHECK(IsPageActionMenuEnabled());
-  [self stopBWGSettingsCoordinator];
-  self.BWGSettingsCoordinator = [[BWGSettingsCoordinator alloc]
+  [self stopGeminiSettingsCoordinator];
+  self.geminiSettingsCoordinator = [[GeminiSettingsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
-  self.BWGSettingsCoordinator.delegate = self;
-  [self.BWGSettingsCoordinator start];
+  self.geminiSettingsCoordinator.delegate = self;
+  [self.geminiSettingsCoordinator start];
 }
 
-- (void)stopBWGSettingsCoordinator {
-  self.BWGSettingsCoordinator.delegate = nil;
-  [self.BWGSettingsCoordinator stop];
-  self.BWGSettingsCoordinator = nil;
+- (void)stopGeminiSettingsCoordinator {
+  self.geminiSettingsCoordinator.delegate = nil;
+  [self.geminiSettingsCoordinator stop];
+  self.geminiSettingsCoordinator = nil;
 }
 
 - (void)stopManageAccountsCoordinator {
@@ -1167,8 +1168,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.manageAccountsCoordinator start];
 }
 
-- (void)showBWGSettings {
-  [self showBWGSettingsPage];
+- (void)showGeminiSettings {
+  [self showGeminiSettingsPage];
 }
 
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
@@ -1365,11 +1366,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   }
 }
 
-#pragma mark - BWGSettingsCoordinatorDelegate
+#pragma mark - GeminiSettingsCoordinatorDelegate
 
-- (void)BWGSettingsCoordinatorViewControllerWasRemoved:
-    (BWGSettingsCoordinator*)coordinator {
-  [self stopBWGSettingsCoordinator];
+- (void)geminiSettingsCoordinatorViewControllerWasRemoved:
+    (GeminiSettingsCoordinator*)coordinator {
+  [self stopGeminiSettingsCoordinator];
 }
 
 @end

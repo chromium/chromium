@@ -31,8 +31,8 @@ enum class PushNotificationClientId;
             (UIViewController*)baseViewController
                           skipIfUINotAvailable:(BOOL)skipIfUINotAvailable;
 
-// Shows the BWG settings UI.
-- (void)showBWGSettings;
+// Shows the Gemini settings UI.
+- (void)showGeminiSettings;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the Google services settings UI, presenting from `baseViewController`.

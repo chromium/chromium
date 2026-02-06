@@ -1,25 +1,25 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class BWGSettingsCoordinator;
+@class GeminiSettingsCoordinator;
 
 // Delegate that allows to dereference the PrivacyCoordinator.
-@protocol BWGSettingsCoordinatorDelegate
+@protocol GeminiSettingsCoordinatorDelegate
 
 // Called when the view controller is removed from navigation controller.
-- (void)BWGSettingsCoordinatorViewControllerWasRemoved:
-    (BWGSettingsCoordinator*)coordinator;
+- (void)geminiSettingsCoordinatorViewControllerWasRemoved:
+    (GeminiSettingsCoordinator*)coordinator;
 
 @end
 
-// Coordinator for the BWG settings view.
-@interface BWGSettingsCoordinator : ChromeCoordinator
+// Coordinator for the Gemini settings view.
+@interface GeminiSettingsCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
@@ -32,8 +32,8 @@
                                          browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
 
-@property(nonatomic, weak) id<BWGSettingsCoordinatorDelegate> delegate;
+@property(nonatomic, weak) id<GeminiSettingsCoordinatorDelegate> delegate;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_COORDINATOR_H_

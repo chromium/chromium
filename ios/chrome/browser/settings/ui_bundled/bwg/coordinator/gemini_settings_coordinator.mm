@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_view_controller.h"
@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
-@implementation BWGSettingsCoordinator {
+@implementation GeminiSettingsCoordinator {
   // View controller presented by this coordinator.
   BWGSettingsViewController* _viewController;
   // Mediator used by this coordinator.

@@ -1,7 +1,7 @@
 source_set("coordinator") {
   sources = [
-    "bwg_settings_coordinator.h",
-    "bwg_settings_coordinator.mm",
+    "gemini_settings_coordinator.h",
+    "gemini_settings_coordinator.mm",
     "gemini_settings_mediator.h",
     "gemini_settings_mediator.mm",
   ]
