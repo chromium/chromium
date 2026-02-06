@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -2960,12 +2961,12 @@ Node* InspectorDOMAgent::NodeForPath(const String& path) {
   InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
       IncludeWhitespace();
   for (wtf_size_t i = 0; i < path_tokens.size() - 1; i += 2) {
-    bool success = true;
     String& index_value = path_tokens[i];
-    wtf_size_t child_number = index_value.ToUInt(&success);
+    auto result = StringToUint(index_value);
+    wtf_size_t child_number = result.value_or(0);
     Node* child;
     String child_name = path_tokens[i + 1];
-    if (!success) {
+    if (!result) {
       if (index_value == "d") {
         child = DocumentForFrameOwner(node);
       } else {

@@ -327,6 +327,15 @@ std::optional<int32_t> StringToInt(const StringView& input) {
   return ok ? std::optional<int32_t>(value) : std::nullopt;
 }
 
+std::optional<uint32_t> StringToUint(const StringView& input) {
+  bool ok = false;
+  NumberParsingOptions option = NumberParsingOptions::Loose();
+  uint32_t value = input.Is8Bit()
+                       ? CharactersToUInt(input.Span8(), option, &ok)
+                       : CharactersToUInt(input.Span16(), option, &ok);
+  return ok ? std::optional<uint32_t>(value) : std::nullopt;
+}
+
 std::optional<double> StringToDouble(const StringView& input) {
   bool ok = false;
   double value = input.Is8Bit() ? CharactersToDouble(input.Span8(), &ok)

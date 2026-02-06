@@ -480,21 +480,6 @@ class WTF_EXPORT String {
   int64_t ToInt64Strict(bool* ok = nullptr) const;
   uint64_t ToUInt64Strict(bool* ok = nullptr) const;
 
-  // The following ToFoo function accept:
-  //  - leading '+'
-  //  - leading Unicode whitespace
-  //  - trailing garbage
-  //  - no "-0"
-  //  - no out-of-range numbers which the resultant type can't represent
-  //
-  // If the input string is not acceptable, 0 is returned and |*ok| becomes
-  // |false|.
-  //
-  // We can use th function to implement a Web Platform feature only if the
-  // input string is already valid according to the specification of the
-  // feature.
-  unsigned ToUInt(bool* ok = nullptr) const;
-
   // See string_to_number.h for float/double parsing.
 
 #ifdef __OBJC__

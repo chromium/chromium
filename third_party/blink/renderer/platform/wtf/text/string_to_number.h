@@ -146,7 +146,7 @@ WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
 //  - leading '+'
 //  - leading Unicode whitespace
 //  - trailing garbage
-//  - no "-0" (StringToUInt and StringToUInt64)
+//  - no "-0" (only for StringToUint)
 //  - no out-of-range numbers which the resultant type can't represent
 //
 // If the input string is not acceptable, std::nullopt is returned.
@@ -155,6 +155,7 @@ WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
 // input string is already valid according to the specification of the
 // feature.
 WTF_EXPORT std::optional<int32_t> StringToInt(const StringView& input);
+WTF_EXPORT std::optional<uint32_t> StringToUint(const StringView& input);
 
 // StringToDouble() and StringToFloat() functions accept:
 //  - leading '+'

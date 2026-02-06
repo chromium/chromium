@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -1120,7 +1121,7 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
   // The saved state should have at least one value and an index.
   DCHECK_GE(state.ValueSize(), 2u);
   if (!IsMultiple()) {
-    unsigned index = state[1].ToUInt();
+    unsigned index = StringToUint(state[1]).value_or(0);
     HTMLOptionElement* option_element =
         index < items_size ? DynamicTo<HTMLOptionElement>(items[index].Get())
                            : nullptr;
@@ -1148,7 +1149,7 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
     wtf_size_t start_index = 0;
     for (wtf_size_t i = 0; i < state.ValueSize(); i += 2) {
       const String& value = state[i];
-      const unsigned index = state[i + 1].ToUInt();
+      const unsigned index = StringToUint(state[i + 1]).value_or(0);
       HTMLOptionElement* option_element =
           index < items_size ? DynamicTo<HTMLOptionElement>(items[index].Get())
                              : nullptr;
