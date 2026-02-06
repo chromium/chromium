@@ -136,11 +136,11 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   // Adds a separator to the menu.
   void AddSeparator();
   // Adds recent tabs as items to the menu.
-  void AddRecentTabItems(bool add_separator = true);
+  void AddRecentTabItems();
   // Adds the contextual input items to the menu.
   void AddContextualInputItems();
   // Adds the tool items to the menu.
-  void AddToolItems(bool add_separator = true);
+  void AddToolItems();
   // Adds the model picker items to the menu.
   void AddModelPickerItems();
   // Adds a title with a localized string to the menu.
@@ -161,15 +161,22 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   bool IsContentSharingEnabled() const;
 
+  /* Helpers for InputType input_state fields. */
   omnibox::InputType GetInputTypeForCommandId(int command_id) const;
   bool IsInputTypeAllowed(omnibox::InputType input_type) const;
   bool IsInputTypeDisabled(omnibox::InputType input_type) const;
 
+  /* Helpers for ToolMode input_state fields. */
   omnibox::ToolMode GetToolModeForCommandId(int command_id) const;
+  const omnibox::ToolConfig* GetToolConfig(omnibox::ToolMode tool) const;
+  std::optional<omnibox::SectionConfig> GetToolSectionConfig() const;
   bool IsToolAllowed(omnibox::ToolMode tool) const;
   bool IsToolDisabled(omnibox::ToolMode tool) const;
 
+  /* Helpers for ModelMode input_state fields. */
   omnibox::ModelMode GetModelModeForCommandId(int command_id) const;
+  const omnibox::ModelConfig* GetModelConfig(omnibox::ModelMode model) const;
+  std::optional<omnibox::SectionConfig> GetModelSectionConfig() const;
   bool IsModelAllowed(omnibox::ModelMode model) const;
   bool IsModelDisabled(omnibox::ModelMode model) const;
 
