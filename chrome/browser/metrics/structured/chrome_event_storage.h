@@ -17,6 +17,8 @@ namespace metrics::structured {
 // The events are stored in-memory and are lost on crash.
 class ChromeEventStorage : public EventStorage<StructuredEventProto> {
  public:
+  using Events = ::google::protobuf::RepeatedPtrField<StructuredEventProto>;
+
   ChromeEventStorage();
 
   ChromeEventStorage(const ChromeEventStorage&) = delete;
@@ -26,8 +28,7 @@ class ChromeEventStorage : public EventStorage<StructuredEventProto> {
 
   // EventStorage:
   void AddEvent(StructuredEventProto event) override;
-  ::google::protobuf::RepeatedPtrField<StructuredEventProto> TakeEvents()
-      override;
+  void TakeEvents(base::OnceCallback<void(Events)> consumer) override;
   int RecordedEventsCount() const override;
   void Purge() override;
   void CopyEvents(EventsProto* proto) const override;

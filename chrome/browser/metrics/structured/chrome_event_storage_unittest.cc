@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,9 +39,10 @@ class ChromeEventStorageTest : public testing::Test {
 
   StructuredDataProto GetReport(ChromeEventStorage* storage) {
     StructuredDataProto structured_data;
-
-    *structured_data.mutable_events() = storage->TakeEvents();
-
+    storage->TakeEvents(
+        base::BindLambdaForTesting([&](ChromeEventStorage::Events events) {
+          *structured_data.mutable_events() = events;
+        }));
     return structured_data;
   }
 

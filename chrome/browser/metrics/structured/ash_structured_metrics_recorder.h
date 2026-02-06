@@ -41,13 +41,15 @@ class AshStructuredMetricsRecorder : public StructuredMetricsRecorder,
  public:
   explicit AshStructuredMetricsRecorder(
       metrics::MetricsProvider* system_profile_provider);
+  ~AshStructuredMetricsRecorder() override;
 
   void OnExternalMetricsCollected(const EventsProto& events);
 
   // StructuredMetricsRecorder:
   void EnableRecording() override;
   void DisableRecording() override;
-  void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto) override;
+  void ProvideEventMetrics(
+      base::OnceCallback<void(StructuredDataProto)> consumer) override;
   void AddSequenceMetadata(StructuredEventProto* proto,
                            const Event& event,
                            const ProjectValidator& project_validator,
@@ -63,10 +65,7 @@ class AshStructuredMetricsRecorder : public StructuredMetricsRecorder,
   void ProfileAdded(const Profile& profile) override;
 
  private:
-  friend class base::RefCountedDeleteOnSequence<StructuredMetricsRecorder>;
-  friend class base::DeleteHelper<StructuredMetricsRecorder>;
   friend class AshStructuredMetricsRecorderTest;
-  ~AshStructuredMetricsRecorder() override;
 
   AshStructuredMetricsRecorder(
       std::unique_ptr<KeyDataProvider> key_provider,
@@ -74,6 +73,12 @@ class AshStructuredMetricsRecorder : public StructuredMetricsRecorder,
       metrics::MetricsProvider* system_profile_provider);
 
   void ProvideSystemProfile(SystemProfileProto* system_profile);
+
+  // Called on the UI thread after events have been retrieved from storage and
+  // the external metrics have been processed.
+  void ProvideEventMetricsDone(
+      base::OnceCallback<void(StructuredDataProto)> consumer,
+      StructuredDataProto events);
 
   // Whether the system profile has been initialized.
   bool system_profile_initialized_ = false;

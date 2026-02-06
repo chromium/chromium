@@ -4,20 +4,34 @@
 
 #include "chrome/browser/metrics/structured/storage_manager_impl.h"
 
+#include <vector>
+
 #include "base/system/sys_info.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "chrome/browser/metrics/structured/arena_event_buffer.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
 namespace metrics::structured {
+
 namespace {
+
 using ::google::protobuf::Arena;
 using ::google::protobuf::RepeatedPtrField;
+
+// Reads events from disk on a background thread.
+StorageManagerImpl::FlushedEvents ReadEventsOnBackgroundThread(
+    std::vector<FlushedKey> keys) {
+  StorageManagerImpl::FlushedEvents result;
+  for (const auto& key : keys) {
+    if (auto events = FlushedMap::ReadKey(key)) {
+      result.emplace_back(key, std::move(*events));
+    }
+  }
+  return result;
+}
 
 // Default paths for Storage Manager on ChromeOS.
 constexpr char kArenaProtoDefaultPath[] =
@@ -33,6 +47,7 @@ constexpr char kRootPartitionPath[] = "/var/lib/metrics/structured/";
 // devices.
 constexpr int64_t kMinBufferSize = 10 * 1024;  // 10 kb
 constexpr int64_t kMinDiskSize = 50 * 1024;    // 50 kb
+
 }  // namespace
 
 StorageManagerImpl::StorageManagerImpl(const StorageManagerConfig& config)
@@ -44,22 +59,18 @@ StorageManagerImpl::StorageManagerImpl(const StorageManagerConfig& config,
                                        const base::FilePath& events_path,
                                        const base::FilePath& flush_dir)
     : config_(config),
-      flushed_map_(flush_dir, config_.disk_max_bytes),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+      event_buffer_(events_path,
+                    /*write_delay=*/base::Minutes(0),
+                    config_.buffer_max_bytes),
+      flushed_map_(flush_dir, config_.disk_max_bytes) {
   LogMaxMemorySizeKb(config_.buffer_max_bytes / 1024);
   LogMaxDiskSizeKb(config_.disk_max_bytes / 1024);
-
-  event_buffer_ = std::make_unique<ArenaEventBuffer>(
-      events_path,
-      /*write_delay=*/base::Minutes(0), config_.buffer_max_bytes);
 }
 
 StorageManagerImpl::~StorageManagerImpl() = default;
 
 void StorageManagerImpl::AddEvent(StructuredEventProto event) {
-  const Result result = event_buffer_->AddEvent(event);
+  const Result result = event_buffer_.AddEvent(event);
   // By default we assume it was successful, it is only an error if the result
   // is an kError.
   RecordStatus status;
@@ -85,21 +96,37 @@ void StorageManagerImpl::AddEvent(StructuredEventProto event) {
   LogStorageManagerRecordStatus(status);
 }
 
-// Reads events from disk then from in-memory.
-//
-// This is a blocking operation since it could be reading events from disk. It
-// would be best to put this in a task.
-RepeatedPtrField<StructuredEventProto> StorageManagerImpl::TakeEvents() {
-  RepeatedPtrField<StructuredEventProto> events;
+void StorageManagerImpl::TakeEvents(base::OnceCallback<void(Events)> consumer) {
+  if (take_events_in_progress_) {
+    std::move(consumer).Run(Events());
+    return;
+  }
+  take_events_in_progress_ = true;
 
-  if (event_buffer_->Size() != 0) {
-    TakeFromInMemory(&events);
+  Events in_memory_events;
+  if (event_buffer_.Size() != 0) {
+    TakeFromInMemory(&in_memory_events);
   }
 
-  if (!flushed_map_.empty()) {
-    TakeFromDisk(&events);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&ReadEventsOnBackgroundThread, flushed_map_.keys()),
+      base::BindOnce(&StorageManagerImpl::CombineEventsOnUIThread,
+                     weak_factory_.GetWeakPtr(), std::move(consumer),
+                     std::move(in_memory_events)));
+}
+
+void StorageManagerImpl::CombineEventsOnUIThread(
+    base::OnceCallback<void(Events)> consumer,
+    Events in_memory_events,
+    FlushedEvents disk_events) {
+  if (!disk_events.empty()) {
+    AddEventsFromDisk(std::move(disk_events), &in_memory_events);
   }
-  return events;
+  std::move(consumer).Run(std::move(in_memory_events));
+  take_events_in_progress_ = false;
 }
 
 // The implementation only says how many events are in-memory or if there are
@@ -109,12 +136,12 @@ RepeatedPtrField<StructuredEventProto> StorageManagerImpl::TakeEvents() {
 // accurate value. I.E, if there are no events in-memory but there are some on
 // disk, this still return > 0.
 int StorageManagerImpl::RecordedEventsCount() const {
-  uint64_t size = event_buffer_->Size();
+  uint64_t size = event_buffer_.Size();
   return size ? size : flushed_map_.keys().size();
 }
 
 void StorageManagerImpl::Purge() {
-  event_buffer_->Purge();
+  event_buffer_.Purge();
   flushed_map_.Purge();
 }
 
@@ -142,20 +169,22 @@ StorageManagerConfig StorageManagerImpl::GetStorageManagerConfig() {
   };
 }
 
+bool StorageManagerImpl::IsInitializedForTesting() const {
+  return event_buffer_.IsInitialized() && flushed_map_.IsInitialized();
+}
+
 void StorageManagerImpl::FlushAndAddEvent(StructuredEventProto&& event) {
   FlushBuffer();
   // Buffer should be cleared by this point.
-  event_buffer_->AddEvent(event);
+  event_buffer_.AddEvent(event);
 }
 
 void StorageManagerImpl::FlushBuffer() {
   // The buffer is written to disk asynchronously, but it is cleared
-  // synchonously and can be written to once this function returns.
-  flushed_map_.Flush(
-      *event_buffer_,
-      base::BindPostTask(task_runner_,
-                         base::BindOnce(&StorageManagerImpl::OnFlushCompleted,
-                                        weak_factory_.GetWeakPtr())));
+  // synchronously and can be written to once this function returns.
+  flushed_map_.Flush(event_buffer_,
+                     base::BindOnce(&StorageManagerImpl::OnFlushCompleted,
+                                    weak_factory_.GetWeakPtr()));
 }
 
 void StorageManagerImpl::OnFlushCompleted(
@@ -173,14 +202,7 @@ void StorageManagerImpl::OnFlushCompleted(
     case FlushError::kQuotaExceeded:
       LogStorageManagerFlushStatus(StorageManagerFlushStatus::kQuotaExceeded);
       // The file is already flushed, just cleanup until we are under quota.
-      if (dropping_flushed_queued_.load()) {
-        break;
-      }
-      dropping_flushed_queued_.store(true);
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&StorageManagerImpl::DropFlushedUntilUnderQuota,
-                         weak_factory_.GetWeakPtr()));
+      DropFlushedUntilUnderQuota();
       break;
     // The write failed and we are unable to recover. The events that were being
     // written are unrecoverable and are lost.
@@ -198,55 +220,38 @@ void StorageManagerImpl::OnFlushCompleted(
   }
 }
 
-void StorageManagerImpl::TakeFromInMemory(
-    RepeatedPtrField<StructuredEventProto>* output) {
-  LogInMemoryEventsAtUpload(event_buffer_->Size());
+void StorageManagerImpl::TakeFromInMemory(Events* output) {
+  LogInMemoryEventsAtUpload(event_buffer_.Size());
 
   // Copy the events out of the buffer. We have to copy here because the events
   // stored in |events_buffer_| are allocated on an arena.
-  output->MergeFrom(event_buffer_->Serialize());
+  output->MergeFrom(event_buffer_.Serialize());
   // Clear in-memory events and update the on-disk backup.
-  event_buffer_->Purge();
+  event_buffer_.Purge();
 }
 
-void StorageManagerImpl::TakeFromDisk(
-    RepeatedPtrField<StructuredEventProto>* output) {
-  LogFlushedBuffersAtUpload(flushed_map_.keys().size());
+void StorageManagerImpl::AddEventsFromDisk(FlushedEvents disk_events,
+                                           Events* output) {
+  LogFlushedBuffersAtUpload(disk_events.size());
 
-  for (const auto& key : flushed_map_.keys()) {
-    std::optional<EventsProto> events = flushed_map_.ReadKey(key);
-    if (!events.has_value()) {
-      continue;
-    }
+  std::vector<FlushedKey> keys;
+  keys.reserve(disk_events.size());
 
+  for (auto& [key, events] : disk_events) {
+    keys.push_back(key);
     // This is to avoid a deep copy of the |events| when using MergeFrom. This
     // should be more efficient despite the additional allocation.
-    std::vector<StructuredEventProto*> elements(events->events_size(), nullptr);
-    output->Reserve(output->size() + events->events_size());
-    events->mutable_events()->ExtractSubrange(0, events->events_size(),
-                                              elements.data());
+    std::vector<StructuredEventProto*> elements(events.events_size(), nullptr);
+    output->Reserve(output->size() + events.events_size());
+    events.mutable_events()->ExtractSubrange(0, events.events_size(),
+                                             elements.data());
     for (auto* event : elements) {
       output->AddAllocated(event);
     }
   }
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StorageManagerImpl::CleanupFlushed,
-                     weak_factory_.GetWeakPtr(), DeleteReason::kUploaded));
-}
-
-void StorageManagerImpl::CleanupFlushed(DeleteReason reason) {
-  // Create copy of flushed keys no notify observers.
-  std::vector<FlushedKey> keys = flushed_map_.keys();
-
-  // All files are being deleted.
-  flushed_map_.Purge();
-
-  // Notify |delegate_| that the flushed files have been deleted.
-  for (const auto& key : keys) {
-    NotifyOnDeleted(key, reason);
-  }
+  // Delete the events from disk now that they have been copied to |output|.
+  flushed_map_.DeleteKeys(keys);
 }
 
 void StorageManagerImpl::DropFlushedUntilUnderQuota() {
@@ -276,12 +281,6 @@ void StorageManagerImpl::DropFlushedUntilUnderQuota() {
 
   // Deletes the keys asynchronously.
   flushed_map_.DeleteKeys(dropped);
-
-  for (const auto& key : dropped) {
-    NotifyOnDeleted(key, DeleteReason::kExceededQuota);
-  }
-
-  dropping_flushed_queued_.store(false);
 }
 
 }  // namespace metrics::structured

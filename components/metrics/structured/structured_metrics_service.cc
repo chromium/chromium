@@ -6,12 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
@@ -34,25 +29,10 @@ constexpr size_t kMaxLogSizeBytes = 1024 * 1024;  // 1 MiB
 // Controls the upload interval.
 constexpr base::TimeDelta kUploadInterval = base::Minutes(10);
 
-#if BUILDFLAG(IS_CHROMEOS)
-StructuredMetricsService::ServiceIOHelper::ServiceIOHelper(
-    scoped_refptr<StructuredMetricsRecorder> recorder)
-    : recorder_(std::move(recorder)) {}
-
-StructuredMetricsService::ServiceIOHelper::~ServiceIOHelper() = default;
-
-ChromeUserMetricsExtension
-StructuredMetricsService::ServiceIOHelper::ProvideEvents() {
-  ChromeUserMetricsExtension uma_proto;
-  recorder_->ProvideEventMetrics(uma_proto);
-  return uma_proto;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 StructuredMetricsService::StructuredMetricsService(
     MetricsServiceClient* client,
     PrefService* local_state,
-    scoped_refptr<StructuredMetricsRecorder> recorder)
+    std::unique_ptr<StructuredMetricsRecorder> recorder)
     : recorder_(std::move(recorder)),
       // This service is only enabled if both structured metrics and the service
       // flags are enabled.
@@ -63,29 +43,12 @@ StructuredMetricsService::StructuredMetricsService(
   CHECK(local_state);
   CHECK(recorder_);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-       // Blocking because the works being done isn't to expensive.
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-
-  io_helper_.emplace(task_runner_, recorder_);
-#endif
-
   // If the StructuredMetricsService is not enabled then return early. The
   // recorder needs to be initialized, but not the reporting service or
   // scheduler.
   if (!structured_metrics_enabled_) {
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Because of construction order of the recorder and service, the service
-  // needs to be set on the storage manager after it is created.
-  StorageManager* storage_manager =
-      static_cast<StorageManager*>(recorder_->event_storage());
-  storage_manager->set_delegate(this);
-#endif
 
   // Setup the reporting service.
   const UnsentLogStore::UnsentLogStoreLimits storage_limits =
@@ -117,14 +80,6 @@ StructuredMetricsService::~StructuredMetricsService() {
       recorder_->event_storage()->HasEvents()) {
     Flush(metrics::MetricsLogsEventManager::CreateReason::kServiceShutdown);
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Because of construction order of the recorder and service, the delegate
-  // must be unset here to avoid dangling pointers.
-  StorageManager* storage_manager =
-      static_cast<StorageManager*>(recorder_->event_storage());
-  storage_manager->unset_delegate(this);
-#endif
 }
 
 void StructuredMetricsService::EnableRecording() {
@@ -185,13 +140,8 @@ void StructuredMetricsService::Flush(
     return;
   }
 
-  ChromeUserMetricsExtension uma_proto;
-  InitializeUmaProto(uma_proto);
-  recorder_->ProvideEventMetrics(uma_proto);
-  const std::string serialized_log = SerializeLog(uma_proto);
-  reporting_service_->StoreLog(serialized_log, reason);
-
-  reporting_service_->log_store()->TrimAndPersistUnsentLogs(true);
+  recorder_->ProvideEventMetrics(base::BindOnce(
+      &StructuredMetricsService::StoreLog, weak_factory_.GetWeakPtr(), reason));
 }
 
 void StructuredMetricsService::Purge() {
@@ -234,47 +184,39 @@ void StructuredMetricsService::CreateLogs(
     bool notify_scheduler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-// An async version is used on Ash because events could potentially be stored on
-// disk and must be accessed from an IO sequence.
-// Other platforms (Windows, Mac, and Linux), the events are stored only
-// in-memory and thus a blocking function isn't needed.
-#if BUILDFLAG(IS_CHROMEOS)
-  BuildAndStoreLog(reason, notify_scheduler);
-#else
-  BuildAndStoreLogSync(reason, notify_scheduler);
-#endif
+  recorder_->ProvideEventMetrics(
+      base::BindOnce(&StructuredMetricsService::StoreLogAndStartUpload,
+                     weak_factory_.GetWeakPtr(), reason, notify_scheduler));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void StructuredMetricsService::BuildAndStoreLog(
+void StructuredMetricsService::StoreLog(
     metrics::MetricsLogsEventManager::CreateReason reason,
-    bool notify_scheduler) {
+    StructuredDataProto structured_data) {
+  if (structured_data.events_size() == 0) {
+    // If there are no events then we do not need to create a log.
+    return;
+  }
+
   ChromeUserMetricsExtension uma_proto;
   InitializeUmaProto(uma_proto);
 
-  io_helper_.AsyncCall(&ServiceIOHelper::ProvideEvents)
-      .Then(base::BindOnce(&StructuredMetricsService::StoreLogAndStartUpload,
-                           weak_factory_.GetWeakPtr(), reason,
-                           notify_scheduler));
-}
-#endif
+  uma_proto.mutable_structured_data()->Swap(&structured_data);
 
-void StructuredMetricsService::BuildAndStoreLogSync(
-    metrics::MetricsLogsEventManager::CreateReason reason,
-    bool notify_scheduler) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ChromeUserMetricsExtension uma_proto;
-  InitializeUmaProto(uma_proto);
-  recorder_->ProvideEventMetrics(uma_proto);
-
-  StoreLogAndStartUpload(reason, notify_scheduler, std::move(uma_proto));
+  const std::string serialized_log = SerializeLog(uma_proto);
+  reporting_service_->StoreLog(serialized_log, reason);
+  log_creation_time_ = base::TimeTicks::Now();
+  reporting_service_->log_store()->TrimAndPersistUnsentLogs(true);
 }
 
 void StructuredMetricsService::StoreLogAndStartUpload(
     metrics::MetricsLogsEventManager::CreateReason reason,
     bool notify_scheduler,
-    ChromeUserMetricsExtension uma_proto) {
+    StructuredDataProto structured_data) {
+  ChromeUserMetricsExtension uma_proto;
+  InitializeUmaProto(uma_proto);
+
+  uma_proto.mutable_structured_data()->Swap(&structured_data);
+
   const std::string serialized_log = SerializeLog(uma_proto);
   reporting_service_->StoreLog(serialized_log, reason);
 
@@ -328,13 +270,8 @@ void StructuredMetricsService::RegisterMetricsProvider(
 }
 
 void StructuredMetricsService::SetRecorderForTest(
-    scoped_refptr<StructuredMetricsRecorder> recorder) {
+    std::unique_ptr<StructuredMetricsRecorder> recorder) {
   recorder_ = std::move(recorder);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Reset the |io_helper_| with the new recorder.
-  io_helper_.emplace(task_runner_, recorder_);
-#endif
 }
 
 MetricsServiceClient* StructuredMetricsService::GetMetricsServiceClient()
@@ -380,14 +317,6 @@ void StructuredMetricsService::SetCreateLogsCallbackInTests(
   create_log_callback_for_tests_ = std::move(callback);
 }
 
-void StructuredMetricsService::OnFlushed(const FlushedKey& key) {
-  // TODO(b/327269939) Implement telemetry for flushed events.
-}
-
-void StructuredMetricsService::OnDeleted(const FlushedKey& key,
-                                         DeleteReason reason) {
-  // TODO(b/327269939) Implement telemetry for deleted events.
-}
 
 // static:
 std::string StructuredMetricsService::SerializeLog(

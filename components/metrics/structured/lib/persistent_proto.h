@@ -56,7 +56,7 @@ class PersistentProto : public internal::PersistentProtoInternal {
 
   T* get() { return static_cast<T*>(internal::PersistentProtoInternal::get()); }
   const T* get() const {
-    return static_cast<T*>(internal::PersistentProtoInternal::get());
+    return static_cast<const T*>(internal::PersistentProtoInternal::get());
   }
 
   T* operator->() { return get(); }

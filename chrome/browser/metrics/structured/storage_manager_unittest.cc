@@ -13,10 +13,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/structured/storage_manager_impl.h"
@@ -36,8 +38,6 @@ using google::protobuf::RepeatedPtrField;
 class TestStorageDelegate : public StorageManager::StorageDelegate {
  public:
   using FlushedCallback = base::RepeatingCallback<void(const FlushedKey&)>;
-  using DeletedCallback =
-      base::RepeatingCallback<void(const FlushedKey&, DeleteReason)>;
 
   TestStorageDelegate() = default;
 
@@ -45,10 +45,6 @@ class TestStorageDelegate : public StorageManager::StorageDelegate {
 
   void SetFlushedCallback(FlushedCallback flushed) {
     flushed_callback_ = std::move(flushed);
-  }
-
-  void SetDeletedCallback(DeletedCallback deleted) {
-    delete_callback_ = std::move(deleted);
   }
 
   void OnFlushed(const FlushedKey& key) override {
@@ -59,31 +55,19 @@ class TestStorageDelegate : public StorageManager::StorageDelegate {
     }
   }
 
-  void OnDeleted(const FlushedKey& key, DeleteReason reason) override {
-    delete_count_ += 1;
-    if (delete_callback_) {
-      delete_callback_.Run(key, reason);
-    }
-  }
-
   int flushed_count() const { return flushed_count_; }
 
   const std::optional<FlushedKey>& flushed_key() { return flushed_key_; }
 
-  int delete_count() const { return delete_count_; }
-
  private:
   std::optional<FlushedKey> flushed_key_;
   int flushed_count_ = 0;
-  int delete_count_ = 0;
 
   FlushedCallback flushed_callback_;
-  DeletedCallback delete_callback_;
 };
 
-StructuredEventProto BuildTestEvent(
-    uint64_t id = 0,
-    const std::vector<int64_t>& metrics = std::vector<int64_t>()) {
+StructuredEventProto BuildTestEvent(uint64_t id = 0,
+                                    const std::vector<int64_t>& metrics = {}) {
   StructuredEventProto event;
   event.set_device_project_id(id);
   int metric_id = 0;
@@ -101,14 +85,6 @@ EventsProto BuildTestEventsProto(int num, int start_id = 0) {
     events.mutable_events()->Add(BuildTestEvent(start_id + i, {start_id}));
   }
   return events;
-}
-
-StorageManagerConfig CreateManagerConfig(int32_t buffer_max_bytes,
-                                         int32_t disk_max_bytes) {
-  return StorageManagerConfig{
-      .buffer_max_bytes = buffer_max_bytes,
-      .disk_max_bytes = disk_max_bytes,
-  };
 }
 
 EventsProto ReadFlushedEvents(const base::FilePath& path) {
@@ -148,28 +124,24 @@ class StorageManagerTest : public testing::Test {
     return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("flushed_dir"));
   }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
-
   std::unique_ptr<StorageManager> CreateManager(
       const StorageManagerConfig& config) {
     auto manager = std::make_unique<StorageManagerImpl>(config, GetArenaPath(),
                                                         GetFlushDir());
     manager->set_delegate(storage_delegate_.get());
+    // Wait for FlushedMap initialization to complete.
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return manager->IsInitializedForTesting(); }));
     return manager;
   }
 
   void SortEvents(RepeatedPtrField<StructuredEventProto>& events) {
-    std::sort(events.begin(), events.end(),
-              [](const StructuredEventProto& l,
-                 const StructuredEventProto& r) -> bool {
-                return l.device_project_id() < r.device_project_id();
-              });
+    std::ranges::sort(events, std::less<>(),
+                      &StructuredEventProto::device_project_id);
   }
 
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
 
@@ -179,9 +151,8 @@ class StorageManagerTest : public testing::Test {
 };
 
 TEST_F(StorageManagerTest, StoreAndProvideEventsInMemory) {
-  std::unique_ptr<StorageManager> manager = CreateManager(
-      CreateManagerConfig(/*buffer_max_bytes=*/1024, /*disk_max_bytes=*/1024));
-  Wait();
+  auto manager =
+      CreateManager({.buffer_max_bytes = 1024, .disk_max_bytes = 1024});
 
   // Add event.
   manager->AddEvent(BuildTestEvent(1, {1, 2, 3}));
@@ -193,17 +164,18 @@ TEST_F(StorageManagerTest, StoreAndProvideEventsInMemory) {
   EXPECT_EQ(base::ComputeDirectorySize(GetFlushDir()), 0l);
 
   // Provide events.
-  RepeatedPtrField<StructuredEventProto> events = manager->TakeEvents();
+  base::test::TestFuture<RepeatedPtrField<StructuredEventProto>> future;
+  manager->TakeEvents(future.GetCallback());
+  auto events = future.Take();
 
   EXPECT_EQ(manager->RecordedEventsCount(), 0);
-  EXPECT_EQ(events.size(), 1);
+  ASSERT_EQ(events.size(), 1);
   EXPECT_EQ(events[0].device_project_id(), 1ul);
 }
 
 TEST_F(StorageManagerTest, FlushEvents) {
-  std::unique_ptr<StorageManager> manager = CreateManager(
-      CreateManagerConfig(/*buffer_max_bytes=*/512, /*disk_max_bytes=*/1024));
-  Wait();
+  auto manager =
+      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
 
   storage_delegate_->SetFlushedCallback(base::BindLambdaForTesting(
       [&](const FlushedKey& key) { EXPECT_TRUE(base::PathExists(key.path)); }));
@@ -213,8 +185,8 @@ TEST_F(StorageManagerTest, FlushEvents) {
 
   // A flush should occur and the event should be added.
   manager->AddEvent(BuildTestEvent(2, {1, 2, 3, 4}));
-  Wait();
-  ASSERT_EQ(storage_delegate_->flushed_count(), 1);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return storage_delegate_->flushed_count() == 1; }));
 
   ASSERT_TRUE(storage_delegate_->flushed_key().has_value());
   EventsProto events =
@@ -226,9 +198,8 @@ TEST_F(StorageManagerTest, FlushEvents) {
 }
 
 TEST_F(StorageManagerTest, FullBuffer) {
-  std::unique_ptr<StorageManager> manager = CreateManager(
-      CreateManagerConfig(/*buffer_max_bytes=*/512, /*disk_max_bytes=*/1024));
-  Wait();
+  auto manager =
+      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
 
   storage_delegate_->SetFlushedCallback(base::BindLambdaForTesting(
       [&](const FlushedKey& key) { EXPECT_TRUE(base::PathExists(key.path)); }));
@@ -238,9 +209,9 @@ TEST_F(StorageManagerTest, FullBuffer) {
 
   // A flush should occur and the event should be added.
   manager->AddEvent(BuildTestEvent(1, {1, 2, 3, 4}));
-  Wait();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return storage_delegate_->flushed_count() == 1; }));
   EXPECT_EQ(manager->RecordedEventsCount(), 1);
-  EXPECT_EQ(storage_delegate_->flushed_count(), 1);
 }
 
 // Tests the ability of StorageManager to collect on-disk events and return them
@@ -255,26 +226,28 @@ TEST_F(StorageManagerTest, ProvideFlushedEvents) {
   WriteEventsProto(GetFlushDir(), "events3",
                    BuildTestEventsProto(/*num=*/3, /*start_id=*/6));
 
-  std::unique_ptr<StorageManager> manager =
-      CreateManager(CreateManagerConfig(/*buffer_max_bytes=*/512,
-                                        /*disk_max_bytes=*/1024));
-  Wait();
+  auto manager =
+      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
   // Returns the number of on-disk files if there are no events in memory.
   ASSERT_EQ(manager->RecordedEventsCount(), 3);
 
-  storage_delegate_->SetDeletedCallback(base::BindLambdaForTesting(
-      [&](const FlushedKey& key, DeleteReason reason) {
-        EXPECT_EQ(reason, DeleteReason::kUploaded);
-        EXPECT_FALSE(base::PathExists(key.path));
-      }));
+  base::test::TestFuture<RepeatedPtrField<StructuredEventProto>> future;
+  manager->TakeEvents(future.GetCallback());
+  auto events = future.Take();
 
-  RepeatedPtrField<StructuredEventProto> events = manager->TakeEvents();
-  Wait();
+  // Wait for asynchronous deletions to complete.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !base::PathExists(
+               GetFlushDir().Append(FILE_PATH_LITERAL("events1"))) &&
+           !base::PathExists(
+               GetFlushDir().Append(FILE_PATH_LITERAL("events2"))) &&
+           !base::PathExists(
+               GetFlushDir().Append(FILE_PATH_LITERAL("events3")));
+  }));
 
-  // Since on-disk events are being read, it is expected they are deleted.
-  EXPECT_EQ(storage_delegate_->delete_count(), 3);
   // 3 events from each of the 3 files.
-  EXPECT_EQ(events.size(), 9);
+  ASSERT_EQ(events.size(), 9);
   // Sort the events to validating all events are present easier.
   SortEvents(events);
 
@@ -294,29 +267,31 @@ TEST_F(StorageManagerTest, ProvideFlushedAndInMemoryEvents) {
   WriteEventsProto(GetFlushDir(), "events3",
                    BuildTestEventsProto(/*num=*/3, /*start_id=*/6));
 
-  std::unique_ptr<StorageManager> manager =
-      CreateManager(CreateManagerConfig(/*buffer_max_bytes=*/1024,
-                                        /*disk_max_bytes=*/1024));
-  Wait();
+  auto manager =
+      CreateManager({.buffer_max_bytes = 1024, .disk_max_bytes = 1024});
   manager->AddEvent(BuildTestEvent(9, {9}));
   manager->AddEvent(BuildTestEvent(10, {10}));
   manager->AddEvent(BuildTestEvent(11, {11}));
 
   ASSERT_EQ(manager->RecordedEventsCount(), 3);
 
-  storage_delegate_->SetDeletedCallback(base::BindLambdaForTesting(
-      [&](const FlushedKey& key, DeleteReason reason) {
-        EXPECT_EQ(reason, DeleteReason::kUploaded);
-        EXPECT_FALSE(base::PathExists(key.path));
-      }));
+  base::test::TestFuture<RepeatedPtrField<StructuredEventProto>> future;
+  manager->TakeEvents(future.GetCallback());
+  auto events = future.Take();
 
-  RepeatedPtrField<StructuredEventProto> events = manager->TakeEvents();
-  Wait();
+  // Wait for asynchronous deletions to complete.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !base::PathExists(
+               GetFlushDir().Append(FILE_PATH_LITERAL("events1"))) &&
+           !base::PathExists(
+               GetFlushDir().Append(FILE_PATH_LITERAL("events2"))) &&
+           !base::PathExists(
+               GetFlushDir().Append(FILE_PATH_LITERAL("events3")));
+  }));
 
-  // Since on-disk events are being read, it is expected they are deleted.
-  EXPECT_EQ(storage_delegate_->delete_count(), 3);
   // 3 events from each of the 3 files and 3 in-memory events.
-  EXPECT_EQ(events.size(), 12);
+  ASSERT_EQ(events.size(), 12);
   // Sort the events to validating all events are present easier.
   SortEvents(events);
 
@@ -336,10 +311,8 @@ TEST_F(StorageManagerTest, Purge) {
   WriteEventsProto(GetFlushDir(), "events3",
                    BuildTestEventsProto(/*num=*/3, /*start_id=*/6));
 
-  std::unique_ptr<StorageManager> manager =
-      CreateManager(CreateManagerConfig(/*buffer_max_bytes=*/1024,
-                                        /*disk_max_bytes=*/1024));
-  Wait();
+  auto manager =
+      CreateManager({.buffer_max_bytes = 1024, .disk_max_bytes = 1024});
   manager->AddEvent(BuildTestEvent(9, {9}));
   manager->AddEvent(BuildTestEvent(10, {10}));
   manager->AddEvent(BuildTestEvent(11, {11}));
@@ -347,6 +320,8 @@ TEST_F(StorageManagerTest, Purge) {
   ASSERT_EQ(manager->RecordedEventsCount(), 3);
 
   manager->Purge();
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 
   ASSERT_EQ(manager->RecordedEventsCount(), 0);
 
@@ -357,15 +332,37 @@ TEST_F(StorageManagerTest, Purge) {
   EXPECT_FALSE(
       base::PathExists(GetFlushDir().Append(FILE_PATH_LITERAL("events3"))));
 
-  std::optional<int64_t> size = base::GetFileSize(GetArenaPath());
-  ASSERT_TRUE(size.has_value());
-  EXPECT_EQ(size.value(), 0l);
+  EXPECT_FALSE(base::PathExists(GetArenaPath()));
+}
+
+TEST_F(StorageManagerTest, PurgeUninitialized) {
+  // This isn't needed in other tests because FlushedMap creates the directory
+  // if it doesn't exist. Here we populate it before hand.
+  ASSERT_TRUE(base::CreateDirectory(GetFlushDir()));
+  WriteEventsProto(GetFlushDir(), "events1", BuildTestEventsProto(/*num=*/3));
+
+  // Create manager but don't Wait() for it to initialize FlushedMap yet.
+  auto manager = std::make_unique<StorageManagerImpl>(
+      StorageManagerConfig{.buffer_max_bytes = 1024, .disk_max_bytes = 1024},
+      GetArenaPath(), GetFlushDir());
+  manager->set_delegate(storage_delegate_.get());
+
+  manager->Purge();
+
+  // Now wait for initialization and subsequent purge.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager->IsInitializedForTesting(); }));
+
+  // Wait for asynchronous deletions to complete.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  EXPECT_EQ(manager->RecordedEventsCount(), 0);
+  EXPECT_FALSE(
+      base::PathExists(GetFlushDir().Append(FILE_PATH_LITERAL("events1"))));
 }
 
 TEST_F(StorageManagerTest, FlushedQuotaExceeded) {
-  std::unique_ptr<StorageManager> manager = CreateManager(
-      CreateManagerConfig(/*buffer_max_bytes=*/512, /*disk_max_bytes=*/64));
-  Wait();
+  auto manager = CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 64});
 
   storage_delegate_->SetFlushedCallback(base::BindLambdaForTesting(
       [&](const FlushedKey& key) { EXPECT_TRUE(base::PathExists(key.path)); }));
@@ -375,38 +372,70 @@ TEST_F(StorageManagerTest, FlushedQuotaExceeded) {
 
   // A flush should occur and the event should be added.
   manager->AddEvent(BuildTestEvent(1, {1, 2, 3, 4}));
-  Wait();
+  // Expect 1 batch of events to be written to disk.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return storage_delegate_->flushed_count() == 1; }));
   // Only the previously added event should be represented as recorded.
   EXPECT_EQ(manager->RecordedEventsCount(), 1);
-  // Expect 1 batch of events to be written to disk.
-  EXPECT_EQ(storage_delegate_->flushed_count(), 1);
-
   FlushedKey previous_key = *storage_delegate_->flushed_key();
-
-  std::vector<FlushedKey> dropped_keys;
-
-  storage_delegate_->SetDeletedCallback(base::BindLambdaForTesting(
-      [&](const FlushedKey& key, DeleteReason reason) {
-        EXPECT_EQ(reason, DeleteReason::kExceededQuota);
-        // The path that was flushed first (only 2) should be the key that is
-        // flushed. Only one is expected so to be deleted, if more happen this
-        // will fail.
-        EXPECT_EQ(previous_key.path, key.path);
-        dropped_keys.push_back(key);
-      }));
 
   // A flush should occur but our quota has been reached.
   manager->AddEvent(BuildTestEvent(1, {1, 2, 3, 4}));
-  Wait();
 
-  // After the second flush, the first file should be deleted.
-  EXPECT_EQ(storage_delegate_->delete_count(), 1);
+  // Wait for asynchronous flush and subsequent deletion to complete.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 
-  // Deleting of the files is asynchronous, checking once all tasks have
-  // completed.
-  for (const FlushedKey& key : dropped_keys) {
-    EXPECT_FALSE(base::PathExists(key.path));
-  }
+  // After the second flush, the first file should be deleted because of quota.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    return !base::PathExists(previous_key.path);
+  }));
+}
+
+TEST_F(StorageManagerTest, ProvideEventsRaceCondition) {
+  // This test simulates a race condition where a new event is flushed to disk
+  // while TakeEvents() is already in progress reading from disk on a
+  // background thread.
+
+  ASSERT_TRUE(base::CreateDirectory(GetFlushDir()));
+  WriteEventsProto(GetFlushDir(), "events1", BuildTestEventsProto(/*num=*/1));
+
+  auto manager =
+      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
+
+  // 1 on-disk file.
+  ASSERT_EQ(manager->RecordedEventsCount(), 1);
+
+  base::test::TestFuture<RepeatedPtrField<StructuredEventProto>> future;
+  manager->TakeEvents(future.GetCallback());
+
+  // While TakeEvents() background task is likely running (or enqueued),
+  // add a new event that will be flushed to disk.
+  // We use a small buffer size (512) and add two large events to trigger a
+  // flush.
+  manager->AddEvent(BuildTestEvent(2, {1, 2, 3, 4, 5, 6, 7, 8}));
+  manager->AddEvent(BuildTestEvent(3, {1, 2, 3, 4, 5, 6, 7, 8}));
+
+  // Wait for the flush to complete and the TakeEvents() to finish.
+  auto events = future.Take();
+
+  // TakeEvents should have returned the events from "events1".
+  // (It might also return the newly flushed events if the flush happened
+  // before ReadEventsOnBackgroundThread grabbed the keys, but in this test
+  // setup we want to verify that the newly flushed events ARE NOT deleted
+  // if they weren't part of the 'take').
+  // Given how TakeEvents is implemented, it grabs flushed_map_.keys() ON THE
+  // UI THREAD before posting the background task. So "events2" (newly
+  // flushed) won't be in that list.
+
+  // The newly flushed file should NOT have been deleted by TakeEvents
+  // completion. RecordedEventsCount() should now be 1 (representing the newly
+  // flushed file).
+  EXPECT_EQ(manager->RecordedEventsCount(), 1);
+
+  // TakeEvents() should have read 1 event.
+  ASSERT_EQ(events.size(), 1);
+  EXPECT_EQ(events[0].device_project_id(), 0ul);
 }
 
 }  // namespace metrics::structured

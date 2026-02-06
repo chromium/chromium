@@ -4,20 +4,17 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_RECORDER_H_
 #define COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_RECORDER_H_
 
-#include <atomic>
 #include <deque>
 #include <memory>
 #include <optional>
-#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/lib/event_storage.h"
@@ -41,9 +38,13 @@ namespace metrics::structured {
 // StructuredMetricsRecorder::OnRecord via Recorder::Record via
 // Event::Record. These events are not uploaded immediately, and are cached
 // in ready-to-upload form.
+//
+// This class is not thread-safe and is designed to be used exclusively on
+// the UI thread. The metrics::structured::Recorder singleton, which owns
+// and calls this Impl, ensures that all relevant methods (like OnEventRecord)
+// are marshaled to the UI thread before being called.
 class StructuredMetricsRecorder
     : public Recorder::RecorderImpl,
-      public base::RefCountedDeleteOnSequence<StructuredMetricsRecorder>,
       KeyDataProvider::Observer {
  public:
   // Interface for watching for the recording of Structured Metrics Events.
@@ -58,6 +59,7 @@ class StructuredMetricsRecorder
   StructuredMetricsRecorder(const StructuredMetricsRecorder&) = delete;
   StructuredMetricsRecorder& operator=(const StructuredMetricsRecorder&) =
       delete;
+  ~StructuredMetricsRecorder() override;
 
   // Manages whether or not Structured Metrics is recording.
   // If these functions are overloaded, make sure they are explicitly called in
@@ -69,15 +71,13 @@ class StructuredMetricsRecorder
 
   bool recording_enabled() const { return recording_enabled_; }
 
-  // Provides event metrics stored in the recorder into |uma_proto|.
-  //
-  // This calls OnIndependentMetrics() to populate |uma_proto| with metadata
-  // fields.
-  virtual void ProvideEventMetrics(ChromeUserMetricsExtension& uma_proto);
+  // Provides event metrics stored in the recorder by calling the consumer with
+  // the events. This is an asynchronous operation.
+  virtual void ProvideEventMetrics(
+      base::OnceCallback<void(StructuredDataProto)> consumer);
 
   // Provides any additional metadata needed by the UMA proto.
   //
-  // This should be called on the UI thread.
   // If this method is overwritten the base implementation must be called.
   virtual void ProvideLogMetadata(ChromeUserMetricsExtension& uma_proto);
 
@@ -105,6 +105,7 @@ class StructuredMetricsRecorder
   friend class StructuredMetricsMixin;
 
   // Recorder::RecorderImpl:
+  // Called by Recorder on the UI thread for each event.
   void OnEventRecord(const Event& event) override;
 
   // Different initialization states for the recorder.
@@ -136,6 +137,11 @@ class StructuredMetricsRecorder
   friend class TestStructuredMetricsRecorder;
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsServiceTest;
+
+  // Called on the UI thread after events have been retrieved from storage.
+  void ProvideEventMetricsDone(
+      base::OnceCallback<void(StructuredDataProto)> consumer,
+      ::google::protobuf::RepeatedPtrField<StructuredEventProto> events);
 
   // Records events before IsInitialized().
   void RecordEventBeforeInitialization(const Event& event);
@@ -208,10 +214,6 @@ class StructuredMetricsRecorder
   void AddDisallowedProjectForTest(uint64_t project_name_hash);
 
  protected:
-  friend class base::RefCountedDeleteOnSequence<StructuredMetricsRecorder>;
-  friend class base::DeleteHelper<StructuredMetricsRecorder>;
-  ~StructuredMetricsRecorder() override;
-
   void NotifyEventRecorded(const StructuredEventProto& event);
 
   // Key data provider that provides device and profile keys.
@@ -239,17 +241,6 @@ class StructuredMetricsRecorder
   InitState init_state_;
 
  private:
-  // Lock and release event storage. This is to mitigate a potential race
-  // condition between TakeEvents() and RecordEvent().
-  //
-  // If storage is locked then recorded events are stored in-memory until
-  // storage is released.
-  void LockStorage();
-  void ReleaseStorage();
-
-  // Once storage is released then record in-memory events into storage.
-  void StoreLockedEvents();
-
   // Tracks the recording state signalled to the metrics provider by
   // OnRecordingEnabled and OnRecordingDisabled. This is false until
   // OnRecordingEnabled is called, which sets it true if structured metrics'
@@ -268,18 +259,13 @@ class StructuredMetricsRecorder
 
   base::ObserverList<Observer> watchers_;
 
-  // A flag to determine if the storage has been locked without actually
-  // acquiring a lock.
-  std::atomic_bool storage_lock_;
-
-  // Events recorded while recording was locked.
-  std::vector<StructuredEventProto> locked_events_;
-
   // Callbacks for tests whenever an event is recorded.
   base::RepeatingClosure test_callback_on_record_ = base::DoNothing();
 
   // Callback to be made once recorder is ready to persist events to disk.
   base::OnceClosure on_ready_callback_ = base::DoNothing();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StructuredMetricsRecorder> weak_factory_{this};
 };

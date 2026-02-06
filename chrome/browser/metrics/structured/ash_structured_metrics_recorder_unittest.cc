@@ -225,7 +225,19 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
 
   ChromeUserMetricsExtension GetUmaProto() {
     ChromeUserMetricsExtension uma_proto;
-    recorder_->ProvideEventMetrics(uma_proto);
+
+    std::optional<StructuredDataProto> events_proto;
+    recorder_->ProvideEventMetrics(base::BindOnce(
+        [](std::optional<StructuredDataProto>* out_proto,
+           StructuredDataProto proto) { *out_proto = std::move(proto); },
+        &events_proto));
+
+    Wait();
+
+    if (events_proto.has_value()) {
+      uma_proto.mutable_structured_data()->MergeFrom(events_proto.value());
+    }
+
     recorder_->ProvideLogMetadata(uma_proto);
     Wait();
     return uma_proto;
@@ -243,11 +255,12 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   void Init() {
     // Create a system profile, normally done by ChromeMetricsServiceClient.
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-    recorder_ = base::WrapRefCounted(new AshStructuredMetricsRecorder(
-        std::make_unique<KeyDataProviderAsh>(DeviceKeyFilePath(),
-                                             base::Seconds(0)),
-        std::make_unique<TestEventStorage>(),
-        system_profile_provider_.get()));
+    recorder_ = std::unique_ptr<AshStructuredMetricsRecorder>(
+        new AshStructuredMetricsRecorder(
+            std::make_unique<KeyDataProviderAsh>(DeviceKeyFilePath(),
+                                                 base::Seconds(0)),
+            std::make_unique<TestEventStorage>(),
+            system_profile_provider_.get()));
 
     profile_manager_.CreateTestingProfile("p1");
     OnRecordingEnabled();
@@ -262,7 +275,7 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
-  scoped_refptr<AshStructuredMetricsRecorder> recorder_;
+  std::unique_ptr<AshStructuredMetricsRecorder> recorder_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
   raw_ptr<TestingProfile> test_profile_;

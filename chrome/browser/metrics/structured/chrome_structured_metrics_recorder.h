@@ -23,6 +23,7 @@ namespace metrics::structured {
 class ChromeStructuredMetricsRecorder final : public StructuredMetricsRecorder {
  public:
   explicit ChromeStructuredMetricsRecorder(PrefService* local_state);
+  ~ChromeStructuredMetricsRecorder() override = default;
 
   ChromeStructuredMetricsRecorder(const ChromeStructuredMetricsRecorder&) =
       delete;
@@ -30,11 +31,6 @@ class ChromeStructuredMetricsRecorder final : public StructuredMetricsRecorder {
       const ChromeStructuredMetricsRecorder&) = delete;
 
   static void RegisterLocalState(PrefRegistrySimple* registry);
-
- private:
-  friend class base::RefCountedDeleteOnSequence<StructuredMetricsRecorder>;
-  friend class base::DeleteHelper<StructuredMetricsRecorder>;
-  ~ChromeStructuredMetricsRecorder() override = default;
 };
 
 }  // namespace metrics::structured

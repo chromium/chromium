@@ -17,8 +17,8 @@ void ChromeEventStorage::AddEvent(StructuredEventProto event) {
   *events_.add_events() = std::move(event);
 }
 
-RepeatedPtrField<StructuredEventProto> ChromeEventStorage::TakeEvents() {
-  return std::move(*events_.mutable_events());
+void ChromeEventStorage::TakeEvents(base::OnceCallback<void(Events)> consumer) {
+  std::move(consumer).Run(std::move(*events_.mutable_events()));
 }
 
 int ChromeEventStorage::RecordedEventsCount() const {

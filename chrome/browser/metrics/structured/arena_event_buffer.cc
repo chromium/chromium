@@ -100,8 +100,15 @@ void ArenaEventBuffer::Purge() {
   events_->Purge();
 }
 
-uint64_t ArenaEventBuffer::Size() {
+uint64_t ArenaEventBuffer::Size() const {
+  // Note: We intentionally do not count the pre-init events in the size of the
+  // buffer, since callers expect that `Size()` reflects the events that are
+  // available for access.
   return proto() ? proto()->events_size() : 0;
+}
+
+bool ArenaEventBuffer::IsInitialized() const {
+  return events_ && events_->has_value();
 }
 
 RepeatedPtrField<StructuredEventProto> ArenaEventBuffer::Serialize() {

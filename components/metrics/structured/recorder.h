@@ -24,22 +24,10 @@ using ::metrics::ChromeUserMetricsExtension;
 
 }
 
-// Recorder is a singleton to help communicate with the
-// StructuredMetricsProvider. It serves three purposes:
-// 1. Begin the initialization of the StructuredMetricsProvider (see class
-// comment for more details).
-// 2. Add an event for the StructuredMetricsProvider to record.
-// 3. Retrieving information about project's key, specifically the day it was
-// last rotated.
-//
-// The StructuredMetricsProvider is owned by the MetricsService, but it needs to
-// be accessible to any part of the codebase, via an EventBase subclass, to
-// record events. The StructuredMetricsProvider registers itself as an observer
-// of this singleton when recording is enabled, and calls to Record (for
-// recording) or ProfileAdded (for initialization) are then forwarded to it.
-//
-// Recorder is embedded within StructuredMetricsClient for Ash Chrome and should
-// only be used in Ash Chrome.
+// Recorder is a thread-safe singleton for recording structured metrics events.
+// While RecordEvent() can be called from any thread, it will post the task
+// to the UI thread to actually process the event with the registered
+// RecorderImpl.
 //
 // TODO(b/282031543): Remove this class and merge remaining logic into
 // structured_metrics_recorder.h since the Record() is exposed via
@@ -61,8 +49,10 @@ class Recorder {
 
   static Recorder* GetInstance();
 
-  // This signals to StructuredMetricsProvider that the event should be
-  // recorded.
+  // Records an event. This method is thread-safe.
+  // If not called on the UI thread, this method will post the event
+  // processing to the UI thread. The actual recording is handled by
+  // the registered RecorderImpl instance on the UI thread.
   void RecordEvent(Event&& event);
 
   // Notifies observers that system profile has been loaded.

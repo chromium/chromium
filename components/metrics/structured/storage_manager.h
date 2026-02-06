@@ -11,15 +11,6 @@
 
 namespace metrics::structured {
 
-// Enum representing why events were deleted.
-enum class DeleteReason {
-  // The events have been uploaded. The events were not lost.
-  kUploaded,
-  // The events were deleted because we are consuming to much disk space. Events
-  // are lost.
-  kExceededQuota,
-};
-
 // The Storage Manager is responsible for storing and managing Structured
 // Metrics events.
 //
@@ -45,9 +36,6 @@ class StorageManager : public EventStorage<StructuredEventProto> {
 
     // Called when a buffer has been flushed to disk.
     virtual void OnFlushed(const FlushedKey& key) = 0;
-
-    // Called when flushed events have been deleted.
-    virtual void OnDeleted(const FlushedKey& key, DeleteReason reason) = 0;
   };
 
   // Ideally, this would take a StorageDelegate as a parameter but because of
@@ -71,8 +59,6 @@ class StorageManager : public EventStorage<StructuredEventProto> {
 
  protected:
   void NotifyOnFlushed(const FlushedKey& key);
-
-  void NotifyOnDeleted(const FlushedKey& key, DeleteReason reason);
 
   // The owner of |this|.
   raw_ptr<StorageDelegate> delegate_ = nullptr;

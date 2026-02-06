@@ -20,11 +20,7 @@
 #include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
-
 namespace {
-
-using ::metrics::ChromeUserMetricsExtension;
-using ::metrics::SystemProfileProto;
 
 // Directory containing serialized event protos to read.
 constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
@@ -69,17 +65,12 @@ void AshStructuredMetricsRecorder::DisableRecording() {
 }
 
 void AshStructuredMetricsRecorder::ProvideEventMetrics(
-    ChromeUserMetricsExtension& uma_proto) {
-  if (!CanProvideMetrics()) {
-    return;
-  }
-
-  // Base class handles most of the work that is needed.
-  StructuredMetricsRecorder::ProvideEventMetrics(uma_proto);
-
-  // Handle External Metrics statistics.
-  LogExternalMetricsScanInUpload(external_metrics_scans_);
-  external_metrics_scans_ = 0;
+    base::OnceCallback<void(StructuredDataProto)> consumer) {
+  // Note: We override this function so that the ProvideEventMetricsDone()
+  // implemented in this class will be called (after the base class one runs).
+  StructuredMetricsRecorder::ProvideEventMetrics(
+      base::BindOnce(&AshStructuredMetricsRecorder::ProvideEventMetricsDone,
+                     weak_factory_.GetWeakPtr(), std::move(consumer)));
 }
 
 void AshStructuredMetricsRecorder::AddSequenceMetadata(
@@ -114,7 +105,7 @@ void AshStructuredMetricsRecorder::AddSequenceMetadata(
 }
 
 void AshStructuredMetricsRecorder::ProvideLogMetadata(
-    ChromeUserMetricsExtension& uma_proto) {
+    metrics::ChromeUserMetricsExtension& uma_proto) {
   StructuredMetricsRecorder::ProvideLogMetadata(uma_proto);
   // Add the system profile.
   ProvideSystemProfile(uma_proto.mutable_system_profile());
@@ -167,13 +158,22 @@ void AshStructuredMetricsRecorder::ProfileAdded(const Profile& profile) {
 }
 
 void AshStructuredMetricsRecorder::ProvideSystemProfile(
-    SystemProfileProto* system_profile) {
+    metrics::SystemProfileProto* system_profile) {
   // Populate the proto if the system profile has been initialized and
   // have a system profile provider.
   // The field may be populated if ChromeOSMetricsProvider has already run.
   if (system_profile_initialized_) {
     system_profile_provider_->ProvideSystemProfileMetrics(system_profile);
   }
+}
+
+void AshStructuredMetricsRecorder::ProvideEventMetricsDone(
+    base::OnceCallback<void(StructuredDataProto)> consumer,
+    StructuredDataProto events) {
+  // Handle External Metrics statistics.
+  LogExternalMetricsScanInUpload(external_metrics_scans_);
+  external_metrics_scans_ = 0;
+  std::move(consumer).Run(std::move(events));
 }
 
 }  // namespace metrics::structured

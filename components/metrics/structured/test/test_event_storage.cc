@@ -21,8 +21,9 @@ void TestEventStorage::AddEvent(StructuredEventProto event) {
   events()->mutable_events()->Add(std::move(event));
 }
 
-RepeatedPtrField<StructuredEventProto> TestEventStorage::TakeEvents() {
-  return std::move(*events_.mutable_events());
+void TestEventStorage::TakeEvents(
+    base::OnceCallback<void(RepeatedPtrField<StructuredEventProto>)> consumer) {
+  std::move(consumer).Run(std::move(*events_.mutable_events()));
 }
 
 int TestEventStorage::RecordedEventsCount() const {

@@ -52,7 +52,7 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto>,
   // EventBuffer:
   Result AddEvent(StructuredEventProto event) override;
   void Purge() override;
-  uint64_t Size() override;
+  uint64_t Size() const override;
   google::protobuf::RepeatedPtrField<StructuredEventProto> Serialize() override;
   void Flush(const base::FilePath& path, FlushedCallback callback) override;
 
@@ -67,6 +67,8 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto>,
 
   ArenaPersistentProto<EventsProto>& proto() { return *events_; }
   const ArenaPersistentProto<EventsProto>& proto() const { return *events_; }
+
+  bool IsInitialized() const override;
 
   // Computes an estimate size in bytes of an event.
   //

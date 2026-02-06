@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/metrics/log_decoder.h"
@@ -103,7 +102,7 @@ class StructuredMetricsServiceTest : public testing::Test {
     auto key_data_provider =
         std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath());
     TestKeyDataProvider* test_key_data_provider = key_data_provider.get();
-    auto recorder = base::MakeRefCounted<StructuredMetricsRecorder>(
+    auto recorder = std::make_unique<StructuredMetricsRecorder>(
         std::move(key_data_provider), std::make_unique<TestEventStorage>());
 
     service_ = std::make_unique<StructuredMetricsService>(&client_, &prefs_,
@@ -375,6 +374,18 @@ TEST_F(StructuredMetricsServiceTest, FlushOnShutdown) {
 
   const auto uma_proto = GetPersistedLog();
   EXPECT_THAT(uma_proto.structured_data().events().size(), 2);
+}
+
+TEST_F(StructuredMetricsServiceTest, FlushWithNoEvents) {
+  Init();
+
+  EnableRecording();
+  EnableReporting();
+
+  service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  Wait();
+
+  EXPECT_THAT(GetPersistedLogCount(), 0);
 }
 
 }  // namespace metrics::structured

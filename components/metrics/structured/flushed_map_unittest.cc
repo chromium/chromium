@@ -51,7 +51,7 @@ class TestEventBuffer : public EventBuffer<StructuredEventProto> {
     });
   }
 
-  uint64_t Size() override { return events_.events_size(); }
+  uint64_t Size() const override { return events_.events_size(); }
 
   const EventsProto& events() const { return events_; }
 
@@ -119,6 +119,20 @@ class FlushedMapTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
+  FlushedKey BuildKey(const base::FilePath& path) {
+    // This is a bit of a hack. We know what the key will be because we created
+    // the file.
+    FlushedKey key;
+    key.path = path;
+    // Manually create the size and other info for the key, since this is used
+    // in size computations.
+    base::File::Info info;
+    EXPECT_TRUE(base::GetFileInfo(path, &info));
+    key.size = info.size;
+    key.creation_time = info.creation_time;
+    return key;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
@@ -174,6 +188,12 @@ TEST_F(FlushedMapTest, ReadFile) {
     EXPECT_EQ(read_events->events(i).device_project_id(),
               events.events(i).device_project_id());
   }
+}
+
+TEST_F(FlushedMapTest, ReadKeyMissingFile) {
+  FlushedKey key;
+  key.path = GetDir().Append(FILE_PATH_LITERAL("nonexistent"));
+  EXPECT_EQ(FlushedMap::ReadKey(key), std::nullopt);
 }
 
 TEST_F(FlushedMapTest, UniqueFlushes) {
@@ -276,6 +296,114 @@ TEST_F(FlushedMapTest, ExceedQuota) {
                            EXPECT_EQ(err, kQuotaExceeded);
                          }));
   Wait();
+}
+
+TEST_F(FlushedMapTest, DeferPurgeBeforeInit) {
+  EXPECT_TRUE(base::CreateDirectory(GetDir()));
+  auto events = BuildTestEvents({1, 2, 3});
+  base::FilePath path = GetDir().Append(FILE_PATH_LITERAL("events"));
+  WriteToDisk(path, std::move(events));
+
+  FlushedMap map = BuildFlushedMap();
+  map.Purge();
+  Wait();
+  EXPECT_TRUE(map.keys().empty());
+  EXPECT_FALSE(base::PathExists(path));
+}
+
+TEST_F(FlushedMapTest, DeferDeleteKeyBeforeInit) {
+  EXPECT_TRUE(base::CreateDirectory(GetDir()));
+  auto events = BuildTestEvents({1, 2, 3});
+  base::FilePath path = GetDir().Append(FILE_PATH_LITERAL("events"));
+  WriteToDisk(path, std::move(events));
+
+  FlushedMap map = BuildFlushedMap();
+  map.DeleteKey(BuildKey(path));
+  Wait();
+  EXPECT_TRUE(map.keys().empty());
+  EXPECT_FALSE(base::PathExists(path));
+}
+
+TEST_F(FlushedMapTest, DeferFlushBeforeInit) {
+  // Manually create the directory, because the flush happens before the
+  // FlushedMap has a chance to create it on its background thread.
+  ASSERT_TRUE(base::CreateDirectory(GetDir()));
+  FlushedMap map = BuildFlushedMap();
+  auto buffer = BuildTestBuffer({1, 2, 3});
+  bool callback_ran = false;
+  map.Flush(buffer,
+            base::BindLambdaForTesting(
+                [&](base::expected<FlushedKey, FlushError> key) {
+                  EXPECT_TRUE(key.has_value());
+                  EXPECT_TRUE(base::PathExists(base::FilePath(key->path)));
+                  callback_ran = true;
+                }));
+  Wait();
+  EXPECT_TRUE(callback_ran);
+  EXPECT_EQ(map.keys().size(), 1ul);
+}
+
+TEST_F(FlushedMapTest, DeleteKeysWithMissingKeys) {
+  FlushedMap map = BuildFlushedMap();
+  Wait();
+
+  auto buffer1 = BuildTestBuffer({1});
+  map.Flush(buffer1, base::BindLambdaForTesting(
+                         [&](base::expected<FlushedKey, FlushError> key) {}));
+  auto buffer2 = BuildTestBuffer({2});
+  base::FilePath path2;
+  map.Flush(buffer2, base::BindLambdaForTesting(
+                         [&](base::expected<FlushedKey, FlushError> key) {
+                           path2 = key->path;
+                         }));
+  Wait();
+
+  ASSERT_EQ(map.keys().size(), 2ul);
+
+  FlushedKey missing_key;
+  missing_key.path = GetDir().Append(FILE_PATH_LITERAL("missing"));
+
+  std::vector<FlushedKey> keys_to_delete = {map.keys()[0], missing_key};
+  map.DeleteKeys(keys_to_delete);
+  Wait();
+
+  EXPECT_EQ(map.keys().size(), 1ul);
+  EXPECT_EQ(map.keys()[0].path, path2);
+}
+
+TEST_F(FlushedMapTest, DeferMultipleOperations) {
+  // Create two files on disk.
+  ASSERT_TRUE(base::CreateDirectory(GetDir()));
+  auto events1 = BuildTestEvents({1, 2, 3});
+  base::FilePath path1 = GetDir().Append(FILE_PATH_LITERAL("events1"));
+  WriteToDisk(path1, std::move(events1));
+  auto events2 = BuildTestEvents({4, 5, 6});
+  base::FilePath path2 = GetDir().Append(FILE_PATH_LITERAL("events2"));
+  WriteToDisk(path2, std::move(events2));
+
+  FlushedMap map = BuildFlushedMap();
+
+  // Before initialization, delete one of the keys and flush a new buffer.
+  map.DeleteKey(BuildKey(path1));
+
+  auto buffer = BuildTestBuffer({7, 8, 9});
+  map.Flush(buffer, base::BindLambdaForTesting(
+                        [&](base::expected<FlushedKey, FlushError> key) {}));
+
+  Wait();
+
+  // After initialization, we should have two keys: the one that wasn't deleted
+  // and the newly flushed one.
+  EXPECT_EQ(map.keys().size(), 2ul);
+
+  std::vector<base::FilePath> paths;
+  for (const auto& key : map.keys()) {
+    paths.push_back(key.path);
+  }
+
+  // The order is not guaranteed.
+  EXPECT_THAT(paths, testing::UnorderedElementsAre(
+                         path2, testing::Not(testing::Eq(path1))));
 }
 
 }  // namespace metrics::structured

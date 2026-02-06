@@ -12,21 +12,20 @@
 namespace metrics::structured {
 
 // Simple in-memory event storage for unit and some browser tests.
-class TestEventStorage final : public EventStorage<StructuredEventProto> {
+class TestEventStorage : public EventStorage<StructuredEventProto> {
  public:
+  using Events = ::google::protobuf::RepeatedPtrField<StructuredEventProto>;
+
   TestEventStorage();
 
   ~TestEventStorage() override;
 
   // EventStorage:
   void AddEvent(StructuredEventProto event) override;
-  ::google::protobuf::RepeatedPtrField<StructuredEventProto> TakeEvents()
-      override;
+  void TakeEvents(base::OnceCallback<void(Events)> consumer) override;
   int RecordedEventsCount() const override;
   void Purge() override;
-  void AddBatchEvents(
-      const google::protobuf::RepeatedPtrField<StructuredEventProto>& events)
-      override;
+  void AddBatchEvents(const Events& events) override;
   void CopyEvents(EventsProto* proto) const override;
 
   EventsProto* events() { return &events_; }

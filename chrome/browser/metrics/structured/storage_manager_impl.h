@@ -5,16 +5,9 @@
 #ifndef CHROME_BROWSER_METRICS_STRUCTURED_STORAGE_MANAGER_IMPL_H_
 #define CHROME_BROWSER_METRICS_STRUCTURED_STORAGE_MANAGER_IMPL_H_
 
-#include <atomic>
-#include <memory>
-
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/metrics/metrics_scheduler.h"
+#include "chrome/browser/metrics/structured/arena_event_buffer.h"
 #include "components/metrics/structured/flushed_map.h"
-#include "components/metrics/structured/lib/event_buffer.h"
 #include "components/metrics/structured/storage_manager.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
@@ -37,6 +30,11 @@ struct StorageManagerConfig {
 // There is no initialization. Events may be recorded immediately.
 class StorageManagerImpl : public StorageManager {
  public:
+  using Events = ::google::protobuf::RepeatedPtrField<StructuredEventProto>;
+
+  // Container for events read from disk.
+  using FlushedEvents = std::vector<std::pair<FlushedKey, EventsProto>>;
+
   explicit StorageManagerImpl(const StorageManagerConfig& config);
 
   // Storage Manager Impl constructor
@@ -51,19 +49,23 @@ class StorageManagerImpl : public StorageManager {
 
   // EventStorage:
   void AddEvent(StructuredEventProto event) override;
-  ::google::protobuf::RepeatedPtrField<StructuredEventProto> TakeEvents()
-      override;
+  void TakeEvents(base::OnceCallback<void(Events)> consumer) override;
   int RecordedEventsCount() const override;
   void Purge() override;
-  void AddBatchEvents(
-      const google::protobuf::RepeatedPtrField<StructuredEventProto>& events)
-      override;
+  void AddBatchEvents(const Events& events) override;
 
   // Gets the configuration for the StorageManager using the configuration of
   // the system.
   static StorageManagerConfig GetStorageManagerConfig();
 
+  bool IsInitializedForTesting() const;
+
  private:
+  // Called on the UI thread to combine in-memory events and disk events.
+  void CombineEventsOnUIThread(base::OnceCallback<void(Events)> consumer,
+                               Events in_memory_events,
+                               FlushedEvents disk_events);
+
   // Flushes |event_buffer_| and then adds |event| to |event_buffer_| after.
   void FlushAndAddEvent(StructuredEventProto&& event);
 
@@ -74,33 +76,26 @@ class StorageManagerImpl : public StorageManager {
   void OnFlushCompleted(base::expected<FlushedKey, FlushError> key);
 
   // Retrieves events from the in-memory buffer.
-  void TakeFromInMemory(
-      google::protobuf::RepeatedPtrField<StructuredEventProto>* output);
+  void TakeFromInMemory(Events* output);
 
-  // Retrieves events from disk. All events are loaded.
-  void TakeFromDisk(
-      google::protobuf::RepeatedPtrField<StructuredEventProto>* output);
-
-  // Cleans up all on-disk events, |storage_service_| is notified of the
-  // deletion with |reason|.
-  void CleanupFlushed(DeleteReason reason);
+  // Adds events read from disk to |output| and cleans up the files.
+  void AddEventsFromDisk(FlushedEvents disk_events, Events* output);
 
   // Deletes on-disk events from |flushed_map_| until it is under the desired
   // quota.
   void DropFlushedUntilUnderQuota();
 
   // The configuration used to create |this|.
-  StorageManagerConfig config_;
+  const StorageManagerConfig config_;
 
   // An EventBuffer to store events in-memory.
-  std::unique_ptr<EventBuffer<StructuredEventProto>> event_buffer_;
+  ArenaEventBuffer event_buffer_;
+
   // Manages flushed events.
   FlushedMap flushed_map_;
 
-  // Flag denoting if flushed events are being dropped.
-  std::atomic_bool dropping_flushed_queued_ = false;
+  bool take_events_in_progress_ = false;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<StorageManagerImpl> weak_factory_{this};
 };
 }  // namespace metrics::structured

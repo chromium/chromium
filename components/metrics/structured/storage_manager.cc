@@ -16,10 +16,4 @@ void StorageManager::NotifyOnFlushed(const FlushedKey& key) {
   }
 }
 
-void StorageManager::NotifyOnDeleted(const FlushedKey& key,
-                                     DeleteReason reason) {
-  if (delegate_) {
-    delegate_->OnDeleted(key, reason);
-  }
-}
 }  // namespace metrics::structured

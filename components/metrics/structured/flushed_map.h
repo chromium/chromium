@@ -46,8 +46,10 @@ class FlushedMap {
 
   ~FlushedMap();
 
-  // Deletes all flushed events from disk.
-  void Purge();
+  // Deletes all flushed events from disk. |callback| is called with the keys
+  // that were purged.
+  void Purge(
+      base::OnceCallback<void(const std::vector<FlushedKey>&)> callback = {});
 
   // Flushes |buffer| to disk. A key is returned that is used to identify the
   // on-disk events.
@@ -56,17 +58,24 @@ class FlushedMap {
   void Flush(EventBuffer<StructuredEventProto>& buffer,
              FlushedCallback callback);
 
-  // Reads the events stored at |key|.
-  std::optional<EventsProto> ReadKey(const FlushedKey& key) const;
+  // Reads the events stored at |key|. Does file I/O and should be called from
+  // a background thread.
+  //
+  // Returns std::nullopt if the key could not be read or the data is not an
+  // EventsProto.
+  static std::optional<EventsProto> ReadKey(const FlushedKey& key);
 
   // Deletes the events of |key|.
   void DeleteKey(const FlushedKey& key);
 
+  // Deletes a vector of keys.
   void DeleteKeys(const std::vector<FlushedKey>& keys);
 
   const std::vector<FlushedKey>& keys() const { return keys_; }
 
   const ResourceInfo& resource_info() const { return resource_info_; }
+
+  bool IsInitialized() const { return is_initialized_; }
 
   bool empty() const { return keys().empty(); }
 
@@ -75,13 +84,8 @@ class FlushedMap {
   // filename is generated using UUID.
   base::FilePath GenerateFilePath() const;
 
-  // Starts a task that builds the list of in-memory keys.
-  void LoadKeysFromDir(const base::FilePath& dir);
-
-  // Traverses |dir| building a list of keys.
-  //
-  // It is assumed that all of the files in |dir| store serialized EventsProtos.
-  void BuildKeysFromDir(const base::FilePath& dir);
+  // Handles the keys that were loaded from disk.
+  void OnKeysLoaded(std::vector<FlushedKey> keys);
 
   // Flushed map operations that need to be handled post flush.
   void OnFlushed(FlushedCallback callback,
@@ -97,6 +101,12 @@ class FlushedMap {
   ResourceInfo resource_info_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Whether the |keys_| have been loaded from disk.
+  bool is_initialized_ = false;
+
+  // A queue of operations that are pending initialization.
+  std::vector<base::OnceClosure> deferred_operations_;
 
   base::WeakPtrFactory<FlushedMap> weak_factory_{this};
 };

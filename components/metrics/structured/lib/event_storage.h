@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_LIB_EVENT_STORAGE_H_
 #define COMPONENTS_METRICS_STRUCTURED_LIB_EVENT_STORAGE_H_
 
+#include "base/functional/callback.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace metrics {
@@ -36,9 +37,10 @@ class EventStorage {
   // Add a new StructuredEventProto to be stored.
   virtual void AddEvent(T event) = 0;
 
-  // External API for removing events from the storage.
-  // Intended to be used with a Swap for improved performance.
-  virtual Container<T> TakeEvents() = 0;
+  // External API for removing events from the storage. Removed events are
+  // passed to the |consumer| callback. The callback may be called
+  // asynchronously.
+  virtual void TakeEvents(base::OnceCallback<void(Container<T>)> consumer) = 0;
 
   // The number of events that have been recorded.
   virtual int RecordedEventsCount() const = 0;

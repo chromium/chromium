@@ -4,7 +4,6 @@
 
 #include "components/metrics/structured/structured_metrics_recorder.h"
 
-#include <sstream>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -14,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/histogram_util.h"
@@ -30,9 +28,7 @@ namespace metrics::structured {
 StructuredMetricsRecorder::StructuredMetricsRecorder(
     std::unique_ptr<KeyDataProvider> key_data_provider,
     std::unique_ptr<EventStorage<StructuredEventProto>> event_storage)
-    : RefCountedDeleteOnSequence(
-          base::SequencedTaskRunner::GetCurrentDefault()),
-      key_data_provider_(std::move(key_data_provider)),
+    : key_data_provider_(std::move(key_data_provider)),
       event_storage_(std::move(event_storage)) {
   CHECK(key_data_provider_);
   CHECK(event_storage_);
@@ -41,11 +37,13 @@ StructuredMetricsRecorder::StructuredMetricsRecorder(
 }
 
 StructuredMetricsRecorder::~StructuredMetricsRecorder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Recorder::GetInstance()->UnsetRecorder(this);
   key_data_provider_->RemoveObserver(this);
 }
 
 void StructuredMetricsRecorder::EnableRecording() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::CurrentUIThread::IsSet());
   // Enable recording only if structured metrics' feature flag is enabled.
   recording_enabled_ =
@@ -56,47 +54,62 @@ void StructuredMetricsRecorder::EnableRecording() {
 }
 
 void StructuredMetricsRecorder::DisableRecording() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::CurrentUIThread::IsSet());
   recording_enabled_ = false;
   disallowed_projects_.clear();
 }
 
 void StructuredMetricsRecorder::ProvideEventMetrics(
-    ChromeUserMetricsExtension& uma_proto) {
+    base::OnceCallback<void(StructuredDataProto)> consumer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CanProvideMetrics() || !event_storage_->HasEvents()) {
+    ProvideEventMetricsDone(std::move(consumer), {});
     return;
   }
 
-  LockStorage();
+  event_storage_->TakeEvents(
+      base::BindOnce(&StructuredMetricsRecorder::ProvideEventMetricsDone,
+                     weak_factory_.GetWeakPtr(), std::move(consumer)));
+}
 
-  // Get the events from event storage.
-  auto events = event_storage_->TakeEvents();
+void StructuredMetricsRecorder::ProvideEventMetricsDone(
+    base::OnceCallback<void(StructuredDataProto)> consumer,
+    ::google::protobuf::RepeatedPtrField<StructuredEventProto> events) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ReleaseStorage();
+  StructuredDataProto structured_data;
 
-  StructuredDataProto& structured_data = *uma_proto.mutable_structured_data();
-  *structured_data.mutable_events() = std::move(events);
+  // Only log if there are events to report.
+  if (!events.empty()) {
+    *structured_data.mutable_events() = std::move(events);
+    LogUploadSizeBytes(structured_data.ByteSizeLong());
+    LogNumEventsInUpload(structured_data.events_size());
+  }
 
-  LogUploadSizeBytes(structured_data.ByteSizeLong());
-  LogNumEventsInUpload(structured_data.events_size());
+  std::move(consumer).Run(std::move(structured_data));
 }
 
 void StructuredMetricsRecorder::ProvideLogMetadata(
     ChromeUserMetricsExtension& uma_proto) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Applies custom metadata providers.
   Recorder::GetInstance()->OnProvideIndependentMetrics(&uma_proto);
 }
 
 bool StructuredMetricsRecorder::CanProvideMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We can provide metrics once device or profile keys have been loaded.
   return recording_enabled() && (IsInitialized() || IsProfileInitialized());
 }
 
 bool StructuredMetricsRecorder::HasMetricsToProvide() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return event_storage()->HasEvents();
 }
 
 void StructuredMetricsRecorder::OnKeyReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::CurrentUIThread::IsSet());
 
   // If key data has not been initialized, it is highly likely that the key data
@@ -128,6 +141,7 @@ void StructuredMetricsRecorder::RemoveEventsObserver(Observer* watcher) {
 }
 
 void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::CurrentUIThread::IsSet());
 
   // One more state for the EventRecordingState exists: kMetricsProviderMissing.
@@ -157,6 +171,7 @@ bool StructuredMetricsRecorder::HasState(State state) const {
 }
 
 void StructuredMetricsRecorder::Purge() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(event_storage_);
   event_storage_->Purge();
   key_data_provider_->Purge();
@@ -167,17 +182,20 @@ void StructuredMetricsRecorder::Purge() {
 
 void StructuredMetricsRecorder::RecordEventBeforeInitialization(
     const Event& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsInitialized());
   unhashed_events_.emplace_back(event.Clone());
 }
 
 void StructuredMetricsRecorder::RecordProfileEventBeforeInitialization(
     const Event& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsProfileInitialized());
   unhashed_profile_events_.emplace_back(event.Clone());
 }
 
 void StructuredMetricsRecorder::RecordEvent(const Event& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsKeyDataInitialized());
 
   // Retrieve key for the project.
@@ -228,12 +246,12 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   Recorder::GetInstance()->OnEventRecorded(&event_proto);
   NotifyEventRecorded(event_proto);
 
-  // Add new event to storage.
-  if (storage_lock_.load()) {
-    locked_events_.push_back(event_proto);
-  } else {
-    event_storage_->AddEvent(event_proto);
-  }
+  // Add new event to storage. Note: There is no problem to do this even if
+  // there's an ongoing async TakeEvents() call, since TakeEvents() will copy
+  // the keys to be read on the current thread and pass them to the background
+  // thread for reading. So these new events won't be read until the next time
+  // TakeEvents() is called.
+  event_storage_->AddEvent(event_proto);
 
   test_callback_on_record_.Run();
 }
@@ -243,6 +261,7 @@ void StructuredMetricsRecorder::InitializeEventProto(
     const Event& event,
     const ProjectValidator& project_validator,
     const EventValidator& event_validator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   proto->set_project_name_hash(project_validator.project_hash());
   proto->set_event_name_hash(event_validator.event_hash());
 
@@ -275,6 +294,7 @@ void StructuredMetricsRecorder::AddMetricsToProto(
     const Event& event,
     const ProjectValidator& project_validator,
     const EventValidator& event_validator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   KeyData* key = key_data_provider_->GetKeyData(event.project_name());
 
   // Key is checked by the calling function.
@@ -335,6 +355,7 @@ void StructuredMetricsRecorder::AddMetricsToProto(
 }
 
 void StructuredMetricsRecorder::HashUnhashedEventsAndPersist() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsInitialized()) {
     LogNumEventsRecordedBeforeInit(unhashed_events_.size());
     while (!unhashed_events_.empty()) {
@@ -374,18 +395,22 @@ void StructuredMetricsRecorder::CacheDisallowedProjectsSet() {
 }
 
 bool StructuredMetricsRecorder::IsKeyDataInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return key_data_provider_->IsReady();
 }
 
 bool StructuredMetricsRecorder::IsInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return init_state_.Has(State::kKeyDataInitialized);
 }
 
 bool StructuredMetricsRecorder::IsProfileInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return init_state_.Has(State::kProfileKeyDataInitialized);
 }
 
 bool StructuredMetricsRecorder::CanForceRecord(const Event& event) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto validators = GetEventValidators(event);
   if (!validators) {
     return false;
@@ -394,6 +419,7 @@ bool StructuredMetricsRecorder::CanForceRecord(const Event& event) const {
 }
 
 bool StructuredMetricsRecorder::IsDeviceEvent(const Event& event) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
   const auto validators = GetEventValidators(event);
@@ -408,6 +434,7 @@ bool StructuredMetricsRecorder::IsDeviceEvent(const Event& event) const {
 }
 
 bool StructuredMetricsRecorder::IsProfileEvent(const Event& event) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
   const auto validators = GetEventValidators(event);
@@ -423,6 +450,7 @@ bool StructuredMetricsRecorder::IsProfileEvent(const Event& event) const {
 
 std::optional<std::pair<const ProjectValidator*, const EventValidator*>>
 StructuredMetricsRecorder::GetEventValidators(const Event& event) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(event.project_name());
 
@@ -441,6 +469,7 @@ StructuredMetricsRecorder::GetEventValidators(const Event& event) const {
 }
 
 void StructuredMetricsRecorder::SetOnReadyToRecord(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_ready_callback_ = std::move(callback);
 
   if (IsInitialized()) {
@@ -450,47 +479,22 @@ void StructuredMetricsRecorder::SetOnReadyToRecord(base::OnceClosure callback) {
 
 void StructuredMetricsRecorder::SetEventRecordCallbackForTest(
     base::RepeatingClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   test_callback_on_record_ = std::move(callback);
 }
 
 void StructuredMetricsRecorder::AddDisallowedProjectForTest(
     uint64_t project_name_hash) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   disallowed_projects_.insert(project_name_hash);
 }
 
 void StructuredMetricsRecorder::NotifyEventRecorded(
     const StructuredEventProto& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& watcher : watchers_) {
     watcher.OnEventRecorded(event);
   }
-}
-
-void StructuredMetricsRecorder::LockStorage() {
-  storage_lock_.store(true);
-}
-
-void StructuredMetricsRecorder::ReleaseStorage() {
-  storage_lock_.store(false);
-
-  StoreLockedEvents();
-}
-
-void StructuredMetricsRecorder::StoreLockedEvents() {
-  base::SequencedTaskRunner* task_runner =
-      Recorder::GetInstance()->GetUiTaskRunner();
-
-  if (!task_runner->RunsTasksInCurrentSequence()) {
-    task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&StructuredMetricsRecorder::StoreLockedEvents,
-                                  weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  for (const auto& event : locked_events_) {
-    event_storage_->AddEvent(event);
-  }
-
-  locked_events_.clear();
 }
 
 }  // namespace metrics::structured

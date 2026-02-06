@@ -65,7 +65,7 @@ class EventBuffer {
   virtual void Purge() = 0;
 
   // The number of events stored in the buffer.
-  virtual uint64_t Size() = 0;
+  virtual uint64_t Size() const = 0;
 
   // Serialize the contents of |this|.
   virtual google::protobuf::RepeatedPtrField<T> Serialize() = 0;
@@ -73,6 +73,8 @@ class EventBuffer {
   // Flushes the buffer to |path|, once the flush is complete |callback| is
   // executed.
   virtual void Flush(const base::FilePath& path, FlushedCallback callback) = 0;
+
+  virtual bool IsInitialized() const { return true; }
 
   const ResourceInfo& resource_info() const { return resource_info_; }
 
