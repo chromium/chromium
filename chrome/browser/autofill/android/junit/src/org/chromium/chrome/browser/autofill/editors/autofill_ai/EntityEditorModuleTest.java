@@ -28,9 +28,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
+import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.ui.base.TestActivity;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -42,7 +47,7 @@ public class EntityEditorModuleTest {
     private EntityEditorCoordinator mCoordinator;
     private View mContainerView;
 
-    private EntityType mEntityType;
+    private EntityInstance mEntityInstance;
 
     @Before
     public void setUp() {
@@ -51,7 +56,7 @@ public class EntityEditorModuleTest {
         mCoordinator = new EntityEditorCoordinator(mActivity);
         mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();
 
-        mEntityType =
+        EntityType entityType =
                 new EntityType(
                         /* typeName= */ EntityTypeName.PASSPORT,
                         /* isReadOnly= */ false,
@@ -59,21 +64,28 @@ public class EntityEditorModuleTest {
                         /* addEntityTypeString= */ "Add passport",
                         /* editEntityTypeString= */ "Edit passport",
                         /* deleteEntityTypeString= */ "Delete passport");
+        mEntityInstance =
+                new EntityInstance.Builder(entityType)
+                        .setGUID("guid")
+                        .setRecordType(RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                        .setUseCount(0)
+                        .build();
     }
 
     @Test
     @SmallTest
     public void testShowEditorDialog() {
-        mCoordinator.showEditorDialog(mEntityType);
+        mCoordinator.showEditorDialog(mEntityInstance);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
-        assertEquals(mEntityType.getAddEntityTypeString(), toolbar.getTitle());
+        assertEquals(mEntityInstance.getEntityType().getAddEntityTypeString(), toolbar.getTitle());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 
     @Test
     @SmallTest
     public void testClickDoneButton() {
-        mCoordinator.showEditorDialog(mEntityType);
+        mCoordinator.showEditorDialog(mEntityInstance);
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
@@ -81,7 +93,7 @@ public class EntityEditorModuleTest {
     @Test
     @SmallTest
     public void testClickCancelButton() {
-        mCoordinator.showEditorDialog(mEntityType);
+        mCoordinator.showEditorDialog(mEntityInstance);
         mContainerView.findViewById(R.id.payments_edit_cancel_button).performClick();
         assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }

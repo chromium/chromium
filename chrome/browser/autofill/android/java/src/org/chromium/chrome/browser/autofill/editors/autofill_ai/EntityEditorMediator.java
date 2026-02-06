@@ -12,7 +12,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the Entity Editor. */
@@ -23,11 +23,13 @@ class EntityEditorMediator {
     EntityEditorMediator() {}
 
     @EnsuresNonNull("mEditorModel")
-    PropertyModel getEditorModel(EntityType entityType) {
+    PropertyModel getEditorModel(EntityInstance entityInstance) {
         if (mEditorModel == null) {
             mEditorModel =
                     new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
-                            .with(EDITOR_TITLE, entityType.getAddEntityTypeString())
+                            .with(
+                                    EDITOR_TITLE,
+                                    entityInstance.getEntityType().getAddEntityTypeString())
                             .with(DONE_RUNNABLE, this::onDone)
                             .with(CANCEL_RUNNABLE, this::onCancel)
                             .build();
