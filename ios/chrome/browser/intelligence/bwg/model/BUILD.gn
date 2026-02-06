@@ -112,14 +112,10 @@ source_set("tab_helper") {
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/web/model/image_fetch",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public",
-    "//ios/web/public/js_image_transcoder",
-    "//ios/web/public/js_messaging",
     "//mojo/public/cpp/bindings",
   ]
 }

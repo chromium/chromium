@@ -375,12 +375,6 @@ bool IsGeminiUpdatedEligibilityEnabled() {
   return base::FeatureList::IsEnabled(kGeminiUpdatedEligibility);
 }
 
-BASE_FEATURE(kWebPageReportedImagesSheet, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsWebPageReportedImagesSheetEnabled() {
-  return base::FeatureList::IsEnabled(kWebPageReportedImagesSheet);
-}
-
 BASE_FEATURE(kGeminiImageRemixTool, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiImageRemixToolEnabled() {

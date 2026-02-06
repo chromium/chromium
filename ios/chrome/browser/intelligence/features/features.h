@@ -277,11 +277,6 @@ BASE_DECLARE_FEATURE(kGeminiUpdatedEligibility);
 // Returns true if the updated eligibiliy checks for Gemini are enabled.
 bool IsGeminiUpdatedEligibilityEnabled();
 
-// Feature flag for displaying a sheet which shows the web page's self-reported
-// important images. Experimental.
-BASE_DECLARE_FEATURE(kWebPageReportedImagesSheet);
-bool IsWebPageReportedImagesSheetEnabled();
-
 // Feature flag for enabling the image remixing tool in the Gemini floaty.
 BASE_DECLARE_FEATURE(kGeminiImageRemixTool);
 bool IsGeminiImageRemixToolEnabled();

@@ -990,9 +990,6 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebPageDefaultZoomFromDynamicTypeName[];
 extern const char kWebPageDefaultZoomFromDynamicTypeDescription[];
 
-extern const char kWebPageReportedImagesSheetName[];
-extern const char kWebPageReportedImagesSheetDescription[];
-
 extern const char kWebPageTextZoomIPadName[];
 extern const char kWebPageTextZoomIPadDescription[];
 

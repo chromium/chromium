@@ -262,13 +262,6 @@
         HandlerForProtocol(_commandDispatcher, BWGCommands);
     BWGTabHelper->SetBwgCommandsHandler(BWGCommandsHandler);
 
-    // TODO(crbug.com/455903668): Remove this or refactor to
-    // `HandlerForProtocol`.
-    if (IsWebPageReportedImagesSheetEnabled()) {
-      BWGTabHelper->SetSnackbarCommandsHandler(
-          static_cast<id<SnackbarCommands>>(_commandDispatcher));
-    }
-
     if (IsAskGeminiChipEnabled()) {
       BWGTabHelper->SetLocationBarBadgeCommandsHandler(
           id<LocationBarBadgeCommands>(_commandDispatcher));
@@ -412,9 +405,6 @@
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
   if (BWGTabHelper) {
     BWGTabHelper->SetBwgCommandsHandler(nil);
-    if (IsWebPageReportedImagesSheetEnabled()) {
-      BWGTabHelper->SetSnackbarCommandsHandler(nil);
-    }
     if (IsAskGeminiChipEnabled()) {
       BWGTabHelper->SetLocationBarBadgeCommandsHandler(nil);
     }
