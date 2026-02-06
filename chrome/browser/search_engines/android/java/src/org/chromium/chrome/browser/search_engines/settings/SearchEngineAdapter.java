@@ -37,19 +37,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridge.GoogleFaviconServerCallback;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.ChoiceMadeLocation;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -73,38 +69,6 @@ public class SearchEngineAdapter extends BaseAdapter
     public static final int MAX_RECENT_ENGINE_NUM = 3;
     public static final long MAX_DISPLAY_TIME_SPAN_MS = DateUtils.DAY_IN_MILLIS * 2;
     private static final Runnable NO_OP = () -> {};
-
-    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
-            NetworkTrafficAnnotationTag.createComplete(
-                    "search_engine_adapter",
-                    """
-                    semantics {
-                        sender: 'SearchEngineAdapter'
-                        description: 'Sends a request to a Google server to retrieve the favicon bitmap.'
-                        trigger:
-                            'A request is sent when the user opens search engine settings and Chrome does '
-                            'not have a favicon.'
-                        data: 'Search engine URL and desired icon size.'
-                        destination: GOOGLE_OWNED_SERVICE
-                        internal {
-                            contacts {
-                                email: 'chrome-signin-team@google.com'
-                            }
-                            contacts {
-                                email: 'triploblastic@google.com'
-                            }
-                        }
-                        user_data {
-                            type: NONE
-                        }
-                        last_reviewed: '2023-12-04'
-                    }
-                    policy {
-                        cookies_allowed: NO
-                        policy_exception_justification: 'Not implemented.'
-                        setting: 'This feature cannot be disabled by settings.'
-                    }\
-                    """);
 
     private static final int VIEW_TYPE_COUNT = 3;
 
@@ -609,51 +573,8 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     private void updateLogo(ImageView logoView, TemplateUrl templateUrl, GURL faviconUrl) {
-        if (mIconCache.containsKey(faviconUrl)) {
-            logoView.setImageBitmap(mIconCache.get(faviconUrl));
-            return;
-        }
-
-        @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
-        if (bitmap != null) {
-            mIconCache.put(faviconUrl, bitmap);
-            logoView.setImageBitmap(bitmap);
-            return;
-        }
-
-        // Use a placeholder image while trying to fetch the logo.
-        int uiElementSizeInPx =
-                mContext.getResources().getDimensionPixelSize(R.dimen.search_engine_favicon_size);
-        logoView.setImageBitmap(
-                FaviconUtils.createGenericFaviconBitmap(mContext, uiElementSizeInPx, null));
-        LargeIconCallback onFaviconAvailable =
-                (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                    if (icon != null) {
-                        logoView.setImageBitmap(icon);
-                        mIconCache.put(faviconUrl, icon);
-                    }
-                };
-        GoogleFaviconServerCallback googleServerCallback =
-                (status) -> {
-                    // Update the time the icon was last requested to avoid automatic eviction
-                    // from cache.
-                    mLargeIconBridge.touchIconFromGoogleServer(faviconUrl);
-                    // The search engine logo will be fetched from google servers, so the actual
-                    // size of the image is controlled by LargeIconService configuration.
-                    // minSizePx=1 is used to accept logo of any size.
-                    mLargeIconBridge.getLargeIconForUrl(
-                            faviconUrl,
-                            /* minSizePx= */ 1,
-                            /* desiredSizePx= */ uiElementSizeInPx,
-                            onFaviconAvailable);
-                };
-        // If the icon already exists in the cache no network request will be made, but the
-        // callback will be triggered nonetheless.
-        mLargeIconBridge.getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                faviconUrl,
-                /* shouldTrimPageUrlPath= */ true,
-                TRAFFIC_ANNOTATION,
-                googleServerCallback);
+        SearchEngineIconUtils.updateIcon(
+                mContext, logoView, templateUrl, faviconUrl, mLargeIconBridge, mIconCache);
     }
 
     // TemplateUrlService.LoadListener

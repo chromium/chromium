@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogMediator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineIconUtils.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SiteSearchSettings.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineListPreference.java",
