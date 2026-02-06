@@ -90,7 +90,7 @@ GURL GetGuestURL() {
                : features::kGlicGuestURL.Get());
 
   // If a preset url is enabled, use it instead.
-  MaybeApplyPresetGuestUrl(&url);
+  url = MaybeApplyPresetGuestUrl(std::move(url));
 
   if (url.is_empty()) {
     LOG(ERROR) << "No glic guest url";
@@ -106,37 +106,34 @@ url::Origin GetGuestOrigin() {
   return url::Origin::Create(GetGuestURL());
 }
 
-void MaybeApplyPresetGuestUrl(GURL* guest_url) {
-  if (base::FeatureList::IsEnabled(features::kGlicGuestUrlPresets)) {
-    GURL preset_url;
-    switch (features::kGlicGuestUrlPresetType.Get()) {
-      case 0:
-        preset_url = GURL(g_browser_process->local_state()->GetString(
-            prefs::kGlicGuestUrlPresetAutopush));
-        break;
-      case 1:
-        preset_url = GURL(g_browser_process->local_state()->GetString(
-            prefs::kGlicGuestUrlPresetPreprod));
-        break;
-      case 2:
-        preset_url = GURL(g_browser_process->local_state()->GetString(
-            prefs::kGlicGuestUrlPresetProd));
-        break;
-      default:
-        return;
-    }
+GURL MaybeApplyPresetGuestUrl(GURL guest_url) {
+  if (!base::FeatureList::IsEnabled(features::kGlicGuestUrlPresets)) {
+    return guest_url;
+  }
 
-    if (preset_url.is_valid()) {
-      *guest_url = preset_url;
-    } else {
-      LOG(ERROR) << "Invalid preset glic guest url, ignoring.";
-    }
+  GURL preset_url;
+  switch (features::kGlicGuestUrlPresetType.Get()) {
+    case 0:
+      preset_url = GURL(g_browser_process->local_state()->GetString(
+          prefs::kGlicGuestUrlPresetAutopush));
+      break;
+    case 1:
+      preset_url = GURL(g_browser_process->local_state()->GetString(
+          prefs::kGlicGuestUrlPresetPreprod));
+      break;
+    case 2:
+      preset_url = GURL(g_browser_process->local_state()->GetString(
+          prefs::kGlicGuestUrlPresetProd));
+      break;
+    default:
+      return guest_url;
+  }
 
-    if (preset_url.is_valid()) {
-      *guest_url = preset_url;
-    } else {
-      LOG(ERROR) << "Invalid preset glic guest url, ignoring.";
-    }
+  if (preset_url.is_valid()) {
+    return preset_url;
+  } else {
+    LOG(ERROR) << "Invalid preset glic guest url, ignoring.";
+    return guest_url;
   }
 }
 

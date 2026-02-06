@@ -21,8 +21,9 @@ BASE_DECLARE_FEATURE(kGlicGuestUrlMultiInstanceParam);
 GURL GetGuestURL();
 url::Origin GetGuestOrigin();
 
-// Checks if a preset url is enabled and updates guest_url if so.
-void MaybeApplyPresetGuestUrl(GURL* guest_url);
+// Checks if a preset url is enabled and returns it if so. Otherwise, returns
+// `guest_url`.
+GURL MaybeApplyPresetGuestUrl(GURL guest_url);
 
 // Returns an updated guest URL that includes a language parameter, set to the
 // browser's UI language. If the parameter is already present, its current value
