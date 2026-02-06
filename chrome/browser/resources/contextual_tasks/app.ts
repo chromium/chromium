@@ -8,6 +8,7 @@ import './ghost_loader.js';
 import './top_toolbar.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -50,6 +51,7 @@ function updateTaskDetailsInUrl(
     taskId: Uuid, threadId: string, turnId: string) {
   const url = new URL(window.location.href);
 
+  const existingTaskId = url.searchParams.get('task');
   url.searchParams.set('task', taskId.value);
 
   threadId ? url.searchParams.set('thread', threadId) :
@@ -58,7 +60,13 @@ function updateTaskDetailsInUrl(
   turnId ? url.searchParams.set('turn', turnId) :
            url.searchParams.delete('turn');
 
-  window.history.replaceState({}, '', url.href);
+  // Allow back navigation if the task ID changes. Other changes to the URL
+  // represent state changes for the current task.
+  if (existingTaskId !== taskId.value) {
+    window.history.pushState({}, '', url.href);
+  } else {
+    window.history.replaceState({}, '', url.href);
+  }
 }
 
 // Updates param for the title in the WebUI URL. This facilitates the restore
@@ -162,6 +170,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   // condition while awaiting isAiPage.
   private isFrameLoading: boolean = false;
   private listenerIds_: number[] = [];
+  private eventTracker_: EventTracker = new EventTracker();
   private commonSearchParams_: {[key: string]: string} = {};
   private postMessageHandler_!: PostMessageHandler;
   private forcedEmbeddedPageHost =
@@ -170,6 +179,9 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getString('contextualTasksSignInDomains').split(',');
   private enableGhostLoader_: boolean =
       loadTimeData.getBoolean('enableGhostLoader');
+  // A callback to allow tests to wait until the popstate handler in this class
+  // has finished running.
+  private popStateFinishedCallbackForTesting_: (() => void)|null = null;
 
   override firstUpdated() {
     this.postMessageHandler_ =
@@ -244,6 +256,31 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.isErrorPageVisible_ = false;
       }),
     ];
+
+    this.eventTracker_.add(window, 'popstate', async () => {
+      // The back button may pop state that was pushed by a task change. If that
+      // is the case, fetch the URL for the task ID and load that in the frame.
+      const taskUuid = new URLSearchParams(location.search).get('task');
+      if (taskUuid) {
+        const {url} =
+            await this.browserProxy_.handler.getUrlForTask({value: taskUuid});
+
+        // Do nothing if the app element is no longer attached to the page. This
+        // can occur in tests where awaiting the call above will delay the rest
+        // of this handler and affect other tests in the suite.
+        if (!this.isConnected) {
+          return;
+        }
+
+        this.browserProxy_.handler.setTaskId({value: taskUuid});
+        this.$.threadFrame.src = url.url;
+
+        // Allow tests to wait for this callback to complete.
+        if (this.popStateFinishedCallbackForTesting_) {
+          this.popStateFinishedCallbackForTesting_();
+        }
+      }
+    });
 
     this.updateSidePanelState();
 
@@ -326,6 +363,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         id => this.browserProxy_.callbackRouter.removeListener(id));
     this.$.threadFrame.request.onBeforeRequest.removeListener(
         this.onBeforeRequest);
+    this.eventTracker_.removeAll();
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -465,6 +503,10 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private setIsGhostLoaderVisible(isVisible: boolean) {
     this.isGhostLoaderVisible_ = isVisible;
+  }
+
+  setPopStateFinishedCallbackForTesting(callback: () => void) {
+    this.popStateFinishedCallbackForTesting_ = callback;
   }
 }
 
