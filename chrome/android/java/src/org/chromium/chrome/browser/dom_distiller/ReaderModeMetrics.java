@@ -188,4 +188,14 @@ public class ReaderModeMetrics {
         RecordUserAction.record("DomDistiller.Android.ThemeChanged");
         RecordHistogram.recordCount100Histogram("DomDistiller.Android.ThemeSelected", theme);
     }
+
+    /**
+     * Report the links enabled state in the prefs.
+     *
+     * @param enabled Whether links are enabled.
+     */
+    public static void reportReaderModePrefsLinksEnabled(boolean enabled) {
+        RecordUserAction.record("DomDistiller.Android.LinksEnabledChanged");
+        RecordHistogram.recordBooleanHistogram("DomDistiller.Android.LinksEnabled", enabled);
+    }
 }

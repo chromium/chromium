@@ -193,7 +193,9 @@ public class ReaderModePrefsView extends LinearLayout
         if (mToggleLinksButton != null) {
             mToggleLinksButton.setOnClickListener(
                     v -> {
-                        mDistilledPagePrefs.setLinksEnabled(!mDistilledPagePrefs.getLinksEnabled());
+                        boolean enabled = !mDistilledPagePrefs.getLinksEnabled();
+                        ReaderModeMetrics.reportReaderModePrefsLinksEnabled(enabled);
+                        mDistilledPagePrefs.setLinksEnabled(enabled);
                     });
         }
     }

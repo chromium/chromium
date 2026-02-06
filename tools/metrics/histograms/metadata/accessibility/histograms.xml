@@ -4136,6 +4136,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Android.LinksEnabled" enum="Boolean"
+    expires_after="2026-06-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the links enabled setting set by the user in the distilled page
+    prefs UI.
+  </summary>
+</histogram>
+
 <histogram
     name="DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled"
     enum="Boolean" expires_after="2026-06-01">
@@ -4175,8 +4186,9 @@ even if they fit the naming pattern. -->
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
-    Tracks when the user interacts with the reader mode toggle in accessibility
-    settings.
+    Records the user's &quot;show links&quot; preference. Logged when the user
+    clicks the &quot;show links&quot; button in the reading mode preferences
+    bottom sheet.
   </summary>
 </histogram>
 

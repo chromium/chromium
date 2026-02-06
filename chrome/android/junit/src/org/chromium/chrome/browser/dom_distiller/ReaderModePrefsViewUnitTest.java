@@ -281,11 +281,15 @@ public class ReaderModePrefsViewUnitTest {
         View toggleLinksButton = mReaderModePrefsView.findViewById(R.id.toggle_links_button);
         Assert.assertNotNull(toggleLinksButton);
         assertEquals(View.VISIBLE, toggleLinksButton.getVisibility());
+
         Assert.assertEquals(
                 mActivity.getString(R.string.reader_mode_toggle_links_off_accessibility_label),
                 toggleLinksButton.getContentDescription());
         when(mDistilledPagePrefs.getLinksEnabled()).thenReturn(true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("DomDistiller.Android.LinksEnabled", false);
         toggleLinksButton.performClick();
+        watcher.assertExpected();
         // Normally this would be driven by DistilledPagePrefs.
         mReaderModePrefsView.onChangeLinksEnabled(false);
         verify(mDistilledPagePrefs).setLinksEnabled(false);
@@ -294,7 +298,10 @@ public class ReaderModePrefsViewUnitTest {
                 mActivity.getString(R.string.reader_mode_toggle_links_on_accessibility_label),
                 toggleLinksButton.getContentDescription());
         when(mDistilledPagePrefs.getLinksEnabled()).thenReturn(false);
+        watcher =
+                HistogramWatcher.newSingleRecordWatcher("DomDistiller.Android.LinksEnabled", true);
         toggleLinksButton.performClick();
+        watcher.assertExpected();
         verify(mDistilledPagePrefs).setLinksEnabled(true);
     }
 

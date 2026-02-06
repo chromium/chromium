@@ -12401,6 +12401,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DomDistiller.Android.LinksEnabledChanged">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <description>
+    User changes the links enabled setting in distilled page preferences.
+  </description>
+</action>
+
 <action name="DomDistiller.Android.OnStartedReaderMode">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
