@@ -38,6 +38,10 @@ IOSWebAuthnCredentialsDelegateFactory::GetFactory(web::WebState* web_state) {
 IOSWebAuthnCredentialsDelegate*
 IOSWebAuthnCredentialsDelegateFactory::GetDelegateForFrame(
     const std::string& frame_id) {
+  if (frame_id.empty()) {
+    return nullptr;
+  }
+
   auto it = delegate_map_.find(frame_id);
   if (it == delegate_map_.end()) {
     auto [new_it, inserted] = delegate_map_.try_emplace(

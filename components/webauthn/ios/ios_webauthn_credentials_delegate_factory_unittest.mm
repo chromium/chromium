@@ -53,6 +53,14 @@ TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, FactoryCreatesDelegate) {
   EXPECT_TRUE(delegate);
 }
 
+// Tests that the factory doesn't create a delegate for an empty frame ID.
+TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest,
+       ReturnsNullptrForEmptyFrameId) {
+  IOSWebAuthnCredentialsDelegate* delegate = factory()->GetDelegateForFrame("");
+
+  EXPECT_FALSE(delegate);
+}
+
 // Tests that the factory returns the same delegate for the same frame.
 TEST_F(IOSWebAuthnCredentialsDelegateFactoryTest, SameDelegateForSameFrame) {
   IOSWebAuthnCredentialsDelegate* delegate1 =
