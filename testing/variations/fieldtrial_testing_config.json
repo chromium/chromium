@@ -6737,10 +6737,14 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "Decoders": "base32,base64",
                         "HCAcceptanceRate": "1",
+                        "Loaders": "curl,wget,invoke-webrequest,iwr",
                         "MaxLength": "1000",
                         "MinLength": "50",
                         "ProcessPayload": "true",
+                        "RemoteRunners": "mshta",
+                        "Runners": "bash,cmd,conhost,iex,invoke-expression,zsh",
                         "SampleRate": "1"
                     },
                     "enable_features": [
