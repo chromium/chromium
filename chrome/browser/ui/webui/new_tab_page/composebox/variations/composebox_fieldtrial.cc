@@ -270,13 +270,15 @@ const base::FeatureParam<bool> kEnableContextDragAndDrop(
     "EnableContextDragAndDrop",
     true);
 
-const base::FeatureParam<bool>
-    kCloseComposeboxByEscape(&kNtpComposebox, "CloseComposeboxByEscape", true);
+const base::FeatureParam<bool> kCloseComposeboxByEscape(
+    &kNtpComposebox,
+    "NtpComposeboxCloseComposeboxByEscape",
+    false);
 
 const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
     &kNtpComposebox,
-    "CloseComposeboxByClickOutside",
-    true);
+    "NtpComposeboxCloseComposeboxByClickOutside",
+    false);
 const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &kNtpComposebox,
     "NtpComposeboxAddTabUploadDelayOnRecentTabChipClick",

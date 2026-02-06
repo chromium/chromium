@@ -842,6 +842,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('session abandoned on esc click', async () => {
     // Arrange.
+    loadTimeData.overrideValues({composeboxCloseByEscape: true});
     createComposeboxElement();
 
     composeboxElement.$.input.value = 'test';

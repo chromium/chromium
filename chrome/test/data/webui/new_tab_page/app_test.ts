@@ -2148,15 +2148,13 @@ suite('NewTabPageAppTest', () => {
       loadTimeData.overrideValues({
         ntpRealboxNextEnabled: true,
         realboxLayoutMode: 'Compact',
+        composeboxCloseByClickOutside: true,
       });
     });
 
     test(
         'A scrim is applied when the focus is on the composebox input',
         async () => {
-          loadTimeData.overrideValues({
-            composeboxCloseByClickOutside: true,
-          });
           const scrim = getScrim();
           assertTrue(!!scrim);
           assertTrue(scrim?.hidden);

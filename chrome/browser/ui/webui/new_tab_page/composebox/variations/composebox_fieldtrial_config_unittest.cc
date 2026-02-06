@@ -63,8 +63,8 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
   EXPECT_EQ(config.entry_point().num_page_load_animations(), 3);
 
   auto composebox = config.composebox();
-  EXPECT_TRUE(composebox.close_by_escape());
-  EXPECT_TRUE(composebox.close_by_click_outside());
+  EXPECT_FALSE(composebox.close_by_escape());
+  EXPECT_FALSE(composebox.close_by_click_outside());
 
   auto image_upload = config.composebox().image_upload();
   EXPECT_EQ(image_upload.enable_webp_encoding(), false);
