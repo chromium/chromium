@@ -114,12 +114,12 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   if (size_bounds.height().is_bounded()) {
     // The pinned container height should not be larger than half the available
     // space unless the unpinned container will not fill that space. Also make
-    // sure the height is at least 0.
+    // sure the height is at least the minimum.
     pinned_container_height = std::max(
         std::min(pinned_preferred_height,
                  std::max(remaining_height / 2,
                           remaining_height - unpinned_preferred_height)),
-        0);
+        pinned_tabs_container_view_->GetMinimumSize().height());
     remaining_height -= pinned_container_height;
   }
   gfx::Rect pinned_container_bounds(
@@ -161,8 +161,9 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   gfx::Rect unpinned_container_bounds(0, y, size_bounds.width().value(),
                                       unpinned_preferred_height);
   if (size_bounds.height().is_bounded()) {
-    unpinned_container_bounds.set_height(std::max(
-        std::min(unpinned_container_bounds.height(), remaining_height), 0));
+    unpinned_container_bounds.set_height(
+        std::max(std::min(unpinned_container_bounds.height(), remaining_height),
+                 unpinned_tabs_container_view_->GetMinimumSize().height()));
   }
   layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view_.get(),
                                      unpinned_tabs_scroll_view_->GetVisible(),
@@ -170,7 +171,6 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
 
   layouts.host_size = gfx::Size(size_bounds.width().value(),
                                 unpinned_container_bounds.bottom());
-  layouts.host_size.SetToMax(GetMinimumSize());
   return layouts;
 }
 
@@ -178,20 +178,6 @@ void VerticalTabStripView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &VerticalTabStripView::UpdateColors, base::Unretained(this)));
-}
-
-gfx::Size VerticalTabStripView::GetMinimumSize() const {
-  // The minimum height of the tabstrip should be enough to show a tab and a
-  // half, showing a partial overflow so that the user knows the container can
-  // be scrolled.
-  return gfx::Size(
-      GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
-      std::min(
-          GetLayoutConstant(
-              LayoutConstant::kVerticalTabStripUncollapsedPadding) +
-              base::ClampCeil(
-                  1.5 * GetLayoutConstant(LayoutConstant::kVerticalTabHeight)),
-          CalculateProposedLayout(views::SizeBounds()).host_size.height()));
 }
 
 void VerticalTabStripView::OnMouseEntered(const ui::MouseEvent& event) {

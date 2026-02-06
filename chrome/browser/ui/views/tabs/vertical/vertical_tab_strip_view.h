@@ -56,7 +56,6 @@ class VerticalTabStripView final : public views::View,
 
   // views::View:
   void AddedToWidget() override;
-  gfx::Size GetMinimumSize() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 

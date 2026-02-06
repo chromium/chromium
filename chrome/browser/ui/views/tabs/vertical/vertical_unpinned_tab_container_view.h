@@ -39,6 +39,9 @@ class VerticalUnpinnedTabContainerView
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  // views::View:
+  gfx::Size GetMinimumSize() const override;
+
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsViewDragging(const views::View& child_view) const override;
   bool ShouldSnapToTarget(const views::View& child_view) const override;

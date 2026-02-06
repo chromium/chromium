@@ -121,12 +121,12 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
     int x = views::AsViewClass<VerticalTabGroupView>(child) && is_collapsed
                 ? 0
                 : horizontal_padding;
-    views::SizeBounds child_bounds =
+    views::SizeBounds child_size_bounds =
         views::SizeBounds(size_bounds.width().is_bounded()
                               ? (size_bounds.width() - (x + horizontal_padding))
                               : size_bounds.width(),
                           {});
-    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_bounds));
+    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_size_bounds));
     bounds.set_x(x);
 
     auto drag_data = GetVisualDataForDraggedView(*child);
@@ -147,9 +147,19 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   if (!children.empty()) {
     height -= kTabVerticalPadding;
   }
-
   layouts.host_size = gfx::Size(width, height);
   return layouts;
+}
+
+gfx::Size VerticalUnpinnedTabContainerView::GetMinimumSize() const {
+  // The minimum size should be enough to show a tab and a half, if needed.
+  const int num_children = collection_node_->GetDirectChildren().size();
+  const int min_height =
+      base::ClampCeil(GetLayoutConstant(LayoutConstant::kVerticalTabHeight) *
+                      std::min(1.5f, static_cast<float>(num_children))) +
+      (num_children > 1 ? kTabVerticalPadding : 0);
+  return gfx::Size(GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
+                   min_height);
 }
 
 bool VerticalUnpinnedTabContainerView::IsViewDragging(

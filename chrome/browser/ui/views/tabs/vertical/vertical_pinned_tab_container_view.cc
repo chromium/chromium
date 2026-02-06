@@ -133,6 +133,19 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   return layouts;
 }
 
+gfx::Size VerticalPinnedTabContainerView::GetMinimumSize() const {
+  // The minimum size should be enough to show a row and a half, if needed.
+  const int num_children = collection_node_->GetDirectChildren().size();
+  const float min_rows = std::min((IsTabStripCollapsed() ? 1.5f : 1.0f),
+                                  static_cast<float>(num_children));
+  const int min_height =
+      base::ClampCeil(GetLayoutConstant(LayoutConstant::kVerticalTabHeight) *
+                      min_rows) +
+      (num_children > 1 ? kTabPadding : 0);
+  return gfx::Size(GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
+                   min_height);
+}
+
 void VerticalPinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }

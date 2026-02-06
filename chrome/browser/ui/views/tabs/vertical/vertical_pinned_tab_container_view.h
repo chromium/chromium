@@ -34,6 +34,9 @@ class VerticalPinnedTabContainerView : public views::View,
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  // views::View:
+  gfx::Size GetMinimumSize() const override;
+
  private:
   // VerticalDraggedTabsContainer:
   VerticalTabDragHandler& GetDragHandler() override;
