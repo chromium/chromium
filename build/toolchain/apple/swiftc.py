@@ -371,6 +371,14 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         header_path = os.path.join(build_cache_dir,
                                    os.path.basename(header_path))
 
+    # Construct a path to the "plugins" directory which contains Swift
+    # macro implementations.
+    # TODO(crbug.com/482318607): Figure out why blaze doesn't need to pass this.
+    mac_platform_path = os.path.join(os.path.dirname(args.sdk_path),
+                                     'MacOSX.platform')
+    swift_plugin_path = os.path.join(mac_platform_path,
+                                     'Developer/usr/lib/swift/host/plugins')
+
     swiftc_args = [
         '-parse-as-library',
         '-module-name',
@@ -404,6 +412,8 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         ensure_directory(os.path.join(build_cache_dir, 'ModuleCache.noindex')),
         '-pch-output-dir',
         ensure_directory(os.path.join(build_cache_dir, 'PrecompiledHeaders')),
+        '-plugin-path',
+        swift_plugin_path,
     ]
 
     # Handle optional -bridge-header flag.
