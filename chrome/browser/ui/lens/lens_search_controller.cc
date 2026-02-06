@@ -266,6 +266,7 @@ void LensSearchController::OpenLensOverlayWithPendingRegion(
   // Setup all state necessary for this Lens session.
   StartLensSession(invocation_source);
 
+  should_show_csb_ = false;
   lens_overlay_controller_->ShowUIWithPendingRegion(
       invocation_source, std::move(region), region_bitmap);
 }
