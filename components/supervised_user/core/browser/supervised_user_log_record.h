@@ -68,9 +68,12 @@ class SupervisedUserLogRecord {
 
   // Given a list of records that map to the supervision state of primary
   // accounts on the user's device, emits metrics that reflect the supervision
-  // status of the user. Returns true if one or more histograms were emitted.
+  // status of the user. On top of that, device-based supervision might emit an
+  // extra record.
+  // Returns true if one or more histograms were emitted.
   static bool EmitHistograms(
-      const std::vector<SupervisedUserLogRecord>& records);
+      const std::vector<SupervisedUserLogRecord>& records,
+      const DeviceParentalControls& device_parental_controls);
 
   // Returns the supervision status of the primary account.
   std::optional<Segment> GetSupervisionStatusForPrimaryAccount() const;

@@ -54,6 +54,11 @@ BASE_DECLARE_FEATURE(kSupervisedUserUseUrlFilteringService);
 BASE_DECLARE_FEATURE(
     kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs);
 
+// When enabled, the supervised user log record will emit the device
+// log record separately. When disabled, the system assumes that the device log
+// record is mutually exclusive with the account/policy based log record.
+BASE_DECLARE_FEATURE(kSupervisedUserUseEmitDeviceLogRecordSeparately);
+
 // Returns whether the V3 version of the URL filter interstitial is
 // enabled.
 bool IsBlockInterstitialV3Enabled();

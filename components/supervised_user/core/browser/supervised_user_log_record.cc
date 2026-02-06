@@ -18,6 +18,7 @@
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -44,10 +45,9 @@ std::optional<SupervisedUserLogRecord::Segment> GetSupervisionStatus(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     const DeviceParentalControls& device_parental_controls) {
-  // TODO(crbug.com/474592052): in case of Family Link and device supervision,
-  // prefer Family Link supervision status. Once properly handled, record
-  // metrics for both supervision types.
-  if (!IsSubjectToParentalControls(pref_service) &&
+  if (!base::FeatureList::IsEnabled(
+          kSupervisedUserUseEmitDeviceLogRecordSeparately) &&
+      !IsSubjectToParentalControls(pref_service) &&
       device_parental_controls.IsEnabled()) {
     // This type of supervision is signin-status independent (but only available
     // to non-incognito profiles).
@@ -299,8 +299,18 @@ SupervisedUserLogRecord SupervisedUserLogRecord::Create(
 
 // static
 bool SupervisedUserLogRecord::EmitHistograms(
-    const std::vector<SupervisedUserLogRecord>& records) {
+    const std::vector<SupervisedUserLogRecord>& records,
+    const DeviceParentalControls& device_parental_controls) {
   bool did_emit_histogram = false;
+
+  if (base::FeatureList::IsEnabled(
+          kSupervisedUserUseEmitDeviceLogRecordSeparately) &&
+      device_parental_controls.IsEnabled()) {
+    base::UmaHistogramEnumeration(
+        kFamilyLinkUserLogSegmentHistogramName,
+        SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally);
+    did_emit_histogram = true;
+  }
 
   std::optional<SupervisedUserLogRecord::Segment> segment =
       GetLogSegmentForHistogram(records);

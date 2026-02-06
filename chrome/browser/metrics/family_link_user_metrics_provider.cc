@@ -24,10 +24,9 @@ FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() = default;
 bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   // This function is called at unpredictable intervals throughout the Chrome
   // session, so guarantee it will never crash.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
   std::vector<supervised_user::SupervisedUserLogRecord> records;
-  for (Profile* profile : profile_list) {
+  for (Profile* const profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
 #if !BUILDFLAG(IS_ANDROID)
     if (!FamilyLinkUserMetricsProvider::
             skip_active_browser_count_for_unittesting_ &&
@@ -44,5 +43,6 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
             GetForProfile(profile),
         g_browser_process->device_parental_controls()));
   }
-  return supervised_user::SupervisedUserLogRecord::EmitHistograms(records);
+  return supervised_user::SupervisedUserLogRecord::EmitHistograms(
+      records, g_browser_process->device_parental_controls());
 }
