@@ -17,72 +17,56 @@
 
 namespace {
 
-std::string GetReconciliationTypeString(
+ReconcilingTemplateURLDataHolder::ReconciliationVariant
+GetReconciliationVariant(
     ReconcilingTemplateURLDataHolder::ReconciliationType type) {
+  using ReconciliationType =
+      ReconcilingTemplateURLDataHolder::ReconciliationType;
+  using ReconciliationVariant =
+      ReconcilingTemplateURLDataHolder::ReconciliationVariant;
   switch (type) {
-    case ReconcilingTemplateURLDataHolder::ReconciliationType::kNone:
-      return "None";
-    case ReconcilingTemplateURLDataHolder::ReconciliationType::kByID:
-      return "ByID";
-    case ReconcilingTemplateURLDataHolder::ReconciliationType::kByKeyword:
-      return "ByKeyword";
-    case ReconcilingTemplateURLDataHolder::ReconciliationType::
-        kByDomainBasedKeyword:
-      return "ByDomainBasedKeyword";
-    case ReconcilingTemplateURLDataHolder::ReconciliationType::kBySeznamKeyword:
-      return "BySeznamKeyword";
-    case ReconcilingTemplateURLDataHolder::ReconciliationType::kByYahooKeyword:
-      return "ByYahooKeyword";
-    case ReconcilingTemplateURLDataHolder::ReconciliationType::
-        kByIdFromAllEngines:
-      return "ByIdFromAllEngines";
+    case ReconciliationType::kByKeyword:
+      return ReconciliationVariant::kByKeyword;
+
+    case ReconciliationType::kBySeznamKeyword:
+    case ReconciliationType::kByYahooKeyword:
+      return ReconciliationVariant::kByDomainBasedKeyword;
+
+    case ReconciliationType::kByIdFromAllEngines:
+    case ReconciliationType::kByIdFromRegionalEngines:
+    case ReconciliationType::kByIdFallthrough:
+      return ReconciliationVariant::kByID;
+
+    case ReconciliationType::kNone:
+      NOTREACHED();
   }
   NOTREACHED();
-}
-
-void RecordReconciliationResultForType(
-    ReconcilingTemplateURLDataHolder::ReconciliationType reconciliation_type,
-    bool success) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Omnibox.TemplateUrl.Reconciliation.",
-                    GetReconciliationTypeString(reconciliation_type),
-                    ".Result"}),
-      success);
 }
 
 void RecordOutcomeMetrics(
     ReconcilingTemplateURLDataHolder::ReconciliationType reconciliation_type,
     bool success) {
-  using ReconciliationType =
-      ReconcilingTemplateURLDataHolder::ReconciliationType;
+  using ReconciliationVariant =
+      ReconcilingTemplateURLDataHolder::ReconciliationVariant;
 
   base::UmaHistogramEnumeration("Omnibox.TemplateUrl.Reconciliation.Type",
                                 reconciliation_type);
-
-  RecordReconciliationResultForType(reconciliation_type, success);
-
-  // The reconciliation type buckets have been split. Also fill the higher level
-  // bucket for result metrics, so we can keep looking at historical data.
-  switch (reconciliation_type) {
-    case ReconciliationType::kNone:
-      NOTREACHED();
-
-    case ReconciliationType::kByID:
-    case ReconciliationType::kByKeyword:
-    case ReconciliationType::kByDomainBasedKeyword:
-      // Legacy buckets, no backfill needed.
+  std::string variant_name;
+  switch (GetReconciliationVariant(reconciliation_type)) {
+    case ReconciliationVariant::kByID:
+      variant_name = "ByID";
       break;
-
-    case ReconciliationType::kBySeznamKeyword:
-    case ReconciliationType::kByYahooKeyword:
-      RecordReconciliationResultForType(
-          ReconciliationType::kByDomainBasedKeyword, success);
+    case ReconciliationVariant::kByKeyword:
+      variant_name = "ByKeyword";
       break;
-
-    case ReconciliationType::kByIdFromAllEngines:
-      RecordReconciliationResultForType(ReconciliationType::kByID, success);
+    case ReconciliationVariant::kByDomainBasedKeyword:
+      variant_name = "ByDomainBasedKeyword";
       break;
   }
+  CHECK(!variant_name.empty());
+  base::UmaHistogramBoolean(base::StrCat({"Omnibox.TemplateUrl.Reconciliation.",
+                                          variant_name, ".Result"}),
+                            success);
 }
 
 }  // namespace
@@ -165,7 +149,8 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
           std::ranges::find(prepopulated_urls, data_to_match.prepopulate_id,
                             &TemplateURLData::prepopulate_id);
       engine_iter != prepopulated_urls.end()) {
-    return {std::move(*engine_iter), ReconciliationType::kByID};
+    return {std::move(*engine_iter),
+            ReconciliationType::kByIdFromRegionalEngines};
   }
 
   // Search the entire search engine database to find matching entry.
@@ -177,8 +162,7 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
     }
   }
 
-  // Nothing was found. Report the failure under the ID type.
-  return {nullptr, ReconciliationType::kByID};
+  return {nullptr, ReconciliationType::kByIdFallthrough};
 }
 
 void ReconcilingTemplateURLDataHolder::SetAndReconcile(

@@ -124,7 +124,7 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   auto [engine, reconciliation_type] =
       holder_.FindMatchingBuiltInDefinitionsById(unknown_engine);
   // Expect to see no definitions.
-  EXPECT_EQ(reconciliation_type, ReconciliationType::kByID);
+  EXPECT_EQ(reconciliation_type, ReconciliationType::kByIdFallthrough);
   EXPECT_FALSE(engine);
 }
 
@@ -136,7 +136,7 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   auto [engine, reconciliation_type] =
       holder_.FindMatchingBuiltInDefinitionsById(known_engine);
 
-  EXPECT_EQ(reconciliation_type, ReconciliationType::kByID);
+  EXPECT_EQ(reconciliation_type, ReconciliationType::kByIdFromRegionalEngines);
   ASSERT_TRUE(engine);
   EXPECT_EQ(duckduckgo.keyword, engine->keyword());
   EXPECT_EQ(duckduckgo.id, engine->prepopulate_id);
@@ -239,8 +239,8 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   histogram_tester_.ExpectUniqueSample(
       "Omnibox.TemplateUrl.Reconciliation.ByDomainBasedKeyword.Result", true,
       1);
-  histogram_tester_.ExpectUniqueSample(
-      "Omnibox.TemplateUrl.Reconciliation.ByYahooKeyword.Result", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Omnibox.TemplateUrl.Reconciliation.ByYahooKeyword.Result", 0);
 
   EXPECT_EQ(holder_.Get()->keyword(), yahoo_de.keyword);
   EXPECT_EQ(holder_.Get()->prepopulate_id, yahoo_de.id);
@@ -263,8 +263,8 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
     histogram_tester.ExpectUniqueSample(
         "Omnibox.TemplateUrl.Reconciliation.ByDomainBasedKeyword.Result", true,
         1);
-    histogram_tester.ExpectUniqueSample(
-        "Omnibox.TemplateUrl.Reconciliation.BySeznamKeyword.Result", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.TemplateUrl.Reconciliation.BySeznamKeyword.Result", 0);
 
     EXPECT_EQ(holder_.Get()->keyword(), seznam.keyword);
     EXPECT_EQ(holder_.Get()->prepopulate_id, seznam.id);
@@ -278,7 +278,8 @@ TEST_F(ReconcilingTemplateURLDataHolderTest, SetAndReconcile_UnknownEngine) {
   holder_.SetAndReconcile(std::make_unique<TemplateURLData>(supplied_engine));
 
   histogram_tester_.ExpectUniqueSample(
-      "Omnibox.TemplateUrl.Reconciliation.Type", ReconciliationType::kByID, 1);
+      "Omnibox.TemplateUrl.Reconciliation.Type",
+      ReconciliationType::kByIdFallthrough, 1);
   histogram_tester_.ExpectUniqueSample(
       "Omnibox.TemplateUrl.Reconciliation.ByID.Result", false, 1);
 
@@ -292,9 +293,12 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   holder_.SetAndReconcile(TemplateURLDataFromPrepopulatedEngine(yahoo));
 
   histogram_tester_.ExpectUniqueSample(
-      "Omnibox.TemplateUrl.Reconciliation.Type", ReconciliationType::kByID, 1);
+      "Omnibox.TemplateUrl.Reconciliation.Type",
+      ReconciliationType::kByIdFromRegionalEngines, 1);
   histogram_tester_.ExpectUniqueSample(
       "Omnibox.TemplateUrl.Reconciliation.ByID.Result", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Omnibox.TemplateUrl.Reconciliation.ByIdFromRegionalEngines.Result", 0);
 
   // For engines with regional variant,
   // the variant used is in priority the one in the regional set.
@@ -316,8 +320,8 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
       ReconciliationType::kByIdFromAllEngines, 1);
   histogram_tester_.ExpectUniqueSample(
       "Omnibox.TemplateUrl.Reconciliation.ByID.Result", true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Omnibox.TemplateUrl.Reconciliation.ByIdFromAllEngines.Result", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Omnibox.TemplateUrl.Reconciliation.ByIdFromAllEngines.Result", 0);
 
   EXPECT_EQ(holder_.Get()->keyword(), brave.keyword);
   EXPECT_EQ(holder_.Get()->prepopulate_id, brave.id);
@@ -336,8 +340,8 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
       ReconciliationType::kByIdFromAllEngines, 1);
   histogram_tester_.ExpectUniqueSample(
       "Omnibox.TemplateUrl.Reconciliation.ByID.Result", true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Omnibox.TemplateUrl.Reconciliation.ByIdFromAllEngines.Result", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Omnibox.TemplateUrl.Reconciliation.ByIdFromAllEngines.Result", 0);
 
   // The user-modifiable properties (e.g. keyword) from the base data are
   // preserved, but others (e.g. search URL) use the prepopulated values.

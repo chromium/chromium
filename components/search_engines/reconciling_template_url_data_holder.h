@@ -42,17 +42,31 @@ class ReconcilingTemplateURLDataHolder {
   // LINT.IfChange(ReconciliationType)
   enum class ReconciliationType {
     kNone = 0,
-    kByID = 1,
+    // kByID = 1, // Deprecated
     kByKeyword = 2,
-    kByDomainBasedKeyword = 3,
+    // kByDomainBasedKeyword = 3, // Deprecated
     kBySeznamKeyword = 4,
     kByYahooKeyword = 5,
     kByIdFromAllEngines = 6,
-    kMaxValue = kByIdFromAllEngines
+    kByIdFromRegionalEngines = 7,
+    kByIdFallthrough = 8,
+
+    kMaxValue = kByIdFallthrough
   };
-  // LINT.ThenChange(
-  // //tools/metrics/histograms/metadata/omnibox/enums.xml:ReconciliationType,
-  // //tools/metrics/histograms/metadata/omnibox/histograms.xml:ByReconciliationVariant)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ReconciliationType)
+
+  // LINT.IfChange(ReconciliationVariant)
+  enum class ReconciliationVariant {
+    // Umbrella bucket
+    kByID = 1,
+
+    kByKeyword = 2,
+
+    kByDomainBasedKeyword = 3,
+
+    kMaxValue = kByDomainBasedKeyword
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:ByReconciliationVariant)
 
   // Returns the keyword associated with currently set search engine.
   // If the SE definition comes from Play API, applies necessary changes
