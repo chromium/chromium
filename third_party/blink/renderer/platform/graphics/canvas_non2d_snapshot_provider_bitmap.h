@@ -18,8 +18,7 @@ namespace blink {
 
 // Renders to a RAM-backed bitmap via an external (client-supplied) draw.
 class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
-    : public CanvasSnapshotProvider,
-      public cc::ImageProvider {
+    : public CanvasSnapshotProvider {
  public:
   static std::unique_ptr<CanvasNon2DSnapshotProviderBitmap> Create(
       const CanvasSnapshotProvider::Info& info);
@@ -41,17 +40,25 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   SkAlphaType GetAlphaType() const override { return info_.alpha_type; }
   gfx::Size Size() const override { return info_.size; }
 
-  // cc::ImageProvider:
-  cc::ImageProvider::ScopedResult GetRasterContent(
-      const cc::DrawImage& draw_image) override;
-
  private:
   explicit CanvasNon2DSnapshotProviderBitmap(
       const CanvasSnapshotProvider::Info& info);
 
-  std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
-  std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
+  class ImageProviderImpl : public cc::ImageProvider {
+   public:
+    explicit ImageProviderImpl(CanvasSnapshotProvider::Info info);
+    ~ImageProviderImpl() override = default;
 
+    // cc::ImageProvider:
+    cc::ImageProvider::ScopedResult GetRasterContent(
+        const cc::DrawImage& draw_image) override;
+
+   private:
+    std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
+    std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
+  };
+
+  std::optional<ImageProviderImpl> image_provider_impl_;
   sk_sp<SkSurface> surface_;
 
   const CanvasSnapshotProvider::Info info_;

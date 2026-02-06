@@ -10,8 +10,34 @@
 
 namespace blink {
 
+CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::ImageProviderImpl(
+    CanvasSnapshotProvider::Info info) {
+  // Create an ImageDecodeCache for half float images only if the canvas
+  // is using half float back storage.
+  cc::ImageDecodeCache* cache_f16 = nullptr;
+  if (info.format == viz::SinglePlaneFormat::kRGBA_F16) {
+    cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
+  }
+
+  cc::ImageDecodeCache* cache_rgba8 =
+      &Image::SharedCCDecodeCache(kN32_SkColorType);
+
+  cc::TargetColorParams target_color_params;
+  target_color_params.color_space = info.color_space;
+  playback_image_provider_n32_.emplace(cache_rgba8, target_color_params,
+                                       cc::PlaybackImageProvider::Settings());
+
+  // If the image provider may require to decode to half float instead of
+  // uint8, create a f16 PlaybackImageProvider with the passed cache.
+  if (info.format == viz::SinglePlaneFormat::kRGBA_F16) {
+    DCHECK(cache_f16);
+    playback_image_provider_f16_.emplace(cache_f16, target_color_params,
+                                         cc::PlaybackImageProvider::Settings());
+  }
+}
+
 cc::ImageProvider::ScopedResult
-CanvasNon2DSnapshotProviderBitmap::GetRasterContent(
+CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
     const cc::DrawImage& draw_image) {
   cc::PaintImage paint_image = draw_image.paint_image();
   if (paint_image.IsDeferredPaintRecord()) {
@@ -92,34 +118,12 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
   draw_callback(recorder_->getRecordingCanvas());
 
   if (recorder_->HasReleasableDrawOps()) {
-    if (!playback_image_provider_n32_) {
-      // Create an ImageDecodeCache for half float images only if the canvas
-      // is using half float back storage.
-      cc::ImageDecodeCache* cache_f16 = nullptr;
-      if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
-        cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-      }
-
-      cc::ImageDecodeCache* cache_rgba8 =
-          &Image::SharedCCDecodeCache(kN32_SkColorType);
-
-      cc::TargetColorParams target_color_params;
-      target_color_params.color_space = info_.color_space;
-      playback_image_provider_n32_.emplace(
-          cache_rgba8, target_color_params,
-          cc::PlaybackImageProvider::Settings());
-
-      // If the image provider may require to decode to half float instead of
-      // uint8, create a f16 PlaybackImageProvider with the passed cache.
-      if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
-        DCHECK(cache_f16);
-        playback_image_provider_f16_.emplace(
-            cache_f16, target_color_params,
-            cc::PlaybackImageProvider::Settings());
-      }
+    if (!image_provider_impl_) {
+      image_provider_impl_.emplace(info_);
     }
 
-    cc::PlaybackParams params(this, surface_->getCanvas()->getLocalToDevice());
+    cc::PlaybackParams params(&image_provider_impl_.value(),
+                              surface_->getCanvas()->getLocalToDevice());
     recorder_->ReleaseMainRecording().Playback(surface_->getCanvas(), params);
   }
 
