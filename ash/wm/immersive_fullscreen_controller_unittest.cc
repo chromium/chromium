@@ -153,6 +153,15 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     test_api_->SetupForTest();
   }
 
+  // AshTestBase:
+  void TearDown() override {
+    test_api_.reset();
+    content_view_ = nullptr;
+    widget_ = nullptr;
+    test_api_animation_disabler_.reset();
+    AshTestBase::TearDown();
+  }
+
   // Enables / disables immersive fullscreen.
   void SetEnabled(bool enabled) {
     ImmersiveFullscreenController::EnableForWidget(widget_, enabled);
@@ -239,9 +248,8 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 
   std::unique_ptr<ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler>
       test_api_animation_disabler_;
-  raw_ptr<views::Widget, DanglingUntriaged> widget_ =
-      nullptr;  // Owned by the native widget.
-  raw_ptr<views::NativeViewHost, DanglingUntriaged> content_view_ =
+  raw_ptr<views::Widget> widget_ = nullptr;  // Owned by the native widget.
+  raw_ptr<views::NativeViewHost> content_view_ =
       nullptr;  // Owned by |widget_|'s root-view.
   std::unique_ptr<ImmersiveFullscreenControllerTestApi> test_api_;
 
