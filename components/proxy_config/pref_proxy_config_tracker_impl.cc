@@ -579,9 +579,15 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
     state = ProxyPrefs::CONFIG_EXTENSION;
   }
 
+  const PrefService::Preference* proxy_override_pref =
+      pref_service->FindPreference(proxy_config::prefs::kProxyOverrideRules);
   if (SetProxyOverrideRules(pref_service, config) &&
       state == ProxyPrefs::CONFIG_UNSET) {
-    state = ProxyPrefs::CONFIG_POLICY_OVERRIDE;
+    if (proxy_override_pref->IsManaged()) {
+      state = ProxyPrefs::CONFIG_POLICY_OVERRIDE;
+    } else {
+      state = ProxyPrefs::CONFIG_EXTENSION_OVERRIDE;
+    }
   }
 
   return state;

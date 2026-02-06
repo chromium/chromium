@@ -71,6 +71,8 @@ std::string ConfigStateToDebugString(ConfigState state) {
       return "config_unset";
     case CONFIG_POLICY_OVERRIDE:
       return "config_policy_override";
+    case CONFIG_EXTENSION_OVERRIDE:
+      return "config_extension_override";
   }
   NOTREACHED();
 }
