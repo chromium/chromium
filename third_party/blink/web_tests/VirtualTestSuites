@@ -2390,6 +2390,7 @@
       "external/wpt/css/css-overflow/root-scroll-marker-activation-in-iframe.html",
       "external/wpt/css/css-overflow/scroll-marker-group-015.html",
       "external/wpt/css/css-overflow/scroll-target-group-003.html",
+      "external/wpt/css/css-overflow/scroll-marker-group-size-container-query-root.html",
       "external/wpt/css/css-overflow/targeted-column-scroll-marker-selection-001.html",
       "external/wpt/css/css-overflow/targeted-column-scroll-marker-selection-002.html",
       "external/wpt/css/css-overflow/targeted-column-scroll-marker-selection-003.html",
