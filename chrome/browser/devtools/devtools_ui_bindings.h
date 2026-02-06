@@ -281,6 +281,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RegisterAidaClientEvent(DispatchCallback callback,
                                const std::string& request) override;
   void SetChromeFlag(const std::string& flag_name, bool value) override;
+  void RequestRestart() override;
 
   // Dispatches a generic HTTP request to a backend service.
   // This is a centralized entry point for DevTools frontend to make network

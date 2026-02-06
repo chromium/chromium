@@ -151,6 +151,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void DispatchHttpRequest(
         DispatchCallback callback,
         const DevToolsDispatchHttpRequestParams& body) = 0;
+    virtual void RequestRestart() = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

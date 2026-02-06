@@ -533,5 +533,6 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                                  &Delegate::RegisterAidaClientEvent, delegate);
   d->RegisterHandlerWithCallback("dispatchHttpRequest",
                                  &Delegate::DispatchHttpRequest, delegate);
+  d->RegisterHandler("requestRestart", &Delegate::RequestRestart, delegate);
   return d;
 }

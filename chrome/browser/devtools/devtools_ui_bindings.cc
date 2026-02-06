@@ -46,6 +46,7 @@
 #include "chrome/browser/devtools/devtools_select_file_dialog.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/url_constants.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -2323,6 +2324,10 @@ void DevToolsUIBindings::SetChromeFlagInternal(Profile* profile,
 void DevToolsUIBindings::SetChromeFlag(const std::string& flag_name,
                                        bool value) {
   SetChromeFlagInternal(profile_, flag_name, value);
+}
+
+void DevToolsUIBindings::RequestRestart() {
+  chrome::AttemptRestart();
 }
 
 void DevToolsUIBindings::MaybeStartLogging() {
