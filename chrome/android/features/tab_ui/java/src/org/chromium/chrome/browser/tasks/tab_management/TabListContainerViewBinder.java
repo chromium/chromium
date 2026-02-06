@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FETCH_VIEW_BY_INDEX_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.GET_VISIBLE_RANGE_CALLBACK;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.HUB_SEARCH_BOX_VISIBILITY_SUPPLIER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CLIP_TO_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CONTENT_SENSITIVE;
@@ -20,16 +22,25 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_TABLET_OR_LANDSCAPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MANUAL_SEARCH_BOX_ANIMATION_SUPPLIER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SEARCH_BOX_VISIBILITY_FRACTION_SUPPLIER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SUPPRESS_ACCESSIBILITY;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Function;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -45,8 +56,10 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SupplementaryContainerAnimationMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -55,13 +68,28 @@ import java.util.function.Supplier;
 /** ViewBinder for {@link TabListRecyclerView}. */
 @NullMarked
 class TabListContainerViewBinder {
+    private static final int PINNED_TABS_SEARCH_BOX_DURATION_MS = 250;
+
+    @VisibleForTesting
+    static final AnimationHandler sSupplementaryContainerAnimationHandler = new AnimationHandler();
+
     public static class ViewHolder {
         public final TabListRecyclerView mTabListRecyclerView;
         public final ImageView mPaneHairline;
+        public final LinearLayout mSupplementaryContainer;
+        public final @Px int mSearchBoxGapPx;
 
-        ViewHolder(TabListRecyclerView tabListRecyclerView, ImageView paneHairline) {
+        ViewHolder(
+                TabListRecyclerView tabListRecyclerView,
+                ImageView paneHairline,
+                LinearLayout mSupplementaryContainer) {
             this.mTabListRecyclerView = tabListRecyclerView;
             this.mPaneHairline = paneHairline;
+            this.mSupplementaryContainer = mSupplementaryContainer;
+            this.mSearchBoxGapPx =
+                    tabListRecyclerView
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.hub_search_box_gap);
         }
     }
 
@@ -75,6 +103,7 @@ class TabListContainerViewBinder {
     public static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
         TabListRecyclerView recyclerView = viewHolder.mTabListRecyclerView;
         ImageView hairline = viewHolder.mPaneHairline;
+        LinearLayout supplementaryDataContainer = viewHolder.mSupplementaryContainer;
 
         if (BLOCK_TOUCH_INPUT == propertyKey) {
             recyclerView.setBlockTouchInput(model.get(BLOCK_TOUCH_INPUT));
@@ -150,6 +179,68 @@ class TabListContainerViewBinder {
                             ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                             : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
             recyclerView.setImportantForAccessibility(important);
+        } else if (ANIMATE_SUPPLEMENTARY_CONTAINER == propertyKey) {
+            if (supplementaryDataContainer == null) return;
+            if (sSupplementaryContainerAnimationHandler.isAnimationPresent()) return;
+
+            SupplementaryContainerAnimationMetadata metadata =
+                    model.get(ANIMATE_SUPPLEMENTARY_CONTAINER);
+            if (metadata == null) return;
+
+            @Px int searchBoxGapPx = viewHolder.mSearchBoxGapPx;
+            int targetTranslationY = metadata.shouldShowSearchBox ? searchBoxGapPx : 0;
+            float containerTranslationY = supplementaryDataContainer.getTranslationY();
+
+            // Optimization: Skip the animation if we are already at the target position
+            // and an update isn't explicitly forced.
+            if (!metadata.forced && containerTranslationY == targetTranslationY) {
+                return;
+            }
+
+            var manualAnimationSupplier = model.get(MANUAL_SEARCH_BOX_ANIMATION_SUPPLIER);
+            var hubVisibilitySupplier = model.get(HUB_SEARCH_BOX_VISIBILITY_SUPPLIER);
+            var fractionSupplier = model.get(SEARCH_BOX_VISIBILITY_FRACTION_SUPPLIER);
+
+            // Create an animator to animate the search box transitioning into and out of view.
+            // During the animation the following state is updated:
+            //   - The translationY of the supplementary container is set to the animated value.
+            //   - A fraction of the animation completeness is computed and supplied.
+            //   - A manual animation supplier is used to signal the manual control of search box
+            // animation.
+            //   - The hub visibility supplier is updated based on the animation direction.
+            ValueAnimator animator =
+                    ValueAnimator.ofFloat(containerTranslationY, targetTranslationY);
+
+            animator.setDuration(PINNED_TABS_SEARCH_BOX_DURATION_MS)
+                    .addUpdateListener(
+                            animation -> {
+                                float translation = (float) animation.getAnimatedValue();
+                                supplementaryDataContainer.setTranslationY(translation);
+                                float fraction =
+                                        searchBoxGapPx > 0 ? translation / searchBoxGapPx : 0f;
+                                fractionSupplier.set(fraction);
+                            });
+            animator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            manualAnimationSupplier.set(true);
+                            if (metadata.shouldShowSearchBox) {
+                                hubVisibilitySupplier.set(true);
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationEnd(@NonNull Animator animation, boolean isReverse) {
+                            if (!metadata.shouldShowSearchBox) {
+                                hubVisibilitySupplier.set(false);
+                            }
+                            manualAnimationSupplier.set(false);
+                        }
+                    });
+
+            // Start the animation.
+            sSupplementaryContainerAnimationHandler.startAnimation(animator);
         } else if (IS_TABLET_OR_LANDSCAPE == propertyKey) {
             boolean isTabletOrLandscape = model.get(IS_TABLET_OR_LANDSCAPE);
             int paddingTop =

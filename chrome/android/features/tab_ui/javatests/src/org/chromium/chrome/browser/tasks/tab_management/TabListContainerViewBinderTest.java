@@ -22,6 +22,7 @@ import android.os.Build;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,6 +47,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -65,6 +67,7 @@ public class TabListContainerViewBinderTest {
     private TabListRecyclerView mRecyclerView;
     private FrameLayout mContentView;
     private ImageView mHairline;
+    private LinearLayout mSupplementaryContainer;
     @Spy private GridLayoutManager mGridLayoutManager;
     @Spy private LinearLayoutManager mLinearLayoutManager;
 
@@ -87,13 +90,14 @@ public class TabListContainerViewBinderTest {
                     ((FrameLayout) mContentView.findViewById(R.id.tab_list_container))
                             .addView(mRecyclerView);
                     mHairline = mContentView.findViewById(R.id.pane_hairline);
+                    mSupplementaryContainer = new LinearLayout(sActivity);
                     mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
                     mMCP =
                             PropertyModelChangeProcessor.create(
                                     mContainerModel,
                                     new TabListContainerViewBinder.ViewHolder(
-                                            mRecyclerView, mHairline),
+                                            mRecyclerView, mHairline, mSupplementaryContainer),
                                     TabListContainerViewBinder::bind);
                 });
     }
@@ -224,7 +228,8 @@ public class TabListContainerViewBinderTest {
         mMCP =
                 PropertyModelChangeProcessor.create(
                         mContainerModel,
-                        new TabListContainerViewBinder.ViewHolder(mRecyclerView, mHairline),
+                        new TabListContainerViewBinder.ViewHolder(
+                                mRecyclerView, mHairline, mSupplementaryContainer),
                         TabListContainerViewBinder::bind);
         mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, true);
         mContainerModel.set(
@@ -236,17 +241,102 @@ public class TabListContainerViewBinderTest {
     @Test
     @MediumTest
     @UiThreadTest
-    public void testHairlineVisibility_NullAnimationSupplier() {
-        // Set supplier to null
+    public void testAnimateSupplementaryContainer() {
+        // Mock the necessary suppliers.
+        SettableNonNullObservableSupplier<Boolean> manualAnimationSupplier =
+                ObservableSuppliers.createNonNull(false);
+        SettableNonNullObservableSupplier<Boolean> hubVisibilitySupplier =
+                ObservableSuppliers.createNonNull(false);
+        SettableNonNullObservableSupplier<Float> fractionSupplier =
+                ObservableSuppliers.createNonNull(0f);
+
         mContainerModel.set(
-                TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER, null);
+                TabListContainerProperties.MANUAL_SEARCH_BOX_ANIMATION_SUPPLIER,
+                manualAnimationSupplier);
+        mContainerModel.set(
+                TabListContainerProperties.HUB_SEARCH_BOX_VISIBILITY_SUPPLIER,
+                hubVisibilitySupplier);
+        mContainerModel.set(
+                TabListContainerProperties.SEARCH_BOX_VISIBILITY_FRACTION_SUPPLIER,
+                fractionSupplier);
 
-        // Hairline should be visible if IS_HAIRLINE_VISIBLE is true, even with null supplier
-        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, true);
-        assertEquals(View.VISIBLE, mHairline.getVisibility());
+        // Simulate animation to show search box.
+        TabListContainerProperties.SupplementaryContainerAnimationMetadata metadata =
+                new TabListContainerProperties.SupplementaryContainerAnimationMetadata(true, false);
+        mContainerModel.set(TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER, metadata);
 
-        // Hairline should be gone if IS_HAIRLINE_VISIBLE is false, even with null supplier
-        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, false);
-        assertEquals(View.GONE, mHairline.getVisibility());
+        // Verify initial animation state.
+        assertTrue(manualAnimationSupplier.get());
+        assertTrue(hubVisibilitySupplier.get());
+        assertEquals(0f, fractionSupplier.get(), 0.001f);
+
+        // Simulate animation end.
+        TabListContainerViewBinder.sSupplementaryContainerAnimationHandler.forceFinishAnimation();
+        assertFalse(manualAnimationSupplier.get());
+        assertTrue(hubVisibilitySupplier.get());
+        assertEquals(1f, fractionSupplier.get(), 0.001f);
+
+        // Simulate animation to hide search box.
+        metadata =
+                new TabListContainerProperties.SupplementaryContainerAnimationMetadata(
+                        false, false);
+        mContainerModel.set(TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER, metadata);
+
+        // Verify initial animation state for hiding.
+        assertTrue(manualAnimationSupplier.get());
+        assertTrue(hubVisibilitySupplier.get());
+        assertEquals(1f, fractionSupplier.get(), 0.001f);
+
+        // Simulate animation end.
+        TabListContainerViewBinder.sSupplementaryContainerAnimationHandler.forceFinishAnimation();
+        assertFalse(manualAnimationSupplier.get());
+        assertFalse(hubVisibilitySupplier.get());
+        assertEquals(0f, fractionSupplier.get(), 0.001f);
+
+        // Test forced update when already at target.
+        metadata =
+                new TabListContainerProperties.SupplementaryContainerAnimationMetadata(true, false);
+        float targetTranslationY =
+                mRecyclerView.getResources().getDimensionPixelSize(R.dimen.hub_search_box_gap);
+        mSupplementaryContainer.setTranslationY(targetTranslationY);
+        mContainerModel.set(TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER, metadata);
+
+        // No animation should start if not forced and already at target.
+        assertFalse(
+                TabListContainerViewBinder.sSupplementaryContainerAnimationHandler
+                        .isAnimationPresent());
+
+        metadata =
+                new TabListContainerProperties.SupplementaryContainerAnimationMetadata(
+                        true, true); // Forced to true
+        mContainerModel.set(TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER, metadata);
+
+        // Animation should start because it's forced.
+        assertTrue(
+                TabListContainerViewBinder.sSupplementaryContainerAnimationHandler
+                        .isAnimationPresent());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testAnimateSupplementaryContainer_NoContainer() {
+        PropertyModel containerModelWithoutSupplementaryContainer =
+                new PropertyModel(TabListContainerProperties.ALL_KEYS);
+        PropertyModelChangeProcessor<
+                        PropertyModel, TabListContainerViewBinder.ViewHolder, PropertyKey>
+                cpWithoutSupplementaryContainer =
+                        PropertyModelChangeProcessor.create(
+                                containerModelWithoutSupplementaryContainer,
+                                new TabListContainerViewBinder.ViewHolder(
+                                        mRecyclerView, mHairline, null),
+                                TabListContainerViewBinder::bind);
+
+        // Ensure no crash when supplementaryDataContainer is null.
+        TabListContainerProperties.SupplementaryContainerAnimationMetadata metadata =
+                new TabListContainerProperties.SupplementaryContainerAnimationMetadata(true, false);
+        containerModelWithoutSupplementaryContainer.set(
+                TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER, metadata);
+        cpWithoutSupplementaryContainer.destroy();
     }
 }

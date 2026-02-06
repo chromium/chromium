@@ -21,9 +21,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Function;
@@ -67,8 +70,11 @@ public class TabListContainerViewBinderUnitTest {
     @Mock private TabListRecyclerView mTabListRecyclerViewMock;
     @Mock private LinearLayoutManager mLinearLayoutManager;
     @Mock private ImageView mPaneHairlineMock;
+    @Mock private LinearLayout mSupplementaryContainerMock;
     @Mock private View mViewMock1;
     @Mock private View mViewMock2;
+    @Mock private Context mContextMock;
+    @Mock private Resources mResourcesMock;
     @Mock Callback<Function<Integer, View>> mFetchViewByIndexCallback;
     @Mock Callback<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCallback;
     @Mock Callback<MonotonicObservableSupplier<Boolean>> mIsScrollingSupplierCallback;
@@ -85,9 +91,13 @@ public class TabListContainerViewBinderUnitTest {
         when(mTabListRecyclerViewMock.findViewById(R.id.tab_list_recycler_view))
                 .thenReturn(mTabListRecyclerViewMock);
         when(mTabListRecyclerViewMock.getLayoutManager()).thenReturn(mLinearLayoutManager);
+        when(mTabListRecyclerViewMock.getResources()).thenReturn(mResourcesMock);
+        when(mTabListRecyclerViewMock.getContext()).thenReturn(mContextMock);
+        when(mContextMock.getResources()).thenReturn(mResourcesMock);
+        when(mResourcesMock.getDimensionPixelSize(R.dimen.hub_search_box_gap)).thenReturn(10);
         mViewHolder =
                 new TabListContainerViewBinder.ViewHolder(
-                        mTabListRecyclerViewMock, mPaneHairlineMock);
+                        mTabListRecyclerViewMock, mPaneHairlineMock, mSupplementaryContainerMock);
     }
 
     @Test

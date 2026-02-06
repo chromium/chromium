@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
+import org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SupplementaryContainerAnimationMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneMediator.TabIndexLookup;
@@ -529,26 +530,14 @@ public class TabSwitcherPaneMediatorUnitTest {
         // Not a tablet. isSearchBoxMovementEnabledForPinnedTabs returns false, so should show.
         mMediator.maybeTranslatePinnedStrip(false, false);
 
-        // Animation should start to show
-        assertTrue(mMediator.getManualSearchBoxAnimationSupplier().get());
-        assertTrue(mHubSearchBoxVisibilitySupplier.get());
-
-        // Run animation to completion.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        assertFalse(mMediator.getManualSearchBoxAnimationSupplier().get());
-        assertTrue(mHubSearchBoxVisibilitySupplier.get());
-        assertEquals(1.0f, mMediator.getSearchBoxVisibilityFractionSupplier().get(), 0.0);
+        SupplementaryContainerAnimationMetadata metadata =
+                mModel.get(TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER);
+        assertTrue(metadata.shouldShowSearchBox);
+        assertFalse(metadata.forced);
     }
 
     @Test
     public void testMaybeTranslatePinnedStrip_hideOnTablet() {
-        // Show it first forcibly on phone.
-        mMediator.maybeTranslatePinnedStrip(true, true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(1.0f, mMediator.getSearchBoxVisibilityFractionSupplier().get(), 0.0);
-        when(mSupplementaryDataContainer.getTranslationY()).thenReturn(20f);
-
         // Now switch to tablet.
         Configuration configuration = new Configuration();
         configuration.screenWidthDp = 700;
@@ -557,13 +546,9 @@ public class TabSwitcherPaneMediatorUnitTest {
         mMediator.maybeTranslatePinnedStrip(true, false);
 
         // Animation should start to hide
-        assertTrue(mMediator.getManualSearchBoxAnimationSupplier().get());
-
-        // Run animation to completion.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        assertFalse(mMediator.getManualSearchBoxAnimationSupplier().get());
-        assertFalse(mHubSearchBoxVisibilitySupplier.get());
-        assertEquals(0.0f, mMediator.getSearchBoxVisibilityFractionSupplier().get(), 0.0);
+        SupplementaryContainerAnimationMetadata metadata =
+                mModel.get(TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER);
+        assertFalse(metadata.shouldShowSearchBox);
+        assertFalse(metadata.forced);
     }
 }

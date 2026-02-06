@@ -5,22 +5,15 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
@@ -42,17 +35,16 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
+import org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SupplementaryContainerAnimationMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripUtils;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -64,8 +56,6 @@ public class TabSwitcherPaneMediator
                 PriceWelcomeMessageReviewActionProvider,
                 TabSwitcherCustomViewManager.Delegate,
                 BackPressHandler {
-
-    private static final int PINNED_TABS_SEARCH_BOX_DURATION_MS = 250;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsDialogVisibleSupplier =
@@ -166,19 +156,13 @@ public class TabSwitcherPaneMediator
     private final TabIndexLookup mTabIndexLookup;
     private final BottomSheetController mBottomSheetController;
     private final Runnable mAddOnLayoutChangedAfterInitialScrollListener;
-    private final AnimationHandler mSupplementaryContainerAnimationHandler = new AnimationHandler();
     private @Nullable MonotonicObservableSupplier<TabListEditorController>
             mTabListEditorControllerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier;
-    private final SettableNonNullObservableSupplier<Boolean> mManualSearchBoxAnimationSupplier =
-            ObservableSuppliers.createNonNull(false);
-    private final SettableNonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier =
-            ObservableSuppliers.createNonNull(0.0f);
     private @Nullable NonNullObservableSupplier<Boolean>
             mCurrentTabListEditorControllerBackSupplier;
     private @Nullable View mCustomView;
     private @Nullable Runnable mCustomViewBackPressRunnable;
-    private final @Px int mSearchBoxGapPx;
 
     private boolean mTryToShowOnFilterChanged;
 
@@ -252,7 +236,6 @@ public class TabSwitcherPaneMediator
         mAddOnLayoutChangedAfterInitialScrollListener =
                 addOnLayoutChangedAfterInitialScrollListener;
         mHubSearchBoxVisibilitySupplier = hubSearchBoxVisibilitySupplier;
-        mSearchBoxGapPx = mContext.getResources().getDimensionPixelSize(R.dimen.hub_search_box_gap);
 
         notifyBackPressStateChangedInternal();
     }
@@ -445,61 +428,9 @@ public class TabSwitcherPaneMediator
         boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
         boolean shouldShow = shouldShowSearchBox && !isTabletOrLandscape;
 
-        animateSupplementaryDataContainer(shouldShow, forced);
-    }
-
-    private void animateSupplementaryDataContainer(boolean isSearchBoxVisible, boolean forced) {
-        // Early out if the animation is already running.
-        if (mSupplementaryContainerAnimationHandler.isAnimationPresent()) return;
-
-        LinearLayout supplementaryDataContainer =
-                mContainerView.findViewById(R.id.supplementary_data_container);
-        if (supplementaryDataContainer == null) return;
-
-        int translationHeight = isSearchBoxVisible ? mSearchBoxGapPx : 0;
-
-        // Early out if we are already in the correct state.
-        if (!forced
-                && isSearchBoxVisible
-                && supplementaryDataContainer.getTranslationY() == translationHeight) {
-            return;
-        }
-
-        // TODO(crbug.com/455919135): Move view manipulation to View binder with relevant property.
-        ValueAnimator translateAnimator =
-                ObjectAnimator.ofFloat(
-                        supplementaryDataContainer,
-                        View.TRANSLATION_Y,
-                        supplementaryDataContainer.getTranslationY(),
-                        translationHeight);
-        translateAnimator.setDuration(PINNED_TABS_SEARCH_BOX_DURATION_MS);
-        translateAnimator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        setManualSearchBoxAnimation(true);
-                        if (isSearchBoxVisible) {
-                            setHubSearchBoxVisibility(true);
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationEnd(@NonNull Animator animation, boolean isReverse) {
-                        if (!isSearchBoxVisible) {
-                            setHubSearchBoxVisibility(false);
-                        }
-                        setManualSearchBoxAnimation(false);
-                    }
-                });
-
-        translateAnimator.addUpdateListener(
-                animation -> {
-                    float translation = (float) animation.getAnimatedValue();
-                    float fraction = mSearchBoxGapPx > 0 ? translation / mSearchBoxGapPx : 0f;
-                    setSearchBoxVisibilityFraction(fraction);
-                });
-
-        mSupplementaryContainerAnimationHandler.startAnimation(translateAnimator);
+        mContainerViewModel.set(
+                ANIMATE_SUPPLEMENTARY_CONTAINER,
+                new SupplementaryContainerAnimationMetadata(shouldShow, forced));
     }
 
     /**
@@ -641,25 +572,5 @@ public class TabSwitcherPaneMediator
 
     private void suppressAccessibility(boolean suppress) {
         mContainerViewModel.set(TabListContainerProperties.SUPPRESS_ACCESSIBILITY, suppress);
-    }
-
-    /** Returns whether the search box animation is manual. */
-    NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier() {
-        return mManualSearchBoxAnimationSupplier;
-    }
-
-    /** Returns a fraction for the manual search box animation. */
-    NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier() {
-        return mSearchBoxVisibilityFractionSupplier;
-    }
-
-    /** Sets whether the search box animation is manual. */
-    private void setManualSearchBoxAnimation(boolean manual) {
-        mManualSearchBoxAnimationSupplier.set(manual);
-    }
-
-    /** Sets the search box visibility fraction. */
-    private void setSearchBoxVisibilityFraction(float fraction) {
-        mSearchBoxVisibilityFractionSupplier.set(fraction);
     }
 }

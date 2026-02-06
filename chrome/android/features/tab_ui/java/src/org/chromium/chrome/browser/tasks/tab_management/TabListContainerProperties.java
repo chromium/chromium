@@ -12,6 +12,7 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 @NullMarked
@@ -88,6 +90,55 @@ class TabListContainerProperties {
     public static final WritableObjectPropertyKey<NonNullObservableSupplier<Boolean>>
             IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER = new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<SettableNonNullObservableSupplier<Boolean>>
+            MANUAL_SEARCH_BOX_ANIMATION_SUPPLIER = new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<SettableNonNullObservableSupplier<Boolean>>
+            HUB_SEARCH_BOX_VISIBILITY_SUPPLIER = new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<SettableNonNullObservableSupplier<Float>>
+            SEARCH_BOX_VISIBILITY_FRACTION_SUPPLIER = new WritableObjectPropertyKey<>();
+
+    /**
+     * A holder for supplementary container animation metadata, used with {@link
+     * #ANIMATE_SUPPLEMENTARY_CONTAINER}.
+     */
+    public static final class SupplementaryContainerAnimationMetadata {
+        /** Whether the search box should be shown. */
+        public final boolean shouldShowSearchBox;
+
+        /** Whether to force the animation even if the view is already in the target state. */
+        public final boolean forced;
+
+        public SupplementaryContainerAnimationMetadata(
+                boolean shouldShowSearchBox, boolean forced) {
+            this.shouldShowSearchBox = shouldShowSearchBox;
+            this.forced = forced;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            // 1. Reference check.
+            if (this == o) return true;
+
+            // 2. Type and field comparison.
+            if (o instanceof SupplementaryContainerAnimationMetadata that) {
+                return this.shouldShowSearchBox == that.shouldShowSearchBox
+                        && this.forced == that.forced;
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(shouldShowSearchBox, forced);
+        }
+    }
+
+    public static final WritableObjectPropertyKey<SupplementaryContainerAnimationMetadata>
+            ANIMATE_SUPPLEMENTARY_CONTAINER = new WritableObjectPropertyKey<>();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -106,6 +157,10 @@ class TabListContainerProperties {
                 SUPPRESS_ACCESSIBILITY,
                 IS_TABLET_OR_LANDSCAPE,
                 IS_NON_ZERO_Y_OFFSET,
-                IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER
+                IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
+                ANIMATE_SUPPLEMENTARY_CONTAINER,
+                MANUAL_SEARCH_BOX_ANIMATION_SUPPLIER,
+                HUB_SEARCH_BOX_VISIBILITY_SUPPLIER,
+                SEARCH_BOX_VISIBILITY_FRACTION_SUPPLIER
             };
 }

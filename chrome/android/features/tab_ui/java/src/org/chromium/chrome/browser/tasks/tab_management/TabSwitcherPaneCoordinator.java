@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -236,6 +237,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final Callback<Boolean> mOnContextMenuFocusableChanged =
             this::onContextMenuFocusableChanged;
     private final NonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mManualSearchBoxAnimationSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier =
+            ObservableSuppliers.createNonNull(0.0f);
     private final @Nullable ImageView mPaneHairline;
     private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
@@ -348,6 +353,16 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                     assumeNonNull(
                                                             mTabGroupModelFilterSupplier.get()),
                                                     /* moveSingleTab= */ false))
+                            .with(
+                                    TabListContainerProperties.MANUAL_SEARCH_BOX_ANIMATION_SUPPLIER,
+                                    mManualSearchBoxAnimationSupplier)
+                            .with(
+                                    TabListContainerProperties.HUB_SEARCH_BOX_VISIBILITY_SUPPLIER,
+                                    hubSearchBoxVisibilitySupplier)
+                            .with(
+                                    TabListContainerProperties
+                                            .SEARCH_BOX_VISIBILITY_FRACTION_SUPPLIER,
+                                    mSearchBoxVisibilityFractionSupplier)
                             .build();
 
             mContainerViewModel = containerViewModel;
@@ -513,19 +528,15 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
                 mSearchBoxVisibilityScrollListener =
                         new DirectionalScrollListener(
-                                () -> { // Scroll up.
-                                    if (isAnyTabPinned()) {
-                                        updatePinnedTabsStripOnScroll(
-                                                /* shouldShowSearchBox= */ true,
-                                                /* forced= */ false);
-                                    }
+                                () -> {
+                                    // Swipe down -> Moving towards top of list.
+                                    updatePinnedTabsStripOnScroll(
+                                            /* shouldShowSearchBox= */ true, /* forced= */ false);
                                 },
-                                () -> { // Scroll down.
-                                    if (isAnyTabPinned()) {
-                                        updatePinnedTabsStripOnScroll(
-                                                /* shouldShowSearchBox= */ false,
-                                                /* forced= */ false);
-                                    }
+                                () -> {
+                                    // Swipe up -> Moving towards bottom of list.
+                                    updatePinnedTabsStripOnScroll(
+                                            /* shouldShowSearchBox= */ false, /* forced= */ false);
                                 });
                 // While the DirectionalScrollListener handles continuous scrolling, this is needed
                 // to notify the PinnedTabStripCoordinator of the final scroll position once a
@@ -553,10 +564,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             assumeNonNull(mTabGroupModelFilterSupplier.get())
                     .getTabModel()
                     .addObserver(mTabModelObserver);
+
+            LinearLayout supplementaryDataContainer =
+                    parentView.findViewById(R.id.supplementary_data_container);
             mContainerViewChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             containerViewModel,
-                            new TabListContainerViewBinder.ViewHolder(recyclerView, mPaneHairline),
+                            new TabListContainerViewBinder.ViewHolder(
+                                    recyclerView, mPaneHairline, supplementaryDataContainer),
                             TabListContainerViewBinder::bind);
             mEdgeToEdgePadAdjuster =
                     new EdgeToEdgePadAdjuster() {
@@ -883,13 +898,13 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Returns whether the search box animation is manual. */
-    public NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier() {
-        return mMediator.getManualSearchBoxAnimationSupplier();
+    NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier() {
+        return mManualSearchBoxAnimationSupplier;
     }
 
     /** Returns a fraction for the manual search box animation. */
-    public NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier() {
-        return mMediator.getSearchBoxVisibilityFractionSupplier();
+    NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier() {
+        return mSearchBoxVisibilityFractionSupplier;
     }
 
     @Override
@@ -1184,7 +1199,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private void updatePinnedTabsStripOnScroll(boolean shouldShowSearchBox, boolean forced) {
         assert mPinnedTabsCoordinator != null;
         mPinnedTabsCoordinator.onScrolled();
-        if (mPinnedTabsCoordinator.isPinnedTabsBarVisible()) {
+        if (shouldShowSearchBox || mPinnedTabsCoordinator.isPinnedTabsBarVisible()) {
             mMediator.maybeTranslatePinnedStrip(shouldShowSearchBox, forced);
         }
     }
