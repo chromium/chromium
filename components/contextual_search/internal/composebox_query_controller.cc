@@ -72,8 +72,6 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kVisualSearchInteractionQueryParameterKey[] = "vsint";
 constexpr char kAddedInputsQueryParameterKey[] = "aai";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
-constexpr char kVisualInputTypeQueryParameterPdfValue[] = "pdf";
-constexpr char kVisualInputTypeQueryParameterWebpageValue[] = "wp";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
@@ -255,23 +253,6 @@ int64_t RandInt64() {
   int64_t number;
   base::RandBytes(base::byte_span_from_ref(number));
   return number;
-}
-
-std::optional<std::string> GetMimeTypeParamValueForSearchUrl(
-    lens::MimeType mime_type) {
-  switch (mime_type) {
-    case lens::MimeType::kPdf:
-      return kVisualInputTypeQueryParameterPdfValue;
-    case lens::MimeType::kAnnotatedPageContent:
-      return kVisualInputTypeQueryParameterWebpageValue;
-    case lens::MimeType::kImage:
-      // Image-only queries should not send a vit parameter in the search URL.
-      [[fallthrough]];
-    case lens::MimeType::kUnknown:
-      [[fallthrough]];
-    default:
-      return std::nullopt;
-  }
 }
 
 }  // namespace
@@ -497,6 +478,10 @@ void ComposeboxQueryController::CreateSearchUrl(
       bool is_aim_search =
           search_url_request_info->search_url_type == SearchUrlType::kAim;
       if (contextual_inputs->inputs_size() == 1) {
+        auto context_media_type =
+            search_url_request_info->image_crop.has_value()
+                ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+                : last_active_file->request_id.media_type();
         // If there is only contextual input, create a search url using the
         // vsrid (single-context) parameter.
         if (search_url_request_info->search_url_type ==
@@ -505,12 +490,15 @@ void ComposeboxQueryController::CreateSearchUrl(
                 lens::features::kLensSendVitForSingleContextNextQueries)) {
           // Single-context queries should send the vit parameter if it is a
           // standard (non-AIM) query, or if the flag to send the vit parameter
-          // for single context next queries is enabled.
-          auto vit_param =
-              GetMimeTypeParamValueForSearchUrl(last_active_file->mime_type);
-          if (vit_param.has_value()) {
+          // for single context next queries is enabled, and if the media type
+          // is not "img".
+          std::string vit_value =
+              lens::VitQueryParamValueForMediaType(context_media_type);
+          if (context_media_type !=
+                  lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE &&
+              !vit_value.empty()) {
             search_url_request_info->additional_params.insert(
-                {kVisualInputTypeQueryParameter, vit_param.value()});
+                {kVisualInputTypeQueryParameter, vit_value});
           }
         }
         std::move(callback).Run(GetUrlForMultimodalSearch(
@@ -519,10 +507,7 @@ void ComposeboxQueryController::CreateSearchUrl(
             search_url_request_info->query_start_time,
             cluster_info_->search_session_id(),
             request_id_generator_.GetNextRequestId(
-                lens::RequestIdUpdateMode::kSearchUrl,
-                search_url_request_info->image_crop.has_value()
-                    ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
-                    : last_active_file->request_id.media_type()),
+                lens::RequestIdUpdateMode::kSearchUrl, context_media_type),
             search_url_request_info->invocation_source, lns_surface,
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params)));
