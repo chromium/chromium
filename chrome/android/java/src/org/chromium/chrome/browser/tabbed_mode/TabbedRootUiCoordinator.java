@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
@@ -320,6 +321,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
     private final OneshotSupplierImpl<Boolean> mTrackerInitializedOneshotSupplier =
             new OneshotSupplierImpl<>();
+    private ContextualTasksBridge mContextualTasksBridge;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -825,6 +827,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mSidePanelContainerCoordinator = null;
         }
 
+        if (mContextualTasksBridge != null) {
+            mContextualTasksBridge.destroy();
+            mContextualTasksBridge = null;
+        }
+
         super.onDestroy();
     }
 
@@ -1072,6 +1079,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mSideUiCoordinator = SideUiCoordinatorFactory.create();
         mSidePanelContainerCoordinator = SidePanelContainerCoordinatorFactory.create();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
+            mContextualTasksBridge = new ContextualTasksBridge();
+        }
 
         initiateTabBottomSheetManagers();
     }

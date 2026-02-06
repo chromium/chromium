@@ -34,6 +34,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/credential_management/android/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/download/public/common/download_features.h"
@@ -152,6 +153,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_capture::features::kContentCaptureSendMetadataForDataShare,
     &content_settings::features::kUserBypassUI,
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
+    &contextual_tasks::kContextualTasks,
     &credential_management::features::kCredentialManagementThirdPartyWebApiRequestForwarding,
     &data_controls::kEnableClipboardDataControlsAndroid,
     &data_sharing::features::kDataSharingEnableUpdateChromeUI,

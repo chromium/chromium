@@ -81,6 +81,7 @@ static_library("flags_android_impl") {
     "//components/commerce/core:feature_list",
     "//components/content_capture/common",
     "//components/content_settings/core/common:features",
+    "//components/contextual_tasks/public:feature_list",
     "//components/credential_management/android:features",
     "//components/data_sharing/public:features",
     "//components/download/public/common:public",
