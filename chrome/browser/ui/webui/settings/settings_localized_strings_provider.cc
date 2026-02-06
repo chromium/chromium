@@ -1711,6 +1711,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableWalletBranding));
 
+  html_source->AddBoolean(
+      "enableSaveToWalletFromSettings",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveToWalletFromSettings));
+
   bool is_mandatory_reauth_feature_flag_enabled = false;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

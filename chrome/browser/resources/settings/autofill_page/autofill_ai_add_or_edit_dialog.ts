@@ -22,6 +22,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import {getTemplate} from './autofill_ai_add_or_edit_dialog.html.js';
 import type {CountryDetailManagerProxy} from './country_detail_manager_proxy.js';
 import {CountryDetailManagerProxyImpl} from './country_detail_manager_proxy.js';
@@ -148,7 +150,16 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       },
 
       /**
-         Holds the error to display (or empty string if valid)
+         True if the feature flag to save entities to wallet from settings is
+         enabled.
+       */
+      saveToWalletFromSettingsEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableSaveToWalletFromSettings'),
+      },
+
+      /**
+         Holds the error to display (or empty string if valid).
        */
       validationError_: {
         type: String,
@@ -200,6 +211,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   declare private years_: string[];
   declare private userEmail_: string;
   declare private footerText_: string;
+  declare private saveToWalletFromSettingsEnabled_: boolean;
 
   private requiredAttributeTypes_: AttributeType[] = [];
   private entityDataManager_: EntityDataManagerProxy =
@@ -397,6 +409,27 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.notifyPath(
         `completeAttributeInstanceList_.${e.model.index}.value.year`);
     this.onAttributeInstanceFieldInput_(e);
+  }
+
+  /**
+   * Returns '*' if the field is required.
+   */
+  private getRequiredIndicator_(attributeInstance: AttributeInstance): string {
+    if (!this.saveToWalletFromSettingsEnabled_) {
+      return '';
+    }
+    const isRequired = this.requiredAttributeTypes_.some(
+        req => req.typeName === attributeInstance.type.typeName);
+    return isRequired ? '*' : '';
+  }
+
+  /**
+   * Computes the label for cr-input fields.
+   * Appends '*' to the label text if required.
+   */
+  private computeInputLabel_(attributeInstance: AttributeInstance): string {
+    return attributeInstance.type.typeNameAsString +
+        this.getRequiredIndicator_(attributeInstance);
   }
 
   private computeFooterText_(): string {

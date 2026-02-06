@@ -55,17 +55,29 @@
     margin-top: 8px;
     white-space: initial;
   }
+
+  #validation-error-top {
+    color: var(--cr-fallback-color-error);
+    margin-bottom: 16px;
+  }
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">[[dialogTitle]]</div>
   <div slot="body">
+    <template is="dom-if" if="[[saveToWalletFromSettingsEnabled_]]">
+      <div id="validation-error-top" class="cr-form-field-label"
+          hidden="[[!validationError_]]">
+        [[validationError_]]
+      </div>
+    </template>
+
     <template is="dom-repeat" items="[[completeAttributeInstanceList_]]"
         as="attributeInstanceItem">
 
       <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
           attributeTypeDataTypeEnum_.COUNTRY)]]">
         <label id="country-select-label" class="cr-form-field-label">
-          [[attributeInstanceItem.type.typeNameAsString]]
+          [[attributeInstanceItem.type.typeNameAsString]][[getRequiredIndicator_(attributeInstanceItem)]]
         </label>
         <select id="country-select" class="md-select"
             aria-label="[[attributeInstanceItem.type.typeNameAsString]]"
@@ -91,13 +103,13 @@
               class="cr-form-field-label"
               hidden="[[isDateInvalid_(attributeInstanceItem,
                   userClickedSaveButton_, attributeInstanceItem.*)]]">
-            [[attributeInstanceItem.type.typeNameAsString]]
+            [[attributeInstanceItem.type.typeNameAsString]][[getRequiredIndicator_(attributeInstanceItem)]]
           </label>
           <label id="invalid-date-select-label"
               class="cr-form-field-label"
               hidden="[[!isDateInvalid_(attributeInstanceItem,
                   userClickedSaveButton_, attributeInstanceItem.*)]]">
-            [[attributeInstanceItem.type.typeNameAsString]]
+            [[attributeInstanceItem.type.typeNameAsString]][[getRequiredIndicator_(attributeInstanceItem)]]
           </label>
 
           <select id="month-select" class="md-select"
@@ -175,7 +187,7 @@
       <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
           attributeTypeDataTypeEnum_.STRING)]]">
         <cr-input id="attribute-instance-field" type="text"
-            label="[[attributeInstanceItem.type.typeNameAsString]]"
+            label="[[computeInputLabel_(attributeInstanceItem)]]"
             value="{{attributeInstanceItem.value}}"
             spellcheck="false" maxlength="1000"
             on-input="onAttributeInstanceFieldInput_"
@@ -185,10 +197,12 @@
 
     </template>
 
-    <div id="validation-error" class="cr-form-field-label"
-     hidden="[[!validationError_]]">
-      [[validationError_]]
-    </div>
+    <template is="dom-if" if="[[!saveToWalletFromSettingsEnabled_]]">
+      <div id="validation-error" class="cr-form-field-label"
+       hidden="[[!validationError_]]">
+        [[validationError_]]
+      </div>
+    </template>
 
     <div id="footer"
          hidden="[[!footerText_]]">
