@@ -31,6 +31,12 @@ struct QueryState {
 
   // Timestamp for determining which times to consider in subsequent query.
   string? after;
+
+  // Whether user visits should be shown.
+  bool include_user_visits;
+
+  // Whether actor visits should be shown.
+  bool include_actor_visits;
 };
 
 
@@ -161,7 +167,12 @@ interface PageHandler {
 
   // Queries for entries matching the query term. Returns a promise of a
   // result object.
-  QueryHistory(string query, int32 max_results, double? begin_time) => (QueryResult results);
+  QueryHistory(
+      string query,
+      int32 max_results,
+      double? begin_time,
+      bool include_user_visits,
+      bool include_actor_visits) => (QueryResult results);
 
   // Completes continuation of ongoing query. Returns a promise of a result
   // object.

@@ -219,6 +219,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
     querying: false,
     searchTerm: '',
     after: null,
+    includeUserVisits: true,
+    includeActorVisits: true,
   };
   protected accessor selectedPage_: string = Page.HISTORY;
   protected accessor selectedTab_: number =
@@ -901,7 +903,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
       e: CustomEvent<{userVisits: boolean, actorVisits: boolean}>) {
     this.includeUserVisits_ = e.detail.userVisits;
     this.includeActorVisits_ = e.detail.actorVisits;
-    /* TODO: Implement firing the change query here. */
+
+    this.fire_('change-query', {
+      search: this.queryState_.searchTerm,
+      includeActorVisits: this.includeActorVisits_,
+      includeUserVisits: this.includeUserVisits_,
+    });
   }
 
   protected showFilterChips_(): boolean {

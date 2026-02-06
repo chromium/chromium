@@ -155,6 +155,8 @@ export class HistoryListElement extends HistoryListElementBase {
     querying: false,
     searchTerm: '',
     after: null,
+    includeUserVisits: true,
+    includeActorVisits: true,
   };
   accessor scrollTarget: HTMLElement = document.documentElement;
   accessor scrollOffset: number = 0;

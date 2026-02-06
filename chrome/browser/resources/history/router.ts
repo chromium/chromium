@@ -53,6 +53,8 @@ export class HistoryRouterElement extends CrLitElement {
     querying: false,
     searchTerm: '',
     after: null,
+    includeUserVisits: true,
+    includeActorVisits: true,
   };
   timeRangeStart?: Date;
 

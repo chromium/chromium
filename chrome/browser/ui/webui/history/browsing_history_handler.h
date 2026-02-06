@@ -61,6 +61,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   void QueryHistory(const std::string& query,
                     int max_count,
                     std::optional<double> begin_timestamp,
+                    bool include_user_visits,
+                    bool include_actor_visits,
                     QueryHistoryCallback callback) override;
 
   void QueryHistoryContinuation(
@@ -122,7 +124,9 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
  protected:
   virtual void SendHistoryQuery(int count,
                                 const std::string& query,
-                                std::optional<double> begin_timestamp);
+                                std::optional<double> begin_timestamp,
+                                bool include_user_visits,
+                                bool include_actor_visits);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest,

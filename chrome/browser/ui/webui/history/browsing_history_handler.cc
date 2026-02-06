@@ -430,12 +430,14 @@ void BrowsingHistoryHandler::StartQueryHistory() {
       this, local_history, sync_service);
 
   // 150 = RESULTS_PER_PAGE from chrome/browser/resources/history/constants.js
-  SendHistoryQuery(150, std::string(), std::nullopt);
+  SendHistoryQuery(150, std::string(), std::nullopt, true, true);
 }
 
 void BrowsingHistoryHandler::QueryHistory(const std::string& query,
                                           int max_count,
                                           std::optional<double> begin_timestamp,
+                                          bool include_user_visits,
+                                          bool include_actor_visits,
                                           QueryHistoryCallback callback) {
   if (!browsing_history_service_) {
     // Page was refreshed, so need to call StartQueryHistory here
@@ -454,18 +456,22 @@ void BrowsingHistoryHandler::QueryHistory(const std::string& query,
 
   query_history_callback_ = std::move(callback);
 
-  SendHistoryQuery(max_count, query, begin_timestamp);
+  SendHistoryQuery(max_count, query, begin_timestamp, include_user_visits,
+                   include_actor_visits);
 }
 
 void BrowsingHistoryHandler::SendHistoryQuery(
     int max_count,
     const std::string& query,
-    std::optional<double> begin_timestamp) {
+    std::optional<double> begin_timestamp,
+    bool include_user_visits,
+    bool include_actor_visits) {
   history::QueryOptions options;
   options.max_count = max_count;
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
-  options.include_actor_visits = true;
+  options.include_actor_visits = include_actor_visits;
+  options.include_user_visits = include_user_visits;
   std::string query_without_prefix = query;
 
   const std::string kHostPrefix = "host:";

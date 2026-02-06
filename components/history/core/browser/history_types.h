@@ -437,6 +437,10 @@ struct QueryOptions {
   // Defaults to false, filtering them out.
   bool include_actor_visits = false;
 
+  // If true, visits with a source other than SOURCE_ACTOR are included.
+  // Defaults to true.
+  bool include_user_visits = true;
+
   // Helpers to get the effective parameters values, since a value of 0 means
   // "unspecified".
   int EffectiveMaxCount() const;

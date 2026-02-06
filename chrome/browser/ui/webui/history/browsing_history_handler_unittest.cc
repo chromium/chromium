@@ -163,7 +163,8 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
                 /*host_only=*/options.host_only,
                 /*visit_order=*/options.visit_order,
                 /*app_id=*/options.app_id,
-                /*include_actor_visits=*/true)))
+                /*include_actor_visits=*/true,
+                /*include_user_visits=*/true)))
         .Times(1)
         .WillOnce([&, mock_results](const std::u16string& search_text,
                                     const QueryOptions& options) {
@@ -194,7 +195,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     mojom::QueryResultPtr history_query_results;
     base::RunLoop run_loop;
     handler_->QueryHistory(
-        query, 150, begin_timestamp,
+        query, 150, begin_timestamp, true, true,
         base::BindLambdaForTesting([&](history::mojom::QueryResultPtr result) {
           history_query_results = std::move(result);
           run_loop.Quit();
