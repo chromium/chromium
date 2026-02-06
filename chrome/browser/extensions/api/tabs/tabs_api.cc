@@ -1091,6 +1091,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     }
   }
 
+  TabListInterface* tab_list = TabListInterface::From(new_window);
+  CHECK(tab_list);
+
 #if !BUILDFLAG(IS_ANDROID)
   bool moved_tab = false;
 #endif
@@ -1106,7 +1109,29 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
                           /*allow_other_window_types=*/true, &error) < 0) {
         return Error(std::move(error));
       }
-#if !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+      // On Android, a new window is created with a single default tab. If urls_
+      // is empty, it means:
+      //
+      // (1) We haven't navigated, which would have navigated the default tab to
+      // a URL;
+      //
+      // (2) There should be only 2 tabs: the default tab and the tab with
+      // "create_data_->tab_id".
+      //
+      // As the tab with "create_data_->tab_id" is added to the end of the tab
+      // list, we close the first (default) tab to match the behavior on other
+      // platforms: the new window should only have the tab with
+      // "create_data_->tab_id".
+      //
+      // TODO(crbug.com/477611601): Remove this logic when a new Android window
+      // has no tabs, like Windows/Mac/Linux.
+      if (urls_.empty()) {
+        CHECK(tab_list->GetTabCount() == 2);
+        tab_list->CloseTab(tab_list->GetTab(0)->GetHandle());
+      }
+#else
       moved_tab = true;
 #endif
     }
@@ -1127,8 +1152,6 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 
   // Select the first tab in the window, if there's at least one tab. There may
   // be no tabs, since we allow the creation of an empty popup above.
-  TabListInterface* tab_list = TabListInterface::From(new_window);
-  CHECK(tab_list);
   if (tab_list->GetTabCount() > 0) {
     tab_list->ActivateTab(tab_list->GetTab(0)->GetHandle());
   }

@@ -5,5 +5,8 @@
   "description": "end-to-end browser test for chrome.windows.create API",
   "background": {
     "scripts": ["test.js"]
-  }
+  },
+  "permissions": [
+    "tabs"
+  ]
 }
