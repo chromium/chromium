@@ -279,7 +279,10 @@ public class DisplayAgent {
                                 DISPLAY_AGENT_TAG,
                                 systemData.guid.hashCode()));
         builder.setContentTitle(notificationData.title);
+        // Set the summary (preview) content text for the notification in collapsed form.
         builder.setContentText(notificationData.message);
+        // Override the content text for the notification in expanded form with wrap text style.
+        builder.setBigTextStyle(notificationData.message);
 
         @Nullable IconBundle smallIconBundle = notificationData.icons.get(IconType.SMALL_ICON);
         if (smallIconBundle != null && smallIconBundle.bitmap != null) {
