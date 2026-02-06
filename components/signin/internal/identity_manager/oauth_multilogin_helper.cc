@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
@@ -72,8 +73,42 @@ net::CookieOptions GetCookieOptions() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Returns a GURL that can be used as a fetcher URL in
+// `net::device_bound_sessions::SessionParams`.
+//
+// OAML can create bound sessions on several Google domains and the fetcher URL
+// must be from the same site. Thus, the OAML URL is unsuitable for domains
+// outside of "*google.com".
+GURL ComputeFetcherUrlForDeviceBoundSessionRegistrationPayload(
+    OAuthMultiloginResult::DeviceBoundSession::Domain domain,
+    std::string_view refresh_url) {
+  GURL absolute_refresh_url(refresh_url);
+  if (absolute_refresh_url.is_valid()) {
+    // If the refresh URL is already an absolute URL, just use it.
+    return absolute_refresh_url;
+  }
+
+  // Fallback case based on `domain`. It's needed while the server still may
+  // return relative URLs.
+  // TODO(crbug.com/482079651): get rid of this path once the server always
+  // sends absolute URLs.
+  const GURL base_url = [&] {
+    switch (domain) {
+      case OAuthMultiloginResult::DeviceBoundSession::Domain::kGoogle:
+        return GaiaUrls::GetInstance()->gaia_url();
+      case OAuthMultiloginResult::DeviceBoundSession::Domain::kYoutube:
+        return GURL("https://accounts.youtube.com/");
+      case OAuthMultiloginResult::DeviceBoundSession::Domain::kUnknown:
+        NOTREACHED();
+    }
+  }();
+
+  return base_url.Resolve(refresh_url);
+}
+
 net::device_bound_sessions::SessionParams
 CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
+    OAuthMultiloginResult::DeviceBoundSession::Domain domain,
     const RegisterBoundSessionPayload& registration_payload) {
   using net::device_bound_sessions::SessionParams;
   CHECK(registration_payload.parsed_for_dbsc_standard);
@@ -108,17 +143,17 @@ CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
                            .attributes = from_credential.attributes});
   }
 
-  return SessionParams(registration_payload.session_id,
-                       // TODO(crbug.com/464268881): Use more robust URL here to
-                       // support different domains.
-                       GaiaUrls::GetInstance()->oauth_multilogin_url(),
-                       registration_payload.refresh_url, std::move(scope),
-                       std::move(credentials),
-                       // Passing an arbitrary key in params as it will be
-                       // retrieved later from the wrapped key passed to
-                       // the `DeviceBoundSessionManager`.
-                       unexportable_keys::UnexportableKeyId(),
-                       registration_payload.allowed_refresh_initiators);
+  return SessionParams(
+      registration_payload.session_id,
+      ComputeFetcherUrlForDeviceBoundSessionRegistrationPayload(
+          domain, registration_payload.refresh_url),
+      registration_payload.refresh_url, std::move(scope),
+      std::move(credentials),
+      // Passing an arbitrary key in params as it will be
+      // retrieved later from the wrapped key passed to
+      // the `DeviceBoundSessionManager`.
+      unexportable_keys::UnexportableKeyId(),
+      registration_payload.allowed_refresh_initiators);
 }
 
 void RecordCreateBoundSessionsResult(
@@ -449,6 +484,7 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
     CHECK(device_bound_session->register_session_payload.has_value());
     sessions_params.push_back(
         CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
+            device_bound_session->domain,
             *device_bound_session->register_session_payload));
   }
   if (sessions_params.empty()) {

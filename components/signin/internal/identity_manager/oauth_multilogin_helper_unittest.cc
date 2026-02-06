@@ -62,6 +62,7 @@ using ::base::test::RunOnceCallback;
 using ::net::device_bound_sessions::SessionParams;
 using ::testing::AllOf;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
@@ -1400,7 +1401,8 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
           UnorderedElementsAre(AllOf(
               Field(&SessionParams::session_id, "id"),
               Field(&SessionParams::fetcher_url,
-                    GaiaUrls::GetInstance()->oauth_multilogin_url()),
+                    GaiaUrls::GetInstance()->gaia_url().Resolve(
+                        "/RotateBoundCookies")),
               Field(&SessionParams::refresh_url, "/RotateBoundCookies"),
               Field(
                   &SessionParams::scope,
@@ -1453,6 +1455,163 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
       "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
       net::device_bound_sessions::SessionError::ErrorType::kSuccess,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
+       SetCookiesViaDeviceBoundSessionManagerWithAbsoluteRefreshUrl) {
+  base::HistogramTester histogram_tester;
+
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
+  const std::vector<uint8_t> binding_key = {1, 2, 3};
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown, binding_key);
+  CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
+
+  const GURL kAbsoluteRefreshUrl("https://youtube.com/RotateBoundCookies");
+
+  EXPECT_CALL(
+      mock_device_bound_session_manager(),
+      CreateBoundSessions(
+          UnorderedElementsAre(AllOf(
+              Field(&SessionParams::session_id, "id_yt"),
+              Field(&SessionParams::fetcher_url, kAbsoluteRefreshUrl),
+              Field(&SessionParams::refresh_url, kAbsoluteRefreshUrl.spec()))),
+          binding_key, SizeIs(1), _, _))
+      .WillOnce(base::test::RunOnceCallback<4>(
+          std::vector<net::device_bound_sessions::SessionError::ErrorType>{
+              net::device_bound_sessions::SessionError::ErrorType::kSuccess},
+          std::vector<net::CookieInclusionStatus>()));
+
+  ASSERT_TRUE(
+      url_loader()->IsPending(multilogin_url_with_cookie_enforcement()));
+
+  const std::string response =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".youtube.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": false,
+              "maxAge": 31536000,
+              "priority": "HIGH"
+            }
+          ],
+          "device_bound_session_info": [
+            {
+              "domain": "YOUTUBE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id_yt",
+                "refresh_url": "https://youtube.com/RotateBoundCookies",
+                "scope": {
+                  "origin": "https://youtube.com",
+                  "include_site": true
+                },
+                "credentials": [{
+                  "type": "cookie",
+                  "name": "__Secure-1PSIDTS",
+                  "scope": {
+                    "domain": ".youtube.com",
+                    "path": "/"
+                  },
+                  "attributes": "Domain=.youtube.com; Path=/; Secure"
+                }],
+                "allowed_refresh_initiators": ["*"]
+              }
+            }
+          ]
+        }
+      )";
+
+  url_loader()->AddResponse(multilogin_url_with_cookie_enforcement(), response);
+  ASSERT_FALSE(
+      url_loader()->IsPending(multilogin_url_with_cookie_enforcement()));
+
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+}
+
+TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
+       SetYoutubeCookiesViaDeviceBoundSessionManagerWithRelativeRefreshUrl) {
+  base::HistogramTester histogram_tester;
+
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
+  const std::vector<uint8_t> binding_key = {1, 2, 3};
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown, binding_key);
+  CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
+
+  EXPECT_CALL(
+      mock_device_bound_session_manager(),
+      CreateBoundSessions(
+          UnorderedElementsAre(AllOf(
+              Field(&SessionParams::session_id, "id_yt"),
+              Field(&SessionParams::fetcher_url,
+                    GURL("https://accounts.youtube.com/RotateBoundCookies")),
+              Field(&SessionParams::refresh_url, "/RotateBoundCookies"))),
+          binding_key, SizeIs(1), _, _))
+      .WillOnce(base::test::RunOnceCallback<4>(
+          std::vector<net::device_bound_sessions::SessionError::ErrorType>{
+              net::device_bound_sessions::SessionError::ErrorType::kSuccess},
+          std::vector<net::CookieInclusionStatus>()));
+
+  ASSERT_TRUE(
+      url_loader()->IsPending(multilogin_url_with_cookie_enforcement()));
+
+  const std::string response =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".youtube.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": false,
+              "maxAge": 31536000,
+              "priority": "HIGH"
+            }
+          ],
+          "device_bound_session_info": [
+            {
+              "domain": "YOUTUBE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id_yt",
+                "refresh_url": "/RotateBoundCookies",
+                "scope": {
+                  "origin": "https://youtube.com",
+                  "include_site": true
+                },
+                "credentials": [{
+                  "type": "cookie",
+                  "name": "__Secure-1PSIDTS",
+                  "scope": {
+                    "domain": ".youtube.com",
+                    "path": "/"
+                  },
+                  "attributes": "Domain=.youtube.com; Path=/; Secure"
+                }],
+                "allowed_refresh_initiators": ["*"]
+              }
+            }
+          ]
+        }
+      )";
+
+  url_loader()->AddResponse(multilogin_url_with_cookie_enforcement(), response);
+  ASSERT_FALSE(
+      url_loader()->IsPending(multilogin_url_with_cookie_enforcement()));
+
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
 }
 
 TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,

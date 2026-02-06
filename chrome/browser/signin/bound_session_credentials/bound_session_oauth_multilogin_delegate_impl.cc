@@ -15,12 +15,16 @@
 
 namespace {
 
-GURL ConvertDeviceBoundSessionDomainToUrl(
+// Returns a site URL corresponding to given `domain`. Returns an empty `GURL`
+// if `domain` isn't supported.
+GURL GetSiteForDeviceBoundSessionDomainIfSupported(
     OAuthMultiloginResult::DeviceBoundSession::Domain domain) {
   using enum OAuthMultiloginResult::DeviceBoundSession::Domain;
   switch (domain) {
     case kGoogle:
       return GURL("https://google.com");
+    case kYoutube:
+      return GURL();
     case kUnknown:
       // This shouldn't happen as unknown domains should be filtered out before
       // (at server response parsing).
@@ -98,13 +102,17 @@ BoundSessionOAuthMultiLoginDelegateImpl::CreateBoundSessionsParams(
   std::vector<bound_session_credentials::BoundSessionParams>
       bound_sessions_params;
   for (const auto* device_bound_session : sessions_to_register) {
+    GURL site = GetSiteForDeviceBoundSessionDomainIfSupported(
+        device_bound_session->domain);
+    if (site.is_empty()) {
+      ++invalid_params_count;
+      continue;
+    }
     bound_session_credentials::BoundSessionParams params =
         bound_session_credentials::
             CreateBoundSessionsParamsFromRegistrationPayload(
                 *device_bound_session->register_session_payload,
-                GaiaUrls::GetInstance()->oauth_multilogin_url(),
-                ConvertDeviceBoundSessionDomainToUrl(
-                    device_bound_session->domain),
+                GaiaUrls::GetInstance()->oauth_multilogin_url(), site,
                 wrapped_binding_key_str,
                 bound_session_credentials::SessionOrigin::SESSION_ORIGIN_OAML);
     if (!bound_session_credentials::AreParamsValid(params)) {

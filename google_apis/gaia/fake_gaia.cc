@@ -180,19 +180,22 @@ base::ListValue GetFailedAccountsForMultilogin(
   return failed_accounts;
 }
 
-base::ListValue GetDeviceBoundSessionInfoForMultilogin(
+base::DictValue GetDeviceBoundSessionInfoForMultilogin(
+    std::string_view domain,
     const FakeGaia::Configuration& configuration) {
-  auto device_bound_session_info = base::DictValue()
-                                       .Set("domain", "GOOGLE_COM")
-                                       .Set("is_device_bound", true);
+  auto device_bound_session_info =
+      base::DictValue()
+          .Set("domain", base::StrCat({base::ToUpperASCII(domain), "_COM"}))
+          .Set("is_device_bound", true);
   if (!configuration.reuse_bound_session) {
+    const std::string cookie_domain = base::StrCat({".", domain, ".com"});
     base::ListValue credentials;
     if (!configuration.session_1p_sidts_cookie.empty()) {
       credentials.Append(base::DictValue()
                              .Set("type", "cookie")
                              .Set("name", "__Secure-1PSIDTS")
                              .Set("scope", base::DictValue()
-                                               .Set("domain", ".google.com")
+                                               .Set("domain", cookie_domain)
                                                .Set("path", "/")));
     }
     if (!configuration.session_3p_sidts_cookie.empty()) {
@@ -200,7 +203,7 @@ base::ListValue GetDeviceBoundSessionInfoForMultilogin(
                              .Set("type", "cookie")
                              .Set("name", "__Secure-3PSIDTS")
                              .Set("scope", base::DictValue()
-                                               .Set("domain", ".google.com")
+                                               .Set("domain", cookie_domain)
                                                .Set("path", "/")));
     }
     auto register_session_payload =
@@ -208,23 +211,36 @@ base::ListValue GetDeviceBoundSessionInfoForMultilogin(
             .Set("session_identifier", "sidts_session")
             .Set("refresh_url", "/RotateBoundCookies");
     if (configuration.spec_compliant_device_bound_session) {
-      register_session_payload.Set("scope",
-                                   base::DictValue()
-                                       .Set("origin", "https://google.com")
-                                       .Set("include_site", true));
+      register_session_payload.Set(
+          "scope",
+          base::DictValue()
+              .Set("origin", base::StrCat({"https://", domain, ".com"}))
+              .Set("include_site", true));
       register_session_payload.Set("allowed_refresh_initiators",
                                    base::ListValue().Append("*"));
       for (auto& credential : credentials) {
-        credential.GetDict().Set("attributes",
-                                 "Secure; HttpOnly; Domain=.google.com; "
-                                 "Path=/; SameSite=None");
+        credential.GetDict().Set(
+            "attributes",
+            base::StrCat({"Secure; HttpOnly; Domain=", cookie_domain,
+                          "; Path=/; SameSite=None"}));
       }
     }
     register_session_payload.Set("credentials", std::move(credentials));
     device_bound_session_info.Set("register_session_payload",
                                   std::move(register_session_payload));
   }
-  return base::ListValue().Append(std::move(device_bound_session_info));
+  return device_bound_session_info;
+}
+
+base::ListValue GetDeviceBoundSessionInfosForMultilogin(
+    const FakeGaia::Configuration& configuration) {
+  auto list = base::ListValue().Append(GetDeviceBoundSessionInfoForMultilogin(
+      /*domain=*/"google", configuration));
+  if (configuration.include_youtube_bound_session) {
+    list.Append(GetDeviceBoundSessionInfoForMultilogin(/*domain=*/"youtube",
+                                                       configuration));
+  }
+  return list;
 }
 
 MultiloginAction GetMultiloginAction(
@@ -1178,7 +1194,7 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
               .Set("status", "OK")
               .Set("cookies", GetCookiesForMultilogin(configuration_))
               .Set("device_bound_session_info",
-                   GetDeviceBoundSessionInfoForMultilogin(configuration_));
+                   GetDeviceBoundSessionInfosForMultilogin(configuration_));
       FormatOkJSONResponse(response, http_response, kXSSIPrefix);
       break;
     }

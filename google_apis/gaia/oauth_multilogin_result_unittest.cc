@@ -1129,6 +1129,76 @@ TEST(OAuthMultiloginResultTest, ReuseExistingDeviceBoundSession) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(OAuthMultiloginResultTest, MultipleDomainsInResponse) {
+  base::HistogramTester histogram_tester;
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies": [],
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id_google",
+                "refresh_url": "/RotateBoundCookies",
+                "credentials": [
+                  {
+                    "type": "cookie",
+                    "name": "__Secure-1PSIDTS",
+                    "scope": {
+                      "domain": ".google.com",
+                      "path": "/"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "domain": "YOUTUBE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id_youtube",
+                "refresh_url": "/RotateBoundCookies",
+                "credentials": [
+                  {
+                    "type": "cookie",
+                    "name": "__Secure-1PSIDTS",
+                    "scope": {
+                      "domain": ".youtube.com",
+                      "path": "/"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(raw_data, net::HTTP_OK);
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(
+      result.device_bound_sessions(),
+      UnorderedElementsAre(
+          AllOf(Field(&DeviceBoundSession::is_device_bound, true),
+                Field(&DeviceBoundSession::domain, kGoogle),
+                Field(&DeviceBoundSession::register_session_payload,
+                      Optional(Field(&RegisterBoundSessionPayload::session_id,
+                                     "id_google")))),
+          AllOf(Field(&DeviceBoundSession::is_device_bound, true),
+                Field(&DeviceBoundSession::domain, kYoutube),
+                Field(&DeviceBoundSession::register_session_payload,
+                      Optional(Field(&RegisterBoundSessionPayload::session_id,
+                                     "id_youtube"))))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
   base::HistogramTester histogram_tester;
 

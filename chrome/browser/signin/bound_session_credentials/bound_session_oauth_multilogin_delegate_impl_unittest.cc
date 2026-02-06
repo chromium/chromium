@@ -599,4 +599,56 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
       /*expected_bucket_count=*/1);
 }
 
+// This test verifies that `signin::BoundSessionOAuthMultiLoginDelegate` cannot
+// create youtube.com sessions.
+TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
+       CannotCreateYoutubeBoundSession) {
+  base::HistogramTester histogram_tester;
+  Signin(/*wrapped_key=*/{1, 2, 3});
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "YOUTUBE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id_youtube",
+                "credentials": [
+                  {
+                    "type": "cookie",
+                    "name": "__Secure-YOUTUBE-Cookie",
+                    "scope": {
+                      "domain": ".youtube.com",
+                      "path": "/"
+                    }
+                  }
+                ],
+                "refresh_url": "https://accounts.youtube.com/RotateBoundCookies"
+              }
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result = CreateOAuthMultiloginResult(raw_data);
+
+  EXPECT_CALL(mock_bound_session_cookie_refresh_service(), StopCookieRotation)
+      .Times(0);
+  EXPECT_CALL(mock_bound_session_cookie_refresh_service(),
+              RegisterNewBoundSession)
+      .Times(0);
+
+  delegate().BeforeSetCookies(result);
+  delegate().OnCookiesSet();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.InvalidParams",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace

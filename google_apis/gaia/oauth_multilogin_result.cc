@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "net/cookies/cookie_constants.h"
@@ -56,6 +57,9 @@ DeviceBoundSession::Domain ParseDeviceBoundSessionDomain(
     std::string_view domain) {
   if (base::EqualsCaseInsensitiveASCII(domain, "GOOGLE_COM")) {
     return DeviceBoundSession::Domain::kGoogle;
+  }
+  if (base::EqualsCaseInsensitiveASCII(domain, "YOUTUBE_COM")) {
+    return DeviceBoundSession::Domain::kYoutube;
   }
   return DeviceBoundSession::Domain::kUnknown;
 }

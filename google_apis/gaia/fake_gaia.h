@@ -104,6 +104,10 @@ class FakeGaia {
     // NOTE: This is only applicable when `reuse_bound_session` is `false`.
     bool spec_compliant_device_bound_session = true;
 
+    // If true, the server will return a bound session for youtube.com in
+    // addition to a google.com bound session.
+    bool include_youtube_bound_session = false;
+
     // Overrides the status returned by OAuthMultilogin. If not set, `FakeGaia`
     // determines the status based on the request parameters.
     //
