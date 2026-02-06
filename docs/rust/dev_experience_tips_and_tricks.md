@@ -48,3 +48,16 @@ The following options exist for dealing with unused code warnings:
       treating them as errors.
 * Locally set `treat_warnings_as_errors = false` in your `args.gn`.
   This will affect all Rust and C/C++ warnings.
+
+## Better Gerrit experience for 100-columns-wide code
+
+Rust Style Guide
+[allows](https://doc.rust-lang.org/style-guide/index.html?highlight=100%20characters#indentation-and-line-width)
+up to 100-characters-wide lines
+([just like Java](https://source.android.com/docs/setup/contribute/code-style#limit-line-length)).
+If Gerrit is configured for 80-characters-wide lines, it can lead to a
+suboptimal user experience.  This can be resolved by changing Gerrit settings
+(e.g. at https://chromium-review.googlesource.com/settings) as follows:
+
+* Diff Preferences => Diff width: 101
+* Edit Preferences => Columns: 100
