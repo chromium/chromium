@@ -57,7 +57,6 @@ class BrowserExtensionWindowController : public WindowController {
   Browser* GetBrowser() const override;
 #endif
   content::WebContents* GetActiveTab() const override;
-  bool HasEditableTabStrip() const override;
   int GetTabCount() const override;
   content::WebContents* GetWebContentsAt(int i) const override;
   bool IsVisibleToTabsAPIForExtension(

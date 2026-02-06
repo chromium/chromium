@@ -58,13 +58,6 @@ content::WebContents* AppWindowController::GetActiveTab() const {
   return app_window_->web_contents();
 }
 
-bool AppWindowController::HasEditableTabStrip() const {
-  // There is no visible tab strip in app windows so we return true to
-  // indicate our tab strip animations are not blocking global
-  // operations (see WindowController::HasEditableTabStrip definition).
-  return true;
-}
-
 int AppWindowController::GetTabCount() const {
   return 1;  // Only one "tab" in an app window.
 }

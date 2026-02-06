@@ -196,7 +196,13 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
     return false;
   }
 
-  if (!window->HasEditableTabStrip()) {
+  // Don't let the extension ungroup a tab if the user is dragging tabs around.
+  // TODO(https://crbug.com/482088886): Update this to check all tab lists for
+  // a profile.
+  TabListInterface* tab_list =
+      TabListInterface::From(window->GetBrowserWindowInterface());
+  CHECK(tab_list);
+  if (!tab_list->IsThisTabListEditable()) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }

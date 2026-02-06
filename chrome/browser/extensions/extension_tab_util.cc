@@ -1368,9 +1368,14 @@ bool ExtensionTabUtil::IsTabStripEditable() {
     return false;
   }
 
+  // TODO(https://crbug.com/482088886): Migrate this to just use
+  // TabListInterface::CanEditTabList().
+
   // See comments in the header for why we need to check all of them.
   for (WindowController* window : *WindowControllerList::GetInstance()) {
-    if (!window->HasEditableTabStrip()) {
+    TabListInterface* tab_list =
+        TabListInterface::From(window->GetBrowserWindowInterface());
+    if (tab_list && !tab_list->IsThisTabListEditable()) {
       return false;
     }
   }

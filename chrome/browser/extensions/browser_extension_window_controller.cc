@@ -173,15 +173,6 @@ content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
   return active_tab ? active_tab->GetContents() : nullptr;
 }
 
-bool BrowserExtensionWindowController::HasEditableTabStrip() const {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return true;
-#else
-  return window_->IsTabStripEditable();
-#endif
-}
-
 int BrowserExtensionWindowController::GetTabCount() const {
   return tab_list_->GetTabCount();
 }

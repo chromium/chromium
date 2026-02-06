@@ -2795,7 +2795,12 @@ bool TabsRemoveFunction::RemoveTab(int tab_id, std::string* error) {
   }
 
   // Don't let the extension remove a tab if the user is dragging tabs around.
-  if (!window->HasEditableTabStrip()) {
+  // TODO(https://crbug.com/482088886): Update this to check all tab lists for
+  // a profile.
+  TabListInterface* tab_list =
+      TabListInterface::From(window->GetBrowserWindowInterface());
+  CHECK(tab_list);
+  if (!tab_list->IsThisTabListEditable()) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
@@ -2879,8 +2884,20 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
     }
   }
 
-  DCHECK(target_window);
-  if (!target_window->HasEditableTabStrip()) {
+  CHECK(target_window);
+  BrowserWindowInterface* target_browser =
+      target_window->GetBrowserWindowInterface();
+  if (!ExtensionTabUtil::SupportsTabGroups(target_browser)) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
+  TabListInterface* tab_list = TabListInterface::From(target_browser);
+  if (!tab_list) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
+
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
 
@@ -2943,20 +2960,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
 
   // Get the remaining group metadata and add the tabs to the group.
   // At this point, we assume this is a valid action due to the checks above.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-  }
-  BrowserWindowInterface* target_browser =
-      target_window->GetBrowserWindowInterface();
-  if (!ExtensionTabUtil::SupportsTabGroups(target_browser)) {
-    return RespondNow(
-        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
-  }
-  TabListInterface* tab_list = TabListInterface::From(target_browser);
-  if (!tab_list) {
-    return RespondNow(
-        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
-  }
+
   // Either create a new tab group (if `group` is empty) or add to an existing
   // group. The API requires std::nullopt for a "null" group ID, so convert
   // `group` to a std::optional<>.

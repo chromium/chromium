@@ -114,18 +114,6 @@ class WindowController {
   // null if there is no active tab.
   virtual content::WebContents* GetActiveTab() const = 0;
 
-  // Returns true if this window has a tab strip that's currently editable or
-  // if there's no visible tab strip.
-  //
-  // During some animations and drags the tab strip won't be editable and
-  // extensions should not update it. Many callers should use
-  // ExtensionTabUtil::IsTabStripEditable() which will check *all* tab strips
-  // because some move operations span tab strips. This checking of all windows
-  // is why windows that don't have visible tab strips should still return true
-  // here: otherwise they will prevent some operations from happening that use
-  // the ExtensionTabUtil.
-  virtual bool HasEditableTabStrip() const = 0;
-
   // Returns the number of tabs in this window.
   virtual int GetTabCount() const = 0;
 

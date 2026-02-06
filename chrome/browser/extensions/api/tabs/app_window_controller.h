@@ -41,7 +41,6 @@ class AppWindowController : public WindowController {
   bool CanClose(Reason* reason) const override;
   Browser* GetBrowser() const override;
   content::WebContents* GetActiveTab() const override;
-  bool HasEditableTabStrip() const override;
   int GetTabCount() const override;
   content::WebContents* GetWebContentsAt(int i) const override;
   bool IsVisibleToTabsAPIForExtension(
