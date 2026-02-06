@@ -1385,7 +1385,7 @@ bool ExtensionTabUtil::IsTabStripEditable() {
 // static
 TabListInterface* ExtensionTabUtil::GetEditableTabList(
     BrowserWindowInterface& browser) {
-  if (!IsTabStripEditable()) {
+  if (!TabListInterface::CanEditTabList(*browser.GetProfile())) {
     return nullptr;
   }
   return TabListInterface::From(&browser);
