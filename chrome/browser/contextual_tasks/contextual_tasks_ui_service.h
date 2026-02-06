@@ -160,6 +160,9 @@ class ContextualTasksUiService : public KeyedService {
   // differentiate different modes or queries.
   bool IsSearchResultsUrl(const GURL& url);
 
+  // Returns whether the provided URL is a share URL.
+  bool IsShareUrl(const GURL& url);
+
   // Returns whether the provided URL is for a valid (e.g. can be loaded in
   // the embedded page in the WebUI) search results page that contains the
   // correct params and isn't a shopping query.
@@ -271,6 +274,9 @@ class ContextualTasksUiService : public KeyedService {
       base::Uuid task_id,
       base::WeakPtr<BrowserWindowInterface> browser,
       const std::vector<std::pair<std::string, bool>>& lookup_results);
+
+  // Navigates to a share URL.
+  virtual void OnShareUrlNavigation(const GURL& url);
 
   // Checks if the provided URL matches any of the allowed hosts.
   bool IsAllowedHost(const GURL& url);

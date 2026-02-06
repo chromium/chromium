@@ -97,6 +97,10 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
               (content::OpenURLParams url_params,
                ContextualTasksUIInterface* web_ui_interface),
               (override));
+  MOCK_METHOD(void,
+              OnShareUrlNavigation,
+              (const GURL& url),
+              (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
   MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
 
@@ -1015,6 +1019,29 @@ TEST_F(ContextualTasksUiServiceTest, GetDefaultAiPageUrl_HasSourceId) {
   std::string sourceid;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "sourceid", &sourceid));
   EXPECT_EQ(sourceid, "chrome");
+}
+
+TEST_F(ContextualTasksUiServiceTest, ShareUrl_FromEmbeddedPage_Intercepted) {
+  GURL navigated_url(
+      "https://google.com/"
+      "search?q=https%3A%2F%2Fshare.google%2Faimode&gsc=2");
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_,
+              OnShareUrlNavigation(GURL(
+                  "https://google.com/"
+                  "search?q=https%3A%2F%2Fshare.google%2Faimode")))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks
