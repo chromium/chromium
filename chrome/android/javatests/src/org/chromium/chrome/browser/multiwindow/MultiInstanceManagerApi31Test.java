@@ -19,6 +19,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -202,6 +203,7 @@ public class MultiInstanceManagerApi31Test {
     // Final state: max limit = 2, active tasks = 2, inactive tasks = 1.
     @Test
     @MediumTest
+    @DisabledTest(message="crbug.com/482145010: Flaky on test-tablet & automotive.")
     @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void decreaseInstanceLimit_MaxActive_NoTasksFinished() {
         // Set initial instance limit.
