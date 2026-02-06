@@ -3417,6 +3417,18 @@ Called by update_extension_permission.py.-->
   <int value="1" label="User is in the developer mode"/>
 </enum>
 
+<enum name="IsExtensionAllowedResult">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Extension install cloud policy checks disabled"/>
+  <int value="2" label="Has non-default installation mode"/>
+  <int value="3" label="Policy not ready"/>
+  <int value="4" label="No policy service"/>
+  <int value="5" label="Extension allowed"/>
+  <int value="6" label="Extension blocked"/>
+  <int value="7" label="No policy for extension"/>
+  <int value="8" label="No cloud policy manager"/>
+</enum>
+
 <enum name="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean">
   <summary>
     A boolean for whether a force installed extension which failed with error

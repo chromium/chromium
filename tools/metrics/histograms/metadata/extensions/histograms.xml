@@ -272,6 +272,56 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="ExtensionInstall.ExtensionMustRemainDisabled.Result"
+    enum="Boolean" expires_after="2026-06-05">
+  <owner>ydago@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records whether an extension must remain disabled. Recorded when
+    ExtensionService checks if an extension must remain disabled.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionInstall.IsExtensionAllowed.Result"
+    enum="IsExtensionAllowedResult" expires_after="2026-06-05">
+  <owner>ydago@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the result of checking if an extension is allowed to be installed.
+    Recorded when ExtensionService checks if an extension is allowed.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionInstall.UserCanInstall.PolicyFetchResult"
+    enum="IsExtensionAllowedResult" expires_after="2026-06-05">
+  <owner>ydago@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the result of fetching the extension install policy. Recorded when
+    ExtensionService checks if a user can install an extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionInstall.UserCanInstall.PolicyFetchTime" units="ms"
+    expires_after="2026-06-05">
+  <owner>ydago@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the time it takes to fetch the extension install policy. Recorded
+    when ExtensionService checks if a user can install an extension.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionInstall.UserMayLoadExtension.Result" enum="Boolean"
+    expires_after="2026-06-05">
+  <owner>ydago@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records whether a user may load an extension. Recorded when ExtensionService
+    checks if a user may load an extension.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
     units="Extension Count" expires_after="2025-12-21">
   <owner>rdevlin.cronin@chromium.org</owner>
