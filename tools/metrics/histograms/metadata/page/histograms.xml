@@ -4400,6 +4400,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.NavigationTiming.NavigationCommitSentToParseStart"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the time the navigation commit request is sent
+    to the renderer to b) the time the renderer starts parsing the HTML. This is
+    recorded for each page load.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.PageTiming.ForegroundDuration" units="ms"
     expires_after="2026-07-05">
   <owner>bmcquade@chromium.org</owner>

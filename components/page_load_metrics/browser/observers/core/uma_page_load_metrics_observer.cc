@@ -271,6 +271,9 @@ const char kHistogramInputCoverageWithoutUserGestureRendererInitiated[] =
 const char kHistogramBackForwardCacheEvent[] =
     "PageLoad.BackForwardCache.Event";
 
+const char kHistogramNavigationCommitSentToParseStart[] =
+    "PageLoad.NavigationTiming.NavigationCommitSentToParseStart";
+
 // Navigation metrics for before-navigation phase.
 const char kHistogramInteractionToNavigationStart[] =
     "PageLoad.NavigationTiming.InteractionToNavigationStart";
@@ -399,19 +402,19 @@ UmaPageLoadMetricsObserver::OnCommit(
           navigation_handle_timing_.user_interaction -
           navigation_handle_timing_.before_unload_dialog_duration;
       if (!duration.is_negative()) {
-        PAGE_LOAD_SUB_10MS_HISTOGRAM(
-            internal::kHistogramInteractionToNavigationStart, duration);
+        PAGE_LOAD_HISTOGRAM2(internal::kHistogramInteractionToNavigationStart,
+                             duration);
       }
     }
     if (std::optional<base::TimeDelta> actual_navigation_offset =
             CalculateActualNavigationOffset(GetDelegate(),
                                             navigation_handle_timing_)) {
-      PAGE_LOAD_SUB_10MS_HISTOGRAM(
+      PAGE_LOAD_HISTOGRAM2(
           internal::kHistogramActualNavigationStartToNavigationStart,
           *actual_navigation_offset);
 
       if (!navigation_handle_timing_.navigation_commit_sent_time.is_null()) {
-        PAGE_LOAD_SUB_10MS_HISTOGRAM(
+        PAGE_LOAD_HISTOGRAM2(
             internal::kHistogramActualNavigationStartToNavigationCommitSent,
             *actual_navigation_offset +
                 navigation_handle_timing_.navigation_commit_sent_time -
@@ -497,7 +500,7 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     if (std::optional<base::TimeDelta> actual_navigation_offset =
             CalculateActualNavigationOffset(GetDelegate(),
                                             navigation_handle_timing_)) {
-      PAGE_LOAD_SUB_10MS_HISTOGRAM(
+      PAGE_LOAD_HISTOGRAM2(
           internal::kHistogramActualNavigationStartToFirstContentfulPaint,
           *actual_navigation_offset +
               timing.paint_timing->first_contentful_paint.value());
@@ -702,9 +705,20 @@ void UmaPageLoadMetricsObserver::OnParseStart(
     if (std::optional<base::TimeDelta> actual_navigation_offset =
             CalculateActualNavigationOffset(GetDelegate(),
                                             navigation_handle_timing_)) {
-      PAGE_LOAD_SUB_10MS_HISTOGRAM(
+      PAGE_LOAD_HISTOGRAM2(
           internal::kHistogramActualNavigationStartToParseStart,
           *actual_navigation_offset + timing.parse_timing->parse_start.value());
+    }
+    if (!navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
+        !timing.parse_timing->parse_start->is_negative()) {
+      base::TimeDelta duration =
+          timing.parse_timing->parse_start.value() -
+          (navigation_handle_timing_.navigation_commit_sent_time -
+           GetDelegate().GetNavigationStart());
+      if (!duration.is_negative()) {
+        PAGE_LOAD_HISTOGRAM2(
+            internal::kHistogramNavigationCommitSentToParseStart, duration);
+      }
     }
     switch (GetPageLoadType(transition_)) {
       case LOAD_TYPE_RELOAD:
@@ -1006,7 +1020,7 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
       if (std::optional<base::TimeDelta> actual_navigation_offset =
               CalculateActualNavigationOffset(GetDelegate(),
                                               navigation_handle_timing_)) {
-        PAGE_LOAD_SUB_10MS_HISTOGRAM(
+        PAGE_LOAD_HISTOGRAM2(
             internal::kHistogramActualNavigationStartToLargestContentfulPaint,
             *actual_navigation_offset + lcp_time);
       }

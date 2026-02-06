@@ -1527,6 +1527,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWrite) {
       internal::kHistogramActualNavigationStartToNavigationCommitSent, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramActualNavigationStartToParseStart, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramNavigationCommitSentToParseStart, 1);
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
