@@ -4150,6 +4150,8 @@ Called by update_autofill_enums.py.-->
   <int value="7" label="Phone Collected, WebOTP Used, OTC Used"/>
 </enum>
 
+<!-- LINT.IfChange(PhoneNumberGrammarUsage2) -->
+
 <enum name="PhoneNumberGrammarUsage2">
   <int value="0"
       label="Country code: [cc] Area Code: [ac] Prefix: [phone] Suffix:
@@ -4170,6 +4172,8 @@ Called by update_autofill_enums.py.-->
   <int value="13" label="Phone: [ac] - [phone]"/>
   <int value="14" label="Phone: [phone]"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/form_parsing/phone_field_parser.cc:PhoneNumberGrammars) -->
 
 <enum name="PredictionStateAutocompleteStatePair">
   <int value="0"

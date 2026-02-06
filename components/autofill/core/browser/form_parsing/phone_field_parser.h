@@ -75,25 +75,39 @@ class PhoneFieldParser : public FormFieldParser {
   explicit PhoneFieldParser(ParsedPhoneFields fields);
 
   struct Rule {
-    RegexType regex;       // The regex used to match this `phone_part`.
-    PhonePart phone_part;  // The type/index of the field.
-    size_t max_size = 0;   // Max size of the field to match. 0 means any.
+    RegexType regex;        // The regex used to match this `phone_part`.
+    PhonePart phone_part;   // The type/index of the field.
+    size_t max_length = 0;  // FormFieldData::max_length of the field to match.
+                            // 0 means any.
   };
-  using PhoneGrammar = std::vector<Rule>;
+
+  struct PhoneGrammar {
+    PhoneGrammar(std::vector<Rule> rules, size_t id);
+    PhoneGrammar(const PhoneGrammar&);
+    PhoneGrammar(PhoneGrammar&&);
+    PhoneGrammar& operator=(const PhoneGrammar& other);
+    PhoneGrammar& operator=(PhoneGrammar&& other);
+    ~PhoneGrammar();
+
+    std::vector<Rule> rules;
+    // Numerical identifier of grammars used for metrics logging, grammars
+    // should not be renumbered and values should not be reused.
+    size_t id;
+  };
 
   // Returns all the `PhoneGrammar`s used for parsing.
   static const std::vector<PhoneGrammar>& GetPhoneGrammars();
 
   // Returns the name of field type which indicated in JSON corresponding to
-  // |regex_id|.
-  static std::string GetJSONFieldType(RegexType phonetype_id);
+  // `regex_type`.
+  static std::string_view GetJSONFieldType(RegexType regex_type);
 
   // Convenient wrapper for ParseField().
   static bool ParsePhoneField(ParsingContext& context,
                               AutofillScanner& scanner,
                               std::optional<FieldAndMatchInfo>* match,
                               const bool is_country_code_field,
-                              const std::string& json_field_type);
+                              std::string_view json_field_type);
 
   // Tries parsing the given `grammar` into `parsed_fields` and returns true
   // if it succeeded.
@@ -108,7 +122,7 @@ class PhoneFieldParser : public FormFieldParser {
   // contain not only a country code but also further text like "Germany (+49)".
   static bool LikelyAugmentedPhoneCountryCode(
       AutofillScanner& scanner,
-      std::optional<FieldAndMatchInfo>* match);
+      std::optional<FieldAndMatchInfo>& match);
 
   // FIELD_PHONE is always present if a match is found. The rest may be nullopt.
   ParsedPhoneFields parsed_phone_fields_;
