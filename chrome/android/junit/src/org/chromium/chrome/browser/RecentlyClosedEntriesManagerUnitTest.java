@@ -12,9 +12,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.util.Pair;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +33,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -37,6 +46,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerImpl;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -48,8 +58,16 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +87,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
     @Mock MultiInstanceManager mMultiInstanceManager;
     @Mock RecentlyClosedTabManager mRecentlyClosedTabManager;
     @Mock TabModelSelector mTabModelSelector;
+    @Mock TabWindowManager mTabWindowManager;
     @Mock TabModel mTabModel;
     @Mock Profile mProfile;
 
@@ -1037,6 +1056,53 @@ public class RecentlyClosedEntriesManagerUnitTest {
         assertEquals(3, entries.get(0).getDate().getTime());
         assertEquals(2, entries.get(1).getDate().getTime());
         assertEquals(1, entries.get(2).getDate().getTime());
+    }
+
+    @Test
+    public void testGetRecentlyClosedWindowInternal() {
+        // Set up test with a single closed window.
+        createRecentlyClosedWindows(/* numOfWindows= */ 1);
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+
+        // Mock out our dependencies. Always return mTabModelSelector.
+        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                new TabModelSelectorFactory() {
+                    @Override
+                    public TabModelSelector buildTabbedSelector(
+                            Context context,
+                            ModalDialogManager modalDialogManager,
+                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+                            TabCreatorManager tabCreatorManager,
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            MultiInstanceManager multiInstanceManager) {
+                        return mTabModelSelector;
+                    }
+
+                    @Override
+                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                            @WindowId int windowId,
+                            Profile profile,
+                            PersistentStoreMigrationManager migrationManager) {
+                        return Pair.create(null, null);
+                    }
+                });
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+
+        // Always return mTabWindowManager.
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        when(mTabWindowManager.getTabModelSelectorById(anyInt())).thenReturn(mTabModelSelector);
+
+        // Invoke the getRecentlyClosed() method with a callback.
+        JniOnceCallback<TabModel> callback = mock();
+        mRecentlyClosedEntriesManager.getRecentlyClosedWindowInternal(callback);
+
+        // The callback is invoked via task with the appropriate tab model.
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    verify(callback).onResult(mTabModel);
+                });
     }
 
     /**

@@ -51,10 +51,21 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_callback.h"
+#include "base/functional/callback.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/tabs/public/tab_interface.h"
 #else
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/RecentlyClosedEntriesManager_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -203,6 +214,12 @@ BrowserWindowInterface* FindBrowserWindowInterfaceWithProfile(
 
 }  // namespace
 
+SessionsGetRecentlyClosedFunction::SessionsGetRecentlyClosedFunction() =
+    default;
+
+SessionsGetRecentlyClosedFunction::~SessionsGetRecentlyClosedFunction() =
+    default;
+
 api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
     const sessions::tab_restore::Tab& tab,
     bool active) {
@@ -268,7 +285,6 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(
       max_results >= 0 && max_results <= api::sessions::MAX_SESSION_RESULTS);
 
-  std::vector<api::sessions::Session> result;
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
@@ -278,7 +294,8 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   if (!tab_restore_service) {
     DCHECK(browser_context()->IsOffTheRecord())
         << "sessions::TabRestoreService expected for normal profiles";
-    return RespondNow(ArgumentList(GetRecentlyClosed::Results::Create(result)));
+    return RespondNow(
+        ArgumentList(GetRecentlyClosed::Results::Create(result_)));
   }
 
   // List of entries. They are ordered from most to least recent.
@@ -292,22 +309,98 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
       auto& group = static_cast<const sessions::tab_restore::Group&>(*entry);
       for (const auto& tab : group.tabs) {
         if (counter++ < max_results) {
-          result.push_back(CreateSessionModel(*tab));
+          result_.push_back(CreateSessionModel(*tab));
         } else {
           break;
         }
       }
     } else {
       if (counter++ < max_results) {
-        result.push_back(CreateSessionModel(*entry));
+        result_.push_back(CreateSessionModel(*entry));
       } else {
         break;
       }
     }
   }
 
-  return RespondNow(ArgumentList(GetRecentlyClosed::Results::Create(result)));
+#if BUILDFLAG(IS_ANDROID)
+  // On Android stores window information on the Java side, so call through JNI
+  // to fetch any recently closed window. Window state may not be persisted at
+  // the time of the call, so pass a callback that will be invoked when window
+  // state is available. The callback is invoked with null on error and when
+  // there is no window available.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::OnceCallback<void(const base::android::JavaRef<jobject>&)> j_callback =
+      base::BindOnce(
+          &SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow, this);
+  Java_RecentlyClosedEntriesManager_getRecentlyClosedWindow(
+      env, base::android::ToJniCallback(env, std::move(j_callback)));
+  if (did_respond()) {
+    // The callback may be invoked immediately for errors, in which case
+    // we have already responded.
+    return AlreadyResponded();
+  } else {
+    // Otherwise we will respond in OnGetRecentlyClosedWindow().
+    return RespondLater();
+  }
+#else
+  // On Win/Mac/Linux the TabRestoreService has window information, so we can
+  // respond immediately.
+  return RespondNow(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow(
+    const base::android::JavaRef<jobject>& j_tab_model) {
+  if (j_tab_model.is_null()) {
+    // No tab model, so no valid window to add.
+    Respond(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
+    return;
+  }
+
+  // Look up the C++ side TabModel.
+  TabModel* model = TabModelList::FindNativeTabModelForJavaObject(j_tab_model);
+  if (!model) {
+    Respond(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
+    return;
+  }
+
+  // Extract the URL for the closed windows.
+  std::vector<api::tabs::Tab> api_tabs;
+  for (int i = 0; i < model->GetTabCount(); ++i) {
+    TabAndroid* tab = model->GetTabAt(i);
+    CHECK(tab);
+    // NOTE: The tabs may not have WebContents, since the window is closed.
+    // TODO(crbug.com/405219627): Extract more metadata from the tab and return
+    // it to the API caller.
+    api::tabs::Tab api_tab;
+    api_tab.index = i;
+    GURL url = tab->GetURL();
+    api_tab.url = url.spec();
+
+    // Scrub any sensitive information from the tab before adding to the list.
+    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+        ExtensionTabUtil::GetScrubTabBehavior(extension(),
+                                              source_context_type(), url);
+    ExtensionTabUtil::ScrubTabForExtension(extension(), nullptr, &api_tab,
+                                           scrub_tab_behavior);
+    api_tabs.push_back(std::move(api_tab));
+  }
+
+  // Populate the window and session objects.
+  api::windows::Window window;
+  window.tabs = std::move(api_tabs);
+  api::sessions::Session session;
+  session.window = std::move(window);
+
+  // Add the session to the result.
+  result_.push_back(std::move(session));
+
+  // Respond to the API caller.
+  Respond(ArgumentList(GetRecentlyClosed::Results::Create(result_)));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 api::tabs::Tab SessionsGetDevicesFunction::CreateTabModel(
     const std::string& session_tag,
