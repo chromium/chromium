@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PRIVATE_NETWORK_ACCESS_URL_LOADER_INTERCEPTOR_H_
-#define SERVICES_NETWORK_PRIVATE_NETWORK_ACCESS_URL_LOADER_INTERCEPTOR_H_
+#ifndef SERVICES_NETWORK_LOCAL_NETWORK_ACCESS_URL_LOADER_INTERCEPTOR_H_
+#define SERVICES_NETWORK_LOCAL_NETWORK_ACCESS_URL_LOADER_INTERCEPTOR_H_
 
 #include <optional>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
-#include "services/network/private_network_access_checker.h"
+#include "services/network/local_network_access_checker.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 
@@ -25,36 +25,36 @@ namespace network {
 namespace mojom {
 class DevToolsObserver;
 enum class IPAddressSpace;
-enum class PrivateNetworkAccessCheckResult;
+enum class LocalNetworkAccessCheckResult;
 class URLLoaderNetworkServiceObserver;
 }  // namespace mojom
 
-// This class encapsulates the Private Network Access (PNA) checks and related
+// This class encapsulates the Local Network Access (LNA) checks and related
 // logic (like Local Network Access permission handling) that need to occur
 // during a URLLoader's lifecycle, specifically when a connection is
 // established.
 //
 // It acts as an interceptor, taking connection information and determining
-// whether the request should proceed based on PNA rules, potentially handling
-// asynchronous permission prompts. It uses PrivateNetworkAccessChecker
+// whether the request should proceed based on LNA rules, potentially handling
+// asynchronous permission prompts. It uses LocalNetworkAccessChecker
 // internally for the core address space checks.
-class PrivateNetworkAccessUrlLoaderInterceptor {
+class LocalNetworkAccessUrlLoaderInterceptor {
  public:
   // Constructs an interceptor for a given request.
   //
   // `client_security_state` should point to the client security to use for the
-  // request, and must outlive the PrivateNetworkAccessChecker, if non-null.
-  PrivateNetworkAccessUrlLoaderInterceptor(
+  // request, and must outlive the LocalNetworkAccessChecker, if non-null.
+  LocalNetworkAccessUrlLoaderInterceptor(
       const ResourceRequest& resource_request,
       const mojom::ClientSecurityState* client_security_state,
       int32_t url_load_options);
 
-  PrivateNetworkAccessUrlLoaderInterceptor(
-      const PrivateNetworkAccessUrlLoaderInterceptor&) = delete;
-  PrivateNetworkAccessUrlLoaderInterceptor& operator=(
-      const PrivateNetworkAccessUrlLoaderInterceptor&) = delete;
+  LocalNetworkAccessUrlLoaderInterceptor(
+      const LocalNetworkAccessUrlLoaderInterceptor&) = delete;
+  LocalNetworkAccessUrlLoaderInterceptor& operator=(
+      const LocalNetworkAccessUrlLoaderInterceptor&) = delete;
 
-  ~PrivateNetworkAccessUrlLoaderInterceptor();
+  ~LocalNetworkAccessUrlLoaderInterceptor();
 
   // Called when the URLLoader establishes a connection (or retrieves a cached
   // entry) for the given `url` with resolved `info`. This method performs
@@ -89,8 +89,8 @@ class PrivateNetworkAccessUrlLoaderInterceptor {
   void ResetForRedirect(const GURL& new_url);
 
   // The following methods provide access to PNA-related state derived from the
-  // checks. They delegate to the internal PrivateNetworkAccessChecker. See
-  // `private_network_access_checker.h` for detailed semantics.
+  // checks. They delegate to the internal LocalNetworkAccessChecker. See
+  // `local_network_access_checker.h` for detailed semantics.
   std::optional<mojom::IPAddressSpace> ResponseAddressSpace() const;
   mojom::IPAddressSpace ClientAddressSpace() const;
   mojom::ClientSecurityStatePtr CloneClientSecurityState() const;
@@ -99,7 +99,7 @@ class PrivateNetworkAccessUrlLoaderInterceptor {
   // Internal helper for `OnConnected()`: performs the core PNA check using the
   // provided `transport_info`, logs events, and notifies observers. Returns
   // the raw check result.
-  PrivateNetworkAccessCheckResult DoCheck(
+  LocalNetworkAccessCheckResult DoCheck(
       const GURL& url,
       const net::TransportInfo& transport_info,
       const net::NetLogWithSource& net_log,
@@ -109,12 +109,12 @@ class PrivateNetworkAccessUrlLoaderInterceptor {
 
   // The underlying checker used to perform the address space comparisons and
   // policy checks.
-  PrivateNetworkAccessChecker checker_;
+  LocalNetworkAccessChecker checker_;
 
-  base::WeakPtrFactory<PrivateNetworkAccessUrlLoaderInterceptor>
+  base::WeakPtrFactory<LocalNetworkAccessUrlLoaderInterceptor>
       weak_ptr_factory_{this};
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PRIVATE_NETWORK_ACCESS_URL_LOADER_INTERCEPTOR_H_
+#endif  // SERVICES_NETWORK_LOCAL_NETWORK_ACCESS_URL_LOADER_INTERCEPTOR_H_

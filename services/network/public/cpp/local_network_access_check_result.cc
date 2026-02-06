@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/private_network_access_check_result.h"
+#include "services/network/public/cpp/local_network_access_check_result.h"
 
 #include <ostream>
 
@@ -12,9 +12,9 @@ namespace network {
 
 using mojom::CorsError;
 
-using Result = PrivateNetworkAccessCheckResult;
+using Result = LocalNetworkAccessCheckResult;
 
-std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
+std::string_view LocalNetworkAccessCheckResultToStringPiece(Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:
       return "allowed-missing-client-security-state";
@@ -42,11 +42,11 @@ std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         PrivateNetworkAccessCheckResult result) {
-  return out << PrivateNetworkAccessCheckResultToStringPiece(result);
+                         LocalNetworkAccessCheckResult result) {
+  return out << LocalNetworkAccessCheckResultToStringPiece(result);
 }
 
-std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
+std::optional<CorsError> LocalNetworkAccessCheckResultToCorsError(
     Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:
@@ -57,13 +57,13 @@ std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kLNAAllowedByPolicyWarn:
       return std::nullopt;
     case Result::kBlockedByLoadOption:
-      // TODO(https:/crbug.com/1254689): Return better error than this, which
+      // TODO(https:/crbug.com/40199690): Return better error than this, which
       // does not fit.
     case Result::kBlockedByPolicyBlock:
-      return CorsError::kInsecurePrivateNetwork;
+      return CorsError::kInsecureLocalNetwork;
     case Result::kBlockedByInconsistentIpAddressSpace:
     case Result::kBlockedByRequiredIpAddressSpaceMismatch:
-      return CorsError::kInvalidPrivateNetworkAccess;
+      return CorsError::kInvalidLocalNetworkAccess;
     case Result::kLNAPermissionRequired:
       return CorsError::kLocalNetworkAccessPermissionDenied;
   }

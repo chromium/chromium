@@ -4882,7 +4882,7 @@ EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 //    "resource_address_space": <the IP address space of the remote endpoint>,
 //    "result": <the result of the check>,
 //  }
-EVENT_TYPE(PRIVATE_NETWORK_ACCESS_CHECK)
+EVENT_TYPE(LOCAL_NETWORK_ACCESS_CHECK)
 
 // This event is logged when the result of a Local Network Access permission
 // request finishes.

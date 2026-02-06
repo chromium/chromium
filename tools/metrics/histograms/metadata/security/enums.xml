@@ -180,6 +180,29 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown"/>
 </enum>
 
+<!-- LINT.IfChange(LocalNetworkAccessCheckResult) -->
+
+<enum name="LocalNetworkAccessCheckResult">
+  <int value="0" label="AllowedMissingClientSecurityState"/>
+  <int value="1" label="AllowedNoLessPublic"/>
+  <int value="2" label="AllowedByPolicyAllow"/>
+  <int value="3" label="AllowedByPolicyWarn"/>
+  <int value="4" label="BlockedByLoadOption"/>
+  <int value="5" label="BlockedByPolicyBlock"/>
+  <int value="6" label="(Deprecated) AllowedByTargetIpAddressSpace"/>
+  <int value="7" label="(Deprecated) BlockedByTargetIpAddressSpace"/>
+  <int value="8" label="(Deprecated) BlockedByPolicyPreflightWarn"/>
+  <int value="9" label="(Deprecated) BlockedByPolicyPreflightBlock"/>
+  <int value="10" label="(Deprecated) AllowedByPolicyPreflightWarn"/>
+  <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
+  <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
+  <int value="13" label="LNAPermissionRequired"/>
+  <int value="14" label="LNAAllowedByPolicyWarn"/>
+  <int value="15" label="BlockedByRequiredIpAddressSpaceMismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/services/network/public/cpp/private_network_access_check_result.h:LocalNetworkAccessCheckResult) -->
+
 <!-- LINT.IfChange(MainFrameProcessReuseBlockReason) -->
 
 <enum name="MainFrameProcessReuseBlockReason">
@@ -273,11 +296,6 @@ chromium-metrics-reviews@google.com.
              hostname is allowlisted."/>
 </enum>
 
-<enum name="NewAcceptedDeviceType">
-  <int value="0" label="Device which has valid name and id"/>
-  <int value="1" label="Ephemeral device stored base on IP address"/>
-</enum>
-
 <enum name="PageEndReason">
   <int value="0" label="END_NONE">
     Page lifetime has not yet ended (page is still active)
@@ -311,38 +329,6 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="END_APP_BACKGROUND">
     The metrics were flushed because the app entered the background.
   </int>
-</enum>
-
-<!-- LINT.IfChange(PrivateNetworkAccessCheckResult) -->
-
-<enum name="PrivateNetworkAccessCheckResult">
-  <int value="0" label="AllowedMissingClientSecurityState"/>
-  <int value="1" label="AllowedNoLessPublic"/>
-  <int value="2" label="AllowedByPolicyAllow"/>
-  <int value="3" label="AllowedByPolicyWarn"/>
-  <int value="4" label="BlockedByLoadOption"/>
-  <int value="5" label="BlockedByPolicyBlock"/>
-  <int value="6" label="(Deprecated) AllowedByTargetIpAddressSpace"/>
-  <int value="7" label="(Deprecated) BlockedByTargetIpAddressSpace"/>
-  <int value="8" label="(Deprecated) BlockedByPolicyPreflightWarn"/>
-  <int value="9" label="(Deprecated) BlockedByPolicyPreflightBlock"/>
-  <int value="10" label="(Deprecated) AllowedByPolicyPreflightWarn"/>
-  <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
-  <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
-  <int value="13" label="LNAPermissionRequired"/>
-  <int value="14" label="LNAAllowedByPolicyWarn"/>
-  <int value="15" label="BlockedByRequiredIpAddressSpaceMismatch"/>
-</enum>
-
-<!-- LINT.ThenChange(/services/network/public/cpp/private_network_access_check_result.h:PrivateNetworkAccessCheckResult) -->
-
-<enum name="PrivateNetworkDeviceValidity">
-  <int value="0" label="Device exists"/>
-  <int value="1" label="New valid device"/>
-  <int value="2" label="Device ID missing"/>
-  <int value="3" label="[Deprecated] Device ID invalid"/>
-  <int value="4" label="Device name missing"/>
-  <int value="5" label="Device name invalid"/>
 </enum>
 
 <enum name="ReusePendingOrCommittedSiteEnum">

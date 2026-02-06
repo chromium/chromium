@@ -31,7 +31,6 @@
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/network_service.h"
 #include "services/network/prefetch_matching_url_loader_factory.h"
-#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"

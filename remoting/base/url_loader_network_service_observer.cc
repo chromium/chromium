@@ -165,11 +165,11 @@ void UrlLoaderNetworkServiceObserver::Clone(
   receivers_.Add(this, std::move(observer));
 }
 
-void UrlLoaderNetworkServiceObserver::OnWebSocketConnectedToPrivateNetwork(
+void UrlLoaderNetworkServiceObserver::OnWebSocketConnectedToLocalNetwork(
     const GURL& request_url,
     network::mojom::IPAddressSpace ip_address_space) {}
 
-void UrlLoaderNetworkServiceObserver::OnUrlLoaderConnectedToPrivateNetwork(
+void UrlLoaderNetworkServiceObserver::OnUrlLoaderConnectedToLocalNetwork(
     const GURL& request_url,
     network::mojom::IPAddressSpace response_address_space,
     network::mojom::IPAddressSpace client_address_space,

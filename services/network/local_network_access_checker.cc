@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/private_network_access_checker.h"
+#include "services/network/local_network_access_checker.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,7 +21,7 @@
 namespace network {
 namespace {
 
-using Result = PrivateNetworkAccessCheckResult;
+using Result = LocalNetworkAccessCheckResult;
 using Policy = mojom::LocalNetworkAccessRequestPolicy;
 
 }  // namespace
@@ -40,7 +40,7 @@ mojom::TransportType MapTransportTypeToMojomTransportType(
   }
 }
 
-PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
+LocalNetworkAccessChecker::LocalNetworkAccessChecker(
     const ResourceRequest& request,
     const mojom::ClientSecurityState* client_security_state,
     int32_t url_load_options)
@@ -52,7 +52,7 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
   SetRequestUrl(request.url);
 }
 
-PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
+LocalNetworkAccessChecker::LocalNetworkAccessChecker(
     const GURL& url,
     const std::optional<url::Origin>& request_initiator,
     mojom::IPAddressSpace required_ip_address_space,
@@ -66,9 +66,9 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
   SetRequestUrl(url);
 }
 
-PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() = default;
+LocalNetworkAccessChecker::~LocalNetworkAccessChecker() = default;
 
-PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
+LocalNetworkAccessCheckResult LocalNetworkAccessChecker::Check(
     const net::TransportInfo& transport_info) {
   // If the request URL host was a private IP, record whether we ended up
   // connecting to that IP address, unless connecting through a proxy.
@@ -92,7 +92,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   return result;
 }
 
-PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
+LocalNetworkAccessCheckResult LocalNetworkAccessChecker::Check(
     const net::IPEndPoint& server_address) {
   mojom::IPAddressSpace resource_address_space =
       IPEndPointToIPAddressSpace(server_address);
@@ -106,7 +106,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   return result;
 }
 
-Result PrivateNetworkAccessChecker::CheckAddressSpace(
+Result LocalNetworkAccessChecker::CheckAddressSpace(
     mojom::IPAddressSpace resource_address_space) {
   if (should_block_local_request_ &&
       IsLessPublicAddressSpace(resource_address_space,
@@ -185,17 +185,17 @@ Result PrivateNetworkAccessChecker::CheckAddressSpace(
   }
 }
 
-void PrivateNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
+void LocalNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
   SetRequestUrl(new_url);
   ResetForRetry();
 }
 
-void PrivateNetworkAccessChecker::ResetForRetry() {
+void LocalNetworkAccessChecker::ResetForRetry() {
   response_address_space_ = std::nullopt;
 }
 
 mojom::ClientSecurityStatePtr
-PrivateNetworkAccessChecker::CloneClientSecurityState() const {
+LocalNetworkAccessChecker::CloneClientSecurityState() const {
   if (!client_security_state_) {
     return nullptr;
   }
@@ -203,7 +203,7 @@ PrivateNetworkAccessChecker::CloneClientSecurityState() const {
   return client_security_state_->Clone();
 }
 
-mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
+mojom::IPAddressSpace LocalNetworkAccessChecker::ClientAddressSpace() const {
   if (!client_security_state_) {
     return mojom::IPAddressSpace::kUnknown;
   }
@@ -211,7 +211,7 @@ mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
   return client_security_state_->ip_address_space;
 }
 
-void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
+void LocalNetworkAccessChecker::SetRequestUrl(const GURL& url) {
   is_request_url_scheme_http_ = url.scheme() == url::kHttpScheme;
   request_url_private_ip_ = ParsePrivateIpFromUrl(url);
 

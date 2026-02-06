@@ -386,9 +386,9 @@ URLLoader::URLLoader(
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
       fetch_window_id_(request.fetch_window_id),
-      private_network_access_interceptor_(request,
-                                          GetClientSecurityState(),
-                                          options_),
+      local_network_access_interceptor_(request,
+                                        GetClientSecurityState(),
+                                        options_),
       trust_token_interceptor_(TrustTokenUrlLoaderInterceptor::MaybeCreate(
           std::move(trust_token_helper_factory))),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
@@ -482,10 +482,10 @@ URLLoader::URLLoader(
     std::optional<mojom::IPAddressSpace> url_address_space =
         GetAddressSpaceFromUrl(request.url);
     if (url_address_space) {
-      PrivateNetworkAccessChecker lna_checker(request, client_security_state,
-                                              options_);
+      LocalNetworkAccessChecker lna_checker(request, client_security_state,
+                                            options_);
       if (lna_checker.CheckAddressSpace(*url_address_space) ==
-          PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+          LocalNetworkAccessCheckResult::kLNAPermissionRequired) {
         // This passes in `TransportType::kDirect`, regardless of how the
         // request may end up being connected -- the cases where we know this
         // is an LNA request from the URL alone are ones where we have high
@@ -826,9 +826,9 @@ void URLLoader::FollowRedirect(
         modified_headers, modified_cors_exempt_headers);
   }
 
-  // Reset the state of the PNA checker - redirects should be treated like new
+  // Reset the state of the LNA checker - redirects should be treated like new
   // requests by the same client.
-  private_network_access_interceptor_.ResetForRedirect(
+  local_network_access_interceptor_.ResetForRedirect(
       new_url ? *new_url : *deferred_redirect_url_);
 
   // Propagate removal or restoration of shared storage eligiblity to the helper
@@ -861,8 +861,8 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
                            net::CompletionOnceCallback callback) {
   DCHECK_EQ(url_request, url_request_.get());
 
-  // Delegate the PNA check to the interceptor.
-  net::Error net_error = private_network_access_interceptor_.OnConnected(
+  // Delegate the LNA check to the interceptor.
+  net::Error net_error = local_network_access_interceptor_.OnConnected(
       url_request_->url(), info,
       // Callback getter for async continuation:
       base::BindOnce(
@@ -891,13 +891,13 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
       url_request_->net_log(), devtools_observer_.get(), devtools_request_id(),
       url_loader_network_observer_.get());
 
-  // If PNA failed synchronously or requires async LNA (ERR_IO_PENDING), return
+  // If LNA failed synchronously or requires async LNA (ERR_IO_PENDING), return
   // now.
   if (net_error != net::OK) {
     return net_error;
   }
 
-  // PNA passed synchronously. Proceed to Accept-CH handling.
+  // LNA passed synchronously. Proceed to Accept-CH handling.
   return ProcessAcceptCHFrameOnConnected(info, std::move(callback));
 }
 
@@ -945,8 +945,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   CHECK(request_cookies_.empty() || include_request_cookies_with_response_);
   return url_loader_util::BuildResponseHead(
       *url_request_, request_cookies_,
-      private_network_access_interceptor_.ClientAddressSpace(),
-      private_network_access_interceptor_.ResponseAddressSpace().value_or(
+      local_network_access_interceptor_.ClientAddressSpace(),
+      local_network_access_interceptor_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown),
       options_, ShouldSetLoadWithStorageAccess(), is_load_timing_enabled_,
       include_load_timing_internal_info_with_response_,
@@ -2259,7 +2259,7 @@ void URLLoader::DispatchOnRawRequest(
       devtools_request_id().value(), url_request_->maybe_sent_cookies(),
       std::move(headers), load_timing_info.request_start,
       std::move(device_bound_session_usages),
-      private_network_access_interceptor_.CloneClientSecurityState(),
+      local_network_access_interceptor_.CloneClientSecurityState(),
       std::move(other_partition_info),
       std::move(applied_network_conditions_id));
 }
@@ -2302,7 +2302,7 @@ void URLLoader::DispatchOnRawResponse() {
   devtools_observer_->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
       std::move(header_array), raw_response_headers,
-      private_network_access_interceptor_.ResponseAddressSpace().value_or(
+      local_network_access_interceptor_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown),
       response_headers->response_code(), url_request_->cookie_partition_key());
 }

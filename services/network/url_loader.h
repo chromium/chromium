@@ -40,10 +40,10 @@
 #include "services/network/ad_auction/event_record_request_helper.h"
 #include "services/network/devtools_durable_msg.h"
 #include "services/network/keepalive_statistics_recorder.h"
+#include "services/network/local_network_access_url_loader_interceptor.h"
 #include "services/network/network_service.h"
 #include "services/network/observer_wrapper.h"
 #include "services/network/partial_decoder.h"
-#include "services/network/private_network_access_url_loader_interceptor.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/orb/orb_api.h"
@@ -675,7 +675,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const std::optional<base::UnguessableToken> fetch_window_id_;
 
   // Must be below `client_security_state_`.
-  PrivateNetworkAccessUrlLoaderInterceptor private_network_access_interceptor_;
+  LocalNetworkAccessUrlLoaderInterceptor local_network_access_interceptor_;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 

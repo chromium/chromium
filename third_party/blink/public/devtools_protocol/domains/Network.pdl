@@ -339,10 +339,10 @@ domain Network
       HeaderDisallowedByPreflightResponse
       RedirectContainsCredentials
       # Request was a private network request initiated by a non-secure context.
-      InsecurePrivateNetwork
+      InsecureLocalNetwork
       # Request carried a target IP address space property that did not match
       # the target resource's address space.
-      InvalidPrivateNetworkAccess
+      InvalidLocalNetworkAccess
       NoCorsRedirectModeNotFollow
       # Request was a local network request and is denied by user permission.
       # https://wicg.github.io/local-network-access/

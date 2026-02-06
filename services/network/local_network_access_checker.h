@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PRIVATE_NETWORK_ACCESS_CHECKER_H_
-#define SERVICES_NETWORK_PRIVATE_NETWORK_ACCESS_CHECKER_H_
+#ifndef SERVICES_NETWORK_LOCAL_NETWORK_ACCESS_CHECKER_H_
+#define SERVICES_NETWORK_LOCAL_NETWORK_ACCESS_CHECKER_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/transport_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
-#include "services/network/public/cpp/private_network_access_check_result.h"
+#include "services/network/public/cpp/local_network_access_check_result.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -37,29 +37,29 @@ struct ResourceRequest;
 mojom::TransportType MapTransportTypeToMojomTransportType(
     const net::TransportType type);
 
-// Applies Private Network Access checks to a single fetch / URL load.
+// Applies Local Network Access checks to a single fetch / URL load.
 //
-// Manages state used for the "Private Network Access check" algorithm from
-// the Private Network Access spec:
-// https://wicg.github.io/private-network-access/#private-network-access-check
+// Manages state used for the "Local Network Access check" algorithm from
+// the Local Network Access spec:
+// https://wicg.github.io/local-network-access/#local-network-access-check
 //
 // Helper class for `URLLoader`. Should be instantiated once per `URLLoader`.
 //
 // Thread-compatible.
-class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
+class COMPONENT_EXPORT(NETWORK_SERVICE) LocalNetworkAccessChecker {
  public:
   // `resource_request` and `url_load_options` correspond to `URLLoader`
   // constructor arguments.
   //
   // `client_security_state` should point to the client security to use for the
-  // request, and must outlive the PrivateNetworkAccessChecker, if non-null. It
+  // request, and must outlive the LocalNetworkAccessChecker, if non-null. It
   // can be nullptr when the factory doesn't use a client security state.
   // `resource_request's` ClientSecurityState, if it has one, is ignored.
-  PrivateNetworkAccessChecker(
+  LocalNetworkAccessChecker(
       const ResourceRequest& resource_request,
       const mojom::ClientSecurityState* client_security_state,
       int32_t url_load_options);
-  PrivateNetworkAccessChecker(
+  LocalNetworkAccessChecker(
       const GURL& url,
       const std::optional<url::Origin>& request_initiator,
       mojom::IPAddressSpace required_ip_address_space,
@@ -67,27 +67,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
       int32_t url_load_options);
 
   // Instances of this class are neither copyable nor movable.
-  PrivateNetworkAccessChecker(const PrivateNetworkAccessChecker&) = delete;
-  PrivateNetworkAccessChecker& operator=(const PrivateNetworkAccessChecker&) =
+  LocalNetworkAccessChecker(const LocalNetworkAccessChecker&) = delete;
+  LocalNetworkAccessChecker& operator=(const LocalNetworkAccessChecker&) =
       delete;
 
-  ~PrivateNetworkAccessChecker();
+  ~LocalNetworkAccessChecker();
 
   // Checks whether the client should be allowed to use the given transport.
   //
-  // Implements the following "Private Network Access check" algorithm:
+  // Implements the following "Local Network Access check" algorithm:
   //
   // https://wicg.github.io/local-network-access/#fetching
-  PrivateNetworkAccessCheckResult Check(
-      const net::TransportInfo& transport_info);
+  LocalNetworkAccessCheckResult Check(const net::TransportInfo& transport_info);
 
   // Same as above, but on an IP EndPoint. Skips proxying checks that the
   // net::TransportInfo version does.
-  PrivateNetworkAccessCheckResult Check(const net::IPEndPoint& server_address);
+  LocalNetworkAccessCheckResult Check(const net::IPEndPoint& server_address);
 
   // Same as Check(), for the case where the `resource_address_space` is already
   // known.
-  PrivateNetworkAccessCheckResult CheckAddressSpace(
+  LocalNetworkAccessCheckResult CheckAddressSpace(
       mojom::IPAddressSpace resource_address_space);
 
   // Returns the IP address space derived from the `transport_info` argument
@@ -178,4 +177,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PRIVATE_NETWORK_ACCESS_CHECKER_H_
+#endif  // SERVICES_NETWORK_LOCAL_NETWORK_ACCESS_CHECKER_H_

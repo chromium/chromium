@@ -24,7 +24,7 @@ TEST(URLLoaderCompletionStatusMojomTraitsTest, MojoRoundTrip) {
   original.encoded_body_length = 5;
   original.decoded_body_length = 6;
   original.cors_error_status =
-      CorsErrorStatus(mojom::CorsError::kInsecurePrivateNetwork);
+      CorsErrorStatus(mojom::CorsError::kInsecureLocalNetwork);
   original.trust_token_operation_status =
       mojom::TrustTokenOperationStatus::kInvalidArgument;
   original.blocked_by_response_reason =

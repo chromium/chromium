@@ -128,7 +128,7 @@ void NetworkServiceDevToolsObserver::OnTrustTokenOperationDone(
                    devtools_request_id, *result);
 }
 
-void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
+void NetworkServiceDevToolsObserver::OnLocalNetworkRequest(
     const std::optional<std::string>& devtools_request_id,
     const GURL& url,
     bool is_warning,
@@ -148,7 +148,7 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
                   network::features::kLocalNetworkAccessChecks)
                   ? protocol::Network::CorsErrorEnum::
                         LocalNetworkAccessPermissionDenied
-                  : protocol::Network::CorsErrorEnum::InsecurePrivateNetwork)
+                  : protocol::Network::CorsErrorEnum::InsecureLocalNetwork)
           .SetFailedParameter("")
           .Build();
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =

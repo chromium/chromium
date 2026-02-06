@@ -236,14 +236,14 @@ interface URLLoaderNetworkServiceObserver {
   // observer).
   Clone(pending_receiver<URLLoaderNetworkServiceObserver> listener);
 
-  // Called when a WebSocket is connected to a private or local IP address
+  // Called when a WebSocket is connected to a local or loopback IP address
   // space.
-  OnWebSocketConnectedToPrivateNetwork(
+  OnWebSocketConnectedToLocalNetwork(
       url.mojom.Url request_url, IPAddressSpace ip_address_space);
 
-  // Called when a URLLoader is connected to a private or local IP address
+  // Called when a URLLoader is connected to a local or loopback IP address
   // space.
-  OnUrlLoaderConnectedToPrivateNetwork(
+  OnUrlLoaderConnectedToLocalNetwork(
       url.mojom.Url request_url,
       IPAddressSpace response_address_space,
       IPAddressSpace client_address_space,

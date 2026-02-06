@@ -98,13 +98,14 @@ enum CorsError {
   kRedirectContainsCredentials,
 
   // Request client is not secure and less private than the request target.
-  // See: https://wicg.github.io/private-network-access/#secure-context-restriction
-  kInsecurePrivateNetwork,
+  // See: https://wicg.github.io/local-network-access/#secure-context-restriction
+  kInsecureLocalNetwork,
 
   // The request carried a `target_ip_address_space` which turned out to
   // be different from the IP address space of the remote endpoint.
-  // See: https://wicg.github.io/private-network-access/#request-target-ip-address-space
-  kInvalidPrivateNetworkAccess,
+  // See: https://wicg.github.io/local-network-access/#fetch-api and
+  // https://wicg.github.io/local-network-access/#request-target-ip-address-space
+  kInvalidLocalNetworkAccess,
 
   // User did not grant permission to access the local network.
   // See: https://wicg.github.io/local-network-access/

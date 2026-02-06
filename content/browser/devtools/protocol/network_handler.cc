@@ -3439,11 +3439,11 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
     case network::mojom::CorsError::kRedirectContainsCredentials:
       return protocol::Network::CorsErrorEnum::RedirectContainsCredentials;
 
-    case network::mojom::CorsError::kInsecurePrivateNetwork:
-      return protocol::Network::CorsErrorEnum::InsecurePrivateNetwork;
+    case network::mojom::CorsError::kInsecureLocalNetwork:
+      return protocol::Network::CorsErrorEnum::InsecureLocalNetwork;
 
-    case network::mojom::CorsError::kInvalidPrivateNetworkAccess:
-      return protocol::Network::CorsErrorEnum::InvalidPrivateNetworkAccess;
+    case network::mojom::CorsError::kInvalidLocalNetworkAccess:
+      return protocol::Network::CorsErrorEnum::InvalidLocalNetworkAccess;
 
     case network::mojom::CorsError::kLocalNetworkAccessPermissionDenied:
       return protocol::Network::CorsErrorEnum::

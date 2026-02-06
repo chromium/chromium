@@ -101,7 +101,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
     case CorsError::kInvalidResponse:
       builder.Append("The response is invalid.");
       break;
-    case CorsError::kInsecurePrivateNetwork:
+    case CorsError::kInsecureLocalNetwork:
       Append(builder, {"The request client is not a secure context and the "
                        "resource is in more-private address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
@@ -203,7 +203,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
                        "' contains a username and password, which is "
                        "disallowed for cross-origin requests."});
       break;
-    case CorsError::kInvalidPrivateNetworkAccess:
+    case CorsError::kInvalidLocalNetworkAccess:
       Append(builder, {"Request had a target IP address space of `",
                        ShortAddressSpace(status.inconsistent_address_space),
                        "` yet the resource is in address space `",
@@ -258,7 +258,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
     case CorsError::kInvalidResponse:
       builder.Append("The response is invalid.");
       break;
-    case CorsError::kInsecurePrivateNetwork:
+    case CorsError::kInsecureLocalNetwork:
       Append(builder, {"The request client is not a secure context and the "
                        "resource is in more-private address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
@@ -360,7 +360,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
                        "' contains a username and password, which is "
                        "disallowed for cross-origin requests."});
       break;
-    case CorsError::kInvalidPrivateNetworkAccess:
+    case CorsError::kInvalidLocalNetworkAccess:
       Append(builder, {"Request had a target IP address space of `",
                        ShortAddressSpace(status.inconsistent_address_space),
                        "` yet the resource is in address space `",

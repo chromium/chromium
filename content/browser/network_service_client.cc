@@ -345,11 +345,11 @@ void NetworkServiceClient::Clone(
   url_loader_network_service_observers_.Add(this, std::move(observer));
 }
 
-void NetworkServiceClient::OnWebSocketConnectedToPrivateNetwork(
+void NetworkServiceClient::OnWebSocketConnectedToLocalNetwork(
     const GURL& request_url,
     network::mojom::IPAddressSpace ip_address_space) {}
 
-void NetworkServiceClient::OnUrlLoaderConnectedToPrivateNetwork(
+void NetworkServiceClient::OnUrlLoaderConnectedToLocalNetwork(
     const GURL& request_url,
     network::mojom::IPAddressSpace response_address_space,
     network::mojom::IPAddressSpace client_address_space,

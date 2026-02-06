@@ -21,11 +21,11 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
+#include "services/network/local_network_access_checker.h"
 #include "services/network/network_context.h"
-#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
-#include "services/network/public/cpp/private_network_access_check_result.h"
+#include "services/network/public/cpp/local_network_access_check_result.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-shared.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
@@ -601,22 +601,21 @@ void WebTransport::OnLocalNetworkAccessCheck(
   //
   // WebTransport has no `url_load_options` available for overriding in
   // content/public/browser/content_browser_client.h.
-  PrivateNetworkAccessChecker checker(
-      url_,
-      origin_,
+  LocalNetworkAccessChecker checker(
+      url_, origin_,
       /*required_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
       client_security_state_.get(), /*url_load_options=*/0);
 
-  PrivateNetworkAccessCheckResult check_result = checker.Check(server_address);
+  LocalNetworkAccessCheckResult check_result = checker.Check(server_address);
   std::optional<mojom::CorsError> cors_error =
-      PrivateNetworkAccessCheckResultToCorsError(check_result);
+      LocalNetworkAccessCheckResultToCorsError(check_result);
   if (!cors_error.has_value()) {
     std::move(callback).Run(net::OK);
     return;
   }
 
   if (url_loader_network_observer_ &&
-      check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+      check_result == LocalNetworkAccessCheckResult::kLNAPermissionRequired) {
     // WebTransport connections are not cached, so just use kDirect.
     mojom::TransportType transport_type = mojom::TransportType::kDirect;
 

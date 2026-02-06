@@ -13,7 +13,7 @@ namespace network {
 namespace {
 
 TEST(CorsMojomTraitsTest, CorsErrorStatusMojoRoundTrip) {
-  CorsErrorStatus original(mojom::CorsError::kInsecurePrivateNetwork,
+  CorsErrorStatus original(mojom::CorsError::kInsecureLocalNetwork,
                            mojom::IPAddressSpace::kLoopback,
                            mojom::IPAddressSpace::kLocal);
   original.failed_parameter = "bleep";

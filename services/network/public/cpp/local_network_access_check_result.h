@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_LOCAL_NETWORK_ACCESS_CHECK_RESULT_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_LOCAL_NETWORK_ACCESS_CHECK_RESULT_H_
 
 #include <iosfwd>
 #include <optional>
@@ -17,11 +17,11 @@ namespace network {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// Please keep in sync with "PrivateNetworkAccessCheckResult" in
+// Please keep in sync with "LocalNetworkAccessCheckResult" in
 // src/tools/metrics/histograms/metadata/security/enums.xml.
 //
-// LINT.IfChange(PrivateNetworkAccessCheckResult)
-enum class PrivateNetworkAccessCheckResult {
+// LINT.IfChange(LocalNetworkAccessCheckResult)
+enum class LocalNetworkAccessCheckResult {
   // Request is allowed because it is missing a client security state.
   kAllowedMissingClientSecurityState = 0,
 
@@ -69,26 +69,26 @@ enum class PrivateNetworkAccessCheckResult {
   // Required for UMA histogram logging.
   kMaxValue = kBlockedByRequiredIpAddressSpaceMismatch,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:PrivateNetworkAccessCheckResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:LocalNetworkAccessCheckResult)
 
 // Returns a human-readable string representing `result`, suitable for logging.
 std::string_view COMPONENT_EXPORT(NETWORK_CPP)
-    PrivateNetworkAccessCheckResultToStringPiece(
-        PrivateNetworkAccessCheckResult result);
+    LocalNetworkAccessCheckResultToStringPiece(
+        LocalNetworkAccessCheckResult result);
 
 // Results are streamable for easier logging and debugging.
 //
 // `COMPONENT_EXPORT()` must come first to compile correctly on Windows.
 COMPONENT_EXPORT(NETWORK_CPP)
 std::ostream& operator<<(std::ostream& out,
-                         PrivateNetworkAccessCheckResult result);
+                         LocalNetworkAccessCheckResult result);
 
 // If `result` indicates that the request should be blocked, returns the
 // corresponding `CorsError` enum value. Otherwise returns `nullopt`.
 std::optional<mojom::CorsError> COMPONENT_EXPORT(NETWORK_CPP)
-    PrivateNetworkAccessCheckResultToCorsError(
-        PrivateNetworkAccessCheckResult result);
+    LocalNetworkAccessCheckResultToCorsError(
+        LocalNetworkAccessCheckResult result);
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_LOCAL_NETWORK_ACCESS_CHECK_RESULT_H_

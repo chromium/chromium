@@ -2638,7 +2638,7 @@ void StoragePartitionImpl::Clone(
       url_loader_network_observers_.current_context());
 }
 
-void StoragePartitionImpl::OnWebSocketConnectedToPrivateNetwork(
+void StoragePartitionImpl::OnWebSocketConnectedToLocalNetwork(
     const GURL& request_url,
     network::mojom::IPAddressSpace ip_address_space) {
   RenderFrameHostImpl* render_frame_host_impl =
@@ -2654,7 +2654,7 @@ void StoragePartitionImpl::OnWebSocketConnectedToPrivateNetwork(
 
     // Log a UseCounter for potential LNA breakage, where we cannot auto-detect
     // a mixed content bypass situation. This is similar to the check below in
-    // StoragePartitionImpl::OnUrlLoaderConnectedToPrivateNetwork.
+    // StoragePartitionImpl::OnUrlLoaderConnectedToLocalNetwork.
     if (!network::IsUrlPotentiallyTrustworthy(request_url) &&
         !request_url.HostIsIPAddress() && !request_url.DomainIs("local")) {
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(
@@ -2665,7 +2665,7 @@ void StoragePartitionImpl::OnWebSocketConnectedToPrivateNetwork(
   }
 }
 
-void StoragePartitionImpl::OnUrlLoaderConnectedToPrivateNetwork(
+void StoragePartitionImpl::OnUrlLoaderConnectedToLocalNetwork(
     const GURL& request_url,
     network::mojom::IPAddressSpace response_address_space,
     network::mojom::IPAddressSpace client_address_space,
