@@ -154,7 +154,7 @@ constexpr base::FeatureParam<
     };
 
 const base::FeatureParam<base::TimeDelta> kPageLoadBoostParam{
-    &kUsePerformanceHelper, "page_load_boost", base::Seconds(0.6)};
+    &kUsePerformanceHelper, "page_load_boost", base::Seconds(3.0)};
 const base::FeatureParam<base::TimeDelta> kUserInputBoostParam{
     &kUsePerformanceHelper, "user_input_boost", base::Seconds(0.5)};
 const base::FeatureParam<base::TimeDelta> kScrollBoostParam{
