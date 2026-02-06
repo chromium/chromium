@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/user_manager",
+  "+components/session_manager/core",
+]

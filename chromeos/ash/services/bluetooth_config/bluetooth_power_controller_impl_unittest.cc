@@ -8,14 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::bluetooth_config {
@@ -42,22 +38,17 @@ class BluetoothPowerControllerImplTest : public testing::Test {
   void SetUp() override {
     BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
         local_state()->registry());
+    ash::test::TestUserSessionManager::RegisterLocalStatePrefs(
+        local_state()->registry());
+
     BluetoothPowerControllerImpl::RegisterProfilePrefs(
         active_user_prefs()->registry());
 
-    session_manager_ = std::make_unique<session_manager::SessionManager>(
-        std::make_unique<session_manager::FakeSessionManagerDelegate>());
-
-    user_manager::UserManagerImpl::RegisterPrefs(local_state()->registry());
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(local_state()));
-    session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(&local_state_);
   }
 
-  void TearDown() override {
-    session_manager_.reset();
-    fake_user_manager_.Reset();
-  }
+  void TearDown() override { test_user_session_manager_.reset(); }
 
   void Init() {
     bluetooth_power_controller_ =
@@ -70,33 +61,14 @@ class BluetoothPowerControllerImplTest : public testing::Test {
   void AddUserSession(const std::string& display_email,
                       const GaiaId& gaia_id,
                       bool is_user_kiosk = false,
-                      bool is_new_profile = false) {
-    const user_manager::User* user;
-    if (is_user_kiosk) {
-      user = user_manager::TestHelper(fake_user_manager_.Get())
-                 .AddKioskChromeAppUser(display_email);
-    } else {
-      user = fake_user_manager_->AddGaiaUser(
-          AccountId::FromUserEmailGaiaId(display_email, gaia_id),
-          user_manager::UserType::kRegular);
-    }
+                      bool new_user = false) {
+    const user_manager::User* user =
+        is_user_kiosk
+            ? test_user_session_manager_->AddKioskChromeAppUser(display_email)
+            : test_user_session_manager_->AddRegularUser(
+                  AccountId::FromUserEmailGaiaId(display_email, gaia_id));
 
-    // Create a session in SessionManager. This will also login the user in
-    // UserManager.
-    session_manager_->CreateSession(
-        user->GetAccountId(),
-        // TODO(crbug.com/278643115): Looks incorrect.
-        // User's username_hash should be set inside CreateSession via
-        // UserManager::UserLoggedIn().
-        user->username_hash(),
-        /*new_user=*/is_new_profile,
-        /*has_active_session=*/false);
-    session_manager_->SessionStarted();
-
-    // Logging in doesn't set the user in UserManager as the active user if
-    // there already is an active user, do so manually.
-    fake_user_manager_->SwitchActiveUser(user->GetAccountId());
-
+    test_user_session_manager_->LogIn(user->GetAccountId(), new_user);
     bluetooth_power_controller_->SetPrefs(&active_user_prefs_, local_state());
   }
 
@@ -131,12 +103,9 @@ class BluetoothPowerControllerImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable local_state_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
 
   sync_preferences::TestingPrefServiceSyncable active_user_prefs_;
-
   FakeAdapterStateController fake_adapter_state_controller_;
 
   std::unique_ptr<BluetoothPowerController> bluetooth_power_controller_;

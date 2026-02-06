@@ -6,3 +6,9 @@ include_rules = [
   "+device/bluetooth",
   "+third_party/re2",
 ]
+
+specific_include_rules = {
+  ".*test\\.cc": [
+    "+components/session_manager/test",
+  ]
+}
