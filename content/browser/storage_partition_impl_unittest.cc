@@ -47,6 +47,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
@@ -800,10 +801,18 @@ bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
 
 class StoragePartitionImplTest : public testing::Test {
  public:
-  StoragePartitionImplTest() : browser_context_(new TestBrowserContext()) {
-    feature_list_.InitWithFeatures({network::features::kInterestGroupStorage,
-                                    network::features::kSharedStorageAPI},
-                                   {});
+  explicit StoragePartitionImplTest(
+      bool is_local_storage_sqlite_enabled = false) {
+    std::vector<base::test::FeatureRef> enabled_features{
+        network::features::kInterestGroupStorage,
+        network::features::kSharedStorageAPI};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (is_local_storage_sqlite_enabled) {
+      enabled_features.push_back(storage::kDomStorageSqlite);
+    } else {
+      disabled_features.push_back(storage::kDomStorageSqlite);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   StoragePartitionImplTest(const StoragePartitionImplTest&) = delete;
@@ -812,9 +821,9 @@ class StoragePartitionImplTest : public testing::Test {
   storage::MockQuotaManager* GetMockManager() {
     if (!quota_manager_.get()) {
       quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-          browser_context_->IsOffTheRecord(), browser_context_->GetPath(),
+          browser_context_.IsOffTheRecord(), browser_context_.GetPath(),
           GetIOThreadTaskRunner({}).get(),
-          browser_context_->GetSpecialStoragePolicy());
+          browser_context_.GetSpecialStoragePolicy());
       mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<storage::MockQuotaClient>(
@@ -826,7 +835,7 @@ class StoragePartitionImplTest : public testing::Test {
     return quota_manager_.get();
   }
 
-  TestBrowserContext* browser_context() { return browser_context_.get(); }
+  TestBrowserContext* browser_context() { return &browser_context_; }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
@@ -835,14 +844,32 @@ class StoragePartitionImplTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestBrowserContext> browser_context_;
+  TestBrowserContext browser_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
 };
 
+// Runs each local storage test twice: once with SQLite and once with LevelDB.
+class LocalStoragePartitionImplTest
+    : public testing::WithParamInterface</*is_sqlite_enabled=*/bool>,
+      public StoragePartitionImplTest {
+ public:
+  LocalStoragePartitionImplTest()
+      : StoragePartitionImplTest(
+            /*is_local_storage_sqlite_enabled=*/GetParam()) {}
+  ~LocalStoragePartitionImplTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    LocalStoragePartitionImplTest,
+    testing::Bool(),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<LocalStoragePartitionImplTest::ParamType>&
+           info) { return info.param ? "SQLite" : "LevelDB"; });
+
 class StoragePartitionShaderClearTest : public testing::Test {
  public:
-  StoragePartitionShaderClearTest()
-      : browser_context_(new TestBrowserContext()) {
+  StoragePartitionShaderClearTest() {
     InitGpuDiskCacheFactorySingleton();
 
     gpu::GpuDiskCacheType type = gpu::GpuDiskCacheType::kGlShaders;
@@ -880,11 +907,11 @@ class StoragePartitionShaderClearTest : public testing::Test {
     return future.Get();
   }
 
-  TestBrowserContext* browser_context() { return browser_context_.get(); }
+  TestBrowserContext* browser_context() { return &browser_context_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestBrowserContext> browser_context_;
+  TestBrowserContext browser_context_;
 
   scoped_refptr<gpu::GpuDiskCache> cache_;
 };
@@ -1355,7 +1382,7 @@ TEST_F(StoragePartitionImplTest, RemoveInterestGroupPermissionsCacheForever) {
       kFrameOrigin, kInterestGroupOrigin, kNetworkIsolationKey));
 }
 
-TEST_F(StoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
+TEST_P(LocalStoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
   const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
@@ -1381,7 +1408,7 @@ TEST_F(StoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
   EXPECT_FALSE(tester.DOMStorageExistsForOrigin(kOrigin3));
 }
 
-TEST_F(StoragePartitionImplTest, RemoveProtectedLocalStorageForever) {
+TEST_P(LocalStoragePartitionImplTest, RemoveProtectedLocalStorageForever) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
   const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
@@ -1409,7 +1436,7 @@ TEST_F(StoragePartitionImplTest, RemoveProtectedLocalStorageForever) {
   EXPECT_FALSE(tester.DOMStorageExistsForOrigin(kOrigin3));
 }
 
-TEST_F(StoragePartitionImplTest, RemoveLocalStorageForLastWeek) {
+TEST_P(LocalStoragePartitionImplTest, RemoveLocalStorageForLastWeek) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
   const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
@@ -1432,7 +1459,7 @@ TEST_F(StoragePartitionImplTest, RemoveLocalStorageForLastWeek) {
   EXPECT_TRUE(tester.DOMStorageExistsForOrigin(kOrigin3));
 }
 
-TEST_F(StoragePartitionImplTest, RemoveLocalStorageForOrigins) {
+TEST_P(LocalStoragePartitionImplTest, RemoveLocalStorageForOrigins) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
   const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
@@ -1458,7 +1485,7 @@ TEST_F(StoragePartitionImplTest, RemoveLocalStorageForOrigins) {
   EXPECT_TRUE(tester.DOMStorageExistsForOrigin(kOrigin3));
 }
 
-TEST_F(StoragePartitionImplTest, RemoveLocalStorageForOneOrigin) {
+TEST_P(LocalStoragePartitionImplTest, RemoveLocalStorageForOneOrigin) {
   const GURL kUrl1 = GURL("http://host1:1/");
   const url::Origin kOrigin1 = url::Origin::Create(kUrl1);
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
