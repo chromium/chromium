@@ -9,7 +9,7 @@ body {
 </style>
 <script>
   let mutationObserver = null;
-  let zeroChangeDetected = false;
+  let emptyChangeDetected = false;
 
   // Create and attach the embed element. Called from the browser test with the
   // content_id. Optional embedId can be provided to give the embed an ID
@@ -54,7 +54,7 @@ body {
 
   // Start monitoring for changes to data-content-id to "0".
   function startMonitoringDataContentId() {
-    zeroChangeDetected = false;
+    emptyChangeDetected = false;
     const embed = document.querySelector('embed');
     if (!embed) return;
 
@@ -63,8 +63,8 @@ body {
         if (mutation.type === 'attributes' &&
             mutation.attributeName === 'data-content-id') {
           const newValue = embed.getAttribute('data-content-id');
-          if (newValue === '0') {
-            zeroChangeDetected = true;
+          if (newValue === '') {
+            emptyChangeDetected = true;
           }
         }
       }
@@ -84,9 +84,9 @@ body {
     }
   }
 
-  // Check if a data-content-id change to zero was detected.
-  function wasZeroChangeDetected() {
-    return zeroChangeDetected;
+  // Check if a data-content-id change to empty was detected.
+  function wasEmptyChangeDetected() {
+    return emptyChangeDetected;
   }
 </script>
 </head>

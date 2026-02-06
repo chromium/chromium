@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/unguessable_token.h"
 #include "cc/layers/content_layer_client.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -82,7 +83,7 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
 
   explicit SurfaceEmbedWebPlugin(
       mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host,
-      int contents_id,
+      const base::UnguessableToken& contents_id,
       content::RenderFrame* render_frame);
 
   void OnSurfaceEmbedHostDisconnected();
@@ -97,7 +98,7 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void InitializeSurfaceLayer();
 
   // The guest contents ID parsed from the `data-content-id` attribute.
-  int contents_id_ = -1;
+  base::UnguessableToken contents_id_;
 
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
   scoped_refptr<cc::SurfaceLayer> layer_;

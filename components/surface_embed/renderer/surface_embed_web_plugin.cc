@@ -36,6 +36,20 @@
 
 namespace surface_embed {
 
+namespace {
+
+base::UnguessableToken DecodeContentId(const std::string& id_string) {
+  if (id_string.empty()) {
+    return base::UnguessableToken();
+  }
+  std::optional<base::UnguessableToken> maybe_id =
+      base::UnguessableToken::DeserializeFromString(id_string);
+  CHECK(maybe_id.has_value());
+  return *maybe_id;
+}
+
+}  // namespace
+
 // Helper class to detect when accessibility mode is enabled.
 class SurfaceEmbedWebPlugin::AccessibilityObserver
     : public content::RenderFrameObserver {
@@ -73,10 +87,10 @@ SurfaceEmbedWebPlugin* SurfaceEmbedWebPlugin::Create(
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&host);
 
   // Read the content ID from the data-content-id attribute
-  int contents_id = -1;
+  base::UnguessableToken contents_id;
   for (size_t i = 0; i < params.attribute_names.size(); ++i) {
     if (params.attribute_names[i].Utf8() == "data-content-id") {
-      base::StringToInt(params.attribute_values[i].Utf8(), &contents_id);
+      contents_id = DecodeContentId(params.attribute_values[i].Utf8());
       break;
     }
   }
@@ -86,7 +100,7 @@ SurfaceEmbedWebPlugin* SurfaceEmbedWebPlugin::Create(
 
 SurfaceEmbedWebPlugin::SurfaceEmbedWebPlugin(
     mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host,
-    int contents_id,
+    const base::UnguessableToken& contents_id,
     content::RenderFrame* render_frame)
     : contents_id_(contents_id),
       host_(std::move(host)),
@@ -117,7 +131,7 @@ bool SurfaceEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
     host_->SetSurfaceEmbed(std::move(pending_remote));
 
     // Then attach with the content ID.
-    if (contents_id_ > 0) {
+    if (!contents_id_.is_empty()) {
       host_->AttachConnector(contents_id_);
     }
 
@@ -363,15 +377,17 @@ void SurfaceEmbedWebPlugin::UpdateDataAttribute(
     return;
   }
 
-  int new_contents_id = -1;
-  if (!base::StringToInt(attribute_value.Utf8(), &new_contents_id) ||
-      new_contents_id == contents_id_) {
+  // We treat invalid values as empty/detach here to make detach syntax not
+  // rely on our implementation details.
+  base::UnguessableToken new_contents_id =
+      DecodeContentId(attribute_value.Utf8());
+  if (new_contents_id == contents_id_) {
     return;
   }
 
   contents_id_ = new_contents_id;
   if (host_) {
-    if (contents_id_ <= 0) {
+    if (contents_id_.is_empty()) {
       host_->DetachConnector();
       DetachInternal();
     } else {
@@ -453,11 +469,11 @@ void SurfaceEmbedWebPlugin::DetachPlugin() {
   // The browser forcibly detached the guest that was previously attached to
   // to this plugin. This can happen when the guest is being re-attached
   // elsewhere.
-  contents_id_ = 0;
+  contents_id_ = base::UnguessableToken();
   // We send this change back to the renderer so that the data-content-id
   // attribute is updated accordingly. It'll be async but will allow detection
   // of the detachment eventually.
-  container_->GetElement().SetAttribute("data-content-id", "0");
+  container_->GetElement().SetAttribute("data-content-id", "");
   DetachInternal();
 }
 

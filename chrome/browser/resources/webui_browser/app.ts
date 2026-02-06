@@ -306,7 +306,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   }
 
 
-  protected showSidePanel_(guestContentsId: number, title: string) {
+  protected showSidePanel_(guestContentsId: string, title: string) {
     this.showingSidePanel_ = true;
     this.$.sidePanel.show(guestContentsId, title);
   }

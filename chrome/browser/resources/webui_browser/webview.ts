@@ -34,11 +34,11 @@ export class WebviewElement extends CrLitElement {
 
   static override get properties() {
     return {
-      guestId: {type: Number},
+      guestId: {type: String},
     };
   }
 
-  accessor guestId: number = -1;
+  accessor guestId: string = '';
   private attached: boolean = false;
   private active: boolean = false;
   guestHandler?: GuestHandlerRemote;
@@ -49,7 +49,7 @@ export class WebviewElement extends CrLitElement {
   }
 
   protected tryToAttach() {
-    if (this.attached || this.guestId === -1) {
+    if (this.attached || this.guestId.length === 0) {
       return;
     }
 

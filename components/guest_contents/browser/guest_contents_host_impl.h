@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(GUEST_CONTENTS) GuestContentsHostImpl
 
   // mojom::GuestContentsHost:
   void Attach(const blink::LocalFrameToken& token_of_frame_to_swap,
-              GuestId guest_contents_id,
+              const base::UnguessableToken& guest_contents_id,
               AttachCallback callback) override;
 
   raw_ptr<content::WebContents> outer_web_contents_;

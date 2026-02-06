@@ -50,20 +50,20 @@ void SurfaceEmbedHost::SetSurfaceEmbed(
       &SurfaceEmbedHost::OnSurfaceEmbedDisconnected, base::Unretained(this)));
 }
 
-void SurfaceEmbedHost::AttachConnector(int64_t content_id) {
+void SurfaceEmbedHost::AttachConnector(
+    const base::UnguessableToken& content_id) {
   // Should never call attach without having a valid SurfaceEmbed remote already
   // bound.
   CHECK(surface_embed_);
 
-  int guest_id = static_cast<int>(content_id);
-  if (guest_id <= 0) {
+  if (content_id.is_empty()) {
     mojo::ReportBadMessage(
         "Invalid content_id in SurfaceEmbedHost::AttachConnector");
     return;
   }
 
   guest_contents::GuestContentsHandle* guest_handle =
-      guest_contents::GuestContentsHandle::FromID(guest_id);
+      guest_contents::GuestContentsHandle::FromID(content_id);
 
   if (!guest_handle) {
     mojo::ReportBadMessage(

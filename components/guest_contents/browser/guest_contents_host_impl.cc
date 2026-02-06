@@ -39,7 +39,7 @@ void GuestContentsHostImpl::WebContentsDestroyed() {
 
 void GuestContentsHostImpl::Attach(
     const blink::LocalFrameToken& token_of_frame_to_swap,
-    GuestId guest_contents_id,
+    const base::UnguessableToken& guest_contents_id,
     AttachCallback callback) {
   GuestContentsHandle* guest_handle =
       GuestContentsHandle::FromID(guest_contents_id);

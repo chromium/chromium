@@ -34,7 +34,7 @@ export class SidePanel extends CrLitElement {
   protected accessor title_: string = '';
   protected accessor showing_: boolean = false;
 
-  show(guestContentsId: number, title: string) {
+  show(guestContentsId: string, title: string) {
     this.webView = new WebviewElement();
     this.webView.guestId = guestContentsId;
     this.title_ = title;

@@ -10,8 +10,7 @@ import '/strings.m.js';
 
 interface WebshellServices {
   allowWebviewElementRegistration(callback: ()=>void): void;
-  attachIframeGuest(guestContentsId: number,
-                    contentWindow: Window | null): void
+  attachIframeGuest(guestContentsId: string, contentWindow: Window|null): void
 }
 
 declare var webshell: WebshellServices;
@@ -40,7 +39,7 @@ class BrowserProxy {
 
 class WebviewElement extends HTMLElement {
   public iframeElement: HTMLIFrameElement;
-  private guestContentsId: number;
+  private guestContentsId: string;
   private attached: boolean = false;
 
   constructor() {
@@ -50,7 +49,7 @@ class WebviewElement extends HTMLElement {
     this.iframeElement.style.margin = "0";
     this.iframeElement.style.padding = "0";
     this.iframeElement.style.flex = '1';
-    this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
+    this.guestContentsId = loadTimeData.getString('guest-contents-id');
     console.log('guest-contents-id', this.guestContentsId);
   }
 
@@ -78,7 +77,7 @@ class WebviewElement extends HTMLElement {
 
 class SurfaceEmbedElement extends HTMLElement {
   public embedElement: HTMLEmbedElement;
-  private guestContentsId: number;
+  private guestContentsId: string;
   private attached: boolean = false;
 
   constructor() {
@@ -88,10 +87,9 @@ class SurfaceEmbedElement extends HTMLElement {
     this.embedElement.style.margin = '0';
     this.embedElement.style.padding = '0';
     this.embedElement.style.flex = '1';
-    this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
+    this.guestContentsId = loadTimeData.getString('guest-contents-id');
     console.log('surface-embed guest-contents-id', this.guestContentsId);
-    this.embedElement.setAttribute(
-        'data-content-id', this.guestContentsId.toString());
+    this.embedElement.setAttribute('data-content-id', this.guestContentsId);
     this.embedElement.setAttribute(
         'type', 'application/x-google-chrome-surface-embed');
   }

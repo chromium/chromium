@@ -54,7 +54,7 @@ Browser::Browser(content::WebUI* web_ui)
       guest_contents_.get());
   auto* guest_handle = guest_contents::GuestContentsHandle::FromWebContents(
       guest_contents_.get());
-  html_source->AddInteger("guest-contents-id", guest_handle->id());
+  html_source->AddString("guest-contents-id", guest_handle->id().ToString());
 }
 
 Browser::~Browser() {

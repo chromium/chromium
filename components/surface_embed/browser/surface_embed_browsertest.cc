@@ -42,28 +42,29 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
   class ScopedDataContentIdMonitor {
    public:
     ScopedDataContentIdMonitor(content::WebContents* web_contents,
-                               bool expect_zero_change)
-        : web_contents_(web_contents), expect_zero_change_(expect_zero_change) {
+                               bool expect_empty_change)
+        : web_contents_(web_contents),
+          expect_empty_change_(expect_empty_change) {
       EXPECT_TRUE(
           content::ExecJs(web_contents_, "startMonitoringDataContentId();"));
     }
 
     ~ScopedDataContentIdMonitor() {
-      bool zero_detected =
-          content::EvalJs(web_contents_, "wasZeroChangeDetected()")
+      bool empty_detected =
+          content::EvalJs(web_contents_, "wasEmptyChangeDetected()")
               .ExtractBool();
 
-      if (expect_zero_change_) {
-        // Wait for zero change if we expect it but haven't seen it yet.
-        if (!zero_detected) {
+      if (expect_empty_change_) {
+        // Wait for empty change if we expect it but haven't seen it yet.
+        if (!empty_detected) {
           EXPECT_TRUE(base::test::RunUntil([&]() {
-            return content::EvalJs(web_contents_, "wasZeroChangeDetected()")
+            return content::EvalJs(web_contents_, "wasEmptyChangeDetected()")
                 .ExtractBool();
-          })) << "data-content-id was not set to 0 as expected";
+          })) << "data-content-id was not set to '' as expected";
         }
       } else {
-        EXPECT_FALSE(zero_detected)
-            << "data-content-id was unexpectedly set to 0 (DetachedByHost "
+        EXPECT_FALSE(empty_detected)
+            << "data-content-id was unexpectedly set to '' (DetachedByHost "
                "incorrectly triggered)";
       }
 
@@ -77,7 +78,7 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
 
    private:
     raw_ptr<content::WebContents> web_contents_;
-    bool expect_zero_change_;
+    bool expect_empty_change_;
   };
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -222,24 +223,28 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
         guest_contents::GuestContentsHandle::CreateForWebContents(
             guest_contents);
     ASSERT_NE(guest_handle, nullptr);
-    std::string script =
-        "createEmbed(" + base::NumberToString(guest_handle->id());
+    std::string script = "createEmbed('" + guest_handle->id().ToString();
     if (embed_id.has_value()) {
-      script += ", '" + embed_id.value() + "'";
+      script += "', '" + embed_id.value();
     }
-    script += ");";
+    script += "');";
     ASSERT_TRUE(content::ExecJs(web_contents(), script));
     ASSERT_TRUE(WaitForHostAttachment(1));
     EXPECT_NE(guest_contents->GetSurfaceEmbedConnector(), nullptr);
   }
 
   // Get the guest handle for the provided guest WebContents.
-  int GetGuestHandleId(content::WebContents* guest_contents) {
+  base::UnguessableToken GetGuestHandleId(
+      content::WebContents* guest_contents) {
     guest_contents::GuestContentsHandle* guest_handle =
         guest_contents::GuestContentsHandle::CreateForWebContents(
             guest_contents);
     EXPECT_NE(guest_handle, nullptr);
-    return guest_handle ? guest_handle->id() : -1;
+    return guest_handle ? guest_handle->id() : base::UnguessableToken();
+  }
+
+  std::string FormatGuestId(const base::UnguessableToken& guest_id) {
+    return base::StrCat({"'", guest_id.ToString(), "'"});
   }
 
   // Setup guest with harness navigation and content loading.
@@ -332,29 +337,29 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
   // Create and load both guests.
   auto guest_contents_red = CreateGuestWebContents();
   NavigateGuestToUrl(guest_contents_red.get(), kRedBoxUrl);
-  int guest_id_red = GetGuestHandleId(guest_contents_red.get());
+  auto guest_id_red = GetGuestHandleId(guest_contents_red.get());
 
   auto guest_contents_blue = CreateGuestWebContents();
   NavigateGuestToUrl(guest_contents_blue.get(), kBlueBoxUrl);
-  int guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
+  auto guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
 
   // Attach the red guest first.
   AttachGuestToEmbed(guest_contents_red.get());
   VerifyBoxRendering(SK_ColorRED);
 
   ScopedDataContentIdMonitor monitor(web_contents(),
-                                     /*expect_zero_change=*/false);
+                                     /*expect_empty_change=*/false);
 
   // Swap to the blue guest by changing the data-content-id attribute.
   std::string script_blue =
-      "setDataContentId(" + base::NumberToString(guest_id_blue) + ");";
+      "setDataContentId(" + FormatGuestId(guest_id_blue) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_blue));
   VerifyBoxRendering(SK_ColorBLUE);
   EXPECT_EQ(guest_contents_red->GetSurfaceEmbedConnector(), nullptr);
 
   // Swap back to red guest.
   std::string script_red_again =
-      "setDataContentId(" + base::NumberToString(guest_id_red) + ");";
+      "setDataContentId(" + FormatGuestId(guest_id_red) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_red_again));
   VerifyBoxRendering(SK_ColorRED);
   EXPECT_EQ(guest_contents_blue->GetSurfaceEmbedConnector(), nullptr);
@@ -408,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, VisibilityHiddenSwapGuest) {
 
   auto guest_contents_blue = CreateGuestWebContents();
   NavigateGuestToUrl(guest_contents_blue.get(), kBlueBoxUrl);
-  int guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
+  auto guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
 
   // Attach the red guest first.
   AttachGuestToEmbed(guest_contents_red.get());
@@ -421,11 +426,11 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, VisibilityHiddenSwapGuest) {
   VerifyBoxRendering(SK_ColorWHITE);
 
   ScopedDataContentIdMonitor monitor(web_contents(),
-                                     /*expect_zero_change=*/false);
+                                     /*expect_empty_change=*/false);
 
   // Swap to the blue guest while hidden.
   std::string script_blue =
-      "setDataContentId(" + base::NumberToString(guest_id_blue) + ");";
+      "setDataContentId(" + FormatGuestId(guest_id_blue) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_blue));
   VerifyBoxRendering(SK_ColorWHITE);
 
@@ -445,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, DisplayNoneSwapGuest) {
 
   auto guest_contents_blue = CreateGuestWebContents();
   NavigateGuestToUrl(guest_contents_blue.get(), kBlueBoxUrl);
-  int guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
+  auto guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
 
   // Attach the red guest first.
   AttachGuestToEmbed(guest_contents_red.get());
@@ -458,11 +463,11 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, DisplayNoneSwapGuest) {
   VerifyBoxRendering(SK_ColorWHITE);
 
   ScopedDataContentIdMonitor monitor(web_contents(),
-                                     /*expect_zero_change=*/false);
+                                     /*expect_empty_change=*/false);
 
   // Swap to the blue guest while display is none.
   std::string script_blue =
-      "setDataContentId(" + base::NumberToString(guest_id_blue) + ");";
+      "setDataContentId(" + FormatGuestId(guest_id_blue) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_blue));
   VerifyBoxRendering(SK_ColorWHITE);
 
@@ -481,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, TwoEmbedSameContentId) {
   // Create and load both guests.
   auto guest_contents_red = CreateGuestWebContents();
   NavigateGuestToUrl(guest_contents_red.get(), kRedBoxUrl);
-  int guest_id_red = GetGuestHandleId(guest_contents_red.get());
+  auto guest_id_red = GetGuestHandleId(guest_contents_red.get());
 
   // Attach the red guest first.
   AttachGuestToEmbedWithId(guest_contents_red.get(), "embed1");
@@ -497,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, TwoEmbedSameContentId) {
   // The first embed's data-content-id should be reset to 0 since it was
   // forcibly detached when the guest was attached to the 2nd embed.
   ScopedDataContentIdMonitor monitor(web_contents(),
-                                     /*expect_zero_change=*/true);
+                                     /*expect_empty_change=*/true);
 
   // Add a 2nd <embed> with ID 'embed2' that uses the same content id.
   AttachGuestToEmbedWithId(guest_contents_red.get(), "embed2");
@@ -516,17 +521,17 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, TwoEmbedSameContentId) {
   // the original guest ID to ensure that a forced detachment doesn't prevent
   // subsequent re-attachment.
   std::string script_reattach_first =
-      "setDataContentId(" + base::NumberToString(guest_id_red) + ", 'embed1');";
+      "setDataContentId(" + FormatGuestId(guest_id_red) + ", 'embed1');";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_reattach_first));
   VerifyBoxRendering(SK_ColorRED);
   EXPECT_TRUE(first_host_delegate->IsAttachedForTesting());
   EXPECT_TRUE(content::EvalJs(web_contents(), "getDataContentId('embed2')")
-                  .ExtractString() == "0");
+                  .ExtractString() == "");
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
-  int guest_id = GetGuestHandleId(guest_contents.get());
+  auto guest_id = GetGuestHandleId(guest_contents.get());
 
   AttachGuestToEmbed(guest_contents.get());
   VerifyBoxRendering(SK_ColorRED);
@@ -537,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
   VerifyBoxRendering(SK_ColorWHITE);
 
   // Create a new embed element and attach the same guest.
-  std::string script = "createEmbed(" + base::NumberToString(guest_id) + ");";
+  std::string script = "createEmbed(" + FormatGuestId(guest_id) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script));
   VerifyBoxRendering(SK_ColorRED);
 }
@@ -598,16 +603,16 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, Detach) {
 
   VerifyBoxRendering(SK_ColorRED);
 
-  // Change the data-content-id attribute to 0 to trigger a detach.
-  std::string script_cause_detach = "setDataContentId(0);";
+  // Change the data-content-id attribute to '' to trigger a detach.
+  std::string script_cause_detach = "setDataContentId('');";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_cause_detach));
   EXPECT_EQ(guest_contents->GetSurfaceEmbedConnector(), nullptr);
   VerifyBoxRendering(SK_ColorWHITE);
 
   // Re-attach the same guest.
-  int guest_id = GetGuestHandleId(guest_contents.get());
+  auto guest_id = GetGuestHandleId(guest_contents.get());
   std::string script_reattach =
-      "setDataContentId(" + base::NumberToString(guest_id) + ");";
+      "setDataContentId(" + FormatGuestId(guest_id) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_reattach));
   VerifyBoxRendering(SK_ColorRED);
   EXPECT_NE(guest_contents->GetSurfaceEmbedConnector(), nullptr);
@@ -674,52 +679,18 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
   AttachGuestToEmbed(guest_contents.get());
   VerifyBoxRendering(SK_ColorRED);
 
-  // Change the data-content-id attribute to 0 to trigger a detach.
-  std::string script_cause_detach = "setDataContentId(0);";
+  // Change the data-content-id attribute to '' to trigger a detach.
+  std::string script_cause_detach = "setDataContentId('');";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_cause_detach));
   EXPECT_EQ(guest_contents->GetSurfaceEmbedConnector(), nullptr);
   VerifyBoxRendering(SK_ColorWHITE);
 
   // Reattach the same guest.
-  int guest_id = GetGuestHandleId(guest_contents.get());
+  auto guest_id = GetGuestHandleId(guest_contents.get());
   std::string script_reattach =
-      "setDataContentId(" + base::NumberToString(guest_id) + ");;";
+      "setDataContentId(" + FormatGuestId(guest_id) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_reattach));
   VerifyBoxRendering(SK_ColorRED);
-}
-
-IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, InvalidContentIdNegative) {
-  // Test that specifying an invalid (negative) content_id creates a host but
-  // doesn't attach any guest, resulting in white rendering.
-  NavigateToAttachHarness();
-
-  std::string script = "createEmbed(-1);";
-  ASSERT_TRUE(content::ExecJs(web_contents(), script));
-
-  // Host should be created even with invalid content_id but no attach should
-  // happen.
-  ASSERT_TRUE(WaitForHostCreation());
-  EXPECT_EQ(1u, SurfaceEmbedHost::GetInstanceCountForTesting());
-  EXPECT_EQ(0u, SurfaceEmbedHost::GetAttachedInstanceCountForTesting());
-  VerifyBoxRendering(SK_ColorWHITE);
-}
-
-IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
-                       AttachValidGuestThenUpdateToNegativeContentId) {
-  // Test that attaching a valid guest shows its content, but updating to a
-  // negative content_id detaches and results in white rendering.
-  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
-  AttachGuestToEmbed(guest_contents.get());
-
-  VerifyBoxRendering(SK_ColorRED);
-  EXPECT_NE(guest_contents->GetSurfaceEmbedConnector(), nullptr);
-
-  // Update the data-content-id to a negative number to trigger detachment.
-  std::string script_detach = "setDataContentId(-5);";
-  ASSERT_TRUE(content::ExecJs(web_contents(), script_detach));
-
-  VerifyBoxRendering(SK_ColorWHITE);
-  EXPECT_EQ(guest_contents->GetSurfaceEmbedConnector(), nullptr);
 }
 
 // Tests that calling focus() on an <embed> makes the guest WebContents focused.

@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(SURFACE_EMBED) SurfaceEmbedHost
   // mojom::SurfaceEmbedHost implementation:
   void SetSurfaceEmbed(mojo::PendingAssociatedRemote<mojom::SurfaceEmbed>
                            surface_embed) override;
-  void AttachConnector(int64_t content_id) override;
+  void AttachConnector(const base::UnguessableToken& content_id) override;
   void DetachConnector() override;
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,

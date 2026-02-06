@@ -46,7 +46,7 @@ interface SurfaceEmbedHost {
 
   // Attaches the guest content identified by `content_id` (a
   // GuestContentsHandle) to the host.
-  AttachConnector(int64 content_id);
+  AttachConnector(mojo_base.mojom.UnguessableToken content_id);
 
   // Detaches the guest content from the host.
   DetachConnector();

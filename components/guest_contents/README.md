@@ -108,7 +108,8 @@ In your WebUI's browser-side C++ code:
           guest_contents_.get());
       auto* guest_handle = guest_contents::GuestContentsHandle::FromWebContents(
           guest_contents_.get());
-      html_source->AddInteger("guest-contents-id", guest_handle->id());
+      html_source->AddString("guest-contents-id",
+                             guest_handle->id().ToString());
     }
     ```
 
@@ -132,18 +133,23 @@ need some C++ code in the renderer.
     }
     ```
 
--   **Implement the Binding**: The AttachIframeGuest function parses the
-    arguments from JavaScript, gets the `content::RenderFrame*` for the
-    `<iframe>`, and calls the `guest_contents` helper function.
+-   **Implement the Binding**: The AttachIframeGuest function gets the
+    `content::RenderFrame*` for the `<iframe>`, and calls the `guest_contents`
+    helper function.
 
     ```c++
     // ui/webui/examples/renderer/render_frame_observer.cc
-    void AttachIframeGuest(const v8::FunctionCallbackInfo<v8::Value>& args) {
-      // ... argument parsing ...
-      int guest_contents_id = args[0].As<v8::Int32>()->Value();
+    void AttachIframeGuest(const std::string& guest_contents_id,
+                           v8::Local<v8::Object> content_window) {
+
       content::RenderFrame* render_frame = GetRenderFrame(args[1]);
       // ...
-      guest_contents::renderer::SwapRenderFrame(render_frame, guest_contents_id);
+      auto parsed_guest_contents_id =
+          base::UnguessableToken::DeserializeFromString(guest_contents_id);
+      if (parsed_guest_contents_id.has_value()) {
+          guest_contents::renderer::SwapRenderFrame(
+                  render_frame, parsed_guest_contents_id);
+      }
     }
     ```
 
@@ -171,14 +177,14 @@ Then, call a C++ binding to trigger the attachment. The example uses a
 // ui/webui/examples/resources/browser/index.ts
 class WebviewElement extends HTMLElement {
   public iframeElement: HTMLIFrameElement;
-  private guestContentsId: number;
+  private guestContentsId: string;
 
   constructor() {
     super();
     this.iframeElement = document.createElement('iframe');
     this.appendChild(this.iframeElement);
 
-    this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
+    this.guestContentsId = loadTimeData.getString('guest-contents-id');
     const iframeContentWindow = this.iframeElement.contentWindow;
 
     // This is the key call that triggers the C++ logic.

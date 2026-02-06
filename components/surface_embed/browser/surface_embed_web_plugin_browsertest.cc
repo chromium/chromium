@@ -108,7 +108,7 @@ class MockSurfaceEmbedHost : public mojom::SurfaceEmbedHost {
                        base::Unretained(this)));
   }
 
-  void AttachConnector(int64_t content_id) override {
+  void AttachConnector(const base::UnguessableToken& content_id) override {
     CHECK(surface_embed_);
     attach_call_count_++;
     last_content_id_ = content_id;
@@ -116,8 +116,7 @@ class MockSurfaceEmbedHost : public mojom::SurfaceEmbedHost {
 
   void DetachConnector() override {
     detach_call_count_++;
-    // TODO(surface-embed): Create a constant for invalid content ID.
-    last_content_id_ = 0;
+    last_content_id_ = base::UnguessableToken();
   }
 
   void SynchronizeVisualProperties(
@@ -138,13 +137,13 @@ class MockSurfaceEmbedHost : public mojom::SurfaceEmbedHost {
 
   int attach_call_count() const { return attach_call_count_; }
   int detach_call_count() const { return detach_call_count_; }
-  int64_t last_content_id() const { return last_content_id_; }
+  base::UnguessableToken last_content_id() const { return last_content_id_; }
 
  private:
   raw_ptr<SurfaceEmbedHostTracker> tracker_;
   int attach_call_count_ = 0;
   int detach_call_count_ = 0;
-  int64_t last_content_id_ = -1;
+  base::UnguessableToken last_content_id_;
   base::OnceClosure disconnect_callback_;
   mojo::AssociatedRemote<mojom::SurfaceEmbed> surface_embed_;
 };
@@ -252,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, EmbedTagCreatesPlugin) {
   ASSERT_TRUE(WaitForAttachCall(host));
   EXPECT_EQ(1, host->attach_call_count());
 
-  EXPECT_EQ(1, host->last_content_id());
+  EXPECT_FALSE(host->last_content_id().is_empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, MultipleEmbedTags) {
@@ -262,9 +261,9 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, MultipleEmbedTags) {
   ASSERT_EQ(kMultipleEmbedCount, GetMockHostCount());
 
   // Verify each host has an independent Mojo connection and receives a call to
-  // AttachConnector(). Collect all content_ids to verify we see 1, 2, and 3
-  // (order is not deterministic).
-  std::set<int64_t> content_ids;
+  // AttachConnector(). Collect all content_ids to verify we see three distinct
+  // ones (order is not deterministic).
+  std::set<base::UnguessableToken> content_ids;
   for (size_t i = 0; i < kMultipleEmbedCount; i++) {
     MockSurfaceEmbedHost* host = GetMockHost(i);
     ASSERT_NE(nullptr, host);
@@ -273,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, MultipleEmbedTags) {
     content_ids.insert(host->last_content_id());
   }
 
-  EXPECT_EQ(std::set<int64_t>({1, 2, 3}), content_ids);
+  EXPECT_EQ(3u, content_ids.size());
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, PluginDestruction) {
@@ -431,27 +430,33 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
   MockSurfaceEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
   ASSERT_TRUE(WaitForAttachCall(host));
-  EXPECT_EQ(1, host->last_content_id());
+  EXPECT_FALSE(host->last_content_id().is_empty());
 
   // Set up disconnect callback to detect if host is destroyed
   bool host_disconnected = false;
   host->SetDisconnectCallback(
       base::BindLambdaForTesting([&]() { host_disconnected = true; }));
 
+  base::UnguessableToken id2 = base::UnguessableToken::Create();
+
   // Change the data-content-id attribute
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
-      "document.embeds[0].setAttribute('data-content-id', '5');"));
+      base::StrCat({"document.embeds[0].setAttribute('data-content-id', '",
+                    id2.ToString(), "');"})));
 
   // Add a new embed element and wait for it to attach. This ensures that
   // the renderer and browser have fully processed the attribute change above.
-  ASSERT_TRUE(
-      content::ExecJs(web_contents(),
-                      "const newEmbed = document.createElement('embed');"
-                      "newEmbed.setAttribute('type', "
-                      "'application/x-google-chrome-surface-embed');"
-                      "newEmbed.setAttribute('data-content-id', '10');"
-                      "document.body.appendChild(newEmbed);"));
+  base::UnguessableToken id3 = base::UnguessableToken::Create();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      base::StrCat({"const newEmbed = document.createElement('embed');"
+                    "newEmbed.setAttribute('type', "
+                    "'application/x-google-chrome-surface-embed');"
+                    "newEmbed.setAttribute('data-content-id', '",
+                    id3.ToString(),
+                    "');"
+                    "document.body.appendChild(newEmbed);"})));
 
   EXPECT_EQ(kFinalEmbedCount, CountEmbedElementsInPage());
   WaitForHostAdded(kFinalEmbedCount);
@@ -461,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
   ASSERT_NE(nullptr, second_host);
   ASSERT_TRUE(WaitForAttachCall(second_host));
   EXPECT_EQ(1, second_host->attach_call_count());
-  EXPECT_EQ(10, second_host->last_content_id());
+  EXPECT_EQ(id3, second_host->last_content_id());
 
   // Verify the original host was not disconnected or recreated
   EXPECT_FALSE(host_disconnected);
@@ -469,7 +474,10 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
   // But we do expect it to have received a second AttachConnector() call with
   // the new content ID.
   EXPECT_EQ(2, host->attach_call_count());
-  EXPECT_EQ(5, host->last_content_id());
+  EXPECT_EQ(id2, host->last_content_id());
+
+  // Clear callback since the current one is tied to this frame.
+  host->SetDisconnectCallback(base::OnceClosure());
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, Detach) {
@@ -483,22 +491,23 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, Detach) {
 
   ASSERT_TRUE(WaitForAttachCall(host));
   EXPECT_EQ(1, host->attach_call_count());
-  EXPECT_EQ(1, host->last_content_id());
+  EXPECT_FALSE(host->last_content_id().is_empty());
 
-  // Change the data-content-id attribute to 0 to trigger a detach.
+  // Change the data-content-id attribute to an empty string to trigger a
+  // detach.
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
-      "document.embeds[0].setAttribute('data-content-id', '0');"));
+      "document.embeds[0].setAttribute('data-content-id', '');"));
 
   ASSERT_TRUE(WaitForDetachCall(host));
   EXPECT_EQ(1, host->detach_call_count());
-  EXPECT_EQ(0, host->last_content_id());
+  EXPECT_TRUE(host->last_content_id().is_empty());
 }
 
-IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
-                       UpdateDataAttributeWithInvalidStrings) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, Detach2) {
   NavigateToTestUrl(kTestUrl);
-  ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
   MockSurfaceEmbedHost* host = GetMockHost(0);
@@ -506,34 +515,16 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
 
   ASSERT_TRUE(WaitForAttachCall(host));
   EXPECT_EQ(1, host->attach_call_count());
-  EXPECT_EQ(1, host->last_content_id());
+  EXPECT_FALSE(host->last_content_id().is_empty());
 
-  // Test a variety of invalid data-content-id attribute values to ensure that
-  // they don't lead to calls to attach on the host.
+  // Remove the data-content-id attribute to trigger a detach.
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
-      "document.embeds[0].setAttribute('data-content-id', 'invalid');"));
-  EXPECT_EQ(1, host->attach_call_count());
-  EXPECT_EQ(0, host->detach_call_count());
+      "document.embeds[0].removeAttribute('data-content-id');"));
 
-  ASSERT_TRUE(content::ExecJs(
-      web_contents(),
-      "document.embeds[0].setAttribute('data-content-id', '123abc');"));
-  EXPECT_EQ(1, host->attach_call_count());
-  EXPECT_EQ(1, host->last_content_id());
-
-  ASSERT_TRUE(content::ExecJs(
-      web_contents(),
-      "document.embeds[0].setAttribute('data-content-id', '');"));
-  EXPECT_EQ(1, host->attach_call_count());
-  EXPECT_EQ(0, host->detach_call_count());
-
-  ASSERT_TRUE(content::ExecJs(
-      web_contents(),
-      "document.embeds[0].setAttribute('data-content-id', '5');"));
-  ASSERT_TRUE(WaitForAttachCall(host));
-  EXPECT_EQ(2, host->attach_call_count());
-  EXPECT_EQ(5, host->last_content_id());
+  ASSERT_TRUE(WaitForDetachCall(host));
+  EXPECT_EQ(1, host->detach_call_count());
+  EXPECT_TRUE(host->last_content_id().is_empty());
 }
 
 }  // namespace surface_embed

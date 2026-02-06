@@ -4,6 +4,7 @@
 
 module webui_examples.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
@@ -16,11 +17,12 @@ interface PageHandlerFactory {
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Navigates the WebView with `guest_contents_id` to `src`.
-  Navigate(int32 guest_contents_id, url.mojom.Url src);
+  Navigate(mojo_base.mojom.UnguessableToken guest_contents_id,
+           url.mojom.Url src);
 
   // Navigates the WebView with `guest_contents_id` to back in the nav stack.
-  GoBack(int32 guest_contents_id);
+  GoBack(mojo_base.mojom.UnguessableToken guest_contents_id);
 
   // Navigates the WebView with `guest_contents_id` to forward in the nav stack.
-  GoForward(int32 guest_contents_id);
+  GoForward(mojo_base.mojom.UnguessableToken guest_contents_id);
 };
