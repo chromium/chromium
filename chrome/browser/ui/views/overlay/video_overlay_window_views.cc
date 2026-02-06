@@ -654,13 +654,22 @@ void VideoOverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  // If there is no focus affordance on the buttons and play/pause button is
-  // visible, only handle space key for TogglePlayPause().
+  // If there's no focused control, then we handle certain keys as if they went
+  // to the relevant control.
   views::View* focused_view = GetFocusManager()->GetFocusedView();
-  if (!focused_view && event->type() == ui::EventType::kKeyPressed &&
-      event->key_code() == ui::VKEY_SPACE && show_play_pause_button_) {
-    TogglePlayPause();
-    event->SetHandled();
+  if (!focused_view && event->type() == ui::EventType::kKeyPressed) {
+    if (event->key_code() == ui::VKEY_SPACE && show_play_pause_button_) {
+      TogglePlayPause();
+      event->SetHandled();
+    } else if (event->key_code() == ui::VKEY_LEFT &&
+               replay_10_seconds_button_->IsDrawn()) {
+      Replay10Seconds();
+      event->SetHandled();
+    } else if (event->key_code() == ui::VKEY_RIGHT &&
+               forward_10_seconds_button_->IsDrawn()) {
+      Forward10Seconds();
+      event->SetHandled();
+    }
   }
 
   MaybeUpdateMeetsUserInteraction(*event);
