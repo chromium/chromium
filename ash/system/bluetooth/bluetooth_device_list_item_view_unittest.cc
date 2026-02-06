@@ -127,8 +127,9 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    // Reset list item before widget due to dependency.
+    bluetooth_device_list_item_ = nullptr;
     widget_.reset();
-
     AshTestBase::TearDown();
   }
 
@@ -143,8 +144,7 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
  protected:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
-  raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>
-      bluetooth_device_list_item_;
+  raw_ptr<BluetoothDeviceListItemView> bluetooth_device_list_item_;
 };
 
 TEST_F(BluetoothDeviceListItemViewTest, HasCorrectLabel) {
