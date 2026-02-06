@@ -54,7 +54,8 @@ class JsCommunication
   void RunScripts(mojom::DocumentInjectionTime injection_time);
 
   mojom::JsToBrowserMessaging* GetJsToJavaMessage(
-      const std::u16string& js_object_name);
+      const std::u16string& js_object_name,
+      int32_t world_id);
 
  private:
   class JsObjectInfo;
@@ -63,7 +64,8 @@ class JsCommunication
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::JsCommunication> pending_receiver);
 
-  using JsObjectMap = std::map<std::u16string, std::unique_ptr<JsObjectInfo>>;
+  using JsObjectMap = std::map<std::pair<std::u16string, int32_t>,
+                               std::unique_ptr<JsObjectInfo>>;
   JsObjectMap js_objects_;
 
   // In some cases DidClearWindowObject will be called twice in a row, we need

@@ -327,8 +327,9 @@ void JsBinding::PostMessage(gin::Arguments* args) {
   }
 
   mojom::JsToBrowserMessaging* js_to_java_messaging =
-      js_communication_ ? js_communication_->GetJsToJavaMessage(js_object_name_)
-                        : nullptr;
+      js_communication_
+          ? js_communication_->GetJsToJavaMessage(js_object_name_, world_id_)
+          : nullptr;
   if (js_to_java_messaging) {
     js_to_java_messaging->PostMessage(
         std::move(message_payload),

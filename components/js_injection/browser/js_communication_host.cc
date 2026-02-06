@@ -102,8 +102,8 @@ class JsCommunicationHost::JsToBrowserMessagingList
     : public mojom::JsObjectsClient {
  public:
   JsToBrowserMessagingList(
-      std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>
-          js_to_browser_messagings,
+      std::map<std::pair<std::u16string, int32_t>,
+               std::unique_ptr<JsToBrowserMessaging>> js_to_browser_messagings,
       mojo::PendingAssociatedReceiver<mojom::JsObjectsClient> receiver)
       : js_to_browser_messagings_(std::move(js_to_browser_messagings)),
         receiver_(this, std::move(receiver)) {}
@@ -116,13 +116,15 @@ class JsCommunicationHost::JsToBrowserMessagingList
     }
   }
 
-  const std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>&
+  const std::map<std::pair<std::u16string, int32_t>,
+                 std::unique_ptr<JsToBrowserMessaging>>&
   js_to_browser_messagings() const {
     return js_to_browser_messagings_;
   }
 
  private:
-  const std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>
+  const std::map<std::pair<std::u16string, int32_t>,
+                 std::unique_ptr<JsToBrowserMessaging>>
       js_to_browser_messagings_;
   mojo::AssociatedReceiver<mojom::JsObjectsClient> receiver_;
 };
@@ -320,7 +322,8 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
       &configurator_remote);
   std::vector<mojom::JsObjectPtr> js_objects;
   js_objects.reserve(js_objects_.size());
-  std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>
+  std::map<std::pair<std::u16string, int32_t>,
+           std::unique_ptr<JsToBrowserMessaging>>
       js_to_browser_messagings;
   for (const auto& js_object : js_objects_) {
     if (NavigationWebMessageSender::IsNavigationListener(js_object->name)) {
@@ -338,7 +341,7 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
     }
     mojo::PendingAssociatedRemote<mojom::JsToBrowserMessaging> pending_remote;
     mojo::PendingAssociatedReceiver<mojom::BrowserToJsMessagingFactory> factory;
-    js_to_browser_messagings[js_object->name] =
+    js_to_browser_messagings[{js_object->name, js_object->world_id}] =
         std::make_unique<JsToBrowserMessaging>(
             render_frame_host,
             pending_remote.InitWithNewEndpointAndPassReceiver(),
