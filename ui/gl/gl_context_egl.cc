@@ -113,8 +113,14 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     // request ES2 instead.
     if ((config_renderable_type & EGL_OPENGL_ES3_BIT) == 0 &&
         context_client_major_version >= 3) {
-      context_client_major_version = 2;
-      context_client_minor_version = 0;
+      if (attribs.allow_es_version_fallback) {
+        context_client_major_version = 2;
+        context_client_minor_version = 0;
+      } else {
+        LOG(ERROR)
+            << "GLES3 is unsupported and ES version fallback is disabled";
+        return false;
+      }
     }
   }
 
@@ -316,12 +322,22 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
                        context_attributes.data());
   if (context_) {
     return true;
+  } else if (!attribs.allow_es_version_fallback) {
+    LOG(ERROR) << "eglCreateContext ES " << context_client_major_version << "."
+               << context_client_minor_version << " failed with error "
+               << GetEGLErrorString(eglGetError())
+               << ". ES version fallback is disabled.";
+    return false;
   }
 
   // If EGL_KHR_no_config_context is in use and context creation failed,
   // it might indicate that an unsupported ES version was requested. Try
   // falling back to a lower version.
   GLint error = eglGetError();
+  LOG(ERROR) << "eglCreateContext ES " << context_client_major_version << "."
+             << context_client_minor_version << " failed with error "
+             << GetEGLErrorString(error);
+
   if (gl_display_->ext->b_EGL_KHR_no_config_context &&
       (error == EGL_BAD_MATCH || error == EGL_BAD_ATTRIBUTE)) {
     // Set up the list of versions to try: 3.1 -> 3.0 -> 2.0
@@ -351,13 +367,13 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
       if (context_) {
         return true;
       } else {
-        error = eglGetError();
+        LOG(ERROR) << "Fallback eglCreateContext ES " << version.first << "."
+                   << version.second << " failed with error "
+                   << GetEGLErrorString(eglGetError());
       }
     }
   }
 
-  LOG(ERROR) << "eglCreateContext failed with error "
-             << GetEGLErrorString(error);
   return false;
 }
 

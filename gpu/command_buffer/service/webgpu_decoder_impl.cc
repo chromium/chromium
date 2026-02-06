@@ -1283,6 +1283,8 @@ ContextResult WebGPUDecoderImpl::Initialize(
     gl::GLContextAttribs attribs;
     attribs.client_major_es_version = 3;
     attribs.client_minor_es_version = 1;
+    // ES 3.1 is required for compute.
+    attribs.allow_es_version_fallback = false;
     gl_context_ = new gl::GLContextEGL(nullptr);
     gl_context_->Initialize(gl_surface.get(), attribs);
     DCHECK(gl_context_->default_surface());

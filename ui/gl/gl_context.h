@@ -96,6 +96,7 @@ struct GL_EXPORT GLContextAttribs {
   bool robust_buffer_access = false;
   int client_major_es_version = 3;
   int client_minor_es_version = 0;
+  bool allow_es_version_fallback = true;
   bool can_skip_validation = false;
 
   // Use EXT_ANGLE_create_context_passthrough_shaders if it is available to tell
