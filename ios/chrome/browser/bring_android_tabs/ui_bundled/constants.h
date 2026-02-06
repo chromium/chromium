@@ -26,7 +26,4 @@ extern NSString* const kBringAndroidTabsPromptTabListOpenButtonAXId;
 // Size of the favicons in the "Bring Android Tabs" tab list.
 extern CGFloat const kBringAndroidTabsFaviconSize;
 
-// Height of the table rows in the "Bring Android Tabs" tab list.
-extern CGFloat const kTabListFromAndroidCellHeight;
-
 #endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_UI_BUNDLED_CONSTANTS_H_

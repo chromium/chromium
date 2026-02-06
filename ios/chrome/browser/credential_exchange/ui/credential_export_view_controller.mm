@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
@@ -390,7 +391,10 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
 
   const password_manager::AffiliatedGroup& group = identifier.affiliatedGroup;
 
-  [self configureCell:cell withGroup:group identifier:identifier];
+  [self configureCell:cell
+            withGroup:group
+           identifier:identifier
+          atIndexPath:indexPath];
   [self updateAccessibilityTraitsForCell:cell indexPath:indexPath];
 
   return cell;
@@ -399,7 +403,8 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
 // Helper to configure the cell.
 - (void)configureCell:(UITableViewCell*)cell
             withGroup:(const password_manager::AffiliatedGroup&)group
-           identifier:(CredentialGroupIdentifier*)identifier {
+           identifier:(CredentialGroupIdentifier*)identifier
+          atIndexPath:(NSIndexPath*)indexPath {
   TableViewCellContentConfiguration* contentConfig =
       [[TableViewCellContentConfiguration alloc] init];
 
@@ -411,7 +416,9 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   contentConfig.subtitleNumberOfLines = 1;
   contentConfig.subtitleLineBreakMode = NSLineBreakByTruncatingTail;
 
-  [self loadFaviconForContentConfiguration:contentConfig identifier:identifier];
+  [self loadFaviconForContentConfiguration:contentConfig
+                                identifier:identifier
+                               atIndexPath:indexPath];
 
   cell.contentConfiguration = contentConfig;
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -422,11 +429,40 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   cell.selectedBackgroundView = selectedBackgroundView;
 }
 
+// Called when a favicon is fetched.
+- (void)didFetchFaviconAttributes:(FaviconAttributes*)attributes
+                           cached:(bool)cached
+                    configuration:
+                        (TableViewCellContentConfiguration*)contentConfig
+                       identifier:(CredentialGroupIdentifier*)identifier
+                        indexPath:(NSIndexPath*)indexPath {
+  if (cached) {
+    FaviconContentConfiguration* newFaviconConfig =
+        [[FaviconContentConfiguration alloc] init];
+    newFaviconConfig.faviconAttributes = attributes;
+    contentConfig.leadingConfiguration = newFaviconConfig;
+  } else if (attributes.faviconImage) {
+    if ([_dataSource indexPathForItemIdentifier:identifier] != indexPath) {
+      return;
+    }
+    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    TableViewCellContentConfiguration* configuration =
+        base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+            cell.contentConfiguration);
+    FaviconContentConfiguration* newFaviconConfig =
+        [[FaviconContentConfiguration alloc] init];
+    newFaviconConfig.faviconAttributes = attributes;
+    configuration.leadingConfiguration = newFaviconConfig;
+    cell.contentConfiguration = configuration;
+  }
+}
+
 // Helper to load favicon and update configuration.
 - (void)loadFaviconForContentConfiguration:
             (TableViewCellContentConfiguration*)contentConfig
                                 identifier:
-                                    (CredentialGroupIdentifier*)identifier {
+                                    (CredentialGroupIdentifier*)identifier
+                               atIndexPath:(NSIndexPath*)indexPath {
   FaviconContentConfiguration* faviconConfiguration =
       [[FaviconContentConfiguration alloc] init];
   contentConfig.leadingConfiguration = faviconConfiguration;
@@ -441,14 +477,11 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   [self.faviconProvider
       fetchFaviconForURL:URL
               completion:^(FaviconAttributes* attributes, BOOL cached) {
-                if (cached) {
-                  FaviconContentConfiguration* newFaviconConfig =
-                      [[FaviconContentConfiguration alloc] init];
-                  newFaviconConfig.faviconAttributes = attributes;
-                  contentConfig.leadingConfiguration = newFaviconConfig;
-                } else if (attributes.faviconImage) {
-                  [weakSelf reconfigureItem:identifier];
-                }
+                [weakSelf didFetchFaviconAttributes:attributes
+                                             cached:cached
+                                      configuration:contentConfig
+                                         identifier:identifier
+                                          indexPath:indexPath];
               }];
 }
 

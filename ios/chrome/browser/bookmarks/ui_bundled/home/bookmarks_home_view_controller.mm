@@ -134,8 +134,6 @@ typedef NS_ENUM(NSInteger, BookmarksContextBarState) {
   BookmarksContextBarMixedSelection,  // Multiple URL / Folders selected.
 };
 
-// Estimated TableView row height.
-constexpr CGFloat kEstimatedRowHeight = 65.0;
 // Separation between non-empty account and profile sections.
 constexpr CGFloat kSpaceBetweenAccountAndProfileSections = 32.0;
 
@@ -557,7 +555,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   self.tableView.dragInteractionEnabled = true;
 
   self.tableView.accessibilityIdentifier = kBookmarksHomeTableViewIdentifier;
-  self.tableView.estimatedRowHeight = kEstimatedRowHeight;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
 
   // Create the mediator and hook up the table view.
@@ -656,24 +653,15 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
   // Start loading a favicon.
   __weak BookmarksHomeViewController* weakSelf = self;
-  GURL blockURL(node->url());
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
-    BookmarksHomeViewController* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    // Due to search filtering, we also need to validate the indexPath
-    // requested versus what is in the table now.
-    if (![strongSelf hasItemAtIndexPath:indexPath] ||
-        [strongSelf nodeAtIndexPath:indexPath] != node) {
-      return;
-    }
-    URLItem.faviconAttributes = attributes;
-    if (!cached && attributes.faviconImage) {
-      [strongSelf.tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
-    }
+    [weakSelf didFetchFaviconAttributes:attributes
+                                 cached:cached
+                                   item:URLItem
+                              indexPath:indexPath
+                                   node:node];
   };
 
+  GURL blockURL(node->url());
   self.faviconLoader->FaviconForPageUrl(
       blockURL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/fallbackToGoogleServer, faviconLoadedBlock);
@@ -1509,6 +1497,36 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 #pragma mark - Private
+
+// Called when a favicon is fetched.
+- (void)didFetchFaviconAttributes:(FaviconAttributes*)attributes
+                           cached:(bool)cached
+                             item:(BookmarksHomeNodeItem*)item
+                        indexPath:(NSIndexPath*)indexPath
+                             node:(const BookmarkNode*)node {
+  // Due to search filtering, we also need to validate the indexPath
+  // requested versus what is in the table now.
+  if (![self hasItemAtIndexPath:indexPath] ||
+      [self nodeAtIndexPath:indexPath] != node) {
+    return;
+  }
+  item.faviconAttributes = attributes;
+  if (!cached && attributes.faviconImage) {
+    if ([self.tableViewModel itemAtIndexPath:indexPath] != item) {
+      return;
+    }
+    LegacyTableViewCell* cell =
+        base::apple::ObjCCastStrict<LegacyTableViewCell>(
+            [self.tableView cellForRowAtIndexPath:indexPath]);
+    if (!cell) {
+      return;
+    }
+    // Even if Apple documentation hints toward reconfiguring the row instead
+    // of just updating the cell, it creates a visible jank. Use the item
+    // configuration method instead. See crbug.com/479692041 for more info.
+    [item configureCell:cell withStyler:self.styler];
+  }
+}
 
 // Creates a delete action for the swipe menu with destructive style (and red
 // color).
@@ -2977,11 +2995,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   configuration.performsFirstActionWithFullSwipe = canEditNode;
 
   return configuration;
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-  return UITableViewAutomaticDimension;
 }
 
 - (void)tableView:(UITableView*)tableView

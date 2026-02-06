@@ -17,5 +17,3 @@ NSString* const kBringAndroidTabsPromptTabListOpenButtonAXId =
     @"kBringAndroidTabsPromptTabListOpenButtonAccessibilityIdentifier";
 
 CGFloat const kBringAndroidTabsFaviconSize = 48;
-
-CGFloat const kTabListFromAndroidCellHeight = 78.0;

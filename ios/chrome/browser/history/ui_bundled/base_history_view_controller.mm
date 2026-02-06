@@ -172,9 +172,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   [self loadModel];
 
   // TableView configuration
-  self.tableView.estimatedRowHeight = 56;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
-  self.tableView.estimatedSectionHeaderHeight = 56;
   self.tableView.sectionFooterHeight = 0.0;
   self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
@@ -584,14 +582,15 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
     HistoryEntryItem* URLItem =
         base::apple::ObjCCastStrict<HistoryEntryItem>(item);
     if (!URLItem.faviconAttributes) {
+      __weak __typeof(self) weakSelf = self;
       CrURL* crurl = [[CrURL alloc] initWithGURL:URLItem.URL];
       [self.imageDataSource
           faviconForPageURL:crurl
                  completion:^(FaviconAttributes* attributes, bool cached) {
-                   URLItem.faviconAttributes = attributes;
-                   if (!cached && attributes.faviconImage) {
-                     [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
-                   }
+                   [weakSelf didFetchFaviconAttributes:attributes
+                                                cached:cached
+                                                  item:URLItem
+                                             indexPath:indexPath];
                  }];
     }
   }
@@ -656,6 +655,29 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 }
 
 #pragma mark - Private methods
+
+// Called when a favicon is fetched.
+- (void)didFetchFaviconAttributes:(FaviconAttributes*)attributes
+                           cached:(bool)cached
+                             item:(HistoryEntryItem*)item
+                        indexPath:(NSIndexPath*)indexPath {
+  item.faviconAttributes = attributes;
+  if (!cached && attributes.faviconImage) {
+    if ([self.tableViewModel itemAtIndexPath:indexPath] != item) {
+      return;
+    }
+    LegacyTableViewCell* cell =
+        base::apple::ObjCCastStrict<LegacyTableViewCell>(
+            [self.tableView cellForRowAtIndexPath:indexPath]);
+    if (!cell) {
+      return;
+    }
+    // Even if Apple documentation hints toward reconfiguring the row instead
+    // of just updating the cell, it creates a visible jank. Use the item
+    // configuration method instead. See crbug.com/479692041 for more info.
+    [item configureCell:cell withStyler:self.styler];
+  }
+}
 
 // Opens URL in a new non-incognito tab and dismisses the history view.
 - (void)openURLInNewTab:(const GURL&)URL {

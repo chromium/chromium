@@ -135,14 +135,14 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
   TableViewURLItem* URLItem =
       base::apple::ObjCCastStrict<TableViewURLItem>(item);
   if (!URLItem.faviconAttributes) {
-    __weak UITableView* weakTableView = tableView;
+    __weak __typeof(self) weakSelf = self;
     [self.imageDataSource
         faviconForPageURL:URLItem.URL
                completion:^(FaviconAttributes* attributes, BOOL cached) {
-                 URLItem.faviconAttributes = attributes;
-                 if (!cached && attributes.faviconImage) {
-                   [weakTableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
-                 }
+                 [weakSelf didFetchFaviconAttributes:attributes
+                                              cached:cached
+                                                item:URLItem
+                                           indexPath:indexPath];
                }];
   }
 
@@ -194,6 +194,29 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
 }
 
 #pragma mark - Private
+
+// Called when a favicon is fetched.
+- (void)didFetchFaviconAttributes:(FaviconAttributes*)attributes
+                           cached:(bool)cached
+                             item:(TableViewURLItem*)item
+                        indexPath:(NSIndexPath*)indexPath {
+  item.faviconAttributes = attributes;
+  if (!cached && attributes.faviconImage) {
+    if ([self.tableViewModel itemAtIndexPath:indexPath] != item) {
+      return;
+    }
+    LegacyTableViewCell* cell =
+        base::apple::ObjCCastStrict<LegacyTableViewCell>(
+            [self.tableView cellForRowAtIndexPath:indexPath]);
+    if (!cell) {
+      return;
+    }
+    // Even if Apple documentation hints toward reconfiguring the row instead
+    // of just updating the cell, it creates a visible jank. Use the item
+    // configuration method instead. See crbug.com/479692041 for more info.
+    [item configureCell:cell withStyler:self.styler];
+  }
+}
 
 - (void)cancelButtonTapped {
   [self.delegate passwordPickerWasDismissed:self];

@@ -46,7 +46,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.tableView.allowsMultipleSelection = YES;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0)];
-  self.tableView.estimatedRowHeight = kTabListFromAndroidCellHeight;
   self.navigationItem.leftBarButtonItem = [self navigationCancelButton];
   self.navigationItem.rightBarButtonItem = [self navigationOpenTabsButton];
   self.tableView.accessibilityIdentifier = kBringAndroidTabsPromptTabListAXId;
@@ -124,6 +123,30 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - Helpers
 
+// Called when a favicon is fetched.
+- (void)didFetchFaviconAttributes:(FaviconAttributes*)attributes
+                           cached:(bool)cached
+                             item:(TableViewURLItem*)item
+                        indexPath:(NSIndexPath*)indexPath {
+  item.faviconAttributes = attributes;
+  if (!cached && attributes.faviconImage) {
+    if ([self.tableViewModel itemAtIndexPath:indexPath] != item) {
+      return;
+    }
+    LegacyTableViewCell* cell =
+        base::apple::ObjCCastStrict<LegacyTableViewCell>(
+            [self.tableView cellForRowAtIndexPath:indexPath]);
+    if (!cell) {
+      return;
+    }
+    // Even if Apple documentation hints toward reconfiguring the
+    // row instead of just updating the cell, it creates a visible
+    // jank. Use the item configuration method instead. See
+    // crbug.com/479692041 for more info.
+    [item configureCell:cell withStyler:self.styler];
+  }
+}
+
 // Retrieves favicon from FaviconLoader and sets FaviconView.
 - (void)loadFaviconForIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
@@ -136,15 +159,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     return;
   }
 
-  __weak UITableView* tableView = self.tableView;
-
+  __weak __typeof(self) weakSelf = self;
   [_faviconDataSource
       faviconForPageURL:URLItem.URL
              completion:^(FaviconAttributes* attributes, bool cached) {
-               URLItem.faviconAttributes = attributes;
-               if (!cached && attributes.faviconImage) {
-                 [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
-               }
+               [weakSelf didFetchFaviconAttributes:attributes
+                                            cached:cached
+                                              item:URLItem
+                                         indexPath:indexPath];
              }];
 }
 

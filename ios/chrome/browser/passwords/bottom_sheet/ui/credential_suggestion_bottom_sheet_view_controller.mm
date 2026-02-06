@@ -341,6 +341,35 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   return titleView;
 }
 
+// Called when a favicon is fetched.
+- (void)didFetchFaviconAttributes:(FaviconAttributes*)attributes
+                           cached:(bool)cached
+                    configuration:
+                        (TableViewCellContentConfiguration*)configuration
+                             cell:(UITableViewCell*)cell {
+  if (cached) {
+    FaviconContentConfiguration* faviconConfiguration =
+        [[FaviconContentConfiguration alloc] init];
+    faviconConfiguration.faviconAttributes = attributes;
+
+    configuration.leadingConfiguration = faviconConfiguration;
+  } else if (attributes.faviconImage) {
+    // Even if Apple documentation hints toward reconfiguring the row instead
+    // of just updating the cell, it creates a visible jank. Use the item
+    // configuration method instead. See crbug.com/479692041 for more info.
+    TableViewCellContentConfiguration* cellConfiguration =
+        base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+            cell.contentConfiguration);
+    FaviconContentConfiguration* faviconConfiguration =
+        [[FaviconContentConfiguration alloc] init];
+    faviconConfiguration.faviconAttributes = attributes;
+    cellConfiguration.leadingConfiguration = faviconConfiguration;
+    // Do not check for cell reusability as it won't happen here and the table
+    // view isn't configured to support it.
+    cell.contentConfiguration = cellConfiguration;
+  }
+}
+
 // Loads the favicon associated with the provided cell.
 // Defaults to the globe symbol if no URL is associated with the cell.
 // In case of a recovery password suggestion, the favicon is replaced by a
@@ -348,7 +377,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 - (void)loadFaviconForConfiguration:
             (TableViewCellContentConfiguration*)configuration
            associatedWithSuggestion:(FormSuggestion*)suggestion
-                        atIndexPath:(NSIndexPath*)indexPath {
+                            forCell:(UITableViewCell*)cell {
   if (suggestion.icon) {
     ImageContentConfiguration* imageConfiguration =
         [[ImageContentConfiguration alloc] init];
@@ -359,18 +388,14 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
     configuration.leadingConfiguration = imageConfiguration;
     return;
   }
+
   __weak __typeof(self) weakSelf = self;
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
     DCHECK(attributes);
-    if (cached) {
-      FaviconContentConfiguration* faviconConfiguration =
-          [[FaviconContentConfiguration alloc] init];
-      faviconConfiguration.faviconAttributes = attributes;
-
-      configuration.leadingConfiguration = faviconConfiguration;
-    } else if (attributes.faviconImage) {
-      [weakSelf reconfigureCellAtIndexPath:indexPath];
-    }
+    [weakSelf didFetchFaviconAttributes:attributes
+                                 cached:cached
+                          configuration:configuration
+                                   cell:cell];
   };
   [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
 }
@@ -447,7 +472,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
   [self loadFaviconForConfiguration:configuration
            associatedWithSuggestion:formSuggestion
-                        atIndexPath:indexPath];
+                            forCell:cell];
 
   cell.contentConfiguration = configuration;
 

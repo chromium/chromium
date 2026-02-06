@@ -773,7 +773,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
           ^(FaviconAttributes* attributes, bool cached) {
             URLItem.faviconAttributes = attributes;
             if (!cached && attributes.faviconImage) {
-              [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+              LegacyTableViewCell* cell =
+                  base::apple::ObjCCastStrict<LegacyTableViewCell>(
+                      [self.tableView cellForRowAtIndexPath:indexPath]);
+              [URLItem configureCell:cell withStyler:self.styler];
             }
           });
     }
