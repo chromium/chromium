@@ -33,6 +33,9 @@ class RootTabCollectionNode : public TabCollectionNode,
   void Init();
   void Reset();
 
+  base::CallbackListSubscription RegisterOnChildrenAddedCallback(
+      base::RepeatingClosure callback);
+
  private:
   using SelectionHandles = base::flat_set<tabs::TabHandle>;
 
@@ -62,10 +65,13 @@ class RootTabCollectionNode : public TabCollectionNode,
 
   void UpdateTabsData(const std::set<tabs::TabInterface*>& changed_tabs);
 
+  void NotifyOnChildrenAdded();
+
   raw_ptr<TabStripModel> tab_strip_model_;
   SelectionHandles selected_tabs_;
   CustomAddChildViewCallback add_node_view_to_parent_;
   CustomRemoveChildViewCallback remove_node_view_from_parent_;
+  base::RepeatingClosureList on_children_added_callback_list_;
   base::WeakPtrFactory<RootTabCollectionNode> weak_ptr_factory_{this};
 };
 

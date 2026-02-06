@@ -48,6 +48,11 @@ class TabStripFlatEdgeButtonActionViewInterface
     }
   }
 
+  void InvokeActionImpl(actions::ActionItem* action_item) override {
+    action_view_->NotifyWillInvokeAction();
+    LabelButtonActionViewInterface::InvokeActionImpl(action_item);
+  }
+
  private:
   raw_ptr<TabStripFlatEdgeButton> action_view_ = nullptr;
 };
@@ -60,6 +65,8 @@ TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
   SetIconSize(
       GetLayoutConstant(LayoutConstant::kVerticalTabStripBottomButtonIconSize));
 }
+
+TabStripFlatEdgeButton::~TabStripFlatEdgeButton() = default;
 
 std::unique_ptr<views::ActionViewInterface>
 TabStripFlatEdgeButton::GetActionViewInterface() {
@@ -83,6 +90,16 @@ void TabStripFlatEdgeButton::SetInsets(const gfx::Insets& insets) {
   std::unique_ptr<views::LabelButtonBorder> border = CreateDefaultBorder();
   border->set_insets(insets);
   SetBorder(std::move(border));
+}
+
+base::CallbackListSubscription
+TabStripFlatEdgeButton::RegisterWillInvokeActionCallback(
+    base::RepeatingClosure callback) {
+  return will_invoke_action_callback_list_.Add(std::move(callback));
+}
+
+void TabStripFlatEdgeButton::NotifyWillInvokeAction() {
+  will_invoke_action_callback_list_.Notify();
 }
 
 void TabStripFlatEdgeButton::OnPaintBackground(gfx::Canvas* canvas) {

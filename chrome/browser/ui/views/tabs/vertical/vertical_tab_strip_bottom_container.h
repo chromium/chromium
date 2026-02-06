@@ -23,7 +23,8 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
  public:
   VerticalTabStripBottomContainer(
       tabs::VerticalTabStripStateController* state_controller,
-      actions::ActionItem* root_action_item);
+      actions::ActionItem* root_action_item,
+      base::RepeatingClosure record_new_tab_button_pressed);
   ~VerticalTabStripBottomContainer() override;
 
   TabStripFlatEdgeButton* AddChildButtonFor(actions::ActionId action_id);
@@ -40,6 +41,7 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<TabStripFlatEdgeButton> new_tab_button_ = nullptr;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
+  base::CallbackListSubscription new_tab_button_pressed_subscription_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 };

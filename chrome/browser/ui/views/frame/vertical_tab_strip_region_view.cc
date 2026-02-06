@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -88,7 +89,10 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
-          state_controller_, root_action_item));
+          state_controller_, root_action_item,
+          base::BindRepeating(
+              &VerticalTabStripRegionView::RecordNewTabButtonPressed,
+              base::Unretained(this))));
   bottom_button_container_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -194,12 +198,19 @@ void VerticalTabStripRegionView::InitializeTabStrip() {
   root_node_->SetController(tab_strip_controller_.get());
 
   root_node_->Init();
+
+  new_tab_button_pressed_start_time_ = std::nullopt;
+  on_children_added_subscription_ = root_node_->RegisterOnChildrenAddedCallback(
+      base::BindRepeating(&VerticalTabStripRegionView::OnChildrenAdded,
+                          base::Unretained(this)));
 }
 
 void VerticalTabStripRegionView::ResetTabStrip() {
   if (!root_node_) {
     return;
   }
+
+  on_children_added_subscription_.reset();
 
   root_node_->Reset();
 
@@ -566,6 +577,19 @@ void VerticalTabStripRegionView::UpdateColors() {
 
 bool VerticalTabStripRegionView::IsFrameActive() const {
   return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
+}
+
+void VerticalTabStripRegionView::RecordNewTabButtonPressed() {
+  new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
+}
+
+void VerticalTabStripRegionView::OnChildrenAdded() {
+  if (new_tab_button_pressed_start_time_.has_value()) {
+    base::UmaHistogramTimes(
+        "TabStrip.TimeToCreateNewTabFromPress",
+        base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());
+    new_tab_button_pressed_start_time_.reset();
+  }
 }
 
 TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(

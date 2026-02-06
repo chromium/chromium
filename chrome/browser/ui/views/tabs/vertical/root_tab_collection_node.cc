@@ -62,6 +62,12 @@ void RootTabCollectionNode::Reset() {
   remove_node_view_from_parent_.Run(view);
 }
 
+base::CallbackListSubscription
+RootTabCollectionNode::RegisterOnChildrenAddedCallback(
+    base::RepeatingClosure callback) {
+  return on_children_added_callback_list_.Add(std::move(callback));
+}
+
 void RootTabCollectionNode::OnChildrenAdded(
     const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles,
@@ -72,6 +78,7 @@ void RootTabCollectionNode::OnChildrenAdded(
         ->AddNewChild(GetPassKey(), child, position.index,
                       /*perform_initialization=*/insert_from_detached);
   }
+  on_children_added_callback_list_.Notify();
 }
 
 void RootTabCollectionNode::OnChildrenRemoved(
@@ -259,4 +266,8 @@ void RootTabCollectionNode::UpdateTabsData(
   for (auto* node : nodes_to_notify) {
     node->NotifyDataChanged();
   }
+}
+
+void RootTabCollectionNode::NotifyOnChildrenAdded() {
+  on_children_added_callback_list_.Notify();
 }

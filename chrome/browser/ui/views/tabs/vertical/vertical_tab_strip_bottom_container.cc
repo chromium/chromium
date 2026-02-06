@@ -16,7 +16,8 @@
 
 VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
     tabs::VerticalTabStripStateController* state_controller,
-    actions::ActionItem* root_action_item)
+    actions::ActionItem* root_action_item,
+    base::RepeatingClosure record_new_tab_button_pressed)
     : root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   SetProperty(views::kElementIdentifierKey,
@@ -30,6 +31,9 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
   new_tab_button_ = AddChildButtonFor(kActionNewTab);
   new_tab_button_->SetProperty(views::kElementIdentifierKey,
                                kNewTabButtonElementId);
+  new_tab_button_pressed_subscription_ =
+      new_tab_button_->RegisterWillInvokeActionCallback(
+          record_new_tab_button_pressed);
 
   UpdateButtonStyles(state_controller);
 }

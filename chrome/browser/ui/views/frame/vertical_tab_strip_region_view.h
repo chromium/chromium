@@ -161,6 +161,9 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   bool IsFrameActive() const;
 
+  void RecordNewTabButtonPressed();
+  void OnChildrenAdded();
+
   raw_ptr<BrowserView> browser_view_;
 
   // When false simulates a non-editable tabstrip. For testing only.
@@ -185,6 +188,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   const raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
+  std::optional<base::CallbackListSubscription> on_children_added_subscription_;
 
   // The width of the vertical tabstrip at the beginning of the current resize
   // operation. Is std::nullopt when not resizing.
@@ -201,6 +205,9 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // Animation for collapsing (GetCurrentValue() -> 0) and expanding
   // (GetCurrentValue() -> 1).
   gfx::SlideAnimation resize_animation_;
+
+  // Used to track the time needed to create a new tab from the new tab button.
+  std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_

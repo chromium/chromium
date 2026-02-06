@@ -23,7 +23,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
     kRight,
   };
   TabStripFlatEdgeButton();
-  ~TabStripFlatEdgeButton() override = default;
+  ~TabStripFlatEdgeButton() override;
 
   // views::LabelButton:
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
@@ -36,6 +36,10 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   void SetIconSize(int icon_size);
   void UpdateIcon(const ui::ImageModel& icon_image);
   void SetInsets(const gfx::Insets& insets);
+
+  base::CallbackListSubscription RegisterWillInvokeActionCallback(
+      base::RepeatingClosure callback);
+  void NotifyWillInvokeAction();
 
   FlatEdge flat_edge_for_testing() const { return flat_edge_; }
 
@@ -52,6 +56,8 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   int icon_size_ = 0;
   FlatEdge flat_edge_ = FlatEdge::kNone;
   base::CallbackListSubscription paint_as_active_subscription_;
+
+  base::RepeatingClosureList will_invoke_action_callback_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_FLAT_EDGE_BUTTON_H_
