@@ -8055,8 +8055,7 @@ bool AXObject::SupportsNameFromContents(bool recursive,
       // objects should return false for now.
       // TODO(crbug.com/443106926): investigate whether other Group objects
       // should be eligible in the future.
-      if (!::features::IsAXObjectSupportsNameFromAddressContentEnabled() ||
-          !GetNode()->HasTagName(html_names::kAddressTag)) {
+      if (!GetNode()->HasTagName(html_names::kAddressTag)) {
         return false;
       }
       [[fallthrough]];
