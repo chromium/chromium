@@ -46,6 +46,8 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
       ModelDownloaderAndroid::DownloadFailureReason reason);
   void TriggerDownloaderOnAvailable(const std::string& name,
                                     const std::string& version);
+  void TriggerDownloaderOnStatusCheckResult(
+      ModelDownloaderAndroid::ModelStatus model_status);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_helper_;

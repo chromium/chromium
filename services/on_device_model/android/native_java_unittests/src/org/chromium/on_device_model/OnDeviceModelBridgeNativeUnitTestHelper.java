@@ -97,6 +97,24 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         }
 
         @Override
+        public void getSizeInTokens(InputPiece[] inputPieces, SessionResponder responder) {
+            int tokenSize = 0;
+            for (InputPiece inputPiece : inputPieces) {
+                switch (inputPiece.which()) {
+                    case InputPiece.Tag.Text:
+                        tokenSize += inputPiece.getText().length();
+                        break;
+                }
+            }
+            final int finalTokenSize = tokenSize;
+            if (mCallbackOnDifferentThread) {
+                new Thread(() -> responder.onSizeInTokensResult(finalTokenSize)).start();
+            } else {
+                responder.onSizeInTokensResult(finalTokenSize);
+            }
+        }
+
+        @Override
         public void onNativeDestroyed() {
             mNativeDestroyed = true;
         }
@@ -137,6 +155,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         }
 
         @Override
+        public void checkStatus(DownloaderResponder responder) {
+            mResponder = responder;
+        }
+
+        @Override
         public void onNativeDestroyed() {
             mNativeDestroyed = true;
         }
@@ -161,6 +184,16 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
                             .start();
                 } else {
                     mResponder.onUnavailable(reason);
+                }
+            }
+        }
+
+        public void onStatusCheckResult(@ModelStatus int modelStatus) {
+            if (!mNativeDestroyed) {
+                if (mCallbackOnDifferentThread) {
+                    new Thread(() -> mResponder.onStatusCheckResult(modelStatus)).start();
+                } else {
+                    mResponder.onStatusCheckResult(modelStatus);
                 }
             }
         }
@@ -265,5 +298,10 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     @CalledByNative
     public void triggerDownloaderOnUnavailable(int reason) {
         mMockAiCoreFactory.mDownloaderBackend.onUnavailable(reason);
+    }
+
+    @CalledByNative
+    public void triggerDownloaderOnStatusCheckResult(int modelStatus) {
+        mMockAiCoreFactory.mDownloaderBackend.onStatusCheckResult(modelStatus);
     }
 }

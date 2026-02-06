@@ -20,6 +20,7 @@ namespace on_device_model {
 
 using DownloadFailureReason = ModelDownloaderAndroid::DownloadFailureReason;
 using BaseModelSpec = ModelDownloaderAndroid::BaseModelSpec;
+using ModelStatus = ModelDownloaderAndroid::ModelStatus;
 
 namespace {
 
@@ -165,6 +166,70 @@ TEST_F(ModelDownloaderAndroidTest, NativeDownloaderDeletionIsSafe) {
   // cause a crash.
   downloader.reset();
   java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
+}
+
+// Test CheckStatus with all ModelStatus enum values.
+TEST_F(ModelDownloaderAndroidTest, CheckStatusAllModelStatusEnums) {
+  java_helper_.SetMockAiCoreFactory();
+
+  std::vector<ModelStatus> model_status_enums = {
+      ModelStatus::kApiNotAvailable, ModelStatus::kUnavailable,
+      ModelStatus::kDownloadable, ModelStatus::kDownloading,
+      ModelStatus::kAvailable};
+
+  for (ModelStatus expected_status_enum : model_status_enums) {
+    base::test::TestFuture<ModelStatus> future;
+    auto downloader = std::make_unique<ModelDownloaderAndroid>(
+        kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
+    downloader->CheckStatus(future.GetCallback());
+    java_helper_.TriggerDownloaderOnStatusCheckResult(expected_status_enum);
+    EXPECT_EQ(future.Get(), expected_status_enum);
+  }
+}
+
+// Test CheckStatus on different thread.
+TEST_F(ModelDownloaderAndroidTest, CheckStatusOnDifferentThread) {
+  java_helper_.SetMockAiCoreFactory();
+
+  base::test::TestFuture<ModelStatus> future;
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
+  java_helper_.SetDownloaderCallbackOnDifferentThread();
+
+  downloader->CheckStatus(future.GetCallback());
+  java_helper_.TriggerDownloaderOnStatusCheckResult(ModelStatus::kAvailable);
+  EXPECT_EQ(future.Get(), ModelStatus::kAvailable);
+}
+
+// Test that CheckStatus and StartDownload use separate callbacks and don't
+// interfere with each other.
+TEST_F(ModelDownloaderAndroidTest, CheckStatusDoesNotAffectStartDownload) {
+  java_helper_.SetMockAiCoreFactory();
+
+  // Use a single downloader instance to call both methods.
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
+
+  // Call CheckStatus.
+  base::test::TestFuture<ModelStatus> check_future;
+  downloader->CheckStatus(check_future.GetCallback());
+
+  // Call StartDownload on the same instance.
+  base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
+      download_future;
+  downloader->StartDownload(download_future.GetCallback());
+
+  // Trigger both callbacks and verify both complete with their expected
+  // results without interfering with each other.
+  java_helper_.TriggerDownloaderOnStatusCheckResult(ModelStatus::kAvailable);
+  java_helper_.TriggerDownloaderOnAvailable("download_model", "456");
+
+  EXPECT_EQ(check_future.Get(), ModelStatus::kAvailable);
+
+  auto download_result = download_future.Get();
+  ASSERT_TRUE(download_result.has_value());
+  EXPECT_EQ(download_result->name, "download_model");
+  EXPECT_EQ(download_result->version, "456");
 }
 
 }  // namespace

@@ -49,8 +49,43 @@ class AiCoreSessionWrapper {
                                             .onComplete(nativeBackendSession, result);
                                 });
                     }
+
+                    @Override
+                    public void onSizeInTokensResult(int tokenCount) {
+                        // Not used in generate
+                    }
                 };
         mBackend.generate(castedGenerateOptions, castedInputPieces, responder);
+    }
+
+    @CalledByNative
+    public void getSizeInTokens(long nativeBackendSession, Object[] inputPieces) {
+        final InputPiece[] castedInputPieces = new InputPiece[inputPieces.length];
+        for (int i = 0; i < inputPieces.length; i++) {
+            castedInputPieces[i] = (InputPiece) inputPieces[i];
+        }
+        SessionResponder responder =
+                new SessionResponder() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Not used in getSizeInTokens
+                    }
+
+                    @Override
+                    public void onComplete(@GenerateResult int result) {
+                        // Not used in getSizeInTokens
+                    }
+
+                    @Override
+                    public void onSizeInTokensResult(int tokenCount) {
+                        mJniSafeCallback.run(
+                                () -> {
+                                    AiCoreSessionWrapperJni.get()
+                                            .onSizeInTokensResult(nativeBackendSession, tokenCount);
+                                });
+                    }
+                };
+        mBackend.getSizeInTokens(castedInputPieces, responder);
     }
 
     @CalledByNative
@@ -63,5 +98,7 @@ class AiCoreSessionWrapper {
         void onResponse(long backendSession, String response);
 
         void onComplete(long backendSession, @GenerateResult int result);
+
+        void onSizeInTokensResult(long backendSession, int tokenCount);
     }
 }

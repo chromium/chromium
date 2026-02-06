@@ -10,6 +10,11 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 class AiCoreModelDownloaderBackendUpstreamImpl implements AiCoreModelDownloaderBackend {
     @Override
+    public void checkStatus(DownloaderResponder responder) {
+        responder.onStatusCheckResult(ModelStatus.API_NOT_AVAILABLE);
+    }
+
+    @Override
     public void startDownload(DownloaderResponder responder) {
         responder.onUnavailable(DownloadFailureReason.API_NOT_AVAILABLE);
     }

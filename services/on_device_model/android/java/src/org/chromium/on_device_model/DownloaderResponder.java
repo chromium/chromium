@@ -22,4 +22,11 @@ public interface DownloaderResponder {
      * called.
      */
     void onUnavailable(@DownloadFailureReason int downloadFailureReason);
+
+    /**
+     * Called when the status check is complete. Called at most once.
+     *
+     * @param modelStatus The model status code.
+     */
+    void onStatusCheckResult(@ModelStatus int modelStatus);
 }

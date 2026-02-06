@@ -110,8 +110,37 @@ void BackendSessionImplAndroid::Generate(
 void BackendSessionImplAndroid::SizeInTokens(
     on_device_model::mojom::InputPtr input,
     base::OnceCallback<void(uint32_t)> callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(0);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!size_in_tokens_callback_)
+      << "Caller should not call SizeInTokens() again before the previous "
+         "callback is invoked.";
+  // Store the callback to be invoked from Java.
+  size_in_tokens_callback_ = std::move(callback);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // Convert input pieces to Java objects.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs;
+  for (const auto& piece : input->pieces) {
+    if (std::holds_alternative<ml::Token>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromToken(
+          env, static_cast<int>(std::get<ml::Token>(piece))));
+    } else if (std::holds_alternative<std::string>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromText(
+          env, base::android::ConvertUTF8ToJavaString(
+                   env, std::get<std::string>(piece))));
+    } else {
+      // TODO(crbug.com/425408635): Support image and audio input for token
+      // counting.
+      NOTREACHED();
+    }
+  }
+
+  // Call Java method to count tokens. The result will be returned via
+  // OnSizeInTokensResult callback.
+  Java_AiCoreSessionWrapper_getSizeInTokens(
+      env, java_session_, reinterpret_cast<int64_t>(this),
+      base::android::ToJavaArrayOfObjects(env, java_inputs));
 }
 
 void BackendSessionImplAndroid::Score(
@@ -185,6 +214,20 @@ void BackendSessionImplAndroid::OnCompleteOnSequence(
   responder_.reset();
 }
 
+void BackendSessionImplAndroid::OnSizeInTokensResult(uint32_t size) {
+  sequence_checker_helper_.PostTask(
+      FROM_HERE,
+      base::BindOnce(&BackendSessionImplAndroid::OnSizeInTokensResultOnSequence,
+                     weak_ptr_, size));
+}
+
+void BackendSessionImplAndroid::OnSizeInTokensResultOnSequence(uint32_t size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (size_in_tokens_callback_) {
+    std::move(size_in_tokens_callback_).Run(size);
+  }
+}
+
 static void JNI_AiCoreSessionWrapper_OnComplete(JNIEnv* env,
                                                 int64_t backend_session,
                                                 int32_t j_generate_result) {
@@ -199,6 +242,16 @@ static void JNI_AiCoreSessionWrapper_OnResponse(
     const jni_zero::JavaRef<jstring>& j_response) {
   reinterpret_cast<BackendSessionImplAndroid*>(backend_session)
       ->OnResponse(base::android::ConvertJavaStringToUTF8(env, j_response));
+}
+
+static void JNI_AiCoreSessionWrapper_OnSizeInTokensResult(
+    JNIEnv* env,
+    int64_t backend_session,
+    int32_t j_token_count) {
+  // j_token_count cannot be negative, but just in case, clamp it to 0 as
+  // OnSizeInTokensResult expects a uint32_t value.
+  reinterpret_cast<BackendSessionImplAndroid*>(backend_session)
+      ->OnSizeInTokensResult(std::max(0, j_token_count));
 }
 
 }  // namespace on_device_model

@@ -25,6 +25,18 @@ public interface AiCoreSessionBackend {
             GenerateOptions generateOptions, InputPiece[] inputPieces, SessionResponder responder);
 
     /**
+     * Gets the size in tokens for the given input pieces.
+     * TODO(crbug.com/479233872): Remove the default implementation which is compatibility shim for
+     * downstream code once downstream code is updated.
+     *
+     * @param inputPieces The input pieces to measure.
+     * @param responder The responder to receive the token count result.
+     */
+    default void getSizeInTokens(InputPiece[] inputPieces, SessionResponder responder) {
+        responder.onSizeInTokensResult(0);
+    }
+
+    /**
      * Called when the native session is destroyed. The implementation class should not call
      * responder after this is called.
      */

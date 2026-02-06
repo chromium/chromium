@@ -18,5 +18,10 @@ class AiCoreSessionBackendUpstreamImpl implements AiCoreSessionBackend {
     }
 
     @Override
+    public void getSizeInTokens(InputPiece[] inputPieces, SessionResponder responder) {
+        responder.onSizeInTokensResult(0);
+    }
+
+    @Override
     public void onNativeDestroyed() {}
 }

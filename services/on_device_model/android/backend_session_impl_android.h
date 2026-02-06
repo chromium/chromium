@@ -80,6 +80,9 @@ class BackendSessionImplAndroid : public BackendSession {
   void OnResponse(const std::string& response);
   // Called when the response of `Generate` is completed from the AiCoreSession.
   void OnComplete(GenerateResult generate_result);
+  // Called when the result of `GetSizeInTokens` is received from the
+  // AiCoreSession.
+  void OnSizeInTokensResult(uint32_t size);
 
  private:
   BackendSessionImplAndroid(
@@ -89,6 +92,7 @@ class BackendSessionImplAndroid : public BackendSession {
 
   void OnResponseOnSequence(const std::string& response);
   void OnCompleteOnSequence(GenerateResult generate_result);
+  void OnSizeInTokensResultOnSequence(uint32_t size);
 
   // The Java counterpart of this object.
   base::android::ScopedJavaGlobalRef<jobject> java_session_;
@@ -97,6 +101,10 @@ class BackendSessionImplAndroid : public BackendSession {
   // responder is fine because `Generate` is only called until the previous one
   // completes.
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
+
+  // Callback for the current GetSizeInTokens call.
+  base::OnceCallback<void(uint32_t)> size_in_tokens_callback_;
+
   // The accumulated context of the current session.
   std::vector<ml::InputPiece> context_input_pieces_;
 

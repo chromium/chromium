@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/android/backend_session_impl_android.h"
 #include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
@@ -295,6 +296,65 @@ TEST_F(BackendModelImplAndroidTest, CloneSession) {
     response_holder.WaitForCompletion();
     EXPECT_THAT(response_holder.responses(), ElementsAre("mock input"));
   }
+}
+
+TEST_F(BackendModelImplAndroidTest, SizeInTokensWithTextInput) {
+  java_helper_.SetMockAiCoreFactory();
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+
+  std::vector<ml::InputPiece> pieces;
+  pieces.push_back("test input string");
+
+  base::test::TestFuture<uint32_t> future;
+  session->SizeInTokens(mojom::Input::New(std::move(pieces)),
+                        future.GetCallback());
+
+  // The mock counts characters in text, so "test input string" = 17 chars.
+  EXPECT_EQ(future.Get(), 17u);
+}
+
+TEST_F(BackendModelImplAndroidTest, SizeInTokensWithTokenInput) {
+  java_helper_.SetMockAiCoreFactory();
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+
+  std::vector<ml::InputPiece> pieces;
+  pieces.push_back(ml::Token::kSystem);
+  pieces.push_back("system message");
+  pieces.push_back(ml::Token::kEnd);
+
+  base::test::TestFuture<uint32_t> future;
+  session->SizeInTokens(mojom::Input::New(std::move(pieces)),
+                        future.GetCallback());
+
+  // The mock counts only text characters, so "system message" = 14 chars.
+  EXPECT_EQ(future.Get(), 14u);
+}
+
+TEST_F(BackendModelImplAndroidTest, SizeInTokensCallbackOnDifferentThread) {
+  java_helper_.SetMockAiCoreFactory();
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+
+  java_helper_.SetCallbackOnDifferentThread();
+
+  std::vector<ml::InputPiece> pieces;
+  pieces.push_back("test input on different thread");
+
+  base::test::TestFuture<uint32_t> future;
+  session->SizeInTokens(mojom::Input::New(std::move(pieces)),
+                        future.GetCallback());
+
+  // The mock counts characters in text,
+  // so "test input on different thread" = 30 chars.
+  EXPECT_EQ(future.Get(), 30u);
 }
 
 }  // namespace

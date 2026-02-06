@@ -102,6 +102,14 @@ void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnAvailable(
       env, java_helper_, j_name, j_version);
 }
 
+void OnDeviceModelBridgeNativeUnitTestHelper::
+    TriggerDownloaderOnStatusCheckResult(
+        ModelDownloaderAndroid::ModelStatus model_status) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_triggerDownloaderOnStatusCheckResult(
+      env, java_helper_, static_cast<int>(model_status));
+}
+
 }  // namespace on_device_model
 
 DEFINE_JNI(OnDeviceModelBridgeNativeUnitTestHelper)
