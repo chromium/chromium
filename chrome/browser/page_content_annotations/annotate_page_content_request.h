@@ -55,6 +55,10 @@ class AnnotatedPageContentRequest {
   // server upload. Will return nullopt if not available.
   std::optional<ExtractedPageContentResult> GetCachedContentAndEligibility();
 
+  // Returns whether the cached APC for `page` is eligible for server upload.
+  // Will return nullopt if not available.
+  std::optional<bool> GetServerUploadEligibility();
+
   void SetFetchPageContextCallbackForTesting(FetchPageContextCallback callback);
 
  private:
