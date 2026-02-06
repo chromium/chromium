@@ -31,6 +31,7 @@
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_cache_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -461,7 +463,10 @@ bool ChromeAutofillClientIOS::IsAutofillProfileEnabled() const {
 }
 
 bool ChromeAutofillClientIOS::IsWalletStorageEnabled() const {
-  return false;
+  autofill::AccountSettingService* setting_service =
+      IOSAccountSettingServiceFactory::GetForProfile(profile_);
+  return setting_service &&
+         setting_service->IsWalletPrivacyContextualSurfacingEnabled();
 }
 
 bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {
