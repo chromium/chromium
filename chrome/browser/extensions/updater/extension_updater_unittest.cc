@@ -2649,7 +2649,6 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
   manifest.Set(manifest_keys::kName, "Fake extension");
   manifest.Set(manifest_keys::kVersion, "1.0.0.1");
   manifest.Set(manifest_keys::kManifestVersion, 2);
-  manifest.Set(manifest_keys::kDifferentialFingerprint, "fingerprint");
   scoped_refptr<Extension> pending_update =
       prefs_->AddExtensionWithManifest(manifest, ManifestLocation::kInternal);
   DelayedInstallManager::Get(profile())->Insert(pending_update);
@@ -2672,17 +2671,16 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
   ASSERT_EQ(enabled_extensions[0]->VersionString(), "1.0.0.0");
 
   // When StartUpdateCheck is called, we expect the pending version is used.
-  EXPECT_CALL(
-      update_service,
-      StartUpdateCheck(
-          ::testing::Field(
-              &ExtensionUpdateCheckParams::update_info,
-              ::testing::ElementsAre(::testing::Pair(
-                  enabled_extensions[0]->id(),
-                  ::testing::FieldsAre(
-                      "", false, ::testing::Optional(std::string("1.0.0.1")),
-                      ::testing::Optional(std::string("fingerprint")))))),
-          _, _));
+  EXPECT_CALL(update_service,
+              StartUpdateCheck(
+                  ::testing::Field(
+                      &ExtensionUpdateCheckParams::update_info,
+                      ::testing::ElementsAre(::testing::Pair(
+                          enabled_extensions[0]->id(),
+                          ::testing::FieldsAre(
+                              "", false,
+                              ::testing::Optional(std::string("1.0.0.1")))))),
+                  _, _));
 
   SetExtensions(enabled_extensions, ExtensionList());
   updater.Start();

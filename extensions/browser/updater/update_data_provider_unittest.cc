@@ -177,36 +177,6 @@ TEST_F(UpdateDataProviderTest, GetData_NoDataAdded) {
   EXPECT_EQ(data[0], std::nullopt);
 }
 
-TEST_F(UpdateDataProviderTest, GetData_Fingerprint) {
-  scoped_refptr<UpdateDataProvider> data_provider =
-      base::MakeRefCounted<UpdateDataProvider>(browser_context());
-
-  const std::string version = "0.1.2.3";
-  const std::string fingerprint = "1.0123456789abcdef";
-  AddExtension(kExtensionId1, version, true,
-               /*disable_reasons=*/{}, ManifestLocation::kInternal);
-  AddExtension(kExtensionId2, version, fingerprint, true,
-               /*disable_reasons=*/{}, ManifestLocation::kInternal);
-
-  ExtensionUpdateDataMap update_data;
-  update_data[kExtensionId1] = {};
-  update_data[kExtensionId2] = {};
-
-  std::vector<std::optional<update_client::CrxComponent>> data;
-  data_provider->GetData(
-      false /*install_immediately*/, update_data,
-      {kExtensionId1, kExtensionId2},
-      base::BindLambdaForTesting(
-          [&](const std::vector<std::optional<update_client::CrxComponent>>&
-                  output) { data = output; }));
-
-  ASSERT_EQ(2UL, data.size());
-  EXPECT_EQ(version, data[0]->version.GetString());
-  EXPECT_EQ(version, data[1]->version.GetString());
-  EXPECT_EQ("2." + version, data[0]->fingerprint);
-  EXPECT_EQ(fingerprint, data[1]->fingerprint);
-}
-
 TEST_F(UpdateDataProviderTest, GetData_EnabledExtension) {
   scoped_refptr<UpdateDataProvider> data_provider =
       base::MakeRefCounted<UpdateDataProvider>(browser_context());
@@ -571,7 +541,6 @@ TEST_F(UpdateDataProviderTest, GetData_Pending_Version) {
 
   const std::string version = "0.1.2.3";
   const std::string pending_version = "0.1.2.4";
-  const std::string pending_fingerprint = "fingerprint";
 
   AddExtension(kExtensionId1, version, true,
                /*disable_reasons=*/{}, ManifestLocation::kInternal);
@@ -579,7 +548,6 @@ TEST_F(UpdateDataProviderTest, GetData_Pending_Version) {
   ExtensionUpdateDataMap update_data;
   update_data[kExtensionId1] = {};
   update_data[kExtensionId1].pending_version = pending_version;
-  update_data[kExtensionId1].pending_fingerprint = pending_fingerprint;
 
   std::vector<std::optional<update_client::CrxComponent>> data;
   data_provider->GetData(
@@ -590,7 +558,6 @@ TEST_F(UpdateDataProviderTest, GetData_Pending_Version) {
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ(pending_version, data[0]->version.GetString());
-  EXPECT_EQ(pending_fingerprint, data[0]->fingerprint);
 }
 
 }  // namespace extensions

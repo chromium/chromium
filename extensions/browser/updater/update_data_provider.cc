@@ -102,8 +102,6 @@ void UpdateDataProvider::GetData(
           extension_data.pending_version
               ? base::Version(*extension_data.pending_version)
               : extension->version();
-      crx_component->fingerprint = extension_data.pending_fingerprint.value_or(
-          extension->DifferentialFingerprint());
     }
     bool allow_dev = extension_urls::GetWebstoreUpdateUrl() !=
                      extension_urls::GetDefaultWebstoreUpdateUrl();
@@ -112,7 +110,7 @@ void UpdateDataProvider::GetData(
         extension->from_webstore() ? GetWebstoreVerifierFormat(allow_dev)
                                    : GetPolicyVerifierFormat();
     crx_component->installer = base::MakeRefCounted<ExtensionInstaller>(
-        id, extension->path(), install_immediately,
+        id, install_immediately,
         base::BindRepeating(&UpdateDataProvider::RunInstallCallback, this));
     if (!ExtensionsBrowserClient::Get()->IsExtensionEnabled(id,
                                                             browser_context_)) {

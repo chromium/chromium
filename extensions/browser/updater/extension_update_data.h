@@ -36,7 +36,6 @@ struct ExtensionUpdateData {
   std::string install_source;
   bool is_corrupt_reinstall{false};
   std::optional<std::string> pending_version;
-  std::optional<std::string> pending_fingerprint;
 };
 
 // The basic structure for an extension update check request, which

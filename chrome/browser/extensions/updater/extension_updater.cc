@@ -792,7 +792,6 @@ ExtensionUpdateData ExtensionUpdater::GetExtensionUpdateData(
 
   if (update) {
     result.pending_version = update->VersionString();
-    result.pending_fingerprint = update->DifferentialFingerprint();
   }
 
   return result;

@@ -27,11 +27,9 @@ using Result = update_client::CrxInstaller::Result;
 
 ExtensionInstaller::ExtensionInstaller(
     ExtensionId extension_id,
-    const base::FilePath& extension_root,
     bool install_immediately,
     ExtensionInstallerCallback extension_installer_callback)
     : extension_id_(extension_id),
-      extension_root_(extension_root),
       install_immediately_(install_immediately),
       extension_installer_callback_(extension_installer_callback) {}
 
