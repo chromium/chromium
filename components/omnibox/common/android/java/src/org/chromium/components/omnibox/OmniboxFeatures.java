@@ -152,6 +152,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", false);
 
+    public static final BooleanCachedFeatureParam sRedirectComposeplateButton =
+            newBooleanParam(sOmniboxMultimodalInput, "redirect_composeplate_button", true);
+
     public static final CachedFlag sMultilineEditField =
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_PROD);
 
