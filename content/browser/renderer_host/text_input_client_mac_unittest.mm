@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -44,6 +45,7 @@ namespace content {
 
 namespace {
 
+using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Values;
 
@@ -214,20 +216,10 @@ class FakeAsyncRequestDelegate final
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-// This test does not test the WebKit side of the dictionary system (which
-// performs the actual data fetching), but rather this just tests that the
-// service's signaling system works.
-class TextInputClientMacTest : public content::RenderViewHostTestHarness,
-                               public ::testing::WithParamInterface<
-                                   std::tuple<FunctionToTest, TimeoutParam>> {
+class TextInputClientMacTestBase : public content::RenderViewHostTestHarness {
  public:
-  using Delegate = FakeAsyncRequestDelegate;
-
-  TextInputClientMacTest()
+  TextInputClientMacTestBase(TimeoutParam timeout_param, bool use_nested_loop)
       : RenderViewHostTestHarness(BrowserTaskEnvironment::REAL_IO_THREAD) {
-    TimeoutParam timeout_param;
-    std::tie(function_to_test_, timeout_param) = GetParam();
-
     base::TimeDelta ipc_timeout;
     switch (timeout_param) {
       case TimeoutParam::kLongTimeout:
@@ -240,17 +232,20 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness,
     }
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kTextInputClient,
-        {{"ipc_timeout",
-          absl::StrFormat("%dms", ipc_timeout.InMilliseconds())}});
+        {{"ipc_timeout", absl::StrFormat("%dms", ipc_timeout.InMilliseconds())},
+         {"use_nested_loop", use_nested_loop ? "true" : "false"}});
   }
 
  protected:
+  virtual std::unique_ptr<TextInputClientMac::AsyncRequestDelegate>
+  CreateDelegate() = 0;
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     RenderViewHostTester::For(rvh())->CreateTestRenderView();
 
-    auto delegate = std::make_unique<Delegate>(function_to_test_, widget());
-    request_delegate_ = delegate.get();
+    auto delegate = CreateDelegate();
+    delegate_ = delegate.get();
     TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
         std::move(delegate));
   }
@@ -258,11 +253,47 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness,
   void TearDown() override {
     FlushIOThreadAndReplies();
 
-    request_delegate_ = nullptr;
+    delegate_ = nullptr;
     TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
         nullptr);
 
     RenderViewHostTestHarness::TearDown();
+  }
+
+  // Flush any tasks posted to the IO thread and their reply tasks.
+  void FlushIOThreadAndReplies() {
+    GetIOThreadTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), task_environment()->QuitClosure());
+    task_environment()->RunUntilQuit();
+  }
+
+  TextInputClientMac::AsyncRequestDelegate* delegate() {
+    return delegate_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<TextInputClientMac::AsyncRequestDelegate> delegate_ = nullptr;
+};
+
+// This test does not test the WebKit side of the dictionary system (which
+// performs the actual data fetching), but rather this just tests that the
+// service's signaling system works.
+class TextInputClientMacTest
+    : public TextInputClientMacTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple<FunctionToTest, TimeoutParam, bool>> {
+ public:
+  TextInputClientMacTest()
+      : TextInputClientMacTestBase(/*ipc_timeout=*/std::get<1>(GetParam()),
+                                   /*use_nested_loop=*/std::get<2>(GetParam())),
+        function_to_test_(std::get<0>(GetParam())) {}
+
+ protected:
+  std::unique_ptr<TextInputClientMac::AsyncRequestDelegate> CreateDelegate()
+      override {
+    return std::make_unique<FakeAsyncRequestDelegate>(function_to_test_,
+                                                      widget());
   }
 
   // Initializes a ResponseType value from an arbitrary integer.
@@ -308,21 +339,14 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness,
     }
   }
 
-  // Flush any tasks posted to the IO thread and their reply tasks.
-  void FlushIOThreadAndReplies() {
-    GetIOThreadTaskRunner()->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), task_environment()->QuitClosure());
-    task_environment()->RunUntilQuit();
-  }
-
   RenderWidgetHost* widget() { return rvh()->GetWidget(); }
 
-  Delegate& request_delegate() { return *request_delegate_; }
+  FakeAsyncRequestDelegate& request_delegate() {
+    return *reinterpret_cast<FakeAsyncRequestDelegate*>(delegate());
+  }
 
  private:
   FunctionToTest function_to_test_;
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<Delegate> request_delegate_ = nullptr;
 };
 
 using TextInputClientMacTimeoutTest = TextInputClientMacTest;
@@ -332,14 +356,61 @@ INSTANTIATE_TEST_SUITE_P(
     TextInputClientMacTest,
     Combine(Values(FunctionToTest::kGetCharacterIndexAtPoint,
                    FunctionToTest::kGetFirstRectForRange),
-            Values(TimeoutParam::kLongTimeout)));
+            Values(TimeoutParam::kLongTimeout),
+            Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     TextInputClientMacTimeoutTest,
     Combine(Values(FunctionToTest::kGetCharacterIndexAtPoint,
                    FunctionToTest::kGetFirstRectForRange),
-            Values(TimeoutParam::kShortTimeout)));
+            Values(TimeoutParam::kShortTimeout),
+            Bool()));
+
+class TextInputClientMacReentryDeathTest
+    : public TextInputClientMacTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  TextInputClientMacReentryDeathTest()
+      : TextInputClientMacTestBase(TimeoutParam::kLongTimeout,
+                                   /*use_nested_loop=*/GetParam()) {}
+
+ protected:
+  // A delegate that calls back into TextInputClientMac on the same thread. This
+  // should fail with a CHECK because reentry is unsafe.
+  class Delegate final : public TextInputClientMac::AsyncRequestDelegate {
+   public:
+    void GetCharacterIndexAtPoint(
+        RenderFrameHost* rfh,
+        const TextInputClientMac::RequestToken& request_token,
+        const gfx::Point& point) final {
+      ASSERT_TRUE(rfh);
+      TextInputClientMac::GetInstance()->GetFirstRectForRange(
+          rfh->GetRenderWidgetHost(), gfx::Range(NSMakeRange(0, 32)));
+    }
+
+    void GetFirstRectForRange(
+        RenderFrameHost* rfh,
+        const TextInputClientMac::RequestToken& request_token,
+        const gfx::Range& range) final {
+      ASSERT_TRUE(rfh);
+      TextInputClientMac::GetInstance()->GetCharacterIndexAtPoint(
+          rfh->GetRenderWidgetHost(), gfx::Point(2, 2));
+    }
+  };
+
+  std::unique_ptr<TextInputClientMac::AsyncRequestDelegate> CreateDelegate()
+      override {
+    return std::make_unique<Delegate>();
+  }
+
+  void SetUp() override {
+    TextInputClientMacTestBase::SetUp();
+    FocusWebContentsOnMainFrame();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, TextInputClientMacReentryDeathTest, Bool());
 
 }  // namespace
 
@@ -431,6 +502,17 @@ TEST_P(TextInputClientMacTimeoutTest, SyncGetter_StaleResult) {
            second_response == TimeoutResponse());
   EXPECT_EQ(first_response, TimeoutResponse());  // Replaces kStaleValue.
   EXPECT_EQ(second_response, kSuccessValue);
+}
+
+TEST_P(TextInputClientMacReentryDeathTest, GetCharacterIndexAtPoint) {
+  EXPECT_CHECK_DEATH(
+      TextInputClientMac::GetInstance()->GetCharacterIndexAtPoint(
+          rvh()->GetWidget(), gfx::Point(2, 2)));
+}
+
+TEST_P(TextInputClientMacReentryDeathTest, GetFirstRectForRange) {
+  EXPECT_CHECK_DEATH(TextInputClientMac::GetInstance()->GetFirstRectForRange(
+      rvh()->GetWidget(), gfx::Range(NSMakeRange(0, 32))));
 }
 
 }  // namespace content
