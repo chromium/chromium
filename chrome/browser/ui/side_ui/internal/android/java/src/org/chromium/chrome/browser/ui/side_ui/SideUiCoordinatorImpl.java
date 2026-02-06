@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.side_ui;
 
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -13,6 +14,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
 
     // TODO(crbug.com/478338737): Update to account for multiple side containers.
     @Nullable private SideUiContainer mSideUiContainer;
+    private final ObserverList<SideUiObserver> mSideUiObservers = new ObserverList<>();
 
     @Override
     public void registerSideUiContainer(SideUiContainer sideUiContainer) {
@@ -27,6 +29,20 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     }
 
     @Override
+    public void addObserver(SideUiObserver observer) {
+        if (mSideUiObservers.addObserver(observer)) {
+            observer.onSideUiSpecsChanged(getSideUiSpecs());
+        }
+    }
+
+    @Override
+    public void removeObserver(SideUiObserver observer) {
+        if (mSideUiObservers.removeObserver(observer)) {
+            observer.onSideUiSpecsChanged(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
+        }
+    }
+
+    @Override
     public void requestUpdateContainer(SideUiContainerProperties properties) {
         // TODO(crbug.com/478306743): Implement.
     }
@@ -34,5 +50,11 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     @Override
     public void destroy() {
         if (mSideUiContainer != null) unregisterSideUiContainer(mSideUiContainer);
+    }
+
+    private SideUiSpecs getSideUiSpecs() {
+        // TODO(crbug.com/478306743): Implement when we attach the container's view to either a
+        //  start or end anchored ViewGroup based on the AnchorSide.
+        return SideUiSpecs.EMPTY_SIDE_UI_SPECS;
     }
 }
