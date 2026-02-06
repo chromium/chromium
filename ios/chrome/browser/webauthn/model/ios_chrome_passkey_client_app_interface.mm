@@ -33,7 +33,7 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
                  webauthn::ReauthenticatePurpose purpose,
                  webauthn::KeysFetchedCallback callback) override {
     CHECK(!callback.is_null());
-    std::move(callback).Run({GetTestKey()});
+    std::move(callback).Run({GetTestKey()}, /*error=*/nil);
   }
 
   void CheckEnrolled(NSString* gaia, CheckEnrolledCallback callback) override {

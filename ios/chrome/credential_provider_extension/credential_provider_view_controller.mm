@@ -301,7 +301,7 @@ enum class PasskeyUserVerificationStatus {
 - (void)prepareInterfaceForExtensionConfiguration {
   if (HasSavedPasskeys(self.credentialStore.credentials)) {
     __weak __typeof__(self) weakSelf = self;
-    auto completion = ^(NSArray<NSData*>* trustedVaultKeys) {
+    auto completion = ^(NSArray<NSData*>* trustedVaultKeys, NSError* error) {
       [weakSelf completeTrustedVaultKeyFetchForExtensionConfiguration];
     };
 
@@ -594,7 +594,7 @@ enum class PasskeyUserVerificationStatus {
 - (void)userSelectedPasskey:(id<Credential>)credential
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSArray<NSData*>* trustedVaultKeys) {
+  auto completion = ^(NSArray<NSData*>* trustedVaultKeys, NSError* error) {
     [weakSelf passkeyAssertionWithCredential:credential
                        passkeyRequestDetails:passkeyRequestDetails
                             trustedVaultKeys:trustedVaultKeys];
@@ -1197,7 +1197,7 @@ enum class PasskeyUserVerificationStatus {
 - (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                             gaia:(NSString*)gaia {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSArray<NSData*>* trustedVaultKeys) {
+  auto completion = ^(NSArray<NSData*>* trustedVaultKeys, NSError* error) {
     [weakSelf createPasskeyWithDetails:passkeyRequestDetails
                                   gaia:gaia
                       trustedVaultKeys:trustedVaultKeys];

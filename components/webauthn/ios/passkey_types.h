@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TYPES_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TYPES_H_
 
+#define IOS_CHROME_PASSKEY_KEYCHAIN_PROVIDER_FETCH_KEYS_CALLBACK_UPDATE
+
 #import <UIKit/UIKit.h>
 
 #import <vector>
@@ -42,7 +44,8 @@ using SharedKey = std::vector<uint8_t>;
 using SharedKeyList = std::vector<SharedKey>;
 
 // Callback to be called once keys are fetched.
-using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
+using KeysFetchedCallback =
+    base::OnceCallback<void(const SharedKeyList&, NSError*)>;
 
 }  // namespace webauthn
 

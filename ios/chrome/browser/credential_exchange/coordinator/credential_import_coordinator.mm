@@ -210,7 +210,9 @@
           fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
                             credential:nil
                                purpose:webauthn::ReauthenticatePurpose::kEncrypt
-                            completion:^(NSArray<NSData*>* trustedVaultKeys) {
+                            completion:^(NSArray<NSData*>* trustedVaultKeys,
+                                         NSError* error) {
+                              // TODO(crbug.com/445889307): Handle error.
                               [weakSelf
                                   onTrustedVaultKeysFetched:trustedVaultKeys];
                             }];

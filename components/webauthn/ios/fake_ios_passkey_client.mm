@@ -21,7 +21,7 @@ bool FakeIOSPasskeyClient::PerformUserVerification() {
 void FakeIOSPasskeyClient::FetchKeys(ReauthenticatePurpose purpose,
                                      KeysFetchedCallback callback) {
   if (!callback.is_null()) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, nil);
   }
 }
 

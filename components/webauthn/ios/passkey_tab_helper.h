@@ -140,7 +140,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // PasskeyJavaScriptFeature.
   void CompletePasskeyCreation(RegistrationRequestParams params,
                                std::string client_data_json,
-                               const SharedKeyList& shared_key_list);
+                               const SharedKeyList& shared_key_list,
+                               NSError* error);
 
   // Callback which uses the provided passkey for assertion given the provided
   // shared keys list and params. The parameters required to resolve the
@@ -148,7 +149,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void CompletePasskeyAssertion(AssertionRequestParams params,
                                 sync_pb::WebauthnCredentialSpecifics passkey,
                                 std::string client_data_json,
-                                const SharedKeyList& shared_key_list);
+                                const SharedKeyList& shared_key_list,
+                                NSError* error);
 
   // Starts remote validation for the given origin and RP ID. If validation
   // starts successfully, the loader is stored in `loaders_` with

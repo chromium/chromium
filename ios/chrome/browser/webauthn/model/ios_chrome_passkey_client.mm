@@ -147,9 +147,9 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       [](id<IOSPasskeyClientCommands> handler,
          webauthn::KeysFetchedCallback inner_callback,
-         NSArray<NSData*>* trusted_vault_keys) {
+         NSArray<NSData*>* trusted_vault_keys, NSError* error) {
         std::move(inner_callback)
-            .Run(SharedKeyListFromTrustedVaultKeys(trusted_vault_keys));
+            .Run(SharedKeyListFromTrustedVaultKeys(trusted_vault_keys), error);
         [handler dismissPasskeyWelcomeScreen];
       },
       command_handler_, std::move(callback)));

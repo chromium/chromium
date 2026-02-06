@@ -33,7 +33,7 @@ void PasskeyKeychainProvider::FetchKeys(
     webauthn::ReauthenticatePurpose purpose,
     webauthn::KeysFetchedCallback callback) {
   if (!callback.is_null()) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, nil);
   }
 }
 
@@ -52,7 +52,7 @@ void PasskeyKeychainProvider::Reauthenticate(
     webauthn::ReauthenticatePurpose purpose,
     webauthn::KeysFetchedCallback callback) {
   if (!callback.is_null()) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, nil);
   }
 }
 
