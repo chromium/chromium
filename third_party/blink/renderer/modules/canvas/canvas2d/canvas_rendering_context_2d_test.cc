@@ -673,11 +673,9 @@ MATCHER(IsValid, "") {
 
 TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
   CreateContext(kNonOpaque);
-  uint32_t gen_id =
-      Context2D()->GetOrCreateResourceProvider()->ContentUniqueID();
+  auto* resource_provider = Context2D()->GetOrCreateResourceProvider();
   Context2D()->fillRect(3, 3, 1, 1);
-  EXPECT_EQ(gen_id,
-            Context2D()->GetOrCreateResourceProvider()->ContentUniqueID());
+  EXPECT_EQ(resource_provider, Context2D()->GetOrCreateResourceProvider());
 }
 
 TEST_P(CanvasRenderingContext2DTest,

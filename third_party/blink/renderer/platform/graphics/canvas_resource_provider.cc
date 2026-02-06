@@ -1811,10 +1811,6 @@ void CanvasResourceProvider::ClearAtCreation() {
   RasterRecord(recorder.ReleaseMainRecording());
 }
 
-uint32_t CanvasResourceProvider::ContentUniqueID() const {
-  return GetSkSurface()->generationID();
-}
-
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());

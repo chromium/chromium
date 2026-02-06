@@ -165,8 +165,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
-  uint32_t ContentUniqueID() const;
-
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,
