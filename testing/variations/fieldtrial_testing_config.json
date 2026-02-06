@@ -4198,16 +4198,16 @@
             ]
         }
     ],
-    "BackgroundThreadPoolPISupported": [
+    "BackgroundThreadPoolPIGeneral": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledBoth_20250805",
+                    "name": "Enabled_20260106",
                     "params": {
-                        "config": "4"
+                        "config": "6"
                     },
                     "enable_features": [
                         "BackgroundThreadPoolFieldTrial"
