@@ -168,14 +168,13 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
   system_identity_manager->AddIdentity(identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    // With multi-profile, `profile` is considered to be the personal profile,
-    // and the managed account gets assigned to a separate managed profile. Move
-    // it into the personal profile so that signin becomes possible.
-    GetApplicationContext()
-        ->GetAccountProfileMapper()
-        ->MoveManagedAccountToPersonalProfileForTesting(identity.gaiaId);
-  }
+  // With multi-profile, `profile` is considered to be the personal profile,
+  // and the managed account gets assigned to a separate managed profile. Move
+  // it into the personal profile so that signin becomes possible.
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->MoveManagedAccountToPersonalProfileForTesting(identity.gaiaId);
+
   authentication_service->SignIn(identity,
                                  signin_metrics::AccessPoint::kUnknown);
 

@@ -80,17 +80,13 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
     FakeSystemIdentityManager::FromSystemIdentityManager(
         GetApplicationContext()->GetSystemIdentityManager())
         ->AddIdentity(identity);
-    std::string profile_name;
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
-      std::optional<std::string> assigned_profile_name =
-          GetApplicationContext()
-              ->GetAccountProfileMapper()
-              ->FindProfileNameForGaiaID(identity.gaiaId);
-      CHECK(assigned_profile_name.has_value());
-      profile_name = *assigned_profile_name;
-    } else {
-      profile_name = profile_manager_.ReserveNewProfileName();
-    }
+    std::optional<std::string> assigned_profile_name =
+        GetApplicationContext()
+            ->GetAccountProfileMapper()
+            ->FindProfileNameForGaiaID(identity.gaiaId);
+    CHECK(assigned_profile_name.has_value());
+    std::string profile_name = *assigned_profile_name;
+
     CHECK(!profile_name.empty());
 
     ProfileIOS* profile = AddProfileImpl(profile_name);

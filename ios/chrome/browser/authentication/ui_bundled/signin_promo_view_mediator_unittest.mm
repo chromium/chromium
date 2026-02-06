@@ -167,11 +167,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void TestSigninPromoWithAccount(SigninPromoViewStyle style) {
     // Expect to receive an update to the consumer with a configurator.
     ExpectConfiguratorNotification(/*identity_changed=*/YES);
-    if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-      // With this feature configuration, AccountProfileMapper sends an extra
-      // "account changed" notification when adding an account to the device.
-      ExpectConfiguratorNotification(/*identity_changed=*/NO);
-    }
+
     AddDefaultIdentity();
     // Check the configurator received by the consumer.
     CheckSigninWithAccountConfigurator(configurator_, style);

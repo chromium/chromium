@@ -70,18 +70,18 @@ class AuthenticationFlowInProfileTest : public PlatformTest {
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_.get());
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
-      // For the purpose of these tests, ensure that the managed identity is
-      // assigned to the personal profile. "Personal" vs "managed" profile
-      // doesn't really matter here (AuthenticationFlowInProfile, as its name
-      // says, doesn't deal with other profiles); it's just important that all
-      // required identities are available in the current/single profile.
-      CHECK_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2UL);
-      GetApplicationContext()
-          ->GetAccountProfileMapper()
-          ->MoveManagedAccountToPersonalProfileForTesting(
-              managed_identity_.gaiaId);
-    }
+
+    // For the purpose of these tests, ensure that the managed identity is
+    // assigned to the personal profile. "Personal" vs "managed" profile
+    // doesn't really matter here (AuthenticationFlowInProfile, as its name
+    // says, doesn't deal with other profiles); it's just important that all
+    // required identities are available in the current/single profile.
+    CHECK_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2UL);
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MoveManagedAccountToPersonalProfileForTesting(
+            managed_identity_.gaiaId);
+
     CHECK_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 3UL);
   }
 

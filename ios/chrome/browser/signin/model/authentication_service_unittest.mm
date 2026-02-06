@@ -510,17 +510,16 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut_ClearDataFromSignin) {
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    // The managed identity is assigned to a separate profile now.
-    ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
-    ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
-    // Move the managed identity into the personal profile, to mimic the
-    // situation where the managed identity was already there before
-    // kSeparateProfilesForManagedAccounts was enabled.
-    GetApplicationContext()
-        ->GetAccountProfileMapper()
-        ->MoveManagedAccountToPersonalProfileForTesting(identity(2).gaiaId);
-  }
+  // The managed identity is assigned to a separate profile now.
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+  // Move the managed identity into the personal profile, to mimic the
+  // situation where the managed identity was already there before
+  // kSeparateProfilesForManagedAccounts was enabled.
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->MoveManagedAccountToPersonalProfileForTesting(identity(2).gaiaId);
+
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
@@ -551,17 +550,16 @@ TEST_F(AuthenticationServiceTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    // The managed identity is assigned to a separate profile now.
-    ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
-    ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
-    // Move the managed identity into the personal profile, to mimic the
-    // situation where the managed identity was already there before
-    // kSeparateProfilesForManagedAccounts was enabled.
-    GetApplicationContext()
-        ->GetAccountProfileMapper()
-        ->MoveManagedAccountToPersonalProfileForTesting(identity(2).gaiaId);
-  }
+  // The managed identity is assigned to a separate profile now.
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+  // Move the managed identity into the personal profile, to mimic the
+  // situation where the managed identity was already there before
+  // kSeparateProfilesForManagedAccounts was enabled.
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->MoveManagedAccountToPersonalProfileForTesting(identity(2).gaiaId);
+
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
@@ -626,17 +624,16 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut_MigratedFromSyncing) {
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
 
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    // The managed identity is assigned to a separate profile now.
-    ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
-    ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
-    // Move the managed identity into the personal profile, to mimic the
-    // situation where the managed identity was already there before
-    // kSeparateProfilesForManagedAccounts was enabled.
-    GetApplicationContext()
-        ->GetAccountProfileMapper()
-        ->MoveManagedAccountToPersonalProfileForTesting(identity(2).gaiaId);
-  }
+  // The managed identity is assigned to a separate profile now.
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+  // Move the managed identity into the personal profile, to mimic the
+  // situation where the managed identity was already there before
+  // kSeparateProfilesForManagedAccounts was enabled.
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->MoveManagedAccountToPersonalProfileForTesting(identity(2).gaiaId);
+
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
