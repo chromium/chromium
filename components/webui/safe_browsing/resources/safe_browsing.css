@@ -7,9 +7,11 @@ body {
   font-size: 1em;
   margin: 15px;
 }
+
 p {
   white-space: pre-wrap;
 }
+
 .content {
   background-color: #fbfbfb;
   border: 1px solid #cecece;
@@ -18,19 +20,23 @@ p {
   overflow-wrap: anywhere;
   padding: 19px;
 }
+
 #sb-title {
   font-size: 2em;
   margin-bottom: 0.8em;
 }
+
 h1,
 h2,
 p {
   font-weight: normal;
   line-height: 1.5;
 }
+
 cr-tab-box {
   font-size: 1.3rem;
 }
+
 table.expandable-events {
   border: 1px solid #cecece;
   border-radius: 3px;
@@ -102,6 +108,7 @@ table.expandable-events td {
 .bold-span {
   font-weight: bold;
 }
+
 .result-container {
   font-weight: normal;
   line-height: 1.5;

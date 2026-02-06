@@ -157,6 +157,7 @@ webview:not([hidden]) {
   display: flex;
   justify-content: space-between;
   cursor: grab;
+  -webkit-app-region: drag;
 }
 
 #loadingPanel .header {
@@ -187,10 +188,6 @@ webview:not([hidden]) {
   --cr-icon-button-size: 24px;
   --cr-icon-button-icon-size: 20px;
   color: var(--color--on-surface-variant);
-}
-
-.panel .header {
-  -webkit-app-region: drag;
 }
 
 .dialog .notice {

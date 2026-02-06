@@ -139,7 +139,7 @@ p {
 .secondary-button {
   background: var(--background-color);
   color: var(--google-blue-600);
-  order: 2
+  order: 2;
 }
 
 .secondary-button:active {
@@ -240,7 +240,7 @@ iframes. */
 }
 
 /* Short version for landscape mode on mobile. */
-@media (min-height: 301px) and (max-height: 400px) and (min-width:481px) {
+@media (min-height: 301px) and (max-height: 400px) and (min-width: 481px) {
   .frame-blocked {
     margin-top: 6vh;
   }

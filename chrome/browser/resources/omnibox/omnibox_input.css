@@ -14,6 +14,8 @@
   --text-active-color: #fff;
   --text-hover-color: #eee;
   --text-inactive-color: #f5f5f5;
+
+  font-size: .75rem;
 }
 
 /* layout */
@@ -38,10 +40,6 @@ input,
 select {
   font-family: inherit;
   font-size: inherit;
-}
-
-:host {
-  font-size: .75rem;
 }
 
 .row {

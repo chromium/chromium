@@ -24,6 +24,9 @@ body {
   --red-text: hsl(0, 50%, var(--color-lightness));
   --green-text: hsl(120, 50%, var(--color-lightness));
   --blue-text: hsl(240, 50%, var(--color-lightness));
+
+  color: var(--text);
+  background-color: var(--light-background);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,9 +34,4 @@ body {
     --start-lightness: 0%;
     --dir-lightness: 1%;
   }
-}
-
-body {
-  color: var(--text);
-  background-color: var(--light-background);
 }

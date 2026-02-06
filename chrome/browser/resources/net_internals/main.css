@@ -26,6 +26,7 @@ body {
 
 ul {
   padding-left: 2em;
+  margin-top:0;
 }
 
 /* This class should be given to top-level content boxes (like the view's main
@@ -89,10 +90,6 @@ ul {
 
 input + label {
   margin-inline-start: 10px;
-}
-
-ul {
-  margin-top:0;
 }
 
 .output-box {

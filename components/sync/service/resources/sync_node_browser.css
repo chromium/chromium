@@ -30,17 +30,17 @@
   display: inline-block;
   min-width: 100%;
   overflow: visible; /* let the container do the scrolling */
-}
 
-/* TODO(akalin): Find a better icon to use for leaf nodes. */
-#sync-node-tree {
+  /* TODO(akalin): Find a better icon to use for leaf nodes. */
   --cr-tree-item-leaf-icon: url(star_small.png);
 }
 
 #sync-node-splitter {
   background-color: rgb(235, 239, 249);
-  cursor: col-resize;
   min-width: 5px;
+<if expr="not is_win">
+  cursor: col-resize;
+</if>
 <if expr="is_win">
   /* TODO(akalin): Make the BMM also use this style. */
   cursor: e-resize;

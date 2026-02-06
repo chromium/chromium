@@ -66,6 +66,7 @@ select:active {
 .th:only-child {
   font-size: 14px;
   font-weight: bold;
+  color: var(--text);
 }
 
 .tbody .tr:nth-child(even) .td {
@@ -86,10 +87,6 @@ select:active {
 .th:nth-child(3n+2),
 .td:nth-child(3n+2) {
   color: var(--blue-text);
-}
-
-.th:only-child {
-  color: var(--text);
 }
 
 .tbody .tr:hover .td:not(:only-child) {

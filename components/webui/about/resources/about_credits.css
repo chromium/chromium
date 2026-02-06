@@ -34,19 +34,23 @@ body {
   font-size: 84%;
   max-width: 1020px;
 }
+
 a {
   color: var(--interactive-color);
 }
+
 .open-sourced {
   clear: both;
   padding-top: 10px;
   font-size: 110%;
 }
+
 .page-title {
   float: left;
   font-size: 164%;
   font-weight: bold;
 }
+
 .product {
   background-color: var(--product-background);
   border-radius: 5px;
@@ -54,21 +58,25 @@ a {
   overflow: auto;
   padding: 2px;
 }
+
 .product .title {
   float: left;
   font-size: 110%;
   font-weight: bold;
   margin: 3px;
 }
+
 .product .homepage {
   color: var(--interactive-color);
   float: right;
   margin: 3px;
   text-align: end;
 }
+
 .product .homepage::before {
   content: ' - ';
 }
+
 .show-all,
 .product .show {
   color: var(--interactive-color);
@@ -77,44 +85,55 @@ a {
   text-align: end;
   text-decoration: underline;
 }
+
 .license {
   border-radius: 3px;
   clear: both;
   display: none;
   padding: 16px;
 }
+
 .license h3 {
   margin-top: 0;
 }
+
 .license pre {
   white-space: pre-wrap;
 }
+
 #print-link {
   float: right;
   margin: 3px;
 }
+
 .dialog #print-link,
 .dialog .homepage {
   display: none;
 }
+
 label.show + div.license {
   display: none;
 }
+
 label.show::after {
   content: 'show license';
   cursor: pointer;
 }
+
 label.show-all::after {
   content: 'show all licenses';
 }
+
 label.show-all:has(input:checked) ~ * label.show + div.license,
 label.show:has(input:checked) + div {
   display: block;
 }
+
 label.show:has(input:checked)::after {
   content: 'hide license';
   cursor: pointer;
 }
+
 label.show-all:has(input:checked)::after {
   content: 'hide all licenses';
 }

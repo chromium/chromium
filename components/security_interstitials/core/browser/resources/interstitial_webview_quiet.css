@@ -95,25 +95,25 @@ h1 {
   text-align: center;
 }
 
-@media (max-height:2em),
-       (max-width:2em) {
+@media (max-height: 2em),
+       (max-width: 2em) {
   .icon {
     display: none;
   }
 }
 
-@media (min-height:25em) and (min-width:37.5em),
-       (min-height:37.5em) and (min-width:25em) {
+@media (min-height: 25em) and (min-width: 37.5em),
+       (min-height: 37.5em) and (min-width: 25em) {
   .interstitial-wrapper {
     padding: 48px;
   }
 }
 
 /* Views that don't fit the details text. */
-@media (max-height:11.25em) and (max-width:18.75em),
-       (max-height:18.75em) and (max-width:11.25em),
-       (max-height:5em),
-       (max-width:5em) {
+@media (max-height: 11.25em) and (max-width: 18.75em),
+       (max-height: 18.75em) and (max-width: 11.25em),
+       (max-height: 5em),
+       (max-width: 5em) {
   .icon {
     max-height: 24px;
     max-width: 24px;

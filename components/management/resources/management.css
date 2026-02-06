@@ -168,7 +168,7 @@ a {
   }
 }
 
-@media (min-height: 400px) and (orientation:portrait) {
+@media (min-height: 400px) and (orientation: portrait) {
   .content-wrapper {
     margin-bottom: 145px;
   }

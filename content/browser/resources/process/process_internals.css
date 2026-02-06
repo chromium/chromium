@@ -8,6 +8,7 @@
 
 html {
   height: 100%;
+  --cr-tree-label-user-select: text;
 }
 
 body {
@@ -86,10 +87,6 @@ body {
   .content-header {
     background: none;
   }
-}
-
-html {
-  --cr-tree-label-user-select: text;
 }
 
 #isolated-origins-container {

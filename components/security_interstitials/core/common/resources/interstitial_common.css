@@ -228,7 +228,7 @@ input[type=checkbox]:focus ~ .checkbox::after {
   left: calc(.3em + var(--padding));
   opacity: 0;
   position: absolute;
-  top: calc(.3em  + var(--padding));
+  top: calc(.3em + var(--padding));
   transform: rotate(-45deg);
   width: .5em;
 }
@@ -431,7 +431,7 @@ input[type=checkbox]:checked ~ .checkbox::before {
   }
 }
 
-@media (min-height: 400px) and (orientation:portrait) {
+@media (min-height: 400px) and (orientation: portrait) {
   .interstitial-wrapper {
     margin-bottom: 145px;
   }
@@ -443,7 +443,7 @@ input[type=checkbox]:checked ~ .checkbox::before {
   }
 }
 
-@media (max-height: 560px) and (min-height: 240px) and (orientation:landscape) {
+@media (max-height: 560px) and (min-height: 240px) and (orientation: landscape) {
   .extended-reporting-has-checkbox #details {
     padding-bottom: 80px;
   }

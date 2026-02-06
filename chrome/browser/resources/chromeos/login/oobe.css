@@ -49,6 +49,29 @@ body {
 
 html {
   --shelf-area-height: var(--shelf-area-height-base);
+
+  /* New dialog size */
+  --oobe-adaptive-dialog-width: var(--oobe-oobe-dialog-width-base);
+  --oobe-adaptive-dialog-height: var(--oobe-oobe-dialog-height-base);
+
+  /* --oobe-dialog-content-padding is not used anymore. It is set to be equal to
+   * --oobe-adaptive-dialog-content-padding */
+  --oobe-dialog-content-padding: 40px;
+  --oobe-dialog-content-padding-top: 20px;
+
+  /* Padding defaults */
+  /* This size fits 675px screen with docked magnifier and shelf. Basically this
+   * is calc(675px * (1 - 1 / 3) - 10px - var(--shelf-area-height-base)) where
+   * 3 is DockedMagnifierController::kDefaultScreenHeightDivisor
+   * 10 is DockedMagnifierController::kSeparatorHeight */
+  --oobe-dialog-min-height: 384px;
+
+  --oobe-dialog-side-margin: 48px;
+
+  --oobe-dialog-adaptable-flex-direction: column;
+
+  --oobe-forward-slide-animation: translateX(+100%);
+  --oobe-backward-slide-animation: translateX(-100%);
 }
 
 html[virtual-keyboard],
@@ -65,33 +88,6 @@ body {
   padding: 0;
   position: fixed;
   top: 0;
-}
-
-/* New dialog size */
-html {
-  --oobe-adaptive-dialog-width: var(--oobe-oobe-dialog-width-base);
-  --oobe-adaptive-dialog-height: var(--oobe-oobe-dialog-height-base);
-}
-
-/* Padding defaults */
-html {
-  /* --oobe-dialog-content-padding is not used anymore. It is set to be equal to
-   * --oobe-adaptive-dialog-content-padding */
-  --oobe-dialog-content-padding: 40px;
-  --oobe-dialog-content-padding-top: 20px;
-
-  /* This size fits 675px screen with docked magnifier and shelf. Basically this
-   * is calc(675px * (1 - 1 / 3) - 10px - var(--shelf-area-height-base)) where
-   * 3 is DockedMagnifierController::kDefaultScreenHeightDivisor
-   * 10 is DockedMagnifierController::kSeparatorHeight */
-  --oobe-dialog-min-height: 384px;
-
-  --oobe-dialog-side-margin: 48px;
-
-  --oobe-dialog-adaptable-flex-direction: column;
-
-  --oobe-forward-slide-animation: translateX(+100%);
-  --oobe-backward-slide-animation: translateX(-100%);
 }
 
 html[dir=rtl] {

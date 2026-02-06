@@ -46,7 +46,9 @@
 
 #sync-results-splitter {
   background-color: rgb(235, 239, 249);
+<if expr="not is_win">
   cursor: col-resize;
+</if>
 <if expr="is_win">
   /* TODO(akalin): Make the BMM also use this style. */
   cursor: e-resize;

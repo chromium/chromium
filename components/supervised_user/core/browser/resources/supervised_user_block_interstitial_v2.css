@@ -235,7 +235,7 @@ p {
   background: var(--background-color);
   border: 1px solid var(--google-gray-300);
   color: var(--google-blue-600);
-  order: 2
+  order: 2;
 }
 
 .secondary-button:active {

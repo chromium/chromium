@@ -29,6 +29,10 @@ h3 {
 #cert-field-value {
   padding-inline-start: 15px;
   white-space: pre-wrap;
+  flex: 1;
+  margin-block-end: 10px;
+  /* Minimum height enough for 3 lines of text. */
+  min-height: 48px;
 }
 
 #general h3 {
@@ -91,13 +95,6 @@ div[slot='panel'] {
    * as the field value text box. */
   flex: 2.9;
   min-height: calc(3 * var(--cr-tree-row-line-height));
-}
-
-#cert-field-value {
-  flex: 1;
-  margin-block-end: 10px;
-  /* Minimum height enough for 3 lines of text. */
-  min-height: 48px;
 }
 
 .section-contents {

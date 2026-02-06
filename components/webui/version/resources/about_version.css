@@ -86,7 +86,6 @@ body {
 
 .version-wide {
   font-family: monospace;
-  max-width: auto;
   padding-inline-start: 5px;
   vertical-align: bottom;
 }
