@@ -111,11 +111,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    @Mock private MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private CustomTabActivityTabProvider mCustomTabProvider;
-    @Mock private MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
-    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     @Mock
     private SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
@@ -132,13 +128,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private Supplier<Integer> mActivityThemeColorSupplier;
-    @Mock private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private AppMenuBlocker mAppMenuBlocker;
     @Mock private BooleanSupplier mSupportsAppMenuSupplier;
     @Mock private BooleanSupplier mSupportsFindInPage;
     @Mock private Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
     @Mock private FullscreenManager mFullscreenManager;
-    @Mock private MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private Supplier<SnackbarManager> mSnackbarManagerSupplier;
     @Mock private Supplier<Boolean> mIsInOverviewModeSupplier;
@@ -162,6 +156,18 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private Supplier<BrowserServicesThemeColorProvider> mBrowserServicesColorProviderSupplier;
 
+    private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier =
+            ObservableSuppliers.alwaysNull();
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController>
             mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();

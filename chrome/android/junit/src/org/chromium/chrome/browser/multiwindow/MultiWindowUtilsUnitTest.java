@@ -46,7 +46,8 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -157,7 +158,6 @@ public class MultiWindowUtilsUnitTest {
 
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock MonotonicObservableSupplier<TabModel> mTabModelSupplier;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
     @Mock HomepageManager mHomepageManager;
@@ -167,8 +167,12 @@ public class MultiWindowUtilsUnitTest {
     @Mock Tab mTab2;
     @Mock Tab mTab3;
 
+    private SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier;
+
     @Before
     public void setUp() {
+        mTabModelSupplier = ObservableSuppliers.createMonotonic(mNormalTabModel);
+
         mUtils =
                 new MultiWindowUtils() {
                     @Override
@@ -218,7 +222,6 @@ public class MultiWindowUtilsUnitTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
-        when(mTabModelSupplier.get()).thenReturn(mNormalTabModel);
 
         SysUtils.setAmountOfPhysicalMemoryKbForTesting(
                 7000 * ConversionUtils.KILOBYTES_PER_MEGABYTE);

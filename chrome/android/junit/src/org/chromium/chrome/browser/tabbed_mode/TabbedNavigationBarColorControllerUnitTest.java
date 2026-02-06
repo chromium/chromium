@@ -79,8 +79,10 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
     @Mock private Tab mTab;
     @Mock private NavigationBarColorProvider.Observer mObserver;
-    @Mock private SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier;
     @Mock private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {

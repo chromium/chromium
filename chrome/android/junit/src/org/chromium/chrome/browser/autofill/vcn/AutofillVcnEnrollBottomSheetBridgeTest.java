@@ -38,6 +38,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -80,10 +81,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     @Mock private WebContents mWebContents;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private Profile mProfile;
     @Mock private AutofillImageFetcher mImageFetcher;
 
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.alwaysNull();
     private ShadowActivity mShadowActivity;
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetBridge mBridge;

@@ -48,7 +48,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -72,9 +72,12 @@ public class StripTabHoverCardViewUnitTest {
 
     @Mock private Tab mHoveredTab;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private TabContentManager mTabContentManager;
-    @Mock private SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier;
+
+    private final SettableMonotonicObservableSupplier<TabContentManager>
+            mTabContentManagerSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private static final float STRIP_STACK_HEIGHT = 500.f;
     private static final float TAB_WIDTH = 100f;
@@ -91,6 +94,8 @@ public class StripTabHoverCardViewUnitTest {
 
     @Before
     public void setUp() {
+        mTabContentManagerSupplier.set(mTabContentManager);
+
         Activity activity = buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         var tabHoverCardView =
@@ -105,7 +110,6 @@ public class StripTabHoverCardViewUnitTest {
         mContext = mTabHoverCardView.getContext();
         mContext.getResources().getDisplayMetrics().density = 1f;
 
-        when(mTabContentManagerSupplier.get()).thenReturn(mTabContentManager);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
         mBitmap = Bitmap.createBitmap(100, 200, Bitmap.Config.RGB_565);

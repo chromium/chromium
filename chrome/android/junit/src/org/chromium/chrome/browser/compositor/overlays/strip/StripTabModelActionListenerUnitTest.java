@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.view.View;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
@@ -33,10 +33,12 @@ public class StripTabModelActionListenerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier;
     @Mock private View mToolbarContainerView;
     @Mock private Runnable mBeforeSyncDialogRunnable;
     @Mock private Runnable mOnSuccess;
+
+    private final SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier =
+            ObservableSuppliers.createNullable();
 
     private StripTabModelActionListener createListener(@ActionType int actionType) {
         return new StripTabModelActionListener(
@@ -48,11 +50,6 @@ public class StripTabModelActionListenerUnitTest {
                 mOnSuccess);
     }
 
-    @Before
-    public void setUp() {
-        when(mGroupIdToHideSupplier.get()).thenReturn(null);
-    }
-
     @Test
     public void testDialogTypeNone() {
         // ActionType isn't impactful here.
@@ -62,12 +59,12 @@ public class StripTabModelActionListenerUnitTest {
         listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         verify(mBeforeSyncDialogRunnable, never()).run();
         verify(mToolbarContainerView, never()).cancelDragAndDrop();
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
 
         // DialogType.NONE will always send IMMEDIATE_CONTINUE.
         listener.onConfirmationDialogResult(
                 DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
         verify(mOnSuccess).run();
     }
 
@@ -81,18 +78,18 @@ public class StripTabModelActionListenerUnitTest {
                 DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mBeforeSyncDialogRunnable, never()).run();
         verify(mToolbarContainerView, never()).cancelDragAndDrop();
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
 
         // Negative confirmation (delete).
         listener.onConfirmationDialogResult(
                 DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
         verify(mOnSuccess, never()).run();
 
         // Positive confirmation (keep).
         listener.onConfirmationDialogResult(
                 DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
         verify(mOnSuccess).run();
 
         // DialogType.COLLABORATION is never IMMEDIATE_CONTINUE.
@@ -106,11 +103,11 @@ public class StripTabModelActionListenerUnitTest {
         listener.willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mBeforeSyncDialogRunnable, never()).run();
         verify(mToolbarContainerView, never()).cancelDragAndDrop();
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
 
         listener.onConfirmationDialogResult(
                 DialogType.SYNC, ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
         verify(mOnSuccess).run();
     }
 
@@ -122,18 +119,18 @@ public class StripTabModelActionListenerUnitTest {
         listener.willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ false);
         verify(mBeforeSyncDialogRunnable).run();
         verify(mToolbarContainerView).cancelDragAndDrop();
-        verify(mGroupIdToHideSupplier).set(TAB_GROUP_ID);
+        assertEquals(TAB_GROUP_ID, mGroupIdToHideSupplier.get());
 
         // Positive confirmation (delete).
         listener.onConfirmationDialogResult(
                 DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mGroupIdToHideSupplier, never()).set(null);
+        assertEquals(TAB_GROUP_ID, mGroupIdToHideSupplier.get());
         verify(mOnSuccess).run();
 
         // Negative confirmation (keep).
         listener.onConfirmationDialogResult(
                 DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
-        verify(mGroupIdToHideSupplier).set(null);
+        assertNull(mGroupIdToHideSupplier.get());
         // Not run a second time or times(2) would be required.
         verify(mOnSuccess).run();
 
@@ -149,7 +146,7 @@ public class StripTabModelActionListenerUnitTest {
         listener.willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mBeforeSyncDialogRunnable, never()).run();
         verify(mToolbarContainerView, never()).cancelDragAndDrop();
-        verify(mGroupIdToHideSupplier, never()).set(any());
+        assertNull(mGroupIdToHideSupplier.get());
 
         // This will assert.
         listener.onConfirmationDialogResult(

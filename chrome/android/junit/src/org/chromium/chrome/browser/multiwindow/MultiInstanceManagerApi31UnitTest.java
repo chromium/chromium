@@ -75,8 +75,10 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -193,11 +195,9 @@ public class MultiInstanceManagerApi31UnitTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-    @Mock MonotonicObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
     @Mock TabModelOrchestrator mTabModelOrchestrator;
     @Mock TabPersistentStore mTabPersistentStore;
     @Mock ActivityManager mActivityManager;
-    @Mock MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock ModalDialogManager mModalDialogManager;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -235,6 +235,13 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Captor private ArgumentCaptor<Runnable> mOnSaveTabListRunnableCaptor;
 
+    private final SettableMonotonicObservableSupplier<TabModelOrchestrator>
+            mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<ModalDialogManager>
+            mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+            new OneshotSupplierImpl<>();
+
     Activity mCurrentActivity;
     Activity[] mActivityPool;
     Activity[] mTabbedActivityPool;
@@ -243,9 +250,6 @@ public class MultiInstanceManagerApi31UnitTest {
     private int mIncognitoTabCount;
     private ArrayList<Tab> mGroupedTabs;
     private TabGroupMetadata mTabGroupMetadata;
-
-    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
-            new OneshotSupplierImpl<>();
 
     private MultiInstanceManagerApi31 createMultiInstanceManager(Activity activity) {
         return new TestMultiInstanceManagerApi31(
@@ -431,6 +435,9 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Before
     public void setUp() {
+        mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
+        mModalDialogManagerSupplier.set(mModalDialogManager);
+
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
 
@@ -477,7 +484,6 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(mActivityManager);
 
         when(mActivityManager.getAppTasks()).thenReturn(new ArrayList());
-        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabPersistentStore()).thenReturn(mTabPersistentStore);
 
         mProfileProviderSupplier.set(mProfileProvider);
@@ -1170,7 +1176,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testSelectedTabUpdatesInstanceInfo() {
-        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+        mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
@@ -1279,7 +1285,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testTabEventsUpdatesTabCounts() {
-        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+        mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
@@ -1375,7 +1381,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void testZeroNormalTabClearsUrlTitle() {
-        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+        mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);

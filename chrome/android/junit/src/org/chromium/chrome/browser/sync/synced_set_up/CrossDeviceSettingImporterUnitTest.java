@@ -30,8 +30,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
@@ -72,7 +73,6 @@ public class CrossDeviceSettingImporterUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Snackbar mSnackbar;
-    @Mock private NullableObservableSupplier<Tab> mActivityTabSupplier;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
     @Mock private Profile mProfile;
@@ -83,18 +83,20 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Captor private ArgumentCaptor<ModalDialogManagerObserver> mModalDialogManagerObserverCaptor;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
-    @Captor private ArgumentCaptor<Callback<Tab>> mTabChangeCallbackCaptor;
 
+    private final SettableNullableObservableSupplier<Tab> mActivityTabSupplier =
+            ObservableSuppliers.createNullable();
     private Activity mActivity;
     private CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
+        mActivityTabSupplier.set(mTab);
+
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
         when(mSnackbarManagerSupplier.get()).thenReturn(mSnackbarManager);
-        when(mActivityTabSupplier.get()).thenReturn(mTab);
         when(mTab.getProfile()).thenReturn(mProfile);
 
         UserPrefs.setPrefServiceForTesting(mPrefService);
@@ -113,8 +115,7 @@ public class CrossDeviceSettingImporterUnitTest {
                         mActivity,
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
-
-        verify(mActivityTabSupplier).addObserver(mTabChangeCallbackCaptor.capture());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
     }
 
     @After
@@ -353,17 +354,18 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Test
     public void testTabObserverManagement() {
-        // Simulate initial tab.
-        mTabChangeCallbackCaptor.getValue().onResult(mTab);
+        // Initial tab is already set in setUp.
         verify(mTab).addObserver(any(TabObserver.class));
 
         // Simulate tab change.
-        mTabChangeCallbackCaptor.getValue().onResult(mTab2);
+        mActivityTabSupplier.set(mTab2);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mTab).removeObserver(any(TabObserver.class));
         verify(mTab2).addObserver(any(TabObserver.class));
 
         // Simulate destroy.
         mCrossDeviceSettingImporter.destroy();
         verify(mTab2).removeObserver(any(TabObserver.class));
+        assertTrue(!mActivityTabSupplier.hasObservers());
     }
 }

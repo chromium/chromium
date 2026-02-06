@@ -55,8 +55,6 @@ public class SceneOverlayTest {
 
     @Mock private ViewGroup mContainerView;
 
-    @Mock private MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     // Use different classes so the overlays can be uniquely ordered. Each supported class has an
@@ -71,6 +69,8 @@ public class SceneOverlayTest {
     @Mock private Layout mLayout;
 
     private final DisplayMetrics mDisplayMetrics = new DisplayMetrics();
+    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier =
+            ObservableSuppliers.alwaysNull();
     private LayoutManagerImpl mLayoutManager;
 
     @Before

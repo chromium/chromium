@@ -29,7 +29,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -62,17 +63,19 @@ public final class ShareButtonControllerUnitTest {
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private ActivityTabProvider mTabProvider;
-    @Mock private MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private GURL mMockGurl;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
 
+    private SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final Configuration mConfiguration = new Configuration();
     private ShareButtonController mShareButtonController;
 
     @Before
     public void setUp() {
+        mShareDelegateSupplier = ObservableSuppliers.createMonotonic(mShareDelegate);
+
         mContext = RuntimeEnvironment.application;
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
@@ -83,8 +86,6 @@ public final class ShareButtonControllerUnitTest {
         doReturn(mock(WebContents.class)).when(mTab).getWebContents();
         doReturn("https").when(mMockGurl).getScheme();
         doReturn(mMockGurl).when(mTab).getUrl();
-
-        doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
 
         mShareButtonController =
                 new ShareButtonController(

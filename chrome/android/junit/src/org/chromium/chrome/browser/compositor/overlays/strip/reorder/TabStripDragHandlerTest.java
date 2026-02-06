@@ -61,7 +61,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -146,7 +145,6 @@ public class TabStripDragHandlerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private WeakReference<Context> mWeakReferenceContext;
     @Mock private MultiWindowUtils mMultiWindowUtils;
-    @Mock private MonotonicObservableSupplier<Integer> mTabStripHeightSupplier;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
 
@@ -157,8 +155,10 @@ public class TabStripDragHandlerTest {
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
-    @Mock
-    private SettableMonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final SettableMonotonicObservableSupplier<Integer> mTabStripHeightSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
 
     private TabStripDragHandler mSourceInstance;
     private TabStripDragHandler mDestInstance;
@@ -187,6 +187,10 @@ public class TabStripDragHandlerTest {
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+
+        mTabStripHeightSupplier.set(mTabStripHeight);
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+
         mPosY = mTabStripHeight - 2 * DRAG_MOVE_DISTANCE;
         mTabStripVisible = true;
 
@@ -221,8 +225,6 @@ public class TabStripDragHandlerTest {
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiWindowTestUtils.enableMultiInstance();
 
-        when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
-
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
 
@@ -234,7 +236,6 @@ public class TabStripDragHandlerTest {
                 .thenReturn(mTabGroupModelFilter);
         when(mTabModelSelector.getCurrentTabGroupModelFilterSupplier())
                 .thenReturn(mTabGroupModelFilterSupplier);
-        when(mTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
 
         Supplier<Boolean> isAppInDesktopWindow =
                 () -> AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);

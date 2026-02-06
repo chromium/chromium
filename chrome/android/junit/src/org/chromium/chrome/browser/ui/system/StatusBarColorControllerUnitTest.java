@@ -64,13 +64,15 @@ public class StatusBarColorControllerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
-    @Mock private MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private Tab mNtpTab;
     @Mock private NewTabPage mNewTabPage;
+
+    private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier =
+            ObservableSuppliers.alwaysNull();
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final SettableNonNullObservableSupplier<Integer> mOverviewColorSupplier =
