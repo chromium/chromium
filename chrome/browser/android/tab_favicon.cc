@@ -54,17 +54,16 @@ SkBitmap TabFavicon::GetBitmapForTab(TabAndroid* tab_android) {
 }
 
 TabFavicon::TabFavicon(JNIEnv* env,
-                       const JavaRef<jobject>& obj,
+                       TabAndroid* tab_android,
                        int navigation_transition_favicon_size)
     : navigation_transition_favicon_size_(navigation_transition_favicon_size),
-      jobj_(env, obj) {}
+      tab_android_(tab_android) {}
 
 TabFavicon::~TabFavicon() = default;
 
 void TabFavicon::SetWebContents(JNIEnv* env,
-                                const JavaRef<jobject>& jweb_contents) {
-  active_web_contents_ =
-      content::WebContents::FromJavaWebContents(jweb_contents);
+                                content::WebContents* web_contents) {
+  active_web_contents_ = web_contents;
   favicon_driver_ =
       favicon::ContentFaviconDriver::FromWebContents(active_web_contents_);
   if (favicon_driver_) {
@@ -124,23 +123,25 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
     return;
   }
 
+  CHECK(tab_android_);
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   auto new_width = image.Width();
   auto new_height = image.Height();
   if (static_cast<bool>(Java_TabFavicon_shouldUpdateFaviconForBrowserUi(
-          env, jobj_, new_width, new_height))) {
+          env, tab_android_, new_width, new_height))) {
     ScopedJavaLocalRef<jobject> j_icon_url =
         url::GURLAndroid::FromNativeGURL(env, icon_url);
     Java_TabFavicon_onFaviconAvailable(
-        env, jobj_, gfx::ConvertToJavaBitmap(favicon), j_icon_url);
+        env, tab_android_, gfx::ConvertToJavaBitmap(favicon), j_icon_url);
   }
   if (content::BackForwardTransitionAnimationManager::
           ShouldAnimateBackForwardTransitions()) {
     CHECK(active_web_contents_);
     if (static_cast<bool>(
             Java_TabFavicon_shouldUpdateFaviconForNavigationTransitions(
-                env, jobj_, new_width, new_height))) {
+                env, tab_android_, new_width, new_height))) {
       SkBitmap scaled =
           RescaleSkBitmap(favicon, navigation_transition_favicon_size_);
       auto* manager =
@@ -152,10 +153,11 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
 }
 
 static int64_t JNI_TabFavicon_Init(JNIEnv* env,
-                                   const JavaRef<jobject>& obj,
+                                   TabAndroid* tab_android,
                                    int navigation_transition_favicon_size) {
+  CHECK(tab_android);
   return reinterpret_cast<intptr_t>(
-      new TabFavicon(env, obj, navigation_transition_favicon_size));
+      new TabFavicon(env, tab_android, navigation_transition_favicon_size));
 }
 
 DEFINE_JNI(TabFavicon)

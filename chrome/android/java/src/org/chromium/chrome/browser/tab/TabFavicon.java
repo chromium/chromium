@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList.RewindableIterator;
@@ -24,7 +25,6 @@ import org.chromium.url.GURL;
 @NullMarked
 public class TabFavicon extends TabWebContentsUserData {
     private static final Class<TabFavicon> USER_DATA_KEY = TabFavicon.class;
-
     private static @Nullable TabFavicon sInstanceForTesting;
 
     private final TabImpl mTab;
@@ -82,7 +82,7 @@ public class TabFavicon extends TabWebContentsUserData {
         mIdealFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
         mNavigationTransitionsIdealFaviconSize =
                 resources.getDimensionPixelSize(R.dimen.navigation_transitions_favicon_size);
-        mNativeTabFavicon = TabFaviconJni.get().init(this, mNavigationTransitionsIdealFaviconSize);
+        mNativeTabFavicon = TabFaviconJni.get().init(tab, mNavigationTransitionsIdealFaviconSize);
     }
 
     @Override
@@ -101,8 +101,8 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     /**
-     * @return The bitmap of the favicon scaled to 16x16dp. null if no favicon is specified or it
-     *     requires the default favicon.
+     * Returns the bitmap of the favicon scaled to 16x16dp. null if no favicon is specified or it
+     * requires the default favicon.
      */
     @VisibleForTesting
     public @Nullable Bitmap getFavicon() {
@@ -165,6 +165,15 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     @CalledByNative
+    private static void onFaviconAvailable(
+            @JniType("TabAndroid*") Tab tab, Bitmap icon, GURL iconUrl) {
+        TabFavicon tabFavicon = get(tab);
+        if (tabFavicon == null) {
+            return;
+        }
+        tabFavicon.onFaviconAvailable(icon, iconUrl);
+    }
+
     @VisibleForTesting
     void onFaviconAvailable(Bitmap icon, GURL iconUrl) {
         assert icon != null;
@@ -179,6 +188,15 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     @CalledByNative
+    private static boolean shouldUpdateFaviconForBrowserUi(
+            @JniType("TabAndroid*") Tab tab, int newIconWidth, int newIconHeight) {
+        TabFavicon tabFavicon = get(tab);
+        if (tabFavicon == null) {
+            return false;
+        }
+        return tabFavicon.shouldUpdateFaviconForBrowserUi(newIconWidth, newIconHeight);
+    }
+
     @VisibleForTesting
     boolean shouldUpdateFaviconForBrowserUi(int newIconWidth, int newIconHeight) {
         return pageUrlChanged()
@@ -191,6 +209,15 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     @CalledByNative
+    private static boolean shouldUpdateFaviconForNavigationTransitions(
+            @JniType("TabAndroid*") Tab tab, int newIconWidth, int newIconHeight) {
+        TabFavicon tabFavicon = get(tab);
+        if (tabFavicon == null) {
+            return false;
+        }
+        return tabFavicon.shouldUpdateFaviconForNavigationTransitions(newIconWidth, newIconHeight);
+    }
+
     private boolean shouldUpdateFaviconForNavigationTransitions(
             int newIconWidth, int newIconHeight) {
         boolean shouldUpdate =
@@ -216,11 +243,12 @@ public class TabFavicon extends TabWebContentsUserData {
 
     @NativeMethods
     interface Natives {
-        long init(TabFavicon self, int navigaionTransitionFaviconSize);
+        long init(@JniType("TabAndroid*") Tab tab, int navigaionTransitionFaviconSize);
 
         void onDestroyed(long nativeTabFavicon);
 
-        void setWebContents(long nativeTabFavicon, WebContents webContents);
+        void setWebContents(
+                long nativeTabFavicon, @JniType("content::WebContents*") WebContents webContents);
 
         void resetWebContents(long nativeTabFavicon);
 

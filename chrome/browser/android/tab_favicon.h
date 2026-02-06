@@ -26,12 +26,11 @@ class TabFavicon : public favicon::FaviconDriverObserver {
   static SkBitmap GetBitmapForTab(TabAndroid* tab_android);
 
   TabFavicon(JNIEnv* env,
-             const base::android::JavaRef<jobject>& obj,
+             TabAndroid* tab_android,
              int navigation_transition_favicon_size);
   ~TabFavicon() override;
 
-  void SetWebContents(JNIEnv* env,
-                      const base::android::JavaRef<jobject>& jweb_contents);
+  void SetWebContents(JNIEnv* env, content::WebContents* web_contents);
   void ResetWebContents(JNIEnv* env);
   void OnDestroyed(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetFavicon(JNIEnv* env);
@@ -47,7 +46,10 @@ class TabFavicon : public favicon::FaviconDriverObserver {
   const int navigation_transition_favicon_size_;
   raw_ptr<content::WebContents> active_web_contents_ = nullptr;
 
-  base::android::ScopedJavaGlobalRef<jobject> jobj_;
+  // Rather than a ScopedJavaGlobalRef, we use a raw_ptr to an object we can
+  // easily look up the TabFavicon Java object from. This reduces entries in the
+  // finite global ref table.
+  raw_ptr<TabAndroid> tab_android_;
   raw_ptr<favicon::FaviconDriver> favicon_driver_;
 };
 
