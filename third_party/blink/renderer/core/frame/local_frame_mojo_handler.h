@@ -281,7 +281,7 @@ class LocalFrameMojoHandler
   void OnPostureChanged(mojom::blink::DevicePostureType posture) final;
 
 #if BUILDFLAG(IS_ANDROID)
-  void PerformSpellCheck() final;
+  void PerformFullContentSpellCheck() final;
 #endif
 
   Member<blink::LocalFrame> frame_;

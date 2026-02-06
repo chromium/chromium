@@ -654,7 +654,7 @@ void ImeAdapterAndroid::PerformSpellCheck(JNIEnv* env) {
     return;
   }
 
-  rfh->GetAssociatedLocalFrame()->PerformSpellCheck();
+  rfh->GetAssociatedLocalFrame()->PerformFullContentSpellCheck();
 }
 
 void ImeAdapterAndroid::AppendAutocorrectUnderlineSpan(JNIEnv* env,

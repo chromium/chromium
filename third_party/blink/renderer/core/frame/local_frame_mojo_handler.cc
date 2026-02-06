@@ -1508,8 +1508,8 @@ void LocalFrameMojoHandler::UpdatePrerenderURL(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void LocalFrameMojoHandler::PerformSpellCheck() {
-  frame_->PerformSpellCheck();
+void LocalFrameMojoHandler::PerformFullContentSpellCheck() {
+  frame_->PerformFullContentSpellCheck();
 }
 #endif
 

@@ -258,7 +258,7 @@ void FakeLocalFrame::GetScrollPosition(GetScrollPositionCallback callback) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void FakeLocalFrame::PerformSpellCheck() {}
+void FakeLocalFrame::PerformFullContentSpellCheck() {}
 #endif
 
 }  // namespace content

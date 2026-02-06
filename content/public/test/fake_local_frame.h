@@ -193,7 +193,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
                           UpdatePrerenderURLCallback callback) override;
   void GetScrollPosition(GetScrollPositionCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
-  void PerformSpellCheck() override;
+  void PerformFullContentSpellCheck() override;
 #endif
 
  private:

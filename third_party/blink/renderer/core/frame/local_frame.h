@@ -979,7 +979,7 @@ class CORE_EXPORT LocalFrame final
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  void PerformSpellCheck();
+  void PerformFullContentSpellCheck();
 #endif  // BUILDFLAG(IS_ANDROID)
  private:
   friend class FrameNavigationDisabler;

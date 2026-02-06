@@ -4279,7 +4279,7 @@ void LocalFrame::NotifyFrameVisibilityChanged(
 
 // TODO(crbug.com/447973489) - Add test coverage for this method
 #if BUILDFLAG(IS_ANDROID)
-void LocalFrame::PerformSpellCheck() {
+void LocalFrame::PerformFullContentSpellCheck() {
   if (!base::FeatureList::IsEnabled(
           blink::features::kAndroidSpellcheckFullApiBlink)) {
     return;
@@ -4293,6 +4293,7 @@ void LocalFrame::PerformSpellCheck() {
 
   const EphemeralRange range(Position(container_node, 0),
                              Position::LastPositionInNode(*container_node));
+
   GetSpellChecker().GetSpellCheckRequester().RequestCheckingFor(
       range,
       ExtractSpellingMarkersFromDocumentMarkerVector(
