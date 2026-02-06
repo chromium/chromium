@@ -191,11 +191,11 @@ const char kAlternativeServiceHttpHeader[] =
     "Alt-Svc: h2=\"mail.example.org:443\"\r\n";
 
 constexpr char kStreamRequestSuccessHistogram[] =
-    "Net.NetworkTransaction.StreamRequestCompleteTime2.Success";
+    "Net.NetworkTransaction.StreamRequestCompleteTime3.Success";
 constexpr char kStreamRequestFailureHistogram[] =
-    "Net.NetworkTransaction.StreamRequestCompleteTime2.Failure";
+    "Net.NetworkTransaction.StreamRequestCompleteTime3.Failure";
 constexpr char kStreamRequestH3SuccessHistogram[] =
-    "Net.NetworkTransaction.StreamRequestCompleteTime2.GoogleHost.Success";
+    "Net.NetworkTransaction.StreamRequestCompleteTime3.GoogleHost.Success";
 
 int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {

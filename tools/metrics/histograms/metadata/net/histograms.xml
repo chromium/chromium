@@ -4121,14 +4121,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.NetworkTransaction.Create{StreamType}Time2{HostType}.{Protocol}{AddressFamily}"
+    name="Net.NetworkTransaction.Create{StreamType}Time3{HostType}.{Protocol}{AddressFamily}"
     units="ms" expires_after="2026-07-26">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The time taken for creating a(n) {StreamType}. Recorded in
     HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
-    completes successfully.
+    completes successfully for the first time (i.e. not for retries).
   </summary>
   <token key="StreamType">
     <variant name="HttpStream"/>
@@ -4198,13 +4198,14 @@ chromium-metrics-reviews@google.com.
   <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
 </histogram>
 
-<histogram name="Net.NetworkTransaction.NegotiatedProtocol{HostType}"
+<histogram name="Net.NetworkTransaction.NegotiatedProtocol2{HostType}"
     enum="SSLNegotiatedAlpnProtocol" expires_after="2026-08-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Negotiated protocol of an HttpStream. Recorded in HttpNetworkTransaction
-    when an HttpStreamRequest succeeded.
+    when an HttpStreamRequest succeeded for the first time (i.e. not for
+    retries).
   </summary>
   <token key="HostType" variants="HostType"/>
 </histogram>
@@ -4220,58 +4221,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.NetworkTransaction.SessionSource2.{Protocol}"
+<histogram name="Net.NetworkTransaction.SessionSource3.{Protocol}"
     enum="NetworkSessionSource" expires_after="2026-04-12">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Measures whether a request used a new or an existing {Protocol} session.
     Recorded in HttpNetworkTransaction::DoCreateStreamComplete when the stream
-    creation completes successfully. Note that this is only recorded for HTTP/2
-    and HTTP/3. There are similar histograms called
-    PageLoad.Clients.GoogleSearch.SessionSource.{Protocol} that are recorded
-    only for search navigation. These histograms are recorded per navigation,
-    whereas this histograms measures per request.
+    creation completes successfully for the first time (i.e. not for retries).
+    Note that this is only recorded for HTTP/2 and HTTP/3. There are similar
+    histograms called PageLoad.Clients.GoogleSearch.SessionSource.{Protocol}
+    that are recorded only for search navigation. These histograms are recorded
+    per navigation, whereas this histograms measures per request.
   </summary>
   <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
 </histogram>
 
-<histogram name="Net.NetworkTransaction.StreamAddressFamily"
+<histogram name="Net.NetworkTransaction.StreamAddressFamily2"
     enum="AddressFamily" expires_after="2026-07-12">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Address family of a remote endpoint of an HttpStream. Recorded in
     HttpNetworkTransaction when an HttpStreamRequest succeeded and getting the
-    remote endpoint IP address succeeded.
+    remote endpoint IP address succeeded for the first time (i.e. not for
+    retries).
   </summary>
 </histogram>
 
 <histogram
-    name="Net.NetworkTransaction.StreamRequestCompleteTime2{HostType}.{SuccessOrFailure}"
+    name="Net.NetworkTransaction.StreamRequestCompleteTime3{HostType}.{SuccessOrFailure}"
     units="ms" expires_after="2026-07-26">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The time taken by an HttpStreamRequest to complete. Recorded only when an
-    HttpStreamRequest succeeded without retries in HttpNetworkTransaction.
+    HttpStreamRequest succeeded without retries in HttpNetworkTransaction for
+    the first time (i.e. not for retries).
   </summary>
   <token key="HostType" variants="HostType"/>
   <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
 
-<histogram name="Net.NetworkTransaction.StreamRequestErrorCode2"
+<histogram name="Net.NetworkTransaction.StreamRequestErrorCode3"
     enum="NetErrorCodes" expires_after="2027-01-06">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The net error for an HttpStreamRequest. Recorded in HttpNetworkTransaction
-    when an HttpStreamRequest failed.
+    when an HttpStreamRequest failed for the first time (i.e. not for retries).
   </summary>
 </histogram>
 
 <histogram
-    name="Net.NetworkTransaction.{Protocol}StreamCreationTime.{NewOrExisting}"
+    name="Net.NetworkTransaction.{Protocol}StreamCreationTime2.{NewOrExisting}"
     units="ms" expires_after="2026-06-28">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -4280,7 +4283,7 @@ chromium-metrics-reviews@google.com.
     HttpStream, recorded separately by protocol and whether the stream is
     created on top of new or existing socket/session. Recorded in
     HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
-    completes successfully.
+    completes successfully for the first time (i.e. not for retries).
   </summary>
   <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
   <token key="NewOrExisting">
