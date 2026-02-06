@@ -80,3 +80,12 @@ TEST_F(StandaloneModuleViewTest, TestFaviconWhenNoProductImage) {
   StandaloneModuleView* view = GetConfiguredStandaloneModuleView();
   [view addConstraintsForProductImageForTesting];
 }
+
+// Tests that updating product image with favicon does not crash when there is
+// no product image.
+TEST_F(StandaloneModuleViewTest,
+       TestUpdateProductImageViewWithFaviconNoProductImage) {
+  StandaloneModuleView* view = GetConfiguredStandaloneModuleView();
+  UIImage* favicon = [[UIImage alloc] init];
+  [view updateProductImageViewWithFavicon:favicon];
+}
