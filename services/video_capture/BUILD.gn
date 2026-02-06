@@ -62,8 +62,6 @@ source_set("lib") {
 
   if (is_chromeos) {
     sources += [
-      "ash/video_capture_device_ash.cc",
-      "ash/video_capture_device_ash.h",
       "ash/video_frame_handler_ash.cc",
       "ash/video_frame_handler_ash.h",
     ]

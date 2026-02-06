@@ -136,10 +136,6 @@ interface VideoFrameHandler {
 
   OnNewBuffer@0(int32 buffer_id, VideoBufferHandle buffer_handle);
 
-  // Deprecated in favor of OnFrameReadyInBuffer() without `scaled_buffers`.
-  // TODO(crbug.com/40938620): Delete when safe to do so.
-  DEPRECATED_OnFrameReadyInBuffer@1(ReadyFrameInBuffer buffer,
-                                    array<ReadyFrameInBuffer> scaled_buffers);
   [MinVersion=13]
   OnFrameReadyInBuffer@13(ReadyFrameInBuffer buffer);
 
@@ -148,14 +144,6 @@ interface VideoFrameHandler {
   OnError@3(media.mojom.VideoCaptureError error);
 
   OnFrameDropped@4(media.mojom.VideoCaptureFrameDropReason reason);
-
-  // Deprecated in favor of OnNewCaptureVersion.
-  [MinVersion=2]
-  DEPRECATED_OnNewCropVersion@10(uint32 crop_version);
-
-  // Deprecated in favor of OnNewCaptureTargetVersion.
-  [MinVersion=4]
-  DEPRECATED_OnNewSubCaptureTargetVersion@12(uint32 sub_capture_target_version);
 
   [MinVersion=14]
   OnNewCaptureVersion@14(media.mojom.CaptureVersion capture_version);
@@ -170,28 +158,4 @@ interface VideoFrameHandler {
   OnStartedUsingGpuDecode@7();
 
   OnStopped@8();
-};
-
-// Similar to |video_capture.mojom.Device| but depends on simplified structures.
-// Next min method ID: 8
-[Uuid="f50f1672-d512-451e-9c70-998ed45ab596"]
-interface VideoCaptureDevice {
-  // It is assumed that it will be called only once.
-  Start@0(media.mojom.VideoCaptureParams requested_settings,
-          pending_remote<VideoFrameHandler> handler);
-
-  MaybeSuspend@1();
-
-  Resume@2();
-
-  GetPhotoState@3() => (media.mojom.PhotoState? capabilities);
-
-  SetPhotoOptions@4(media.mojom.PhotoSettings settings) => (bool success);
-
-  TakePhoto@5() => (media.mojom.Blob? blob);
-
-  ProcessFeedback@6(media.mojom.VideoCaptureFeedback feedback);
-
-  [MinVersion = 1]
-  RequestRefreshFrame@7();
 };
