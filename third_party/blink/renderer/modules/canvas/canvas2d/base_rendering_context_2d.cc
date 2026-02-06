@@ -1396,7 +1396,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // accelerated SharedImage provider, we won't be able to transfer the canvas.
   // In that case, WebGPU access is not possible.
   CanvasResourceProviderSharedImage* provider =
-      GetOrCreateResourceProvider()->AsSharedImageProvider();
+      GetOrCreateResourceProvider()->As2DSharedImageProvider();
   if (!provider || !provider->IsAccelerated()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Unable to transfer canvas to GPU.");
@@ -1460,7 +1460,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // otherwise.
   resource_provider_from_webgpu_access_ =
       base::WrapUnique<CanvasResourceProviderSharedImage>(
-          owned_provider.release()->AsSharedImageProvider());
+          owned_provider.release()->As2DSharedImageProvider());
 
   // The user isn't obligated to ever transfer back, which means this resource
   // provider might stick around for while. Jettison any unnecessary resources.

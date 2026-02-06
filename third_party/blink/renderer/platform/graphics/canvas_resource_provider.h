@@ -127,7 +127,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   };
 #pragma GCC diagnostic pop
 
-  virtual CanvasResourceProviderSharedImage* AsSharedImageProvider() {
+  virtual Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() {
     return nullptr;
   }
 
@@ -435,10 +435,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 
-  // CanvasResourceProvider:
-  CanvasResourceProviderSharedImage* AsSharedImageProvider() final {
-    return this;
-  }
   bool IsAccelerated() const final { return is_accelerated_; }
   bool IsGpuContextLost() const override;
   base::ByteSize EstimatedSizeInBytes() const override;
@@ -616,6 +612,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                                       WebGraphicsSharedImageInterfaceProvider*,
                                       Delegate*);
   ~Canvas2DResourceProviderSharedImage() override = default;
+
+  // CanvasResourceProvider:
+  Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
+    return this;
+  }
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
