@@ -6,4 +6,8 @@ specific_include_rules = {
   "status_icon_chromeos\\.cc": [
     "+ash/shell.h",
   ],
+
+  "status_tray_chromeos\\.cc": [
+    "+ash/constants/chrome_custom_icon_catalog.h",
+  ],
 }
