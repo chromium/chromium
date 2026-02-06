@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -118,10 +119,13 @@ void ValuableMetadataSyncBridge::UploadInitialLocalData(
   for (const EntityInstance::EntityId& storage_key : local_keys_to_upload) {
     if (std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
             pass_type = GetPassTypeForEntityId(storage_key)) {
-      change_processor()->Put(*storage_key,
-                              CreateEntityDataFromEntityMetadata(
-                                  stored_metadata[storage_key], *pass_type),
-                              metadata_change_list);
+      change_processor()->Put(
+          *storage_key,
+          CreateEntityDataFromEntityMetadata(
+
+              stored_metadata[storage_key], *pass_type,
+              GetPossiblyTrimmedValuableMetadataSpecifics(storage_key.value())),
+          metadata_change_list);
     }
   }
 }
@@ -221,7 +225,11 @@ ValuableMetadataSyncBridge::GetAllData() {
     if (std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
             pass_type = GetPassTypeForEntityId(storage_key)) {
       batch->Put(*storage_key,
-                 CreateEntityDataFromEntityMetadata(metadata, *pass_type));
+
+                 CreateEntityDataFromEntityMetadata(
+                     metadata, *pass_type,
+                     GetPossiblyTrimmedValuableMetadataSpecifics(
+                         storage_key.value())));
     }
   }
   return batch;
@@ -385,6 +393,14 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
   return std::nullopt;
 }
 
+const sync_pb::AutofillValuableMetadataSpecifics&
+ValuableMetadataSyncBridge::GetPossiblyTrimmedValuableMetadataSpecifics(
+    std::string_view storage_key) {
+  return change_processor()
+      ->GetPossiblyTrimmedRemoteSpecifics(std::string(storage_key))
+      .autofill_valuable_metadata();
+}
+
 void ValuableMetadataSyncBridge::ServerEntityInstanceMetadataChanged(
     const EntityInstanceMetadataChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -403,7 +419,9 @@ void ValuableMetadataSyncBridge::ServerEntityInstanceMetadataChanged(
               pass_type = GetPassTypeForEntityId(change.data_model().guid)) {
         change_processor()->Put(
             *change.key(),
-            CreateEntityDataFromEntityMetadata(change.data_model(), *pass_type),
+            CreateEntityDataFromEntityMetadata(
+                change.data_model(), *pass_type,
+                GetPossiblyTrimmedValuableMetadataSpecifics(*change.key())),
             metadata_change_list.get());
       }
       break;

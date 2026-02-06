@@ -189,7 +189,8 @@ GetFlightReservationAttributesFromSpecifics(
 // Takes an `entity` and returns a proto message with the information needed
 // in order to send this entity to the sync server.
 sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
-    const EntityInstance& entity) {
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
   using enum AttributeTypeName;
   CHECK_EQ(entity.type().name(), EntityTypeName::kFlightReservation);
   auto get_value = [&](AttributeTypeName attribute_type_name) {
@@ -197,7 +198,7 @@ sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
         entity.attribute(AttributeType(attribute_type_name))
             ->GetCompleteRawInfo());
   };
-  sync_pb::AutofillValuableSpecifics specifics;
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
   specifics.set_id(*entity.guid());
   specifics.set_is_editable(!entity.are_attributes_read_only());
 
@@ -224,39 +225,33 @@ sync_pb::AutofillValuableSpecifics GetFlightReservationSpecifics(
 // Takes an `entity` and returns a proto message with the information needed in
 // order to send this entity to the sync server.
 sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
-    const EntityInstance& entity) {
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
   using enum AttributeTypeName;
   CHECK_EQ(entity.type().name(), EntityTypeName::kVehicle);
-  sync_pb::AutofillValuableSpecifics specifics;
+  sync_pb::AutofillValuableSpecifics specifics = base_specifics;
   specifics.set_id(*entity.guid());
   specifics.set_is_editable(!entity.are_attributes_read_only());
 
   sync_pb::VehicleRegistration& vehicle =
       *specifics.mutable_vehicle_registration();
-  auto set_vehicle_field =
-      [&](AttributeTypeName attribute_type_name,
-          void (sync_pb::VehicleRegistration::*setter)(const std::string&)) {
-        if (base::optional_ref<const AttributeInstance> attribute =
-                entity.attribute(AttributeType(attribute_type_name))) {
-          (vehicle.*setter)(base::UTF16ToUTF8(attribute->GetCompleteRawInfo()));
-        }
-      };
+#define SET_OR_CLEAR(attribute_type, field_suffix)            \
+  if (base::optional_ref<const AttributeInstance> attribute = \
+          entity.attribute(AttributeType(attribute_type))) {  \
+    vehicle.set_##field_suffix(                               \
+        base::UTF16ToUTF8(attribute->GetCompleteRawInfo()));  \
+  } else {                                                    \
+    vehicle.clear_##field_suffix();                           \
+  }
 
-  set_vehicle_field(kVehicleMake,
-                    &sync_pb::VehicleRegistration::set_vehicle_make);
-  set_vehicle_field(kVehicleModel,
-                    &sync_pb::VehicleRegistration::set_vehicle_model);
-  set_vehicle_field(kVehicleYear,
-                    &sync_pb::VehicleRegistration::set_vehicle_year);
-  set_vehicle_field(
-      kVehicleVin,
-      &sync_pb::VehicleRegistration::set_vehicle_identification_number);
-  set_vehicle_field(kVehiclePlateNumber,
-                    &sync_pb::VehicleRegistration::set_vehicle_license_plate);
-  set_vehicle_field(kVehiclePlateState,
-                    &sync_pb::VehicleRegistration::set_license_plate_region);
-  set_vehicle_field(kVehicleOwner,
-                    &sync_pb::VehicleRegistration::set_owner_name);
+  SET_OR_CLEAR(kVehicleMake, vehicle_make);
+  SET_OR_CLEAR(kVehicleModel, vehicle_model);
+  SET_OR_CLEAR(kVehicleYear, vehicle_year);
+  SET_OR_CLEAR(kVehicleVin, vehicle_identification_number);
+  SET_OR_CLEAR(kVehiclePlateNumber, vehicle_license_plate);
+  SET_OR_CLEAR(kVehiclePlateState, license_plate_region);
+  SET_OR_CLEAR(kVehicleOwner, owner_name);
+#undef SET_OR_CLEAR
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       SerializeChromeValuablesMetadata(entity);
@@ -310,9 +305,18 @@ GetVehicleAttributesFromSpecifics(
 }  // namespace
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
-    const EntityInstance& entity) {
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  // WARNING: if you are adding support for new `AutofillValuableSpecifics`
+  // fields, you need to update the
+  // `TrimAutofillValuableSpecificsDataForCaching` function accordingly
+  DCHECK_EQ(0u, TrimAutofillValuableSpecificsDataForCaching(
+                    CreateSpecificsFromEntityInstance(entity,
+                                                      /*base_specifics=*/{}))
+                    .ByteSizeLong());
+
   sync_pb::AutofillValuableSpecifics valuable_specifics =
-      CreateSpecificsFromEntityInstance(entity);
+      CreateSpecificsFromEntityInstance(entity, base_specifics);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   entity_data->name = valuable_specifics.id();
@@ -323,12 +327,13 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
 }
 
 sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
-    const EntityInstance& entity) {
+    const EntityInstance& entity,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
   switch (entity.type().name()) {
     case EntityTypeName::kFlightReservation:
-      return GetFlightReservationSpecifics(entity);
+      return GetFlightReservationSpecifics(entity, base_specifics);
     case EntityTypeName::kVehicle:
-      return GetVehicleInformationSpecifics(entity);
+      return GetVehicleInformationSpecifics(entity, base_specifics);
     case EntityTypeName::kPassport:
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
@@ -388,9 +393,10 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
     const EntityInstance::EntityMetadata& metadata,
-    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type,
+    const sync_pb::AutofillValuableMetadataSpecifics& base_specifics) {
   sync_pb::AutofillValuableMetadataSpecifics metadata_specifics =
-      CreateSpecificsFromEntityMetadata(metadata, pass_type);
+      CreateSpecificsFromEntityMetadata(metadata, pass_type, base_specifics);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   entity_data->name = metadata_specifics.valuable_id();
@@ -401,8 +407,9 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityMetadata(
 
 sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromEntityMetadata(
     const EntityInstance::EntityMetadata& metadata,
-    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
-  sync_pb::AutofillValuableMetadataSpecifics specifics;
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type,
+    const sync_pb::AutofillValuableMetadataSpecifics& base_specifics) {
+  sync_pb::AutofillValuableMetadataSpecifics specifics = base_specifics;
   specifics.set_valuable_id(*metadata.guid);
   specifics.set_use_count(metadata.use_count);
   specifics.set_last_used_date_unix_epoch_micros(

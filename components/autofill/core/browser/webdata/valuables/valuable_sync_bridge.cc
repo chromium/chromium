@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
@@ -325,16 +326,26 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
     if (instance.type().name() == EntityTypeName::kFlightReservation &&
         is_sync_flight_reservations_enabled) {
       const std::string& id = instance.guid().value();
-      batch->Put(id, CreateEntityDataFromEntityInstance(instance));
+      batch->Put(id, CreateEntityDataFromEntityInstance(
+                         instance, GetPossiblyTrimmedValuableSpecifics(id)));
     }
     if (instance.type().name() == EntityTypeName::kVehicle &&
         is_sync_vehicle_registrations_enabled) {
       const std::string& id = instance.guid().value();
-      batch->Put(id, CreateEntityDataFromEntityInstance(instance));
+      batch->Put(id, CreateEntityDataFromEntityInstance(
+                         instance, GetPossiblyTrimmedValuableSpecifics(id)));
     }
   }
 
   return batch;
+}
+
+const sync_pb::AutofillValuableSpecifics&
+ValuableSyncBridge::GetPossiblyTrimmedValuableSpecifics(
+    std::string_view storage_key) {
+  return change_processor()
+      ->GetPossiblyTrimmedRemoteSpecifics(std::string(storage_key))
+      .autofill_valuable();
 }
 
 std::unique_ptr<syncer::DataBatch> ValuableSyncBridge::GetDataForCommit(
@@ -635,7 +646,9 @@ void ValuableSyncBridge::EntityInstanceChanged(
     case EntityInstanceChange::UPDATE:
       change_processor()->Put(
           *change.key(),
-          CreateEntityDataFromEntityInstance(change.data_model()),
+          CreateEntityDataFromEntityInstance(
+              change.data_model(),
+              GetPossiblyTrimmedValuableSpecifics(*change.key())),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::REMOVE:

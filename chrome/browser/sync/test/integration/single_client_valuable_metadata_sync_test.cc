@@ -49,14 +49,16 @@ sync_pb::SyncEntity EntityInstanceToSyncEntity(
   sync_pb::AutofillValuableSpecifics* valuable_specifics =
       entity.mutable_specifics()->mutable_autofill_valuable();
   *valuable_specifics =
-      autofill::CreateSpecificsFromEntityInstance(entity_instance);
+      autofill::CreateSpecificsFromEntityInstance(entity_instance,
+                                                  /*base_specifics=*/{});
   return entity;
 }
 
 sync_pb::AutofillValuableMetadataSpecifics AsAutofillValuableMetadataSpecifics(
     const EntityInstance::EntityMetadata& metadata,
     const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
-  return autofill::CreateSpecificsFromEntityMetadata(metadata, pass_type);
+  return autofill::CreateSpecificsFromEntityMetadata(metadata, pass_type,
+                                                     /*base_specifics=*/{});
 }
 
 class FakeServerValuableMetadataChecker
@@ -126,7 +128,8 @@ class SingleClientValuableMetadataSyncTest : public SyncTest {
       const EntityInstance::EntityMetadata& metadata,
       const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type) {
     sync_pb::AutofillValuableMetadataSpecifics specifics =
-        CreateSpecificsFromEntityMetadata(metadata, pass_type);
+        CreateSpecificsFromEntityMetadata(metadata, pass_type,
+                                          /*base_specifics=*/{});
     sync_pb::EntitySpecifics entity_specifics;
     *entity_specifics.mutable_autofill_valuable_metadata() = specifics;
     GetFakeServer()->InjectEntity(

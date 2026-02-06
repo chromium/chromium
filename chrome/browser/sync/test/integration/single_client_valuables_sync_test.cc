@@ -111,7 +111,8 @@ sync_pb::SyncEntity EntityInstanceToSyncEntity(
   sync_pb::AutofillValuableSpecifics* valuable_specifics =
       entity.mutable_specifics()->mutable_autofill_valuable();
   *valuable_specifics =
-      autofill::CreateSpecificsFromEntityInstance(entity_instance);
+      autofill::CreateSpecificsFromEntityInstance(entity_instance,
+                                                  /*base_specifics=*/{});
   return entity;
 }
 
@@ -120,7 +121,8 @@ sync_pb::SyncEntity EntityInstanceToSyncEntity(
 // `AutofillValuableSpecifics`.
 sync_pb::AutofillValuableSpecifics AsAutofillValuableSpecifics(
     const EntityInstance& entity_instance) {
-  return autofill::CreateSpecificsFromEntityInstance(entity_instance);
+  return autofill::CreateSpecificsFromEntityInstance(entity_instance,
+                                                     /*base_specifics=*/{});
 }
 
 // Helper class to wait until the fake server's AutofillValuableSpecifics match

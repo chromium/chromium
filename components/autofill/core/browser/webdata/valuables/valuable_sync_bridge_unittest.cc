@@ -31,6 +31,7 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/sync/test/unknown_field_util.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,6 +44,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Return;
+using testing::ReturnRef;
 using testing::UnorderedElementsAre;
 
 constexpr char kId1[] = "1";
@@ -123,6 +125,8 @@ class ValuableSyncBridgeTest : public testing::Test {
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
              &encryptor_);
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
+    ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
 
     bridge_ = std::make_unique<ValuableSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
@@ -181,7 +185,9 @@ class ValuableSyncBridgeTest : public testing::Test {
   }
 
   syncer::EntityData EntityInstanceToEntityData(const EntityInstance& entity) {
-    return std::move(*CreateEntityDataFromEntityInstance(entity));
+    return std::move(
+        *CreateEntityDataFromEntityInstance(entity,
+                                            /*base_specifics=*/{}));
   }
 
   MockAutofillWebDataBackend& backend() { return backend_; }
@@ -361,6 +367,30 @@ TEST_F(ValuableSyncBridgeTest, GetDataForCommit_Entities) {
       bridge().GetDataForCommit({"00000000-0000-4000-8000-300000000000"});
   EXPECT_THAT(ExtractEntitiesFromDataBatch(std::move(batch)),
               ElementsAre(vehicle2));
+}
+
+// Tests that `GetDataForCommit()` includes unknown fields from the server.
+TEST_F(ValuableSyncBridgeTest,
+       GetDataForCommit_Entities_PreservesUnknownFields) {
+  const EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000"});
+  AddEntities({vehicle});
+
+  sync_pb::EntitySpecifics base_specifics;
+  syncer::test::AddUnknownFieldToProto(
+      *base_specifics.mutable_autofill_valuable(), "unknown_field");
+
+  ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+      .WillByDefault(ReturnRef(base_specifics));
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({vehicle.guid().value()});
+  ASSERT_TRUE(batch->HasNext());
+  const syncer::KeyAndData& data_pair = batch->Next();
+  ASSERT_EQ(data_pair.first, vehicle.guid().value());
+  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
+                data_pair.second->specifics.autofill_valuable()),
+            "unknown_field");
 }
 
 // Tests that `GetDataForCommit()` returns an empty batch for no keys.
@@ -669,6 +699,33 @@ TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_RemoveLocal) {
   const EntityInstance vehicle = test::GetVehicleEntityInstance();
   bridge().EntityInstanceChanged(EntityInstanceChange(
       EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
+}
+
+// Tests that `EntityInstanceChanged()` includes unknown fields from the server.
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PreservesUnknownFields) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000"});
+
+  sync_pb::EntitySpecifics base_specifics;
+  syncer::test::AddUnknownFieldToProto(
+      *base_specifics.mutable_autofill_valuable(), "unknown_field");
+  EXPECT_CALL(mock_processor(),
+              GetPossiblyTrimmedRemoteSpecifics(vehicle.guid().value()))
+      .WillOnce(ReturnRef(base_specifics));
+
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([&vehicle](const std::string& storage_key,
+                           std::unique_ptr<syncer::EntityData> entity_data,
+                           syncer::MetadataChangeList* metadata) {
+        ASSERT_EQ(storage_key, vehicle.guid().value());
+        EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
+                      entity_data->specifics.autofill_valuable()),
+                  "unknown_field");
+      });
+
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
 }
 
 class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {

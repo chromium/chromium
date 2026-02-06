@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -125,6 +126,12 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // These cards are converted to their `AutofillLoyaltyCardSpecifics`
   // representation and returned as a `syncer::MutableDataBatch`.
   std::unique_ptr<syncer::MutableDataBatch> GetData();
+
+  // If available, returns cached possibly trimmed
+  // `AutofillValuableSpecifics` for given `storage_key`. By default,
+  // empty `AutofillValuableSpecifics` is returned.
+  const sync_pb::AutofillValuableSpecifics& GetPossiblyTrimmedValuableSpecifics(
+      std::string_view storage_key);
 
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
