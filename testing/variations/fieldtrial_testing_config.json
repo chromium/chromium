@@ -19543,6 +19543,23 @@
             ]
         }
     ],
+    "PasswordUploadUiUpdate": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordUploadUiUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordlessSetup": [
         {
             "platforms": [

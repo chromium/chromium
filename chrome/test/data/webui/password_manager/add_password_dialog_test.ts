@@ -5,6 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {Page, PASSWORD_NOTE_MAX_CHARACTER_COUNT, PasswordManagerImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -125,6 +126,8 @@ suite('AddPasswordDialogTest', function() {
   });
 
   test('show/hide password', async function() {
+    const refresh_suffix =
+        loadTimeData.getBoolean('passwordUploadUiUpdate') ? '-refresh' : '';
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
     await flushTasks();
@@ -135,7 +138,8 @@ suite('AddPasswordDialogTest', function() {
     assertEquals('password', dialog.$.passwordInput.type);
     assertTrue(dialog.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility', dialog.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility' + refresh_suffix,
+        dialog.$.showPasswordButton.getAttribute('class'));
 
     dialog.$.showPasswordButton.click();
 
@@ -144,7 +148,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals('text', dialog.$.passwordInput.type);
     assertTrue(dialog.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility-off',
+        'icon-visibility-off' + refresh_suffix,
         dialog.$.showPasswordButton.getAttribute('class'));
   });
 

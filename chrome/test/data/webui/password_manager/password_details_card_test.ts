@@ -128,6 +128,8 @@ suite('PasswordDetailsCardTest', function() {
   });
 
   test('show/hide password', async function() {
+    const refresh_suffix =
+        loadTimeData.getBoolean('passwordUploadUiUpdate') ? '-refresh' : '';
     const password = createPasswordEntry(
         {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
 
@@ -139,7 +141,8 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals('password', card.$.passwordValue.type);
     assertTrue(card.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility', card.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility' + refresh_suffix,
+        card.$.showPasswordButton.getAttribute('class'));
 
     card.$.showPasswordButton.click();
     assertEquals(
@@ -152,7 +155,8 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals('text', card.$.passwordValue.type);
     assertTrue(card.$.showPasswordButton.hasAttribute('class'));
     assertEquals(
-        'icon-visibility-off', card.$.showPasswordButton.getAttribute('class'));
+        'icon-visibility-off' + refresh_suffix,
+        card.$.showPasswordButton.getAttribute('class'));
   });
 
   test('clicking edit button opens an edit dialog', async function() {
