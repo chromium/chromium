@@ -188,6 +188,10 @@ class EslintTsTest(unittest.TestCase):
             'eventName': 'focus',
             'tagName': 'cr-button',
         },
+        _EXPECTED_ERROR % {
+            'eventName': 'animationend',
+            'tagName': 'div',
+        },
     ]
     for e in errors:
       self.assertTrue(

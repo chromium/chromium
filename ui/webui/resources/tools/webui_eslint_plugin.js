@@ -725,7 +725,7 @@ const inlineEventHandler = ESLintUtils.RuleCreator.withoutDocs({
     // Regular expression to extract all inline lambda event handlers from a
     // string.
     const EVENT_HANDLER_REGEX =
-        /<(?<tagName>[^ >\/!\n]+).*@(?<eventName>[a-zA-Z0-9-]+)\s*=\s*"\$\{\s*\(?.*?\)?\s*=>.*?\}"/g;
+        /@(?<eventName>[a-zA-Z0-9-]+)\s*=\s*"\$\{\s*\(?.*?\)?\s*=>[\s\S]*?\}"/g;
 
     return {
       ['FunctionDeclaration[id.name=/getHtml|getTemplate/]'](node) {
@@ -748,7 +748,14 @@ const inlineEventHandler = ESLintUtils.RuleCreator.withoutDocs({
         }
 
         const eventNames = matches.map(match => match.groups['eventName']);
-        const tagNames = matches.map(match => match.groups['tagName']);
+        const tagNames = matches.map(match => {
+          const tagNameStart =
+              bodyString.substring(0, match.index).lastIndexOf('<') + 1;
+          const tagNameLength = bodyString.substring(tagNameStart).indexOf(' ');
+          return bodyString.substring(
+              tagNameStart, tagNameStart + tagNameLength);
+        });
+
         for (let i = 0; i < eventNames.length; i++) {
           context.report({
             node,

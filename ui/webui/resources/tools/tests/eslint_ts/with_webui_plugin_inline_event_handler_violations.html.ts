@@ -12,6 +12,11 @@ export function getHtml(this: MyDummyElement) {
 <cr-icon-button @click="${(e: Event) => this.onIconClick(e)}"></cr-icon-button>
 <cr-input id="input" @input="${e => this.inputData_ = e.data}">
 </cr-input>
+<div id="animation" class="my-special-animation-class"
+   @animationend="${(e: AnimationEvent) => {
+      this.onAnimationEnd_(e, 'hello');
+    }}">
+</div>
 <select class="md-select" @change="${this.onSelectChange}">
   ${this.myArray.map(item => html`
     <option value="${item.id}">${item.name}</option>
