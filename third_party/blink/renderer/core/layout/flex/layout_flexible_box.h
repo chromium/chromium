@@ -42,6 +42,7 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   bool IsChildAllowed(LayoutObject* object,
                       const ComputedStyle& style) const override;
   void RemoveChild(LayoutObject*) override;
+  void UpdateAfterLayout() override;
 
   bool IsFlexibleBox() const final {
     NOT_DESTROYED();

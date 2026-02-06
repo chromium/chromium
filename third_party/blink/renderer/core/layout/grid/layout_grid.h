@@ -76,6 +76,7 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
     return true;
   }
 
+  void UpdateAfterLayout() override;
   void MarkGridDirty();
 
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;

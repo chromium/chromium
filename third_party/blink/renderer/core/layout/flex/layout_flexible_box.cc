@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -128,6 +129,21 @@ void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
   }
 
   LayoutBlock::RemoveChild(child);
+}
+
+void LayoutFlexibleBox::UpdateAfterLayout() {
+  NOT_DESTROYED();
+
+  // Gap decorations depend on the position of flex items, which may change
+  // when a child's size changes (e.g., during animation). Trigger a full
+  // paint invalidation to ensure the gap decorations repaint correctly.
+  // TODO(crbug.com/357648037): See if the conditions for this can be scoped
+  // more narrowly.
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      StyleRef().HasGapRule()) {
+    SetShouldDoFullPaintInvalidation();
+  }
+  LayoutBlock::UpdateAfterLayout();
 }
 
 }  // namespace blink
