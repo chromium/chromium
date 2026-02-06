@@ -2021,6 +2021,12 @@ class ModeSelectionWindowCycleControllerTest
     generator_ = GetEventGenerator();
   }
 
+  // WindowCycleControllerTest:
+  void TearDown() override {
+    generator_ = nullptr;
+    WindowCycleControllerTest::TearDown();
+  }
+
   void SwitchPerDeskAltTabMode(bool per_desk_mode,
                                bool use_slow_duration = false) {
     gfx::ScopedAnimationDurationScaleMode animation_scale(
@@ -2042,7 +2048,7 @@ class ModeSelectionWindowCycleControllerTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
+  raw_ptr<ui::test::EventGenerator> generator_;
 };
 
 // Tests that when user taps tab slider buttons, the active mode should
@@ -3202,6 +3208,8 @@ class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
 
   void TearDown() override {
     multi_user_window_manager_.reset();
+    generator_ = nullptr;
+    shelf_view_test_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
@@ -3278,7 +3286,7 @@ class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
+  raw_ptr<ui::test::EventGenerator> generator_;
 
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
