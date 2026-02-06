@@ -975,6 +975,8 @@ def main():
                 sys.executable,
                 os.path.join(THIS_DIR, 'build_crubit.py')
             ]
+            if args.rust_force_head_revision:
+                build_cmd.append("--crubit-force-head-revision")
             # TODO(https://crbug.com/481661885): Fix Crubit builds on Windows.
             fail_hard = (sys.platform != 'win32')
             TeeCmd(build_cmd, log, fail_hard=fail_hard)

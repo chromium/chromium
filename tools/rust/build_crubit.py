@@ -131,10 +131,19 @@ def main():
     parser.add_argument('--debug',
                         action='store_true',
                         help=('build Crubit in debug mode'))
+    parser.add_argument('--crubit-force-head-revision',
+                        action='store_true',
+                        help=('build the most recent commit of crubit '
+                              'instead of the current pinned version'))
     args = parser.parse_args()
 
+    if args.crubit_force_head_revision:
+        crubit_revision = GetLatestCrubitCommit()
+    else:
+        crubit_revision = CRUBIT_REVISION
+
     if not args.skip_checkout:
-        CheckoutGitRepo("crubit", CRUBIT_GIT, CRUBIT_REVISION, CRUBIT_SRC_DIR)
+        CheckoutGitRepo("crubit", CRUBIT_GIT, crubit_revision, CRUBIT_SRC_DIR)
 
     if args.out_dir:
         return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, args.out_dir)
