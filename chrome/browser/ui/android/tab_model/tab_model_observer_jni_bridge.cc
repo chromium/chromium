@@ -175,6 +175,9 @@ void TabModelObserverJniBridge::AllTabsAreClosing(JNIEnv* env) {
   for (auto& observer : model_observers_) {
     observer.AllTabsAreClosing();
   }
+  for (auto& observer : interface_observers_) {
+    observer.OnAllTabsAreClosing(*tab_model_);
+  }
 }
 
 void TabModelObserverJniBridge::TabRemoved(JNIEnv* env, TabAndroid* tab) {
