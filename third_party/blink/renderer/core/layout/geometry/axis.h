@@ -34,6 +34,24 @@ inline constexpr LogicalAxes operator&=(LogicalAxes& a, LogicalAxes b) {
   return a;
 }
 
+inline constexpr LogicalAxes operator^(LogicalAxes a, LogicalAxes b) {
+  return LogicalAxes(a.value() ^ b.value());
+}
+
+inline constexpr LogicalAxes operator^=(LogicalAxes& a, LogicalAxes b) {
+  a.value() ^= b.value();
+  return a;
+}
+
+inline constexpr LogicalAxes operator-(LogicalAxes a, LogicalAxes b) {
+  return LogicalAxes(a.value() & ~b.value());
+}
+
+inline constexpr LogicalAxes operator-=(LogicalAxes& a, LogicalAxes b) {
+  a.value() &= ~b.value();
+  return a;
+}
+
 inline constexpr PhysicalAxes operator|(PhysicalAxes a, PhysicalAxes b) {
   return PhysicalAxes(a.value() | b.value());
 }
@@ -58,6 +76,15 @@ inline constexpr PhysicalAxes operator^(PhysicalAxes a, PhysicalAxes b) {
 
 inline constexpr PhysicalAxes operator^=(PhysicalAxes& a, PhysicalAxes b) {
   a.value() ^= b.value();
+  return a;
+}
+
+inline constexpr PhysicalAxes operator-(PhysicalAxes a, PhysicalAxes b) {
+  return PhysicalAxes(a.value() & ~b.value());
+}
+
+inline constexpr PhysicalAxes operator-=(PhysicalAxes& a, PhysicalAxes b) {
+  a.value() &= ~b.value();
   return a;
 }
 

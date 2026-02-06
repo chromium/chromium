@@ -41,6 +41,38 @@ TEST(AxisTest, LogicalAxesOperators) {
     axes &= kLogicalAxesBlock;
     EXPECT_EQ(kLogicalAxesNone, axes);
   }
+
+  // operator ^
+  EXPECT_EQ(kLogicalAxesNone, (kLogicalAxesNone ^ kLogicalAxesNone));
+  EXPECT_EQ(kLogicalAxesNone, (kLogicalAxesBoth ^ kLogicalAxesBoth));
+  EXPECT_EQ(kLogicalAxesBoth, (kLogicalAxesInline ^ kLogicalAxesBlock));
+  EXPECT_EQ(kLogicalAxesBlock, (kLogicalAxesBoth ^ kLogicalAxesInline));
+
+  // operator ^=
+  {
+    LogicalAxes axes(kLogicalAxesNone);
+    EXPECT_EQ(kLogicalAxesNone, axes);
+    axes ^= kLogicalAxesInline;
+    EXPECT_EQ(kLogicalAxesInline, axes);
+    axes ^= kLogicalAxesBoth;
+    EXPECT_EQ(kLogicalAxesBlock, axes);
+  }
+
+  // operator -
+  EXPECT_EQ(kLogicalAxesNone, (kLogicalAxesNone - kLogicalAxesNone));
+  EXPECT_EQ(kLogicalAxesNone, (kLogicalAxesInline - kLogicalAxesBoth));
+  EXPECT_EQ(kLogicalAxesInline, (kLogicalAxesBoth - kLogicalAxesBlock));
+  EXPECT_EQ(kLogicalAxesInline, (kLogicalAxesInline - kLogicalAxesBlock));
+
+  // operator -=
+  {
+    LogicalAxes axes(kLogicalAxesBoth);
+    EXPECT_EQ(kLogicalAxesBoth, axes);
+    axes -= kLogicalAxesInline;
+    EXPECT_EQ(kLogicalAxesBlock, axes);
+    axes -= kLogicalAxesBlock;
+    EXPECT_EQ(kLogicalAxesNone, axes);
+  }
 }
 
 TEST(AxisTest, PhysicalAxesOperators) {
@@ -78,6 +110,42 @@ TEST(AxisTest, PhysicalAxesOperators) {
     axes &= kPhysicalAxesHorizontal;
     EXPECT_EQ(kPhysicalAxesHorizontal, axes);
     axes &= kPhysicalAxesVertical;
+    EXPECT_EQ(kPhysicalAxesNone, axes);
+  }
+
+  // operator ^
+  EXPECT_EQ(kPhysicalAxesNone, (kPhysicalAxesNone ^ kPhysicalAxesNone));
+  EXPECT_EQ(kPhysicalAxesNone, (kPhysicalAxesBoth ^ kPhysicalAxesBoth));
+  EXPECT_EQ(kPhysicalAxesBoth,
+            (kPhysicalAxesHorizontal ^ kPhysicalAxesVertical));
+  EXPECT_EQ(kPhysicalAxesVertical,
+            (kPhysicalAxesBoth ^ kPhysicalAxesHorizontal));
+
+  // operator ^=
+  {
+    PhysicalAxes axes(kPhysicalAxesNone);
+    EXPECT_EQ(kPhysicalAxesNone, axes);
+    axes ^= kPhysicalAxesHorizontal;
+    EXPECT_EQ(kPhysicalAxesHorizontal, axes);
+    axes ^= kPhysicalAxesBoth;
+    EXPECT_EQ(kPhysicalAxesVertical, axes);
+  }
+
+  // operator -
+  EXPECT_EQ(kPhysicalAxesNone, (kPhysicalAxesNone - kPhysicalAxesNone));
+  EXPECT_EQ(kPhysicalAxesNone, (kPhysicalAxesHorizontal - kPhysicalAxesBoth));
+  EXPECT_EQ(kPhysicalAxesHorizontal,
+            (kPhysicalAxesBoth - kPhysicalAxesVertical));
+  EXPECT_EQ(kPhysicalAxesHorizontal,
+            (kPhysicalAxesHorizontal - kPhysicalAxesVertical));
+
+  // operator -=
+  {
+    PhysicalAxes axes(kPhysicalAxesBoth);
+    EXPECT_EQ(kPhysicalAxesBoth, axes);
+    axes -= kPhysicalAxesHorizontal;
+    EXPECT_EQ(kPhysicalAxesVertical, axes);
+    axes -= kPhysicalAxesVertical;
     EXPECT_EQ(kPhysicalAxesNone, axes);
   }
 }
