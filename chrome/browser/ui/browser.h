@@ -965,7 +965,6 @@ class Browser : public TabStripModelObserver,
   void EnumerateDirectory(content::WebContents* web_contents,
                           scoped_refptr<content::FileSelectListener> listener,
                           const base::FilePath& path) override;
-  void OnWebApiWindowResizableChanged() override;
   bool GetCanResize() override;
 #if !BUILDFLAG(IS_ANDROID)
   bool CanUseWindowingControls(
@@ -973,6 +972,7 @@ class Browser : public TabStripModelObserver,
   void MinimizeFromWebAPI() override;
   void MaximizeFromWebAPI() override;
   void RestoreFromWebAPI() override;
+  void SetResizableFromWebAPI(bool resizable) override;
 #endif
   ui::mojom::WindowShowState GetWindowShowState() const override;
   bool CanEnterFullscreenModeForTab(

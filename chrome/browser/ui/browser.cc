@@ -2553,10 +2553,6 @@ void Browser::EnumerateDirectory(
   FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
 }
 
-void Browser::OnWebApiWindowResizableChanged() {
-  window_->OnWebApiWindowResizableChanged();
-}
-
 bool Browser::GetCanResize() {
   return window_->GetCanResize();
 }
@@ -2583,6 +2579,10 @@ void Browser::MaximizeFromWebAPI() {
 
 void Browser::RestoreFromWebAPI() {
   window_->Restore();
+}
+
+void Browser::SetResizableFromWebAPI(bool resizable) {
+  GetBrowserView().SetResizableFromWebApi(resizable);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

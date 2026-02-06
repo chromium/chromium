@@ -501,6 +501,7 @@ class BrowserView : public BrowserWindow,
 
   // Getter for the `window.setResizable(bool)` state.
   std::optional<bool> GetWebApiWindowResizable() const;
+  void SetResizableFromWebApi(std::optional<bool> resizable);
 
   // Returns true if the browser is currently showing tabs in a split view.
   bool IsInSplitView() const;
@@ -558,7 +559,6 @@ class BrowserView : public BrowserWindow,
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
-  void OnWebApiWindowResizableChanged() override;
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
   bool ShouldHideUIForFullscreen() const override;
@@ -755,7 +755,6 @@ class BrowserView : public BrowserWindow,
                                             bool visible) override;
 
   // content::WebContentsObserver:
-  void DidFirstVisuallyNonEmptyPaint() override;
   void TitleWasSet(content::NavigationEntry* entry) override;
 
   // views::ClientView:
@@ -1445,9 +1444,7 @@ class BrowserView : public BrowserWindow,
   std::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
 
-  // Caching the last value of `PageData::can_resize_` that has been notified to
-  // the WidgetObservers to avoid notifying them when nothing has changed.
-  std::optional<bool> cached_can_resize_from_web_api_;
+  std::optional<bool> resizable_from_web_api_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

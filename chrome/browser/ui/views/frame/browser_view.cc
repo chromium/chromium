@@ -1913,10 +1913,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
 
   WebContentsObserver::Observe(new_contents);
 
-  // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
-  // window.setResizable API should never be called from multi-tab browser.
-  CHECK(!GetWebApiWindowResizable());
-
   // If |contents_container_| already has the correct WebContents, we can save
   // some work.  This also prevents extra events from being reported by the
   // Visibility API under Windows, as ChangeWebContents will briefly hide
@@ -2898,21 +2894,7 @@ void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 std::optional<bool> BrowserView::GetWebApiWindowResizable() const {
-  // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
-  if (browser()->tab_strip_model()->count() > 1) {
-    return std::nullopt;
-  }
-
-  // The value can only be set in web apps, where there currently can only be 1
-  // WebContents, the return value can be determined only by looking at the
-  // value set by the active WebContents' primary page.
-  content::WebContents* web_contents =
-      const_cast<BrowserView*>(this)->GetActiveWebContents();
-  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
-    return std::nullopt;
-  }
-
-  return web_contents->GetPrimaryPage().GetResizable();
+  return resizable_from_web_api_;
 }
 
 bool BrowserView::GetCanResize() {
@@ -2933,33 +2915,13 @@ ui::mojom::WindowShowState BrowserView::GetWindowShowState() const {
   }
 }
 
-void BrowserView::OnWebApiWindowResizableChanged() {
-  // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
-  // The value can only be set in web apps, where there currently can only be 1
-  // WebContents, the return value can be determined only by looking at the
-  // value set by the active WebContents' primary page.
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents || !web_contents->GetPrimaryMainFrame() || !GetWidget()) {
+void BrowserView::SetResizableFromWebApi(std::optional<bool> resizable) {
+  // The API is allowed only for PWAs and IWAs
+  CHECK_EQ(browser()->GetType(), BrowserWindowInterface::TYPE_APP);
+  if (resizable == resizable_from_web_api_) {
     return;
   }
-
-  auto can_resize = web_contents->GetPrimaryPage().GetResizable();
-  if (cached_can_resize_from_web_api_ == can_resize) {
-    return;
-  }
-
-  // Setting it to std::nullopt should never be blocked.
-  if (can_resize.has_value() && browser()->tab_strip_model()->count() > 1) {
-    // This adds a warning to the active tab, even when another tab makes the
-    // call, which also needs to be fixed as part of the multi-apps support.
-    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("window.setResizable blocked due to being called "
-                           "from a multi-tab browser."));
-    return;
-  }
-
-  cached_can_resize_from_web_api_ = can_resize;
+  resizable_from_web_api_ = resizable;
   NotifyWidgetSizeConstraintsChanged();
   InvalidateLayout();  // To show/hide the maximize button.
 }
@@ -3006,19 +2968,6 @@ void BrowserView::OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
   // (-[NSWindow beginSheet:]), which natively draw a scrim.
   window_scrim_view_->SetVisible(visible);
 #endif
-}
-
-void BrowserView::DidFirstVisuallyNonEmptyPaint() {
-  auto can_resize = GetWebApiWindowResizable();
-  if (cached_can_resize_from_web_api_ == can_resize) {
-    return;
-  }
-  cached_can_resize_from_web_api_ = can_resize;
-
-  // Observers must be notified when there's new `Page` with a differing
-  // `can_resize` value to make sure that they know that `Widget`'s
-  // resizability has changed.
-  NotifyWidgetSizeConstraintsChanged();
 }
 
 void BrowserView::TitleWasSet(content::NavigationEntry* entry) {

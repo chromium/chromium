@@ -1081,10 +1081,6 @@ bool WebUIBrowserWindow::IsBorderlessModeEnabled() const {
   return false;
 }
 
-void WebUIBrowserWindow::OnWebApiWindowResizableChanged() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 bool WebUIBrowserWindow::GetCanResize() {
   return widget_delegate_->CanResize();
 }

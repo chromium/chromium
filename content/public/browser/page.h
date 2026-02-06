@@ -108,14 +108,6 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // Returns the MIME type bound to the Page contents after a navigation.
   virtual const std::string& GetContentsMimeType() const = 0;
 
-  // Test version of `PageImpl::SetResizable` to allow tests outside of
-  // //content to simulate the value normally set by the
-  // window.setResizable(bool) API.
-  virtual void SetResizableForTesting(std::optional<bool> resizable) = 0;
-  // Returns the value set by `window.setResizable(bool)` API or `std::nullopt`
-  // if unset which can override `BrowserView::CanResize`.
-  virtual std::optional<bool> GetResizable() = 0;
-
 #if BUILDFLAG(IS_ANDROID)
   // Returns a reference to Page Java counterpart.
   virtual const base::android::JavaRef<jobject>& GetJavaPage() = 0;

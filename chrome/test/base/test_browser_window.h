@@ -113,7 +113,6 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   void Maximize() override {}
   void Minimize() override {}
   void Restore() override {}
-  void OnWebApiWindowResizableChanged() override {}
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
   bool ShouldHideUIForFullscreen() const override;

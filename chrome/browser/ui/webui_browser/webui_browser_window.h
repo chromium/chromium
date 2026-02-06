@@ -207,7 +207,6 @@ class WebUIBrowserWindow : public BrowserWindow,
   void ShowIncognitoClearBrowsingDataDialog() override;
   void ShowIncognitoHistoryDisclaimerDialog() override;
   bool IsBorderlessModeEnabled() const override;
-  void OnWebApiWindowResizableChanged() override;
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
   void ShowChromeLabs() override;

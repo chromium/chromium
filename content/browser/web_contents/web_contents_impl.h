@@ -789,6 +789,7 @@ class CONTENT_EXPORT WebContentsImpl
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
+  void SetResizable(bool resizable) override;
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void UpdateUserGestureCarryoverInfo() override;
@@ -1245,7 +1246,6 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsPageInPreviewMode() const override;
   void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) override;
-  void OnWebApiWindowResizableChanged() override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
   void OnColorChooserFactoryReceiver(

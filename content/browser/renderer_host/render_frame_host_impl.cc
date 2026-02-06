@@ -8389,7 +8389,7 @@ void RenderFrameHostImpl::SetResizable(bool resizable) {
     return;
   }
 
-  GetPage().SetResizable(resizable);
+  delegate_->SetResizable(resizable);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

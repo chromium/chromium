@@ -105,6 +105,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -2132,8 +2133,10 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     : public WebAppFrameToolbarBrowserTest {
  public:
   WebAppFrameToolbarBrowserTest_AdditionalWindowingControls() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kDesktopPWAsAdditionalWindowingControls);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kDesktopPWAsAdditionalWindowingControls,
+         blink::features::kDesktopPWAsTabStrip},
+        {});
   }
 
   void SetUp() override {
@@ -2143,7 +2146,7 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     WebAppFrameToolbarBrowserTest::SetUp();
   }
 
-  webapps::AppId InstallAndLaunchWebApp() {
+  webapps::AppId InstallAndLaunchWebApp(bool tabbed = false) {
     DCHECK(https_server()->Started());
 
     const GURL start_url = helper()->LoadTestPageWithDataAndGetURL(
@@ -2155,9 +2158,15 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = std::move(u"Test app");
-    web_app_info->display_mode = web_app::DisplayMode::kStandalone;
-    web_app_info->user_display_mode =
-        web_app::mojom::UserDisplayMode::kStandalone;
+    if (tabbed) {
+      web_app_info->display_mode = web_app::DisplayMode::kTabbed;
+      web_app_info->user_display_mode =
+          web_app::mojom::UserDisplayMode::kTabbed;
+    } else {
+      web_app_info->display_mode = web_app::DisplayMode::kStandalone;
+      web_app_info->user_display_mode =
+          web_app::mojom::UserDisplayMode::kStandalone;
+    }
 
     return helper()->InstallAndLaunchCustomWebApp(
         browser(), std::move(web_app_info), start_url);
@@ -2264,7 +2273,7 @@ IN_PROC_BROWSER_TEST_F(
   // `BrowserView` which `can_resize` is true. Otherwise it cannot be overridden
   // by the web API.
   helper()->browser_view()->SetCanResize(false);
-  web_contents->GetPrimaryPage().SetResizableForTesting(std::nullopt);
+  helper()->browser_view()->SetResizableFromWebApi(std::nullopt);
   CheckCanResize(false, std::nullopt);
 
   EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
@@ -2310,7 +2319,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), false);
 
   // Sets the resizability true for the second page.
   EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/true,
@@ -2321,65 +2330,89 @@ IN_PROC_BROWSER_TEST_F(
   // Returns back to the main page.
   web_contents->GetController().GoBack();
   content::WaitForLoadStop(web_contents);
-  // Reads the resizability from the BFCache if it's enabled. Otherwise null.
-  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_FALSE(helper()->browser_view()->GetWebApiWindowResizable().value());
-  } else {
-    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
-              std::nullopt);
-  }
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), true);
 
   // Navigates forward to the already visited second page.
   web_contents->GetController().GoForward();
   content::WaitForLoadStop(web_contents);
-  // Reads the resizability from the BFCache if it's enabled. Otherwise null.
-  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_TRUE(helper()->browser_view()->GetWebApiWindowResizable().value());
-  } else {
-    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
-              std::nullopt);
-  }
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), true);
 }
 
 // TODO(crbug.com/362078628): Gardening. This test has been flaky for long.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability \
-  DISABLED_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability
+#define MAYBE_NavigatingOutsideTheAppScopeAndBack \
+  DISABLED_NavigatingOutsideTheAppScopeAndBack
 #else
-#define MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability \
-  NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability
+#define MAYBE_NavigatingOutsideTheAppScopeAndBack \
+  NavigatingOutsideTheAppScopeAndBack
 #endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability) {
+    MAYBE_NavigatingOutsideTheAppScopeAndBack) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
   // Sets the resizability true for the app.
-  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/true,
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
+  CheckCanResize(false, false);
+
+  // Navigating to a different URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
+                                           GURL("https://www.google.com/")));
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), false);
+
+  // Returning to the original URL.
+  web_contents->GetController().GoBack();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    SetResizableMultiTabWebApp) {
+  InstallAndLaunchWebApp(/*tabbed=*/true);
+  helper()->GrantWindowManagementPermission();
+
+  // Add second tab.
+  chrome::NewTab(helper()->app_browser());
+  ASSERT_EQ(helper()->app_browser()->tab_strip_model()->count(), 2);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
+
+  // Return to the first tab.
+  chrome::SelectNextTab(helper()->app_browser());
+  auto* const web_contents_first_tab =
+      helper()->browser_view()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents_first_tab);
+
+  // Set the resizability to false in the first tab.
+  EXPECT_EQ(EvalSetResizable(web_contents_first_tab, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
+  CheckCanResize(false, false);
+
+  // Switch to the second tab of the app.
+  chrome::SelectNextTab(helper()->app_browser());
+  auto* const web_contents_second_tab =
+      helper()->browser_view()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents_second_tab);
+  CheckCanResize(false, false);
+
+  // Set the resizability to true in the second tab.
+  EXPECT_EQ(EvalSetResizable(web_contents_second_tab, /*resizable_passed=*/true,
                              /*resizable_expected=*/true),
             "window.setResizable(true) succeeded.");
   CheckCanResize(true, true);
 
-  // Another URL where resizability is not set resets the web API overridden
-  // resizability.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
-                                           GURL("https://www.google.com/")));
-  content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
-
-  // Returning to the original URL then reads the resizability from the BFCache
-  // if it's enabled.
-  web_contents->GetController().GoBack();
-  content::WaitForLoadStop(web_contents);
-  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
-    EXPECT_TRUE(helper()->browser_view()->GetWebApiWindowResizable().value());
-  } else {
-    EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(),
-              std::nullopt);
-  }
+  // Return back to the first tab.
+  chrome::SelectNextTab(helper()->app_browser());
+  content::WaitForLoadStop(web_contents_first_tab);
+  CheckCanResize(true, true);
 }
 
 IN_PROC_BROWSER_TEST_F(

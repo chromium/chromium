@@ -117,19 +117,6 @@ const std::string& PageImpl::GetContentsMimeType() const {
   return contents_mime_type_;
 }
 
-void PageImpl::SetResizableForTesting(std::optional<bool> resizable) {
-  SetResizable(resizable);
-}
-
-void PageImpl::SetResizable(std::optional<bool> resizable) {
-  resizable_ = resizable;
-  delegate_->OnWebApiWindowResizableChanged();
-}
-
-std::optional<bool> PageImpl::GetResizable() {
-  return resizable_;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 const base::android::JavaRef<jobject>& PageImpl::GetJavaPage() {
   return page_proxy_->java_page();

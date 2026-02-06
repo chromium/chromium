@@ -368,6 +368,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Request to restore window.
   virtual void Restore() {}
+
+  // Request to set resizable.
+  virtual void SetResizable(bool) {}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

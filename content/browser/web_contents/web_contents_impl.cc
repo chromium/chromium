@@ -4819,6 +4819,13 @@ void WebContentsImpl::Restore() {
   }
   GetDelegate()->RestoreFromWebAPI();
 }
+
+void WebContentsImpl::SetResizable(bool resizable) {
+  if (!GetDelegate()) {
+    return;
+  }
+  GetDelegate()->SetResizableFromWebAPI(resizable);
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
@@ -11905,10 +11912,6 @@ void WebContentsImpl::CancelPreviewByMojoBinderPolicy(
     delegate_->CancelPreview(
         PreviewCancelReason::BlockedByMojoBinderPolicy(interface_name));
   }
-}
-
-void WebContentsImpl::OnWebApiWindowResizableChanged() {
-  delegate_->OnWebApiWindowResizableChanged();
 }
 
 FrameTreeNodeId WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {

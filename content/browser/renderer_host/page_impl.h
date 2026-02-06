@@ -75,15 +75,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
   const std::string& GetContentsMimeType() const override;
-  void SetResizableForTesting(std::optional<bool> resizable) override;
-  std::optional<bool> GetResizable() override;
 #if BUILDFLAG(IS_ANDROID)
   const base::android::JavaRef<jobject>& GetJavaPage() override;
 #endif
 
-  // Setter for the `window.setResizable(bool)` API's value defining whether the
-  // window can be resized or not. `std::nullopt` means the value is not set.
-  void SetResizable(std::optional<bool> resizable);
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
   virtual void UpdateManifestUrl(const GURL& manifest_url);
@@ -352,10 +347,6 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Whether the first visually non-empty paint has occurred.
   bool did_first_visually_non_empty_paint_ = false;
-
-  // Stores the value set by `window.setResizable(bool)` API for whether the
-  // window can be resized or not. `std::nullopt` means the value is not set.
-  std::optional<bool> resizable_ = std::nullopt;
 
   // A 64 bit token used as the initial hash value for canvas noising per page,
   // where nullopt indicates canvas noising should not be enabled for the page.
