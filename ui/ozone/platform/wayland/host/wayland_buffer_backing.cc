@@ -13,13 +13,8 @@ namespace ui {
 WaylandBufferBacking::WaylandBufferBacking(const WaylandConnection* connection,
                                            uint32_t buffer_id,
                                            const gfx::Size& size,
-                                           BufferBackingType type,
-                                           uint32_t format)
-    : connection_(connection),
-      format_(format),
-      buffer_id_(buffer_id),
-      size_(size),
-      type_(type) {
+                                           BufferBackingType type)
+    : connection_(connection), buffer_id_(buffer_id), size_(size), type_(type) {
   DCHECK(connection_);
   DCHECK_NE(buffer_id_, kInvalidBufferId);
 }

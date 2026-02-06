@@ -40,12 +40,10 @@ class WaylandBufferBacking {
   WaylandBufferBacking(const WaylandConnection* connection,
                        uint32_t buffer_id,
                        const gfx::Size& size,
-                       BufferBackingType type,
-                       uint32_t format = DRM_FORMAT_INVALID);
+                       BufferBackingType type);
   virtual ~WaylandBufferBacking();
 
   const WaylandConnection* connection() const { return connection_; }
-  uint32_t format() const { return format_; }
   uint32_t id() const { return buffer_id_; }
   gfx::Size size() const { return size_; }
 
@@ -66,9 +64,6 @@ class WaylandBufferBacking {
  private:
   // Non-owned pointer to the main connection.
   raw_ptr<const WaylandConnection> connection_;
-
-  // DRM buffer format if specified, otherwise DRM_FORMAT_INVALID (0)
-  const uint32_t format_;
 
   // Requests a new wl_buffer. |callback| will be run with the created wl_buffer
   // object when creation is complete.
