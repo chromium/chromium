@@ -20,13 +20,11 @@
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
+#include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -43,6 +41,18 @@
 namespace extensions {
 
 namespace {
+
+class NullPolicyChecker : public actor::EnterprisePolicyUrlChecker {
+ public:
+  actor::EnterprisePolicyBlockReason Evaluate(const GURL& url) const override {
+    return actor::EnterprisePolicyBlockReason::kNotBlocked;
+  }
+};
+
+NullPolicyChecker& GetNullPolicyChecker() {
+  static NullPolicyChecker checker;
+  return checker;
+}
 
 // Converts a session tab id to a tab handle.
 int32_t ConvertSessionTabIdToTabHandle(
@@ -159,14 +169,8 @@ ExperimentalActorCreateTaskFunction::~ExperimentalActorCreateTaskFunction() =
     default;
 
 ExtensionFunction::ResponseAction ExperimentalActorCreateTaskFunction::Run() {
-  // TODO(bokan): This is here to preserve behavior but extension API shouldn't
-  // be using Glic enterprise policies and can be removed.
-  auto* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_context());
-
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
-  actor::TaskId task_id =
-      actor_service->CreateTask(&glic_service->actor_policy_checker());
+  actor::TaskId task_id = actor_service->CreateTask(&GetNullPolicyChecker());
 
   return RespondNow(ArgumentList(
       api::experimental_actor::CreateTask::Results::Create(task_id.value())));

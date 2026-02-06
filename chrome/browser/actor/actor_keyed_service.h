@@ -74,8 +74,9 @@ class ActorKeyedService : public KeyedService,
   void ResetForTesting();
 
   // Starts a new task with an execution engine and returns the new task's id.
-  // `options`, when provided, contains information used to initialize the
-  // task.
+  // `options`, when provided, contains information used to initialize the task.
+  // The provided `policy_checker` must be non-null and it must outlive the
+  // ActorTask.
   TaskId CreateTask(const EnterprisePolicyUrlChecker* policy_checker);
   TaskId CreateTaskWithOptions(const EnterprisePolicyUrlChecker* policy_checker,
                                webui::mojom::TaskOptionsPtr options,
