@@ -193,8 +193,8 @@ void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
         // TODO(https://crbug.com/437416134): Revamp this for better interfacing
         // and fix potential bugs.
         auto& current_redirect_hop = GetCurrentSingleRedirectHopToServe();
-        DUMP_WILL_BE_CHECK(
-            !current_redirect_hop.on_cookie_copy_complete_callback_);
+        // TODO(crbug.com/482216429): `on_cookie_copy_complete_callback_` can
+        // be non-null here so probably we should make this a list of callbacks.
         current_redirect_hop.on_cookie_copy_complete_callback_ =
             BindOnceForRvalueMemberMethod<>(
                 &PrefetchServingHandle::OnCookieCopyComplete, std::move(*this),
