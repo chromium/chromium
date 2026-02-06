@@ -11,13 +11,13 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
 
 namespace ash::settings {
 
-class GuestOsHandler : public ::settings::SettingsPageUIHandler,
+class GuestOsHandler : public content::WebUIMessageHandler,
                        public CrosUsbDeviceObserver {
  public:
   explicit GuestOsHandler(Profile* profile);
@@ -25,7 +25,7 @@ class GuestOsHandler : public ::settings::SettingsPageUIHandler,
   GuestOsHandler& operator=(const GuestOsHandler&) = delete;
   ~GuestOsHandler() override;
 
-  // SettingsPageUIHandler
+  // content::WebUIMessageHandler
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

@@ -8,9 +8,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
@@ -20,7 +20,7 @@ class Profile;
 namespace ash::settings {
 
 // Chrome OS fingerprint setup settings page UI handler.
-class FingerprintHandler : public ::settings::SettingsPageUIHandler,
+class FingerprintHandler : public content::WebUIMessageHandler,
                            public device::mojom::FingerprintObserver,
                            public session_manager::SessionManagerObserver {
  public:
@@ -31,7 +31,7 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
 
   ~FingerprintHandler() override;
 
-  // SettingsPageUIHandler overrides:
+  // content::WebUIMessageHandler overrides:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

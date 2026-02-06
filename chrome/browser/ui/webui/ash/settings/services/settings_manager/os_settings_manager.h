@@ -82,7 +82,7 @@ class SettingsUserActionTracker;
 //     flags passed as booleans.
 //
 // (3) Add logic supporting message-passing between the browser process (C++)
-//     and the settings app (JS), via SettingsPageUIHandler objects.
+//     and the settings app (JS), via content::WebUIMessageHandler objects.
 class OsSettingsManager : public KeyedService {
  public:
   OsSettingsManager(
@@ -106,7 +106,7 @@ class OsSettingsManager : public KeyedService {
   // function.
   void AddLoadTimeData(content::WebUIDataSource* html_source);
 
-  // Adds SettingsPageUIHandlers to an OS settings instance.
+  // Adds content::WebUIMessageHandlers to an OS settings instance.
   void AddHandlers(content::WebUI* web_ui);
 
   AppNotificationHandler* app_notification_handler() {

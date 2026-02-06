@@ -7,14 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash::settings {
 
 // Chrome OS "Keyboard" settings page UI handler.
-class KeyboardHandler : public ::settings::SettingsPageUIHandler,
+class KeyboardHandler : public content::WebUIMessageHandler,
                         public ui::InputDeviceEventObserver {
  public:
   // Name of the message sent to WebUI when the keys that should be shown
@@ -43,7 +43,7 @@ class KeyboardHandler : public ::settings::SettingsPageUIHandler,
 
   ~KeyboardHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

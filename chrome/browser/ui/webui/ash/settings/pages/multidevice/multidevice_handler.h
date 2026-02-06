@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
@@ -21,6 +20,7 @@
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class PrefService;
 
@@ -28,7 +28,7 @@ namespace ash::settings {
 
 // Chrome "Multidevice" (a.k.a. "Connected Devices") settings page UI handler.
 class MultideviceHandler
-    : public ::settings::SettingsPageUIHandler,
+    : public content::WebUIMessageHandler,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public phonehub::MultideviceFeatureAccessManager::Observer,
       public phonehub::NotificationAccessSetupOperation::Delegate,
@@ -63,7 +63,7 @@ class MultideviceHandler
   void LogPhoneHubPermissionOnboardingSetupResult(const base::ListValue& args);
 
  private:
-  // ::settings::SettingsPageUIHandler:
+  // content::WebUIMessageHandler:
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 

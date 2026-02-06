@@ -10,14 +10,14 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/note_taking/note_taking_helper.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash::settings {
 
 // Chrome OS stylus settings handler.
-class StylusHandler : public ::settings::SettingsPageUIHandler,
+class StylusHandler : public content::WebUIMessageHandler,
                       public NoteTakingHelper::Observer,
                       public ui::InputDeviceEventObserver {
  public:
@@ -28,7 +28,7 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
 
   ~StylusHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

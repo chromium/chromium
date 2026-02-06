@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "chrome/browser/ash/system/pointer_device_observer.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash::settings {
 
 // Chrome OS "Mouse and touchpad" settings page UI handler.
-class PointerHandler : public ::settings::SettingsPageUIHandler,
+class PointerHandler : public content::WebUIMessageHandler,
                        public system::PointerDeviceObserver::Observer {
  public:
   PointerHandler();
@@ -23,7 +23,7 @@ class PointerHandler : public ::settings::SettingsPageUIHandler,
 
   ~PointerHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

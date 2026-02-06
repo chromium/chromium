@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_INTERNET_INTERNET_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/tether/gms_core_notifications_state_tracker.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/gfx/native_ui_types.h"
 
 class Profile;
@@ -17,7 +17,7 @@ namespace ash::settings {
 // Chrome OS Internet settings page UI handler.
 class InternetHandler
     : public tether::GmsCoreNotificationsStateTracker::Observer,
-      public ::settings::SettingsPageUIHandler {
+      public content::WebUIMessageHandler {
  public:
   explicit InternetHandler(Profile* profile);
 
@@ -26,7 +26,7 @@ class InternetHandler
 
   ~InternetHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

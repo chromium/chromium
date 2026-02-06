@@ -7,15 +7,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash::settings {
 
 // Chrome OS date and time settings page UI handler.
-class DateTimeHandler : public ::settings::SettingsPageUIHandler,
+class DateTimeHandler : public content::WebUIMessageHandler,
                         public SystemClockClient::Observer {
  public:
   DateTimeHandler();
@@ -25,7 +25,7 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
 
   ~DateTimeHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

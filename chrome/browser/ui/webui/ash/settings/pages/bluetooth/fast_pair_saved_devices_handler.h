@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ class FastPairImageDecoder;
 namespace settings {
 
 // Chrome OS Fast Pair Saved Devices subpage UI handler.
-class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
+class FastPairSavedDevicesHandler : public content::WebUIMessageHandler {
  public:
   FastPairSavedDevicesHandler();
   explicit FastPairSavedDevicesHandler(
@@ -33,7 +33,7 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
       delete;
   ~FastPairSavedDevicesHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

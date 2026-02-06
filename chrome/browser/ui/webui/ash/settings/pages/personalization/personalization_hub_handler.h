@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PERSONALIZATION_PERSONALIZATION_HUB_HANDLER_H_
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash::settings {
 
 // Chrome "Personalization Hub" settings page UI handler.
-class PersonalizationHubHandler : public ::settings::SettingsPageUIHandler {
+class PersonalizationHubHandler : public content::WebUIMessageHandler {
  public:
   PersonalizationHubHandler();
 
@@ -21,7 +21,7 @@ class PersonalizationHubHandler : public ::settings::SettingsPageUIHandler {
 
   ~PersonalizationHubHandler() override;
 
-  // SettingsPageUIHandler:
+  // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override {}
   void OnJavascriptDisallowed() override {}

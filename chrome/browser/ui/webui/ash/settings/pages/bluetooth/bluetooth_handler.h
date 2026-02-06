@@ -7,20 +7,20 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::settings {
 
 // Chrome OS Bluetooth subpage UI handler.
-class BluetoothHandler : public ::settings::SettingsPageUIHandler {
+class BluetoothHandler : public content::WebUIMessageHandler {
  public:
   BluetoothHandler();
   BluetoothHandler(const BluetoothHandler&) = delete;
   BluetoothHandler& operator=(const BluetoothHandler&) = delete;
   ~BluetoothHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

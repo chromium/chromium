@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -26,7 +26,7 @@ class TimeTicks;
 namespace ash::settings {
 
 // Chrome OS battery status and power settings handler.
-class PowerHandler : public ::settings::SettingsPageUIHandler,
+class PowerHandler : public content::WebUIMessageHandler,
                      public chromeos::PowerManagerClient::Observer {
  public:
   // Idle behaviors presented in the UI. These are mapped to preferences by
@@ -88,7 +88,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
 
   ~PowerHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

@@ -26,7 +26,7 @@ class TtsHandler : public SettingsWithTtsPreviewHandler {
   void HandleGetDisplayNameForLocale(const base::ListValue& args);
   void HandleGetApplicationLocale(const base::ListValue& args);
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
   // VoicesChangedDelegate implementation.

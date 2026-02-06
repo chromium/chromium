@@ -8,12 +8,11 @@
 #include "ash/quick_pair/feature_status_tracker/battery_saver_active_provider.h"
 #include "ash/quick_pair/feature_status_tracker/hardware_offloading_supported_provider.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash::settings {
 
-class FastPairSoftwareScanningHandler
-    : public ::settings::SettingsPageUIHandler {
+class FastPairSoftwareScanningHandler : public content::WebUIMessageHandler {
  public:
   FastPairSoftwareScanningHandler(
       std::unique_ptr<ash::quick_pair::BatterySaverActiveProvider>
@@ -26,10 +25,8 @@ class FastPairSoftwareScanningHandler
       const FastPairSoftwareScanningHandler&) = delete;
   ~FastPairSoftwareScanningHandler() override;
 
-  // WebUIMessageHandler
+  // content::WebUIMessageHandler
   void RegisterMessages() override;
-
-  // SettingsPageUIHandler
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 

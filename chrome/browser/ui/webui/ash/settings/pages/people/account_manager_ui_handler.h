@@ -12,19 +12,19 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
 
 namespace ash::settings {
 
 class AccountManagerUIHandler
-    : public ::settings::SettingsPageUIHandler,
+    : public content::WebUIMessageHandler,
       public account_manager::AccountManagerFacade::Observer,
       public signin::IdentityManager::Observer,
       public AccountAppsAvailability::Observer {

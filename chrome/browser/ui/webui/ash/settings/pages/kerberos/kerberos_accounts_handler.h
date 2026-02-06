@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace content {
 class WebUIDataSource;
@@ -29,7 +29,7 @@ class Profile;
 
 namespace ash::settings {
 
-class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
+class KerberosAccountsHandler : public content::WebUIMessageHandler,
                                 public KerberosCredentialsManager::Observer {
  public:
   static std::unique_ptr<KerberosAccountsHandler> CreateIfKerberosEnabled(

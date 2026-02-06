@@ -13,9 +13,9 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
 
@@ -43,7 +43,7 @@ inline constexpr int64_t kSpaceCriticallyLowBytes = 512 * 1024 * 1024;
 // Threshold to show a message indicating space is low (1 GB).
 inline constexpr int64_t kSpaceLowBytes = 1 * 1024 * 1024 * 1024;
 
-class StorageHandler : public ::settings::SettingsPageUIHandler,
+class StorageHandler : public content::WebUIMessageHandler,
                        public arc::ArcSessionManagerObserver,
                        public disks::DiskMountManager::Observer,
                        public SizeCalculator::Observer {
@@ -55,7 +55,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
 
   ~StorageHandler() override;
 
-  // ::settings::SettingsPageUIHandler:
+  // content::WebUIMessageHandler:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

@@ -14,12 +14,12 @@
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
 
@@ -30,7 +30,7 @@ struct CrostiniDiskInfo;
 
 namespace ash::settings {
 
-class CrostiniHandler : public ::settings::SettingsPageUIHandler,
+class CrostiniHandler : public content::WebUIMessageHandler,
                         public crostini::CrostiniDialogStatusObserver,
                         public crostini::CrostiniExportImport::Observer,
                         public crostini::CrostiniPortForwarder::Observer,
@@ -44,7 +44,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
 
   ~CrostiniHandler() override;
 
-  // SettingsPageUIHandler
+  // content::WebUIMessageHandler
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

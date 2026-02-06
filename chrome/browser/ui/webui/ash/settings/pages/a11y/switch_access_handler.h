@@ -7,8 +7,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/events/event_handler.h"
 
 class PrefService;
@@ -16,14 +16,14 @@ class PrefService;
 namespace ash::settings {
 
 // Settings handler for the switch access subpage.
-class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
+class SwitchAccessHandler : public content::WebUIMessageHandler,
                             public ui::EventHandler {
  public:
   explicit SwitchAccessHandler(PrefService* prefs);
 
   ~SwitchAccessHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

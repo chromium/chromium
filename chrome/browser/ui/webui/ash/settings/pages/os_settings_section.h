@@ -39,8 +39,9 @@ class SearchTagRegistry;
 // tags should be removed via RemoveSearchTags().
 //
 // When the settings app is initialized, this class is used to add loadTimeData
-// (e.g., localized strings and flag values) as well as SettingsPageUIHandlers
-// (i.e., browser to JS IPC mechanisms) to the page.
+// (e.g., localized strings and flag values) as well as
+// content::WebUIMessageHandlers (i.e., browser to JS IPC mechanisms) to the
+// page.
 class OsSettingsSection {
  public:
   // Used to construct a hierarchy of this section (i.e., which settings and
@@ -107,8 +108,8 @@ class OsSettingsSection {
   // settings instance.
   virtual void AddLoadTimeData(content::WebUIDataSource* html_source) = 0;
 
-  // Adds SettingsPageUIHandlers to an OS settings instance. Override if the
-  // derived type requires one or more handlers for this section.
+  // Adds content::WebUIMessageHandlers to an OS settings instance. Override if
+  // the derived type requires one or more handlers for this section.
   virtual void AddHandlers(content::WebUI* web_ui) {}
 
   // Provides the message ID for the name of this section.

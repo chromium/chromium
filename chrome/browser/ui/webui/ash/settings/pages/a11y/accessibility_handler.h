@@ -8,14 +8,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/soda/soda_installer.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
 
 namespace ash::settings {
 
-class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
+class AccessibilityHandler : public content::WebUIMessageHandler,
                              public speech::SodaInstaller::Observer {
  public:
   explicit AccessibilityHandler(Profile* profile);
@@ -25,7 +25,7 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
 
   ~AccessibilityHandler() override;
 
-  // SettingsPageUIHandler implementation.
+  // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;

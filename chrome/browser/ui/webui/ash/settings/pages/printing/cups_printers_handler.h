@@ -15,11 +15,11 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "printing/printer_query_result.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -49,7 +49,7 @@ class ServerPrintersFetcher;
 namespace settings {
 
 // Chrome OS CUPS printing settings page UI handler.
-class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
+class CupsPrintersHandler : public content::WebUIMessageHandler,
                             public ui::SelectFileDialog::Listener,
                             public CupsPrintersManager::Observer,
                             public CupsPrintersManager::LocalPrintersObserver {
@@ -66,7 +66,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   ~CupsPrintersHandler() override;
 
-  // SettingsPageUIHandler overrides:
+  // content::WebUIMessageHandler overrides:
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
