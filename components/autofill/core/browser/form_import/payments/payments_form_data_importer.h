@@ -36,6 +36,8 @@ class PaymentsFormDataImporter {
   virtual ~PaymentsFormDataImporter();
 
  private:
+  friend class PaymentsFormDataImporterTestApi;
+
   const raw_ref<AutofillClient> client_;
 };
 
