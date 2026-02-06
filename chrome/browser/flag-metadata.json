@@ -137,11 +137,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "allow-dsp-based-aec",
-    "owners": [ "peah@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "allow-dsp-based-agc",
     "owners": [ "peah@chromium.org" ],
     "expiry_milestone": 128

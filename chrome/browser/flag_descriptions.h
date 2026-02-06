@@ -7726,11 +7726,6 @@ inline constexpr char kTetheringExperimentalFunctionalityDescription[] =
 
 // Prefer keeping this section sorted to adding new definitions down here.
 
-inline constexpr char kCrOSDspBasedAecAllowedName[] =
-    "Allow CRAS to use a DSP-based AEC if available";
-inline constexpr char kCrOSDspBasedAecAllowedDescription[] =
-    "Allows the system variant of the AEC in CRAS to be run on DSP ";
-
 inline constexpr char kCrOSDspBasedNsAllowedName[] =
     "Allow CRAS to use a DSP-based NS if available";
 inline constexpr char kCrOSDspBasedNsAllowedDescription[] =

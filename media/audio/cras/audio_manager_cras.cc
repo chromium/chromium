@@ -95,9 +95,8 @@ bool IsSystemAecDeactivated(int aec_group_id) {
 // allow using DSP-based AEC effect.
 bool IsDspBasedAecDeactivated(int aec_group_id) {
   return base::GetFieldTrialParamByFeatureAsBool(
-             media::kCrOSDspBasedAecDeactivatedGroups,
-             base::NumberToString(aec_group_id), false) ||
-         !base::FeatureList::IsEnabled(media::kCrOSDspBasedAecAllowed);
+      media::kCrOSDspBasedAecDeactivatedGroups,
+      base::NumberToString(aec_group_id), false);
 }
 
 // Checks if the board with `aec_group_id` is flagged by the field trial to not
