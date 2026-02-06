@@ -50,6 +50,7 @@ class MultiContentsResizeArea : public views::ResizeArea {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void SetVisible(bool visible) override;
 
  private:
   raw_ptr<MultiContentsView> multi_contents_view_;

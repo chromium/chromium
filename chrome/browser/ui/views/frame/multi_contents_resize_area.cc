@@ -55,7 +55,8 @@ MultiContentsResizeHandle::MultiContentsResizeHandle() {
 }
 
 void MultiContentsResizeHandle::UpdateVisibility() {
-  layer()->SetVisible(HasFocus() || parent()->IsMouseHovered());
+  layer()->SetVisible(parent()->GetVisible() &&
+                      (HasFocus() || parent()->IsMouseHovered()));
 }
 
 void MultiContentsResizeHandle::AddedToWidget() {
@@ -129,6 +130,11 @@ void MultiContentsResizeArea::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void MultiContentsResizeArea::OnMouseExited(const ui::MouseEvent& event) {
+  resize_handle_->UpdateVisibility();
+}
+
+void MultiContentsResizeArea::SetVisible(bool visible) {
+  views::View::SetVisible(visible);
   resize_handle_->UpdateVisibility();
 }
 
