@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SAFE_BROWSING_ANDROID_REAL_TIME_URL_CHECKS_ALLOWLIST_H_
 #define COMPONENTS_SAFE_BROWSING_ANDROID_REAL_TIME_URL_CHECKS_ALLOWLIST_H_
 
-#include <set>
 #include <string>
 
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -125,8 +125,9 @@ class RealTimeUrlChecksAllowlist {
 
   // Set of URL hash prefixes in the safe browsing allowlist.
   // We are not using a flat_set because these are ideal for small sets, but
-  // the allowlist contains roughly 2,000 strings so we are using std::set.
-  std::set<std::string> allowlist_patterns_;
+  // the allowlist contains roughly 2,000 strings so we are using
+  // absl::flat_hash_set.
+  absl::flat_hash_set<std::string> allowlist_patterns_;
 
   // Version of the allowlist, same as version_id in realtimeallowlist.proto.
   int version_id_;
