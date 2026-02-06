@@ -39,6 +39,10 @@ class DictionarySyncPerfTest : public SyncTest {
   DictionarySyncPerfTest& operator=(const DictionarySyncPerfTest&) = delete;
 
   ~DictionarySyncPerfTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {
