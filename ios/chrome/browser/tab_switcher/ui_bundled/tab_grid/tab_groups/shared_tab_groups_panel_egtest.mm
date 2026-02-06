@@ -152,6 +152,12 @@ void AddSharedGroup(BOOL owner,
 
 // Tests that leaving a shared tab group from the tab groups panel works.
 - (void)testSharedTabGroupsPanelLeaveSharedGroup {
+  // TODO(crbug.com/482348307): Test fails on iPad simulator.
+#if TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad simulator.");
+  }
+#endif
   AddSharedGroup(/*owner=*/NO, self.testServer);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
