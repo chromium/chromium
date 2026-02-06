@@ -58,6 +58,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/omnibox/common/logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/consent_level.h"
@@ -891,6 +892,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   bool is_ai_page = ui_service_->IsAiUrl(url);
   task_info_delegate_->SetIsAiPage(is_ai_page);
 
+  OMNIBOX_LOG("embedded_page_nav") << navigation_handle->GetURL().spec();
+
   // Set whether this navigation is to a zero state so the UI can adjust
   // accordingly.
   const bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
@@ -1017,6 +1020,9 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   task_info_delegate_->SetThreadTurnId(mstk);
 
   if (task_changed) {
+    OMNIBOX_LOG("embedded_page_nav")
+        << "Task changed: "
+        << task_info_delegate_->GetTaskId().value().AsLowercaseString();
     task_info_delegate_->PrepareForTaskChange();
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),

@@ -60,6 +60,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/new_tab_shared:build_ts",
     "//chrome/browser/resources/omnibox/aim_eligibility:build_ts",
+    "//chrome/browser/resources/omnibox/logging:build_ts",
     "//chrome/browser/resources/omnibox_popup:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
     "//chrome/browser/resources/on_device_translation_internals:build_ts",

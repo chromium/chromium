@@ -12170,6 +12170,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kContextualTaskEntryPointVariations,
                                     "ContextualTasks")},
 
+    {"omnibox-debug-logs", omnibox::flag_descriptions::kOmniboxDebugLogsName,
+     omnibox::flag_descriptions::kOmniboxDebugLogsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxDebugLogs)},
+
     {"contextual-tasks-context",
      contextual_tasks::flag_descriptions::kContextualTasksContextName,
      contextual_tasks::flag_descriptions::kContextualTasksContextDescription,

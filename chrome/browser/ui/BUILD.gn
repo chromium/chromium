@@ -245,6 +245,8 @@ static_library("ui") {
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/webui/omnibox/aim_eligibility",
     "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings",
+    "//chrome/browser/ui/webui/omnibox/logging",
+    "//chrome/browser/ui/webui/omnibox/logging:mojo_bindings",
   ]
 
   deps = [

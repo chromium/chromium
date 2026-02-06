@@ -141,6 +141,9 @@ BASE_DECLARE_FEATURE(kAimUrlInterceptPassthrough);
 inline constexpr base::FeatureParam<std::string> kAimUrlInterceptionParams{
     &kAimUrlInterceptPassthrough, "aim_url_interception_params", ""};
 
+// Enable debug logs that can be read from an internals page.
+BASE_DECLARE_FEATURE(kOmniboxDebugLogs);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);
@@ -151,6 +154,12 @@ BASE_DECLARE_FEATURE(kAndroidHubSearchTabGroups);
 BASE_DECLARE_FEATURE(kOmniboxImprovementForLFF);
 #endif  // BUILDFLAG(IS_ANDROID)
 // Note: no new flags beyond this point.
+
+namespace flag_descriptions {
+extern const char kOmniboxDebugLogsName[];
+extern const char kOmniboxDebugLogsDescription[];
+}  // namespace flag_descriptions
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "logs.mojom" ]
+
+  webui_module_path = "/"
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+static_library("logging") {
+  sources = [
+    "logs_page_handler.cc",
+    "logs_page_handler.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//components/omnibox/common",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}

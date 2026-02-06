@@ -54,6 +54,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
+#include "chrome/browser/ui/webui/omnibox/logging/logs.mojom.h"
+#include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -527,6 +529,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   if (is_contextual_tasks_enabled) {
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
+    RegisterWebUIControllerInterfaceBinder<
+        omnibox::logging::mojom::PageHandlerFactory, OmniboxUI>(map);
   }
 
   // Registering bindings for all WebUIControllers, even if only one of the
