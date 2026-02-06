@@ -92,39 +92,35 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
   draw_callback(recorder_->getRecordingCanvas());
 
   if (recorder_->HasReleasableDrawOps()) {
-    if (!skia_canvas_) {
-      if (!playback_image_provider_n32_) {
-        // Create an ImageDecodeCache for half float images only if the canvas
-        // is using half float back storage.
-        cc::ImageDecodeCache* cache_f16 = nullptr;
-        if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
-          cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-        }
-
-        cc::ImageDecodeCache* cache_rgba8 =
-            &Image::SharedCCDecodeCache(kN32_SkColorType);
-
-        cc::TargetColorParams target_color_params;
-        target_color_params.color_space = info_.color_space;
-        playback_image_provider_n32_.emplace(
-            cache_rgba8, target_color_params,
-            cc::PlaybackImageProvider::Settings());
-
-        // If the image provider may require to decode to half float instead of
-        // uint8, create a f16 PlaybackImageProvider with the passed cache.
-        if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
-          DCHECK(cache_f16);
-          playback_image_provider_f16_.emplace(
-              cache_f16, target_color_params,
-              cc::PlaybackImageProvider::Settings());
-        }
+    if (!playback_image_provider_n32_) {
+      // Create an ImageDecodeCache for half float images only if the canvas
+      // is using half float back storage.
+      cc::ImageDecodeCache* cache_f16 = nullptr;
+      if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
+        cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
       }
 
-      skia_canvas_ =
-          std::make_unique<cc::SkiaPaintCanvas>(surface_->getCanvas(), this);
+      cc::ImageDecodeCache* cache_rgba8 =
+          &Image::SharedCCDecodeCache(kN32_SkColorType);
+
+      cc::TargetColorParams target_color_params;
+      target_color_params.color_space = info_.color_space;
+      playback_image_provider_n32_.emplace(
+          cache_rgba8, target_color_params,
+          cc::PlaybackImageProvider::Settings());
+
+      // If the image provider may require to decode to half float instead of
+      // uint8, create a f16 PlaybackImageProvider with the passed cache.
+      if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
+        DCHECK(cache_f16);
+        playback_image_provider_f16_.emplace(
+            cache_f16, target_color_params,
+            cc::PlaybackImageProvider::Settings());
+      }
     }
 
-    skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
+    cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(), this);
+    skia_canvas.drawPicture(recorder_->ReleaseMainRecording());
   }
 
   cc::PaintImage paint_image;

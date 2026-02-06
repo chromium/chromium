@@ -53,7 +53,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
   sk_sp<SkSurface> surface_;
-  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
 
   const CanvasSnapshotProvider::Info info_;
 
