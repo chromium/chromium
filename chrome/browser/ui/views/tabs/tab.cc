@@ -1278,6 +1278,12 @@ void Tab::UpdateForegroundColors() {
 }
 
 void Tab::CloseButtonPressed(const ui::Event& event) {
+  if (IsActive()) {
+    base::RecordAction(UserMetricsAction("CloseTab_Active"));
+  } else {
+    base::RecordAction(UserMetricsAction("CloseTab_Inactive"));
+  }
+
   if (!alert_indicator_button_ || !alert_indicator_button_->GetVisible()) {
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
   } else if (tabs::TabAlertController::GetAlertStateToShow(data_.alert_state) ==

@@ -9031,6 +9031,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="CloseTab_Active">
+  <owner>dpenning@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User clicked the close tab button; the tab was active.
+  </description>
+</action>
+
 <action name="CloseTab_AudioIndicator">
   <owner>miu@chromium.org</owner>
   <description>
@@ -9043,6 +9051,14 @@ should be able to be added at any place in this file.
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User clicked the close tab button; the tab was the last tab in a split.
+  </description>
+</action>
+
+<action name="CloseTab_Inactive">
+  <owner>dpenning@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User clicked the close tab button; the tab was inactive.
   </description>
 </action>
 

@@ -758,6 +758,12 @@ void VerticalTabView::UpdateContrastRatioValues() {
 }
 
 void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
+  if (active_) {
+    base::RecordAction(base::UserMetricsAction("CloseTab_Active"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("CloseTab_Inactive"));
+  }
+
   CHECK(alert_indicator_);
   if (!alert_indicator_->GetVisible()) {
     base::RecordAction(base::UserMetricsAction("CloseTab_NoAlertIndicator"));
