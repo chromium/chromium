@@ -8,5 +8,4 @@ specific_include_rules = {
 }
 include_rules = [
   "+components/on_device_translation",
-  "+components/on_device_ai",
 ]

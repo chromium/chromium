@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -147,6 +148,10 @@ class ModelBrokerClient final {
   void CreateSession(mojom::OnDeviceFeature feature,
                      const SessionConfigParams& config_params,
                      CreateSessionCallback callback);
+
+  // Add DownloadProgressObserver.
+  void AddModelDownloadProgressObserver(
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
  private:
   mojo::Remote<mojom::ModelBroker> remote_;

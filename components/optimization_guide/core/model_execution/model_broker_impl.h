@@ -81,7 +81,9 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   };
 
   ModelBrokerImpl(UsageTracker& usage_tracker,
-                  EnsureInitCallback ensure_init_callback);
+                  EnsureInitCallback ensure_init_callback,
+                  AddDownloadProgressObserverCallback
+                      add_download_progress_observer_callback);
   ~ModelBrokerImpl() override;
 
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver);
@@ -95,6 +97,12 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
       mojom::ModelSubscriptionOptionsPtr options,
       mojo::PendingRemote<mojom::ModelSubscriber> subscriber) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  void AddModelDownloadProgressObserver(
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer)
+      override;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Finishes Subscribe after initialization is finished.
   void SubscribeInternal(
       mojom::ModelSubscriptionOptionsPtr options,
@@ -102,6 +110,7 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
 
   raw_ref<UsageTracker> usage_tracker_;
   EnsureInitCallback ensure_init_callback_;
+  AddDownloadProgressObserverCallback add_download_progress_observer_callback_;
   std::map<mojom::OnDeviceFeature, SolutionProvider> solution_providers_;
   mojo::ReceiverSet<mojom::ModelBroker> receivers_;
   base::WeakPtrFactory<ModelBrokerImpl> weak_ptr_factory_{this};

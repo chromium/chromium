@@ -304,6 +304,8 @@ source_set("ondevice") {
       "model_execution/on_device_model_adaptation_loader.h",
       "model_execution/on_device_model_component.cc",
       "model_execution/on_device_model_component.h",
+      "model_execution/on_device_model_download_progress_manager.cc",
+      "model_execution/on_device_model_download_progress_manager.h",
       "model_execution/on_device_model_execution_proto_descriptors.h",
       "model_execution/on_device_model_execution_proto_status.h",
       "model_execution/on_device_model_execution_proto_value_utils.cc",
@@ -355,6 +357,7 @@ source_set("ondevice") {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/optimization_guide/public/mojom",
       "//components/prefs",
+      "//components/update_client",
       "//components/version_info",
       "//services/data_decoder/public/cpp",
       "//services/on_device_model/public/cpp",
@@ -549,12 +552,16 @@ static_library("model_execution_test_support") {
   ]
   if (build_with_model_execution) {
     sources += [
+      "model_execution/test/fake_component_update_service.cc",
+      "model_execution/test/fake_component_update_service.h",
       "model_execution/test/fake_model_assets.cc",
       "model_execution/test/fake_model_assets.h",
       "model_execution/test/fake_model_broker.cc",
       "model_execution/test/fake_model_broker.h",
       "model_execution/test/feature_config_builder.cc",
       "model_execution/test/feature_config_builder.h",
+      "model_execution/test/mock_download_progress_observer.cc",
+      "model_execution/test/mock_download_progress_observer.h",
       "model_execution/test/mock_on_device_capability.cc",
       "model_execution/test/mock_on_device_capability.h",
       "model_execution/test/mock_remote_model_executor.cc",
@@ -569,8 +576,10 @@ static_library("model_execution_test_support") {
       "model_execution/test/test_on_device_model_component_state_manager.h",
     ]
     deps += [
+      "//components/component_updater:test_support",
       "//components/optimization_guide/public/mojom",
       "//components/prefs:test_support",
+      "//components/update_client",
       "//services/on_device_model/public/cpp:types",
       "//services/on_device_model/public/cpp/test_support",
     ]
@@ -744,6 +753,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/on_device_asset_manager_unittest.cc",
       "model_execution/on_device_model_adaptation_loader_unittest.cc",
       "model_execution/on_device_model_component_unittest.cc",
+      "model_execution/on_device_model_download_progress_manager_unittest.cc",
       "model_execution/on_device_model_execution_proto_descriptors_unittest.cc",
       "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
       "model_execution/on_device_model_feature_adapter_unittest.cc",

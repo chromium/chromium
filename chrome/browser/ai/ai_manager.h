@@ -9,14 +9,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_summarizer.h"
-#include "components/component_updater/component_updater_service.h"
-#include "components/on_device_ai/ai_model_download_progress_manager.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
@@ -52,7 +51,6 @@ class AIManager : public base::SupportsUserData::Data,
       base::expected<std::unique_ptr<AILanguageModel>,
                      blink::mojom::AIManagerCreateClientError>;
   AIManager(content::BrowserContext* browser_context,
-            component_updater::ComponentUpdateService* component_update_service,
             content::RenderFrameHost* rfh);
   AIManager(const AIManager&) = delete;
   AIManager& operator=(const AIManager&) = delete;
@@ -63,10 +61,6 @@ class AIManager : public base::SupportsUserData::Data,
 
   size_t GetContextBoundObjectSetSizeForTesting() {
     return context_bound_object_set_.GetSize();
-  }
-
-  size_t GetDownloadProgressObserversSizeForTesting() {
-    return model_download_progress_manager_.GetNumberOfReporters();
   }
 
   // Return the default and max sampling params for the LanguageModel API.
@@ -181,9 +175,6 @@ class AIManager : public base::SupportsUserData::Data,
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 
-  on_device_ai::AIModelDownloadProgressManager model_download_progress_manager_;
-
-  raw_ref<component_updater::ComponentUpdateService> component_update_service_;
   AIContextBoundObjectSet context_bound_object_set_;
   raw_ptr<content::BrowserContext> browser_context_;
 

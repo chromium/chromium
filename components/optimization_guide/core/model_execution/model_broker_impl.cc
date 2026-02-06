@@ -15,10 +15,14 @@
 
 namespace optimization_guide {
 
-ModelBrokerImpl::ModelBrokerImpl(UsageTracker& usage_tracker,
-                                 EnsureInitCallback ensure_init_callback)
+ModelBrokerImpl::ModelBrokerImpl(
+    UsageTracker& usage_tracker,
+    EnsureInitCallback ensure_init_callback,
+    AddDownloadProgressObserverCallback add_download_progress_observer_callback)
     : usage_tracker_(usage_tracker),
-      ensure_init_callback_(std::move(ensure_init_callback)) {}
+      ensure_init_callback_(std::move(ensure_init_callback)),
+      add_download_progress_observer_callback_(
+          std::move(add_download_progress_observer_callback)) {}
 
 ModelBrokerImpl::~ModelBrokerImpl() = default;
 
@@ -51,6 +55,15 @@ ModelBrokerImpl::SolutionProvider& ModelBrokerImpl::GetSolutionProvider(
     mojom::OnDeviceFeature feature) {
   return solution_providers_.emplace(feature, feature).first->second;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ModelBrokerImpl::AddModelDownloadProgressObserver(
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  TRACE_EVENT("optimization_guide",
+              "ModelBrokerImpl::AddModelDownloadProgressObserver");
+  add_download_progress_observer_callback_.Run(std::move(observer));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ModelBrokerImpl::Solution::Solution() = default;
 ModelBrokerImpl::Solution::~Solution() = default;

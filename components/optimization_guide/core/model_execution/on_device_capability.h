@@ -97,6 +97,11 @@ using OptimizationGuideModelExecutionResultStreamingCallback =
 using OptimizationGuideModelSizeInTokenCallback =
     base::OnceCallback<void(std::optional<uint32_t>)>;
 
+// The callback for adding a download progress observer to
+// OnDeviceModelDownloadProgressManager.
+using AddDownloadProgressObserverCallback = base::RepeatingCallback<void(
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>)>;
+
 // Params used to control sampling output tokens for the on-device model.
 struct SamplingParams {
   uint32_t top_k = 1;

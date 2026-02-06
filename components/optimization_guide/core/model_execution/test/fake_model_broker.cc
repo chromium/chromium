@@ -91,7 +91,8 @@ ModelBrokerState& FakeModelBroker::GetOrCreateBrokerState() {
   if (!model_broker_state_) {
     model_broker_state_.emplace(local_state_.local_state(), model_provider_,
                                 component_state_.CreateDelegate(),
-                                fake_launcher_.LaunchFn());
+                                fake_launcher_.LaunchFn(),
+                                &component_state_.component_update_service());
   }
   return *model_broker_state_;
 }

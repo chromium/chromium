@@ -51,87 +51,6 @@ void AITestUtils::TestStreamingResponder::OnQuotaOverflow() {
   quota_overflow_run_loop_.Quit();
 }
 
-AITestUtils::MockModelDownloadProgressMonitor::
-    MockModelDownloadProgressMonitor() = default;
-AITestUtils::MockModelDownloadProgressMonitor::
-    ~MockModelDownloadProgressMonitor() = default;
-
-mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
-AITestUtils::MockModelDownloadProgressMonitor::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
-
-mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
-AITestUtils::FakeMonitor::BindNewPipeAndPassRemote() {
-  return mock_monitor_.BindNewPipeAndPassRemote();
-}
-
-void AITestUtils::FakeMonitor::ExpectReceivedUpdate(
-    uint64_t expected_downloaded_bytes,
-    uint64_t expected_total_bytes,
-    base::OnceClosure callback) {
-  EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(testing::_, testing::_))
-      .WillOnce([callback = std::move(callback), expected_downloaded_bytes,
-                 expected_total_bytes](uint64_t downloaded_bytes,
-                                       uint64_t total_bytes) mutable {
-        EXPECT_EQ(downloaded_bytes, expected_downloaded_bytes);
-        EXPECT_EQ(total_bytes, expected_total_bytes);
-        std::move(callback).Run();
-      });
-}
-
-void AITestUtils::FakeMonitor::ExpectReceivedUpdate(
-    uint64_t expected_downloaded_bytes,
-    uint64_t expected_total_bytes) {
-  base::RunLoop download_progress_run_loop;
-  ExpectReceivedUpdate(expected_downloaded_bytes, expected_total_bytes,
-                       download_progress_run_loop.QuitClosure());
-  download_progress_run_loop.Run();
-}
-
-void AITestUtils::FakeMonitor::ExpectReceivedNormalizedUpdate(
-    uint64_t expected_downloaded_bytes,
-    uint64_t expected_total_bytes,
-    base::OnceClosure callback) {
-  ExpectReceivedUpdate(on_device_ai::NormalizeModelDownloadProgress(
-                           expected_downloaded_bytes, expected_total_bytes),
-                       on_device_ai::kNormalizedDownloadProgressMax,
-                       std::move(callback));
-}
-
-void AITestUtils::FakeMonitor::ExpectReceivedNormalizedUpdate(
-    uint64_t expected_downloaded_bytes,
-    uint64_t expected_total_bytes) {
-  ExpectReceivedUpdate(on_device_ai::NormalizeModelDownloadProgress(
-                           expected_downloaded_bytes, expected_total_bytes),
-                       on_device_ai::kNormalizedDownloadProgressMax);
-}
-
-void AITestUtils::FakeMonitor::ExpectNoUpdate() {
-  EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(testing::_, testing::_))
-      .Times(0);
-}
-
-AITestUtils::MockComponentUpdateService::MockComponentUpdateService() = default;
-AITestUtils::MockComponentUpdateService::~MockComponentUpdateService() =
-    default;
-
-void AITestUtils::MockComponentUpdateService::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void AITestUtils::MockComponentUpdateService::RemoveObserver(
-    Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-void AITestUtils::MockComponentUpdateService::SendUpdate(
-    const component_updater::CrxUpdateItem& item) {
-  for (Observer& observer : observer_list_) {
-    observer.OnEvent(item);
-  }
-}
-
 AITestUtils::AITestBase::AITestBase()
     : ChromeRenderViewHostTestHarness(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -151,8 +70,8 @@ void AITestUtils::AITestBase::SetUp() {
   fake_broker_->UpdateModelAdaptation(*fake_asset_);
 
   SetupMockOptimizationGuideKeyedService();
-  ai_manager_ = std::make_unique<AIManager>(
-      main_rfh()->GetBrowserContext(), &component_update_service_, main_rfh());
+  ai_manager_ =
+      std::make_unique<AIManager>(main_rfh()->GetBrowserContext(), main_rfh());
 }
 
 void AITestUtils::AITestBase::TearDown() {
@@ -195,8 +114,8 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
       profile(), base::BindRepeating(
                      [](content::BrowserContext* context)
                          -> std::unique_ptr<KeyedService> { return nullptr; }));
-  ai_manager_ = std::make_unique<AIManager>(
-      main_rfh()->GetBrowserContext(), &component_update_service_, main_rfh());
+  ai_manager_ =
+      std::make_unique<AIManager>(main_rfh()->GetBrowserContext(), main_rfh());
 }
 
 blink::mojom::AIManager* AITestUtils::AITestBase::GetAIManagerInterface() {
@@ -208,10 +127,6 @@ AITestUtils::AITestBase::GetAIManagerRemote() {
   mojo::Remote<blink::mojom::AIManager> ai_manager;
   ai_manager_->AddReceiver(ai_manager.BindNewPipeAndPassReceiver());
   return ai_manager;
-}
-
-size_t AITestUtils::AITestBase::GetAIManagerDownloadProgressObserversSize() {
-  return ai_manager_->GetDownloadProgressObserversSizeForTesting();
 }
 
 size_t AITestUtils::AITestBase::GetAIManagerContextBoundObjectSetSize() {

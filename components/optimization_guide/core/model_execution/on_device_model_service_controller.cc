@@ -137,7 +137,8 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager,
     UsageTracker& usage_tracker,
-    base::SafeRef<on_device_model::ServiceClient> service_client)
+    base::SafeRef<on_device_model::ServiceClient> service_client,
+    AddDownloadProgressObserverCallback add_download_progress_observer_callback)
     : access_controller_(std::move(access_controller)),
       usage_tracker_(usage_tracker),
       service_client_(std::move(service_client)),
@@ -146,7 +147,8 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
           *usage_tracker_,
           base::BindRepeating(
               &PerformanceClassifier::EnsurePerformanceClassAvailable,
-              performance_classifier)) {
+              performance_classifier),
+          std::move(add_download_progress_observer_callback)) {
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(), nullptr);
   service_client_->set_on_disconnect_fn(base::BindRepeating(
       &OnDeviceModelServiceController::OnServiceDisconnected,

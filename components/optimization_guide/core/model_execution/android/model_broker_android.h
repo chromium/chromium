@@ -16,7 +16,9 @@
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/on_device_model_mojom_impl.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace on_device_model {
@@ -64,6 +66,9 @@ class ModelBrokerAndroid final : public OnDeviceCapability {
   void OnModelDisconnected(
       proto::ModelExecutionFeature feature,
       base::WeakPtr<on_device_model::mojom::OnDeviceModel> model);
+
+  void AddModelDownloadProgressObserver(
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
   const raw_ref<PrefService> local_state_;
 

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/current_thread.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 
 namespace optimization_guide {
 
@@ -43,6 +44,15 @@ class TestComponentState final {
     return base::test::RunUntil([&]() { return installer_registered(); });
   }
 
+  bool WaitForDownloadObserver() const;
+
+  void UpdateDownloadProgress(uint64_t downloaded_bytes);
+
+  FakeComponent& component() { return component_; }
+  component_updater::ComponentUpdateService& component_update_service() {
+    return component_update_service_;
+  }
+
  private:
   class DelegateImpl;
 
@@ -51,6 +61,8 @@ class TestComponentState final {
   bool uninstall_called_ = false;
   bool request_update_called_ = false;
   std::unique_ptr<FakeBaseModelAsset> installed_asset_;
+  FakeComponent component_{"component_id", 1000};
+  testing::NiceMock<FakeComponentUpdateService> component_update_service_;
   base::WeakPtrFactory<TestComponentState> weak_ptr_factory_{this};
 };
 

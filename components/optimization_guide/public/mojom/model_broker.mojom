@@ -5,6 +5,7 @@
 module optimization_guide.mojom;
 
 import "mojo/public/mojom/base/proto_wrapper.mojom";
+import "services/on_device_model/public/mojom/download_observer.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 
 enum OnDeviceFeature {
@@ -90,4 +91,10 @@ interface ModelBroker {
   // Starts listening for models that provide the requested feature.
   Subscribe(ModelSubscriptionOptions options,
             pending_remote<ModelSubscriber> subcriber);
+
+  // Start listening for download progress updates for models.
+  // TODO: crbug.com/474999857 Implement this method on Android.
+  [EnableIfNot=is_android]
+  AddModelDownloadProgressObserver(
+      pending_remote<on_device_model.mojom.DownloadObserver> observer);
 };

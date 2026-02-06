@@ -48,14 +48,6 @@ inline void SendStreamingStatus(
 blink::mojom::ModelStreamingResponseStatus ConvertOnDeviceError(
     optimization_guide::OnDeviceError error);
 
-static constexpr int kNormalizedDownloadProgressMax = 0x10000;
-
-// Normalizes the model download progress by scaling `bytes_so_far` from
-// having `total_bytes` its max to having a `kNormalizedDownloadProgressMax`
-// as its max.
-int64_t NormalizeModelDownloadProgress(int64_t bytes_so_far,
-                                       int64_t total_bytes);
-
 base::flat_set<std::string_view> RestrictSupportedLanguagesForFeature(
     const base::flat_set<std::string_view>& supported,
     const base::FeatureParam<std::string>& feature_param);

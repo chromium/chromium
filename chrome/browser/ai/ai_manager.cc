@@ -25,7 +25,6 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_language_model.h"
-#include "chrome/browser/ai/ai_never_load_component.h"
 #include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/language/core/common/locale_util.h"
-#include "components/on_device_ai/ai_crx_component.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -333,12 +331,9 @@ bool CheckAndFixOutputLanguage(
 
 }  // namespace
 
-AIManager::AIManager(
-    content::BrowserContext* browser_context,
-    component_updater::ComponentUpdateService* component_update_service,
-    content::RenderFrameHost* rfh)
-    : component_update_service_(*component_update_service),
-      context_bound_object_set_(GetPriorityFromVisibility(rfh)),
+AIManager::AIManager(content::BrowserContext* browser_context,
+                     content::RenderFrameHost* rfh)
+    : context_bound_object_set_(GetPriorityFromVisibility(rfh)),
       browser_context_(browser_context),
       rfh_(rfh ? rfh->GetWeakDocumentPtr() : content::WeakDocumentPtr()) {
   if (rfh && rfh->GetRenderWidgetHost()) {
@@ -989,22 +984,10 @@ void AIManager::OnModelPathValidationComplete(const base::FilePath& model_path,
 void AIManager::AddModelDownloadProgressObserver(
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
         observer_remote) {
-  auto components = on_device_ai::AICrxComponent::FromComponentIds(
-      &component_update_service_.get(),
-      {component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
-           GetOnDeviceModelExtensionId()});
-
-  // Have some portion of the loading bar occupied until the renderer sends the
-  // 100% download progress on creation. This is to indicate that there is still
-  // work going on between when the model is downloaded and the actual API
-  // instance is created.
-  if (base::FeatureList::IsEnabled(features::kAIModelUnloadableProgress)) {
-    components.insert(std::make_unique<on_device_ai::AINeverLoadComponent>(
-        features::kAIModelUnloadableProgressBytes.Get()));
+  if (model_broker_client_) {
+    model_broker_client_->AddModelDownloadProgressObserver(
+        std::move(observer_remote));
   }
-
-  model_download_progress_manager_.AddObserver(std::move(observer_remote),
-                                               std::move(components));
 }
 
 void AIManager::RenderWidgetHostVisibilityChanged(

@@ -34,22 +34,6 @@ blink::mojom::ModelStreamingResponseStatus ConvertOnDeviceError(
   }
 }
 
-int64_t NormalizeModelDownloadProgress(int64_t bytes_so_far,
-                                       int64_t total_bytes) {
-  // If `bytes_so_far` is zero, we should have downloaded zero bytes
-  // out of zero meaning we're at 100%. So set it to
-  // `kNormalizedDownloadProgressMax` to avoid dividing by zero.
-  if (total_bytes == 0) {
-    CHECK_EQ(bytes_so_far, 0);
-    return kNormalizedDownloadProgressMax;
-  }
-
-  double raw_progress_fraction =
-      bytes_so_far / static_cast<double>(total_bytes);
-
-  return raw_progress_fraction * kNormalizedDownloadProgressMax;
-}
-
 base::flat_set<std::string_view> RestrictSupportedLanguagesForFeature(
     const base::flat_set<std::string_view>& supported,
     const base::FeatureParam<std::string>& feature_param) {

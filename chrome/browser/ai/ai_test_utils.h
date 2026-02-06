@@ -14,7 +14,6 @@
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
@@ -79,82 +78,6 @@ class AITestUtils {
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
   };
 
-  class MockModelDownloadProgressMonitor
-      : public on_device_model::mojom::DownloadObserver {
-   public:
-    MockModelDownloadProgressMonitor();
-    ~MockModelDownloadProgressMonitor() override;
-    MockModelDownloadProgressMonitor(const MockModelDownloadProgressMonitor&) =
-        delete;
-    MockModelDownloadProgressMonitor& operator=(
-        const MockModelDownloadProgressMonitor&) = delete;
-
-    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
-    BindNewPipeAndPassRemote();
-
-    // `on_device_model::mojom::DownloadObserver` implementation.
-    MOCK_METHOD(void,
-                OnDownloadProgressUpdate,
-                (uint64_t downloaded_bytes, uint64_t total_bytes),
-                (override));
-
-   private:
-    mojo::Receiver<on_device_model::mojom::DownloadObserver> receiver_{this};
-  };
-
-  class FakeMonitor {
-   public:
-    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
-    BindNewPipeAndPassRemote();
-
-    // Expects that the next `OnDownloadProgressUpdate` is called with
-    // `expected_downloaded_bytes` and `expected_total_bytes`. Once it receives
-    // an update, calls `callback`.
-    void ExpectReceivedUpdate(uint64_t expected_downloaded_bytes,
-                              uint64_t expected_total_bytes,
-                              base::OnceClosure callback);
-
-    // Overload that waits until the update is received.
-    void ExpectReceivedUpdate(uint64_t expected_downloaded_bytes,
-                              uint64_t expected_total_bytes);
-
-    // Same as `ExpectReceivedUpdate` except it normalizes
-    // `expected_downloaded_bytes` and `expected_total_bytes`.
-    void ExpectReceivedNormalizedUpdate(uint64_t expected_downloaded_bytes,
-                                        uint64_t expected_total_bytes,
-                                        base::OnceClosure callback);
-
-    // Overload that waits until the update is received.
-    void ExpectReceivedNormalizedUpdate(uint64_t expected_downloaded_bytes,
-                                        uint64_t expected_total_bytes);
-
-    void ExpectNoUpdate();
-
-   private:
-    AITestUtils::MockModelDownloadProgressMonitor mock_monitor_;
-  };
-
-  class MockComponentUpdateService
-      : public component_updater::MockComponentUpdateService {
-   public:
-    MockComponentUpdateService();
-    ~MockComponentUpdateService() override;
-
-    void AddObserver(Observer* observer) override;
-
-    void RemoveObserver(Observer* observer) override;
-
-    void SendUpdate(const component_updater::CrxUpdateItem& item);
-
-    // Not copyable or movable.
-    MockComponentUpdateService(const MockComponentUpdateService&) = delete;
-    MockComponentUpdateService& operator=(const MockComponentUpdateService&) =
-        delete;
-
-   private:
-    base::ObserverList<Observer>::Unchecked observer_list_;
-  };
-
   class AITestBase : public ChromeRenderViewHostTestHarness {
    public:
     AITestBase();
@@ -173,11 +96,9 @@ class AITestUtils {
     blink::mojom::AIManager* GetAIManagerInterface();
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
     size_t GetAIManagerContextBoundObjectSetSize();
-    size_t GetAIManagerDownloadProgressObserversSize();
 
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
-    AITestUtils::MockComponentUpdateService component_update_service_;
     std::unique_ptr<optimization_guide::FakeModelBroker> fake_broker_;
     std::unique_ptr<optimization_guide::FakeAdaptationAsset> fake_asset_;
 

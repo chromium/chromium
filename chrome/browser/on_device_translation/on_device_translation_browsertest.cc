@@ -21,7 +21,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
@@ -38,7 +37,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/on_device_ai/test_support/fake_component.h"
 #include "components/on_device_translation/component_manager.h"
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
@@ -47,6 +45,7 @@
 #include "components/on_device_translation/service/test/test_util.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/service_controller_manager.h"
+#include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -63,6 +62,8 @@
 using ::blink::mojom::CanCreateTranslatorResult;
 using ::blink::mojom::TranslatorLanguageCode;
 using ::content::JsReplace;
+using ::optimization_guide::FakeComponent;
+using ::optimization_guide::FakeComponentUpdateService;
 using ::testing::_;
 
 namespace on_device_translation {
@@ -983,12 +984,14 @@ class OnDeviceTranslationProgressMonitorBrowserTest
         &component_update_service_);
 
     // `GetComponentDetails` should be called by the
-    // `AIModelDownloadProgressManager` to filter out existing downloads.
+    // `OnDeviceModelDownloadProgressManager` to filter out existing
+    // downloads.
     EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
         .WillRepeatedly(
             [&](const std::string& id, component_updater::CrxUpdateItem* item) {
               // The `total_bytes` doesn't matter since
-              // `AIModelDownloadProgressManager` doesn't check it for now.
+              // `OnDeviceModelDownloadProgressManager` doesn't check it for
+              // now.
               *item = GetComponentForTranslateKit(100).CreateUpdateItem(
                   update_client::ComponentState::kNew, 0);
               return true;
@@ -1042,16 +1045,14 @@ class OnDeviceTranslationProgressMonitorBrowserTest
     run_loop_language_pack.Run();
   }
 
-  on_device_ai::FakeComponent GetComponentForTranslateKit(
-      uint64_t total_bytes) {
+  FakeComponent GetComponentForTranslateKit(uint64_t total_bytes) {
     return {component_updater::TranslateKitComponentInstallerPolicy::
                 GetExtensionId(),
             total_bytes};
   }
 
-  on_device_ai::FakeComponent GetComponentForLanguagePack(
-      LanguagePackKey language_pack_key,
-      uint64_t total_bytes) {
+  FakeComponent GetComponentForLanguagePack(LanguagePackKey language_pack_key,
+                                            uint64_t total_bytes) {
     const LanguagePackComponentConfig& config =
         GetLanguagePackComponentConfig(language_pack_key);
     std::string id =
@@ -1059,18 +1060,17 @@ class OnDeviceTranslationProgressMonitorBrowserTest
     return {id, total_bytes};
   }
 
-  void SendUpdate(on_device_ai::FakeComponent component,
-                  uint64_t downloaded_bytes) {
+  void SendUpdate(FakeComponent component, uint64_t downloaded_bytes) {
     component_update_service_.SendUpdate(component.CreateUpdateItem(
         update_client::ComponentState::kDownloading, downloaded_bytes));
   }
 
   double NormalizedProgress(uint64_t downloaded_bytes, uint64_t total_bytes) {
-    // `on_device_ai::NormalizeModelDownloadProgress` normalizes to 0 - 0x10000
-    // range. We divide it by 0x10000 (65536) again to get it in the 0.0 - 1.0
-    // range.
-    return on_device_ai::NormalizeModelDownloadProgress(downloaded_bytes,
-                                                        total_bytes) /
+    // `optimization_guide::NormalizeModelDownloadProgress` normalizes to 0 -
+    // 0x10000 range. We divide it by 0x10000 (65536) again to get it in the 0.0
+    // - 1.0 range.
+    return optimization_guide::NormalizeModelDownloadProgress(downloaded_bytes,
+                                                              total_bytes) /
            65536.0;
   }
 
@@ -1109,7 +1109,7 @@ class OnDeviceTranslationProgressMonitorBrowserTest
 
  private:
   MockComponentManager component_manager_{GetTempDir()};
-  AITestUtils::MockComponentUpdateService component_update_service_;
+  FakeComponentUpdateService component_update_service_;
   std::unique_ptr<MockTranslationManagerImpl> translation_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1128,9 +1128,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationProgressMonitorBrowserTest,
   TranslateAndMonitorProgress(source_language, target_language);
 
   // Components we expect to receive updates for.
-  on_device_ai::FakeComponent translation_kit =
-      GetComponentForTranslateKit(4321);
-  on_device_ai::FakeComponent en_ja_language_pack =
+  FakeComponent translation_kit = GetComponentForTranslateKit(4321);
+  FakeComponent en_ja_language_pack =
       GetComponentForLanguagePack(LanguagePackKey::kEn_Ja, 1234);
 
   // The downloaded bytes and total bytes for all components.

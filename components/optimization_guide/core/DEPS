@@ -1,5 +1,8 @@
 include_rules = [
   "+components/autofill/core/common",
+  "+components/update_client/crx_update_item.h",
+  "+components/component_updater/component_updater_service.h",
+  "+components/component_updater/mock_component_updater_service.h",
   "+components/component_updater/pref_names.h",
   "+components/crx_file",
   "+components/download/public/background_service",
@@ -27,7 +30,6 @@ include_rules = [
 specific_include_rules = {
   ".*_unittest.cc": [
     "+third_party/zlib/google/zip.h",
-    "+components/component_updater/component_updater_service.h",
     "+ui/base",
   ],
 };

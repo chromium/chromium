@@ -336,7 +336,10 @@ ModelBrokerAndroid::ModelBrokerAndroid(
       usage_tracker_(&local_state),
       impl_(usage_tracker_,
             base::BindRepeating(&ModelBrokerAndroid::EnsureSolutionFactory,
-                                base::Unretained(this))) {}
+                                base::Unretained(this)),
+            base::BindRepeating(
+                &ModelBrokerAndroid::AddModelDownloadProgressObserver,
+                base::Unretained(this))) {}
 ModelBrokerAndroid::~ModelBrokerAndroid() = default;
 
 void ModelBrokerAndroid::BindModelBroker(
@@ -378,6 +381,12 @@ void ModelBrokerAndroid::OnModelDisconnected(
     proto::ModelExecutionFeature feature,
     base::WeakPtr<on_device_model::mojom::OnDeviceModel> model) {
   model_services_.erase(feature);
+}
+
+void ModelBrokerAndroid::AddModelDownloadProgressObserver(
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  // TODO: crbug.com/474999857 Get download progress from AICore, and notify the
+  // observers.
 }
 
 }  // namespace optimization_guide

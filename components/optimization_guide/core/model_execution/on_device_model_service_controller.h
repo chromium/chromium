@@ -77,7 +77,9 @@ class OnDeviceModelServiceController final {
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager,
       UsageTracker& usage_tracker,
-      base::SafeRef<on_device_model::ServiceClient> service_client);
+      base::SafeRef<on_device_model::ServiceClient> service_client,
+      AddDownloadProgressObserverCallback
+          add_download_progress_observer_callback);
   ~OnDeviceModelServiceController();
 
   // Whether an on-device session can be created for `feature`.

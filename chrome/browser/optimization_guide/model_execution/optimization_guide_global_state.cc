@@ -103,6 +103,11 @@ class OnDeviceModelComponentStateManagerDelegate
     component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
         UpdateOnDemand();
   }
+
+  std::string GetComponentId() override {
+    return component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+        GetOnDeviceModelExtensionId();
+  }
 };
 
 void LaunchService(
@@ -205,7 +210,8 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           *g_browser_process->local_state(),
           prediction_manager_.prediction_manager(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
-          base::BindRepeating(&LaunchService)
+          base::BindRepeating(&LaunchService),
+          g_browser_process->component_updater()
 #elif BUILDFLAG(IS_ANDROID)
           *g_browser_process->local_state(),
           prediction_manager_.prediction_manager()

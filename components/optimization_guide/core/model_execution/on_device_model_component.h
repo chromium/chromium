@@ -198,6 +198,9 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     // Request on demand update. Assumes that `RegisterInstaller` has already
     // been called.
     virtual void RequestUpdate() = 0;
+
+    // Gets the base model component ID.
+    virtual std::string GetComponentId() = 0;
   };
 
   class Observer : public base::CheckedObserver {
