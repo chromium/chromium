@@ -75,7 +75,8 @@ class VerticalTabGroupView
   bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
-  void HandleTabDragInContainer(const gfx::Point point_in_container) override;
+  void HandleTabDragInContainer(const gfx::Point& point_in_container) override;
+  void OnTabDragExited(const gfx::Point& point_in_screen) override;
 
   void ResetCollectionNode();
   void OnDataChanged();

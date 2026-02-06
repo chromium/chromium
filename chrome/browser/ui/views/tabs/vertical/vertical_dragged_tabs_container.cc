@@ -130,7 +130,8 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
   return GetDragHandler().GetDragContext();
 }
 
-void VerticalDraggedTabsContainer::OnTabDragExited() {
+void VerticalDraggedTabsContainer::OnTabDragExited(
+    const gfx::Point& point_in_screen) {
   ResetDragState();
 }
 

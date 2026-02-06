@@ -166,7 +166,7 @@ void VerticalPinnedTabContainerView::UpdateLayoutForDrag() {
 }
 
 void VerticalPinnedTabContainerView::HandleTabDragInContainer(
-    const gfx::Point point_in_container) {
+    const gfx::Point& point_in_container) {
   const views::ProposedLayout& target_layout = layout_manager_->target_layout();
   views::View* view_at_point =
       GetViewAtPoint(target_layout, point_in_container);

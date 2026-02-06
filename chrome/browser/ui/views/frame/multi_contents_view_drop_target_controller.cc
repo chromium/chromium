@@ -115,7 +115,8 @@ TabDragContext* MultiContentsViewDropTargetController::OnTabDragUpdated(
 
 void MultiContentsViewDropTargetController::OnTabDragEntered() {}
 
-void MultiContentsViewDropTargetController::OnTabDragExited() {
+void MultiContentsViewDropTargetController::OnTabDragExited(
+    const gfx::Point& point_in_screen) {
   ResetDropTargetTimers();
   HideDropTarget();
 }

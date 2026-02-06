@@ -69,7 +69,7 @@ class MultiContentsViewDropTargetController final
   TabDragContext* OnTabDragUpdated(TabDragTarget::DragController& controller,
                                    const gfx::Point& point_in_screen) override;
   void OnTabDragEntered() override;
-  void OnTabDragExited() override;
+  void OnTabDragExited(const gfx::Point& point_in_screen) override;
   void OnTabDragEnded() override;
   bool CanDropTab() override;
   void HandleTabDrop(TabDragTarget::DragController& controller) override;

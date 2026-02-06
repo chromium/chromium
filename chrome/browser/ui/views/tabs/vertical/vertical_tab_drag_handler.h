@@ -46,6 +46,11 @@ class VerticalTabDragHandler {
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) = 0;
 
+  // Handles tab strip model updates to reflect a drag exiting a group.
+  // Position hint is used to determine where the drag is, relative to the node.
+  virtual void HandleDraggedTabsOutOfGroup(const TabCollectionNode& node,
+                                           DragPositionHint position_hint) = 0;
+
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
 
@@ -90,6 +95,8 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleDraggedTabsOverNode(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) override;
+  void HandleDraggedTabsOutOfGroup(const TabCollectionNode& node,
+                                   DragPositionHint position_hint) override;
   TabDragContext* GetDragContext() override;
   bool IsViewDragging(const views::View& view) const override;
   bool IsDraggingPinnedTabs() const override;
@@ -162,9 +169,6 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleTabDragOverTab(const TabCollectionNode& node);
   void HandleTabDragOverSplit(const TabCollectionNode& node);
   void HandleTabDragOverGroup(const TabCollectionNode& node);
-  void HandleTabDragOverUnpinnedContainer(
-      const TabCollectionNode& node,
-      std::optional<DragPositionHint> position_hint);
 
   // Returns the group id of the dragged group header, or null if the drag
   // was not initiated by a group header.

@@ -349,7 +349,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragExited) {
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Exiting the drag should hide it.
-  controller().OnTabDragExited();
+  controller().OnTabDragExited(gfx::Point());
   FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
   EXPECT_FALSE(drop_target_view().GetVisible());
 }

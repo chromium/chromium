@@ -59,7 +59,7 @@ class TabDragTarget {
       const gfx::Point& point_in_screen) = 0;
 
   // Invoked when this delegate is no longer targeted by the controller.
-  virtual void OnTabDragExited() = 0;
+  virtual void OnTabDragExited(const gfx::Point& point_in_screen) = 0;
 
   // Notification for the end of a drag, for any reason (e.g. drop, cancel,
   // etc.).

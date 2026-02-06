@@ -924,7 +924,7 @@ TabDragController::Liveness TabDragController::ContinueDragging(
       return Liveness::kDeleted;
     }
     target_context = context;
-    UpdateDragTarget(drop_target);
+    UpdateDragTarget(drop_target, point_in_screen);
     if (current_drag_target_) {
       TabDragContext* delegate_context =
           current_drag_target_->OnTabDragUpdated(*this, point_in_screen);
@@ -956,9 +956,10 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   return Liveness::kAlive;
 }
 
-void TabDragController::UpdateDragTarget(TabDragTarget* new_target) {
+void TabDragController::UpdateDragTarget(TabDragTarget* new_target,
+                                         const gfx::Point& point_in_screen) {
   if (current_drag_target_ && current_drag_target_ != new_target) {
-    current_drag_target_->OnTabDragExited();
+    current_drag_target_->OnTabDragExited(point_in_screen);
   }
   current_drag_target_ = new_target;
   if (current_drag_target_) {

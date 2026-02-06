@@ -544,7 +544,8 @@ class TabDragController : public views::WidgetObserver,
 #endif  // defined(USE_AURA)
 
   // Updates the current drag target, and fires relevant handler events.
-  void UpdateDragTarget(TabDragTarget* new_target);
+  void UpdateDragTarget(TabDragTarget* new_target,
+                        const gfx::Point& point_in_screen);
   void ResetDragTarget();
 
   static void SetTabDragPointResolver(TabDragPointResolver& resolver);

@@ -53,7 +53,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   TabDragContext* OnTabDragUpdated(TabDragTarget::DragController& controller,
                                    const gfx::Point& point_in_screen) override;
   void OnTabDragEntered() override {}
-  void OnTabDragExited() override;
+  void OnTabDragExited(const gfx::Point& point_in_screen) override;
   void OnTabDragEnded() override;
   bool CanDropTab() final;
   void HandleTabDrop(TabDragTarget::DragController& controller) final {}
@@ -73,6 +73,12 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // view. Returns std::nullopt if the view is not being dragged.
   std::optional<DraggedViewVisualData> GetVisualDataForDraggedView(
       const views::View& view) const;
+
+  // Returns the bounds of the box containing all dragged views, adjusted to
+  // the point `point_in_container`, and clamped to the bounds of the
+  // container.
+  gfx::Rect GetDraggingViewsBoundsAtPoint(
+      const gfx::Point& point_in_container) const;
 
   // Helper for getting the view at a given point, excluding dragged views.
   views::View* GetViewAtPoint(const views::ProposedLayout& layout,
@@ -94,7 +100,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Handles a dragged tab that is parented within this target.
   // `point_in_container` is a point relative to this target's view.
   virtual void HandleTabDragInContainer(
-      const gfx::Point point_in_container) = 0;
+      const gfx::Point& point_in_container) = 0;
 
   // Updates state related to dragging tabs, to be used when this container
   // starts handling a drag.
@@ -115,12 +121,6 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Updates the transformations applied to dragging views, according to
   // the last drag point.
   void UpdateDraggingViewTransforms(const gfx::Point& point_in_container);
-
-  // Returns the bounds of the box containing all dragged views, adjusted to
-  // the point `point_in_container`, and clamped to the bounds of the
-  // container.
-  gfx::Rect GetDraggingViewsBoundsAtPoint(
-      const gfx::Point& point_in_container) const;
 
   bool IsHorizontalDragSupported() const;
 

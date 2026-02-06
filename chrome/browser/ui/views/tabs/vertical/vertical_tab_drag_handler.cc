@@ -262,12 +262,44 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
     case TabCollectionNode::Type::GROUP:
       HandleTabDragOverGroup(node);
       break;
-    case TabCollectionNode::Type::UNPINNED:
-      HandleTabDragOverUnpinnedContainer(node, position_hint);
-      break;
     default:
       NOTREACHED();
   }
+}
+
+void VerticalTabDragHandlerImpl::HandleDraggedTabsOutOfGroup(
+    const TabCollectionNode& node,
+    DragPositionHint position_hint) {
+  CHECK_EQ(node.type(), TabCollectionNode::Type::GROUP);
+
+  const auto* tab_group =
+      static_cast<const tabs::TabGroupTabCollection*>(
+          std::get<const tabs::TabCollection*>(node.GetNodeData()))
+          ->GetTabGroup();
+  CHECK(tab_group);
+
+  const auto& selection_model = tab_strip_model_->selection_model();
+  int insertion_idx;
+  switch (position_hint) {
+    case DragPositionHint::kBottom: {
+      int last_tab_in_group =
+          tab_strip_model_->GetIndexOfTab(tab_group->GetLastTab());
+      insertion_idx =
+          last_tab_in_group - selection_model.selected_tabs().size() + 1;
+      break;
+    }
+    case DragPositionHint::kTop: {
+      int first_tab_in_group =
+          tab_strip_model_->GetIndexOfTab(tab_group->GetFirstTab());
+      insertion_idx = first_tab_in_group;
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+
+  insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
+  tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
 }
 
 void VerticalTabDragHandlerImpl::HandleTabDragOverTab(
@@ -342,16 +374,15 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
   int first_selected_index =
       *selection_model.GetListSelectionModel().selected_indices().cbegin();
 
-  auto dragged_group = GetDraggingGroupHeaderId();
   if (tab_strip_model_->IsGroupCollapsed(tab_group->id()) ||
-      dragged_group.has_value()) {
-    // If dragging over a collapsed group or dragging a group header, then
+      IsDraggingGroups()) {
+    // If dragging over a collapsed group or dragging a group, then
     // move the dragged tabs/header before or after the dragged-over group.
     int insertion_idx =
         (first_selected_index < first_tab_in_group)
             ? last_tab_in_group - selection_model.selected_tabs().size() + 1
             : first_tab_in_group;
-    if (dragged_group.has_value()) {
+    if (auto dragged_group = GetDraggingGroupHeaderId()) {
       tab_strip_model_->MoveGroupTo(*dragged_group, insertion_idx);
     } else {
       tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
@@ -365,41 +396,6 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
             : last_tab_in_group + 1;
     insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
     tab_strip_model_->MoveSelectedTabsTo(insertion_idx, tab_group->id());
-  }
-}
-
-void VerticalTabDragHandlerImpl::HandleTabDragOverUnpinnedContainer(
-    const TabCollectionNode& node,
-    std::optional<DragPositionHint> position_hint) {
-  if (position_hint == DragPositionHint::kBottom) {
-    int insertion_index =
-        tab_strip_model_->count() -
-        tab_strip_model_->selection_model().selected_tabs().size();
-    if (auto group = GetDraggingGroupHeaderId(); group.has_value()) {
-      tab_strip_model_->MoveGroupTo(*group, insertion_index);
-    } else {
-      // Move the selected tabs to the end.
-      tab_strip_model_->MoveSelectedTabsTo(insertion_index, std::nullopt);
-    }
-    return;
-  }
-
-  if (IsDraggingGroups()) {
-    return;
-  }
-
-  // TODO(crbug.com/439963720): Re-evaluate whether this logic is needed once drag
-  // hit-testing is improved.
-  const tabs::TabInterface* selected_tab =
-      *tab_strip_model_->selection_model().selected_tabs().cbegin();
-
-  if (selected_tab->GetGroup().has_value()) {
-    ui::ListSelectionModel::SelectedIndices selected =
-        tab_strip_model_->selection_model()
-            .GetListSelectionModel()
-            .selected_indices();
-    std::vector<int> tab_indices(selected.begin(), selected.end());
-    tab_strip_model_->RemoveFromGroup(tab_indices);
   }
 }
 

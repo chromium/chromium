@@ -181,7 +181,9 @@ class FakeTabDragTarget : public TabDragTarget {
     return nullptr;
   }
   void OnTabDragEntered() override { drag_entered_ = true; }
-  void OnTabDragExited() override { drag_exited_ = true; }
+  void OnTabDragExited(const gfx::Point& point_in_screen) override {
+    drag_exited_ = true;
+  }
   void OnTabDragEnded() override { drag_ended_ = true; }
   bool CanDropTab() override { return can_drop_; }
   void HandleTabDrop(DragController& controller) override {

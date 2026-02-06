@@ -340,7 +340,7 @@ void VerticalTabGroupView::UpdateLayoutForDrag() {
 }
 
 void VerticalTabGroupView::HandleTabDragInContainer(
-    const gfx::Point point_in_container) {
+    const gfx::Point& point_in_container) {
   views::View* view_at_point =
       GetViewAtPoint(layout_manager_->target_layout(), point_in_container);
   const TabCollectionNode* node = collection_node_;
@@ -370,6 +370,19 @@ bool VerticalTabGroupView::GetIsShared() {
       tab_group_service->GetGroup(GetTabGroupFromNode(collection_node_)->id());
 
   return saved_group && saved_group->is_shared_tab_group();
+}
+
+void VerticalTabGroupView::OnTabDragExited(const gfx::Point& point_in_screen) {
+  auto dragging_tabs_bounds = GetDraggingViewsBoundsAtPoint(
+      views::View::ConvertPointFromScreen(this, point_in_screen));
+  if (dragging_tabs_bounds.y() < 0) {
+    GetDragHandler().HandleDraggedTabsOutOfGroup(*collection_node_,
+                                                 DragPositionHint::kTop);
+  } else if (dragging_tabs_bounds.bottom() > height()) {
+    GetDragHandler().HandleDraggedTabsOutOfGroup(*collection_node_,
+                                                 DragPositionHint::kBottom);
+  }
+  VerticalDraggedTabsContainer::OnTabDragExited(point_in_screen);
 }
 
 void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {

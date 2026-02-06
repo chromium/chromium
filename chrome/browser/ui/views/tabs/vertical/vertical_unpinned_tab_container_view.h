@@ -53,7 +53,7 @@ class VerticalUnpinnedTabContainerView
   bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
-  void HandleTabDragInContainer(const gfx::Point point_in_container) override;
+  void HandleTabDragInContainer(const gfx::Point& point_in_container) override;
 
   void ResetCollectionNode();
 
