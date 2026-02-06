@@ -8972,12 +8972,12 @@ const CSSValue* RowGap::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForGapLength(style.RowGap(), style);
 }
 
-const CSSValue* GapRuleOverlap::CSSValueFromComputedStyleInternal(
+const CSSValue* RuleOverlap::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.GapRuleOverlap());
+  return CSSIdentifierValue::Create(style.RuleOverlap());
 }
 
 const CSSValue* Rx::ParseSingleValue(

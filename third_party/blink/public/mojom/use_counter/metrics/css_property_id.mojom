@@ -907,7 +907,7 @@ enum CSSSampleId {
     kCornerShape = 842,
     kScrollTargetGroup = 843,
     kRowRuleStyle = 844,
-    kGapRuleOverlap = 845,
+    // kGapRuleOverlap = 845,  // Renamed to kRuleOverlap
     kRowRuleWidth = 846,
     kRowRuleColor = 847,
     kPrintColorAdjust = 848,
@@ -1002,6 +1002,7 @@ enum CSSSampleId {
     kTimelineTriggerActivationRangeStart = 930,
     kTimelineTriggerActivationRangeEnd = 931,
     kTimelineTriggerActivationRange = 932,
+    kRuleOverlap = 933,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

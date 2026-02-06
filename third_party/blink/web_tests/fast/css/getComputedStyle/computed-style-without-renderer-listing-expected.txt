@@ -210,7 +210,6 @@ font-variant-numeric: normal
 font-variant-position: normal
 font-weight: 400
 frame-sizing: auto
-gap-rule-overlap: row-over-column
 grid-auto-columns: auto
 grid-auto-flow: row
 grid-auto-rows: auto
@@ -350,6 +349,7 @@ row-rule-width: 3px
 ruby-align: space-around
 ruby-overhang: auto
 ruby-position: over
+rule-overlap: row-over-column
 rx: auto
 ry: auto
 scale: none

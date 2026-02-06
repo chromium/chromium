@@ -225,7 +225,6 @@ All changes to this list should go through Blink's feature review process: http:
     font-weight
     forced-color-adjust
     frame-sizing
-    gap-rule-overlap
     grid-auto-columns
     grid-auto-flow
     grid-auto-rows
@@ -369,6 +368,7 @@ All changes to this list should go through Blink's feature review process: http:
     ruby-align
     ruby-overhang
     ruby-position
+    rule-overlap
     rx
     ry
     scale

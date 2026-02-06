@@ -1297,7 +1297,7 @@
     "hanging",
     "mathematical",
 
-    // gap-rule-overlap
+    // rule-overlap
     "row-over-column",
     "column-over-row",
 

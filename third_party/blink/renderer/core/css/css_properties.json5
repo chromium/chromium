@@ -6718,7 +6718,7 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "gap-rule-overlap",
+      name: "rule-overlap",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: false,
       field_group: "*",

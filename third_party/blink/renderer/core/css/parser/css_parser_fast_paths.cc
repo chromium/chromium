@@ -1244,7 +1244,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kForcedColorAdjust:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kPreserveParentColor;
-    case CSSPropertyID::kGapRuleOverlap:
+    case CSSPropertyID::kRuleOverlap:
       return value_id == CSSValueID::kRowOverColumn ||
              value_id == CSSValueID::kColumnOverRow;
     case CSSPropertyID::kGridLanesPack:
@@ -1769,7 +1769,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kFieldSizing,
     CSSPropertyID::kFrameSizing,
     CSSPropertyID::kForcedColorAdjust,
-    CSSPropertyID::kGapRuleOverlap,
+    CSSPropertyID::kRuleOverlap,
     CSSPropertyID::kGridLanesPack,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageAnimation,
