@@ -110,6 +110,10 @@ bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
   focus_manager_->RegisterAccelerator(home_key_, normal, this);
   focus_manager_->RegisterAccelerator(end_key_, normal, this);
   focus_manager_->RegisterAccelerator(escape_key_, normal, this);
+  if (TraverseUsingUpDownKeys()) {
+    focus_manager_->RegisterAccelerator(up_key_, normal, this);
+    focus_manager_->RegisterAccelerator(down_key_, normal, this);
+  }
   focus_manager_->RegisterAccelerator(left_key_, normal, this);
   focus_manager_->RegisterAccelerator(right_key_, normal, this);
   focus_manager_->AddFocusChangeListener(this);
@@ -119,6 +123,10 @@ bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
 
 bool AccessiblePaneView::SetPaneFocusAndFocusDefault() {
   return SetPaneFocus(GetDefaultFocusableChild());
+}
+
+bool AccessiblePaneView::TraverseUsingUpDownKeys() {
+  return false;
 }
 
 views::View* AccessiblePaneView::GetDefaultFocusableChild() {
@@ -140,6 +148,10 @@ void AccessiblePaneView::RemovePaneFocus() {
   focus_manager_->UnregisterAccelerator(home_key_, this);
   focus_manager_->UnregisterAccelerator(end_key_, this);
   focus_manager_->UnregisterAccelerator(escape_key_, this);
+  if (TraverseUsingUpDownKeys()) {
+    focus_manager_->UnregisterAccelerator(up_key_, this);
+    focus_manager_->UnregisterAccelerator(down_key_, this);
+  }
   focus_manager_->UnregisterAccelerator(left_key_, this);
   focus_manager_->UnregisterAccelerator(right_key_, this);
 }
@@ -204,6 +216,18 @@ bool AccessiblePaneView::AcceleratorPressed(
       }
       return true;
     }
+    case ui::VKEY_UP:
+      if (!TraverseUsingUpDownKeys()) {
+        return false;
+      }
+      focus_manager_->AdvanceFocus(true);
+      return true;
+    case ui::VKEY_DOWN:
+      if (!TraverseUsingUpDownKeys()) {
+        return false;
+      }
+      focus_manager_->AdvanceFocus(false);
+      return true;
     case ui::VKEY_LEFT:
       focus_manager_->AdvanceFocus(!rtl);
       return true;

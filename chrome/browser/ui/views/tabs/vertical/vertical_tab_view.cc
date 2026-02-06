@@ -181,6 +181,7 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
                      /*align_leading=*/true,
                      /*expand=*/true)};
 
+  SetProperty(views::kElementIdentifierKey, kTabElementId);
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 

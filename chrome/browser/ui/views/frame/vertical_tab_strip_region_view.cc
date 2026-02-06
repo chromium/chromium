@@ -394,6 +394,10 @@ views::View* VerticalTabStripRegionView::GetTabStripView() {
   return tab_strip_view_;
 }
 
+bool VerticalTabStripRegionView::TraverseUsingUpDownKeys() {
+  return true;
+}
+
 void VerticalTabStripRegionView::OnResize(int resize_amount,
                                           bool done_resizing) {
   if (!starting_width_on_resize_.has_value()) {

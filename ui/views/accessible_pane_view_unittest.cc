@@ -309,6 +309,73 @@ TEST_F(AccessiblePaneViewTest, DoesntCrashOnEscapeWithRemovedView) {
   EXPECT_TRUE(test_view2->AcceleratorPressed(test_view2->escape_key()));
 }
 
+class TestBarViewVertical : public TestBarView {
+  METADATA_HEADER(TestBarViewVertical, TestBarView)
+
+ public:
+  TestBarViewVertical() = default;
+  ~TestBarViewVertical() override = default;
+
+  bool TraverseUsingUpDownKeys() override { return true; }
+};
+
+BEGIN_METADATA(TestBarViewVertical)
+END_METADATA
+
+TEST_F(AccessiblePaneViewTest, PaneFocusTraversalVertical) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  View* root = widget->GetRootView();
+  auto* test_view = root->AddChildView(std::make_unique<TestBarViewVertical>());
+  widget->Show();
+  widget->Activate();
+
+  // Set pane focus on second child.
+  EXPECT_TRUE(test_view->SetPaneFocus(test_view->second_child_button()));
+
+  // down
+  test_view->AcceleratorPressed(test_view->down_key());
+  EXPECT_EQ(test_view->third_child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+  // up
+  test_view->AcceleratorPressed(test_view->up_key());
+  EXPECT_EQ(test_view->second_child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+
+  widget->CloseNow();
+}
+
+TEST_F(AccessiblePaneViewTest, PaneFocusTraversalVerticalDisabled) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  View* root = widget->GetRootView();
+  auto* test_view = root->AddChildView(std::make_unique<TestBarView>());
+  widget->Show();
+  widget->Activate();
+
+  // Set pane focus on second child.
+  EXPECT_TRUE(test_view->SetPaneFocus(test_view->second_child_button()));
+
+  // down - should be ignored
+  EXPECT_FALSE(test_view->AcceleratorPressed(test_view->down_key()));
+  EXPECT_EQ(test_view->second_child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+  // up - should be ignored
+  EXPECT_FALSE(test_view->AcceleratorPressed(test_view->up_key()));
+  EXPECT_EQ(test_view->second_child_button(),
+            test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+
+  widget->CloseNow();
+}
+
 TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
   std::unique_ptr<TestBarView> test_view = std::make_unique<TestBarView>();
   test_view->GetViewAccessibility().SetName(u"Name");

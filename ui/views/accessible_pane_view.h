@@ -49,6 +49,11 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   // Returns true if the pane was able to receive focus.
   virtual bool SetPaneFocusAndFocusDefault();
 
+  // When true allows the pane to handle the up and down arrow keys to navigate
+  // the children. Defaults to false.
+  // Note: If true, the down arrow will no longer open submenus.
+  virtual bool TraverseUsingUpDownKeys();
+
   // Overridden from View:
   FocusTraversable* GetPaneFocusTraversable() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -68,6 +73,8 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   const ui::Accelerator& home_key() const { return home_key_; }
   const ui::Accelerator& end_key() const { return end_key_; }
   const ui::Accelerator& escape_key() const { return escape_key_; }
+  const ui::Accelerator& up_key() const { return up_key_; }
+  const ui::Accelerator& down_key() const { return down_key_; }
   const ui::Accelerator& left_key() const { return left_key_; }
   const ui::Accelerator& right_key() const { return right_key_; }
 
@@ -120,6 +127,8 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   ui::Accelerator home_key_{ui::VKEY_HOME, ui::EF_NONE};
   ui::Accelerator end_key_{ui::VKEY_END, ui::EF_NONE};
   ui::Accelerator escape_key_{ui::VKEY_ESCAPE, ui::EF_NONE};
+  ui::Accelerator up_key_{ui::VKEY_UP, ui::EF_NONE};
+  ui::Accelerator down_key_{ui::VKEY_DOWN, ui::EF_NONE};
   ui::Accelerator left_key_{ui::VKEY_LEFT, ui::EF_NONE};
   ui::Accelerator right_key_{ui::VKEY_RIGHT, ui::EF_NONE};
 
