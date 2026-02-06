@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
 namespace signin {
@@ -32,6 +33,8 @@ class DeviceStatisticsScheduler {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+
+    virtual bool IsDeviceStatisticsMetricReportingEnabled() = 0;
 
     virtual std::unique_ptr<DeviceStatisticsRequest>
     CreateDeviceStatisticsRequest(const CoreAccountInfo&, const GURL&) = 0;
@@ -65,6 +68,8 @@ class DeviceStatisticsScheduler {
   const GURL sync_server_url_;
 
   std::unique_ptr<DeviceStatisticsTracker> tracker_;
+
+  base::WeakPtrFactory<DeviceStatisticsScheduler> weak_factory_{this};
 };
 
 }  // namespace syncer

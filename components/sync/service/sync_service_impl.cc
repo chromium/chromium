@@ -418,10 +418,12 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
       std::make_unique<LocalDataMigrationItemQueue>(this,
                                                     data_type_manager_.get());
 
+  // TODO(crbug.com/465716865): Move the feature check and the startup delay
+  // into DeviceStatisticsScheduler itself.
   if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsScheduler,
+        base::BindOnce(&SyncServiceImpl::StartDeviceStatisticsScheduler,
                        weak_factory_.GetWeakPtr()),
         kSyncRecordDeviceStatisticsMetricsDelay.Get());
   }
@@ -1962,6 +1964,10 @@ void SyncServiceImpl::OnIdentityManagerShutdown(
   NOTREACHED(base::NotFatalUntil::M142);
 }
 
+bool SyncServiceImpl::IsDeviceStatisticsMetricReportingEnabled() {
+  return sync_client_->IsMetricsAndCrashReportingEnabled();
+}
+
 std::unique_ptr<DeviceStatisticsRequest>
 SyncServiceImpl::CreateDeviceStatisticsRequest(const CoreAccountInfo& account,
                                                const GURL& url) {
@@ -2494,28 +2500,8 @@ void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError(
   bookmark_sync_error_state_.AcknowledgeError();
 }
 
-void SyncServiceImpl::MaybeStartDeviceStatisticsScheduler() {
+void SyncServiceImpl::StartDeviceStatisticsScheduler() {
   CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
-
-  // TODO(crbug.com/465716865): Move the metrics check into
-  // DeviceStatisticsScheduler.
-  if (!sync_client_->IsMetricsAndCrashReportingEnabled()) {
-    return;
-  }
-
-  // TODO(crbug.com/465716865): Move this logic into
-  // DeviceStatisticsScheduler.
-  if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
-    // It shouldn't happen in practice that the account info (refresh tokens)
-    // still aren't fully loaded at this point. But if it does, attempt starting
-    // the tracker again in a little while.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsScheduler,
-                       weak_factory_.GetWeakPtr()),
-        base::Seconds(1));
-    return;
-  }
 
   device_statistics_scheduler_ = std::make_unique<DeviceStatisticsScheduler>(
       /*delegate=*/this, sync_client_->GetPrefService(),

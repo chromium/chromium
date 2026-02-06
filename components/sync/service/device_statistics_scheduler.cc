@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/time.h"
 #include "components/sync/service/device_statistics_request.h"
 #include "components/sync/service/device_statistics_tracker.h"
@@ -47,6 +49,24 @@ void DeviceStatisticsScheduler::RegisterProfilePrefs(
 }
 
 void DeviceStatisticsScheduler::StartTracker() {
+  if (!delegate_->IsDeviceStatisticsMetricReportingEnabled()) {
+    return;
+  }
+
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // It shouldn't happen in practice that the account info (refresh tokens)
+    // still aren't fully loaded at this point. But if it does, attempt starting
+    // the tracker again in a little while.
+    // TODO(crbug.com/465716865): Reconsider whether repeatedly re-trying makes
+    // sense.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DeviceStatisticsScheduler::StartTracker,
+                       weak_factory_.GetWeakPtr()),
+        base::Seconds(5));
+    return;
+  }
+
   // Only record metrics once per day.
   const base::Time last_recorded_at =
       pref_service_->GetTime(kLastAttemptedToRecordPref);

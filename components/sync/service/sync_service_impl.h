@@ -233,6 +233,7 @@ class SyncServiceImpl : public SyncService,
       signin::IdentityManager* identity_manager) override;
 
   // DeviceStatisticsScheduler::Delegate implementation.
+  bool IsDeviceStatisticsMetricReportingEnabled() override;
   std::unique_ptr<DeviceStatisticsRequest> CreateDeviceStatisticsRequest(
       const CoreAccountInfo&,
       const GURL&) override;
@@ -419,7 +420,7 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback);
 
-  void MaybeStartDeviceStatisticsScheduler();
+  void StartDeviceStatisticsScheduler();
 
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;

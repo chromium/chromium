@@ -26,6 +26,8 @@ class DeviceStatisticsSchedulerTest
     DeviceStatisticsScheduler::RegisterProfilePrefs(pref_service_.registry());
   }
 
+  bool IsDeviceStatisticsMetricReportingEnabled() override { return true; }
+
   std::unique_ptr<DeviceStatisticsRequest> CreateDeviceStatisticsRequest(
       const CoreAccountInfo& account,
       const GURL& url) override {
