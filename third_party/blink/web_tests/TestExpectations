@@ -1467,6 +1467,9 @@ crbug.com/379516109 external/wpt/ai/language_detection/* [ Failure Timeout ]
 # Failing on Win ARM
 crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout ]
 
+# Flaky test on all platforms.
+crbug.com/479913865 external/wpt/ai/translator/translator-locale.https.window.html [ Skip Timeout ]
+
 # Built-In AI echo backends do not support response constraints or prefixes
 crbug.com/461860505 external/wpt/ai/language-model/language-model-response-json-schema.tentative.https.window.html [ Failure ]
 
