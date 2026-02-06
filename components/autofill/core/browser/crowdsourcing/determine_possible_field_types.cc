@@ -380,8 +380,8 @@ PossibleTypes GetPossibleTypes(
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId> fields_that_match_state,
     const std::string& app_locale) {
-  std::u16string value_u16 = field.value_for_import();
-  base::TrimWhitespace(value_u16, base::TRIM_ALL, &value_u16);
+  const std::u16string_view value_u16 =
+      base::TrimWhitespace(field.value_for_import(), base::TRIM_ALL);
 
   PossibleTypes pt;
 
@@ -424,9 +424,8 @@ void FindAndSetPossibleOtpFieldTypes(
   }
 
   for (auto [field, pt] : base::zip(fields, possible_types)) {
-    std::u16string field_value = field->value();
-    base::TrimWhitespace(field_value, base::TRIM_ALL, &field_value);
-    const std::string field_value_u8 = base::UTF16ToUTF8(field_value);
+    const std::string field_value_u8 =
+        base::UTF16ToUTF8(base::TrimWhitespace(field->value(), base::TRIM_ALL));
 
     // Check if the field value matches any of the recent OTPs.
     for (const OneTimeToken& otp : recent_otps) {

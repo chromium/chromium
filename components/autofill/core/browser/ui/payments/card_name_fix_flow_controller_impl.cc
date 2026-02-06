@@ -65,9 +65,8 @@ void CardNameFixFlowControllerImpl::OnNameAccepted(const std::u16string& name) {
   had_user_interaction_ = true;
   autofill_metrics::LogSaveCardCardholderNameWasEdited(
       inferred_cardholder_name_ != name);
-  std::u16string trimmed_name;
-  base::TrimWhitespace(name, base::TRIM_ALL, &trimmed_name);
-  std::move(name_accepted_callback_).Run(trimmed_name);
+  std::move(name_accepted_callback_)
+      .Run(std::u16string(base::TrimWhitespace(name, base::TRIM_ALL)));
 }
 
 void CardNameFixFlowControllerImpl::OnDismissed() {

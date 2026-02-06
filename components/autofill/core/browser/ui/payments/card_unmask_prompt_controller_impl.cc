@@ -177,7 +177,8 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
   card_unmask_view_->DisableAndWaitForVerification();
 
   DCHECK(InputCvcIsValid(cvc));
-  base::TrimWhitespace(cvc, base::TRIM_ALL, &pending_details_.cvc);
+  pending_details_.cvc =
+      std::u16string(base::TrimWhitespace(cvc, base::TRIM_ALL));
   if (ShouldRequestExpirationDate()) {
     DCHECK(InputExpirationIsValid(exp_month, exp_year));
     pending_details_.exp_month = exp_month;
@@ -344,8 +345,8 @@ std::u16string CardUnmaskPromptControllerImpl::GetCvcImageAnnouncement() const {
 
 bool CardUnmaskPromptControllerImpl::InputCvcIsValid(
     std::u16string_view input_text) const {
-  std::u16string trimmed_text;
-  base::TrimWhitespace(input_text, base::TRIM_ALL, &trimmed_text);
+  const std::u16string_view trimmed_text =
+      base::TrimWhitespace(input_text, base::TRIM_ALL);
 
   // Allow three digit American Express Cvc value when it is a back of card cvc
   // challenge option.

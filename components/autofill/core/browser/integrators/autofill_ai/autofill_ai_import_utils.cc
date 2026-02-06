@@ -59,9 +59,8 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field,
                                              AttributeType attribute_type) {
   if (attribute_type.data_type() != AttributeType::DataType::kDate ||
       !field.IsSelectElement()) {
-    std::u16string value = field.value_for_import();
-    base::TrimWhitespace(value, base::TRIM_ALL, &value);
-    return {.value = std::move(value),
+    return {.value = std::u16string(
+                base::TrimWhitespace(field.value_for_import(), base::TRIM_ALL)),
             .format_string = field.format_string() ? *field.format_string()
                                                    : AutofillFormatString()};
   }

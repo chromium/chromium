@@ -1026,9 +1026,9 @@ bool AutofillProfile::SetInfoWithVerificationStatus(const AutofillType& type,
   if (!form_group) {
     return false;
   }
-  std::u16string trimmed_value;
-  base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
 
+  const std::u16string_view trimmed_value =
+      base::TrimWhitespace(value, base::TRIM_ALL);
   if (type.GetAddressType() == ADDRESS_HOME_COUNTRY) {
     const AddressCountryCode old_country_code = GetAddressCountryCode();
     const bool response = form_group->SetInfoWithVerificationStatus(

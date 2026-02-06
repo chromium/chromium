@@ -200,7 +200,7 @@ using payments::AmountExtractionManager;
 
 namespace {
 
-ValuePatternsMetric GetValuePattern(const std::u16string& value) {
+ValuePatternsMetric GetValuePattern(std::u16string_view value) {
   if (IsUPIVirtualPaymentAddress(value)) {
     return ValuePatternsMetric::kUpiVpa;
   }
@@ -218,8 +218,8 @@ void LogValuePatternsMetric(const FormData& form) {
     if (!field.is_focusable()) {
       continue;
     }
-    std::u16string value;
-    base::TrimWhitespace(field.value(), base::TRIM_ALL, &value);
+    const std::u16string_view value =
+        base::TrimWhitespace(field.value(), base::TRIM_ALL);
     if (value.empty()) {
       continue;
     }

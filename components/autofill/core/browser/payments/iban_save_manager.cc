@@ -226,10 +226,10 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
     Iban import_candidate,
     payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
-  if (!nickname.empty()) {
-    std::u16string trimmed_nickname;
-    base::TrimWhitespace(nickname, base::TRIM_ALL, &trimmed_nickname);
-    import_candidate.set_nickname(trimmed_nickname);
+  const std::u16string_view trimmed_nickname =
+      base::TrimWhitespace(nickname, base::TRIM_ALL);
+  if (!trimmed_nickname.empty()) {
+    import_candidate.set_nickname(std::u16string(trimmed_nickname));
   }
 
   const std::string& partial_iban_hash =
@@ -266,12 +266,10 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
     payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
   CHECK_NE(import_candidate.record_type(), Iban::kServerIban);
-  if (!nickname.empty()) {
-    std::u16string trimmed_nickname;
-    base::TrimWhitespace(nickname, base::TRIM_ALL, &trimmed_nickname);
-    if (!trimmed_nickname.empty()) {
-      import_candidate.set_nickname(trimmed_nickname);
-    }
+  const std::u16string_view trimmed_nickname =
+      base::TrimWhitespace(nickname, base::TRIM_ALL);
+  if (!trimmed_nickname.empty()) {
+    import_candidate.set_nickname(std::u16string(trimmed_nickname));
   }
 
   autofill_metrics::UploadIbanActionMetric action_metric;

@@ -215,8 +215,8 @@ bool IsAchRoutingTransitNumber(std::u16string_view value) {
   // [3,7,1,3,7,1,3,7], and total the results. The remaining ninth digit is the
   // checksum necessary to make the total sum up to the nearest value that is
   // evenly divisible by 10.
-  std::u16string trimmed_value;
-  base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
+  const std::u16string_view trimmed_value =
+      base::TrimWhitespace(value, base::TRIM_ALL);
 
   if (trimmed_value.length() != 9) {
     return false;

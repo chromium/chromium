@@ -97,16 +97,16 @@ std::u16string RemoveWhitespace(std::u16string_view value) {
 }
 
 std::u16string SanitizeCreditCardFieldValue(std::u16string_view value) {
-  std::u16string sanitized;
   // We remove whitespace as well as some invisible unicode characters.
-  base::TrimWhitespace(value, base::TRIM_ALL, &sanitized);
-  base::TrimString(sanitized,
-                   std::u16string({base::i18n::kRightToLeftMark,
-                                   base::i18n::kLeftToRightMark}),
-                   &sanitized);
+  value = base::TrimWhitespace(value, base::TRIM_ALL);
+  value = base::TrimString(value,
+                           std::u16string({base::i18n::kRightToLeftMark,
+                                           base::i18n::kLeftToRightMark}),
+                           base::TRIM_ALL);
   // Some sites have ____-____-____-____ in their credit card number fields, for
   // example.
-  base::RemoveChars(sanitized, u"-_", &sanitized);
+  std::u16string sanitized;
+  base::RemoveChars(value, u"-_", &sanitized);
   return sanitized;
 }
 

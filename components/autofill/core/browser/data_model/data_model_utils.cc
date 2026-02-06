@@ -343,8 +343,8 @@ std::optional<int> ParseMonthFromString(std::u16string_view text,
 }
 
 std::optional<int> ParseYearFromString(std::u16string_view text) {
-  std::u16string trimmed;
-  base::TrimWhitespace(text, base::TRIM_ALL, &trimmed);
+  const std::u16string_view trimmed =
+      base::TrimWhitespace(text, base::TRIM_ALL);
 
   int year = 0;
   if (!trimmed.empty() && !base::StringToInt(trimmed, &year))

@@ -388,23 +388,19 @@ size_t CalculateTableCellColumnSpan(const WebElement& element) {
 //  * CombineAndCollapseWhitespace("foo   ", "   bar", false) -> "foo bar"
 //  * CombineAndCollapseWhitespace(" foo", "bar ", false)     -> " foobar "
 //  * CombineAndCollapseWhitespace(" foo", "bar ", true)      -> " foo bar "
-const std::u16string CombineAndCollapseWhitespace(const std::u16string& prefix,
-                                                  const std::u16string& suffix,
-                                                  bool force_whitespace) {
-  std::u16string prefix_trimmed;
-  base::TrimPositions prefix_trailing_whitespace =
-      base::TrimWhitespace(prefix, base::TRIM_TRAILING, &prefix_trimmed);
+std::u16string CombineAndCollapseWhitespace(std::u16string_view prefix,
+                                            std::u16string_view suffix,
+                                            bool force_whitespace) {
+  const std::u16string_view prefix_trimmed =
+      base::TrimWhitespace(prefix, base::TRIM_TRAILING);
+  const std::u16string_view suffix_trimmed =
+      base::TrimWhitespace(suffix, base::TRIM_LEADING);
 
-  // Recursively compute the children's text.
-  std::u16string suffix_trimmed;
-  base::TrimPositions suffix_leading_whitespace =
-      base::TrimWhitespace(suffix, base::TRIM_LEADING, &suffix_trimmed);
-
-  if (prefix_trailing_whitespace || suffix_leading_whitespace ||
+  if (prefix_trimmed != prefix || suffix_trimmed != suffix ||
       force_whitespace) {
-    return prefix_trimmed + u" " + suffix_trimmed;
+    return base::StrCat({prefix_trimmed, u" ", suffix_trimmed});
   }
-  return prefix_trimmed + suffix_trimmed;
+  return base::StrCat({prefix_trimmed, suffix_trimmed});
 }
 
 // This is a helper function for the FindChildText() function (see below).
@@ -469,13 +465,11 @@ std::u16string FindChildTextWithIgnoreList(
     return node.NodeValue().Utf16();
   }
 
+  constexpr int kChildSearchDepth = 10;
   WebNode child = node.FirstChild();
-
-  const int kChildSearchDepth = 10;
-  std::u16string node_text =
-      FindChildTextInner(child, kChildSearchDepth, divs_to_skip);
-  base::TrimWhitespace(node_text, base::TRIM_ALL, &node_text);
-  return node_text;
+  return std::u16string(base::TrimWhitespace(
+      FindChildTextInner(child, kChildSearchDepth, divs_to_skip),
+      base::TRIM_ALL));
 }
 
 struct InferredLabel {
