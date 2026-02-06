@@ -22,3 +22,9 @@ message FjordOobeStateInfo {
   // The current OOBE state.
   FjordOobeState oobe_state = 1;
 }
+
+message SetFjordOobeStateResponse {
+  // Whether the state was successfully set.
+  bool success = 1;
+  string error_message = 2;
+}

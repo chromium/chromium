@@ -53,6 +53,8 @@ class FjordOobeServiceProvider
       dbus::ExportedObject::ResponseSender response_sender);
   void GetOobeState(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender);
+  void SetOobeState(dbus::MethodCall* method_call,
+                    dbus::ExportedObject::ResponseSender response_sender);
 
   // A reference on ExportedObject for sending signals.
   scoped_refptr<dbus::ExportedObject> exported_object_;
