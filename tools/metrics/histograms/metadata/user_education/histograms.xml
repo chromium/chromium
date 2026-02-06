@@ -57,6 +57,12 @@ chromium-metrics-reviews@google.com.
       summary="Promotion for Organize Tabs in the app menu."/>
   <variant name="TabstripDeclutter"
       summary="Promotion for Close Unused Tabs in the app menu."/>
+  <variant name="VerticalTabsNewBadge"
+      summary="Promotion for toggling to the vertical tab strip in the system
+               context menu."/>
+  <variant name="VerticalTabsPreviewBadge"
+      summary="Promotion for toggling to the vertical tab strip in the system
+               context menu."/>
 </variants>
 
 <!-- LINT.IfChange(NtpPromoActions) -->

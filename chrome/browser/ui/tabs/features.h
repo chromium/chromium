@@ -18,6 +18,10 @@ BASE_DECLARE_FEATURE(kTabGroupHome);
 
 BASE_DECLARE_FEATURE(kVerticalTabs);
 
+BASE_DECLARE_FEATURE(kVerticalTabsPreviewBadge);
+
+BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
+
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
 BASE_DECLARE_FEATURE(kBackToOpener);

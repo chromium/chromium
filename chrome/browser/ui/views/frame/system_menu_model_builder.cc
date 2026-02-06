@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -16,11 +17,14 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -127,6 +131,19 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     } else {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_VERTICAL_TAB);
+      const bool use_preview_badge =
+          base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
+      const ui::NewBadgeType badge_type = use_preview_badge
+                                              ? ui::NewBadgeType::kPreview
+                                              : ui::NewBadgeType::kNew;
+      const user_education::DisplayNewBadge show_badge =
+          UserEducationService::MaybeShowNewBadge(
+              browser()->GetProfile(), use_preview_badge
+                                           ? tabs::kVerticalTabsPreviewBadge
+                                           : tabs::kVerticalTabsNewBadge);
+      model->SetIsNewFeatureAt(
+          model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
+          show_badge, badge_type);
     }
     model->SetElementIdentifierAt(
         model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),

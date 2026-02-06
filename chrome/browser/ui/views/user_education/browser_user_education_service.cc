@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
@@ -2074,6 +2075,20 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(141, "emshack@chromium.org",
                                "Shown in the link context menu to open the "
                                "link in a new split tab.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      tabs::kVerticalTabsPreviewBadge,
+      user_education::Metadata(146, "stluong@chromium.org",
+                               "Show the preview badge in the system context "
+                               "menu to toggle the horizontal tab strip "
+                               "to be a vertical tab strip")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      tabs::kVerticalTabsNewBadge,
+      user_education::Metadata(147, "stluong@chromium.org",
+                               "Show the new badge in the system context menu "
+                               "to toggle the horizontal tab strip "
+                               "to be a vertical tab strip")));
 }
 
 std::unique_ptr<user_education::FeaturePromoControllerCommon>
