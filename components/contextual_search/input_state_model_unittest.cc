@@ -456,4 +456,26 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   EXPECT_TRUE(final_state.disabled_input_types.empty());
 }
 
+TEST_F(InputStateModelCompatibilityTest, CanvasToolAllowsAllInputs) {
+  // Set deep search rule `allow_all_input_types` to true.
+  for (auto& rule : *config_.mutable_rule_set()->mutable_tool_rules()) {
+    if (rule.tool() == omnibox::ToolMode::TOOL_MODE_CANVAS) {
+      rule.set_allow_all_input_types(true);
+    }
+  }
+
+  // Re-create the model with the modified config.
+  input_state_model_ =
+      std::make_unique<InputStateModel>(session_handle_, config_);
+  input_state_model_->SetPrefService(&pref_service_);
+  input_state_model_->set_state_for_testing(state_);
+
+  // Select Canvas.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  const auto& new_state = input_state_model_->get_state_for_testing();
+
+  // With allow_all_input_types, no inputs should be disabled.
+  EXPECT_TRUE(new_state.disabled_input_types.empty());
+}
+
 }  // namespace contextual_search
