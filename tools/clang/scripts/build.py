@@ -352,7 +352,7 @@ def GetLibXml2Dirs():
   return LibXmlDirs()
 
 
-def BuildLibXml2():
+def BuildLibXml2(cc, cxx, cmake_sysroot):
   """Download and build libxml2"""
   # The .tar.gz on GCS was uploaded as follows.
   # The gitlab page has more up-to-date packages than http://xmlsoft.org/,
@@ -374,10 +374,9 @@ def BuildLibXml2():
   # Disable everything except WITH_TREE and WITH_OUTPUT, both needed by LLVM's
   # WindowsManifestMerger.
   # Also enable WITH_THREADS, else libxml doesn't compile on Linux.
-  RunCommand(
-      [
-          'cmake',
-          '-GNinja',
+  cmake_args = [
+          '-DCMAKE_C_COMPILER=' + cc,
+          '-DCMAKE_CXX_COMPILER=' + cxx,
           '-DCMAKE_BUILD_TYPE=Release',
           '-DCMAKE_INSTALL_PREFIX=install',
           '-DCMAKE_INSTALL_LIBDIR=lib',
@@ -418,9 +417,11 @@ def BuildLibXml2():
           '-DLIBXML2_WITH_XPATH=OFF',
           '-DLIBXML2_WITH_XPTR=OFF',
           '-DLIBXML2_WITH_ZLIB=OFF',
-          '..',
-      ],
-      setenv=True)
+      ]
+  if cmake_sysroot:
+    cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
+
+  RunCommand(['cmake', '-GNinja'] + cmake_args + ['..'], setenv=True)
   RunCommand(['ninja', 'install'], setenv=True)
 
   if sys.platform == 'win32':
@@ -466,7 +467,7 @@ class ZStdDirs:
     self.lib_dir = os.path.join(self.install_dir, 'lib')
 
 
-def BuildZStd():
+def BuildZStd(cc, cxx, cmake_sysroot):
   """Download and build zstd lib"""
   # The zstd-1.5.5.tar.gz was downloaded from
   #   https://github.com/facebook/zstd/releases/
@@ -482,18 +483,18 @@ def BuildZStd():
   os.mkdir(dirs.build_dir)
   os.chdir(dirs.build_dir)
 
-  RunCommand(
-      [
-          'cmake',
-          '-GNinja',
+  cmake_args = [
+          '-DCMAKE_C_COMPILER=' + cc,
+          '-DCMAKE_CXX_COMPILER=' + cxx,
           '-DCMAKE_BUILD_TYPE=Release',
           '-DCMAKE_INSTALL_PREFIX=install',
           '-DCMAKE_INSTALL_LIBDIR=lib',
           '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
           '-DZSTD_BUILD_SHARED=OFF',
-          '../build/cmake',
-      ],
-      setenv=True)
+      ]
+  if cmake_sysroot:
+    cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
+  RunCommand(['cmake', '-GNinja'] + cmake_args + ['../build/cmake'], setenv=True)
   RunCommand(['ninja', 'install'], setenv=True)
 
   if sys.platform == 'win32':
@@ -886,6 +887,7 @@ def main():
   # -fuse-ld=lld there to make the compiler driver call the linker (by setting
   # LLVM_ENABLE_LLD).
   cc, cxx, lld = None, None, None
+  cmake_sysroot = None
 
   cflags = []
   cxxflags = []
@@ -982,10 +984,11 @@ def main():
   if sys.platform.startswith('linux'):
     # Add the sysroot to base_cmake_args.
     if platform.machine() == 'aarch64':
-      base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_arm64)
+      cmake_sysroot = sysroot_arm64
     else:
       # amd64 is the default toolchain.
-      base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_amd64)
+      cmake_sysroot = sysroot_amd64
+    base_cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
 
   if sys.platform == 'win32':
     AddGitForWindowsToPath()
@@ -1009,7 +1012,7 @@ def main():
   # and to make sure lld-link output on other platforms is identical to
   # lld-link on Windows (for cross-builds).
   with timer.time('libxml2 build'):
-    libxml_cmake_args, libxml_cflags = BuildLibXml2()
+    libxml_cmake_args, libxml_cflags = BuildLibXml2(cc, cxx, cmake_sysroot)
   base_cmake_args += libxml_cmake_args
   cflags += libxml_cflags
   cxxflags += libxml_cflags
@@ -1017,7 +1020,7 @@ def main():
   if args.with_zstd:
     # Statically link zstd to make lld support zstd compression for debug info.
     with timer.time('zstd build'):
-      zstd_cmake_args, zstd_cflags = BuildZStd()
+      zstd_cmake_args, zstd_cflags = BuildZStd(cc, cxx, cmake_sysroot)
     base_cmake_args += zstd_cmake_args
     cflags += zstd_cflags
     cxxflags += zstd_cflags
