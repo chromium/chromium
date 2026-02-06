@@ -268,6 +268,7 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (void)configureWithConfig:(MagicStackModule*)config {
+  [self resetView];
   // Ensures that the modules conforms to the dynamic MS height. For
   // the MVT when it lives outside of the Magic Stack to stay as close to its
   // intrinsic size as possible, the constraint is configured to be less than

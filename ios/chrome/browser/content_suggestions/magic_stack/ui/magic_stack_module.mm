@@ -26,4 +26,8 @@
   return @(int(self.type)).hash;
 }
 
+- (BOOL)hasDifferentContentsFromConfig:(MagicStackModule*)config {
+  return self.type != config.type;
+}
+
 @end

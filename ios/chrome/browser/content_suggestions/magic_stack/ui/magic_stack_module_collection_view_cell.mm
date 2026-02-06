@@ -25,12 +25,6 @@ const float kCornerRadius = 24;
 
 }  // namespace
 
-@interface MagicStackModuleCollectionViewCell ()
-
-@property(nonatomic, assign) ContentSuggestionsModuleType type;
-
-@end
-
 @implementation MagicStackModuleCollectionViewCell {
   // Container that holds the module contents.
   MagicStackModuleContainer* _moduleContainer;
@@ -38,6 +32,7 @@ const float kCornerRadius = 24;
   UIContextMenuInteraction* _contextMenuInteraction;
   // Background view to show the proper colored vs blur effect background.
   MagicStackModuleBackgroundView* _moduleBackgroundView;
+  MagicStackModule* _config;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -58,10 +53,10 @@ const float kCornerRadius = 24;
 }
 
 - (void)configureWithConfig:(MagicStackModule*)config {
-  if (_type == config.type) {
+  if (_config && ![_config hasDifferentContentsFromConfig:config]) {
     return;
   }
-  _type = config.type;
+  _config = config;
   [_moduleContainer configureWithConfig:config];
   if (!_contextMenuInteraction) {
     _contextMenuInteraction = [[UIContextMenuInteraction alloc]
@@ -81,7 +76,7 @@ const float kCornerRadius = 24;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  _type = ContentSuggestionsModuleType::kInvalid;
+  _config = nil;
   if (_contextMenuInteraction) {
     [_contextMenuInteraction dismissMenu];
     [self removeInteraction:_contextMenuInteraction];

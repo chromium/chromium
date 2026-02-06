@@ -46,6 +46,14 @@
   _consumerSource = item.consumerSource;
 }
 
+- (BOOL)hasDifferentContentsFromConfig:(MagicStackModule*)config {
+  if ([super hasDifferentContentsFromConfig:config]) {
+    return YES;
+  }
+  TabResumptionItem* item = static_cast<TabResumptionItem*>(config);
+  return _tabURL != item.tabURL;
+}
+
 #pragma mark - properties
 
 - (const GURL&)tabURL {

@@ -37,6 +37,12 @@ enum class ContentSuggestionsModuleType;
 // The delegate of the module.
 @property(nonatomic, weak) id<MagicStackModuleDelegate> delegate;
 
+// Returns YES if this class instance has different contents from `config`.
+// Each subclass should implement this to differentiate when updating a card
+// (e.g. Tab Resumption has new URL).
+- (BOOL)hasDifferentContentsFromConfig:(MagicStackModule*)config
+    NS_REQUIRES_SUPER;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_MAGIC_STACK_UI_MAGIC_STACK_MODULE_H_
