@@ -850,6 +850,10 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     return;
   }
 
+  if (params.reason != AttributeModificationReason::kDirectly) {
+    return;
+  }
+
   if (params.name == html_names::kCommandAttr) {
     bool old_is_overscroll = IsOverscrollCommand(
         GetCommandEventType(params.old_value, GetExecutionContext()));
@@ -879,8 +883,6 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     }
   }
 
-  if (params.reason != AttributeModificationReason::kDirectly)
-    return;
   // adjustedFocusedElementInTreeScope() is not trivial. We should check
   // attribute names, then call adjustedFocusedElementInTreeScope().
   if (params.name == html_names::kHiddenAttr && !params.new_value.IsNull()) {
@@ -3172,6 +3174,14 @@ Node::InsertionNotificationRequest HTMLElement::InsertedInto(
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().InsertedInto(insertion_point);
 
+  if (IsOverscrollCommand(GetCommandEventType(
+          FastGetAttribute(html_names::kCommandAttr), GetExecutionContext()))) {
+    const auto& command_for = FastGetAttribute(html_names::kCommandforAttr);
+    if (!command_for.empty()) {
+      GetDocument().AddOverscrollCommandTarget(command_for);
+    }
+  }
+
   return kInsertionDone;
 }
 
@@ -3192,6 +3202,14 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
   Element::RemovedFrom(insertion_point);
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().RemovedFrom(insertion_point);
+
+  if (IsOverscrollCommand(GetCommandEventType(
+          FastGetAttribute(html_names::kCommandAttr), GetExecutionContext()))) {
+    const auto& command_for = FastGetAttribute(html_names::kCommandforAttr);
+    if (!command_for.empty()) {
+      GetDocument().RemoveOverscrollCommandTarget(command_for);
+    }
+  }
 }
 
 void HTMLElement::DidMoveToNewDocument(Document& old_document) {

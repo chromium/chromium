@@ -60,6 +60,7 @@ class OverscrollAreaTrackerTest : public testing::Test,
 };
 
 class OverscrollAreaTrackerPageTest : public PageTestBase,
+                                      public testing::WithParamInterface<int>,
                                       ScopedOverscrollGesturesForTest {
  public:
   OverscrollAreaTrackerPageTest() : ScopedOverscrollGesturesForTest(true) {}
@@ -724,5 +725,73 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerNegativeScroll) {
   ASSERT_EQ(overscrollable_area->MaximumScrollOffset().x(), 200);
   ASSERT_EQ(overscrollable_area->MaximumScrollOffset().y(), 200);
 }
+
+TEST_P(OverscrollAreaTrackerPageTest,
+       OverscrollContainerWithElementInvalidationChecks) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container, #menu {
+        width: 200px;
+        height: 200px;
+      }
+      #menu {
+        right: 200px;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu"></div>
+      <div id="content"></div>
+    </div>
+    <button id=button command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    Element* container = GetElementById("container");
+    ASSERT_TRUE(container);
+    PseudoElement* overscroll_area_parent =
+        GetElementById("menu")->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    Element* menu = GetElementById("menu");
+    Element* content = GetElementById("content");
+    ASSERT_TRUE(overscroll_area_parent);
+    ASSERT_TRUE(menu);
+    ASSERT_TRUE(content);
+  }
+
+  ASSERT_LE(GetParam(), 2);
+  switch (GetParam()) {
+    case 0:
+      GetElementById("button")->remove();
+      break;
+    case 1:
+      GetElementById("button")->SetAttributeWithoutValidation(
+          html_names::kCommandAttr, AtomicString("toggle-foo"));
+      break;
+    case 2:
+      GetElementById("button")->removeAttribute(html_names::kCommandAttr);
+      break;
+  }
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetDocument().OverscrollCommandTargets().size(), 0u);
+
+  Element* container = GetElementById("container");
+  ASSERT_TRUE(container);
+  PseudoElement* overscroll_area_parent =
+      GetElementById("menu")->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  Element* menu = GetElementById("menu");
+  Element* content = GetElementById("content");
+
+  EXPECT_FALSE(overscroll_area_parent);
+  EXPECT_TRUE(menu);
+  EXPECT_TRUE(content);
+
+  EXPECT_EQ(menu->GetLayoutObject()->Parent(), container->GetLayoutObject());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OverscrollAreaTrackerPageTest,
+                         ::testing::Values(0, 1, 2));
 
 }  // namespace blink
