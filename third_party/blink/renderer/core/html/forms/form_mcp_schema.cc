@@ -29,17 +29,54 @@ namespace blink {
 
 namespace {
 
-String ToNumberString(const JSONValue& value) {
-  String string;
+bool ToString(const JSONValue& value, String* out) {
+  if (value.AsString(out)) {
+    return true;
+  }
   int i;
-  double d;
   if (value.AsInteger(&i)) {
-    return String::Number(i);
+    *out = String::Number(i);
+    return true;
   }
+  double d;
   if (value.AsDouble(&d)) {
-    return String::Number(d);
+    *out = String::Number(d);
+    return true;
   }
-  return g_null_atom;
+  bool b;
+  if (value.AsBoolean(&b)) {
+    *out = b ? "true" : "false";
+    return true;
+  }
+  return false;
+}
+
+bool ToBoolean(const JSONValue& value, bool* out) {
+  if (value.AsBoolean(out)) {
+    return true;
+  }
+  int i;
+  if (value.AsInteger(&i)) {
+    *out = (i != 0);
+    return true;
+  }
+  double d;
+  if (value.AsDouble(&d)) {
+    *out = (d != 0.0);
+    return true;
+  }
+  String s;
+  if (value.AsString(&s)) {
+    if (EqualIgnoringASCIICase(s, "true") || s == "1") {
+      *out = true;
+      return true;
+    }
+    if (EqualIgnoringASCIICase(s, "false") || s == "0") {
+      *out = false;
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -157,7 +194,7 @@ bool FormMCPSchema::ValidateTextData(const ControlVector& controls_for_name,
     return false;
   }
   String s;
-  if (!value.AsString(&s)) {
+  if (!ToString(value, &s)) {
     return false;
   }
   if (s.empty()) {
@@ -177,8 +214,11 @@ bool FormMCPSchema::ValidateNumberData(const ControlVector& controls_for_name,
   }
   if (auto* input =
           DynamicTo<HTMLInputElement>(controls_for_name.front().Get())) {
-    String number_string = ToNumberString(value);
-    return !number_string.empty() && input->SanitizeValue(number_string);
+    String number_string;
+    if (ToString(value, &number_string)) {
+      return !number_string.empty() &&
+             !input->SanitizeValue(number_string).empty();
+    }
   }
   return false;
 }
@@ -188,7 +228,7 @@ bool FormMCPSchema::ValidateCheckboxData(const ControlVector& controls_for_name,
   // Single checkboxes are represented as a boolean in the schema.
   if (controls_for_name.size() == 1u) {
     bool unused;
-    return value.AsBoolean(&unused);
+    return ToBoolean(value, &unused);
   }
 
   // Otherwise, a list of (unique) values.
@@ -207,7 +247,7 @@ bool FormMCPSchema::ValidateCheckboxData(const ControlVector& controls_for_name,
   // Each value in the array must have a corresponding form control.
   for (const JSONValue& item : *array) {
     String s;
-    if (!item.AsString(&s)) {
+    if (!ToString(item, &s)) {
       return false;
     }
     if (!allowed_values.Contains(s)) {
@@ -223,7 +263,7 @@ bool FormMCPSchema::ValidateCheckboxData(const ControlVector& controls_for_name,
 bool FormMCPSchema::ValidateRadioData(const ControlVector& controls_for_name,
                                       const JSONValue& value) {
   String string;
-  if (!value.AsString(&string)) {
+  if (!ToString(value, &string)) {
     return false;
   }
   // Make sure the provided value matches one of the options.
@@ -250,7 +290,7 @@ bool FormMCPSchema::ValidateSelectData(const ControlVector& controls_for_name,
 
   if (!element->IsMultiple()) {
     String s;
-    return value.AsString(&s) && allowed_values.Contains(s);
+    return ToString(value, &s) && allowed_values.Contains(s);
   }
 
   const JSONArray* array = JSONArray::Cast(&value);
@@ -261,7 +301,7 @@ bool FormMCPSchema::ValidateSelectData(const ControlVector& controls_for_name,
   // Each value in the array must have a corresponding option.
   for (const JSONValue& item : *array) {
     String s;
-    if (!item.AsString(&s)) {
+    if (!ToString(item, &s)) {
       return false;
     }
     if (!allowed_values.Contains(s)) {
@@ -284,7 +324,7 @@ bool FormMCPSchema::ValidateFileData(const ControlVector& controls_for_name,
 
   auto is_absolute_path_string = [](const JSONValue& value) -> bool {
     String path_string;
-    if (value.AsString(&path_string)) {
+    if (ToString(value, &path_string)) {
       return StringToFilePath(path_string).IsAbsolute();
     }
     return false;
@@ -669,7 +709,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeFileParameterSchema(
 void FormMCPSchema::FillTextData(const ControlVector& controls_for_name,
                                  const JSONValue& value) {
   String string;
-  if (!value.AsString(&string)) {
+  if (!ToString(value, &string)) {
     return;
   }
   if (auto* input =
@@ -685,7 +725,10 @@ void FormMCPSchema::FillNumberData(const ControlVector& controls_for_name,
                                    const JSONValue& value) {
   if (auto* input =
           DynamicTo<HTMLInputElement>(controls_for_name.front().Get())) {
-    input->SetValue(ToNumberString(value));
+    String number_string;
+    if (ToString(value, &number_string)) {
+      input->SetValue(number_string);
+    }
   }
 }
 
@@ -693,7 +736,7 @@ void FormMCPSchema::FillCheckboxData(const ControlVector& controls_for_name,
                                      const JSONValue& value) {
   if (controls_for_name.size() == 1u) {
     bool checked;
-    CHECK(value.AsBoolean(&checked));
+    CHECK(ToBoolean(value, &checked));
     To<HTMLInputElement>(*controls_for_name.front()).SetChecked(checked);
     return;
   }
@@ -709,7 +752,7 @@ void FormMCPSchema::FillCheckboxData(const ControlVector& controls_for_name,
   HashSet<String> checked_values;
   for (const JSONValue& item : *array) {
     String s;
-    CHECK(item.AsString(&s));
+    CHECK(ToString(item, &s));
     checked_values.insert(s);
   }
 
@@ -723,7 +766,7 @@ void FormMCPSchema::FillCheckboxData(const ControlVector& controls_for_name,
 void FormMCPSchema::FillRadioData(const ControlVector& controls_for_name,
                                   const JSONValue& value) {
   String string;
-  if (!value.AsString(&string)) {
+  if (!ToString(value, &string)) {
     return;
   }
   for (HTMLFormControlElement* control : controls_for_name) {
@@ -740,7 +783,7 @@ void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
 
   if (!select.IsMultiple()) {
     String selected_value;
-    CHECK(value.AsString(&selected_value));
+    CHECK(ToString(value, &selected_value));
     select.SetValue(selected_value, /*send_events=*/true,
                     WebAutofillState::kNotFilled);
     return;
@@ -752,7 +795,7 @@ void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
   HashSet<String> selected_values;
   for (const JSONValue& item : *array) {
     String s;
-    CHECK(item.AsString(&s));
+    CHECK(ToString(item, &s));
     selected_values.insert(s);
   }
 
@@ -780,14 +823,14 @@ void FormMCPSchema::FillFileData(const ControlVector& controls_for_name,
     }
     for (const JSONValue& item : *array) {
       String path;
-      if (!item.AsString(&path)) {
+      if (!ToString(item, &path)) {
         return;
       }
       paths.push_back(path);
     }
   } else {
     String path;
-    if (!value.AsString(&path)) {
+    if (!ToString(value, &path)) {
       return;
     }
     paths.push_back(path);

@@ -885,4 +885,83 @@ TEST_F(ModelContextTest, ToolSignalAborted) {
   run_loop.Run();
 }
 
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FlexibleTypes) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"HTML(
+    <form toolautosubmit toolname="flexible_tool" tooldescription="Flexible types tool">
+      <input id=text name=text type=text>
+      <input id=number name=number type=number>
+      <input id=check1 name=check1 type=checkbox>
+      <select id=select name=select>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+      </select>
+    </form>
+    <script>
+      document.querySelector('form').addEventListener('submit', e => {
+        window.text_val = document.querySelector('#text').value;
+        window.number_val = document.querySelector('#number').value;
+        window.check_val = document.querySelector('#check1').checked;
+        window.select_val = document.querySelector('#select').value;
+        e.preventDefault();
+        e.respondWith(Promise.resolve("done"));
+      });
+    </script>
+  )HTML");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  String json_string = R"JSON(
+    {
+      "text": 123,
+      "number": "456",
+      "check1": 1,
+      "select": 2
+    }
+  )JSON";
+
+  model_context->ExecuteTool(
+      "flexible_tool", json_string, /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            ASSERT_TRUE(res.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_EQ(EvalJsString("window.text_val"), "123");
+  EXPECT_EQ(EvalJsString("window.number_val"), "456");
+  EXPECT_TRUE(EvalJsBoolean("window.check_val"));
+  EXPECT_EQ(EvalJsString("window.select_val"), "2");
+
+  // Test with boolean strings and numeric strings for select
+  base::RunLoop run_loop2;
+  json_string = R"JSON(
+    {
+      "check1": "false",
+      "select": "3"
+    }
+  )JSON";
+
+  model_context->ExecuteTool(
+      "flexible_tool", json_string, /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            ASSERT_TRUE(res.has_value());
+            run_loop2.Quit();
+          }));
+  run_loop2.Run();
+
+  EXPECT_FALSE(EvalJsBoolean("window.check_val"));
+  EXPECT_EQ(EvalJsString("window.select_val"), "3");
+}
+
 }  // namespace blink

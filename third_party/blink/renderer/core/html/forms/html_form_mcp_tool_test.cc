@@ -328,11 +328,11 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_NumberString) {
         }
       )JSON";
 
-  EXPECT_FALSE(FillFormControls(*form_element, json_string));
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
 
   HTMLInputElement* num1 = GetInputElement("num1");
   ASSERT_TRUE(num1);
-  EXPECT_EQ("7", num1->Value());
+  EXPECT_EQ("35", num1->Value());
 }
 
 TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_InvalidString) {
