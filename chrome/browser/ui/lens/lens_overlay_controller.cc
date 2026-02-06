@@ -85,6 +85,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
+#include "components/omnibox/common/logger.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1967,14 +1968,13 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
         /*is_initial_query=*/state_ == State::kOverlay);
     if (lens_search_controller_->should_route_to_contextual_tasks() &&
         state_ == State::kOverlay) {
-      // Post a task to close the overlay to avoid destroying the searchbox handler
-      // while it is still on the stack.
+      // Post a task to close the overlay to avoid destroying the searchbox
+      // handler while it is still on the stack.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &LensSearchController::CloseLensSync,
-              lens_search_controller_->GetWeakPtr(),
-              lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
+          FROM_HERE, base::BindOnce(&LensSearchController::CloseLensSync,
+                                    lens_search_controller_->GetWeakPtr(),
+                                    lens::LensOverlayDismissalSource::
+                                        kContextualTasksQuerySubmitted));
       return;
     }
   } else if (initialization_data_->selected_region_.is_null()) {
@@ -2101,6 +2101,9 @@ void LensOverlayController::HandleInteractionURLResponse(
   results_side_panel_coordinator->SetLatestPageUrlWithResponse(
       GURL(response.page_url()));
   results_side_panel_coordinator->LoadURLInResultsFrame(GURL(response.url()));
+
+  // Log the URL the debug omnibox webui page.
+  OMNIBOX_LOG("lens_results_nav") << response.url();
 }
 
 void LensOverlayController::HandleInteractionResponse(
