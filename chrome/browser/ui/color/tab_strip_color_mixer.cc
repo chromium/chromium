@@ -209,8 +209,8 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
       kColorNewTabButtonInkDropFrameActive, std::ceil(0.14f * 255.0f));
 
   /* Vertical Tab Strip colors. */
-  mixer[kColorVerticalTabStripShadow] = {
-      SetAlpha(ui::kColorShadowBase, std::ceil(0.40f * 255.0f))};
+  mixer[kColorVerticalTabStripShadow] =
+      SetAlpha(ui::kColorSysNeutralOutline, std::ceil(0.60f * 255.0f));
 
   /* WebUI Tab Strip colors. */
   // TODO(crbug.com/40678998): Update the tab strip color to respond
