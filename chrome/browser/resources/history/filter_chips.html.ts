@@ -7,21 +7,22 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HistoryFilterChipsElement} from './filter_chips.js';
 
 export function getHtml(this: HistoryFilterChipsElement) {
-  // TODO(b/472479874): Translate strings.
-  return html`
+  // clang-format off
+  return html`<!--_html_template_start_-->
     <div class="filter-chip-container">
       <cr-chip
           ?selected="${this.isUserSelected}"
           @click="${this.onUserVisitsClick_}">
         ${this.isUserSelected ? html`<cr-icon icon="cr:check"></cr-icon>` : ''}
-        You
+        $i18n{sourceFilterChipUser}
       </cr-chip>
       <cr-chip
           ?selected="${this.isActorSelected}"
           @click="${this.onActorVisitsClick_}">
         ${this.isActorSelected ? html`<cr-icon icon="cr:check"></cr-icon>` : ''}
-        Auto browse
+        $i18n{sourceFilterChipActor}
       </cr-chip>
     </div>
-  `;
+<!--_html_template_end_-->`;
+  // clang-format on
 }
