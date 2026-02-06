@@ -124,8 +124,7 @@ suite('MovePasswordsDialogTest', function() {
     items[1]!.dispatchEvent(new CustomEvent('change'));
     await flushTasks();
 
-    dialog.shadowRoot!.querySelector<HTMLButtonElement>(
-                          '#acceptButton')!.click();
+    dialog.$.acceptButton.click();
 
     const movedIds = await passwordManager.whenCalled('movePasswordsToAccount');
     assertEquals(1, movedIds.length);
@@ -137,9 +136,7 @@ suite('MovePasswordsDialogTest', function() {
         [createPasswordEntry({id: 0}), createPasswordEntry({id: 1})];
     await createDialog(passwords);
 
-    const acceptButton =
-        dialog.shadowRoot!.querySelector<HTMLButtonElement>('#acceptButton')!;
-    assertFalse(acceptButton.disabled);
+    assertFalse(dialog.$.acceptButton.disabled);
 
     // Simulate unchecking all items.
     const items = dialog.shadowRoot!.querySelectorAll('password-preview-item');
@@ -150,7 +147,7 @@ suite('MovePasswordsDialogTest', function() {
     await flushTasks();
 
     assertTrue(
-        acceptButton.disabled,
+        dialog.$.acceptButton.disabled,
         'Button should be disabled when nothing is selected');
   });
 

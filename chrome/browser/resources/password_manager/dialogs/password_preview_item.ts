@@ -55,6 +55,7 @@ export class PasswordPreviewItemElement extends PasswordPreviewItemElementBase {
       checked: {
         type: Boolean,
         value: true,
+        reflectToAttribute: true,
       },
     };
   }

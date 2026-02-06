@@ -8,6 +8,7 @@ import '../shared_style.css.js';
 import '../user_utils_mixin.js';
 import './password_preview_item.js';
 
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -20,6 +21,7 @@ import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getTemplate} from './move_passwords_dialog.html.js';
+import type {PasswordPreviewItemElement} from './password_preview_item.js';
 
 /**
  * This should be kept in sync with the enum in
@@ -41,6 +43,7 @@ export enum MoveToAccountStoreTrigger {
 
 export interface MovePasswordsDialogElement {
   $: {
+    acceptButton: CrButtonElement,
     accountEmail: HTMLElement,
     dialog: CrDialogElement,
   };
@@ -113,7 +116,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
     this.$.dialog.cancel();
   }
 
-  private onMoveButtonClick_() {
+  private onAcceptButtonClick_() {
     assert(this.isAccountStoreUser);
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         this.selectedPasswordIds_);
@@ -129,7 +132,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
     this.$.dialog.close();
   }
 
-  private async computeDescriptionString_() {
+  private async updateDescriptionString_() {
     const description =
         this.hasOnlyDeviceCredentials && this.passwords.length === 1 ?
         this.i18n('moveSinglePasswordDialogDescription') :
@@ -138,7 +141,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
     this.descriptionString = description.replace('$1', this.url);
   }
 
-  private async computePasswordsTitle_() {
+  private async updatePasswordsTitle_() {
     const passwordsTitle =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'movePasswordsDialogPasswordsTitle', this.passwords.length);
@@ -151,14 +154,15 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
       return;
     }
 
-    this.computeDescriptionString_();
-    this.computePasswordsTitle_();
+    this.updateDescriptionString_();
+    this.updatePasswordsTitle_();
   }
 
-  private passwordSelected_() {
+  private onPasswordPreviewItemChange_() {
     this.selectedPasswordIds_ =
-        Array.from(this.shadowRoot!.querySelectorAll('password-preview-item'))
-            .filter(item => item.checked)
+        Array
+            .from(this.shadowRoot!.querySelectorAll<PasswordPreviewItemElement>(
+                'password-preview-item[checked]'))
             .map(item => item.passwordId);
   }
 }
