@@ -4742,7 +4742,6 @@
   {
     "name": "files-trash-auto-cleanup",
     "owners": [
-      "jboulic@chromium.org",
       "benreich@chromium.org",
       "simmonsjosh@google.com"
     ],
@@ -9278,7 +9277,10 @@
   },
   {
     "name": "upload-office-to-cloud",
-    "owners": [ "jboulic@chromium.org", "alexbn@chromium.org", "simmonsjosh@google.com" ],
+    "owners": [
+      "alexbn@chromium.org",
+      "simmonsjosh@google.com"
+    ],
     "expiry_milestone": 133
   },
   {
