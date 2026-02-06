@@ -31,8 +31,8 @@ class API_AVAILABLE(macos(14.0)) DISPLAY_EXPORT CAMetalDisplayLinkMac
   std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) override;
 
-  std::unique_ptr<PresentionCallbackMac> RegisterPresentionCallback(
-      PresentionCallbackMac::Callback callback) override;
+  std::unique_ptr<PresentationCallbackMac> RegisterPresentationCallback(
+      PresentationCallbackMac::Callback callback) override;
 
   base::TimeDelta GetRefreshInterval() const override;
   void GetRefreshIntervalRange(base::TimeDelta& min_interval,
@@ -52,20 +52,20 @@ class API_AVAILABLE(macos(14.0)) DISPLAY_EXPORT CAMetalDisplayLinkMac
 
   // This is called by VSyncCallbackMac's destructor.
   void UnregisterCallback(VSyncCallbackMac* callback);
-  void UnregisterPresentionCallback(PresentionCallbackMac* callback);
+  void UnregisterPresentationCallback(PresentationCallbackMac* callback);
 
   // CADisplayLink callback from MetalObjCState.display_link.
   void MetalDisplayLinkCallback(CAMetalDisplayLink* display_link,
                                 CAMetalDisplayLinkUpdate* update);
 
-  void MetalPresentionCallback(id<MTLDrawable> drawable);
+  void MetalPresentationCallback(id<MTLDrawable> drawable);
 
   const CGDirectDisplayID display_id_;
   std::unique_ptr<MetalObjCState> objc_state_;
 
   base::WeakPtr<VSyncCallbackMac> vsync_callback_;
 
-  base::WeakPtr<PresentionCallbackMac> presented_callback_;
+  base::WeakPtr<PresentationCallbackMac> presented_callback_;
 
   // This is used for calculating the frame interval (target_time -
   // last_target_time), valid only when the callbacks are continues. If callback

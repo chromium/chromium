@@ -71,29 +71,29 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   base::WeakPtrFactory<VSyncCallbackMac> weak_factory_{this};
 };
 
-class DISPLAY_EXPORT PresentionCallbackMac {
+class DISPLAY_EXPORT PresentationCallbackMac {
  public:
   using Callback = base::RepeatingCallback<void(int64_t, base::TimeTicks)>;
-  ~PresentionCallbackMac();
+  ~PresentationCallbackMac();
 
-  base::WeakPtr<PresentionCallbackMac> GetWeakPtr();
+  base::WeakPtr<PresentationCallbackMac> GetWeakPtr();
 
  private:
   friend class CAMetalDisplayLinkMac;
   friend struct MetalObjCState;
 
-  using UnregisterCallback = base::OnceCallback<void(PresentionCallbackMac*)>;
+  using UnregisterCallback = base::OnceCallback<void(PresentationCallbackMac*)>;
 
-  explicit PresentionCallbackMac(UnregisterCallback unregister_callback,
-                                 Callback callback,
-                                 bool do_callback_on_ctor_thread);
+  explicit PresentationCallbackMac(UnregisterCallback unregister_callback,
+                                   Callback callback,
+                                   bool do_callback_on_ctor_thread);
 
   // The callback to unregister `this` with its DisplayLinkMac.
   UnregisterCallback unregister_callback_;
 
   Callback callback_for_displaylink_thread_;
 
-  base::WeakPtrFactory<PresentionCallbackMac> weak_factory_{this};
+  base::WeakPtrFactory<PresentationCallbackMac> weak_factory_{this};
 };
 
 class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
@@ -118,8 +118,8 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   virtual std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) = 0;
 
-  virtual std::unique_ptr<PresentionCallbackMac> RegisterPresentionCallback(
-      PresentionCallbackMac::Callback callback);
+  virtual std::unique_ptr<PresentationCallbackMac> RegisterPresentationCallback(
+      PresentationCallbackMac::Callback callback);
 
   // Get the panel/monitor refresh interval
   virtual base::TimeDelta GetRefreshInterval() const = 0;

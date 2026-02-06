@@ -21,14 +21,14 @@ API_AVAILABLE(macos(14.0))
 - (void)setCallback:
     (base::RepeatingCallback<void(CAMetalDisplayLink*,
                                   CAMetalDisplayLinkUpdate*)>)callback;
-- (void)setPresentionCallback:
+- (void)setPresentationCallback:
     (base::RepeatingCallback<void(id<MTLDrawable>)>)callback;
 @end
 
 @implementation DisplayLinkDelegate {
   base::RepeatingCallback<void(CAMetalDisplayLink*, CAMetalDisplayLinkUpdate*)>
       _callback;
-  base::RepeatingCallback<void(id<MTLDrawable>)> _presentedCallback;
+  base::RepeatingCallback<void(id<MTLDrawable>)> _presentationCallback;
 }
 
 - (instancetype)initWithLayer:(CAMetalLayer*)layer {
@@ -44,17 +44,17 @@ API_AVAILABLE(macos(14.0))
 
 - (void)metalDisplayLink:(CAMetalDisplayLink*)link
              needsUpdate:(CAMetalDisplayLinkUpdate*)update {
-  if (!_presentedCallback.is_null()) {
+  if (!_presentationCallback.is_null()) {
     id<CAMetalDrawable> drawable = [update drawable];
 
     __weak DisplayLinkDelegate* weakSelf = self;
     [drawable addPresentedHandler:^(id<MTLDrawable> d) {
       // Convert weak reference back to strong to ensure 'self' exists
       // for the duration of this block execution. Also ensure
-      // _presentedCallback has not been unregistered.
+      // _presentationCallback has not been unregistered.
       __strong DisplayLinkDelegate* strongSelf = weakSelf;
-      if (strongSelf && !strongSelf->_presentedCallback.is_null()) {
-        strongSelf->_presentedCallback.Run(d);
+      if (strongSelf && !strongSelf->_presentationCallback.is_null()) {
+        strongSelf->_presentationCallback.Run(d);
       }
     }];
   }
@@ -68,9 +68,9 @@ API_AVAILABLE(macos(14.0))
   _callback = callback;
 }
 
-- (void)setPresentionCallback:
+- (void)setPresentationCallback:
     (base::RepeatingCallback<void(id<MTLDrawable>)>)callback {
-  _presentedCallback = callback;
+  _presentationCallback = callback;
 }
 
 @end
@@ -162,7 +162,8 @@ void CAMetalDisplayLinkMac::MetalDisplayLinkCallback(
   }
 }
 
-void CAMetalDisplayLinkMac::MetalPresentionCallback(id<MTLDrawable> drawable) {
+void CAMetalDisplayLinkMac::MetalPresentationCallback(
+    id<MTLDrawable> drawable) {
   if (!presented_callback_) {
     return;
   }
@@ -282,18 +283,18 @@ void CAMetalDisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   last_target_time_ = base::TimeTicks();
 }
 
-std::unique_ptr<PresentionCallbackMac>
-CAMetalDisplayLinkMac::RegisterPresentionCallback(
-    PresentionCallbackMac::Callback callback) {
+std::unique_ptr<PresentationCallbackMac>
+CAMetalDisplayLinkMac::RegisterPresentationCallback(
+    PresentationCallbackMac::Callback callback) {
   [objc_state_->delegate
-      setPresentionCallback:base::BindRepeating(
-                                &CAMetalDisplayLinkMac::MetalPresentionCallback,
-                                weak_factory_.GetWeakPtr())];
+      setPresentationCallback:
+          base::BindRepeating(&CAMetalDisplayLinkMac::MetalPresentationCallback,
+                              weak_factory_.GetWeakPtr())];
 
   // Make CADisplayLink callbacks to run on the same RUNLOOP of the register
   // thread without PostTask accross threads.
-  auto new_callback = base::WrapUnique(new PresentionCallbackMac(
-      base::BindOnce(&CAMetalDisplayLinkMac::UnregisterPresentionCallback,
+  auto new_callback = base::WrapUnique(new PresentationCallbackMac(
+      base::BindOnce(&CAMetalDisplayLinkMac::UnregisterPresentationCallback,
                      this),
       std::move(callback), /*post_callback_to_ctor_thread=*/false));
 
@@ -302,10 +303,10 @@ CAMetalDisplayLinkMac::RegisterPresentionCallback(
   return new_callback;
 }
 
-void CAMetalDisplayLinkMac::UnregisterPresentionCallback(
-    PresentionCallbackMac* callback) {
+void CAMetalDisplayLinkMac::UnregisterPresentationCallback(
+    PresentationCallbackMac* callback) {
   [objc_state_->delegate
-      setPresentionCallback:base::RepeatingCallback<void(id<MTLDrawable>)>()];
+      setPresentationCallback:base::RepeatingCallback<void(id<MTLDrawable>)>()];
   presented_callback_ = nullptr;
 }
 
