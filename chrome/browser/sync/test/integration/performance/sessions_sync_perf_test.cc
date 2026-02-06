@@ -47,6 +47,10 @@ class SessionsSyncPerfTest : public SyncTest {
   SessionsSyncPerfTest(const SessionsSyncPerfTest&) = delete;
   SessionsSyncPerfTest& operator=(const SessionsSyncPerfTest&) = delete;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
   // Opens |num_tabs| new tabs on |profile|.
   void AddTabs(int profile, int num_tabs);
 
