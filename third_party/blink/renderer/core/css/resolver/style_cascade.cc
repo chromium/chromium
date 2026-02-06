@@ -2208,10 +2208,10 @@ void StyleCascade::FlattenFunctionBody(
   for (const Member<StyleRuleBase>& child : group.ChildRules()) {
     if (auto* function_declarations =
             DynamicTo<StyleRuleFunctionDeclarations>(child.Get())) {
-      const CSSPropertyValueSet& propety_value_set =
+      const CSSPropertyValueSet& property_value_set =
           function_declarations->Properties();
       for (const CSSPropertyValue& property_value :
-           propety_value_set.Properties()) {
+           property_value_set.Properties()) {
         if (property_value.PropertyID() == CSSPropertyID::kVariable) {
           const auto& unresolved_local =
               To<CSSUnparsedDeclarationValue>(property_value.Value());
@@ -2220,7 +2220,7 @@ void StyleCascade::FlattenFunctionBody(
         }
       }
       if (auto* r = DynamicTo<CSSUnparsedDeclarationValue>(
-              propety_value_set.GetPropertyCSSValue(CSSPropertyID::kResult))) {
+              property_value_set.GetPropertyCSSValue(CSSPropertyID::kResult))) {
         result = r->VariableDataValue();
       }
     } else if (auto* supports_rule =
