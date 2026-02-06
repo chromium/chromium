@@ -79,23 +79,19 @@ enum class StoreType {
 
 // Adds a URL with address |url| and title |title| to the bookmark bar of
 // profile |profile|. Returns a pointer to the node that was added.
-// TODO(crbug.com/353425612): Remove the default value for `store`.
-const bookmarks::BookmarkNode* AddURL(
-    int profile,
-    const std::u16string& title,
-    const GURL& url,
-    StoreType store_type = StoreType::kLocalOrSyncableStore);
+const bookmarks::BookmarkNode* AddURL(int profile,
+                                      const std::u16string& title,
+                                      const GURL& url,
+                                      StoreType store_type);
 
 // Adds a URL with address |url| and title |title| to the bookmark bar of
 // profile |profile| at position |index|. Returns a pointer to the node that
 // was added.
-// TODO(crbug.com/353425612): Remove the default value for `store`.
-const bookmarks::BookmarkNode* AddURL(
-    int profile,
-    size_t index,
-    const std::u16string& title,
-    const GURL& url,
-    StoreType store_type = StoreType::kLocalOrSyncableStore);
+const bookmarks::BookmarkNode* AddURL(int profile,
+                                      size_t index,
+                                      const std::u16string& title,
+                                      const GURL& url,
+                                      StoreType store_type);
 
 // Adds a URL with address |url| and title |title| under the node |parent| of
 // profile |profile| at position |index|. Returns a pointer to the node that

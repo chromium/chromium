@@ -2942,8 +2942,10 @@ IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest, ReorderChildren) {
 
   ASSERT_TRUE(SetupClients());
 
-  ASSERT_NE(nullptr, AddURL(/*profile=*/0, /*index=*/0, u"Google", google_url));
-  ASSERT_NE(nullptr, AddURL(/*profile=*/0, /*index=*/1, u"Yahoo", yahoo_url));
+  ASSERT_NE(nullptr, AddURL(/*profile=*/0, /*index=*/0, u"Google", google_url,
+                            StoreType::kLocalOrSyncableStore));
+  ASSERT_NE(nullptr, AddURL(/*profile=*/0, /*index=*/1, u"Yahoo", yahoo_url,
+                            StoreType::kLocalOrSyncableStore));
 
   ASSERT_TRUE(SetupSync());
   // Trigger batch upload for transport mode.
