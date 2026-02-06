@@ -3491,9 +3491,17 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", switches::kDisableFeatures,
      "ReplaceSyncPromosWithSignInPromos"},
-    {"Enabled", switches::kEnableFeatures, "ReplaceSyncPromosWithSignInPromos"},
+    {"Enabled", switches::kEnableFeatures,
+     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/false"},
     {"Enabled with follow-ups", switches::kEnableFeatures,
-     "ReplaceSyncPromosWithSignInPromos,UnoPhase2FollowUp"},
+     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/"
+     "false,UnoPhase2FollowUp"},
+    {"Enabled with explicit signin for extensions", switches::kEnableFeatures,
+     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/true"},
+    {"Enabled with explicit signin for extensions and follow-ups",
+     switches::kEnableFeatures,
+     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/true,"
+     "UnoPhase2FollowUp"},
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 

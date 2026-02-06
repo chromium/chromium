@@ -1704,6 +1704,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Extensions.ExplicitSigninFromAnyAccessPoint"
+    enum="BooleanIsNewOptIn" expires_after="2026-12-21">
+  <owner>amelies@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the user explicitly signed in for the first time or if they
+    have previously done so before in the same profile. Recorded upon signing in
+    through any access point.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.ExplicitSigninFromExtensionInstallBubble"
     enum="BooleanIsNewOptIn" expires_after="2026-06-21">
   <owner>kelvinjiang@chromium.org</owner>

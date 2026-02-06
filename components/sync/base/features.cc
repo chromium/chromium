@@ -84,6 +84,11 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+BASE_FEATURE_PARAM(bool,
+                   kExplicitSigninForExtensions,
+                   &kReplaceSyncPromosWithSignInPromos,
+                   "explicit_signin_for_extensions",
+                   false);
 
 BASE_FEATURE(kEnableAwaitSyncServiceStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -719,6 +719,43 @@ TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
   EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncPrefsTest, ExtensionsEnabledWithExplicitBrowserPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kExtensions));
+
+  SigninPrefs(pref_service_).SetExtensionsExplicitBrowserSignin(gaia_id_, true);
+
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kExtensions));
+}
+
+TEST_F(SyncPrefsTest, ExtensionsEnabledWithoutExplicitSigninFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      {{syncer::kExplicitSigninForExtensions.name, "false"}});
+
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kExtensions));
+}
+
+TEST_F(SyncPrefsTest, ExtensionsDisabledWithExplicitSigninFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      {{syncer::kExplicitSigninForExtensions.name, "true"}});
+
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kExtensions));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 enum BooleanPrefState { PREF_FALSE, PREF_TRUE, PREF_UNSET };
 
 // Similar to SyncPrefsTest, but does not create a SyncPrefs instance. This lets

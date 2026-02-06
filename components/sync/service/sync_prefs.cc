@@ -1120,9 +1120,13 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
              pref_service_->GetBoolean(
                  ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
     case UserSelectableType::kExtensions:
-      // Before kReplaceSyncPromosWithSignInPromos, Extensions require a
-      // specific explicit sign in.
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
+      // Extensions require a specific explicit sign in if
+      // `kExplicitSigninForExtensions` is enabled (relevant for desktop only).
+      // If it is not, but `kReplaceSyncPromosWithSignInPromos` is, then
+      // extensions are on by default.
+      return (base::FeatureList::IsEnabled(
+                  kReplaceSyncPromosWithSignInPromos) &&
+              !syncer::kExplicitSigninForExtensions.Get()) ||
              SigninPrefs(*pref_service_)
                  .GetExtensionsExplicitBrowserSignin(gaia_id);
     case UserSelectableType::kApps:

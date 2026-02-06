@@ -27263,6 +27263,21 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "ExplicitSigninForExtensions": "false"
+                    },
+                    "enable_features": [
+                        "ForcedDiceMigration",
+                        "IPH_SignInBenefits",
+                        "ReplaceSyncPromosWithSignInPromos",
+                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"
+                    ]
+                },
+                {
+                    "name": "EnabledWithExplicitSigninForExtensions",
+                    "params": {
+                        "ExplicitSigninForExtensions": "true"
+                    },
                     "enable_features": [
                         "ForcedDiceMigration",
                         "IPH_SignInBenefits",
