@@ -1,0 +1,14 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [
+    "api_v1.proto",
+    "client_data.proto",
+    "client_info.proto",
+    "private_pass.proto",
+  ]
+}

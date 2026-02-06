@@ -1,0 +1,31 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package wallet;
+
+option optimize_for = LITE_RUNTIME;
+
+// Information about the client making the request.
+message ClientInfo {
+  // Information about Chrome Autofill client.
+  message ChromeClientInfo {
+    // The version of the Chrome client.
+    optional string version = 1;
+  }
+  // Information about Chrome Web Page Detection client.
+  message ChromeWebPageDetectionClientInfo {
+    // The version of the Chrome Web Page Detection client.
+    optional string version = 1;
+  }
+
+  // Client-specific information.
+  oneof info {
+    // Information about Chrome Autofill client.
+    ChromeClientInfo chrome_client_info = 1;
+    // Information about Chrome Web Page Detection client.
+    ChromeWebPageDetectionClientInfo chrome_web_page_detection_client_info = 2;
+  }
+}

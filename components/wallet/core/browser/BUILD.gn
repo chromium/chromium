@@ -53,6 +53,8 @@ static_library("browser") {
     "//services/network/public/cpp",
     "//url",
   ]
+
+  public_deps = [ "//components/wallet/core/browser/proto" ]
 }
 
 source_set("test_support") {

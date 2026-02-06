@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Data models to interface with Wallet API v1.
+
+syntax = "proto2";
+
+package wallet.api;
+
+import "client_info.proto";
+import "private_pass.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Request for the UpsertPrivatePass RPC.
+message UpsertPrivatePassRequest {
+  // Pass to upsert.
+  optional PrivatePass private_pass = 1;
+
+  // Information about the client making the request.
+  optional ClientInfo client_info = 2;
+}

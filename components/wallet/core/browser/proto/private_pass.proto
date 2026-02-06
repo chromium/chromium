@@ -1,0 +1,113 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package wallet;
+
+import "client_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Private pass data.
+// Next ID: 11
+message PrivatePass {
+  // The unique identifier of the private pass.
+  optional string pass_id = 1;
+
+  // Driver license data.
+  // Next ID: 7
+  message DriverLicense {
+    // The value of the owner name.
+    optional string owner_name = 1;
+    // The encrypted value of the driver license number.
+    optional string driver_license_number = 2;
+    // The value of the country code of the driver license. ISO 3166-1 alpha-2.
+    optional string country_code = 3;
+    // The value of the region of the driver license.
+    optional string region = 4;
+    // The value of the issue date of the driver license. This is a timestamp in
+    // microseconds.
+    optional int64 issue_date_unix_epoch_micros = 5;
+    // The value of the expiration date of the driver license. This is a
+    // timestamp in microseconds.
+    optional int64 expiration_date_unix_epoch_micros = 6;
+  }
+
+  // Passport data.
+  // Next ID: 6
+  message Passport {
+    // The value of the owner name.
+    optional string owner_name = 1;
+    // The encrypted value of the passport number.
+    optional string passport_number = 2;
+    // The value of the country code of the passport. ISO 3166-1 alpha-2.
+    optional string country_code = 3;
+    // The value of the issue date of the passport. This is a timestamp in
+    // microseconds.
+    optional int64 issue_date_unix_epoch_micros = 4;
+    // The value of the expiration date of the passport. This is a timestamp in
+    // microseconds.
+    optional int64 expiration_date_unix_epoch_micros = 5;
+  }
+
+  // ID card data.
+  // Next ID: 7
+  message IdCard {
+    // The value of the owner name.
+    optional string owner_name = 1;
+    // The encrypted value of the national ID number.
+    optional string id_number = 2;
+    // The value of the country code of the national ID. ISO 3166-1 alpha-2.
+    optional string country_code = 3;
+    // The value of the region of the national ID.
+    optional string region = 4;
+    // The value of the issue date of the national ID. This is a timestamp in
+    // microseconds.
+    optional int64 issue_date_unix_epoch_micros = 5;
+    // The value of the expiration date of the national ID. This is a timestamp
+    // in microseconds.
+    optional int64 expiration_date_unix_epoch_micros = 6;
+  }
+
+  // Redress number data.
+  // Next ID: 3
+  message RedressNumber {
+    // The value of the owner name.
+    optional string owner_name = 1;
+    // The value of the redress number.
+    optional string redress_number = 2;
+  }
+
+  // Known traveler number data.
+  // Next ID: 4
+  message KnownTravelerNumber {
+    // The value of the owner name.
+    optional string owner_name = 1;
+    // The value of the known traveler number.
+    optional string known_traveler_number = 2;
+    // The value of the expiration date of the known traveler number. This is a
+    // timestamp in microseconds.
+    optional int64 expiration_date_unix_epoch_micros = 3;
+  }
+
+  // The private pass data to be created or updated.
+  oneof data {
+    // The driver license pass data.
+    DriverLicense driver_license = 2;
+    // The passport pass data.
+    Passport passport = 3;
+    // The national ID pass data.
+    IdCard id_card = 7;
+    // The redress number pass data.
+    RedressNumber redress_number = 8;
+    // The known traveler number pass data.
+    KnownTravelerNumber known_traveler_number = 9;
+  }
+
+  // Client data for the pass. Holds client-specific data for Chrome.
+  optional ClientData client_data = 10;
+
+  reserved 4, 5, 6;
+}
