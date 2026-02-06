@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -145,32 +146,35 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
 
   gfx::Rect rect(view->GetLocalBounds());
 
+  const Corners corners = GetMirroredCorners();
+  const Outline outline = GetMirroredOutline();
+
   // Draw corners behind where necessary using the background color.
-  if (corners_.upper_leading.type == CornerType::kRoundedWithBackground) {
+  if (corners.upper_leading.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.upper_leading.radius.value_or(default_radius_);
+        corners.upper_leading.radius.value_or(default_radius_);
     const SkPath corner_path =
         SkPath::Rect(SkRect::MakeXYWH(0, 0, corner_radius, corner_radius));
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
   }
-  if (corners_.upper_trailing.type == CornerType::kRoundedWithBackground) {
+  if (corners.upper_trailing.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.upper_trailing.radius.value_or(default_radius_);
+        corners.upper_trailing.radius.value_or(default_radius_);
     const SkPath corner_path = SkPath::Rect(SkRect::MakeXYWH(
         rect.width() - corner_radius, 0, corner_radius, corner_radius));
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
   }
-  if (corners_.lower_trailing.type == CornerType::kRoundedWithBackground) {
+  if (corners.lower_trailing.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.lower_trailing.radius.value_or(default_radius_);
+        corners.lower_trailing.radius.value_or(default_radius_);
     const SkPath corner_path = SkPath::Rect(SkRect::MakeXYWH(
         rect.width() - corner_radius, rect.height() - corner_radius,
         corner_radius, corner_radius));
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
   }
-  if (corners_.lower_leading.type == CornerType::kRoundedWithBackground) {
+  if (corners.lower_leading.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.lower_leading.radius.value_or(default_radius_);
+        corners.lower_leading.radius.value_or(default_radius_);
     const SkPath corner_path = SkPath::Rect(SkRect::MakeXYWH(
         0, rect.height() - corner_radius, corner_radius, corner_radius));
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
@@ -178,10 +182,10 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
 
   // Draw solid rect/rrect background:
   SkVector radii[4] = {
-      CornerToRadiusVector(corners_.upper_leading, default_radius_),
-      CornerToRadiusVector(corners_.upper_trailing, default_radius_),
-      CornerToRadiusVector(corners_.lower_trailing, default_radius_),
-      CornerToRadiusVector(corners_.lower_leading, default_radius_)};
+      CornerToRadiusVector(corners.upper_leading, default_radius_),
+      CornerToRadiusVector(corners.upper_trailing, default_radius_),
+      CornerToRadiusVector(corners.lower_trailing, default_radius_),
+      CornerToRadiusVector(corners.lower_leading, default_radius_)};
   const SkPath path =
       SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
   PaintPath(canvas, path, primary_color_, /*anti_alias=*/true);
@@ -189,11 +193,11 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
   // Paint strokes around the outside. Corners get strokes if they are between
   // two sides with strokes and have a radius. Multiple paths may be drawn if
   // the sides with outlines are disconnected.
-  if (outline_.has_strokes()) {
+  if (outline.has_strokes()) {
     cc::PaintFlags stroke_flags;
     stroke_flags.setStrokeWidth(views::Separator::kThickness);
     stroke_flags.setColor(
-        GetView().GetColorProvider()->GetColor(outline_.color));
+        GetView().GetColorProvider()->GetColor(outline.color));
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
     stroke_flags.setAntiAlias(true);
 
@@ -209,13 +213,13 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     SkPathBuilder stroke_path;
 
     // Start by drawing the top line.
-    if (outline_.top) {
+    if (outline.top) {
       stroke_path.moveTo(stroke_bounds.x() + radii[0].x(), stroke_bounds.y());
       stroke_path.lineTo(stroke_bounds.right() - radii[1].x(),
                          stroke_bounds.y());
 
       // Maybe draw the upper trailing corner as well.
-      if (outline_.trailing && !radii[1].isZero()) {
+      if (outline.trailing && !radii[1].isZero()) {
         stroke_path.arcTo(
             radii[1], 0, SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
             SkPoint(stroke_bounds.right(), stroke_bounds.y() + radii[1].y()));
@@ -223,7 +227,7 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     }
 
     // Next, draw the right side if present.
-    if (outline_.trailing) {
+    if (outline.trailing) {
       if (stroke_path.isEmpty()) {
         stroke_path.moveTo(stroke_bounds.right(),
                            stroke_bounds.y() + radii[1].y());
@@ -232,7 +236,7 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
                          stroke_bounds.bottom() - radii[2].y());
 
       // Maybe draw the bottom trailing corner.
-      if (outline_.bottom && !radii[2].isZero()) {
+      if (outline.bottom && !radii[2].isZero()) {
         stroke_path.arcTo(radii[2], 0, SkPathBuilder::kSmall_ArcSize,
                           SkPathDirection::kCW,
                           SkPoint(stroke_bounds.right() - radii[2].x(),
@@ -244,7 +248,7 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     }
 
     // Next, draw the bottom if present.
-    if (outline_.bottom) {
+    if (outline.bottom) {
       if (stroke_path.isEmpty()) {
         stroke_path.moveTo(stroke_bounds.right() - radii[2].x(),
                            stroke_bounds.bottom());
@@ -253,7 +257,7 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
                          stroke_bounds.bottom());
 
       // Maybe draw the bottom leading corner.
-      if (outline_.leading && !radii[3].isZero()) {
+      if (outline.leading && !radii[3].isZero()) {
         stroke_path.arcTo(
             radii[3], 0, SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
             SkPoint(stroke_bounds.x(), stroke_bounds.bottom() - radii[3].y()));
@@ -264,7 +268,7 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     }
 
     // Next, draw the left side if present.
-    if (outline_.leading) {
+    if (outline.leading) {
       if (stroke_path.isEmpty()) {
         stroke_path.moveTo(stroke_bounds.x(),
                            stroke_bounds.bottom() - radii[3].y());
@@ -272,7 +276,7 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
 
       // Maybe draw the top leading corner.
       stroke_path.lineTo(stroke_bounds.x(), stroke_bounds.y() + radii[0].y());
-      if (outline_.top && !radii[0].isZero()) {
+      if (outline.top && !radii[0].isZero()) {
         stroke_path.arcTo(
             radii[0], 0, SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
             SkPoint(stroke_bounds.x() + radii[0].x(), stroke_bounds.y()));
@@ -289,11 +293,12 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
 std::optional<gfx::RoundedCornersF>
 CustomCornersBackground::GetRoundedCornerRadii() const {
   // Provided for completeness; this is not used anywhere.
+  const Corners corners = GetMirroredCorners();
   return gfx::RoundedCornersF(
-      CornerToRadius(corners_.upper_leading, default_radius_),
-      CornerToRadius(corners_.upper_trailing, default_radius_),
-      CornerToRadius(corners_.lower_trailing, default_radius_),
-      CornerToRadius(corners_.lower_leading, default_radius_));
+      CornerToRadius(corners.upper_leading, default_radius_),
+      CornerToRadius(corners.upper_trailing, default_radius_),
+      CornerToRadius(corners.lower_trailing, default_radius_),
+      CornerToRadius(corners.lower_leading, default_radius_));
 }
 
 const views::View& CustomCornersBackground::GetView() const {
@@ -305,4 +310,23 @@ void CustomCornersBackground::OnBrowserPaintAsActiveChanged() {
       std::holds_alternative<FrameColor>(corner_color_)) {
     view_->SchedulePaint();
   }
+}
+
+CustomCornersBackground::Corners CustomCornersBackground::GetMirroredCorners()
+    const {
+  Corners corners = corners_;
+  if (base::i18n::IsRTL()) {
+    std::swap(corners.upper_leading, corners.upper_trailing);
+    std::swap(corners.lower_leading, corners.lower_trailing);
+  }
+  return corners;
+}
+
+CustomCornersBackground::Outline CustomCornersBackground::GetMirroredOutline()
+    const {
+  Outline outline = outline_;
+  if (base::i18n::IsRTL()) {
+    std::swap(outline.leading, outline.trailing);
+  }
+  return outline;
 }

@@ -108,6 +108,12 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   // Hide this as it should not be used directly.
   using Background::SetColor;
 
+  // Possibly mirrors corners for RtL.
+  Corners GetMirroredCorners() const;
+
+  // Possibly mirrors outline for RtL.
+  Outline GetMirroredOutline() const;
+
   bool visible_ = true;
   ColorChoice primary_color_;
   ColorChoice corner_color_;

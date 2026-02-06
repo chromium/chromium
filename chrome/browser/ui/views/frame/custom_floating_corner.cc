@@ -197,8 +197,13 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
       clip_path.moveTo(rect.width(), 0);
       clip_path.lineTo(rect.width(), rect.height());
       clip_path.lineTo(0, rect.height());
-      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
-                      SkPathDirection::kCCW, SkPoint(rect.width(), 0));
+      if (extend_vertical) {
+        clip_path.lineTo(0, rect.height() - kStrokeSize);
+      }
+      clip_path.arcTo(
+          corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+          SkPathDirection::kCCW,
+          SkPoint(has_stroke ? rect.width() - kStrokeSize : rect.width(), 0));
       break;
   }
   canvas->ClipPath(clip_path.detach(), /*do_anti_alias=*/true);
@@ -240,7 +245,13 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
                                                   : rect.height()));
         break;
       case CornerOrientation::kBottomTrailing:
-        NOTREACHED() << "Stroke not yet implemented for lower corners.";
+        stroke_path.moveTo(rect.width() - kStrokeSize, 0);
+        stroke_path.arcTo(
+            corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+            SkPathDirection::kCW,
+            SkPoint(0, extend_vertical ? rect.height() - kStrokeSize
+                                       : rect.height()));
+        break;
     }
     canvas->DrawPath(stroke_path.detach(), flags);
   }
