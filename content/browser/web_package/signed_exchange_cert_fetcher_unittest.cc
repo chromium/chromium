@@ -147,7 +147,7 @@ class URLLoaderFactoryForMockLoader final
   }
   void CloseClientPipe() { client_remote_.reset(); }
 
-  std::optional<network::ResourceRequest> url_request() const {
+  const std::optional<network::ResourceRequest>& url_request() const {
     return url_request_;
   }
 
