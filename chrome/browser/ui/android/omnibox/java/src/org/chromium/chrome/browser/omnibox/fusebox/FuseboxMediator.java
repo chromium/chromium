@@ -332,7 +332,8 @@ public class FuseboxMediator {
                         && tabSelector.getCurrentTab() != null
                         && !mModelList
                                 .getAttachedTabIds()
-                                .contains(tabSelector.getCurrentTab().getId());
+                                .contains(tabSelector.getCurrentTab().getId())
+                        && OmniboxFeatures.sAllowCurrentTab.getValue();
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, shouldShowCurrentTab);
         if (!shouldShowCurrentTab) return;
