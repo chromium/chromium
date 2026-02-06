@@ -63,7 +63,7 @@ void PrefChangeRegistrar::Add(std::string_view path,
       << "Already had pref, \"" << path << "\", registered.";
 
   service_->AddPrefObserver(path, this);
-  observers_.insert_or_assign(std::string(path), std::move(obs));
+  observers_.insert_or_assign(path, std::move(obs));
 }
 
 void PrefChangeRegistrar::AddMultiple(
@@ -77,9 +77,7 @@ void PrefChangeRegistrar::AddMultiple(
 void PrefChangeRegistrar::Remove(std::string_view path) {
   DCHECK(IsObserved(path));
 
-  // Use std::map::erase directly once C++23 is supported.
-  auto it = observers_.find(path);
-  observers_.erase(it);
+  observers_.erase(path);
   service_->RemovePrefObserver(path, this);
 }
 
@@ -96,7 +94,7 @@ bool PrefChangeRegistrar::IsEmpty() const {
 }
 
 bool PrefChangeRegistrar::IsObserved(std::string_view pref) {
-  return observers_.find(pref) != observers_.end();
+  return observers_.contains(pref);
 }
 
 void PrefChangeRegistrar::OnServiceDestroyed(PrefService* service) {
