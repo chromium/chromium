@@ -508,16 +508,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        AccessiblePaneViewDefaultFocusableChild) {
-  // Add a tab.
-  AppendTab();
-
   // Ensure the default focusable element is the VerticalTabStripTopContainer.
   views::View* view = region_view()->GetDefaultFocusableChild();
   ASSERT_TRUE(view);
-  EXPECT_TRUE(views::IsViewClass<VerticalTabStripTopContainer>(view))
-      << "GetDefaultFocusableChild() should return a "
-         "VerticalTabStripTopContainer, but returned "
-      << view->GetClassName();
+  EXPECT_EQ(view, region_view()->GetTabAnchorViewAt(0));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,

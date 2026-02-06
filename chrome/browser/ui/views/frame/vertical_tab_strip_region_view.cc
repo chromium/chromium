@@ -165,6 +165,11 @@ void VerticalTabStripRegionView::Layout(PassKey) {
 }
 
 views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
+  const int active_index = tab_strip_model_->active_index();
+  if (active_index != TabStripModel::kNoTab) {
+    return GetTabAnchorViewAt(active_index);
+  }
+
   return top_button_container_;
 }
 
