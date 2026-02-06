@@ -783,7 +783,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
           base::UmaHistogramEnumeration(
               "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
               autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
-          chrome::ShowSettingsSubPage(browser, chrome::kYourSavedInfoSubPage);
+          chrome::ShowSettingsSubPage(browser, chrome::kAutofillSubPage);
         } else {
           chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
         }

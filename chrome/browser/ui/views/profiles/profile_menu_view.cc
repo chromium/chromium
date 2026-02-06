@@ -537,7 +537,7 @@ void ProfileMenuView::OnYourSavedInfoSettingsButtonClicked() {
   base::UmaHistogramEnumeration(
       "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
       autofill::autofill_metrics::AutofillSettingsReferrer::kProfileMenu);
-  chrome::ShowSettingsSubPage(&browser(), chrome::kYourSavedInfoSubPage);
+  chrome::ShowSettingsSubPage(&browser(), chrome::kAutofillSubPage);
 }
 
 void ProfileMenuView::OnBatchUploadButtonClicked(ActionableItem button_type) {

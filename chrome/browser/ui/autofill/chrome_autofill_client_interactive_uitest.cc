@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientYourSavedInfoTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(
       active_contents->GetVisibleURL(),
-      GURL(std::string("chrome://settings/") + chrome::kYourSavedInfoSubPage));
+      GURL(std::string("chrome://settings/") + chrome::kAutofillSubPage));
 }
 
 }  // namespace

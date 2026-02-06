@@ -660,8 +660,8 @@ void ShowTravel(BrowserWindowInterface* bwi) {
   ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kTravelSubPage);
 }
 
-void ShowYourSavedInfo(BrowserWindowInterface* bwi) {
-  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kYourSavedInfoSubPage);
+void ShowAutofill(BrowserWindowInterface* bwi) {
+  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kAutofillSubPage);
 }
 
 void ShowAllSitesSettingsFilteredByRwsOwner(

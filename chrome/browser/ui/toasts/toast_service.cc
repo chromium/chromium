@@ -358,7 +358,7 @@ void ToastService::RegisterToasts(
             .AddCloseButton()
             .AddActionButton(
                 IDS_AUTOFILL_AI_TOAST_BUTTON,
-                base::BindRepeating(chrome::ShowYourSavedInfo,
+                base::BindRepeating(chrome::ShowAutofill,
                                     base::Unretained(browser_window_interface)))
             .AddGlobalScoped()
             .Build());
