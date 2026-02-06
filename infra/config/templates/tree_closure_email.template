@@ -4,6 +4,10 @@ Builder "{{ .Build.Builder | formatBuilderID }}" failed at {{ .Build.EndTime | t
 
 <b>This failure is tree closing.</b>
 
+<p>
+Note to Gardeners: GardenerAI is currently attempting to identify and revert the culprit. Please defer investigation until you receive a IRM notification. An IRM alert will be triggered if the GenAI tool fails to resolve the closure.
+</p>
+
 <table>
   <tr>
     <td>New status:</td>
