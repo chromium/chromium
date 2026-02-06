@@ -114,7 +114,6 @@ BrowserNavigatorTest::BrowserNavigatorTest() {
   scoped_feature_list_.InitWithFeatures(
       {
           features::kFileSystemAccessPersistentPermissions,
-          content_settings::features::kTrackingProtection3pcd,
       },
       {});
 }
