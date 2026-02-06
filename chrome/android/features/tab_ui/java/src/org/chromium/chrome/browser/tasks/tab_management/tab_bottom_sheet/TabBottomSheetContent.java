@@ -53,6 +53,11 @@ public class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean hasCustomLifecycle() {
+        return true;
+    }
+
+    @Override
     public void onBackPressed() {
         handleBackPress();
     }
@@ -60,6 +65,16 @@ public class TabBottomSheetContent implements BottomSheetContent {
     @Override
     public boolean swipeToDismissEnabled() {
         return true;
+    }
+
+    @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getHalfHeightRatio() {
+        return 0.4f;
     }
 
     @Override
@@ -73,11 +88,6 @@ public class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @StringRes int getSheetClosedAccessibilityStringId() {
-        return R.string.tab_bottom_sheet_closed;
-    }
-
-    @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.tab_bottom_sheet_half_height;
     }
@@ -85,5 +95,15 @@ public class TabBottomSheetContent implements BottomSheetContent {
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.tab_bottom_sheet_full_height;
+    }
+
+    @Override
+    public @StringRes int getSheetClosedAccessibilityStringId() {
+        return R.string.tab_bottom_sheet_closed;
+    }
+
+    @Override
+    public boolean canSuppressInAnyState() {
+        return false;
     }
 }

@@ -137,4 +137,14 @@ public class TabBottomSheetCoordinatorTest {
         verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean(), anyInt());
         assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
     }
+
+    @Test
+    public void testShowBottomSheet_ContentHasCustomLifecycle() {
+        simulateShowSuccessAndGetObserver();
+        verify(mMockBottomSheetController)
+                .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
+        TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
+        assertNotNull(content);
+        assertTrue(content.hasCustomLifecycle());
+    }
 }
