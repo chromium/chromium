@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 using auto_launch_util::StartupLaunchMode;
@@ -72,6 +73,12 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
               return std::make_unique<TestStartupLaunchManager>(
                   &browser_process);
             }));
+#if BUILDFLAG(IS_CHROMEOS)
+    feature_list_.InitWithFeatures(
+        {features::kGlicShowStatusTrayIcon,
+         chromeos::features::kSupportCustomIconsInStatusArea},
+        {});
+#endif
   }
 
   void TearDownOnMainThread() override {
@@ -127,13 +134,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, KeepAlive) {
 }
 
 // Checks that the status icon exists when the pref is enabled.
-// TODO(crbug.com/460829115): Enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_StatusIcon DISABLED_StatusIcon
-#else
-#define MAYBE_StatusIcon StatusIcon
-#endif
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, MAYBE_StatusIcon) {
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, StatusIcon) {
   ASSERT_FALSE(g_browser_process->status_tray()->HasStatusIconOfTypeForTesting(
       StatusTray::StatusIconType::GLIC_ICON));
 
