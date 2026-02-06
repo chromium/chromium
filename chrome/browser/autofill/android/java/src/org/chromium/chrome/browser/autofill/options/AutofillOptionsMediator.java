@@ -27,10 +27,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -111,6 +113,10 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         mModel = model;
         mContext = context;
         updateToggleStateFromPref();
+        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_VISIBLE, shouldShowAutofillAi());
+        mModel.set(
+                AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE, isEligibleToAutofillAi());
+        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.COUNT);
     }
@@ -119,11 +125,30 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         return mModel != null;
     }
 
-    // TODO(crbug.com/467563819): Update the initial switch value using the Enhanced Autofill pref.
     // TODO(crbug.com/467563819): Hide everything related to Autofill AI if the page is accessed via
     // deep-link.
     boolean shouldShowAutofillAi() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
+    }
+
+    boolean isEligibleToAutofillAi() {
+        return shouldShowAutofillAi()
+                && EntityDataManagerFactory.getForProfile(mProfile).isEligibleToAutofillAi();
+    }
+
+    boolean isAutofillAiOn() {
+        return shouldShowAutofillAi()
+                && EntityDataManagerFactory.getForProfile(mProfile).getAutofillAiOptInStatus();
+    }
+
+    void onAutofillAiSettingToggled(boolean isOn) {
+        @AutofillAiOptInStatus
+        int optInStatus = isOn ? AutofillAiOptInStatus.OPTED_IN : AutofillAiOptInStatus.OPTED_OUT;
+        if (!EntityDataManagerFactory.getForProfile(mProfile)
+                .setAutofillAiOptInStatus(optInStatus)) {
+            // If failed to set, reset the switch to match current status.
+            mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
+        }
     }
 
     /**

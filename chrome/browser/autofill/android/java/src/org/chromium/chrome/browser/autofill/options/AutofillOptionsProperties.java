@@ -9,7 +9,6 @@ import android.text.SpannableString;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -25,8 +24,14 @@ class AutofillOptionsProperties {
             new ReadableObjectPropertyKey<>("on_third_party_toggle_changed");
     static final WritableObjectPropertyKey<SpannableString> THIRD_PARTY_TOGGLE_HINT =
             new WritableObjectPropertyKey<>("third_party_toggle_hint");
-    static final ReadableBooleanPropertyKey AUTOFILL_AI_SETTING_VISIBLE =
-            new ReadableBooleanPropertyKey("autofill_ai_setting_visible");
+    static final WritableBooleanPropertyKey AUTOFILL_AI_SETTING_VISIBLE =
+            new WritableBooleanPropertyKey("autofill_ai_setting_visible");
+    static final WritableBooleanPropertyKey AUTOFILL_AI_SETTING_ELIGIBLE =
+            new WritableBooleanPropertyKey("autofill_ai_setting_eligible");
+    static final WritableBooleanPropertyKey AUTOFILL_AI_SETTING_ON =
+            new WritableBooleanPropertyKey("autofill_ai_setting_on");
+    static final ReadableObjectPropertyKey<Callback<Boolean>> ON_AUTOFILL_AI_SETTING_TOGGLED =
+            new ReadableObjectPropertyKey<>("on_autofill_ai_setting_toggled");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -35,6 +40,9 @@ class AutofillOptionsProperties {
                 ON_THIRD_PARTY_TOGGLE_CHANGED,
                 THIRD_PARTY_TOGGLE_HINT,
                 AUTOFILL_AI_SETTING_VISIBLE,
+                AUTOFILL_AI_SETTING_ELIGIBLE,
+                AUTOFILL_AI_SETTING_ON,
+                ON_AUTOFILL_AI_SETTING_TOGGLED,
             };
 
     /**

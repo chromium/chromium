@@ -104,6 +104,15 @@ public class AutofillOptionsCoordinator {
                         .with(
                                 AutofillOptionsProperties.AUTOFILL_AI_SETTING_VISIBLE,
                                 mMediator.shouldShowAutofillAi())
+                        .with(
+                                AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE,
+                                mMediator.isEligibleToAutofillAi())
+                        .with(
+                                AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON,
+                                mMediator.isAutofillAiOn())
+                        .with(
+                                AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED,
+                                mMediator::onAutofillAiSettingToggled)
                         .build();
         mMediator.initialize(model, mFragment.getReferrer(), mFragment.getContext());
 

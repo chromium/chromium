@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -61,12 +62,15 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -112,6 +116,7 @@ public class AutofillOptionsTest {
     @Mock private Runnable mRestartRunnable;
     @Mock private ModalDialogManager mDialogManager;
     @Mock private AutofillManager mAutofillManager;
+    @Mock private EntityDataManager mMockEntityDataManager;
 
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
 
@@ -120,8 +125,10 @@ public class AutofillOptionsTest {
 
     @Before
     public void setUp() {
+        EntityDataManagerFactory.setInstanceForTesting(mMockEntityDataManager);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
         ShadowApplication shadowApplication = Shadow.extract(RuntimeEnvironment.getApplication());
         shadowApplication.setSystemService(Context.AUTOFILL_MANAGER_SERVICE, mAutofillManager);
@@ -486,6 +493,78 @@ public class AutofillOptionsTest {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
         assertTrue(mFragment.getAutofillAiSwitch().isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiToggleEnabledWhenEligible() {
+        doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertTrue(mFragment.getAutofillAiSwitch().isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiToggleDisabledWhenNotEligible() {
+        doReturn(false).when(mMockEntityDataManager).isEligibleToAutofillAi();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertFalse(mFragment.getAutofillAiSwitch().isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiToggleSetsOptInStatus() {
+        doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
+        doReturn(false).when(mMockEntityDataManager).getAutofillAiOptInStatus();
+        doReturn(true).when(mMockEntityDataManager).setAutofillAiOptInStatus(anyInt());
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        // Toggle the switch to ON.
+        mFragment
+                .getAutofillAiSwitch()
+                .getOnPreferenceChangeListener()
+                .onPreferenceChange(mFragment.getAutofillAiSwitch(), true);
+        verify(mMockEntityDataManager).setAutofillAiOptInStatus(AutofillAiOptInStatus.OPTED_IN);
+
+        // Toggle the switch to OFF.
+        mFragment
+                .getAutofillAiSwitch()
+                .getOnPreferenceChangeListener()
+                .onPreferenceChange(mFragment.getAutofillAiSwitch(), false);
+        verify(mMockEntityDataManager).setAutofillAiOptInStatus(AutofillAiOptInStatus.OPTED_OUT);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiToggleResetsOnFailure() {
+        doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
+        doReturn(false).when(mMockEntityDataManager).getAutofillAiOptInStatus();
+        doReturn(false).when(mMockEntityDataManager).setAutofillAiOptInStatus(anyInt());
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        // Toggle the switch to ON.
+        mFragment
+                .getAutofillAiSwitch()
+                .getOnPreferenceChangeListener()
+                .onPreferenceChange(mFragment.getAutofillAiSwitch(), true);
+
+        // Since it failed, it should have been reset to match getAutofillAiOptInStatus() which is
+        // false.
+        assertFalse(mFragment.getAutofillAiSwitch().isChecked());
     }
 
     @Test
