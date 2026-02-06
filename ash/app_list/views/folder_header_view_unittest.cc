@@ -43,6 +43,12 @@ class FolderHeaderViewTest : public AshTestBase {
     // cases to configure the model before opening the folder.
   }
 
+  void TearDown() override {
+    folder_header_view_ = nullptr;
+    model_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   // Assumes the folder is the first item in the grid.
   void ShowAppListAndOpenFolder() {
     auto* helper = GetAppListTestHelper();
@@ -82,8 +88,8 @@ class FolderHeaderViewTest : public AshTestBase {
     PressAndReleaseKey(key_code, flags);
   }
 
-  raw_ptr<test::AppListTestModel, DanglingUntriaged> model_ = nullptr;
-  raw_ptr<FolderHeaderView, DanglingUntriaged> folder_header_view_ = nullptr;
+  raw_ptr<test::AppListTestModel> model_ = nullptr;
+  raw_ptr<FolderHeaderView> folder_header_view_ = nullptr;
 };
 
 TEST_F(FolderHeaderViewTest, WhitespaceCollapsedWhenFolderNameViewLosesFocus) {
