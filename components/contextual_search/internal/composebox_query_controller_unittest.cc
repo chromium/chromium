@@ -2326,7 +2326,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text_source(),
             lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT);
   const auto& params =
-      client_to_aim_request->submit_query().payload().additional_cgi_params();
+      client_to_aim_request->submit_query().payload().cgi_params();
   EXPECT_EQ(params.size(), 2u);
   EXPECT_EQ(params.at("key1"), "value1");
   EXPECT_EQ(params.at("key2"), "value2");
