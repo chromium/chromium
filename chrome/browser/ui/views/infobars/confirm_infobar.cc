@@ -93,8 +93,11 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
 
     const bool is_default_button =
         type == buttons || type == ConfirmInfoBarDelegate::BUTTON_OK;
-    button_ptr->SetStyle(is_default_button ? ui::ButtonStyle::kProminent
-                                           : ui::ButtonStyle::kTonal);
+    const auto fallback_style = is_default_button ? ui::ButtonStyle::kProminent
+                                                  : ui::ButtonStyle::kTonal;
+    button_ptr->SetStyle(
+        delegate_ptr->GetButtonStyle(type).value_or(fallback_style));
+
     button_ptr->SetImageModel(views::Button::STATE_NORMAL,
                               delegate_ptr->GetButtonImage(type));
     button_ptr->SetEnabled(delegate_ptr->GetButtonEnabled(type));

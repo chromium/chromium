@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_INFOBARS_CORE_CONFIRM_INFOBAR_DELEGATE_H_
 #define COMPONENTS_INFOBARS_CORE_CONFIRM_INFOBAR_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
@@ -75,6 +77,11 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // Returns the tooltip for the specified button. The default implementation
   // returns an empty tooltip.
   virtual std::u16string GetButtonTooltip(InfoBarButton button) const;
+
+  // Returns the style for the specified button. The default implementation
+  // returns std::nullopt, which means default styling logic will be used.
+  virtual std::optional<ui::ButtonStyle> GetButtonStyle(
+      InfoBarButton button) const;
 
   // Returns true if this specific infobar instance should use the
   // custom layout to show the link text before the button.

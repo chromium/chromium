@@ -4,9 +4,12 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/strings/grit/ui_strings.h"
 
 ConfirmInfoBarDelegate::~ConfirmInfoBarDelegate() = default;
@@ -61,6 +64,11 @@ bool ConfirmInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
 std::u16string ConfirmInfoBarDelegate::GetButtonTooltip(
     InfoBarButton button) const {
   return std::u16string();
+}
+
+std::optional<ui::ButtonStyle> ConfirmInfoBarDelegate::GetButtonStyle(
+    InfoBarButton button) const {
+  return std::nullopt;
 }
 
 bool ConfirmInfoBarDelegate::ShouldShowLinkBeforeButton() const {
