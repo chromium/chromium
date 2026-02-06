@@ -4828,7 +4828,7 @@ if (!is_android) {
         "../browser/extensions/extension_disabled_ui_browsertest.cc",
         "../browser/extensions/extension_dom_clipboard_apitest.cc",
         "../browser/extensions/extension_fileapi_apitest.cc",
-        "../browser/extensions/extension_function_registration_test.cc",
+        "../browser/extensions/extension_function_registration_browsertest.cc",
         "../browser/extensions/extension_functional_browsertest.cc",
         "../browser/extensions/extension_geolocation_apitest.cc",
         "../browser/extensions/extension_get_views_apitest.cc",
