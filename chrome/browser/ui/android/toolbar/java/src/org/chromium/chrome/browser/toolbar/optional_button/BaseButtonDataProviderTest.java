@@ -26,7 +26,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,17 +84,17 @@ public class BaseButtonDataProviderTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
+    private SettableMonotonicObservableSupplier<Tab> mMockTabSupplier;
     @Mock private Tab mMockTab;
-    @Mock private MonotonicObservableSupplier<Tab> mMockTabSupplier;
     @Mock private ModalDialogManager mMockModalDialogManager;
 
     @Before
     public void setUp() {
+        mMockTabSupplier = ObservableSuppliers.createMonotonic(mMockTab);
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         when(mMockTab.getContext()).thenReturn(mActivity);
-        when(mMockTabSupplier.get()).thenReturn(mMockTab);
     }
 
     @Test

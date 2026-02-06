@@ -28,9 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -54,40 +52,32 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TopToolbarOverlayMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private TopToolbarOverlayMediator mMediator;
-    private PropertyModel mModel;
 
     @Mock private Context mContext;
-
     @Mock private LayoutStateProvider mLayoutStateProvider;
-
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
-
     @Mock private Tab mTab;
-
     @Mock private Tab mTab2;
-    @Mock private MonotonicObservableSupplier<Tab> mTabSupplier;
     @Mock private ToolbarProgressBar mProgressBar;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
-
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
-
     @Captor private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutObserverCaptor;
-    @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
-
     @Captor
     private ArgumentCaptor<ClipDrawableProgressBar.ProgressBarObserver> mProgressBarObserverCaptor;
 
+    private final SettableMonotonicObservableSupplier<Tab> mTabSupplier =
+            ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Integer> mBottomToolbarControlsOffsetSupplier =
             ObservableSuppliers.createNonNull(0);
     private final SettableNonNullObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableMonotonicObservableSupplier<Long> mCaptureResourceIdSupplier =
             ObservableSuppliers.createMonotonic();
+    private TopToolbarOverlayMediator mMediator;
+    private PropertyModel mModel;
 
     @Before
     public void beforeTest() {
@@ -108,7 +98,6 @@ public class TopToolbarOverlayMediatorTest {
                         .with(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null)
                         .build();
 
-        when(mTabSupplier.get()).thenReturn(mTab);
         mMediator =
                 new TopToolbarOverlayMediator(
                         mModel,
@@ -128,7 +117,6 @@ public class TopToolbarOverlayMediatorTest {
         mMediator.setIsAndroidViewVisible(true);
 
         // Ensure the observer is added to the initial tab.
-        verify(mTabSupplier).addObserver(mActivityTabObserverCaptor.capture());
         setTabSupplierTab(mTab);
 
         verify(mProgressBar).addObserver(mProgressBarObserverCaptor.capture());
@@ -141,8 +129,7 @@ public class TopToolbarOverlayMediatorTest {
 
     /** Set the tab that will be returned by the supplier and trigger the observer event. */
     private void setTabSupplierTab(Tab tab) {
-        when(mTabSupplier.get()).thenReturn(tab);
-        mActivityTabObserverCaptor.getValue().onResult(tab);
+        mTabSupplier.set(tab);
     }
 
     @Test
@@ -507,6 +494,7 @@ public class TopToolbarOverlayMediatorTest {
 
         mMediator.destroy();
 
+        assertFalse(mTabSupplier.hasObservers());
         assertFalse(mBottomToolbarControlsOffsetSupplier.hasObservers());
         assertFalse(mSuppressToolbarSceneLayerSupplier.hasObservers());
         verify(mLayoutStateProvider).removeObserver(mLayoutObserverCaptor.getValue());

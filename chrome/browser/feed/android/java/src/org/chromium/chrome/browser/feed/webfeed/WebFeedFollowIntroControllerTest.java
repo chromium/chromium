@@ -35,7 +35,8 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
@@ -81,7 +82,6 @@ public final class WebFeedFollowIntroControllerTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock FeedLauncher mFeedLauncher;
-    @Mock private MonotonicObservableSupplier<Tab> mTabSupplier;
     @Mock private Tracker mTracker;
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private Tab mTab;
@@ -95,6 +95,7 @@ public final class WebFeedFollowIntroControllerTest {
     @Mock private NavigationController mNavigationController;
     @Mock private NavigationHandle mNavigationHandle;
 
+    private SettableMonotonicObservableSupplier<Tab> mTabSupplier;
     private Activity mActivity;
     private EmptyTabObserver mEmptyTabObserver;
     private FakeClock mClock;
@@ -103,7 +104,7 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Before
     public void setUp() {
-        // Print logs to stdout.
+        mTabSupplier = ObservableSuppliers.createMonotonic(mTab);
 
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
@@ -130,7 +131,6 @@ public final class WebFeedFollowIntroControllerTest {
         when(mTab.getUrl()).thenReturn(sTestUrl);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mTabSupplier.get()).thenReturn(mTab);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
 
         mTestUserDataHost = new UserDataHost();

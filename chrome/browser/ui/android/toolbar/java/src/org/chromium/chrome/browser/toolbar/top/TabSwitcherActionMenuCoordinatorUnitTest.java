@@ -32,7 +32,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -66,8 +67,6 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Profile mProfile;
-    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock private MonotonicObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TabModel mNormalTabModel;
@@ -80,21 +79,25 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @Mock private Tab mTab;
 
     private Context mContext;
+    private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createMonotonic();
     private TabSwitcherActionMenuCoordinator mCoordinator;
 
     @Before
     public void setUp() {
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        mCurrentTabSupplier.set(mTab);
         mActivityScenario.getScenario().onActivity(activity -> mContext = spy(activity));
 
         TrackerFactory.setTrackerForTests(mTracker);
         IncognitoUtils.setEnabledForTesting(true);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
 
-        when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
-        when(mCurrentTabSupplier.get()).thenReturn(mTab);
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
         when(mContext.getResources()).thenReturn(mResources);

@@ -45,7 +45,8 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -102,12 +103,11 @@ public class PasswordManagerHelperTest {
 
     @Mock private PendingIntent mPendingIntentMock;
 
-    @Mock private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-
     // TODO(crbug.com/40854050): Use fake instead of mock
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
 
     private ModalDialogManager mModalDialogManager;
+    private SettableMonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     @Mock private LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
@@ -133,7 +133,7 @@ public class PasswordManagerHelperTest {
                 new ModalDialogManager(
                         mock(ModalDialogManager.Presenter.class),
                         ModalDialogManager.ModalDialogType.APP);
-        when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
+        mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic(mModalDialogManager);
         doAnswer(
                         invocation -> {
                             mLoadingDialogCoordinatorObserver = invocation.getArgument(0);

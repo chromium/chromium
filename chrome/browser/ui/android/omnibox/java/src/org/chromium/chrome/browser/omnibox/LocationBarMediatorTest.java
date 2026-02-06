@@ -191,7 +191,6 @@ public class LocationBarMediatorTest {
     @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Mock private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
@@ -234,6 +233,7 @@ public class LocationBarMediatorTest {
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
 
     private Context mContext;
+    private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
     private LocationBarMediator mMediator;
@@ -252,6 +252,7 @@ public class LocationBarMediatorTest {
     @Before
     @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
+        mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -266,7 +267,6 @@ public class LocationBarMediatorTest {
                 .getUserDataHost();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mTabModelSelector).when(mTabModelSelectorSupplier).get();
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
         doReturn(true).when(mLocationBarLayout).shouldClearTextOnFocus();
         doReturn(mRootView).when(mLocationBarTablet).getRootView();

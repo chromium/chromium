@@ -63,6 +63,8 @@ public class AutocompleteCoordinatorUnitTest {
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+    private final MonotonicObservableSupplier<Profile> mProfileObservableSupplier =
+            ObservableSuppliers.alwaysNull();
 
     @Mock private AutocompleteDelegate mAutocompleteDelegate;
     @Mock private OmniboxSuggestionsDropdownEmbedder mDropdownEmbedder;
@@ -71,7 +73,6 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private Supplier<Tab> mActivityTabSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
-    @Mock private MonotonicObservableSupplier<Profile> mProfileObservableSupplier;
     @Mock private Callback<String> mBringToForegroundCallback;
     @Mock private BasicSuggestionProcessor.BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegate mOmniboxActionDelegate;

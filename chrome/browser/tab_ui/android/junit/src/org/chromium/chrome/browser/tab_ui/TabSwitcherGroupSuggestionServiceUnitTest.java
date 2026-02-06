@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -78,14 +79,13 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
 
     @Before
     public void setUp() {
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         GroupSuggestionsServiceFactory.setGroupSuggestionsServiceForTesting(
                 mGroupSuggestionsService);
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.iterator()).thenAnswer(inv -> mTabs.iterator());
-
-        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
 
         mService =
                 new TabSwitcherGroupSuggestionService(
@@ -104,7 +104,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     @Test
     public void testDestroy() {
         mService.destroy();
-        verify(mTabGroupModelFilterSupplier).removeObserver(any());
+        assertFalse(mTabGroupModelFilterSupplier.hasObservers());
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
     }
 
