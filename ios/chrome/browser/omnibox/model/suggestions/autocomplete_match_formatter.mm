@@ -362,6 +362,10 @@ UIColor* DimColorIncognito() {
 /// the omnibox would be a noop. However, this list also omits other types that
 /// are deprecated or not launched on iOS.
 - (BOOL)isAppendable {
+  if (_match.IsThreadsHistorySuggestion()) {
+    return NO;
+  }
+
   if (_match.suggest_template) {
     return YES;
   }

@@ -1751,6 +1751,10 @@ bool AutocompleteMatch::IsContextualSearchSuggestion() const {
   return subtypes.contains(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
 }
 
+bool AutocompleteMatch::IsThreadsHistorySuggestion() const {
+  return subtypes.contains(886 /*SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT*/);
+}
+
 bool AutocompleteMatch::IsToolbelt() const {
   return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
          !actions.empty() && omnibox_feature_configs::Toolbelt::Get().enabled;

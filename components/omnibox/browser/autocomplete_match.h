@@ -558,6 +558,9 @@ struct AutocompleteMatch {
   // by lens in the side panel.
   bool IsContextualSearchSuggestion() const;
 
+  // Checks if this match is an  Aim threads history suggestion.
+  bool IsThreadsHistorySuggestion() const;
+
   // Checks if this match is a specialized toolbelt match with actions on
   // a button row.
   bool IsToolbelt() const;
