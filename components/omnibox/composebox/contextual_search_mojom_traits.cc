@@ -187,6 +187,8 @@ EnumTraits<UsedFileUploadStatus, contextual_search::FileUploadStatus>::ToMojom(
       return UsedFileUploadStatus::kUploadExpired;
     case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
       return UsedFileUploadStatus::kProcessingSuggestSignalsReady;
+    case contextual_search::FileUploadStatus::kUploadReplaced:
+      return UsedFileUploadStatus::kUploadReplaced;
   }
   NOTREACHED();
 }
@@ -220,6 +222,9 @@ bool EnumTraits<UsedFileUploadStatus, contextual_search::FileUploadStatus>::
     case UsedFileUploadStatus::kProcessingSuggestSignalsReady:
       *output =
           contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady;
+      return true;
+    case UsedFileUploadStatus::kUploadReplaced:
+      *output = contextual_search::FileUploadStatus::kUploadReplaced;
       return true;
   }
   NOTREACHED();

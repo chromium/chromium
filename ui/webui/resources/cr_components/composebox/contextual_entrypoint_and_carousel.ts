@@ -445,6 +445,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             FileUploadStatus.kValidationFailed,
             FileUploadStatus.kUploadFailed,
             FileUploadStatus.kUploadExpired,
+            FileUploadStatus.kUploadReplaced,
           ].includes(status)) {
         this.files_.delete(token);
         if (file.tabId) {

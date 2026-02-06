@@ -934,6 +934,7 @@ CreateInputDataFromAnnotatedPageContent(
     case contextual_search::FileUploadStatus::kNotUploaded:
     case contextual_search::FileUploadStatus::kProcessing:
     case contextual_search::FileUploadStatus::kUploadStarted:
+    case contextual_search::FileUploadStatus::kUploadReplaced:
       // No-op, as the state is already `Uploading`.
       return;
   }
