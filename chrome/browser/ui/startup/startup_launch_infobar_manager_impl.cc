@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +30,43 @@
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
 
+using InfoBarType = StartupLaunchInfoBarManager::InfoBarType;
+
+namespace {
+
+constexpr char histogram_name_base[] = "Startup.Launch.InfoBar";
+
+std::string GetInfoBarTypeVariant(InfoBarType type) {
+  switch (type) {
+    case InfoBarType::kForegroundOptIn:
+      return "ForegroundOptIn";
+    case InfoBarType::kForegroundOptOut:
+      return "ForegroundOptOut";
+  }
+}
+
+std::string GetInteractionHistogramName(InfoBarType type) {
+  return base::JoinString(
+      {
+          histogram_name_base,
+          GetInfoBarTypeVariant(type),
+          "Interaction",
+      },
+      ".");
+}
+
+std::string GetShownHistogramName(InfoBarType type) {
+  return base::JoinString(
+      {
+          histogram_name_base,
+          GetInfoBarTypeVariant(type),
+          "Shown",
+      },
+      ".");
+}
+
+}  // namespace
+
 StartupLaunchInfoBarManagerImpl::StartupLaunchInfoBarManagerImpl() = default;
 StartupLaunchInfoBarManagerImpl::~StartupLaunchInfoBarManagerImpl() {
   CloseAllInfoBars();
@@ -36,6 +74,8 @@ StartupLaunchInfoBarManagerImpl::~StartupLaunchInfoBarManagerImpl() {
 
 void StartupLaunchInfoBarManagerImpl::ShowInfoBars(InfoBarType infobar_type) {
   CloseAllInfoBars();
+
+  base::UmaHistogramCounts100(GetShownHistogramName(infobar_type), 1);
 
   infobar_type_ = infobar_type;
   browser_collection_observation_.Observe(
@@ -155,6 +195,9 @@ void StartupLaunchInfoBarManagerImpl::OnInfoBarRemoved(
 
 void StartupLaunchInfoBarManagerImpl::OnAccept() {
   did_user_interact_ = true;
+  base::UmaHistogramEnumeration(GetInteractionHistogramName(infobar_type_),
+                                StartupLaunchInfoBarInteraction::kAccept);
+
   switch (infobar_type_) {
     case InfoBarType::kForegroundOptOut:
       GlobalBrowserCollection::GetInstance()->ForEach(
@@ -167,17 +210,19 @@ void StartupLaunchInfoBarManagerImpl::OnAccept() {
             return true;
           },
           BrowserCollection::Order::kActivation);
+      CloseAllInfoBars();
       break;
     case InfoBarType::kForegroundOptIn:
       g_browser_process->local_state()->SetBoolean(
           prefs::kForegroundLaunchOnLogin, true);
-
       break;
   }
 }
 
 void StartupLaunchInfoBarManagerImpl::OnDismiss() {
   did_user_interact_ = true;
+  base::UmaHistogramEnumeration(GetInteractionHistogramName(infobar_type_),
+                                StartupLaunchInfoBarInteraction::kDismiss);
 
   auto* local_state = g_browser_process->local_state();
 

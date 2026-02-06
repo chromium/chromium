@@ -118,6 +118,9 @@ class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
   // through settings toggle.
   void OnLaunchOnStartupPrefChanged();
 
+  // Helper method to apply the current state of the foreground launch pref.
+  void UpdateForegroundLaunchRegistration();
+
   bool is_showing_infobar_ = false;
 
   // Task runner for making startup/login configuration changes that may

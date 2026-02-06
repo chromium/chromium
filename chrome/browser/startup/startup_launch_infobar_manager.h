@@ -15,10 +15,14 @@ class StartupLaunchInfoBarManager {
     virtual void OnInfoBarDismissed() = 0;
   };
 
+  // Infobar types that can be shown to users.
+  //
+  // LINT.IfChange(InfoBarType)
   enum class InfoBarType {
     kForegroundOptIn,
     kForegroundOptOut,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/startup/histograms.xml:StartupLaunchInfoBarType)
 
   virtual ~StartupLaunchInfoBarManager() = default;
 

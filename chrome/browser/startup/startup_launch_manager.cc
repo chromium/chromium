@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -142,7 +143,7 @@ StartupLaunchManager::StartupLaunchManager(BrowserProcess* browser_process)
                             base::Unretained(this)));
 
     // Initialize StartupLaunchManager to use current value of the pref.
-    OnLaunchOnStartupPrefChanged();
+    UpdateForegroundLaunchRegistration();
   } else {
     // Removes foreground launch if feature flag is disabled, but keeps the pref
     // unchanged. This allows us to resume the experiment if it needs to be
@@ -226,6 +227,15 @@ void StartupLaunchManager::ForceReleaseAllLocks() {
 }
 
 void StartupLaunchManager::OnLaunchOnStartupPrefChanged() {
+  UpdateForegroundLaunchRegistration();
+
+  constexpr char histogram_name[] =
+      "Startup.Launch.Foreground.PreferenceChanged";
+  base::UmaHistogramBoolean(histogram_name,
+                            foreground_launch_on_login_.GetValue());
+}
+
+void StartupLaunchManager::UpdateForegroundLaunchRegistration() {
   if (foreground_launch_on_login_.GetValue()) {
     RegisterLaunchOnStartup(StartupLaunchReason::kForeground);
   } else {

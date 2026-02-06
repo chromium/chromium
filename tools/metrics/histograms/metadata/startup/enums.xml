@@ -140,6 +140,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(StartupLaunchInfoBarInteraction) -->
+
+<enum name="StartupLaunchInfoBarInteraction">
+  <int value="0" label="Dismiss"/>
+  <int value="1" label="Accept"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/startup_launch_infobar_manager_impl.h:StartupLaunchInfoBarInteraction) -->
+
 <!-- LINT.IfChange(StartupTemperature) -->
 
 <enum name="StartupTemperature">

@@ -14,7 +14,10 @@ namespace features {
 //
 // 1. Foreground mode param gates launch on foreground feature and the settings
 // toggle UI to enable/disable it.
+//
+// LINT.IfChange(LaunchOnStartupMode)
 enum class LaunchOnStartupMode { kForeground };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/histograms.xml:StartupLaunchMode)
 
 // Default preference value for running experiment with the feature.
 //

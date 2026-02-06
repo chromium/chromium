@@ -29,6 +29,25 @@ chromium-metrics-reviews@google.com.
       summary="Chrome starts up with intent to WebApkActivity"/>
 </variants>
 
+<!-- LINT.IfChange(StartupLaunchInfoBarType) -->
+
+<variants name="StartupLaunchInfoBarType">
+  <variant name="ForegroundOptIn"
+      summary="Opt-in to foreground launch on login"/>
+  <variant name="ForegroundOptOut"
+      summary="Opt-out of foreground launch on login"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/startup/startup_launch_infobar_manager.h:InfoBarType) -->
+
+<!-- LINT.IfChange(StartupLaunchMode) -->
+
+<variants name="StartupLaunchMode">
+  <variant name="Foreground" summary="Foreground"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/startup/startup_launch_features.h:LaunchOnStartupMode) -->
+
 <variants name="StartupTemperature">
   <variant name="" summary="All startups"/>
   <variant name=".ColdStartup"
@@ -1204,6 +1223,35 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records session type for a cold start. It is recorded at cold start.
     Histogram only for iOS.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Launch.InfoBar.{StartupLaunchInfoBarType}.Interaction"
+    enum="StartupLaunchInfoBarInteraction" expires_after="2027-02-05">
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records user interactions with the {StartupLaunchInfoBarType} infobar.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Launch.InfoBar.{StartupLaunchInfoBarType}.Shown"
+    units="times" expires_after="2027-02-05">
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records how many times {StartupLaunchInfoBarType} infobar has been shown to
+    the user.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Launch.{StartupLaunchMode}.PreferenceChanged"
+    enum="BooleanEnabled" expires_after="2027-02-05">
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the new value of the {StartupLaunchMode} launch on login preference
+    when it is changed by the user.
   </summary>
 </histogram>
 

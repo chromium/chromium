@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
@@ -427,6 +428,32 @@ TEST_F(StartupLaunchManagerForegroundLaunchOptInTest,
       .Times(testing::Exactly(0));
   extensions_startup_launch_client.SetLaunchOnStartup(false);
   testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
+TEST_F(StartupLaunchManagerForegroundLaunchOptInTest,
+       RecordMetricsOnPrefChange) {
+  base::HistogramTester histogram_tester;
+
+  // Recreate StartupLaunchManager to simulate startup.
+  TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+  TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+      /*profile_manager=*/false);
+
+  const std::string histogram_name =
+      "Startup.Launch.Foreground.PreferenceChanged";
+
+  // Metrics should not be recorded on startup.
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  // Metrics should be recorded when the pref is changed.
+  g_browser_process->local_state()->SetBoolean(prefs::kForegroundLaunchOnLogin,
+                                               true);
+  histogram_tester.ExpectUniqueSample(histogram_name, true, 1);
+
+  g_browser_process->local_state()->SetBoolean(prefs::kForegroundLaunchOnLogin,
+                                               false);
+  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
+  histogram_tester.ExpectTotalCount(histogram_name, 2);
 }
 
 TEST_F(StartupLaunchManagerForegroundLaunchOptInTest, ShowInfoBarIfApplicable) {

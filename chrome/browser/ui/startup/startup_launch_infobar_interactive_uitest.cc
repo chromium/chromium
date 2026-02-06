@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -40,8 +41,9 @@ class StartupLaunchInfoBarInteractiveTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptInInfoBar) {
+  base::HistogramTester histogram_tester;
   RunTestSequence(
-      Do([this]() {
+      InstrumentTab(kWebContentsElementId, 0), Do([this]() {
         manager_->ShowInfoBars(
             StartupLaunchInfoBarManager::InfoBarType::kForegroundOptIn);
       }),
@@ -52,10 +54,18 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptInInfoBar) {
             return g_browser_process->local_state()->GetBoolean(
                 prefs::kForegroundLaunchOnLogin);
           },
-          true));
+          true),
+      Do([&histogram_tester]() {
+        histogram_tester.ExpectTotalCount(
+            "Startup.Launch.InfoBar.ForegroundOptIn.Shown", 1);
+        histogram_tester.ExpectUniqueSample(
+            "Startup.Launch.InfoBar.ForegroundOptIn.Interaction",
+            StartupLaunchInfoBarInteraction::kAccept, 1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptOutInfoBar) {
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       InstrumentTab(kWebContentsElementId, 0), Do([this]() {
         manager_->ShowInfoBars(
@@ -64,11 +74,19 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptOutInfoBar) {
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       PressButton(ConfirmInfoBar::kOkButtonElementId),
       WaitForWebContentsNavigation(kWebContentsElementId,
-                                   GURL("chrome://settings/onStartup")));
+                                   GURL("chrome://settings/onStartup")),
+      Do([&histogram_tester]() {
+        histogram_tester.ExpectTotalCount(
+            "Startup.Launch.InfoBar.ForegroundOptOut.Shown", 1);
+        histogram_tester.ExpectUniqueSample(
+            "Startup.Launch.InfoBar.ForegroundOptOut.Interaction",
+            StartupLaunchInfoBarInteraction::kAccept, 1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest,
                        InfoBarAppearsOnNewTabs) {
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       Do([this]() {
         manager_->ShowInfoBars(
@@ -76,11 +94,15 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest,
       }),
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       AddInstrumentedTab(kWebContentsElementId, GURL("about:blank")),
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId));
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId), Do([&histogram_tester]() {
+        histogram_tester.ExpectTotalCount(
+            "Startup.Launch.InfoBar.ForegroundOptIn.Shown", 1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest,
                        DismissingOneClosesAll) {
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       Do([this]() {
         manager_->ShowInfoBars(
@@ -93,5 +115,12 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest,
       WaitForHide(ConfirmInfoBar::kInfoBarElementId),
       // Check that it's also gone from the other tab.
       SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
+      EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId),
+      Do([&histogram_tester]() {
+        histogram_tester.ExpectTotalCount(
+            "Startup.Launch.InfoBar.ForegroundOptIn.Shown", 1);
+        histogram_tester.ExpectUniqueSample(
+            "Startup.Launch.InfoBar.ForegroundOptIn.Interaction",
+            StartupLaunchInfoBarInteraction::kDismiss, 1);
+      }));
 }

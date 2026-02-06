@@ -34,6 +34,18 @@ class Profile;
 
 class TabStripModel;
 
+// UMA enum for tracking interactions with Startup Launch infobars.
+// These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+//
+// LINT.IfChange(StartupLaunchInfoBarInteraction)
+enum class StartupLaunchInfoBarInteraction {
+  kDismiss = 0,
+  kAccept = 1,
+  kMaxValue = kAccept,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/histograms.xml:StartupLaunchInfoBarInteraction)
+
 // Implementation of StartupLaunchInfoBarManager that manages the lifecycle of
 // startup launch infobars across multiple browser windows and tabs.
 // It tracks tab insertions to show the infobar on new tabs and observes
