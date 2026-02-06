@@ -2243,8 +2243,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // Check that the computed height has a realistic value (crbug.com/1446068).
   DUMP_WILL_BE_CHECK(height >= (0.0 - FLT_EPSILON) &&
                      height <= (expandedToolbarHeight + FLT_EPSILON));
-
-  if (![self.toolbarCoordinator showingOmniboxPopup]) {
+  if (IsChromeNextIaEnabled() ||
+      ![self.toolbarCoordinator showingOmniboxPopup]) {
     self.secondaryToolbarHeightConstraint.constant = height;
   }
 }
@@ -2822,6 +2822,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 }
 
 - (BOOL)canBeginToolbarSwipe {
+  if (IsChromeNextIaEnabled()) {
+    return YES;
+  }
   return ![self.toolbarCoordinator isOmniboxFirstResponder] &&
          ![self.toolbarCoordinator showingOmniboxPopup];
 }
