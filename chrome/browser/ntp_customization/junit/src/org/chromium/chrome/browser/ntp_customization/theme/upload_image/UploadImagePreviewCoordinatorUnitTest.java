@@ -20,10 +20,13 @@ import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.After;
 import org.junit.Before;
@@ -51,6 +54,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -77,6 +81,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
     private Matrix mLandscapeMatrix;
     private Bitmap mLogoBitmap;
     private PropertyModel mPropertyModel;
+    private int mToolbarHeight;
 
     @Before
     public void setUp() {
@@ -100,6 +105,8 @@ public class UploadImagePreviewCoordinatorUnitTest {
         mSaveButton = contentView.findViewById(R.id.save_button);
         mCancelButton = contentView.findViewById(R.id.cancel_button);
         mLogoBitmap = Bitmap.createBitmap(5, 5, Bitmap.Config.ARGB_8888);
+        mToolbarHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
         mConfigManager = NtpCustomizationConfigManager.getInstance();
         ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.setForTesting(true);
@@ -524,6 +531,157 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "The real view should use logo bottom margin as top margin",
                 expectedTopMargin,
                 layoutParams.topMargin);
+    }
+
+    @Test
+    public void testOnApplyWindowInsets_ThreeButtonNavigation_Portrait() {
+        // Setup insets representing 3-button navigation (tappable bottom bar)
+        int top = 20;
+        int bottom = 100;
+        int left = 0;
+        int right = 0;
+        Insets systemBars = Insets.of(left, top, right, bottom);
+        Insets navigationBars = Insets.of(0, 0, 0, bottom);
+        Insets tappableElement = Insets.of(0, top, 0, bottom);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), systemBars)
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), navigationBars)
+                        .setInsets(WindowInsetsCompat.Type.tappableElement(), tappableElement)
+                        .build();
+        int expectedTopGuideline = mToolbarHeight + top;
+        // For 3-button navigation, the bottom inset should be applied as padding
+        Rect expectedSideAndBottom = new Rect(left, 0, right, bottom);
+
+        WindowInsetsCompat result =
+                mUploadImagePreviewCoordinator.onApplyWindowInsets(mCropImageView, insets);
+
+        assertTrue(EdgeToEdgeUtils.hasTappableNavigationBarFromInsets(insets));
+        verifyPaddingAndInsetsConsumed(result, expectedTopGuideline, expectedSideAndBottom);
+    }
+
+    @Test
+    public void testOnApplyWindowInsets_GestureNavigation_Portrait() {
+        // Setup insets representing Gesture navigation
+        int top = 20;
+        int bottom = 40;
+        int left = 0;
+        int right = 0;
+        Insets systemBars = Insets.of(left, top, right, bottom);
+        Insets navigationBars = Insets.of(0, 0, 0, bottom);
+        Insets tappableElement = Insets.of(0, top, 0, 0);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), systemBars)
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), navigationBars)
+                        .setInsets(WindowInsetsCompat.Type.tappableElement(), tappableElement)
+                        .build();
+
+        int expectedTopGuideline = mToolbarHeight + top;
+        // For Gesture navigation, the bottom inset should not be applied (padding = 0)
+        Rect expectedSideAndBottom = new Rect(left, 0, right, 0);
+
+        WindowInsetsCompat result =
+                mUploadImagePreviewCoordinator.onApplyWindowInsets(mCropImageView, insets);
+
+        assertFalse(EdgeToEdgeUtils.hasTappableNavigationBarFromInsets(insets));
+        verifyPaddingAndInsetsConsumed(result, expectedTopGuideline, expectedSideAndBottom);
+    }
+
+    @Test
+    public void testOnApplyWindowInsets_ThreeButtonNavigation_Landscape() {
+        // Setup insets representing 3-button navigation in Landscape (Nav bar on the Right)
+        int top = 20; // Status bar at top
+        int bottom = 0; // No navigation bar at bottom
+        int left = 0;
+        int right = 100; // Navigation bar is on the right side
+
+        Insets systemBars = Insets.of(left, top, right, bottom);
+        Insets navigationBars = Insets.of(0, 0, right, 0);
+        Insets tappableElement = Insets.of(0, top, right, 0);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), systemBars)
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), navigationBars)
+                        .setInsets(WindowInsetsCompat.Type.tappableElement(), tappableElement)
+                        .build();
+
+        int expectedTopGuideline = mToolbarHeight + top;
+
+        // In Landscape 3-button, the bottom padding is 0 (physically no bar there),
+        // but the right inset is preserved in the Rect.
+        Rect expectedSideAndBottom = new Rect(left, 0, right, bottom);
+
+        WindowInsetsCompat result =
+                mUploadImagePreviewCoordinator.onApplyWindowInsets(mCropImageView, insets);
+
+        assertTrue(EdgeToEdgeUtils.hasTappableNavigationBarFromInsets(insets));
+        verifyPaddingAndInsetsConsumed(result, expectedTopGuideline, expectedSideAndBottom);
+    }
+
+    @Test
+    public void testOnApplyWindowInsets_GestureNavigation_Landscape() {
+        // Setup insets representing Gesture navigation in Landscape
+        int top = 20;
+        int bottom = 20; // Small gesture handle at the bottom
+        int left = 0;
+        int right = 0; // Gestures usually don't have a solid bar on the right
+
+        Insets systemBars = Insets.of(left, top, right, bottom);
+        Insets navigationBars = Insets.of(0, 0, 0, bottom);
+        // Tappable element is 0 at bottom for gestures
+        Insets tappableElement = Insets.of(0, top, 0, 0);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), systemBars)
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), navigationBars)
+                        .setInsets(WindowInsetsCompat.Type.tappableElement(), tappableElement)
+                        .build();
+
+        int expectedTopGuideline = mToolbarHeight + top;
+
+        // For Gesture navigation, bottom padding is 0 (Edge-to-Edge).
+        // Right is 0 because there is no bar.
+        Rect expectedSideAndBottom = new Rect(left, 0, right, 0);
+
+        WindowInsetsCompat result =
+                mUploadImagePreviewCoordinator.onApplyWindowInsets(mCropImageView, insets);
+
+        assertFalse(EdgeToEdgeUtils.hasTappableNavigationBarFromInsets(insets));
+        verifyPaddingAndInsetsConsumed(result, expectedTopGuideline, expectedSideAndBottom);
+    }
+
+    void verifyPaddingAndInsetsConsumed(
+            WindowInsetsCompat insets, int expectedTopGuideline, Rect expectedSideAndBottom) {
+        // Verifies PropertyModel updates
+        PropertyModel model = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
+        assertEquals(
+                "Top guideline should include toolbar height + top inset",
+                expectedTopGuideline,
+                model.get(NtpThemeProperty.TOP_GUIDELINE_BEGIN));
+
+        assertEquals(
+                "Bottom inset should be 0 for gesture nav (Edge-to-Edge), but sides should remain",
+                expectedSideAndBottom,
+                model.get(NtpThemeProperty.SIDE_AND_BOTTOM_INSETS));
+
+        // Verifies that the method consumed the specific insets it is responsible for
+        assertEquals(
+                "Status bars should be consumed in the returned insets",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(
+                "Navigation bars should be consumed in the returned insets",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(
+                "Display cutout should be consumed in the returned insets",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.displayCutout()));
     }
 
     /**

@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.insets.InsetObserver;
@@ -178,10 +179,16 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
         mPreviewPropertyModel.set(
                 NtpThemeProperty.TOP_GUIDELINE_BEGIN, mToolBarHeight + combinedInsets.top);
 
+        // Only applies padding for 3-button navigation. Gesture navigation should remain
+        // edge-to-edge (0 padding).
+        boolean hasTappableNavBar =
+                EdgeToEdgeUtils.hasTappableNavigationBarFromInsets(windowInsetsCompat);
+        int bottomInsetForPadding = hasTappableNavBar ? combinedInsets.bottom : 0;
+
         // Groups Left, Right, and Bottom into a Rect to update the model once. We pass 0 for top
         // since it's handled by the TOP_INSETS property above.
         Rect sideAndBottomInsets =
-                new Rect(combinedInsets.left, 0, combinedInsets.right, combinedInsets.bottom);
+                new Rect(combinedInsets.left, 0, combinedInsets.right, bottomInsetForPadding);
         mPreviewPropertyModel.set(NtpThemeProperty.SIDE_AND_BOTTOM_INSETS, sideAndBottomInsets);
 
         // Consumes the insets since the root view already adjusted their paddings.

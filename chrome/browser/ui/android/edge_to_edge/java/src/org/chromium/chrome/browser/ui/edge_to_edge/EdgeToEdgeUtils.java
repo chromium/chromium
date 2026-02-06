@@ -395,7 +395,7 @@ public class EdgeToEdgeUtils {
     }
 
     /** Returns whether the given window's insets contains a tappable navigation bar. */
-    static boolean hasTappableNavigationBarFromInsets(WindowInsetsCompat insets) {
+    public static boolean hasTappableNavigationBarFromInsets(WindowInsetsCompat insets) {
         Insets navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
         Insets tappableElementInsets = insets.getInsets(WindowInsetsCompat.Type.tappableElement());
         // Return whether there is any overlap in navigation bar and tappable element insets.
