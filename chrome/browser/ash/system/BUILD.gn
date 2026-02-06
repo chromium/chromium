@@ -80,6 +80,7 @@ static_library("system") {
     # TODO(crbug.com/353408109): Use //chrome/browser/ash/login instead after fixing cyclic
     # dependency.
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/ash/login/fjord_oobe/proto",
     "//chrome/browser/ash/login/oobe_apps_service/proto",
     "//chrome/browser/ui/webui/ash/login/mojom",
     "//chromeos/ash/components/drivefs",
