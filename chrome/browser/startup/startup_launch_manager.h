@@ -9,8 +9,10 @@
 
 #include "base/containers/enum_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/startup/startup_launch_infobar_manager.h"
 #include "chrome/installer/util/auto_launch_util.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -38,7 +40,7 @@ enum class StartupLaunchReason {
 
 // StartupLaunchManager registers with the OS so that Chrome launches on device
 // startup - depending on the reasons why Chrome should launch on startup.
-class StartupLaunchManager {
+class StartupLaunchManager : public StartupLaunchInfoBarManager::Observer {
  public:
   // Clients should instantiate and own this class, and use
   // `UpdateLaunchOnStartup` to interact with StartupLaunchManager.
@@ -62,15 +64,33 @@ class StartupLaunchManager {
   };
 
   explicit StartupLaunchManager(BrowserProcess* browser_process);
-  virtual ~StartupLaunchManager();
+  ~StartupLaunchManager() override;
 
   DECLARE_USER_DATA(StartupLaunchManager);
 
   static StartupLaunchManager* From(BrowserProcess* browser_process);
 
+  // StartupLaunchInfoBarManager::Observer:
+  void OnInfoBarDismissed() override;
+
   // Releases the lock held by this instance. Once all active locks are
   // released or 1 minute has passed, a registry commit will occur.
   void CommitLaunchOnStartupState();
+
+#if BUILDFLAG(IS_WIN)
+  // Sets the infobar manager. This is injected at runtime rather than in the
+  // constructor to resolve circular dependencies between StartupLaunchManager
+  // and the UI components that implement the infobar manager.
+  // StartupLaunchManager owns the manager. If a manager already exists and
+  // an infobar is being shown, it will be closed before the new manager
+  // takes over.
+  void SetInfoBarManager(std::unique_ptr<StartupLaunchInfoBarManager> manager);
+
+  // Triggers the display of infobars across all eligible browser windows if
+  // the preconditions (experiment state, not declined too many times) are met.
+  // Requires a manager to be set via `SetInfoBarManager` beforehand.
+  void MaybeShowInfoBars();
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   // Methods to unregister/register individual reasons with the launch manager.
@@ -98,6 +118,8 @@ class StartupLaunchManager {
   // through settings toggle.
   void OnLaunchOnStartupPrefChanged();
 
+  bool is_showing_infobar_ = false;
+
   // Task runner for making startup/login configuration changes that may
   // require file system or registry access.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -115,6 +137,17 @@ class StartupLaunchManager {
   base::OneShotTimer fallback_timer_;
 
   PrefMember<bool> foreground_launch_on_login_;
+
+#if BUILDFLAG(IS_WIN)
+  std::optional<StartupLaunchInfoBarManager::InfoBarType> infobar_type_ =
+      std::nullopt;
+
+  std::unique_ptr<StartupLaunchInfoBarManager> infobar_manager_;
+
+  base::ScopedObservation<StartupLaunchInfoBarManager,
+                          StartupLaunchInfoBarManager::Observer>
+      infobar_manager_observation_{this};
+#endif
 
   ui::ScopedUnownedUserData<StartupLaunchManager> scoped_unowned_user_data_;
 };

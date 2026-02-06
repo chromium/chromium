@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/startup/startup_launch_infobar_manager.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
@@ -56,6 +57,8 @@ class StartupLaunchInfoBarManagerImpl
   // StartupLaunchInfoBarManager:
   void ShowInfoBars(InfoBarType infobar_type) override;
   void CloseAllInfoBars() override;
+  void AddObserver(StartupLaunchInfoBarManager::Observer* observer) override;
+  void RemoveObserver(StartupLaunchInfoBarManager::Observer* observer) override;
 
  private:
   void CreateInfoBarForWebContents(content::WebContents* contents,
@@ -79,6 +82,8 @@ class StartupLaunchInfoBarManagerImpl
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
   std::map<raw_ptr<content::WebContents>, raw_ptr<infobars::InfoBar>> infobars_;
+
+  base::ObserverList<StartupLaunchInfoBarManager::Observer> observers_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};

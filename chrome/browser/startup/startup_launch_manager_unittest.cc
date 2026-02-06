@@ -33,6 +33,16 @@ class TestStartupLaunchManager : public StartupLaunchManager {
                void(std::optional<StartupLaunchMode> startup_mode));
 };
 
+#if BUILDFLAG(IS_WIN)
+class MockStartupLaunchInfoBarManager : public StartupLaunchInfoBarManager {
+ public:
+  MOCK_METHOD(void, ShowInfoBars, (InfoBarType infobar_type), (override));
+  MOCK_METHOD(void, CloseAllInfoBars, (), (override));
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+};
+#endif
+
 }  // namespace
 
 class StartupLaunchManagerTestBase : public testing::Test {
@@ -419,6 +429,107 @@ TEST_F(StartupLaunchManagerForegroundLaunchOptInTest,
   testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
 
+TEST_F(StartupLaunchManagerForegroundLaunchOptInTest, ShowInfoBarIfApplicable) {
+  TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
+  auto infobar_manager_mock =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+  MockStartupLaunchInfoBarManager* infobar_manager = infobar_manager_mock.get();
+
+  // Expectations for setting the manager: it should observe the new manager.
+  EXPECT_CALL(*infobar_manager, AddObserver(launch_manager))
+      .Times(testing::Exactly(1));
+
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock));
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+
+  // Expectations for showing infobars.
+  EXPECT_CALL(
+      *infobar_manager,
+      ShowInfoBars(StartupLaunchInfoBarManager::InfoBarType::kForegroundOptIn))
+      .Times(testing::Exactly(1));
+
+  launch_manager->MaybeShowInfoBars();
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
+TEST_F(StartupLaunchManagerForegroundLaunchOptInTest,
+       CloseInfoBarsOnPrefChange) {
+  TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
+  auto infobar_manager_mock =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+  MockStartupLaunchInfoBarManager* infobar_manager = infobar_manager_mock.get();
+
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock));
+  launch_manager->MaybeShowInfoBars();
+
+  EXPECT_CALL(*infobar_manager, CloseAllInfoBars()).Times(testing::Exactly(1));
+  g_browser_process->local_state()->SetBoolean(prefs::kForegroundLaunchOnLogin,
+                                               true);
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
+TEST_F(StartupLaunchManagerForegroundLaunchOptInTest,
+       CloseInfoBarsOnNewManager) {
+  TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
+  auto infobar_manager_mock1 =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+  MockStartupLaunchInfoBarManager* infobar_manager1 =
+      infobar_manager_mock1.get();
+
+  EXPECT_CALL(*infobar_manager1, AddObserver(launch_manager))
+      .Times(testing::Exactly(1));
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock1));
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+
+  // Simulate showing infobars.
+  EXPECT_CALL(*infobar_manager1, ShowInfoBars(testing::_))
+      .Times(testing::Exactly(1));
+  launch_manager->MaybeShowInfoBars();
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+
+  auto infobar_manager_mock2 =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+  MockStartupLaunchInfoBarManager* infobar_manager2 =
+      infobar_manager_mock2.get();
+
+  // When setting a new manager while one is active and showing, it should close
+  // old infobars.
+  EXPECT_CALL(*infobar_manager1, CloseAllInfoBars()).Times(testing::Exactly(1));
+  EXPECT_CALL(*infobar_manager2, AddObserver(launch_manager))
+      .Times(testing::Exactly(1));
+
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock2));
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
+TEST_F(StartupLaunchManagerForegroundLaunchOptInTest,
+       ObserverNotifiedOnDismiss) {
+  TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
+  auto infobar_manager_mock =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+  MockStartupLaunchInfoBarManager* infobar_manager = infobar_manager_mock.get();
+
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock));
+
+  EXPECT_CALL(*infobar_manager, ShowInfoBars(testing::_))
+      .Times(testing::Exactly(1));
+  launch_manager->MaybeShowInfoBars();
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+
+  // Simulate dismissal.
+  launch_manager->OnInfoBarDismissed();
+
+  // If we try to set a new manager now, it should NOT try to close existing
+  // infobars because we've been notified they are dismissed/handled.
+  auto infobar_manager_mock2 =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+
+  EXPECT_CALL(*infobar_manager, CloseAllInfoBars()).Times(testing::Exactly(0));
+
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock2));
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
 class StartupLaunchManagerForegroundLaunchOptOutTest
     : public StartupLaunchManagerTestBase {
  public:
@@ -477,6 +588,30 @@ TEST_F(StartupLaunchManagerForegroundLaunchOptOutTest,
   g_browser_process->local_state()->SetBoolean(prefs::kForegroundLaunchOnLogin,
                                                false);
 
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
+TEST_F(StartupLaunchManagerForegroundLaunchOptOutTest,
+       ShowInfoBarIfApplicable) {
+  TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
+  auto infobar_manager_mock =
+      std::make_unique<MockStartupLaunchInfoBarManager>();
+  MockStartupLaunchInfoBarManager* infobar_manager = infobar_manager_mock.get();
+
+  // Expectations for setting the manager: it should observe the new manager.
+  EXPECT_CALL(*infobar_manager, AddObserver(launch_manager))
+      .Times(testing::Exactly(1));
+
+  launch_manager->SetInfoBarManager(std::move(infobar_manager_mock));
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+
+  // Expectations for showing infobars.
+  EXPECT_CALL(
+      *infobar_manager,
+      ShowInfoBars(StartupLaunchInfoBarManager::InfoBarType::kForegroundOptOut))
+      .Times(testing::Exactly(1));
+
+  launch_manager->MaybeShowInfoBars();
   testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
 

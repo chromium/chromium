@@ -75,6 +75,16 @@ void StartupLaunchInfoBarManagerImpl::CloseAllInfoBars() {
   }
 }
 
+void StartupLaunchInfoBarManagerImpl::AddObserver(
+    StartupLaunchInfoBarManager::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void StartupLaunchInfoBarManagerImpl::RemoveObserver(
+    StartupLaunchInfoBarManager::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void StartupLaunchInfoBarManagerImpl::CreateInfoBarForWebContents(
     content::WebContents* web_contents,
     Profile* profile) {
@@ -137,6 +147,9 @@ void StartupLaunchInfoBarManagerImpl::OnInfoBarRemoved(
 
   if (did_user_interact_) {
     CloseAllInfoBars();
+    for (auto& observer : observers_) {
+      observer.OnInfoBarDismissed();
+    }
   }
 }
 
