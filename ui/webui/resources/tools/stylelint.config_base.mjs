@@ -48,6 +48,7 @@ export default {
     '@stylistic/declaration-block-semicolon-space-before': 'never',
     '@stylistic/declaration-block-trailing-semicolon': 'always',
     '@stylistic/no-extra-semicolons': true,
+    '@stylistic/selector-list-comma-newline-after': 'always',
 
     // https://google.github.io/styleguide/htmlcssguide.html#Property_Name_Stops
     '@stylistic/media-feature-colon-space-after': 'always',

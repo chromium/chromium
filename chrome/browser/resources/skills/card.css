@@ -81,7 +81,8 @@
   flex: 1;
 }
 
-#editButton, #saveButton {
+#editButton,
+#saveButton {
   --cr-button-border-color: transparent;
 }
 
