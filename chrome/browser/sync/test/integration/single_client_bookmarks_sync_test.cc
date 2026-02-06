@@ -1660,7 +1660,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
 
   // Add 2 new bookmarks to exceed the limit.
   const BookmarkNode* bookmark_bar_node =
-      GetBookmarkBarNode(kSingleProfileIndex);
+      GetBookmarkBarNode(kSingleProfileIndex, StoreType::kLocalOrSyncableStore);
 
   const std::u16string kTitle1 = u"title1";
   const std::string kUrl1 = "http://www.url1.com";

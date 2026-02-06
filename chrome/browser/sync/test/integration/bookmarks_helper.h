@@ -61,10 +61,9 @@ enum class StoreType {
 [[nodiscard]] bookmarks::BookmarkModel* GetBookmarkModel(int index);
 
 // Used to access the bookmark bar within a particular sync profile.
-// TODO(crbug.com/353425612): Remove the default value for `store`.
 [[nodiscard]] const bookmarks::BookmarkNode* GetBookmarkBarNode(
     int index,
-    StoreType store_type = StoreType::kLocalOrSyncableStore);
+    StoreType store_type);
 
 // Used to access the "other bookmarks" node within a particular sync profile.
 // TODO(crbug.com/353425612): Remove the default value for `store`.
