@@ -101,8 +101,8 @@ function arrowDown(realbox: SearchboxElement): KeyboardEvent {
   return arrowDownEvent;
 }
 
-async function createAndAppendRealbox(properties: Partial<SearchboxElement> = {}):
-    Promise<SearchboxElement> {
+async function createAndAppendRealbox(
+    properties: Partial<SearchboxElement> = {}): Promise<SearchboxElement> {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   const realbox = document.createElement('cr-searchbox');
   Object.assign(realbox, properties);
@@ -1212,7 +1212,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
     realbox.shadowRoot.querySelector<HTMLElement>(
-                           '#voiceSearchButton')!.focus();
+                          '#voiceSearchButton')!.focus();
     assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
 
     const matches = [createSearchMatchForTesting(), createUrlMatch()];
@@ -1724,7 +1724,7 @@ suite('NewTabPageRealboxTest', () => {
       cancelable: true,
       composed: true,  // So it propagates across shadow DOM boundary.
     }));
-    await  microtasksFinished();
+    await microtasksFinished();
     assertNotEquals(
         window.getComputedStyle(matchEls[1]!.$.remove).display, 'none');
   });
@@ -1837,7 +1837,7 @@ suite('NewTabPageRealboxTest', () => {
 
     const arrowDownEvent = arrowDown(realbox);
     assertTrue(arrowDownEvent.defaultPrevented);
-    await  microtasksFinished();
+    await microtasksFinished();
 
     // First match is selected.
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2463,8 +2463,8 @@ suite('NewTabPageRealboxTest', () => {
             }));
         assertTrue(await areMatchesShowing());
 
-        const matchEls = realbox.$.matches.shadowRoot.querySelectorAll(
-            'cr-searchbox-match');
+        const matchEls =
+            realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
         assertEquals(2, matchEls.length);
 
         // Test initial icon state for the first match: icon image not used.
@@ -3348,8 +3348,8 @@ suite('NewTabPageRealboxTabsTest', () => {
   });
 
   test('getRecentTabs only fires when context menu is open', async () => {
-    const contextElement = realbox.shadowRoot.querySelector(
-        'contextual-entrypoint-and-carousel');
+    const contextElement =
+        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);
     contextElement.dispatchEvent(new CustomEvent('context-menu-opened'));
     await microtasksFinished();
