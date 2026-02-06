@@ -801,7 +801,7 @@ void Tab::UpdateAccessibleName() {
 
 void Tab::OnAXNameChanged(ax::mojom::StringAttribute attribute,
                           const std::optional<std::string>& name) {
-  if (GetWidget()) {
+  if (GetWidget() && IsActive()) {
     GetWidget()->UpdateAccessibleNameForRootView();
   }
 }
