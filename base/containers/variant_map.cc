@@ -22,7 +22,7 @@ std::atomic_bool g_is_absl_flat_map_in_variant_map_enabled{false};
 
 // Whether absl::flat_hash_map is used by default instead of std::map in
 // base::VariantMap.
-BASE_FEATURE(kAbslFlatMapInVariantMap, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAbslFlatMapInVariantMap, FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
