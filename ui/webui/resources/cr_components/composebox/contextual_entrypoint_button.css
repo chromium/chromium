@@ -38,7 +38,7 @@
   width: var(--button-height);
 }
 
-cr-button#entrypoint.ai-mode-button {
+cr-button#entrypoint {
   width: max-content;
 }
 
@@ -63,11 +63,6 @@ cr-button#entrypoint.ai-mode-button {
     fade-in 850ms 970ms var(--text-animation-curve) forwards;
   opacity: 0;
   transform: translateX(-12px);
-}
-
-#entrypoint.ai-mode-button {
-  position: relative;
-  z-index: 5;
 }
 
 /*
@@ -222,9 +217,8 @@ cr-button#entrypoint.ai-mode-button {
 }
 
 #entrypoint {
-  --cr-button-disabled-text-color: var(
-    --color-composebox-context-entrypoint-text-disabled
-  );
+  --cr-button-disabled-text-color:
+      var(--color-composebox-context-entrypoint-text-disabled);
   --cr-button-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
       var(--cr-icon-button-hover-background-color);
@@ -232,6 +226,8 @@ cr-button#entrypoint.ai-mode-button {
   --icon-block-padding-small: 10px;
   border: initial;
   gap: 4px;
+  position: relative;
+  z-index: 5;
 }
 
 :host(:not([glif-animation-state='ineligible'])) #entrypoint {

@@ -203,7 +203,8 @@ suite('AppTest', function() {
       await microtasksFinished();
       const entrypointButton =
           carousel.$.contextEntrypoint.shadowRoot.querySelector<HTMLElement>(
-              '#entrypoint')!;
+              '#entrypoint');
+      assertTrue(!!entrypointButton);
       entrypointButton.focus();
       await microtasksFinished();
       assertTrue(entrypointButton.matches(':focus-within'));
