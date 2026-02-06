@@ -526,15 +526,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             itemDecoration = new ContainmentItemDecoration(controller);
             mItemDecorations.put(fragment, itemDecoration);
             recyclerView.addItemDecoration(itemDecoration);
+            // Force a re-inflation of all views to ensure they pick up the new theme.
+            // This is only needed the first time the theme is applied to this fragment view.
+            reInflateViews(fragment);
         }
         itemDecoration.updatePreferenceStyles(
                 controller.generatePreferenceStyles(
                         SettingsUtils.getVisiblePreferences(fragment.getPreferenceScreen())));
         recyclerView.invalidateItemDecorations();
-
-        // Force a re-inflation of all views to ensure they pick up the new
-        // theme.
-        reInflateViews(fragment);
     }
 
     private void applyMainSettingsFragmentDecoration(MainSettings mainSettings) {
