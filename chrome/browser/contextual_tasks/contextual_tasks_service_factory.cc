@@ -28,7 +28,7 @@
 #include "content/public/browser/browser_context.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/tab_strip_context_decorator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
@@ -51,9 +51,8 @@ size_t GetNumberOfActiveTasks(Profile* profile) {
         }
 
         // Check how many tasks are cached in the side panel.
-        if (auto* coordinator =
-                ContextualTasksSidePanelCoordinator::From(browser)) {
-          number_of_active_tasks += coordinator->GetNumberOfActiveTasks();
+        if (auto* controller = ContextualTasksPanelController::From(browser)) {
+          number_of_active_tasks += controller->GetNumberOfActiveTasks();
         }
 
         // Check how many tasks are open in a full tab.

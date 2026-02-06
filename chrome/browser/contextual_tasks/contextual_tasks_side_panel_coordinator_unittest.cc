@@ -246,7 +246,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   // Verify open the side panel with active tab not associated with a task will
   // create a new task.
   EXPECT_CALL(*mock_controller_, CreateTask()).Times(1);
-  coordinator_->Show(false);
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelAlreadyOpen) {
@@ -258,7 +259,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelAlreadyOpen) {
       mock_side_panel_ui_,
       Show(SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks), _, _))
       .Times(0);
-  coordinator_->Show(false);
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {

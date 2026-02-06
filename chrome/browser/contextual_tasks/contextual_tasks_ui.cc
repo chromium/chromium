@@ -23,8 +23,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
@@ -506,12 +506,12 @@ content::WebContents* ContextualTasksUI::GetWebUIWebContents() {
 }
 
 void ContextualTasksUI::CloseSidePanel() {
-  auto* coordinator = GetSidePanelCoordinator();
-  if (!coordinator) {
+  auto* controller = GetPanelController();
+  if (!controller) {
     return;
   }
 
-  coordinator->Close();
+  controller->Close();
 }
 
 void ContextualTasksUI::BindInterface(
@@ -597,8 +597,8 @@ ContextualTasksUI::GetOrCreateContextualSessionHandle() {
 
   // If no valid session exists, maintains context continuity by trying to find
   // one from affiliated tabs or side panel WebContents.
-  auto* coordinator = GetSidePanelCoordinator();
-  if (!coordinator || !task_id_.has_value()) {
+  auto* controller = GetPanelController();
+  if (!controller || !task_id_.has_value()) {
     return nullptr;
   }
 
@@ -607,7 +607,7 @@ ContextualTasksUI::GetOrCreateContextualSessionHandle() {
   UpdateContextualSearchWebContentsHelperForTask(
       contextual_search_service,
       /*browser_window=*/browser_window_interface, contextual_tasks_service_,
-      coordinator, web_contents, task_id_.value());
+      controller, web_contents, task_id_.value());
   return helper->session_handle();
 }
 
@@ -848,8 +848,8 @@ ContextualTasksUI::GetPageRemote() {
   return page_;
 }
 
-contextual_tasks::ContextualTasksSidePanelCoordinator*
-ContextualTasksUI::GetSidePanelCoordinator() {
+contextual_tasks::ContextualTasksPanelController*
+ContextualTasksUI::GetPanelController() {
   if (!web_ui()->GetWebContents()) {
     return nullptr;
   }
@@ -859,7 +859,7 @@ ContextualTasksUI::GetSidePanelCoordinator() {
     return nullptr;
   }
 
-  return contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
+  return contextual_tasks::ContextualTasksPanelController::From(browser);
 }
 
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(

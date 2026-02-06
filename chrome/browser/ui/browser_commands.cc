@@ -2214,13 +2214,13 @@ void CloseTabSearch(Browser* browser) {
 }
 
 void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser) {
-  auto* coordinator =
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
-  CHECK(coordinator);
-  if (coordinator->IsSidePanelOpenForContextualTask()) {
-    coordinator->Close();
+  auto* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser);
+  CHECK(controller);
+  if (controller->IsPanelOpenForContextualTask()) {
+    controller->Close();
   } else {
-    coordinator->Show();
+    controller->Show();
   }
 }
 

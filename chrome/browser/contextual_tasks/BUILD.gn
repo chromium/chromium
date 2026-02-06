@@ -19,6 +19,7 @@ source_set("contextual_tasks") {
     "ai_mode_context_library_converter.h",
     "contextual_tasks_context_service.h",
     "contextual_tasks_context_service_factory.h",
+    "contextual_tasks_panel_controller.h",
     "contextual_tasks_service_factory.h",
     "contextual_tasks_tab_visit_tracker.cc",
     "contextual_tasks_tab_visit_tracker.h",
@@ -38,11 +39,13 @@ source_set("contextual_tasks") {
     ":mojo_bindings",
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
     "//components/passage_embeddings/content",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//content/public/browser",
+    "//third_party/omnibox_proto",
   ]
 }
 

@@ -21,7 +21,7 @@ class ContextualSearchService;
 
 namespace contextual_tasks {
 class ContextualTasksService;
-class ContextualTasksSidePanelCoordinator;
+class ContextualTasksPanelController;
 
 // Finds an existing contextual search session for a given task ID by checking
 // all affiliated tabs and side panel WebContents.
@@ -29,7 +29,7 @@ contextual_search::ContextualSearchSessionHandle* FindSessionForTask(
     const base::Uuid& task_id,
     ContextualTasksService* contextual_tasks_service,
     BrowserWindowInterface* browser_window,
-    ContextualTasksSidePanelCoordinator* side_panel_coordinator = nullptr);
+    ContextualTasksPanelController* panel_controller = nullptr);
 
 // Helper method to set task ID and session handle on the
 // ContextualSearchWebContentsHelper associated with the given `web_contents`.
@@ -40,7 +40,7 @@ void UpdateContextualSearchWebContentsHelperForTask(
     contextual_search::ContextualSearchService* contextual_search_service,
     BrowserWindowInterface* browser_window,
     ContextualTasksService* contextual_tasks_service,
-    ContextualTasksSidePanelCoordinator* side_panel_coordinator,
+    ContextualTasksPanelController* panel_controller,
     content::WebContents* web_contents,
     const base::Uuid& task_id);
 

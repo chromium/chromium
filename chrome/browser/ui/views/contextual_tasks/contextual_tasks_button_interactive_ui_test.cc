@@ -6,8 +6,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -175,9 +175,9 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
   }
 
   content::WebContents* GetSidePanelWebContents() {
-    auto* coordinator =
-        contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
-    return coordinator->GetActiveWebContents();
+    auto* controller =
+        contextual_tasks::ContextualTasksPanelController::From(browser());
+    return controller->GetActiveWebContents();
   }
 
   contextual_tasks::ContextualTasksUiService* GetUiService() {
@@ -262,11 +262,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,
       WaitForShow(kSidePanelElementId),
       CheckResult(
           [&] {
-            auto* coordinator =
-                contextual_tasks::ContextualTasksSidePanelCoordinator::From(
+            auto* controller =
+                contextual_tasks::ContextualTasksPanelController::From(
                     browser());
             std::optional<contextual_tasks::ContextualTask> task =
-                coordinator->GetCurrentTask();
+                controller->GetCurrentTask();
             if (!task) {
               return std::string();
             }
@@ -370,8 +370,7 @@ class ContextualTasksEphemeralButtonInteractiveTest
   // in a contextual task.
   auto SimulateOpeningContextualTaskSidePanel() {
     return Do([&] {
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser())
-          ->Show();
+      contextual_tasks::ContextualTasksPanelController::From(browser())->Show();
     });
   }
 
@@ -379,7 +378,7 @@ class ContextualTasksEphemeralButtonInteractiveTest
   // close button in the contextual task side panel.
   auto SimulateClosingContextualTaskSidePanel() {
     return Do([&] {
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser())
+      contextual_tasks::ContextualTasksPanelController::From(browser())
           ->Close();
     });
   }

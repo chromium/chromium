@@ -18,6 +18,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -305,9 +306,10 @@ ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
 }
 
 // static
-ContextualTasksSidePanelCoordinator* ContextualTasksSidePanelCoordinator::From(
+ContextualTasksPanelController* ContextualTasksPanelController::From(
     BrowserWindowInterface* window) {
-  return Get(window->GetUnownedUserDataHost());
+  return ContextualTasksSidePanelCoordinator::Get(
+      window->GetUnownedUserDataHost());
 }
 
 void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
@@ -373,7 +375,7 @@ void ContextualTasksSidePanelCoordinator::Show(
   UpdateWebContentsForActiveTab();
 
   // Only show the side panel if it's closed.
-  if (!IsSidePanelOpenForContextualTask()) {
+  if (!IsPanelOpenForContextualTask()) {
     if (transition_from_tab) {
       views::View* content =
           BrowserElementsViews::From(browser_window_)
@@ -417,8 +419,7 @@ bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
       SidePanelEntry::PanelType::kToolbar);
 }
 
-bool ContextualTasksSidePanelCoordinator::IsSidePanelOpenForContextualTask()
-    const {
+bool ContextualTasksSidePanelCoordinator::IsPanelOpenForContextualTask() const {
   return side_panel_ui_->IsSidePanelEntryShowing(
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
 }
@@ -545,7 +546,7 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
 
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksSidePanelCoordinator::
-    GetContextualSearchSessionHandleForSidePanel() {
+    GetContextualSearchSessionHandleForPanel() {
   if (!web_view_ || !web_view_->GetWebContents()) {
     return nullptr;
   }
@@ -557,7 +558,7 @@ ContextualTasksSidePanelCoordinator::
 }
 
 std::vector<content::WebContents*>
-ContextualTasksSidePanelCoordinator::GetSidePanelWebContentsList() const {
+ContextualTasksSidePanelCoordinator::GetPanelWebContentsList() const {
   std::vector<content::WebContents*> result;
   for (const auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
     result.push_back(cache_item->web_contents.get());
@@ -641,13 +642,13 @@ void ContextualTasksSidePanelCoordinator::UpdateSidePanelVisibility() {
   bool should_be_open = ShouldBeOpen();
 
   // If state is open and the side panel is closed, open the side panel.
-  if (should_be_open && !IsSidePanelOpenForContextualTask()) {
+  if (should_be_open && !IsPanelOpenForContextualTask()) {
     Unhide();
     return;
   }
 
   // If state is closed and the side panel is open, close the side panel.
-  if (!should_be_open && IsSidePanelOpenForContextualTask()) {
+  if (!should_be_open && IsPanelOpenForContextualTask()) {
     Hide();
     return;
   }
@@ -733,7 +734,7 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
     UpdateOpenState(/*is_open=*/false);
   }
 
-  bool was_side_panel_open = IsSidePanelOpenForContextualTask();
+  bool was_side_panel_open = IsPanelOpenForContextualTask();
   bool web_contents_changed = UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
   // If side panel was previously not open, it could have been opened
@@ -744,7 +745,7 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
     UpdateContextualTaskUI();
   }
 
-  bool is_side_panel_currently_open = IsSidePanelOpenForContextualTask();
+  bool is_side_panel_currently_open = IsPanelOpenForContextualTask();
   if (!was_side_panel_open && is_side_panel_currently_open) {
     // Side panel was previously closed but it is now open due to switching to
     // a tab with an affiliated task.
@@ -915,7 +916,7 @@ void ContextualTasksSidePanelCoordinator::Unhide() {
 void ContextualTasksSidePanelCoordinator::ObserveWebContentsOnActiveTab() {
   CHECK(browser_window_);
 
-  if (!IsSidePanelOpenForContextualTask()) {
+  if (!IsPanelOpenForContextualTask()) {
     Observe(nullptr);
     return;
   }
@@ -937,7 +938,7 @@ void ContextualTasksSidePanelCoordinator::UpdateContextualTaskUI() {
     return;
   }
 
-  if (!IsSidePanelOpenForContextualTask()) {
+  if (!IsPanelOpenForContextualTask()) {
     return;
   }
 
@@ -1020,7 +1021,7 @@ void ContextualTasksSidePanelCoordinator::MaybeInitTabScopedOpenState() {
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
   auto it = tab_scoped_open_state_.find(tab_id);
   if (it == tab_scoped_open_state_.end()) {
-    tab_scoped_open_state_[tab_id] = IsSidePanelOpenForContextualTask();
+    tab_scoped_open_state_[tab_id] = IsPanelOpenForContextualTask();
   }
 }
 
@@ -1074,7 +1075,7 @@ std::pair<std::optional<base::Uuid>,
           contextual_search::ContextualSearchSessionHandle*>
 ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrSidePanel() {
   content::WebContents* web_contents = nullptr;
-  if (IsSidePanelOpenForContextualTask()) {
+  if (IsPanelOpenForContextualTask()) {
     if (web_view_ && web_view_->GetWebContents()) {
       web_contents = web_view_->GetWebContents();
     }

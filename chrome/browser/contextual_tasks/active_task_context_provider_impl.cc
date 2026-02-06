@@ -6,7 +6,7 @@
 
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
@@ -216,10 +216,9 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
       GetTabsFromContext(*context, browser_window_);
 
   // Add auto-suggested tab if chip is showing.
-  auto* coordinator =
-      ContextualTasksSidePanelCoordinator::From(browser_window_);
-  if (coordinator && coordinator->IsSidePanelOpenForContextualTask()) {
-    auto maybe_handle = coordinator->GetAutoSuggestedTabHandle();
+  auto* controller = ContextualTasksPanelController::From(browser_window_);
+  if (controller && controller->IsPanelOpenForContextualTask()) {
+    auto maybe_handle = controller->GetAutoSuggestedTabHandle();
     if (maybe_handle) {
       tabs_to_underline.insert(*maybe_handle);
     }

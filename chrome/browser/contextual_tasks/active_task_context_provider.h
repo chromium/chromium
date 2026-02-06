@@ -50,7 +50,7 @@ class ActiveTaskContextProvider {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Central method called to recompute tab underlines based on the active task.
-  // Called by various external callers (e.g. composebox, side panel coordinator
+  // Called by various external callers (e.g. composebox, panel controller
   // etc). This is also the same method that gets invoked internally by the
   // implementation class in response to various observed events such as tab
   // switch, navigation, context update, tab association update etc.

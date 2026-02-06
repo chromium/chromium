@@ -671,9 +671,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
     base::HistogramTester histogram_tester;
 
     // Open the Contextual Tasks Side Panel.
-    auto* coordinator =
-        contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser());
-    coordinator->Show();
+    auto* controller =
+        contextual_tasks::ContextualTasksPanelController::From(browser());
+    controller->Show();
 
     histogram_tester.ExpectUniqueSample(
         "ContextualCueing.NudgeInteraction",

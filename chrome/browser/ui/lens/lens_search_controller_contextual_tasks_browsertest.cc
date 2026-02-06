@@ -5,7 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -94,11 +94,9 @@ class ContextualTasksLensInteractionBrowserTestBase
   }
 
   bool IsContextualTasksSidePanelOpen() {
-    auto* contextual_tasks_coordinator =
-        contextual_tasks::ContextualTasksSidePanelCoordinator::From(
-            GetBrowserWindowInterface());
-    return contextual_tasks_coordinator &&
-           contextual_tasks_coordinator->IsSidePanelOpenForContextualTask();
+    auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+        GetBrowserWindowInterface());
+    return controller && controller->IsPanelOpenForContextualTask();
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot

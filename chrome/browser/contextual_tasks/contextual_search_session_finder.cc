@@ -5,7 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -21,14 +21,14 @@ contextual_search::ContextualSearchSessionHandle* FindSessionForTask(
     const base::Uuid& task_id,
     ContextualTasksService* contextual_tasks_service,
     BrowserWindowInterface* browser_window,
-    ContextualTasksSidePanelCoordinator* side_panel_coordinator) {
+    ContextualTasksPanelController* panel_controller) {
   if (!contextual_tasks_service) {
     return nullptr;
   }
 
-  if (side_panel_coordinator) {
+  if (panel_controller) {
     for (content::WebContents* web_contents :
-         side_panel_coordinator->GetSidePanelWebContentsList()) {
+         panel_controller->GetPanelWebContentsList()) {
       if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
               web_contents)) {
         auto* existing_session = helper->GetSessionForTask(task_id);
@@ -65,7 +65,7 @@ void UpdateContextualSearchWebContentsHelperForTask(
     contextual_search::ContextualSearchService* contextual_search_service,
     BrowserWindowInterface* browser_window,
     ContextualTasksService* contextual_tasks_service,
-    ContextualTasksSidePanelCoordinator* side_panel_coordinator,
+    ContextualTasksPanelController* panel_controller,
     content::WebContents* web_contents,
     const base::Uuid& task_id) {
   if (!contextual_search_service || !browser_window || !web_contents) {
@@ -79,8 +79,7 @@ void UpdateContextualSearchWebContentsHelperForTask(
   // and session handle.
   contextual_search::ContextualSearchSessionHandle* existing_session =
       contextual_tasks::FindSessionForTask(task_id, contextual_tasks_service,
-                                           browser_window,
-                                           side_panel_coordinator);
+                                           browser_window, panel_controller);
 
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;

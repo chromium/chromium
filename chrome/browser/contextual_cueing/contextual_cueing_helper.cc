@@ -362,10 +362,9 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if !BUILDFLAG(IS_ANDROID)
-  auto* coordinator =
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(
-          browser_window_interface);
-  if (coordinator && coordinator->IsSidePanelOpenForContextualTask()) {
+  auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+      browser_window_interface);
+  if (controller && controller->IsPanelOpenForContextualTask()) {
     recorder->set_nudge_decision(
         NudgeDecision::kNudgeNotShownContextualTasksSidePanelForTabShowing);
     return true;

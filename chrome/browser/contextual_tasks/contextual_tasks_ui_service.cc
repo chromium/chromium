@@ -21,8 +21,8 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -276,10 +276,10 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     BrowserWindow* window = BrowserWindow::FindBrowserWindowWithWebContents(
         source_tab->GetContents());
     if (window) {
-      auto* coordinator = ContextualTasksSidePanelCoordinator::From(
+      auto* controller = ContextualTasksPanelController::From(
           window->AsBrowserView()->browser());
-      coordinator->Show();
-      contextual_task_web_contents = coordinator->GetActiveWebContents();
+      controller->Show();
+      contextual_task_web_contents = controller->GetActiveWebContents();
     }
   } else if (!is_to_new_tab) {
     source_tab->GetContents()->GetController().LoadURLWithParams(
@@ -497,18 +497,18 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       contextual_task_contents.get();
 
   // Transfer the contextual task contents into the side panel cache.
-  ContextualTasksSidePanelCoordinator::From(browser.get())
+  ContextualTasksPanelController::From(browser.get())
       ->TransferWebContentsFromTab(task_id,
                                    std::move(contextual_task_contents));
 
   // Open the side panel.
-  ContextualTasksSidePanelCoordinator::From(browser.get())
+  ContextualTasksPanelController::From(browser.get())
       ->Show(/*transition_from_tab=*/true);
 
   // Notify the WebUI to adjust itself e.g. hide the toolbar.
   // `contextual_task_contents_ptr` is guaranteed to be alive here, since
   // the ownership of `contextual_task_contents` has been moved to
-  // ContextualTasksSidePanelCoordinator.
+  // the ContextualTasksPanelController implementation's instance.
   if (auto* web_ui_interface =
           GetWebUiInterface(contextual_task_contents_ptr)) {
     web_ui_interface->OnSidePanelStateChanged();
@@ -921,16 +921,15 @@ void ContextualTasksUiService::OnTaskChanged(
     return;
   }
 
-  ContextualTasksSidePanelCoordinator* side_panel_coordinator =
-      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
+  ContextualTasksPanelController* controller =
+      ContextualTasksPanelController::From(browser_window_interface);
 
   if (is_shown_in_tab) {
     auto* contextual_search_service =
         ContextualSearchServiceFactory::GetForProfile(profile_.get());
     UpdateContextualSearchWebContentsHelperForTask(
         contextual_search_service, browser_window_interface,
-        contextual_tasks_service_, side_panel_coordinator, web_contents,
-        task_id);
+        contextual_tasks_service_, controller, web_contents, task_id);
 
     auto* active_task_context_provider =
         ActiveTaskContextProvider::From(browser_window_interface);
@@ -970,7 +969,7 @@ void ContextualTasksUiService::OnTaskChanged(
       contextual_tasks_service_->AssociateTabWithTask(new_task_id, active_id);
     }
 
-    side_panel_coordinator->OnTaskChanged(web_contents, new_task_id);
+    controller->OnTaskChanged(web_contents, new_task_id);
   }
 }
 
@@ -978,9 +977,9 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
     const base::Uuid& task_id,
     BrowserWindowInterface* browser,
     const GURL& inner_frame_url) {
-  auto* coordinator =
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
-  CHECK(coordinator);
+  auto* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser);
+  CHECK(controller);
 
   // If the side panel wasn't showing an AI page, don't embed the page in the
   // webui - navigate directly to the link instead.
@@ -995,7 +994,7 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
 
   } else {
     std::unique_ptr<content::WebContents> web_contents =
-        coordinator->DetachWebContentsForTask(task_id);
+        controller->DetachWebContentsForTask(task_id);
     if (!web_contents) {
       return;
     }
@@ -1012,7 +1011,7 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
     }
   }
 
-  coordinator->Close();
+  controller->Close();
 
   ContextualTasksService* task_service =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
@@ -1029,21 +1028,21 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
         session_handle) {
   CHECK(contextual_tasks_service_);
 
-  // Get the coordinator for the current window.
-  auto* coordinator =
-      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
-  auto* panel_contents = coordinator->GetActiveWebContents();
+  // Get the controller for the current window.
+  auto* controller =
+      ContextualTasksPanelController::From(browser_window_interface);
+  auto* panel_contents = controller->GetActiveWebContents();
 
   // Create a task for the URL if the side panel wasn't already showing a task.
-  if (!panel_contents || !coordinator->IsSidePanelOpenForContextualTask()) {
+  if (!panel_contents || !controller->IsPanelOpenForContextualTask()) {
     ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
     task_id_to_creation_url_[task.GetTaskId()] = url;
     AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
-    coordinator->Show();
+    controller->Show();
 
     // Associate the web contents with the task and set the session handle if
     // provided.
-    content::WebContents* web_contents = coordinator->GetActiveWebContents();
+    content::WebContents* web_contents = controller->GetActiveWebContents();
     AssociateWebContentsToTask(web_contents, task.GetTaskId());
     if (session_handle) {
       ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents)
@@ -1117,13 +1116,13 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
 void ContextualTasksUiService::OnLensOverlayStateChanged(
     BrowserWindowInterface* browser_window_interface,
     bool is_showing) {
-  auto* coordinator =
-      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
-  if (!coordinator || !coordinator->IsSidePanelOpenForContextualTask()) {
+  auto* controller =
+      ContextualTasksPanelController::From(browser_window_interface);
+  if (!controller || !controller->IsPanelOpenForContextualTask()) {
     return;
   }
 
-  auto* panel_contents = coordinator->GetActiveWebContents();
+  auto* panel_contents = controller->GetActiveWebContents();
   if (!panel_contents) {
     return;
   }

@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 
@@ -8,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -51,10 +53,12 @@ class ContextualTasksUiService;
 class ContextualTasksWebView;
 class ActiveTaskContextProvider;
 
-class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
-                                            public TabListInterfaceObserver,
-                                            public SidePanelEntryObserver,
-                                            content::WebContentsObserver {
+class ContextualTasksSidePanelCoordinator
+    : public ContextualTasksPanelController,
+      public TabStripModelObserver,
+      public TabListInterfaceObserver,
+      public SidePanelEntryObserver,
+      content::WebContentsObserver {
  public:
   // A data structure to hold the cache and state of the side panel per thread.
   struct WebContentsCacheItem {
@@ -89,62 +93,36 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
       const ContextualTasksSidePanelCoordinator&) = delete;
   ~ContextualTasksSidePanelCoordinator() override;
 
-  static ContextualTasksSidePanelCoordinator* From(
-      BrowserWindowInterface* window);
-
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
-  // Show the side panel. If |transition_from_tab| is true, trigger the side
-  // panel content to animate from the active tab content's bounds.
-  void Show(bool transition_from_tab = false,
-            omnibox::ChromeAimEntryPoint entry_point =
-                omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
-
-  // Close the side panel.
-  void Close();
+  // ContextualTasksPanelController overrides:
+  void Show(bool transition_from_tab,
+            omnibox::ChromeAimEntryPoint entry_point) override;
+  void Close() override;
+  bool IsPanelOpenForContextualTask() const override;
+  std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() override;
+  void OnTaskChanged(content::WebContents* web_contents,
+                     base::Uuid task_id) override;
+  content::WebContents* GetActiveWebContents() override;
+  std::vector<content::WebContents*> GetPanelWebContentsList() const override;
+  std::unique_ptr<content::WebContents> DetachWebContentsForTask(
+      const base::Uuid& task_id) override;
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSearchSessionHandleForPanel() override;
+  void TransferWebContentsFromTab(
+      const base::Uuid& task_id,
+      std::unique_ptr<content::WebContents> web_contents) override;
+  std::optional<ContextualTask> GetCurrentTask() override;
+  size_t GetNumberOfActiveTasks() const override;
 
   // Check if the side panel is currently showing
   bool IsSidePanelOpen();
-
-  // Check if the side panel is currently opening for ContextualTask as other
-  // feature might also show side panel.
-  bool IsSidePanelOpenForContextualTask() const;
-
-  // Transfer WebContents from tab to side panel.
-  // This is called before a tab is converted to the side panel.
-  void TransferWebContentsFromTab(
-      const base::Uuid& task_id,
-      std::unique_ptr<content::WebContents> web_contents);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
-
-  content::WebContents* GetActiveWebContents();
-
-  // Detaches the WebContents for the given task and returns it.
-  std::unique_ptr<content::WebContents> DetachWebContentsForTask(
-      const base::Uuid& task_id);
-
-  // Called when the current task is changed to a new task or an existing task.
-  // In both cases, the cache needs to be updated.
-  void OnTaskChanged(content::WebContents* web_contents, base::Uuid task_id);
-
-  // Returns the number of active tasks tracked by `this`.
-  size_t GetNumberOfActiveTasks() const;
-
-  // Helper method to get the session handle from the side panel's WebUI.
-  contextual_search::ContextualSearchSessionHandle*
-  GetContextualSearchSessionHandleForSidePanel();
-
-  // Returns a list of all cached side panel WebContents.
-  std::vector<content::WebContents*> GetSidePanelWebContentsList() const;
-
-  // Returns the tab handle of the auto suggested tab if the auto suggested tab
-  // chip is shown in the compose box.
-  std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle();
 
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;
@@ -153,9 +131,6 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Get the WebContentsCacheItem for web_contents, return nullptr if not found.
   ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
   GetWebContentsCacheItemForWebContents(content::WebContents* web_contents);
-
-  // Get the task associated with the active tab.
-  std::optional<ContextualTask> GetCurrentTask();
 
   void SetSidePanelIdNotToOverrideForTesting(SidePanelEntry::Id side_panel_id);
 
