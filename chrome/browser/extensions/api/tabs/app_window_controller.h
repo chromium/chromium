@@ -55,7 +55,6 @@ class AppWindowController : public WindowController {
   bool OpenOptionsPage(const Extension* extension,
                        const GURL& url,
                        bool open_in_tab) override;
-  bool SupportsTabs() override;
 
  private:
   raw_ptr<AppWindow> app_window_;  // Owns us.

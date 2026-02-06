@@ -2287,7 +2287,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   }
 
   // tabs_internal::GetTabById may return a null window for prerender tabs.
-  if (!window || !window->SupportsTabs()) {
+  if (!window || !ExtensionTabUtil::BrowserSupportsTabs(
+                     window->GetBrowserWindowInterface())) {
     return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
   }
 

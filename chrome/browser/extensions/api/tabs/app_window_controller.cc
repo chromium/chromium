@@ -92,8 +92,4 @@ bool AppWindowController::OpenOptionsPage(const Extension* extension,
   return false;
 }
 
-bool AppWindowController::SupportsTabs() {
-  return false;
-}
-
 }  // namespace extensions

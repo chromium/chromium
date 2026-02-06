@@ -71,7 +71,6 @@ class BrowserExtensionWindowController : public WindowController {
   bool OpenOptionsPage(const Extension* extension,
                        const GURL& url,
                        bool open_in_tab) override;
-  bool SupportsTabs() override;
 
  private:
   const raw_ref<BrowserWindowInterface> browser_;

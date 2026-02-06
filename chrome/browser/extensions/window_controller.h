@@ -165,10 +165,6 @@ class WindowController {
                                const GURL& url,
                                bool open_in_tab) = 0;
 
-  // Returns true if the Browser can report tabs to extensions. Example of
-  // Browsers which don't support tabs include apps and devtools.
-  virtual bool SupportsTabs() = 0;
-
   ui::BaseWindow* window() { return window_.get(); }
   Profile* profile() { return profile_.get(); }
 

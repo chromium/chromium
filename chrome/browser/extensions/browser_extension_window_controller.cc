@@ -324,8 +324,4 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
   return true;
 }
 
-bool BrowserExtensionWindowController::SupportsTabs() {
-  return window_type_ != api::tabs::WindowType::kDevtools;
-}
-
 }  // namespace extensions
