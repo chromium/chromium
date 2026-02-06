@@ -13,12 +13,13 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {installMock} from '../test_support.js';
 
 const AIM_THREADS_HISTORY_LABEL = 'AI Mode history';
+const DESKTOP_CHROME_NTP_THREADS_SOURCE = 'chrome.crn.rb';
 const DESKTOP_CHROME_NTP_THREADS_ENTRY_POINT = 129;
 const AIM_DISPLAY_MODE = 50;
 const AIM_THREADS_VISIBILITY_MODE = 3;
 const AIM_THREADS_URL = `https://www.google.com/search?udm=${
     AIM_DISPLAY_MODE}&aep=${DESKTOP_CHROME_NTP_THREADS_ENTRY_POINT}&atvm=${
-    AIM_THREADS_VISIBILITY_MODE}`;
+    AIM_THREADS_VISIBILITY_MODE}&source=${DESKTOP_CHROME_NTP_THREADS_SOURCE}`;
 
 suite('NewTabPageThreadsRailTest', () => {
   let threadsRailElement: ThreadsRailElement;
