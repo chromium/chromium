@@ -97,6 +97,7 @@ public class AutocompleteMatch {
     private final String mAdditionalText;
     private final @Nullable String mTabGroupUuid;
     private final @Nullable String mAssociatedKeyword;
+    private final boolean mIsRefineable;
     private @Nullable SuggestTemplateInfo mSuggestTemplate;
 
     public AutocompleteMatch(
@@ -166,6 +167,13 @@ public class AutocompleteMatch {
         mAdditionalText = additionalText;
         mTabGroupUuid = tabGroupUuid;
         mAssociatedKeyword = associatedKeyword;
+        mIsRefineable =
+                !mHasTabMatch
+                        && mType != OmniboxSuggestionType.URL_WHAT_YOU_TYPED
+                        && mType != OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED
+                        && mType != OmniboxSuggestionType.OPEN_TAB
+                        && mType != OmniboxSuggestionType.TILE_SUGGESTION
+                        && !mSubtypes.contains(/* SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT */ 886);
         if (serializedSuggestTemplate != null) {
             try {
                 mSuggestTemplate = SuggestTemplateInfo.parseFrom(serializedSuggestTemplate);
@@ -525,6 +533,10 @@ public class AutocompleteMatch {
 
     public @Nullable String getAssociatedKeyword() {
         return mAssociatedKeyword;
+    }
+
+    public boolean isRefineable() {
+        return mIsRefineable;
     }
 
     /**
