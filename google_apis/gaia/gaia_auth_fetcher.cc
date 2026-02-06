@@ -378,26 +378,29 @@ void GaiaAuthFetcher::StartRevokeOAuth2Token(const std::string& auth_token) {
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchange(
     const std::string& auth_code,
-    const std::string& user_agent_full_version_list,
-    const std::string& binding_registration_token) {
+    const std::string& binding_registration_token,
+    const UserAgentHeadersParam& user_agent_headers) {
   StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
-      auth_code, /*device_id=*/std::string(), user_agent_full_version_list,
-      binding_registration_token);
+      auth_code, /*device_id=*/std::string(), binding_registration_token,
+      user_agent_headers);
 }
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
     const std::string& auth_code,
     const std::string& device_id,
-    const std::string& user_agent_full_version_list,
-    const std::string& binding_registration_token) {
+    const std::string& binding_registration_token,
+    const UserAgentHeadersParam& user_agent_headers) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   VLOG(1) << "Starting OAuth token pair fetch";
 
   net::HttpRequestHeaders headers;
-  if (!user_agent_full_version_list.empty()) {
+  if (!user_agent_headers.full_version_list.empty()) {
     headers.SetHeader("Sec-CH-UA-Full-Version-List",
-                      user_agent_full_version_list);
+                      user_agent_headers.full_version_list);
+  }
+  if (!user_agent_headers.platform.empty()) {
+    headers.SetHeader("Sec-CH-UA-Platform", user_agent_headers.platform);
   }
 
   request_body_ =

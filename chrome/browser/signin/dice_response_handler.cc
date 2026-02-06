@@ -40,6 +40,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/http/structured_headers.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 const int kDiceTokenFetchTimeoutSeconds = 10;
@@ -92,6 +93,15 @@ void RecordDiceResponseHeader(DiceResponseHeader header) {
 void RecordDiceFetchTokenResult(DiceTokenFetchResult result) {
   base::UmaHistogramEnumeration(kDiceTokenFetchResultHistogram, result,
                                 kDiceTokenFetchResultCount);
+}
+
+// Creates a serialized string header value out of the input type, using
+// structured headers.
+template <typename T>
+std::string SerializeHeaderString(const T& value) {
+  return net::structured_headers::SerializeItem(
+             net::structured_headers::Item(value))
+      .value_or(std::string());
 }
 
 }  // namespace
@@ -180,12 +190,14 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
   VLOG(1) << "Start fetching token for account: " << email_;
   gaia_auth_fetcher_ =
       signin_client_->CreateGaiaAuthFetcher(this, gaia::GaiaSource::kChrome);
+  blink::UserAgentMetadata ua_metadata =
+      embedder_support::GetUserAgentMetadata();
   // `binding_registration_token_` is empty if the binding key was not
   // generated.
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(
-      authorization_code_,
-      embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList(),
-      binding_registration_token_);
+      authorization_code_, binding_registration_token_,
+      {.full_version_list = ua_metadata.SerializeBrandFullVersionList(),
+       .platform = SerializeHeaderString(ua_metadata.platform)});
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),
       base::Seconds(kDiceTokenFetchTimeoutSeconds));

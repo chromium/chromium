@@ -92,6 +92,16 @@ class SharedURLLoaderFactory;
 
 class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
  public:
+  // Contains user agent headers that might be shared in requests to Google
+  // Accounts APIs.
+  //
+  // These strings must be "header-ready", i.e. already serialized according to
+  // Structured Headers rules if applicable.
+  struct UserAgentHeadersParam {
+    std::string full_version_list;
+    std::string platform;
+  };
+
   // This will later be hidden behind an auth service which caches tokens.
   GaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
@@ -119,8 +129,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   // called on the consumer on the original thread.
   void StartAuthCodeForOAuth2TokenExchange(
       const std::string& auth_code,
-      const std::string& user_agent_full_version_list = std::string(),
-      const std::string& binding_registration_token = std::string());
+      const std::string& binding_registration_token = std::string(),
+      const UserAgentHeadersParam& user_agent_headers = {});
 
   // Start a request to exchange the authorization code for an OAuthLogin-scoped
   // oauth2 token.
@@ -135,8 +145,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   void StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
       const std::string& auth_code,
       const std::string& device_id,
-      const std::string& user_agent_full_version_list = std::string(),
-      const std::string& binding_registration_token = std::string());
+      const std::string& binding_registration_token = std::string(),
+      const UserAgentHeadersParam& user_agent_headers = {});
 
   // Starts a request to get the cookie for list of accounts.
   void StartOAuthMultilogin(

@@ -370,12 +370,19 @@ std::unique_ptr<HttpResponse> HandleOAuth2TokenExchangeURL(
   if (request.content.find(kBoundTokenRegistrationJwt) != std::string::npos) {
     response.Set("refresh_token_type", "bound_to_key");
     std::optional<std::string> version_header_value;
+    std::optional<std::string> platform_header_value;
     if (auto it = request.headers.find("Sec-CH-UA-Full-Version-List");
         it != request.headers.end()) {
       version_header_value = it->second;
     }
-    EXPECT_EQ(version_header_value, embedder_support::GetUserAgentMetadata()
-                                        .SerializeBrandFullVersionList());
+    if (auto it = request.headers.find("Sec-CH-UA-Platform");
+        it != request.headers.end()) {
+      platform_header_value = it->second;
+    }
+    auto ua_metadata = embedder_support::GetUserAgentMetadata();
+    EXPECT_EQ(version_header_value,
+              ua_metadata.SerializeBrandFullVersionList());
+    EXPECT_EQ(platform_header_value, "\"" + ua_metadata.platform + "\"");
   }
 
   http_response->set_content(*base::WriteJson(response));
