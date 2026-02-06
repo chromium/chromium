@@ -45,6 +45,11 @@ class CONTENT_EXPORT SmartCardEmulationHandler
    public:
     explicit PendingRequestImpl(CallbackType cb) : callback_(std::move(cb)) {}
 
+    PendingRequestImpl(PendingRequestImpl&&) = default;
+    PendingRequestImpl& operator=(PendingRequestImpl&&) = default;
+
+    virtual ~PendingRequestImpl() = default;
+
     void ReportError(device::mojom::SmartCardError error) {
       std::move(callback_).Run(ResultType::NewError(error));
     }
@@ -67,9 +72,24 @@ class CONTENT_EXPORT SmartCardEmulationHandler
       device::mojom::SmartCardContext::GetStatusChangeCallback,
       device::mojom::SmartCardStatusChangeResult>;
 
-  using PendingConnect =
-      PendingRequestImpl<device::mojom::SmartCardContext::ConnectCallback,
-                         device::mojom::SmartCardConnectResult>;
+  class PendingConnect : public PendingRequestImpl<
+                             device::mojom::SmartCardContext::ConnectCallback,
+                             device::mojom::SmartCardConnectResult> {
+   public:
+    PendingConnect(
+        device::mojom::SmartCardContext::ConnectCallback callback,
+        mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher);
+    ~PendingConnect() override;
+    PendingConnect(PendingConnect&&);
+
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+    TakeWatcher() {
+      return std::move(watcher_);
+    }
+
+   private:
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher_;
+  };
 
   // Handles Cancel, Disconnect, SetAttrib, EndTransaction.
   using PendingPlainResult = PendingRequestImpl<

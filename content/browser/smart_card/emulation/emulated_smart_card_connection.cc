@@ -14,8 +14,14 @@ using device::mojom::SmartCardError;
 
 EmulatedSmartCardConnection::EmulatedSmartCardConnection(
     base::WeakPtr<SmartCardEmulationManager> manager,
-    const uint32_t handle)
-    : manager_(std::move(manager)), handle_(handle) {}
+    const uint32_t handle,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher)
+    : manager_(std::move(manager)), handle_(handle) {
+  if (watcher) {
+    watcher_remote_.Bind(std::move(watcher));
+  }
+  NotifyWatcher();
+}
 
 EmulatedSmartCardConnection::~EmulatedSmartCardConnection() = default;
 
@@ -29,6 +35,7 @@ void EmulatedSmartCardConnection::Disconnect(
         device::mojom::SmartCardSuccess::kOk));
     return;
   }
+  NotifyWatcher();
   manager_->OnDisconnect(handle_, disposition, std::move(callback));
 }
 
@@ -41,6 +48,7 @@ void EmulatedSmartCardConnection::Transmit(
         SmartCardError::kServiceStopped));
     return;
   }
+  NotifyWatcher();
   manager_->OnTransmit(handle_, protocol, data, std::move(callback));
 }
 
@@ -52,6 +60,7 @@ void EmulatedSmartCardConnection::Control(uint32_t control_code,
         SmartCardError::kServiceStopped));
     return;
   }
+  NotifyWatcher();
   manager_->OnControl(handle_, control_code, data, std::move(callback));
 }
 
@@ -62,6 +71,7 @@ void EmulatedSmartCardConnection::GetAttrib(uint32_t id,
         SmartCardError::kServiceStopped));
     return;
   }
+  NotifyWatcher();
   manager_->OnGetAttrib(handle_, id, std::move(callback));
 }
 
@@ -73,6 +83,7 @@ void EmulatedSmartCardConnection::SetAttrib(uint32_t id,
         SmartCardError::kServiceStopped));
     return;
   }
+  NotifyWatcher();
   manager_->OnSetAttrib(handle_, id, data, std::move(callback));
 }
 
@@ -82,6 +93,7 @@ void EmulatedSmartCardConnection::Status(StatusCallback callback) {
         SmartCardError::kServiceStopped));
     return;
   }
+  NotifyWatcher();
   manager_->OnStatus(handle_, std::move(callback));
 }
 
@@ -92,7 +104,14 @@ void EmulatedSmartCardConnection::BeginTransaction(
         SmartCardError::kServiceStopped));
     return;
   }
+  NotifyWatcher();
   manager_->OnBeginTransaction(handle_, std::move(callback));
+}
+
+void EmulatedSmartCardConnection::NotifyWatcher() {
+  if (watcher_remote_.is_bound()) {
+    watcher_remote_->NotifyConnectionUsed();
+  }
 }
 
 }  // namespace content

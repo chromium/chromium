@@ -3422,7 +3422,8 @@ test("content_unittests") {
   }
 
   if (enable_smart_card) {
-    sources += [ "../browser/smart_card/emulation/emulated_smart_card_context_factory_unittest.cc" ]
+    sources +=
+        [ "../browser/smart_card/emulation/smart_card_emulation_unittest.cc" ]
     deps += [ "//content/browser/smart_card/emulation" ]
   }
 

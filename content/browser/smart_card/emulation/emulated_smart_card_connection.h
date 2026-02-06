@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
 
 namespace content {
@@ -20,8 +21,10 @@ class SmartCardEmulationManager;
 // Represents an active connection to a specific emulated smart card.
 class EmulatedSmartCardConnection : public device::mojom::SmartCardConnection {
  public:
-  EmulatedSmartCardConnection(base::WeakPtr<SmartCardEmulationManager> manager,
-                              const uint32_t handle);
+  EmulatedSmartCardConnection(
+      base::WeakPtr<SmartCardEmulationManager> manager,
+      const uint32_t handle,
+      mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher);
 
   ~EmulatedSmartCardConnection() override;
 
@@ -50,8 +53,11 @@ class EmulatedSmartCardConnection : public device::mojom::SmartCardConnection {
   void BeginTransaction(BeginTransactionCallback callback) override;
 
  private:
+  void NotifyWatcher();
+
   base::WeakPtr<SmartCardEmulationManager> manager_;
   const uint32_t handle_;
+  mojo::Remote<device::mojom::SmartCardConnectionWatcher> watcher_remote_;
 };
 
 }  // namespace content

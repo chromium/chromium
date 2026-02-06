@@ -433,6 +433,15 @@ DispatchResponse SmartCardEmulationHandler::Disable() {
   return DispatchResponse::Success();
 }
 
+SmartCardEmulationHandler::PendingConnect::PendingConnect(
+    device::mojom::SmartCardContext::ConnectCallback callback,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher)
+    : PendingRequestImpl(std::move(callback)), watcher_(std::move(watcher)) {}
+
+SmartCardEmulationHandler::PendingConnect::~PendingConnect() = default;
+SmartCardEmulationHandler::PendingConnect::PendingConnect(PendingConnect&&) =
+    default;
+
 void SmartCardEmulationHandler::AddPendingRequest(const std::string& request_id,
                                                   PendingRequest request) {
   pending_requests_.emplace(request_id, std::move(request));
@@ -499,8 +508,11 @@ base::expected<void, std::string> SmartCardEmulationHandler::CompleteConnect(
   auto success_data = device::mojom::SmartCardConnectSuccess::New();
   success_data->active_protocol = active_protocol;
 
+  mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher =
+      req.TakeWatcher();
+
   auto connection_impl = std::make_unique<EmulatedSmartCardConnection>(
-      weak_ptr_factory_.GetWeakPtr(), handle);
+      weak_ptr_factory_.GetWeakPtr(), handle, std::move(watcher));
 
   mojo::PendingRemote<device::mojom::SmartCardConnection> connection_remote;
 
@@ -773,7 +785,8 @@ void SmartCardEmulationHandler::OnConnect(
     device::mojom::SmartCardContext::ConnectCallback callback) {
   std::string request_id = GenerateRequestId();
 
-  AddPendingRequest(request_id, PendingConnect(std::move(callback)));
+  AddPendingRequest(request_id,
+                    PendingConnect(std::move(callback), std::move(watcher)));
 
   frontend_->ConnectRequested(
       request_id, context_id, reader, ToProtocolShareMode(share_mode),
