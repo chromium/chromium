@@ -612,6 +612,7 @@
 #define IDC_OMNIBOX_CONTEXT_CANVAS                            54014
 #define IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO                    54015
 #define IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING                54016
+#define IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR                 54017
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

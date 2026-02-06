@@ -31,6 +31,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "back_arrow_touch.icon",
     "backspace.icon",
     "battery_saver_refresh.icon",
+    "bolt.icon",
     "bookmark_all_tabs_chrome_refresh.icon",
     "bookmarkbar_overflow_refresh.icon",
     "bookmarks_lists_menu.icon",

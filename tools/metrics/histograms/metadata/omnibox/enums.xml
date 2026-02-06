@@ -132,6 +132,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Canvas"/>
   <int value="6" label="AutoModel"/>
   <int value="7" label="ThinkingModel"/>
+  <int value="8" label="RegularModel"/>
 </enum>
 
 <!-- LINT.ThenChange(chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
