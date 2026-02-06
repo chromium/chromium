@@ -8978,11 +8978,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "tab-strip-incognito-migration",
-    "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "tab-switcher-drag-drop",
     "owners": [
       "desiatyrikov@google.com",
