@@ -17,13 +17,13 @@ class OriginChecker {
   OriginChecker();
   ~OriginChecker();
 
-  // Returns true iff navigation to `url` is allowed, either due to
-  // Same-Origin-Policy or by a previous call to `AllowNavigation`.
+  // Returns true iff navigation to `destination_origin` is allowed, either due
+  // to Same-Origin-Policy or by a previous call to `AllowNavigation`.
   //
   // Must not be called if `actor::IsNavigationGatingEnabled()` returns false.
   bool IsNavigationAllowed(
       base::optional_ref<const url::Origin> initiator_origin,
-      const GURL& url) const;
+      const url::Origin& destination_origin) const;
 
   // Returns true iff navigation to or interaction with `origin` has been
   // allowed (via a previous call to `AllowNavigationTo`) with

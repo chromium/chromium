@@ -11,20 +11,20 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "net/base/schemeful_site.h"
+#include "url/origin.h"
 
 namespace actor {
 
 namespace {
 // Helper to determine if `reference_origin` being allowlisted allows navigation
-// to `navigation_url`. See note on `kGlicNavigationGatingUseSiteNotOrigin`.
+// to `destination_origin`. See note on `kGlicNavigationGatingUseSiteNotOrigin`.
 bool IsSameForNewOriginNavigationGating(const url::Origin& reference_origin,
-                                        const GURL& navigation_url) {
+                                        const url::Origin& destination_origin) {
   if (kGlicNavigationGatingUseSiteNotOrigin.Get()) {
-    return net::SchemefulSite::IsSameSite(reference_origin.GetURL(),
-                                          navigation_url);
+    return net::SchemefulSite::IsSameSite(reference_origin, destination_origin);
   }
 
-  return reference_origin.IsSameOriginWith(navigation_url);
+  return reference_origin.IsSameOriginWith(destination_origin);
 }
 }  // namespace
 
@@ -33,16 +33,17 @@ OriginChecker::~OriginChecker() = default;
 
 bool OriginChecker::IsNavigationAllowed(
     base::optional_ref<const url::Origin> initiator_origin,
-    const GURL& url) const {
+    const url::Origin& destination_origin) const {
   CHECK(IsNavigationGatingEnabled());
 
-  return (initiator_origin &&
-          IsSameForNewOriginNavigationGating(*initiator_origin, url)) ||
-         std::ranges::any_of(
-             allowed_navigation_origins_, [&](const auto& pair) {
-               const url::Origin& origin = pair.first;
-               return IsSameForNewOriginNavigationGating(origin, url);
-             });
+  return (initiator_origin && IsSameForNewOriginNavigationGating(
+                                  *initiator_origin, destination_origin)) ||
+         std::ranges::any_of(allowed_navigation_origins_,
+                             [&](const auto& pair) {
+                               const url::Origin& origin = pair.first;
+                               return IsSameForNewOriginNavigationGating(
+                                   origin, destination_origin);
+                             });
 }
 
 bool OriginChecker::IsNavigationConfirmedByUser(

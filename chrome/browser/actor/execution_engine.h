@@ -296,7 +296,7 @@ class ExecutionEngine : public ToolDelegate {
 
   void LogNavigationGating(
       base::optional_ref<const url::Origin> initiator_origin,
-      const GURL& navigation_url,
+      const url::Origin& navigation_origin,
       bool applied_gate) const;
 
   // Returns the highest-priority navigation gating decision. Prioritizes
@@ -312,7 +312,7 @@ class ExecutionEngine : public ToolDelegate {
       NavigationDecisionCallback callback);
   void OnNavigationSensitiveUrlListChecked(
       base::optional_ref<const url::Origin> initiator_origin,
-      const GURL navigation_url,
+      const url::Origin& navigation_origin,
       bool skip_prompt,
       base::ScopedUmaHistogramTimer timer,
       NavigationDecisionCallback callback,

@@ -267,6 +267,8 @@ ExecutionEngine::ShouldDeferNavigation(
   base::ScopedUmaHistogramTimer timer(
       "Actor.NavigationGating.TimeElapsedForGating2");
 
+  // Note: `DetermineGatingDecision` operates on GURLs, but `origin_checker_`
+  // operates on Origins only.
   const GatingDecision decision = DetermineGatingDecision(
       /*source_url=*/GetPrimaryMainFrame(navigation_handle)
           ->GetLastCommittedURL(),
@@ -278,12 +280,14 @@ ExecutionEngine::ShouldDeferNavigation(
     case GatingDecision::kAllowByStaticList:
       LogNavigationGating(
           /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
-          navigation_handle.GetURL(), /*applied_gate=*/false);
+          url::Origin::Create(navigation_handle.GetURL()),
+          /*applied_gate=*/false);
       return content::NavigationThrottle::PROCEED;
     case GatingDecision::kBlockByStaticList:
       LogNavigationGating(
           /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
-          navigation_handle.GetURL(), /*applied_gate=*/true);
+          url::Origin::Create(navigation_handle.GetURL()),
+          /*applied_gate=*/true);
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     case GatingDecision::kNeedsAsyncCheck: {
       bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
@@ -302,12 +306,11 @@ ExecutionEngine::ShouldDeferNavigation(
 
 void ExecutionEngine::LogNavigationGating(
     base::optional_ref<const url::Origin> initiator_origin,
-    const GURL& navigation_url,
+    const url::Origin& navigation_origin,
     bool applied_gate) const {
   UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.AppliedGate", applied_gate);
 
   if (initiator_origin) {
-    url::Origin navigation_origin = url::Origin::Create(navigation_url);
     UMA_HISTOGRAM_BOOLEAN(
         "Actor.NavigationGating.CrossOrigin2",
         !initiator_origin->IsSameOriginWith(navigation_origin));
@@ -374,18 +377,19 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
   // the origin is allowed, we should proceed and not double prompt.
   if (origin_checker_.IsNavigationConfirmedByUser(
           url::Origin::Create(navigation_url))) {
-    OnNavigationSensitiveUrlListChecked(initiator_origin, navigation_url,
-                                        skip_prompt, std::move(timer),
-                                        std::move(callback),
-                                        /*not_sensitive=*/true);
+    OnNavigationSensitiveUrlListChecked(
+        initiator_origin, url::Origin::Create(navigation_url), skip_prompt,
+        std::move(timer), std::move(callback),
+        /*not_sensitive=*/true);
     return;
   }
   base::expected<void, DecisionCallback> sensitive_check_result =
       MaybeCheckOptimizationGuideForSensitiveUrl(
           navigation_url, task_->profile(),
           base::BindOnce(&ExecutionEngine::OnNavigationSensitiveUrlListChecked,
-                         GetWeakPtr(), initiator_origin, navigation_url,
-                         skip_prompt, std::move(timer), std::move(callback)));
+                         GetWeakPtr(), initiator_origin,
+                         url::Origin::Create(navigation_url), skip_prompt,
+                         std::move(timer), std::move(callback)));
   if (!sensitive_check_result.has_value()) {
     std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
   }
@@ -393,23 +397,24 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
 
 void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
     base::optional_ref<const url::Origin> initiator_origin,
-    const GURL navigation_url,
+    const url::Origin& navigation_origin,
     bool skip_prompt,
     base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback,
     bool not_sensitive) {
   // If not sensitive, check if it's an origin the actor has previously
   // interacted with or received instructions from the server to interact with.
-  if (not_sensitive &&
-      origin_checker_.IsNavigationAllowed(initiator_origin, navigation_url)) {
-    LogNavigationGating(initiator_origin, navigation_url,
+  if (not_sensitive && origin_checker_.IsNavigationAllowed(initiator_origin,
+                                                           navigation_origin)) {
+    LogNavigationGating(initiator_origin, navigation_origin,
                         /*applied_gate=*/false);
     std::move(callback).Run(/*may_continue=*/true);
     return;
   }
 
   // At this point, the navigation is either blocked OR not on the allowlist.
-  LogNavigationGating(initiator_origin, navigation_url, /*applied_gate=*/true);
+  LogNavigationGating(initiator_origin, navigation_origin,
+                      /*applied_gate=*/true);
 
   if (skip_prompt) {
     std::move(callback).Run(/*may_continue=*/false);
@@ -420,8 +425,8 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
   // origin and we should either confirm the navigation with the web client or
   // prompt the user depending on the feature state.
   if (not_sensitive) {
-    HandleNavigationToNewOrigin(url::Origin::Create(navigation_url),
-                                std::move(timer), std::move(callback));
+    HandleNavigationToNewOrigin(navigation_origin, std::move(timer),
+                                std::move(callback));
     return;
   }
 
@@ -432,7 +437,7 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
   }
 
   // Otherwise, present a user confirmation dialog to continue.
-  SendUserConfirmationDialogRequest(url::Origin::Create(navigation_url),
+  SendUserConfirmationDialogRequest(navigation_origin,
                                     /*for_sensitive_origin=*/true,
                                     std::move(timer), std::move(callback));
 }
