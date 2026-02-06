@@ -160,6 +160,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="109647177154844434">Hatua ya kuondoa Parallels Desktop itafuta picha yako ya Windows. Hii ni pamoja na programu, mipangilio na data yake. Una uhakika ungependa kuendelea?</translation>
 <translation id="1097016918605049747">Ukurasa huu hauwezi kutafsiriwa</translation>
 <translation id="1097658378307015415">Kabla ya kuingia, tafadhali ingia kama Mgeni ili kuamilisha mtandao <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Ili kuwezesha vipengele kama vile utambuzi wa ulaghai, Chrome inaweza kutumia mifumo ya AI inayotekelezwa moja kwa moja kwenye kifaa chako bila kutuma data yako kwenye seva za Google. Ukizima mipangilio hii, huenda vipengele hivi visifanye kazi. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu AI kwenye kifaa<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Picha imenakiliwa kutoka kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Aikoni ya sasa</translation>
 <translation id="1102759278139578486">Imeshindwa kupakua faili za ufafanuzi wa kipengele kikuu. Jaribu tena baadaye.</translation>
@@ -4782,7 +4783,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4206585797409671301">Kinaruhusiwa kuonyesha maombi</translation>
 <translation id="4207144975205749656">Husimba kwa njia fiche maombi ya uelekezaji ili washambulizi kwenye mtandao huo wasiweze kuona shughuli zako</translation>
 <translation id="4207932031282227921">Umeombwa ruhusa, bonyeza kitufe cha F6 ili ujibu</translation>
-<translation id="4208390505124702064">Tafuta <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Kubwa</translation>
 <translation id="4209247656298167054">Hakuna Sasisho</translation>
 <translation id="4209251085232852247">Imezimwa</translation>
@@ -5614,6 +5614,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ingependa kutumia taarifa binafsi zilizo kwenye pochi yako dijitali.</translation>
 <translation id="4785719467058219317">Unatumia ufunguo wa usalama ambao haujasajiliwa kwenye tovuti hii</translation>
 <translation id="4785914069240823137">Ghairi Kupunguza</translation>
+<translation id="4786430656008801173">AI kwenye kifaa</translation>
 <translation id="4787471921443575924">Badilisha ufunguo wa siri wa jina la mtumiaji: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Tafadhali kagua muunganisho wako wa mtandao na ujaribu tena.</translation>
 <translation id="4789348252524569426">Imeshindwa kusakinisha faili za matamshi. Unahitaji kusasisha kifaa chako. Zima kisha uwashe kifaa chako na ujaribu tena.</translation>

@@ -380,7 +380,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5289287148052354622">Descarga la aplicación Chromium</translation>
 <translation id="5294316920224716406">Cuando navegues en modo Incógnito, Chromium te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="5313228254328109263">Servicio interno de la herramienta de actualización de Chromium</translation>
-<translation id="5346059693449184483">¿Qué tienes en mente?</translation>
 <translation id="5346389065299425353">Profundiza en tu búsqueda añadiendo varias pestañas, archivos y herramientas</translation>
 <translation id="5352264705793813212">Chromium ha encontrado algunas recomendaciones de seguridad para que las revises</translation>
 <translation id="5352361688875342522">Otros perfiles de Chromium</translation>
@@ -645,7 +644,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8177472873527554730">No se encuentra contenido en la página</translation>
 <translation id="8200109504272824693">Introduce tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta (<ph name="USER_EMAIL" />)</translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
-<translation id="8223142476690844338">Hola, <ph name="USER_NAME" />. ¿En qué estás pensando?</translation>
 <translation id="8223363452568144035">Para usar la cámara, da acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium no puede verificar el origen de esta extensión y podría no ser segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene ninguna descripción útil, Chromium intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>

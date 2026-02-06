@@ -1277,6 +1277,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3052868890529250114">Muodostat yleensä yhteyden sivustoihin suojatusti, mutta Chrome ei voinut tällä kertaa käyttää turvallista yhteyttä. Hyökkääjä saattaa yrittää salakuunnella tai muokata verkkoyhteyttäsi. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />:n hinnanalennus / <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Osta nyt, maksa myöhemmin ‐virhenäkymä. Näppäimistö piilotettu.</translation>
+<translation id="3057844102210575426">Ylläpidä matkatietoja</translation>
 <translation id="3061707000357573562">Virheenkorjauspalvelu</translation>
 <translation id="3062655045399308513">Poista selausdata…</translation>
 <translation id="3063453392496098461">VPN-taustapalveluiden asennus epäonnistui.</translation>
@@ -2008,6 +2009,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4203769790323223880">Pääsyä kameraan ei sallittu</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Tarkista palomuurin ja virustorjuntaohjelmiston määritykset.<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Haku sivustolta <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Suuri</translation>
 <translation id="4210602799576081649">Vahvistuskoodi on vanhentunut, pyydä uutta koodia</translation>
 <translation id="421066178035138955">käyttää virtuaalitodellisuuslaitteita ja ‑dataa</translation>
@@ -2064,6 +2066,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4270541775497538019">Pinoaja 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Näytä 0 arvostelua. Keskimääräinen arvio on <ph name="STARS" /> tähteä.}=1{Näytä 1 arvostelu. Keskimääräinen arvio on <ph name="STARS" /> tähteä.}other{Näytä kaikki # arvostelua. Keskimääräinen arvio on <ph name="STARS" /> tähteä.}}</translation>
 <translation id="4271652479722040953">Kun laajennuksia lisätään Chromeen, olennaisia tietoja näistä laajennuksista lähetetään kolmansille osapuolille analysoitavaksi, ja ne voivat näkyä järjestelmänvalvojalle. Data sisältää laajennuksia koskevia tietoja, kuten nimen, asennusajan ja asennuslähteen sekä laajennuksiin liittyvän toiminnan (kuten välilehtien vaihtamisen, verkkosivustojen kontaktoinnin tai evästeiden käytön). Dataa kerätään sekä Chrome Web Storesta että sen ulkopuolelta asennetuista laajennuksista.</translation>
+<translation id="4275788652681621337">Sulje sivupaneeli</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
 <translation id="4276974990916607331">Ei kiitos</translation>
 <translation id="4277028893293644418">Pyydä uusi salasana</translation>
@@ -2627,6 +2630,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5209670883520018268">Lokero 20</translation>
 <translation id="5212364581680288382">Moottoripyöräurheilu</translation>
 <translation id="5214542134842513912">Valitse, minkä laajojen aihekategorioiden avulla mainoksia voidaan personoida. Jos laitat laajemman kategorian pois päältä, myös siihen liittyvät aiheet estetään.</translation>
+<translation id="52163492208010719">Ylläpidä henkilötodistuksia</translation>
 <translation id="521659676233207110">Lokero 13</translation>
 <translation id="5216942107514965959">Viimeksi avattu tänään</translation>
 <translation id="5217759126664161410">Virheellinen protokollan muoto.</translation>
@@ -2711,6 +2715,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5344522958567249764">Muuta mainosyksityisyysasetuksia</translation>
 <translation id="5344579389779391559">Tämä sivu voi yrittää veloittaa sinua</translation>
 <translation id="5345249337934847112">Paperi (päällystetty, paksu)</translation>
+<translation id="5346059693449184483">Mitä mielessä?</translation>
 <translation id="5348330584842140856">Tiedostoa ei siirretty, koska sitä ei ole enää olemassa</translation>
 <translation id="5349543692327946794">Etiketit (mustesuihku)</translation>
 <translation id="5351548097010183514">Rakennusmateriaalit ja ‑tarvikkeet</translation>
@@ -4507,6 +4512,7 @@ Lisätietoja:
 <translation id="8216640997712497593">14 x 18 tuumaa</translation>
 <translation id="8218327578424803826">Määrätty sijainti:</translation>
 <translation id="8220602974062798186">Estetäänkö <ph name="TOPIC" /> ja muut siihen liittyvät aiheet?</translation>
+<translation id="8223142476690844338">Hei <ph name="USER_NAME" />, miten voin auttaa?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, kysy tältä: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Kahden sivun näkymä</translation>
 <translation id="822925450938886901">Jos haluat lisätietoja ja mahdollisesti sovellettavia käytäntöjä, avaa chrome://management selaimessasi.</translation>

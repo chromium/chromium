@@ -40,6 +40,7 @@
 <translation id="137466361146087520">‏גרסת הבטא של Google Chrome</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1399397803214730675">‏במחשב זה מותקנת כבר גרסה עדכנית יותר של Google Chrome. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Google Chrome ולנסות שוב.</translation>
+<translation id="1404026649028693342">‏תמיד להציג את מצב AI</translation>
 <translation id="141901961143729572">כאן אפשר לשתף את המחשבות שלך</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{‏העדכון של Chrome הסתיים. אפשר להשתמש בגרסה העדכנית מיד עם ההפעלה מחדש. לאחר מכן, הכרטיסיות הנוכחיות ייפתחו מחדש.}=1{‏העדכון של Chrome הסתיים. אפשר להשתמש בגרסה העדכנית מיד עם ההפעלה מחדש. לאחר מכן, הכרטיסיות הנוכחיות ייפתחו מחדש. החלון הפרטי לא ייפתח מחדש.}one{‏העדכון של Chrome הסתיים. אפשר להשתמש בגרסה העדכנית מיד עם ההפעלה מחדש. לאחר מכן, הכרטיסיות הנוכחיות ייפתחו מחדש. # החלונות הפרטיים לא ייפתחו מחדש.}two{‏העדכון של Chrome הסתיים. אפשר להשתמש בגרסה העדכנית מיד עם ההפעלה מחדש. לאחר מכן, הכרטיסיות הנוכחיות ייפתחו מחדש. # החלונות הפרטיים לא ייפתחו מחדש.}other{‏העדכון של Chrome הסתיים. אפשר להשתמש בגרסה העדכנית מיד עם ההפעלה מחדש. לאחר מכן, הכרטיסיות הנוכחיות ייפתחו מחדש. # החלונות הפרטיים לא ייפתחו מחדש.}}</translation>
 <translation id="1434626383986940139">‏אפליקציות Chrome – קאנארי</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">מוריד...</translation>
 <translation id="1651617469580841801">‏כשמשתמשים ב-Google Lens, כותרת הדף, כתובת ה-URL והתוכן, כולל קובצי PDF, נשלחים אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">‏מידע על ChromeOS Flex</translation>
+<translation id="1665867022636014702">‏שימוש בהגדרות הדפדפן המומלצות של Google</translation>
 <translation id="1674870198290878346">‏פתיחת הקישור בחלון &amp;אנונימי של Chrome</translation>
 <translation id="1682634494516646069">‏Google Chrome אינו יכול לקרוא ולכתוב בספריית הנתונים שלו: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה לכלי החיפוש, הבינה המלאכותית והסוכנים של הארגון כדי לקבל הצעות.</translation>
@@ -97,6 +99,7 @@
 <translation id="2026377840141807639">‏פרופילים ב-Chrome מאפשרים לך להפריד בין הגלישה האישית לבין הגלישה בעבודה. אפשר להוסיף פרופיל חדש עכשיו.</translation>
 <translation id="2034233344106846793">‏‫Chrome משדרג חיבורים לא מאובטחים ל-HTTPS באופן אוטומטי כשאפשר</translation>
 <translation id="2039417478970545937">הגדרות.</translation>
+<translation id="2066690553719545730">‏תמיד להציג את מצב AI</translation>
 <translation id="2091012649849228750">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.</translation>
 <translation id="2094648590148273905">‏התנאים של ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏לסגור את Chrome בכל זאת?</translation>
@@ -355,6 +358,7 @@
 <translation id="4885446229353981848">‏תמיד להציג את קיצור הדרך ל-Google Lens</translation>
 <translation id="4891791193823137474">‏לאפשר ל-Google Chrome לפעול ברקע</translation>
 <translation id="4895437082222824641">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
+<translation id="4896867431081882115">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך להגדיר את Chrome בתור דפדפן ברירת המחדל. לגישה מהירה, Chrome יוצמד לסרגל האפליקציות.</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4918844574251943176">התמונה הועתקה</translation>
 <translation id="4926882258455737990">‏כדי להשתמש בחשבון Google אחר עם Gemini ב-Chrome, צריך <ph name="BEGIN_LINK" />ליצור פרופיל חדש<ph name="END_LINK" /> ולהיכנס באמצעות החשבון הרצוי</translation>
@@ -394,7 +398,6 @@
 <translation id="5334309298019785904">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי הסנכרון לא זמין לדומיין שלך.</translation>
 <translation id="5334487786912937552">‏נדרשת הרשאת גישה לאחסון ב-Chrome כדי להוריד את קבצים</translation>
 <translation id="5337648990166757586">‏אופציונלי: שליחה אוטומטית של נתוני אבחון ונתוני שימוש במכשיר אל Google תעזור לשפר את התכונות ואת הביצועים של ChromeOS.</translation>
-<translation id="5346059693449184483">מה חשבת לעשות?</translation>
 <translation id="5346389065299425353">כדי להעמיק את החיפוש, אפשר להוסיף כמה כרטיסיות, קבצים וכלים</translation>
 <translation id="5353252989841766347">‏ייצוא סיסמאות מ-Chrome</translation>
 <translation id="5368118228313795342">קוד נוסף: <ph name="EXTRA_CODE" />.</translation>
@@ -555,6 +558,7 @@
 <translation id="6885412569789873916">‏אפליקציות לגרסת הבטא של Chrome</translation>
 <translation id="6893363893008038481">‏הסרת החשבון מ-Chrome</translation>
 <translation id="6896758677409633944">העתקה</translation>
+<translation id="6908182077349113099">‏רוצה לסנכרן את הסיסמאות, הסימניות וההיסטוריה שלך באופן מושלם בין המכשירים? כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך לעדכן את דפדפן ברירת המחדל ל-Chrome.</translation>
 <translation id="6930294499209825">‏השירות שומר על תוכנות Google מעודכנות. אם השירות יושבת או יופסק, תוכנות Google שמותקנות אצלך לא יתעדכנו יותר באופן קבוע. המשמעות היא שלא ניתן יהיה לתקן פרצות אבטחה שעשויות להיווצר ושתכונות מסוימות לא יפעלו. השירות הזה יוסר באופן אוטומטי אם אין תוכנה של Google שמשתמשת בו.</translation>
 <translation id="6933858244219479645">‏מערכת ChromeOS</translation>
 <translation id="6938166777909186039">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.1.</translation>
@@ -686,7 +690,6 @@
 <translation id="8162006532256575008">‏שימוש ב-Chrome ללא חשבון</translation>
 <translation id="8177472873527554730">לא נמצא תוכן בדף</translation>
 <translation id="8221491193165283816">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות יש ללחוץ כאן.</translation>
-<translation id="8223142476690844338">היי <ph name="USER_NAME" />, איך אני יכול לעזור לך?</translation>
 <translation id="8255190535488645436">‏Google Chrome משתמש במצלמה ובמיקרופון שלך.</translation>
 <translation id="8267953129876836456">‏יש ל-Chrome כמה המלצות לגבי בטיחות שכדאי לבדוק</translation>
 <translation id="8286862437124483331">‏Google Chrome מנסה להציג סיסמאות. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>

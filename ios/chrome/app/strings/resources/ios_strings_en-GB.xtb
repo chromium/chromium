@@ -1666,6 +1666,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Make default in Settings…</translation>
 <translation id="7007970306646738803">Choose what to do with the existing browsing data on this device, like tabs, history and passwords.</translation>
+<translation id="7012978439516925343">Verify that it's you to create a passkey</translation>
 <translation id="7015418667643980944">Split view</translation>
 <translation id="7016070607649558507">You have one weak password. Fix it now to stay safe.</translation>
 <translation id="7016958933495968912">Options for discover</translation>

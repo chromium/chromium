@@ -1277,6 +1277,7 @@
 <translation id="3052868890529250114">De obicei, te conectezi în siguranță la site-uri, dar Chrome nu a putut folosi o conexiune securizată de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Ecranul de eroare Cumpără acum, plătește mai târziu. Tastatura este ascunsă.</translation>
+<translation id="3057844102210575426">Gestionează informațiile despre călătorii</translation>
 <translation id="3061707000357573562">Serviciu de corecție</translation>
 <translation id="3062655045399308513">Șterge datele de navigare...</translation>
 <translation id="3063453392496098461">Serviciile VPN în fundal nu s-au instalat.</translation>
@@ -2007,6 +2008,7 @@
 <translation id="4203769790323223880">Folosirea camerei foto nu este permisă</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />să verifici configurarea pentru firewall și antivirus;<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Caută pe <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Mare</translation>
 <translation id="4210602799576081649">Codul de verificare a expirat. Solicită un cod nou.</translation>
 <translation id="421066178035138955">să folosească dispozitivele de realitate virtuală și datele conexe.</translation>
@@ -2063,6 +2065,7 @@
 <translation id="4270541775497538019">Receptorul de hârtie 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Vezi 0 recenzii. Evaluarea medie este de <ph name="STARS" /> stele.}=1{Vezi o recenzie. Evaluarea medie este de <ph name="STARS" /> stele.}few{Vezi toate cele # recenzii. Evaluarea medie este de <ph name="STARS" /> stele.}other{Vezi toate cele # de recenzii. Evaluarea medie este de <ph name="STARS" /> de stele.}}</translation>
 <translation id="4271652479722040953">Când sunt adăugate extensii în Chrome, datele relevante despre aceste extensii sunt trimise terților pentru analiză și pot fi vizibile pentru administrator. Datele includ informații despre extensii, cum ar fi numele, ora instalării, sursa instalării, precum și activitatea asociată acestor extensii (cum ar fi schimbarea filelor, contactarea site-urilor sau accesarea cookie-urilor). Aceste date sunt colectate pentru extensiile instalate din Magazinul web Chrome, precum și pentru extensiile instalate din afara magazinului.</translation>
+<translation id="4275788652681621337">Închide panoul lateral</translation>
 <translation id="4275830172053184480">Reporniți gadgetul</translation>
 <translation id="4276974990916607331">Nu, mulțumesc</translation>
 <translation id="4277028893293644418">Resetează parola</translation>
@@ -2626,6 +2629,7 @@
 <translation id="5209670883520018268">Tava 20</translation>
 <translation id="5212364581680288382">Curse de motociclete</translation>
 <translation id="5214542134842513912">Alege categoriile ample de subiecte care se pot folosi pentru a personaliza anunțurile. Dacă dezactivezi o categorie mai amplă, vei bloca și subiectele conexe ale acesteia.</translation>
+<translation id="52163492208010719">Gestionează actele de identitate</translation>
 <translation id="521659676233207110">Tava 13</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
 <translation id="5217759126664161410">Format de protocol nevalid.</translation>
@@ -2710,6 +2714,7 @@
 <translation id="5344522958567249764">Gestionează confidențialitatea anunțurilor</translation>
 <translation id="5344579389779391559">Această pagină poate să genereze costuri</translation>
 <translation id="5345249337934847112">Hârtie (grea tratată)</translation>
+<translation id="5346059693449184483">La ce te gândești?</translation>
 <translation id="5348330584842140856">Fișierul nu a fost mutat deoarece nu mai există</translation>
 <translation id="5349543692327946794">Etichete (inkjet)</translation>
 <translation id="5351548097010183514">Materiale și articole pentru construcții</translation>
@@ -4506,6 +4511,7 @@ Detalii suplimentare:
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">Locație atribuită:</translation>
 <translation id="8220602974062798186">Blochezi <ph name="TOPIC" /> și orice subiecte conexe?</translation>
+<translation id="8223142476690844338">Salut, <ph name="USER_NAME" />! La ce te gândești?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, întreabă <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Afișare cu două pagini</translation>
 <translation id="822925450938886901">Pentru informații suplimentare și politicile care se pot aplica, deschide chrome://management în browser.</translation>

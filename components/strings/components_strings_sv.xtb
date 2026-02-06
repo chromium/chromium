@@ -2008,6 +2008,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4203769790323223880">Kamera tillåts inte</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />kontrollera konfigureringarna för brandväggen och antivirusprogram<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Sök i <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4210602799576081649">Verifieringskoden har löpt ut. Begär en ny kod.</translation>
 <translation id="421066178035138955">använda VR-enheter och data</translation>
@@ -2064,6 +2065,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4270541775497538019">Utmatningsfack 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Visa 0 recensioner. Medelbetyget är <ph name="STARS" /> stjärnor.}=1{Visa 1 recension. Medelbetyget är <ph name="STARS" /> stjärnor.}other{Visa alla # recensioner. Medelbetyget är <ph name="STARS" /> stjärnor.}}</translation>
 <translation id="4271652479722040953">När tillägg läggs till i Chrome skickas relevant data om dessa tillägg till tredje part för analys och kan vara synlig för administratören. Datan omfattar information om tilläggen, till exempel namn, installationstid, installationskälla samt aktivitet som är kopplad till dessa tillägg (till exempel att byta flikar, kontakta webbplatser eller komma åt cookies). Denna data samlas in för tillägg som har installerats från Chrome Web Store och tillägg som inte har installerats från butiken.</translation>
+<translation id="4275788652681621337">Stäng sidopanelen</translation>
 <translation id="4275830172053184480">Starta om enheten</translation>
 <translation id="4276974990916607331">Nej tack</translation>
 <translation id="4277028893293644418">Återställ lösenord</translation>
@@ -2712,6 +2714,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5344522958567249764">Hantera annonsintegritet</translation>
 <translation id="5344579389779391559">Den här sidan kan försöka debitera dig</translation>
 <translation id="5345249337934847112">Papper (tungt, bestruket)</translation>
+<translation id="5346059693449184483">Vad vill du ha hjälp med?</translation>
 <translation id="5348330584842140856">Den här filen flyttades inte eftersom den inte längre finns</translation>
 <translation id="5349543692327946794">Etiketter (Inkjet)</translation>
 <translation id="5351548097010183514">Byggmaterial och tillbehör</translation>
@@ -4508,6 +4511,7 @@ Mer information.
 <translation id="8216640997712497593">14 x 18 tum</translation>
 <translation id="8218327578424803826">Tilldelad plats:</translation>
 <translation id="8220602974062798186">Vill du blockera <ph name="TOPIC" /> och relaterade ämnen?</translation>
+<translation id="8223142476690844338">Hej <ph name="USER_NAME" />! Vad vill du ha hjälp med?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Fråga <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Dubbelsidig vy</translation>
 <translation id="822925450938886901">Om du vill ha mer information och se vilka policyer som kan gälla kan du öppna chrome://management i webbläsaren.</translation>

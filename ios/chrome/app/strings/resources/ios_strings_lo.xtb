@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">ເພີ່ມສິນຄ້າໃສ່ລາຍການສິນຄ້າທີ່ຕິດຕາມແລ້ວ.</translation>
 <translation id="2230173723195178503">ໂຫຼດໜ້າເວັບແລ້ວ</translation>
 <translation id="2236949375853147973">ການເຄື່ອນໄຫວຂອງຂ້ອຍ</translation>
+<translation id="2237869114829007407">ເບິ່ງພາບຮວມ ແລະ ຂໍ້ມູນເຈາະເລິກທີ່ສຳຄັນສຳລັບໜ້າ ຫຼື ຫົວຂໍ້ໃດກໍຕາມ</translation>
 <translation id="2240256190924001613">ມີໂປຣໄຟລ໌ການຕັ້ງຄ່າ</translation>
 <translation id="2244080985779413662">ເວັບໄຊນີ້ຕ້ອງການດາວໂຫຼດໄຟລ໌ ແລະ ເປີດໄຟລ໌ໃນ Wallet ຂອງທ່ານ.</translation>
 <translation id="2245007488813216650">ກຳລັງແປ…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">ເພີ່ມເຕີມ</translation>
 <translation id="3311748811247479259">ປິດ</translation>
 <translation id="3312300514034250578">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ</translation>
+<translation id="3315786055700307152">ຕອນນີ້ສິນຄ້າຂອງທ່ານຫຼຸດ 15% ແລ້ວ</translation>
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="333229797575847124">ວິທີເປີດການນຳໃຊ້ຄຸນສົມບັດນີ້</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">ສ້າງກະແຈຜ່ານສຳລັບ</translation>
 <translation id="3380352560400387991">ເວັບໄຊນີ້ກຳລັງພະຍາຍາມເປີດແອັບພລິເຄຊັນ. ການດຳເນີນການນີ້ຈະນຳທ່ານອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="3385742921291399323">ເບິ່ງລະຫັດຜ່ານ, ແຖບ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆທີ່ບັນທຶກໄວ້ຂອງທ່ານ.</translation>
+<translation id="3391765987934722383">ຢ່າພາດການຫຼຸດລາຄາ</translation>
 <translation id="3392923070107623576">ຈັດລະບຽບໂດຍການສ້າງກຸ່ມແຖບ</translation>
 <translation id="3404232721752787413">ບັນທຶກໃນ Google ຮູບພາບ</translation>
 <translation id="3406506285180498376">ແບ່ງປັນໜ້າ…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
 <translation id="3955740319737378355">ແລ້ວໆ</translation>
 <translation id="3955822496205734389">ທ່ານມີລະຫັດຜ່ານງ່າຍ.</translation>
+<translation id="3957016963627617921">ເຮັດສິ່ງຕ່າງໆໄດ້ຫຼາຍຂຶ້ນດ້ວຍ Gemini ໃນ Chrome</translation>
 <translation id="3958312024468322930">ລາກມັນໄປໃສ່ຈຸດຈອດຢູ່ລຸ່ມສຸດຂອງໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="3962326069546168954">ບັນທຶກ</translation>
 <translation id="3967327056943561740">ບຸກມາກ</translation>
@@ -1662,6 +1666,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນໃນການຕັ້ງຄ່າ…</translation>
 <translation id="7007970306646738803">ເລືອກວ່າຈະເຮັດແນວໃດກັບຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ໃນອຸປະກອນນີ້ ເຊັ່ນ: ແຖບ, ປະຫວັດ ແລະ ລະຫັດຜ່ານ.</translation>
+<translation id="7012978439516925343">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອສ້າງກະແຈຜ່ານ</translation>
 <translation id="7015418667643980944">ມຸມມອງແບບແຍກ</translation>
 <translation id="7016070607649558507">ທ່ານມີລະຫັດຜ່ານງ່າຍ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
 <translation id="7016958933495968912">ຕົວເລືອກສຳລັບ Discover</translation>
@@ -2163,6 +2168,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8803639129939845298">ປອດໄພ</translation>
 <translation id="8813277370772331957">ແຈ້ງເຕືອນຂ້ອຍໃນພາຍຫຼັງ</translation>
 <translation id="8814719628147284151">ສືບຕໍ່</translation>
+<translation id="8817524703470045896">ຕິດຕາມລາຄາ ແລະ ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດກໍຕາມ</translation>
 <translation id="8819155700324279105">ເພີ່ມການປົກປ້ອງຕໍ່ກັບໄພຂົ່ມຂູ່ທາງອອນລາຍອີກຊັ້ນໜຶ່ງ</translation>
 <translation id="8820817407110198400">ບຸກມາກ</translation>
 <translation id="8822421075653507124">ເພື່ອໃຫ້ແນ່ໃຈວ່າອຸປະກອນນີ້ສາມາດຖືກນໍາໃຊ້ຢ່າງປອດໄພ, ອົງກອນຂອງທ່ານອາດຈະຕ້ອງເບິ່ງຂໍ້ມູນກ່ຽວກັບລະບົບປະຕິບັດການ, ໂປຣແກຣມທ່ອງເວັບ ແລະ ການຕັ້ງຄ່າຂອງຕົນ ຕະຫຼອດຈົນເຖິງຊອບແວທີ່ຖືກຕິດຕັ້ງຢູ່ອຸປະກອນ.</translation>
@@ -2170,6 +2176,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8829809207373502270">ກະແຈຜ່ານນີ້ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ. ເນື່ອງຈາກຖືກລຶບຈາກ <ph name="WEBSITE" /> ແລະ ຈະຖືກລຶບຈາກບ່ອນນີ້ໃນໄວໆນີ້. <ph name="BEGIN_LINK" />ກ່ຽວກັບກະແຈຜ່ານ<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ປິດແຖບທີ່ບໍ່ມີການນຳໃຊ້ທັງໝົດ</translation>
 <translation id="8837654851594567190">ຈັດຮຽງຕາມຜູ້ເຜີຍແຜ່</translation>
+<translation id="8844136307393039959">ລາຄາຫຼຸດລົງສຳລັບສິນຄ້າທີ່ທ່ານຕິດຕາມ</translation>
 <translation id="8848286253339013170">ກຳລັງບັນທຶກຮູບໃນ Google ຮູບພາບສຳລັບ <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">ເຊື່ອງໄວ້</translation>
 <translation id="8855242995793521265">ບໍ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບ ຫຼື ອຸປະກອນຂອງທ່ານເຮັດວຽກຊ້າລົງຢ່າງເຫັນໄດ້ຊັດ.</translation>
@@ -2213,6 +2220,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8976382372951310360">ຊ່ວຍເຫຼືອ</translation>
 <translation id="8976414606286374109">ບັດຕ່າງໆແມ່ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="8981454092730389528">ການຄວບຄຸມກິດຈະກຳ Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ເວັບໄຊທີ່ປັກໝຸດແລ້ວ</translation>
 <translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="9000532564152265066">ແຖບທັງໝົດ</translation>
 <translation id="9003677638446136377">ກວດ​ເບິ່ງ​ອີກ</translation>

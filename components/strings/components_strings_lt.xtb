@@ -2009,6 +2009,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4203769790323223880">Fotoaparatas neleidžiamas</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Patikrinti užkardos ir antivirusinės sistemos konfigūracijas<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">„Google“ disko</translation>
+<translation id="4208390505124702064">Ieškoti <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Didelis</translation>
 <translation id="4210602799576081649">Patvirtinimo kodas baigė galioti, pateikite užklausą dėl naujo kodo</translation>
 <translation id="421066178035138955">Naudoti virtualiosios realybės įrenginius ir duomenis</translation>
@@ -2065,6 +2066,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4270541775497538019">6 dėtuvė</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Peržiūrėti 0 apžvalgų. Vidutinis įvertinimas žvaigždutėmis: <ph name="STARS" />.}=1{Peržiūrėti 1 apžvalgą. Vidutinis įvertinimas žvaigždutėmis: <ph name="STARS" />.}one{Peržiūrėti visas # apžvalgą. Vidutinis įvertinimas žvaigždutėmis: <ph name="STARS" />.}few{Peržiūrėti visas # apžvalgas. Vidutinis įvertinimas žvaigždutėmis: <ph name="STARS" />.}many{Peržiūrėti visas # apžvalgos. Vidutinis įvertinimas žvaigždutėmis: <ph name="STARS" />.}other{Peržiūrėti visas # apžvalgų. Vidutinis įvertinimas žvaigždutėmis: <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Kai prie „Chrome“ pridedami plėtiniai, atitinkami duomenys apie šiuos plėtinius siunčiami trečiosioms šalims analizei atlikti ir gali būti matomi administratoriui. Duomenys apima informaciją apie plėtinius, pvz., pavadinimą, diegimo laiką, diegimo šaltinį, taip pat su šiais plėtiniais susijusią veiklą (pvz., skirtukų keitimą, susisiekimą su svetainėmis ar prieigą prie slapukų). Šie duomenys renkami apie plėtinius, įdiegtus iš „Chrome“ internetinės parduotuvės, ir apie plėtinius, įdiegtus ne iš šios parduotuvės.</translation>
+<translation id="4275788652681621337">Uždaryti šoninį skydelį</translation>
 <translation id="4275830172053184480">Iš naujo paleisti įrenginį</translation>
 <translation id="4276974990916607331">Ne, ačiū</translation>
 <translation id="4277028893293644418">Iš naujo nustatyti slaptažodį</translation>
@@ -2713,6 +2715,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5344522958567249764">Tvarkyti su skelbimais susijusį privatumą</translation>
 <translation id="5344579389779391559">Šiame puslapyje gali būti bandoma jus apmokestinti</translation>
 <translation id="5345249337934847112">Popierius (dengtas standusis)</translation>
+<translation id="5346059693449184483">Apie ką galvojate?</translation>
 <translation id="5348330584842140856">Šis failas nebuvo perkeltas, nes jo nebėra</translation>
 <translation id="5349543692327946794">Etiketės (rašalinės)</translation>
 <translation id="5351548097010183514">Statybinės medžiagos ir prekės</translation>
@@ -4509,6 +4512,7 @@ Papildoma išsami informacija:
 <translation id="8216640997712497593">14 x 18 col.</translation>
 <translation id="8218327578424803826">Priskirta vieta:</translation>
 <translation id="8220602974062798186">Blokuoti „<ph name="TOPIC" />“ ir visas susijusias temas?</translation>
+<translation id="8223142476690844338">Sveiki, <ph name="USER_NAME" />, apie ką galvojate?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, klausti „<ph name="KEYWORD_SUFFIX" />“</translation>
 <translation id="8228419419708659934">Dviejų puslapių peržiūra</translation>
 <translation id="822925450938886901">Jei norite peržiūrėti papildomą informaciją ir politiką, kuri gali būti taikoma, naršyklėje atidarykite chrome://management.</translation>

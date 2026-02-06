@@ -160,6 +160,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="109647177154844434">A Parallels Desktop eltávolításával a Windows-kép is törlődik – beleértve az alkalmazásokat, a beállításokat és az adatokat is. Biztosan folytatja a műveletet?</translation>
 <translation id="1097016918605049747">Nem sikerült lefordítani ezt az oldalt</translation>
 <translation id="1097658378307015415">Kérjük, bejelentkezés előtt a(z) <ph name="NETWORK_ID" /> hálózat aktiválásához lépjen be vendégként.</translation>
+<translation id="1099070179078143183">Az olyan funkciók működtetéséhez, mint a csalásészlelés, a Chrome olyan AI-modelleket használhat, amelyek közvetlenül az eszközön futnak, anélkül hogy elküldenék az adatokat a Google szervereire. Ha az eszközalapú AI ki van kapcsolva, akkor előfordulhat, hogy ezek a funkciók nem működnek. <ph name="BEGIN_LINK" />További információ az eszközalapú AI-ról<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Kép vágólapra másolva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Jelenlegi ikon</translation>
 <translation id="1102759278139578486">Nem sikerült letölteni a fő annotációs fájlokat. Próbálja újra később.</translation>
@@ -4785,7 +4786,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4206585797409671301">Megjeleníthet kérelmeket</translation>
 <translation id="4207144975205749656">Titkosítja a navigációs kérelmeket, így az ugyanazon a hálózaton lévő támadók nem láthatják az Ön forgalmát.</translation>
 <translation id="4207932031282227921">Engedély kérelmezve, a válaszhoz nyomja le az F6 billentyűt</translation>
-<translation id="4208390505124702064">Keresés itt: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Nagy</translation>
 <translation id="4209247656298167054">Nincs frissítés</translation>
 <translation id="4209251085232852247">Kikapcsolva</translation>
@@ -5617,6 +5617,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4784349455504343791">A(z) <ph name="WEBSITE_ORIGIN" /> használni szeretné az Ön digitális pénztárcájából származó személyes adatokat.</translation>
 <translation id="4785719467058219317">Olyan biztonsági hardverkulcsot használ, amely nincs regisztrálva ezen a webhelyen</translation>
 <translation id="4785914069240823137">Kivágás visszavonása</translation>
+<translation id="4786430656008801173">Eszközalapú AI</translation>
 <translation id="4787471921443575924">A következő felhasználónév azonosítókulcsának szerkesztése: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Ellenőrizze a hálózati kapcsolatot, és próbálkozzon újra.</translation>
 <translation id="4789348252524569426">Nem sikerült telepíteni a beszédfájlokat. Szükség van az eszköz frissítésére. Indítsa újra az eszközt, és próbálkozzon újra.</translation>

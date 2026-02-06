@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Toode lisati teie jälgitavate toodete loendisse.</translation>
 <translation id="2230173723195178503">Veebileht laaditi</translation>
 <translation id="2236949375853147973">Minu tegevused</translation>
+<translation id="2237869114829007407">Hankige ülevaade ja oluline statistika mis tahes lehe või teema kohta</translation>
 <translation id="2240256190924001613">Seadistusprofiil on saadaval</translation>
 <translation id="2244080985779413662">See veebisait soovib faili alla laadida ja avada selle teie rakenduses Wallet.</translation>
 <translation id="2245007488813216650">Tõlkimine …</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">rohkem</translation>
 <translation id="3311748811247479259">Väljas</translation>
 <translation id="3312300514034250578">Täiustatud ohutu sirvimine</translation>
+<translation id="3315786055700307152">Teie toode on nüüd 15% soodsam</translation>
 <translation id="3324193307694657476">Aadress 2</translation>
 <translation id="3328801116991980348">Saiditeave</translation>
 <translation id="333229797575847124">Selle funktsiooni lubamine</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Pääsuvõtme loomine:</translation>
 <translation id="3380352560400387991">See sait üritab rakendust avada. See suunab teid inkognito režiimist välja.</translation>
 <translation id="3385742921291399323">Saate juurdepääsu salvestatud paroolidele, vahelehtedele, järjehoidjatele ja muule.</translation>
+<translation id="3391765987934722383">Ärge jääge hinnalangusest ilma</translation>
 <translation id="3392923070107623576">Hoidke vahelehegruppide loomise abil korda</translation>
 <translation id="3404232721752787413">Salvesta teenusesse Google Photos</translation>
 <translation id="3406506285180498376">Lehe jagamine …</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3955740319737378355">Valmis</translation>
 <translation id="3955822496205734389">Teil on nõrgad paroolid.</translation>
+<translation id="3957016963627617921">Tehke Geminiga Chrome'is rohkem</translation>
 <translation id="3958312024468322930">Pukseerige see dokki, mis asub avakuva allosas</translation>
 <translation id="3962326069546168954">Salvesta</translation>
 <translation id="3967327056943561740">Järjehoidjad</translation>
@@ -1662,6 +1666,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Muuda seadetes vaikevalikuks …</translation>
 <translation id="7007970306646738803">Valige, mida teha selles seadmes olemasolevate sirvimisandmetega, nagu vahelehed, ajalugu ja paroolid.</translation>
+<translation id="7012978439516925343">Pääsuvõtme loomiseks kinnitage oma isik</translation>
 <translation id="7015418667643980944">Poolitatud vaade</translation>
 <translation id="7016070607649558507">Teil on 1 nõrk parool. Turvalisuse tagamiseks parandage see kohe.</translation>
 <translation id="7016958933495968912">Funktsiooni Discover valikud</translation>
@@ -2163,6 +2168,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8803639129939845298">Turvaline</translation>
 <translation id="8813277370772331957">Tuleta mulle hiljem meelde</translation>
 <translation id="8814719628147284151">Jätka</translation>
+<translation id="8817524703470045896">Jälgige hindu ja hankige märguandeid, kui hind mõnel saidil langeb</translation>
 <translation id="8819155700324279105">Lisage täiendav kaitsekiht võrguohtude eest</translation>
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="8822421075653507124">Seadme ohutu kasutamise tagamiseks peab teie organisatsioon võib-olla nägema teavet operatsioonisüsteemi, brauseri, seadete ning seadmesse installitud tarkvara kohta.</translation>
@@ -2170,6 +2176,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8829809207373502270">See pääsuvõti ei toimi enam. See on veebisaidilt <ph name="WEBSITE" /> kustutatud ja kustutatakse varsti ka siit. <ph name="BEGIN_LINK" />Teave pääsuvõtmete kohta<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Sulge kõik inaktiivsed</translation>
 <translation id="8837654851594567190">Sordi väljaandja järgi</translation>
+<translation id="8844136307393039959">Teie jälgitava toote hind langes</translation>
 <translation id="8848286253339013170">Pilt salvestatakse teenusesse Google Photos kontol <ph name="USER_EMAIL" /> …</translation>
 <translation id="8849001918648564819">Peidetud</translation>
 <translation id="8855242995793521265">Ei aeglusta märgatavalt teie brauserit ega seadet.</translation>
@@ -2213,6 +2220,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8976382372951310360">Abi</translation>
 <translation id="8976414606286374109">Kaardid salvestatakse teie Google'i kontole.</translation>
 <translation id="8981454092730389528">Google'i kontotegevuste haldus</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kinnitatud sait</translation>
 <translation id="8998289560386111590">Pole teie seadmes saadaval</translation>
 <translation id="9000532564152265066">Kõik vahelehed</translation>
 <translation id="9003677638446136377">Kontrolli uuesti</translation>

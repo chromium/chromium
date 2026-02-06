@@ -160,6 +160,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="109647177154844434">Parallels Desktop oʻchirilsa, Windows tasviri ham oʻchib ketadi. Ichidagi ilovalar, sozlamalar va maʼlumotlari bilan. Davom ettirilsinmi?</translation>
 <translation id="1097016918605049747">Bu sahifa tarjima qilinmaydi</translation>
 <translation id="1097658378307015415"><ph name="NETWORK_ID" /> tarmog‘ini faollashtirish uchun avval mehmon sifatida kiring.</translation>
+<translation id="1099070179078143183">Firibgarlikni aniqlash kabi funksiyalarni ishga tushirish uchun Chrome maʼlumotlaringizni Google serverlariga yubormasdan bevosita qurilmangizda ishlaydigan AI modellaridan foydalanishi mumkin. Bu sozlama faolsizlantirilsa, bu funksiyalar ishlamasligi mumkin. <ph name="BEGIN_LINK" />Qurilmadagi AI haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Rasm <ph name="DEVICE_NAME" /> qurilmasidan nusxalandi</translation>
 <translation id="1100504063505580045">Joriy belgi</translation>
 <translation id="1102759278139578486">Asosiy tugun izoh fayllari yuklab olinmadi. Keyinroq qayta urining.</translation>
@@ -4774,7 +4775,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4206585797409671301">Soʻrovlar chiqarishga ruxsat berilgan</translation>
 <translation id="4207144975205749656">Bir xil tarmoqdagi hujumchilar trafigingizni koʻra olmasligi uchun navigatsiya soʻrovlarini shifrlaydi</translation>
 <translation id="4207932031282227921">Ruxsat talabi keldi, javob berish uchun F6 tugmasini bosing</translation>
-<translation id="4208390505124702064"><ph name="SITE_NAME" /> saytidan qidirish</translation>
 <translation id="4209092469652827314">Katta</translation>
 <translation id="4209247656298167054">Yangilanishlar yoʻq</translation>
 <translation id="4209251085232852247">Oʻchiq</translation>
@@ -5606,6 +5606,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> elektron hamyoningizdagi shaxsiy maʼlumotlardan foydalanmoqchi.</translation>
 <translation id="4785719467058219317">Elektron kalitingiz bu sayt roʻyxatidan oʻtkazilmagan</translation>
 <translation id="4785914069240823137">Qirqib olishni bekor qilish</translation>
+<translation id="4786430656008801173">Qurilmadagi AI</translation>
 <translation id="4787471921443575924">Bu foydalanuvchi nomi uchun kalitni tahrirlash: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Tarmoq ulanishini tekshiring va qaytadan urining.</translation>
 <translation id="4789348252524569426">Nutq fayllari oʻrnatilmadi. Qurilma yangilanishi lozim. Qurilmani qayta ishga tushirib, yana urining.</translation>

@@ -1277,6 +1277,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3052868890529250114">K webům se obvykle připojujete zabezpečeně, ale tentokrát Chrome zabezpečené připojení použít nemohl. Je možné, že se nějaký útočník pokouší sledovat nebo upravovat vaše připojení k síti. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">U produktu <ph name="PRODUCT_NAME" /> klesla cena o <ph name="PRICE_DROP" /></translation>
 <translation id="3056660797732519147">Obrazovka s chybou procesu Koupit teď, zaplatit později. Klávesnice je skrytá.</translation>
+<translation id="3057844102210575426">Spravovat cestovní informace</translation>
 <translation id="3061707000357573562">Služba oprav</translation>
 <translation id="3062655045399308513">Vymazat údaje o prohlížení…</translation>
 <translation id="3063453392496098461">Instalace služeb VPN na pozadí selhala.</translation>
@@ -2003,6 +2004,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4203769790323223880">Fotoaparát není povolen</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Zkontrolovat konfiguraci firewallu a antivirového softwaru<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Disk Google</translation>
+<translation id="4208390505124702064">Hledat na webu <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velké</translation>
 <translation id="4210602799576081649">Platnost ověřovacího kódu vypršela, požádejte o nový</translation>
 <translation id="421066178035138955">Používat zařízení a data pro virtuální realitu</translation>
@@ -2059,6 +2061,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4270541775497538019">Stohovač 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Zobrazit 0 recenzí. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}=1{Zobrazit 1 recenzi. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}few{Zobrazit všechny # recenze. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}many{Zobrazit všech # recenze. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}other{Zobrazit všech # recenzí. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Když jsou do Chromu přidána rozšíření, odesílají se o nich relevantní data třetím stranám k analýze a tato data může vidět také váš administrátor. Tato data zahrnují informace o rozšířeních, jako jsou název, čas instalace a zdroj instalace, a také s nimi spojené aktivity (jako je změna karet, kontaktování webů nebo přístup k souborům cookie). Tato data se shromažďují pro rozšíření nainstalovaná z Internetového obchodu Chrome i pro rozšíření nainstalovaná odjinud.</translation>
+<translation id="4275788652681621337">Zavřít boční panel</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4276974990916607331">Ne, díky</translation>
 <translation id="4277028893293644418">Resetovat heslo</translation>
@@ -2622,6 +2625,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5209670883520018268">Přihrádka 20</translation>
 <translation id="5212364581680288382">Motocyklové závody</translation>
 <translation id="5214542134842513912">Vyberte, které široké kategorie témat mohou být používány k personalizaci reklam. Vypnutím širší kategorie zablokujete také související témata.</translation>
+<translation id="52163492208010719">Spravovat doklady totožnosti</translation>
 <translation id="521659676233207110">Přihrádka 13</translation>
 <translation id="5216942107514965959">Naposledy navštíveno dnes</translation>
 <translation id="5217759126664161410">Neplatný formát protokolu.</translation>
@@ -2706,6 +2710,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5344522958567249764">Spravovat ochranu soukromí v reklamách</translation>
 <translation id="5344579389779391559">Tato stránka se vám může pokusit naúčtovat poplatky</translation>
 <translation id="5345249337934847112">Papír (těžký potahovaný)</translation>
+<translation id="5346059693449184483">Co se vám honí hlavou?</translation>
 <translation id="5348330584842140856">Tento soubor se nepřesunul, protože už neexistuje</translation>
 <translation id="5349543692327946794">Štítky (pro inkoustové tiskárny)</translation>
 <translation id="5351548097010183514">Stavební materiály a potřeby</translation>
@@ -4500,6 +4505,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8216640997712497593">14 × 18″</translation>
 <translation id="8218327578424803826">Přiřazené místo:</translation>
 <translation id="8220602974062798186">Zablokovat téma <ph name="TOPIC" /> a všechna související témata?</translation>
+<translation id="8223142476690844338">Hezký den, <ph name="USER_NAME" />, co se vám honí hlavou?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, zeptat se služby <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Zobrazení dvou stránek</translation>
 <translation id="822925450938886901">Další informace a zásady, které se na vás vztahují, najdete v prohlížeči na adrese chrome://management.</translation>

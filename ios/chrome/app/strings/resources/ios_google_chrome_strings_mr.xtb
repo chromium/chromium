@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1035560095760914532">Chrome कधीही अ‍ॅक्सेस करण्यासाठी ते तळाशी ठेवा</translation>
 <translation id="1076643793026027628">Chrome हे गुप्त मोडमध्ये YouTube गुप्त मोड लिंक आपोआप उघडते.</translation>
 <translation id="1081114897601629648">पुढील पासवर्ड Google Password Manager मध्ये इंपोर्ट केले नव्हते, कारण ते आवश्यकतांशी जुळत नाहीत.</translation>
 <translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">तुम्ही Google Chrome ची <ph name="LIMIT" /> बुकमार्कची मर्यादा गाठली आहे, त्यामुळे तुमचे काही बुकमार्क अद्याप तुमच्या Google खाते मध्ये सेव्ह केलेले नाहीत.
 
 तुम्ही काही बुकमार्क हटवत नाही, तोपर्यंत तुमच्या खात्यामध्ये नवीन बुकमार्क सेव्ह केले जाऊ शकत नाहीत. तुम्ही आता साइन आउट केल्यास, सेव्ह न केलेले बुकमार्क हटवले जातील.</translation>
+<translation id="2901621928549457170">तुम्ही तुमच्या iPad वर असाल, तेव्हा Chrome झटपट उघडा</translation>
 <translation id="2922914028977213693">तुमच्या iPad वर Chrome चा पुरेपूर वापर करण्यासाठी इथे टॅप करा.</translation>
 <translation id="292371311537977079">Chrome सेटिंग्ज</translation>
 <translation id="2923827943290349720">तुम्ही Chrome बंद करता तेव्हा गुप्त टॅब लॉक करा</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome निवडा</translation>
 <translation id="5123188916260706415">Chrome मध्ये आवाज वापरून शोधा</translation>
 <translation id="5162467219239570114">Chrome कालबाह्य झाले आहे. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> मध्ये अपडेट उपलब्ध नसल्यास, तुमचे डिव्हाइस यापुढे Chrome च्या नवीन आवृत्तींना सपोर्ट करत नाही याची शक्यता आहे.</translation>
+<translation id="5172049865623113551">तुम्ही तुमच्या iPhone वर असाल, तेव्हा Chrome झटपट उघडा</translation>
+<translation id="5179095426828744632">तुमच्या डॉकवरून Chrome अधिक जलद ॲक्सेस करा</translation>
 <translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
 <translation id="5190139289262548459">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन केलेले खाते आणि Chrome कसे वापरले जाते हे व्यवस्थापित करते.</translation>
 <translation id="5209238444239954363">Chrome ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>

@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">See tähendab, et Chromium taotleb iga kord mobiilisaiti.</translation>
 <translation id="1115463765356382667">Viige lõpule allolevad soovitatavad toimingud, et Chromiumi parimal moel kasutada.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
+<translation id="119044033865561140">Avage Chromium kohe, kui olete oma iPadis</translation>
 <translation id="1211450393895337634">Avage Chromium kiiremini, kui olete valmis oma iPadis sirvima.</translation>
 <translation id="1229234641991056119">Kasutage Chromiumis oma Safari paroole, ajalugu, järjehoidjaid ja krediitkaarte</translation>
 <translation id="1257458525759135959">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chromiumil fotode lisamine</translation>
 <translation id="1260702988262336471">Avage Chromiumi menüü</translation>
 <translation id="12739128458173458">Selle vahelehe saatmiseks teise seadmesse logige mõlemas seadmes Chromiumi sisse.</translation>
+<translation id="1279797561821266129">Avage Chromium kiiremini oma doki kaudu</translation>
 <translation id="1361748954329991663">Chromium on aegunud. Kui <ph name="BEGIN_LINK" />App Store'is<ph name="END_LINK" /> pole värskendust saadaval, on võimalik, et teie seade ei toeta enam Chromiumi uuemaid versioone.</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1423007117030725713">Alustage otsingut uuel Chromiumi vahelehel.</translation>
@@ -176,6 +178,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="4790638144988730920">Jätkake Google’i kontol Chromiumi andmete kasutamist.</translation>
 <translation id="4828317641996116749">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="4856138222358683580">Chromiumi toimingud</translation>
+<translation id="4869706986935301458">Avage Chromium kohe, kui olete oma iPhone'is</translation>
 <translation id="4904452304169763785">Hoiatab privaatsus- või turvaprobleemidest, mille Chromium teie eest tuvastab.</translation>
 <translation id="4908570938463711775">Alustamiseks õppige tundma Chromiumi kasulikke põhialuseid</translation>
 <translation id="4962295957157529683">Lõpetage teises avatud Chromiumi aknas pooleliolev toiming.</translation>
@@ -295,6 +298,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7395825497086981028">Teie parool salvestatakse konto <ph name="EMAIL" /> paroolihaldurisse.</translation>
 <translation id="7434848749522628428">See pääsuvõti salvestatakse konto <ph name="USER_EMAIL" /> paroolihaldurisse.</translation>
 <translation id="7504829997542308412">Avage Chromium</translation>
+<translation id="7507535968973352823">Asetage Chromium alumisse piirkonda, et sellele igal ajal juurde pääseda</translation>
 <translation id="7531461704633548377">Chromiumilt</translation>
 <translation id="7554983317097061001">Chromiumi nõuanne: teisaldage Chromium dokki</translation>
 <translation id="7576863740961052505">Chromiumi seadete haldamine</translation>

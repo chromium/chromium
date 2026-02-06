@@ -993,6 +993,7 @@
 <translation id="1652326691684645429">הפעלה של 'שיתוף בקרבת מקום'</translation>
 <translation id="1652862280638399816">‏כדי להשתמש במנהל הסיסמאות של Google עם מערכת 'צרור מפתחות של macOS', צריך להפעיל מחדש את Chromium ולהתיר גישה אל 'צרור מפתחות'. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
 <translation id="1653958716132599769">קיבוץ כרטיסיות קשורות</translation>
+<translation id="165448107578581061">‏‫Gemini עובד על המשימה…</translation>
 <translation id="1654580009054503925">אין הרשאה להציג בקשות</translation>
 <translation id="1654713139320245449">‏לא נמצאו יעדים להפעלת Cast. לקבלת עזרה</translation>
 <translation id="1656528038316521561">שקיפות רקע</translation>
@@ -3888,6 +3889,7 @@
 <translation id="3619294456800709762">אתרים יכולים להפעיל את מצב 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="3620136223548713675">מיקום גאוגרפי</translation>
 <translation id="3621202678540785336">קלט</translation>
+<translation id="3621841019087952625">אגדיר אחר כך</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="3622820753353315928">צבע המסך בזמן הבהוב</translation>
 <translation id="3623318122257816196">לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. האתרים האחרים האלה יכולים לבקש הרשאה להשתמש במידע שהם שמרו עליך בזמן הגלישה באתר.</translation>
@@ -4288,6 +4290,7 @@
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="3856470183388031602">‏שימוש בחשבון Google ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">בחירת אזור זמן</translation>
+<translation id="3856902135796972992">האתר הזה דורש פעולה נוספת. כדי לשנות את הסיסמה, צריך להשלים את הפעולה בדף.</translation>
 <translation id="3857807444929313943">יש להרים ולגעת בחיישן שוב</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="385939467708172187">שימוש בסיסמה חזקה</translation>
@@ -4783,7 +4786,6 @@
 <translation id="4206585797409671301">יש הרשאה להציג בקשות</translation>
 <translation id="4207144975205749656">הצפנה של בקשות ניווט כדי שתוקפים באותה רשת לא יוכלו לראות את התנועה שלך</translation>
 <translation id="4207932031282227921">‏נשלחה בקשת הרשאה, יש ללחוץ על F6 כדי להשיב</translation>
-<translation id="4208390505124702064">חיפוש ב-<ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">גדול</translation>
 <translation id="4209247656298167054">אין עדכון</translation>
 <translation id="4209251085232852247">מושבת</translation>
@@ -6259,6 +6261,7 @@
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{לבטל את קבוצת הכרטיסיות?}one{לבטל את קבוצות הכרטיסיות?}two{לבטל את קבוצות הכרטיסיות?}other{לבטל את קבוצות הכרטיסיות?}}</translation>
 <translation id="5230190638672215545">‏אפשר להקליד uow כדי לקבל ươ</translation>
 <translation id="5230516054153933099">חלון</translation>
+<translation id="5231255476752743708">‏‫Chrome צריך עזרה כדי לשנות את הסיסמה</translation>
 <translation id="5232714764496316200">‏עושים שיעורי בית בעזרת Google Lens</translation>
 <translation id="5233231016133573565">זיהוי תהליך</translation>
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
@@ -8324,6 +8327,7 @@
 <translation id="6677527809400770913">התנועה <ph name="GESTURE" /> הוקצתה לפעולה <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">גלים גדולים שמתנפצים בים, עם יבשה רחוקה ברקע. רמזים של אור כתום מופיעים ממש מעבר לאופק, בשמיים קודרים.</translation>
 <translation id="6678717876183468697">כתובת אתר של שאילתה</translation>
+<translation id="6678974601734442817">‏‫Chromium צריך עזרה כדי לשנות את הסיסמה</translation>
 <translation id="6679947539429331601">הסתרה למשך 12 שעות</translation>
 <translation id="6680442031740878064">השטח הזמין: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">קצב</translation>

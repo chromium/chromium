@@ -1277,6 +1277,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3052868890529250114">Ön általában biztonságosan csatlakozik a webhelyekhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">A Késleltetett fizetés hibajelző képernyője. A billentyűzet el van rejtve.</translation>
+<translation id="3057844102210575426">Utazási információk kezelése</translation>
 <translation id="3061707000357573562">Javítókészlet szolgáltatás</translation>
 <translation id="3062655045399308513">Böngészési adatok törlése…</translation>
 <translation id="3063453392496098461">Nem sikerült telepíteni a VPN-háttérszolgáltatásokat.</translation>
@@ -2004,6 +2005,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4203769790323223880">Kamerahasználat nem engedélyezett</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />A tűzfal és a vírusirtó konfigurációjának ellenőrzése<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Keresés itt: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Nagy</translation>
 <translation id="4210602799576081649">Az ellenőrző kód lejárt, kérjen újat.</translation>
 <translation id="421066178035138955">Virtuálisvalóság-eszközök és -adatok használata</translation>
@@ -2060,6 +2062,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4270541775497538019">6. kötegelő</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}=1{1 vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}other{Az összes (#) vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}}</translation>
 <translation id="4271652479722040953">Amikor bővítményeket ad hozzá a Chrome-hoz, a böngésző elemzés céljából harmadik feleknek továbbítja az adott bővítményekkel kapcsolatos vonatkozó adatokat, amelyeket a rendszergazda is láthat. Az adatok közé tartoznak a bővítményekre vonatkozó információk, például a bővítmények neve, a telepítés ideje, a telepítés forrása, valamint az ezekkel a bővítményekkel kapcsolatos tevékenységek (például lapváltás, webhelyekkel való kapcsolatfelvétel vagy cookie-khoz való hozzáférés). Ezeket az adatokat a Chrome Webáruházból telepített bővítményekre, valamint a webáruházon kívülről telepített bővítményekre vonatkozóan is gyűjti a rendszer.</translation>
+<translation id="4275788652681621337">Oldalsó panel bezárása</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4276974990916607331">Nem</translation>
 <translation id="4277028893293644418">Jelszó visszaállítása</translation>
@@ -2623,6 +2626,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5209670883520018268">20. tálca</translation>
 <translation id="5212364581680288382">Motorversenyzés</translation>
 <translation id="5214542134842513912">Kiválaszthatja, hogy milyen tágabb témakategóriák legyenek használhatók a hirdetések személyre szabásához. Egy adott tágabb kategória kikapcsolásával a hozzá kapcsolódó témákat is letiltja.</translation>
+<translation id="52163492208010719">Személyazonosító okmányok kezelése</translation>
 <translation id="521659676233207110">13. tálca</translation>
 <translation id="5216942107514965959">Utolsó látogatás: ma</translation>
 <translation id="5217759126664161410">Érvénytelen protokollformátum.</translation>
@@ -2707,6 +2711,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5344522958567249764">A hirdetésekhez kapcsolódó adatvédelem kezelése</translation>
 <translation id="5344579389779391559">Ez az oldal fizetésre próbálhatja meg rávenni</translation>
 <translation id="5345249337934847112">Papír (nehézsúlyú bevont)</translation>
+<translation id="5346059693449184483">Mi jár a fejében?</translation>
 <translation id="5348330584842140856">Ez a fájl nem lett áthelyezve, mert már nem létezik</translation>
 <translation id="5349543692327946794">Címkék (tintasugaras)</translation>
 <translation id="5351548097010183514">Építőanyagok</translation>
@@ -4503,6 +4508,7 @@ További részletek:
 <translation id="8216640997712497593">14 × 18 hüvelyk</translation>
 <translation id="8218327578424803826">Hozzárendelt helyszín:</translation>
 <translation id="8220602974062798186">Letiltja a(z) <ph name="TOPIC" /> témát és az összes kapcsolódó témát?</translation>
+<translation id="8223142476690844338">Üdv, <ph name="USER_NAME" />! Mi jár a fejében?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Kérdés hozzá: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Kétoldalas nézet</translation>
 <translation id="822925450938886901">További információkért és az alkalmazott házirendekért nyissa meg a chrome://management oldalt a böngészőjében.</translation>

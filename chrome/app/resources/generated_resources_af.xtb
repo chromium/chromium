@@ -160,6 +160,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="109647177154844434">As Parallels Desktop gedeïnstalleer word, sal jou Windows-stelselkopie uitgevee word. Dit sluit die programme, instellings en data daarvan in. Is jy seker jy wil voortgaan?</translation>
 <translation id="1097016918605049747">Hierdie bladsy kon nie vertaal word nie.</translation>
 <translation id="1097658378307015415">Voor jy aanmeld, gaan asseblief as Gas in om die netwerk <ph name="NETWORK_ID" /> te aktiveer</translation>
+<translation id="1099070179078143183">Om kenmerke soos swendelbespeuring aan te dryf, kan Chrome KI-modelle gebruik wat direk op jou toestel loop sonder om jou data na Google-bedieners te stuur. Wanneer dit af is, sal hierdie kenmerke dalk nie werk nie. <ph name="BEGIN_LINK" />Kry meer inligting oor KI op jou toestel<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Prent is van <ph name="DEVICE_NAME" /> af gekopieer</translation>
 <translation id="1100504063505580045">Huidige ikoon</translation>
 <translation id="1102759278139578486">Kan nie die hoofnodus se annotasielêers aflaai nie. Probeer later weer.</translation>
@@ -2588,7 +2589,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2724841811573117416">WebRTC-loglêers</translation>
 <translation id="272488616838512378">Eenheidomskakeling</translation>
 <translation id="2725200716980197196">Netwerkverbinding is herstel</translation>
-<translation id="2725312032345042618">Gevalgeskiedenis</translation>
+<translation id="2725312032345042618">Gebeurtenisgeskiedenis</translation>
 <translation id="2726776862643824793">verlaag skermhelderheid</translation>
 <translation id="272741954544380994">Deursoek prent met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Moet my nie weer herinner nie</translation>
@@ -4787,7 +4788,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4206585797409671301">Toegelaat om versoeke te wys</translation>
 <translation id="4207144975205749656">Enkripteer navigasieversoeke sodat aanvallers op dieselfde netwerk nie jou verkeer kan sien nie</translation>
 <translation id="4207932031282227921">Toestemming is versoek; druk F6 om te antwoord</translation>
-<translation id="4208390505124702064">Deursoek <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4209247656298167054">Geen opdatering nie</translation>
 <translation id="4209251085232852247">Afgeskakel</translation>
@@ -5619,6 +5619,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> wil persoonlike inligting gebruik wat in jou digitale beursie is.</translation>
 <translation id="4785719467058219317">Jy gebruik tans 'n sleutel wat nie by hierdie webwerf geregistreer is nie</translation>
 <translation id="4785914069240823137">Kanselleer snoei</translation>
+<translation id="4786430656008801173">KI op toestel</translation>
 <translation id="4787471921443575924">Toegangsleutel vir gebruikernaam wysig: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Gaan jou netwerkverbinding na en probeer weer.</translation>
 <translation id="4789348252524569426">Kan nie spraaklêers installeer nie. Jou toestel moet opgedateer word. Herbegin jou toestel en probeer weer.</translation>

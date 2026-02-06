@@ -160,6 +160,7 @@
 <translation id="109647177154844434">解除安裝 Parallels Desktop 時，系統將刪除 Windows 映像檔，包含其應用程式、設定和資料。確定要繼續嗎？</translation>
 <translation id="1097016918605049747">無法翻譯這個網頁</translation>
 <translation id="1097658378307015415">請在登入前以訪客身分進入，啟用網路 <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Chrome 可使用直接在裝置執行的 AI 模型 (無需將你的資料傳送至 Google 伺服器)，提供詐騙偵測等功能。關閉裝置端 AI 後，這些功能可能無法運作。<ph name="BEGIN_LINK" />進一步瞭解裝置端 AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">從「<ph name="DEVICE_NAME" />」複製的圖片</translation>
 <translation id="1100504063505580045">目前圖示</translation>
 <translation id="1102759278139578486">無法下載主節點註解檔案，請稍後再試。</translation>
@@ -4770,7 +4771,6 @@
 <translation id="4206585797409671301">已允許顯示要求</translation>
 <translation id="4207144975205749656">加密瀏覽要求，防止同一網路上的攻擊者查看你的流量</translation>
 <translation id="4207932031282227921">已要求權限，按下 F6 鍵即可回覆</translation>
-<translation id="4208390505124702064">搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4209247656298167054">沒有更新</translation>
 <translation id="4209251085232852247">已關閉</translation>
@@ -5599,6 +5599,7 @@
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想要使用你在數位錢包中的個人資訊。</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
+<translation id="4786430656008801173">裝置端 AI</translation>
 <translation id="4787471921443575924">編輯使用者名稱 <ph name="USER_EMAIL" /> 的密碼金鑰</translation>
 <translation id="4788092183367008521">請檢查你的網路連線，然後再試一次。</translation>
 <translation id="4789348252524569426">無法安裝語音檔案，必須更新裝置。請重新啟動裝置，然後再試一次。</translation>

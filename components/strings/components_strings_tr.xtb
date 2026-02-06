@@ -1277,6 +1277,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3052868890529250114">Sitelere genelde güvenli bir şekilde bağlanıyorsunuz, ancak Chrome bu kez güvenli bir bağlantı kuramadı. Bir saldırgan, ağ bağlantınızı gizlice izlemeye veya değiştirmeye çalışıyor olabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ürünün fiyatı <ph name="PRICE_DROP" /> düştü</translation>
 <translation id="3056660797732519147">Şimdi al sonra öde hata ekranı. Klavye gizli.</translation>
+<translation id="3057844102210575426">Seyahat bilgilerini yönet</translation>
 <translation id="3061707000357573562">Yama Hizmeti</translation>
 <translation id="3062655045399308513">Tarama Verilerini Sil</translation>
 <translation id="3063453392496098461">VPN arka plan hizmetleri yüklenemedi.</translation>
@@ -2007,6 +2008,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4203769790323223880">Kameraya izin verilmiyor</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Güvenlik duvarı ve virüsten korunma yapılandırmalarını kontrol etme<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Ara <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Büyük</translation>
 <translation id="4210602799576081649">Doğrulama kodunun süresi doldu. Yeni bir kod isteyin</translation>
 <translation id="421066178035138955">Sanal gerçeklik cihazlarını ve verilerini kullanmak</translation>
@@ -2063,6 +2065,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4270541775497538019">Yığınlayıcı 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 yorumu göster. Ortalama puan <ph name="STARS" /> yıldız.}=1{1 yorumu göster. Ortalama puan <ph name="STARS" /> yıldız.}other{# yorumun tümünü göster. Ortalama puan <ph name="STARS" /> yıldız.}}</translation>
 <translation id="4271652479722040953">Chrome'a eklenen uzantılarla ilgili veriler analiz edilmek üzere üçüncü taraflara gönderilir ve yöneticiniz tarafından görülebilir. Ad, yükleme zamanı, yükleme kaynağı gibi uzantılarla ilgili bilgilerin yanı sıra uzantılarla ilişkili etkinlikler (ör. sekme değiştirme, web siteleriyle iletişime geçme veya çerezlere erişme) bu veriler arasında yer alır. Bu veriler hem Chrome Web Mağazası'ndan hem de mağaza dışından yüklenen uzantılar için toplanır.</translation>
+<translation id="4275788652681621337">Yan paneli kapat</translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4276974990916607331">Hayır, teşekkürler</translation>
 <translation id="4277028893293644418">Şifreyi sıfırla</translation>
@@ -2626,6 +2629,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5209670883520018268">Tepsi 20</translation>
 <translation id="5212364581680288382">Motosiklet Yarışı</translation>
 <translation id="5214542134842513912">Reklamların kişiselleştirilmesine yardımcı olmak için kullanılacak geniş kapsamlı konu kategorilerini seçin. Daha geniş kapsamlı bir kategori devre dışı bırakıldığında bu kategoriyle ilgili konular da engellenir.</translation>
+<translation id="52163492208010719">Kimlik belgelerini yönet</translation>
 <translation id="521659676233207110">Tepsi 13</translation>
 <translation id="5216942107514965959">En son bugün ziyaret edildi</translation>
 <translation id="5217759126664161410">Geçersiz protokol biçimi.</translation>
@@ -2710,6 +2714,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5344522958567249764">Reklam gizliliğini yönet</translation>
 <translation id="5344579389779391559">Bu sayfa sizden para almaya çalışabilir</translation>
 <translation id="5345249337934847112">Kağıt (Kalın Kaplanmış)</translation>
+<translation id="5346059693449184483">Aklınızda ne var?</translation>
 <translation id="5348330584842140856">Bu dosya artık mevcut olmadığı için taşınamadı</translation>
 <translation id="5349543692327946794">Etiketler (Mürekkep Püskürtmeli)</translation>
 <translation id="5351548097010183514">İnşaat Malzemeleri ve Gereçleri</translation>
@@ -4506,6 +4511,7 @@ Ek ayrıntılar:
 <translation id="8216640997712497593">14 x 18 inç</translation>
 <translation id="8218327578424803826">Atanan Konum:</translation>
 <translation id="8220602974062798186"><ph name="TOPIC" /> ve ilgili konular engellensin mi?</translation>
+<translation id="8223142476690844338">Merhaba <ph name="USER_NAME" />, aklınızda ne var?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> anahtar kelimesini sorun</translation>
 <translation id="8228419419708659934">İki sayfalı görünüm</translation>
 <translation id="822925450938886901">Ek bilgiler ve geçerli olabilecek politikalar için tarayıcınızda chrome://management adresini açın.</translation>

@@ -1277,6 +1277,7 @@
 <translation id="3052868890529250114">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن اس مرتبہ Chrome محفوظ کنکشن کا استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> سے قیمت میں <ph name="PRICE_DROP" /> گراوٹ</translation>
 <translation id="3056660797732519147">ابھی خریدیں، ادائیگی بعد میں کریں کی خرابی کی اسکرین۔ کی بورڈ پوشیدہ ہے۔</translation>
+<translation id="3057844102210575426">سفر کی معلومات کا نظم کریں</translation>
 <translation id="3061707000357573562">پیچ سروس</translation>
 <translation id="3062655045399308513">براؤزنگ ڈیٹا حذف کریں...</translation>
 <translation id="3063453392496098461">‏‫VPN کی پس منظر سروسز کی انسٹالیشن ناکام ہو گئی۔</translation>
@@ -2008,6 +2009,7 @@
 <translation id="4203769790323223880">کیمرے کی اجازت نہیں ہے</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />فائروال اور اینٹی وائرس کنفیگریشنز کو چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064"><ph name="SITE_NAME" /> میں تلاش کریں</translation>
 <translation id="4209092469652827314">بڑا</translation>
 <translation id="4210602799576081649">توثیقی کوڈ کی میعاد ختم ہوگئی، ایک نئے کوڈ کی درخواست کریں</translation>
 <translation id="421066178035138955">ورچوئل رئیلٹی آلات اور ڈیٹا کا استعمال کریں</translation>
@@ -2064,6 +2066,7 @@
 <translation id="4270541775497538019">اسٹیکر 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{‫0 جائزے ملاحظہ کریں۔ اوسط درجہ بندی <ph name="STARS" /> ستارے ہیں۔}=1{‫1 جائزہ ملاحظہ کریں۔ اوسط درجہ بندی <ph name="STARS" /> ستارے ہیں۔}other{سبھی # جائزے ملاحظہ کریں۔ اوسط درجہ بندی <ph name="STARS" /> ستارے ہیں۔}}</translation>
 <translation id="4271652479722040953">‏جب ایکسٹینشنز کو Chrome میں شامل کیا جاتا ہے تو ان ایکسٹینشنز کے بارے میں متعلقہ ڈیٹا فریقین ثالث کو تجزیے کے لیے بھیجا جاتا ہے اور ممکن ہے کہ یہ آپ کے منتظم کو دکھائی دے۔ ڈیٹا میں ایکسٹینشنز کے بارے میں معلومات شامل ہوتی ہیں جیسے کہ نام، انسٹال کا وقت، انسٹال کا ماخذ نیز ان ایکسٹینشنز سے وابستہ سرگرمی (جیسے ٹیبز کو تبدیل کرنا، ویب سائٹس سے رابطہ کرنا یا کوکیز تک رسائی حاصل کرنا)۔ یہ ڈیٹا Chrome ویب اسٹور سے انسٹال کردہ ایکسٹینشنز نیز بیرون اسٹور ایکسٹینشنز کے لیے جمع کیا جاتا ہے۔</translation>
+<translation id="4275788652681621337">سائیڈ پینل بند کریں</translation>
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4276974990916607331">نہیں شکریہ</translation>
 <translation id="4277028893293644418">پاس ورڈ ری سیٹ کریں</translation>
@@ -2627,6 +2630,7 @@
 <translation id="5209670883520018268">ٹرے 20</translation>
 <translation id="5212364581680288382">موٹرسائیکلوں کی ریس</translation>
 <translation id="5214542134842513912">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں۔ ایک وسیع زمرہ کو آف کرنے سے اس سے متعلقہ موضوعات بھی مسدود ہو جائیں گے۔</translation>
+<translation id="52163492208010719">شناختی دستاویزات کا نظم کریں</translation>
 <translation id="521659676233207110">ٹرے 13</translation>
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
 <translation id="5217759126664161410">پروٹوکول کا فارمیٹ غلط ہے۔</translation>
@@ -2711,6 +2715,7 @@
 <translation id="5344522958567249764">اشتہارات کی رازداری کا نظم کریں</translation>
 <translation id="5344579389779391559">یہ صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
 <translation id="5345249337934847112">کاغذ (ہیوی ویٹ کوٹیڈ)</translation>
+<translation id="5346059693449184483">آپ کے ذہن میں کیا ہے؟</translation>
 <translation id="5348330584842140856">اس فائل کو منتقل نہیں کیا گیا کیونکہ اب یہ موجود نہیں ہے</translation>
 <translation id="5349543692327946794">لیبلز (انک جیٹ)</translation>
 <translation id="5351548097010183514">تعمیراتی مٹیریل اور سپلائیز</translation>
@@ -4507,6 +4512,7 @@
 <translation id="8216640997712497593">‏‎14 x 18 انچ</translation>
 <translation id="8218327578424803826">تفویض کردہ مقام</translation>
 <translation id="8220602974062798186"><ph name="TOPIC" /> کو اور کسی بھی متعلقہ موضوع کو مسدود کریں؟</translation>
+<translation id="8223142476690844338">آداب <ph name="USER_NAME" />، آپ کے ذہن میں کیا ہے؟</translation>
 <translation id="8226408512771130794">‫<ph name="KEYWORD_SHORTCUT" />، <ph name="KEYWORD_SUFFIX" /> سے پوچھیں</translation>
 <translation id="8228419419708659934">دو صفحہ کا منظر</translation>
 <translation id="822925450938886901">‏اضافی معلومات اور وہ پالیسیاں جو لاگو ہو سکتی ہیں ان کے لیے، اپنے براؤزر میں chrome://management کھولیں۔</translation>

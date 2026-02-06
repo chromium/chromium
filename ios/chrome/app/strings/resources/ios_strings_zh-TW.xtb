@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">產品已加入追蹤的產品清單。</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
+<translation id="2237869114829007407">取得任何網頁或主題的總覽資訊和重要洞察</translation>
 <translation id="2240256190924001613">有可用的組態設定檔</translation>
 <translation id="2244080985779413662">這個網站想要下載檔案並在「錢包」中開啟。</translation>
 <translation id="2245007488813216650">翻譯中…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">關閉</translation>
 <translation id="3312300514034250578">安全瀏覽強化防護功能</translation>
+<translation id="3315786055700307152">商品現享 85 折優惠</translation>
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328801116991980348">網站資訊</translation>
 <translation id="333229797575847124">如何啟用這項功能</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">使用以下名稱建立密碼金鑰：</translation>
 <translation id="3380352560400387991">這個網站正在嘗試開啟某個應用程式，這會使你退出無痕模式。</translation>
 <translation id="3385742921291399323">取得儲存的密碼、分頁、書籤等資料。</translation>
+<translation id="3391765987934722383">別錯過降價資訊</translation>
 <translation id="3392923070107623576">建立分頁群組，讓一切井然有序</translation>
 <translation id="3404232721752787413">儲存在 Google 相簿中</translation>
 <translation id="3406506285180498376">分享網頁…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">登入</translation>
 <translation id="3955740319737378355">完成</translation>
 <translation id="3955822496205734389">你有多組低強度密碼。</translation>
+<translation id="3957016963627617921">使用 Chrome 內建 Gemini 提升效率</translation>
 <translation id="3958312024468322930">將圖示拖曳到主畫面底部的 Dock</translation>
 <translation id="3962326069546168954">儲存</translation>
 <translation id="3967327056943561740">書籤</translation>
@@ -2163,6 +2167,7 @@
 <translation id="8803639129939845298">安全</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814719628147284151">繼續</translation>
+<translation id="8817524703470045896">追蹤價格，任何網站降價時即可收到快訊通知</translation>
 <translation id="8819155700324279105">多添一層防護，有效防範線上威脅</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8822421075653507124">貴機構可能需要查看這部裝置的作業系統、瀏覽器、設定的相關資訊，以及裝置上安裝的軟體，確保裝置能安全使用。</translation>
@@ -2170,6 +2175,7 @@
 <translation id="8829809207373502270">這個密碼金鑰已失效，目前已從 <ph name="WEBSITE" /> 刪除，很快就會從密碼管理工具中刪除。<ph name="BEGIN_LINK" />關於密碼金鑰<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">關閉所有閒置分頁</translation>
 <translation id="8837654851594567190">依發布者排序</translation>
+<translation id="8844136307393039959">你追蹤的產品降價了</translation>
 <translation id="8848286253339013170">正在將圖片儲存至 <ph name="USER_EMAIL" /> 的 Google 相簿…</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8855242995793521265">不會大幅降低瀏覽器或裝置運作速度。</translation>
@@ -2213,6 +2219,7 @@
 <translation id="8976382372951310360">說明</translation>
 <translation id="8976414606286374109">信用卡會儲存至你的 Google 帳戶。</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，釘選的網站</translation>
 <translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
 <translation id="9000532564152265066">所有分頁</translation>
 <translation id="9003677638446136377">重新檢查</translation>

@@ -2641,6 +2641,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Periksa Tatabahasa Dengan Ejaan</translation>
 <translation id="2750020734439919571">Lagi tetapan dan kebenaran apl Chrome</translation>
+<translation id="275010360476017464">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Aktiviti Apl Gemini (jika dihidupkan).</translation>
 <translation id="2750602041558385535">Muat turun yang tidak disahkan disekat</translation>
 <translation id="2751454300227269244">Gerakkan mulut anda ke kanan</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> mahu mengetahui nombor ID kunci keselamatan anda. Laman ini akan mengetahui dengan tepat kunci keselamatan yang anda gunakan.</translation>
@@ -4743,6 +4744,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4169535189173047238">Jangan benarkan</translation>
 <translation id="4170314459383239649">Kosongkan Apabila Keluar</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Kongsi tab dengan Gemini}other{Kongsi # tab dengan Gemini}}</translation>
+<translation id="4172944993779635350">Kata laluan anda untuk "<ph name="URL" />" disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam akaun anda.</translation>
 <translation id="4173129130568053653">Gemini boleh membantu anda menempah janji temu, membuat troli beli-belah atau melakukan tugasan lain yang anda berikan kepada Gemini.</translation>
 <translation id="4175137578744761569">Ungu cerah dan putih</translation>
 <translation id="4176463684765177261">Dilumpuhkan</translation>
@@ -4788,7 +4790,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4206585797409671301">Dibenarkan untuk menunjukkan permintaan</translation>
 <translation id="4207144975205749656">Menyulitkan permintaan navigasi supaya penyerang pada rangkaian yang sama tidak dapat melihat trafik anda</translation>
 <translation id="4207932031282227921">Kebenaran diminta, tekan F6 untuk memberikan respons</translation>
-<translation id="4208390505124702064">Cari <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4209247656298167054">Tiada Kemaskinian</translation>
 <translation id="4209251085232852247">Dimatikan</translation>
@@ -5060,6 +5061,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4386604394450371010">ikhtisar</translation>
 <translation id="4387890294700445764">Kata laluan yang terjejas</translation>
 <translation id="4388650384344483842">Gunakan sekurang-kurangnya 8 aksara</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Kata laluan untuk <ph name="URL" />}other{Kata laluan untuk <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dan <ph name="NUMBER_OF_OTHER_SWITCHES" /> lagi suis</translation>
 <translation id="439266289085815679">Konfigurasi Blueooth dikawal oleh <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edit fail konfigurasi</translation>
@@ -5589,6 +5591,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4762849514113423887">Kata laluan salah. Cuba lagi.</translation>
 <translation id="4763408175235639573">Kuki berikut ditetapkan apabila anda melihat halaman ini</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> bukan akaun Google for Education yang sah. Hubungi pentadbir anda. Jika anda seorang pentadbir, anda boleh menyediakan organisasi anda dengan melawati: g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} kata laluan untuk "<ph name="URL" />" disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam akaun anda.}other{{COUNT} kata laluan untuk "<ph name="URL" />" disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam akaun.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Peranti ini akan disimpan selama 1 bulan dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}other{Peranti ini akan disimpan selama {MONTHS} bulan dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}}</translation>
 <translation id="476563889641554689">Pilih kawasan untuk dicari dengan Lens</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Menyemak kunci awam dan sekatan integriti... Kurang daripada 1 minit lagi}=1{Menyemak kunci awam dan sekatan integriti... Tinggal 1 minit}other{Menyemak kunci awam dan sekatan integriti... Tinggal # minit}}</translation>
@@ -5776,6 +5779,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4881685975363383806">Jangan ingatkan saya lain kali</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4882312758060467256">Boleh mengakses tapak ini</translation>
+<translation id="4882848900607400156">Apabila anda berkongsi lokasi tepat anda, Gemini boleh menjawab pertanyaan anda dengan lebih tepat. Data anda tidak digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="4882919381756638075">Tapak biasanya menggunakan mikrofon anda untuk ciri komunikasi seperti sembang video</translation>
 <translation id="4883436287898674711">Semua tapak <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Pengurus Tugas</translation>
@@ -5866,6 +5870,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4945439665401275950">Untuk menyediakan cap jari, minta anak anda menyentuh butang kuasa. Data cap jari anak anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="4946998421534856407">pelancar + anak panah ke atas</translation>
 <translation id="4947376546135294974">Data daripada laman yang anda lawati</translation>
+<translation id="4948370357877377178">Teruskan tugasan anda</translation>
 <translation id="4950100687509657457">Buat profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{satu fail}other{# fail}}</translation>
 <translation id="495170559598752135">Tindakan</translation>
@@ -6059,6 +6064,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Dengan Penyulitan RSA</translation>
 <translation id="5090637338841444533">Tidak dibenarkan untuk menjejak kedudukan kamera anda</translation>
 <translation id="5091636240353511739">Tunjukkan PIN</translation>
+<translation id="5093447877601682598">Hantar maklum balas tentang jalur tab</translation>
 <translation id="5093477827231450397">Senarai laman yang anda sekat yang anda tidak mahu mencadangkan iklan ke laman lain</translation>
 <translation id="5093569275467863761">Subbingkai Dicache Kembali/Maju Inkognito: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Anda boleh membuka dan mengedit fail yang disokong dengan apl ini daripada apl Files atau apl lain. Untuk mengawal fail yang membuka apl ini secara lalai, <ph name="BEGIN_LINK" />ketahui cara menetapkan apl lalai pada peranti anda<ph name="END_LINK" />.</translation>
@@ -8891,6 +8897,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7057567173736333354">Perihalkan imej anda</translation>
 <translation id="70577934383983846">Gunakan kata laluan ini pada semua peranti anda</translation>
 <translation id="7058024590501568315">Rangkaian tersembunyi</translation>
+<translation id="7058325593717863084">Hantar Maklum Balas Tentang Jalur Tab</translation>
 <translation id="7059858479264779982">Tetapkan kepada autolancar</translation>
 <translation id="7060004353663489242"><ph name="FIELD_LIST" /> diperlukan</translation>
 <translation id="7063129466199351735">Memproses pintasan...</translation>
@@ -9091,6 +9098,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Keluar daripada halaman}other{Keluar daripada halaman}}</translation>
 <translation id="7207457272187520234">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Tetapan ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda.</translation>
 <translation id="7207631048330366454">Cari apl</translation>
+<translation id="7209958456051239069">Apabila anda berkongsi lokasi tepat anda, Gemini boleh menjawab pertanyaan anda dengan lebih tepat</translation>
 <translation id="7210257969463271891">Apl web yang anda pasang akan dipaparkan di sini</translation>
 <translation id="7210432570808024354">Ketik dan leret untuk menggerakkan item</translation>
 <translation id="7210499381659830293">Pencetak sambungan</translation>
@@ -10710,6 +10718,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8288032458496410887">Nyahpasang <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Ekstrak Teks Daripada PDF</translation>
 <translation id="8289128870594824098">Saiz cakera</translation>
+<translation id="8289200713453671499">Beralih antara kumpulan tab anda dengan perbualan AI terbaharu anda dengan pantas tanpa kehilangan tempat anda.</translation>
 <translation id="8289509909262565712">Selamat datang ke <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Muat turun Chrome</translation>
 <translation id="8291942417224950075">Untuk kegunaan peribadi</translation>
@@ -11691,6 +11700,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8945508919180478719">Mikrofon gaya studio</translation>
 <translation id="8946359700442089734">Ciri penyahpepijatan tidak didayakan sepenuhnya pada peranti ini <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Kuncupkan semua permintaan dalam bar alamat</translation>
+<translation id="8946996840522387154">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Aktiviti Apl Gemini (jika dihidupkan). Data anda tidak digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="894763922177556086">Bagus</translation>
 <translation id="895054485242522631">Tapak boleh menggunakan penderia gerakan</translation>
 <translation id="8951256747718668828">Pemulihan tidak dapat diselesaikan kerana berlaku ralat</translation>

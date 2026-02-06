@@ -160,6 +160,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="109647177154844434">Dacă dezinstalezi Parallels Desktop, imaginea Windows va fi ștearsă. Aici sunt incluse aplicațiile, setările și datele conexe. Sigur vrei să continui?</translation>
 <translation id="1097016918605049747">Pagina nu a putut fi tradusă</translation>
 <translation id="1097658378307015415">Înainte de a vă conecta, începeți o sesiune pentru invitați pentru activarea rețelei <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Ca să ofere funcții precum detectarea escrocheriilor, Chrome poate să folosească modele AI care rulează direct pe dispozitivul tău, fără să trimită datele la serverele Google. Când opțiunea este dezactivată, este posibil ca aceste funcții să nu fie disponibile. <ph name="BEGIN_LINK" />Află mai multe despre AI pe dispozitiv<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Imagine copiată de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Pictograma actuală</translation>
 <translation id="1102759278139578486">Nu se pot descărca fișierele cu adnotări pentru nodurile principale. Încearcă din nou mai târziu.</translation>
@@ -4774,7 +4775,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4206585797409671301">Are permisiunea de a afișa solicitări</translation>
 <translation id="4207144975205749656">Criptează solicitările de navigare, astfel încât atacatorii din aceeași rețea să nu-ți poată vedea traficul.</translation>
 <translation id="4207932031282227921">Permisiune necesară, apasă F6 pentru a răspunde</translation>
-<translation id="4208390505124702064">Caută pe <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Mare</translation>
 <translation id="4209247656298167054">Nicio actualizare</translation>
 <translation id="4209251085232852247">Dezactivat</translation>
@@ -5606,6 +5606,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> dorește să-ți folosească informațiile cu caracter personal din portofelul digital.</translation>
 <translation id="4785719467058219317">Folosești o cheie de securitate care nu este înregistrată pe acest site</translation>
 <translation id="4785914069240823137">Anulează decuparea</translation>
+<translation id="4786430656008801173">AI pe dispozitiv</translation>
 <translation id="4787471921443575924">Editează cheia de acces pentru numele de utilizator: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Verifică conexiunea la rețea și încearcă din nou.</translation>
 <translation id="4789348252524569426">Nu se pot instala fișierele pentru recunoaștere vocală. Dispozitivul trebuie actualizat. Repornește dispozitivul și încearcă din nou.</translation>

@@ -379,7 +379,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="5289287148052354622">Obtenir l'appli Chromium</translation>
 <translation id="5294316920224716406">Lors de la navigation en mode Navigation privée, Chromium vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="5313228254328109263">Service interne de mise à jour de Chromium</translation>
-<translation id="5346059693449184483">À quoi pensez-vous?</translation>
 <translation id="5346389065299425353">Approfondissez votre recherche en ajoutant plusieurs onglets, fichiers et outils</translation>
 <translation id="5352264705793813212">Chromium a trouvé des recommandations de sécurité que vous pouvez examiner</translation>
 <translation id="5352361688875342522">Autres profils Chromium</translation>
@@ -644,7 +643,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8177472873527554730">Impossible de trouver du contenu sur la page</translation>
 <translation id="8200109504272824693">Entrez votre phrase de passe pour utiliser et enregistrer les données Chromium dans votre compte, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Vous bloquez habituellement les notifications. Pour autoriser ce site à vous envoyer des notifications, cliquez ici.</translation>
-<translation id="8223142476690844338">Bonjour <ph name="USER_NAME" />, à quoi pensez-vous?</translation>
 <translation id="8223363452568144035">Pour utiliser votre caméra, accordez l'accès à Chromium dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chromium afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="8248265253516264921">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>

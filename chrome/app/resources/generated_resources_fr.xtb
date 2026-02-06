@@ -160,6 +160,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="109647177154844434">Si vous désinstallez Parallels Desktop, cela supprimera aussi l'image Windows, y compris ses applications, ses paramètres et ses données. Voulez-vous vraiment continuer ?</translation>
 <translation id="1097016918605049747">Impossible de traduire cette page</translation>
 <translation id="1097658378307015415">Avant de vous connecter, veuillez vous connecter en tant qu'invité afin d'activer le réseau <ph name="NETWORK_ID" />.</translation>
+<translation id="1099070179078143183">Pour activer des fonctionnalités comme la Détection d'escroqueries, Chrome peut utiliser des modèles d'IA qui s'exécutent directement sur votre appareil sans envoyer vos données aux serveurs Google. Lorsque cette option est désactivée, il est possible que ces fonctionnalités ne s'exécutent pas. <ph name="BEGIN_LINK" />En savoir plus sur l'IA sur l'appareil<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Image copiée depuis <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Icône actuelle</translation>
 <translation id="1102759278139578486">Impossible de télécharger les fichiers d'annotation du nœud principal. Réessayez plus tard.</translation>
@@ -4773,7 +4774,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4206585797409671301">Autorisée à afficher les demandes</translation>
 <translation id="4207144975205749656">Chiffre les requêtes de navigation pour que les pirates sur le même réseau ne puissent pas voir votre trafic</translation>
 <translation id="4207932031282227921">Autorisation demandée, appuyez sur F6 pour répondre</translation>
-<translation id="4208390505124702064">Rechercher sur <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209247656298167054">Aucune mise à jour</translation>
 <translation id="4209251085232852247">Désactivé</translation>
@@ -5605,6 +5605,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> souhaite utiliser des informations personnelles de votre portefeuille numérique.</translation>
 <translation id="4785719467058219317">La clé de sécurité n'est pas enregistrée auprès de ce site Web</translation>
 <translation id="4785914069240823137">Annuler le recadrage</translation>
+<translation id="4786430656008801173">IA sur l'appareil</translation>
 <translation id="4787471921443575924">Modifier la clé d'accès pour <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Veuillez vérifier votre connexion réseau, puis réessayer.</translation>
 <translation id="4789348252524569426">Impossible d'installer les fichiers vocaux. Votre appareil doit être mis à jour. Redémarrez-le et réessayez.</translation>

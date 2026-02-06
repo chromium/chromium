@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Продуктът е добавен към списъка ви с проследявани продукти.</translation>
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="2236949375853147973">Моята активност</translation>
+<translation id="2237869114829007407">Получавайте общ преглед и ключова статистика за всяка страница или тема</translation>
 <translation id="2240256190924001613">Налице е конфигурационен профил</translation>
 <translation id="2244080985779413662">Този уебсайт иска да изтегли файл и да го отвори в Wallet.</translation>
 <translation id="2245007488813216650">Превежда се…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">още</translation>
 <translation id="3311748811247479259">Изключено</translation>
 <translation id="3312300514034250578">Подобрена защита от Безопасно сърфиране</translation>
+<translation id="3315786055700307152">Елементът ви вече е с 15% отстъпка</translation>
 <translation id="3324193307694657476">Адрес 2</translation>
 <translation id="3328801116991980348">Информация за сайта</translation>
 <translation id="333229797575847124">Как да активирате тази функция</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Създайте ключ за достъп за</translation>
 <translation id="3380352560400387991">Този сайт се опитва да отвори приложение. Това действие ще изключи режима „инкогнито“.</translation>
 <translation id="3385742921291399323">Осъществявайте достъп до запазените си пароли, раздели, отметки и др.</translation>
+<translation id="3391765987934722383">Не пропускайте понижение на цената</translation>
 <translation id="3392923070107623576">Бъдете организирани с помощта на групи раздели</translation>
 <translation id="3404232721752787413">Запазване в Google Снимки</translation>
 <translation id="3406506285180498376">Споделяне на страницата…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">Имате ненадеждни пароли.</translation>
+<translation id="3957016963627617921">Правете повече неща с Gemini в Chrome</translation>
 <translation id="3958312024468322930">Преместете с плъзгане до лентата Dock в долната част на началния екран</translation>
 <translation id="3962326069546168954">Запазване</translation>
 <translation id="3967327056943561740">Отметки</translation>
@@ -1662,6 +1666,7 @@
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Задаване като браузър по подразбиране в настройките…</translation>
 <translation id="7007970306646738803">Изберете какво да се направи със съществуващите данни за сърфирането на това устройство, като например разделите, историята и паролите.</translation>
+<translation id="7012978439516925343">Потвърдете самоличността си, за да създадете ключ за достъп</translation>
 <translation id="7015418667643980944">Разделен изглед</translation>
 <translation id="7016070607649558507">Имате 1 ненадеждна парола. Коригирайте я сега, за да сте в безопасност.</translation>
 <translation id="7016958933495968912">Опции за Discover</translation>
@@ -2163,6 +2168,7 @@
 <translation id="8803639129939845298">Сигурно</translation>
 <translation id="8813277370772331957">Напомняне по-късно</translation>
 <translation id="8814719628147284151">Напред</translation>
+<translation id="8817524703470045896">Проследявайте цени и получавайте сигнали при понижение на цената в даден сайт</translation>
 <translation id="8819155700324279105">Добавете допълнителна защита срещу онлайн заплахи</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="8822421075653507124">За да се обезпечи безопасното използване на това устройство, може да е необходимо организацията ви да вижда информация за операционната система, браузъра и настройките му, както и какъв софтуер е инсталиран на устройството.</translation>
@@ -2170,6 +2176,7 @@
 <translation id="8829809207373502270">Този ключ за достъп вече не работи. Той бе изтрит от <ph name="WEBSITE" /> и скоро ще бъде изтрит и оттук. <ph name="BEGIN_LINK" />Всичко за ключовете за достъп<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Затваряне на всички неактивни</translation>
 <translation id="8837654851594567190">Сортиране по издател</translation>
+<translation id="8844136307393039959">Понижение на цената на проследявания от вас продукт</translation>
 <translation id="8848286253339013170">Изображението в Google Снимки се запазва за <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8855242995793521265">Не забавя осезаемо браузъра или устройството ви.</translation>
@@ -2213,6 +2220,7 @@
 <translation id="8976382372951310360">Помощ</translation>
 <translation id="8976414606286374109">Данните за картите се запазват в профила ви в Google.</translation>
 <translation id="8981454092730389528">Контроли за активността в Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" /> – фиксиран сайт</translation>
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
 <translation id="9000532564152265066">Всички раздели</translation>
 <translation id="9003677638446136377">Повторна проверка</translation>

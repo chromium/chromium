@@ -1277,6 +1277,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3052868890529250114">Yfirleitt tengistu vefsvæðum á öruggan hátt en Chrome gat ekki notað örugga tengingu í þetta sinn. Árásaraðili gæti verið að reyna að hlera eða breyta nettengingunni þinni. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> verðlækkun á <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Villuskjár „Kauptu núna, borgaðu síðar“. Lyklaborð er falið.</translation>
+<translation id="3057844102210575426">Stjórna ferðaupplýsingum</translation>
 <translation id="3061707000357573562">Plástraþjónusta</translation>
 <translation id="3062655045399308513">Eyða vefskoðunargögnum...</translation>
 <translation id="3063453392496098461">Uppsetning á bakgrunnsþjónustu VPN mistókst.</translation>
@@ -2007,6 +2008,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4203769790323223880">Myndavél ekki leyfð</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Athuga eldveggjar- og vírusvarnastillingar<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Leita á <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stórt</translation>
 <translation id="4210602799576081649">Staðfestingarkóði er útrunninn, biddu um annan kóða</translation>
 <translation id="421066178035138955">Nota sýndarveruleikatæki og -gögn</translation>
@@ -2063,6 +2065,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4270541775497538019">Staflari 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Engar umsagnir. Meðaleinkunn er <ph name="STARS" /> stjörnur.}=1{Sjá eina umsögn. Meðaleinkunn er <ph name="STARS" /> stjörnur.}one{Sjá # umsögn. Meðaleinkunn er <ph name="STARS" /> stjörnur.}other{Sjá # umsagnir. Meðaleinkunn er <ph name="STARS" /> stjörnur.}}</translation>
 <translation id="4271652479722040953">Þegar viðbótum er bætt við Chrome eru viðeigandi gögn um þær sendar til þriðju aðila til greiningar og kunna að vera sýnilegar kerfisstjóranum þínum. Gögnin fela í sér upplýsingar um viðbæturnar, t.d. heiti, uppsetningartíma, uppruna uppsetningar og virkni sem tengist þeim (t.d. þegar flipum er breytt, samband haft við vefsvæði eða aðgangur fenginn að fótsporum). Gögnunum er safnað fyrir viðbætur sem sóttar eru í Vefverslun Chrome eða aðrar verslanir.</translation>
+<translation id="4275788652681621337">Loka hliðarglugga</translation>
 <translation id="4275830172053184480">Endurræstu tækið</translation>
 <translation id="4276974990916607331">Nei takk</translation>
 <translation id="4277028893293644418">Endurstilla aðgangsorð</translation>
@@ -2626,6 +2629,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5209670883520018268">Bakki 20</translation>
 <translation id="5212364581680288382">Mótorhjólakappakstur</translation>
 <translation id="5214542134842513912">Veldu hvaða víðu flokka umfjöllunarefna er hægt að nota til að hjálpa til við að sérsníða auglýsingar. Að slökkva á víðum flokki lokar líka á tengd efni.</translation>
+<translation id="52163492208010719">Stjórna auðkenningarskjölum</translation>
 <translation id="521659676233207110">Bakki 13</translation>
 <translation id="5216942107514965959">Síðast opnað í dag</translation>
 <translation id="5217759126664161410">Ógilt snið samskiptareglu.</translation>
@@ -2710,6 +2714,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5344522958567249764">Stjórna persónuvernd auglýsinga</translation>
 <translation id="5344579389779391559">Þessi síða gæti reynt að rukka þig um greiðslu</translation>
 <translation id="5345249337934847112">Pappír (þykkur og húðaður)</translation>
+<translation id="5346059693449184483">Hvað liggur þér á hjarta?</translation>
 <translation id="5348330584842140856">Ekki tókst að flytja skrána vegna þess að hún er ekki lengur til</translation>
 <translation id="5349543692327946794">Merkimiðar (bleksprautaðir)</translation>
 <translation id="5351548097010183514">Byggingarefni og byggingavöruverslanir</translation>
@@ -4505,6 +4510,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8216640997712497593">14 x 18 to.</translation>
 <translation id="8218327578424803826">Úthlutuð staðsetning:</translation>
 <translation id="8220602974062798186">Setja <ph name="TOPIC" /> á bannlista og öll tengd umfjöllunarefni?</translation>
+<translation id="8223142476690844338">Hæ <ph name="USER_NAME" />, hvað liggur þér á hjarta?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, spurðu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Birta tvær síður</translation>
 <translation id="822925450938886901">Farðu á chrome://management í vafranum þínum til að fá frekari upplýsingar og reglur sem kunna að eiga við.</translation>

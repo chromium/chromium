@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">This means that Chromium will request the mobile site every time.</translation>
 <translation id="1115463765356382667">Complete these suggested actions below to get the most out of Chrome.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
+<translation id="119044033865561140">Open Chromium instantly when you're on your iPad</translation>
 <translation id="1211450393895337634">Open Chromium faster when you're ready to browse on your iPad.</translation>
 <translation id="1229234641991056119">Use your Safari passwords, history, bookmarks and credit cards in Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
 <translation id="1260702988262336471">Open the Chromium menu</translation>
 <translation id="12739128458173458">To send this tab to another device, sign in to Chromium on both devices.</translation>
+<translation id="1279797561821266129">Access Chromium faster from your dock</translation>
 <translation id="1361748954329991663">Chromium is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chromium anymore.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1423007117030725713">Start a search in a new Chromium tab.</translation>
@@ -176,6 +178,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="4790638144988730920">Keep using the Chromium data in your Google Account.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4856138222358683580">Chromium actions</translation>
+<translation id="4869706986935301458">Open Chromium instantly when you're on your iPhone</translation>
 <translation id="4904452304169763785">Alerts on any privacy or security issues that Chromium detects for you.</translation>
 <translation id="4908570938463711775">Learn the helpful Chromium basics to get you started</translation>
 <translation id="4962295957157529683">Finish what you were doing in your other open Chromium window.</translation>
@@ -295,6 +298,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7395825497086981028">Your password will be saved to Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">This passkey will be saved to Password Manager for <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Open Chromium</translation>
+<translation id="7507535968973352823">Place Chromium in the bottom area to access it at any time</translation>
 <translation id="7531461704633548377">From Chromium</translation>
 <translation id="7554983317097061001">Chromium tip: Move Chromium to the dock</translation>
 <translation id="7576863740961052505">Manage Chromium settings</translation>

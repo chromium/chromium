@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1035560095760914532">Поставете Chrome в долната лента, за да имате достъп до браузъра по всяко време</translation>
 <translation id="1076643793026027628">Chrome автоматично отваря в режим „инкогнито“ връзките в режим „инкогнито“ към YouTube.</translation>
 <translation id="1081114897601629648">Следните пароли не бяха импортирани в Google Мениджър на пароли, защото не отговарят на изискванията.</translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Достигнахте ограничението на Chrome от <ph name="LIMIT" /> отметки, така че някои от отметките ви още не са запазени в профила ви в Google.
 
 Новите отметки не могат да се запазват в профила ви, докато не изтриете някои. Ако излезете от профила си сега, незапазените отметки ще бъдат изтрити.</translation>
+<translation id="2901621928549457170">Отваряйте Chrome незабавно, когато използвате своя iPad</translation>
 <translation id="2922914028977213693">Докоснете тук, за да се възползвате максимално от Chrome на своя iPad.</translation>
 <translation id="292371311537977079">Настройки на Chrome</translation>
 <translation id="2923827943290349720">Заключване на разделите в режим „инкогнито“ при затваряне на Chrome</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Изберете Chrome.</translation>
 <translation id="5123188916260706415">Търсене с глас в Chrome</translation>
 <translation id="5162467219239570114">Chrome не е актуален. Ако не виждате налични актуализации в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, е възможно устройството ви да не поддържа новите версии на Chrome.</translation>
+<translation id="5172049865623113551">Отваряйте Chrome незабавно, когато използвате своя iPhone</translation>
+<translation id="5179095426828744632">Осъществявайте по-бърз достъп до Chrome от лентата Dock</translation>
 <translation id="5184329579814168207">Отваряне в Chrome</translation>
 <translation id="5190139289262548459">Организацията ви (<ph name="DOMAIN" />) управлява профила, в който сте влезли, и начина на използване на Chrome.</translation>
 <translation id="5209238444239954363">Chrome не можа да провери за актуализации. Опитайте отново по-късно.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1035560095760914532">Для быстрого доступа к браузеру Chrome переместите его в нижнюю часть экрана</translation>
 <translation id="1076643793026027628">В Chrome ссылки на видео YouTube в режиме инкогнито автоматически открываются в режиме инкогнито.</translation>
 <translation id="1081114897601629648">Пароли не соответствуют требованиям, поэтому их не удалось импортировать в Google Менеджер паролей.</translation>
 <translation id="1086486568852410168">Поиск с Google Объективом</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">У вас очень много закладок в Chrome (можно до <ph name="LIMIT" />), поэтому некоторые из них ещё не сохранены в аккаунте Google.
 
 Чтобы добавить закладки в аккаунт, удалите некоторые из сохраненных. Если вы выйдете прямо сейчас, несохраненные закладки будут удалены.</translation>
+<translation id="2901621928549457170">Вы сможете мгновенно открывать Chrome на iPad.</translation>
 <translation id="2922914028977213693">Нажмите здесь, чтобы использовать все возможности Chrome на iPad.</translation>
 <translation id="292371311537977079">Настройки Chrome</translation>
 <translation id="2923827943290349720">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Выберите Chrome.</translation>
 <translation id="5123188916260706415">Голосовой поиск в Chrome</translation>
 <translation id="5162467219239570114">Версия Chrome устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chrome.</translation>
+<translation id="5172049865623113551">Вы сможете мгновенно открывать Chrome на iPhone.</translation>
+<translation id="5179095426828744632">Добавьте Chrome на панель Dock для быстрого доступа</translation>
 <translation id="5184329579814168207">Открыть в Chrome</translation>
 <translation id="5190139289262548459">Аккаунтом, в который вы вошли, и использованием Chrome управляет ваша организация (<ph name="DOMAIN" />).</translation>
 <translation id="5209238444239954363">Chrome не удалось проверить наличие обновлений. Повторите попытку позже.</translation>

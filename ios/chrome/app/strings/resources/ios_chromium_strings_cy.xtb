@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Mae hyn yn golygu y bydd Chromium yn gofyn am y wefan symudol bob tro.</translation>
 <translation id="1115463765356382667">Cwblhau'r gweithredoedd a awgrymir isod i gael y gorau o Chromium.</translation>
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
+<translation id="119044033865561140">Agor Chromium ar unwaith pan fyddwch ar eich iPad</translation>
 <translation id="1211450393895337634">Agor Chromium yn gyflymach pan fyddwch yn barod i bori ar eich iPad.</translation>
 <translation id="1229234641991056119">Defnyddiwch eich cyfrineiriau, hanes, nodau tudalen a chardiau credyd Safari yn Chromium</translation>
 <translation id="1257458525759135959">I gadw lluniau, tapiwch ar Gosodiadau i ganiatáu i Chromium ychwanegu at eich lluniau</translation>
 <translation id="1260702988262336471">Agorwch y ddewislen Chromium</translation>
 <translation id="12739128458173458">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chromium ar y ddwy ddyfais.</translation>
+<translation id="1279797561821266129">Cael mynediad at Chromium yn gyflymach o'ch doc</translation>
 <translation id="1361748954329991663">Mae Chromium yn hen. Os nad oes diweddariad ar gael yn <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mae'n bosib nad yw'ch dyfais yn cefnogi fersiynau newydd o Chromium mwyach.</translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1423007117030725713">Dechrau chwiliad mewn tab Chromium newydd.</translation>
@@ -176,6 +178,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cy
 <translation id="4790638144988730920">Parhewch i ddefnyddio'r data Chromium yn eich Cyfrif Google.</translation>
 <translation id="4828317641996116749">Nid oedd modd i Chromium wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="4856138222358683580">Gweithredoedd Chromium</translation>
+<translation id="4869706986935301458">Agor Chromium ar unwaith pan fyddwch ar eich iPhone</translation>
 <translation id="4904452304169763785">Rhybuddion ar unrhyw faterion preifatrwydd neu ddiogelwch y mae Chromium yn eu canfod i chi.</translation>
 <translation id="4908570938463711775">Dysgwch hanfodion defnyddiol Chromium i ddechrau arni</translation>
 <translation id="4962295957157529683">Gorffennwch yr hyn roeddech yn ei wneud yn y ffenestr arall a oedd ar agor gennych yn Chromium.</translation>
@@ -295,6 +298,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7395825497086981028">Bydd eich cyfrinair yn cael ei gadw i'r Rheolwr Cyfrineiriau ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Bydd y cod pas hwn yn cael ei gadw i'r Rheolwr Cyfrineiriau ar gyfer <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Agor Chromium</translation>
+<translation id="7507535968973352823">Rhowch Chromium yn yr ardal waelod i gael mynediad ato unrhyw bryd</translation>
 <translation id="7531461704633548377">O Chromium</translation>
 <translation id="7554983317097061001">Awgrym Chromium: Symudwch Chromium i'r doc</translation>
 <translation id="7576863740961052505">Rheoli gosodiadau Chromium</translation>

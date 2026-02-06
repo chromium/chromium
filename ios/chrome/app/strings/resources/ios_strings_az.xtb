@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Məhsul izlənilən məhsullar siyahısına əlavə edildi.</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
 <translation id="2236949375853147973">Fəaliyyətim</translation>
+<translation id="2237869114829007407">İstənilən səhifə və ya mövzu üçün icmal və statistik məlumatlar əldə edin</translation>
 <translation id="2240256190924001613">Konfiqurasiya profili əlçatandır</translation>
 <translation id="2244080985779413662">Bu veb-sayt fayl endirmək və onu Pulqabınızda açmaq istəyir.</translation>
 <translation id="2245007488813216650">Tərcümə edilir…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">ardı</translation>
 <translation id="3311748811247479259">Deaktiv</translation>
 <translation id="3312300514034250578">Qabaqcıl Güvənli Baxış</translation>
+<translation id="3315786055700307152">Məhsulunuza 15% endirim tətbiq olunur</translation>
 <translation id="3324193307694657476">Ünvan 2</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="333229797575847124">Bu funksiyanı aktivləşdirmə qaydası</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Bunun üçün parol yaradın</translation>
 <translation id="3380352560400387991">Bu sayt tətbiqi açmağa çalışır. Anonim rejimdən çıxacaqsınız.</translation>
 <translation id="3385742921291399323">Yadda saxlanılmış parollar, tablar, əlfəcinlər və s. əldə edin.</translation>
+<translation id="3391765987934722383">Endirimi qaçırmayın</translation>
 <translation id="3392923070107623576">Tab qrupları yaradaraq nizamlı qalın</translation>
 <translation id="3404232721752787413">Google Fotoda yadda saxlayın</translation>
 <translation id="3406506285180498376">Səhifəni paylaşın…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3955740319737378355">Hazırdır</translation>
 <translation id="3955822496205734389">Zəif parollar var.</translation>
+<translation id="3957016963627617921">Chrome-da Gemini ilə daha çox iş görün</translation>
 <translation id="3958312024468322930">Onu Ana ekranın aşağısındakı doka sürükləyin</translation>
 <translation id="3962326069546168954">Yadda saxlayın</translation>
 <translation id="3967327056943561740">Əlfəcinlər</translation>
@@ -2163,6 +2167,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8803639129939845298">Güvənli</translation>
 <translation id="8813277370772331957">Sonra xatırladın</translation>
 <translation id="8814719628147284151">Davam edin</translation>
+<translation id="8817524703470045896">Qiymətləri izləyin və istənilən saytda qiymət endikdə xəbərdarlıq alın</translation>
 <translation id="8819155700324279105">Onlayn təhlükələrə qarşı əlavə qoruma səviyyəsi əlavə edin</translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>
 <translation id="8822421075653507124">Bu cihazın təhlükəsiz istifadəsi üçün təşkilat əməliyyat sistemi, brauzer, ayarlar, habelə cihazda quraşdırılmış proqram təminatı haqqında məlumatları görməli ola bilər.</translation>
@@ -2170,6 +2175,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8829809207373502270">Bu giriş açarı artıq işləmir. O, <ph name="WEBSITE" /> veb-saytından silinib və qısa müddətdən sonra buradan silinəcək. <ph name="BEGIN_LINK" />Giriş açarı haqqında<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Deaktiv tabları bağlayın</translation>
 <translation id="8837654851594567190">Naşir üzrə çeşidləyin</translation>
+<translation id="8844136307393039959">İzlədiyiniz məhsulun qiyməti düşüb</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" /> üçün şəkil Google Fotoda yadda saxlanır…</translation>
 <translation id="8849001918648564819">Gizli</translation>
 <translation id="8855242995793521265">Brauzer və ya cihazı çox yavaşlatmır.</translation>
@@ -2213,6 +2219,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8976382372951310360">Yardım</translation>
 <translation id="8976414606286374109">Kartlar Google Hesabınızda saxlanılır.</translation>
 <translation id="8981454092730389528">Google Fəaliyyət Nəzarəti</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, bərkidilmiş sayt</translation>
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
 <translation id="9000532564152265066">Bütün tablar</translation>
 <translation id="9003677638446136377">Yenidən yoxlayın</translation>

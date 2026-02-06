@@ -160,6 +160,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="109647177154844434">Kapag na-uninstall ang Parallels Desktop, made-delete ang iyong imahe ng Windows. Kasama rito ang mga application, setting, at data nito. Sigurado ka bang gusto mong magpatuloy?</translation>
 <translation id="1097016918605049747">Hindi maisasalin ang page na ito</translation>
 <translation id="1097658378307015415">Bago mag-sign in, mangyaring pumasok bilang Bisita upang i-activate ang network <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Para mapagana ang mga feature tulad ng pag-detect ng scam, puwedeng gumamit ang Chrome ng mga AI model na direktang gumagana sa iyong device nang hindi ipinapadala ang data mo sa mga server ng Google. Kapag naka-off ito, posibleng hindi gumana ang mga feature na ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa on-device na AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Nakopya ang larawan mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Kasalukuyang icon</translation>
 <translation id="1102759278139578486">Hindi ma-download ang mga file ng annotation ng pangunahing node. Subukan ulit sa ibang pagkakataon.</translation>
@@ -4788,7 +4789,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4206585797409671301">Pinapayagang magpakita ng mga request</translation>
 <translation id="4207144975205749656">Ine-encrypt ang mga request sa pag-navigate para hindi makita ng mga attacker na nasa parehong network ang iyong trapiko</translation>
 <translation id="4207932031282227921">Humiling ng pahintulot, pindutin ang F6 para tumugon</translation>
-<translation id="4208390505124702064">Hanapin sa <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Malaki</translation>
 <translation id="4209247656298167054">Walang Update</translation>
 <translation id="4209251085232852247">Naka-off</translation>
@@ -5620,6 +5620,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4784349455504343791">Gustong gamitin ng <ph name="WEBSITE_ORIGIN" /> ang personal na impormasyon mula sa iyong digital wallet.</translation>
 <translation id="4785719467058219317">Gumagamit ka ng security key na hindi nakarehistro sa website na ito</translation>
 <translation id="4785914069240823137">Kanselahin ang Pag-crop</translation>
+<translation id="4786430656008801173">On-device na AI</translation>
 <translation id="4787471921443575924">Mag-edit ng passkey para sa username: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Pakisuri ang iyong koneksyon sa network at subukan ulit.</translation>
 <translation id="4789348252524569426">Hindi ma-install ang mga file ng speech. Kailangang i-update ang iyong device. I-restart ang iyong device at subukan ulit.</translation>

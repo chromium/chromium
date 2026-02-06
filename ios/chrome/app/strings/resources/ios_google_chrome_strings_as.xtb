@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1035560095760914532">যিকোনো সময়তে এক্সেছ কৰিবলৈ Chromeক একেবাৰে তলৰ অংশত ৰাখক</translation>
 <translation id="1076643793026027628">Chromeএ স্বয়ংক্ৰিয়ভাৱে Youtubeৰ ইনক’গনিট’ লিংকসমূহ ইনক’গনিট’ত খোলে।</translation>
 <translation id="1081114897601629648">তলত উল্লেখিত পাছৱৰ্ডসমূহ Google Password Managerলৈ আমদানি কৰা হোৱা নাছিল, কাৰণ সেইসমূহে প্ৰয়োজনীয়তা পূৰণ কৰা নাই।</translation>
 <translation id="1086486568852410168">Google Lensৰে সন্ধান কৰক</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">আপুনি Google Chromeৰ বুকমাৰ্কৰ সীমা <ph name="LIMIT" />ত উপনীত হৈছে, সেয়েহে আপোনাৰ কিছুমান বুকমাৰ্ক এতিয়াও আপোনাৰ Google একাউণ্টত ছেভ কৰা হোৱা নাই।
 
 আপুনি কিছুমান বুকমাৰ্ক মচি নেপেলোৱালৈকে আপোনাৰ একাউণ্টত নতুন বুকমাৰ্ক ছেভ কৰিব নোৱাৰি। যদি আপুনি এতিয়াই ছাইন আউট কৰে, ছেভ নকৰা বুকমাৰ্কসমূহ মচি পেলোৱা হ’ব।</translation>
+<translation id="2901621928549457170">আপুনি আপোনাৰ iPadত থাকিলে তাৎক্ষণিকভাৱে Chrome খোলক</translation>
 <translation id="2922914028977213693">আপোনাৰ iPadত Chromeৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ইয়াত টিপক।</translation>
 <translation id="292371311537977079">Chromeৰ ছেটিং</translation>
 <translation id="2923827943290349720">আপুনি Chrome বন্ধ কৰিলে ইনক’গনিট’ টেবসমূহ লক কৰক</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome বাছনি কৰক</translation>
 <translation id="5123188916260706415">Chromeত ভইচৰ দ্বাৰা সন্ধান কৰক</translation>
 <translation id="5162467219239570114">Chrome পুৰণি হৈছে। <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />ত কোনো আপডে’ট নাথাকিলে এয়া সম্ভৱ যে আপোনাৰ ডিভাইচটোৱে Chromeৰ নতুন সংস্কৰণসমূহ আৰু সমৰ্থন নকৰে।</translation>
+<translation id="5172049865623113551">আপুনি আপোনাৰ iPhoneত থাকিলে তাৎক্ষণিকভাৱে Chrome খোলক</translation>
+<translation id="5179095426828744632">আপোনাৰ ড’কৰ পৰা দ্ৰুততাৰে Chrome এক্সেছ কৰক</translation>
 <translation id="5184329579814168207">Chromeত খোলক</translation>
 <translation id="5190139289262548459">আপোনাৰ প্ৰতিষ্ঠানে, <ph name="DOMAIN" />, আপুনি ছাইন ইন কৰা একাউণ্টটো আৰু Chrome কেনেকৈ ব্যৱহাৰ কৰা হয় পৰিচালনা কৰে।</translation>
 <translation id="5209238444239954363">Chromeএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>

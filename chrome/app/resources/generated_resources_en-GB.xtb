@@ -2641,6 +2641,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
 <translation id="2750020734439919571">More Chrome app settings and permissions</translation>
+<translation id="275010360476017464">Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps activity (if it's on).</translation>
 <translation id="2750602041558385535">Unverified download blocked</translation>
 <translation id="2751454300227269244">Move your mouth right</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> wants to learn the ID number of your security key. The site will know exactly which security key you're using.</translation>
@@ -4788,7 +4789,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4206585797409671301">Allowed to show requests</translation>
 <translation id="4207144975205749656">Encrypts navigation requests so that attackers on the same network can't see your traffic</translation>
 <translation id="4207932031282227921">Permission requested, press F6 to respond</translation>
-<translation id="4208390505124702064">Search <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Large</translation>
 <translation id="4209247656298167054">No update</translation>
 <translation id="4209251085232852247">Turned off</translation>
@@ -5776,6 +5776,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4881685975363383806">Don't remind me next time</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4882312758060467256">Has access to this site</translation>
+<translation id="4882848900607400156">When you share your precise location, Gemini can answer your questions more accurately. Your data is not used to improve generative AI models.</translation>
 <translation id="4882919381756638075">Sites usually use your microphone for communication features like video chatting</translation>
 <translation id="4883436287898674711">All <ph name="WEBSITE_1" /> sites</translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>
@@ -5866,6 +5867,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4945439665401275950">To set up fingerprint, get your child to touch the power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">launcher + up arrow</translation>
 <translation id="4947376546135294974">Data from the site that you're visiting</translation>
+<translation id="4948370357877377178">Continue your tasks</translation>
 <translation id="4950100687509657457">Create profile</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{a file}other{# files}}</translation>
 <translation id="495170559598752135">Actions</translation>
@@ -9091,6 +9093,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Exit page}other{Exit pages}}</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
+<translation id="7209958456051239069">When you share your precise location, Gemini can answer your questions more accurately</translation>
 <translation id="7210257969463271891">Web apps that you install appear here</translation>
 <translation id="7210432570808024354">Tap and drag to move items</translation>
 <translation id="7210499381659830293">Extension printers</translation>
@@ -10710,6 +10713,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8288032458496410887">Uninstall <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Extract text from PDF</translation>
 <translation id="8289128870594824098">Disk size</translation>
+<translation id="8289200713453671499">Quickly switch between your tab groups and your recent AI conversations without losing your place.</translation>
 <translation id="8289509909262565712">Welcome to <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Download Chrome</translation>
 <translation id="8291942417224950075">For personal use</translation>
@@ -11690,6 +11694,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8945508919180478719">Studio-style mic</translation>
 <translation id="8946359700442089734">Debugging features were not completely enabled on this <ph name="IDS_SHORT_PRODUCT_NAME" /> device.</translation>
 <translation id="8946954897220903437">Collapse all requests in the address bar</translation>
+<translation id="8946996840522387154">Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps activity (if it's on). Your data is not used to improve generative AI models.</translation>
 <translation id="894763922177556086">Good</translation>
 <translation id="895054485242522631">Sites can use motion sensors</translation>
 <translation id="8951256747718668828">Restoring couldn't be completed due to an error</translation>

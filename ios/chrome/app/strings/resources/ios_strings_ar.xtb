@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">تمت إضافة المنتج إلى قائمة المنتجات التي يتم تتبُّع أسعارها.</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="2236949375853147973">نشاطي</translation>
+<translation id="2237869114829007407">يمكنك الحصول على نظرة عامة ومعلومات أساسية حول أي صفحة أو موضوع</translation>
 <translation id="2240256190924001613">ملف تحميل الإعدادات متوفِّر</translation>
 <translation id="2244080985779413662">‏"يطلب هذا الموقع الإلكتروني تنزيل ملف وفتحه في تطبيق Apple Wallet" ‏(This website wants to download a file and open it in your Wallet).</translation>
 <translation id="2245007488813216650">جارٍ الترجمة…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">عرض المزيد</translation>
 <translation id="3311748811247479259">غير مفعَّل</translation>
 <translation id="3312300514034250578">الحماية المحسّنة للتصفّح الآمن</translation>
+<translation id="3315786055700307152">‏خصم ‎15% على المنتج الآن</translation>
 <translation id="3324193307694657476">العنوان 2</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
 <translation id="333229797575847124">طريقة تفعيل هذه الميزة</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">إنشاء مفتاح مرور للحساب</translation>
 <translation id="3380352560400387991">يحاول هذا الموقع الإلكتروني فتح أحد التطبيقات. وسيؤدي هذا إلى الخروج من وضع التصفُّح المتخفي.</translation>
 <translation id="3385742921291399323">يتيح لك تسجيل الدخول الوصول إلى كلمات المرور وعلامات التبويب والإشارات المرجعية المحفوظة وغيرها.</translation>
+<translation id="3391765987934722383">معنا لن يفوتك أي انخفاض في الأسعار</translation>
 <translation id="3392923070107623576">تساعدك هذه المجموعات في تنظيم المهام</translation>
 <translation id="3404232721752787413">‏الحفظ في "صور Google"</translation>
 <translation id="3406506285180498376">مشاركة الصفحة…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3955740319737378355">تم</translation>
 <translation id="3955822496205734389">لديك كلمات مرور ضعيفة.</translation>
+<translation id="3957016963627617921">‏مهام أكثر مع "Gemini في Chrome"</translation>
 <translation id="3958312024468322930">اسحب رمز التطبيق إلى شريط التطبيقات في أسفل شاشتك الرئيسية</translation>
 <translation id="3962326069546168954">حفظ</translation>
 <translation id="3967327056943561740">الإشارات المرجعية</translation>
@@ -1660,6 +1664,7 @@
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">الضبط كمتصفِّح تلقائي من خلال "الإعدادات"…</translation>
 <translation id="7007970306646738803">يُرجى تحديد الإجراء المطلوب بخصوص بيانات التصفّح الحالية على هذا الجهاز، مثل علامات التبويب والسجلّ وكلمات المرور.</translation>
+<translation id="7012978439516925343">يجب إثبات هويتك لإنشاء مفتاح مرور</translation>
 <translation id="7015418667643980944">تقسيم العرض</translation>
 <translation id="7016070607649558507">لديك كلمة مرور واحدة ضعيفة. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="7016958933495968912">خيارات ميزة "اقتراحات"</translation>
@@ -2162,6 +2167,7 @@
 <translation id="8803639129939845298">آمن</translation>
 <translation id="8813277370772331957">تذكيري لاحقًا</translation>
 <translation id="8814719628147284151">متابعة</translation>
+<translation id="8817524703470045896">يمكنك تتبُّع الأسعار والحصول على تنبيهات عند انخفاضها على أي موقع إلكتروني</translation>
 <translation id="8819155700324279105">يمكنك إضافة طبقة حماية إضافية من التهديدات على الإنترنت.</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8822421075653507124">للتأكُّد من إمكانية استخدام هذا الجهاز بأمان، قد تحتاج مؤسستك إلى الاطّلاع على معلومات حول نظام التشغيل والمتصفّح والإعدادات والبرامج المثبَّتة على الجهاز.</translation>
@@ -2169,6 +2175,7 @@
 <translation id="8829809207373502270">لم يعُد مفتاح المرور هذا صالحًا، حيث تم حذفه من <ph name="WEBSITE" />، وسيتم حذفه من هنا قريبًا. <ph name="BEGIN_LINK" />لمحة عن مفاتيح المرور<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">إغلاق جميع علامات التبويب غير النشطة</translation>
 <translation id="8837654851594567190">الترتيب حسب الناشر</translation>
+<translation id="8844136307393039959">انخفض سعر المنتج الذي يتم تتبّعه</translation>
 <translation id="8848286253339013170">‏جارٍ حفظ الصورة في "صور Google" للحساب <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">مخفي</translation>
 <translation id="8855242995793521265">لا يؤدي إلى إبطاء المتصفِّح أو الجهاز بشكل ملحوظ.</translation>
@@ -2212,6 +2219,7 @@
 <translation id="8976382372951310360">مساعدة</translation>
 <translation id="8976414606286374109">‏يتم حفظ بطاقات الائتمان في حسابك على Google.</translation>
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>
+<translation id="8988107725234939347">‫"<ph name="WEBSITE_TITLE" />"، موقع إلكتروني مثبَّت</translation>
 <translation id="8998289560386111590">غير متاح على جهازك</translation>
 <translation id="9000532564152265066">جميع علامات التبويب</translation>
 <translation id="9003677638446136377">التحقق مرة أخرى</translation>

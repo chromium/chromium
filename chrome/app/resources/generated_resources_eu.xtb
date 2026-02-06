@@ -160,6 +160,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="109647177154844434">Parallels Desktop desinstalatzen baduzu, Windows-en irudia ezabatuko da. Besteak beste, aplikazioak, ezarpenak eta datuak ezabatuko dira. Ziur aurrera egin nahi duzula?</translation>
 <translation id="1097016918605049747">Ezin izan da itzuli orri hau</translation>
 <translation id="1097658378307015415">Saioa hasi aurretik, sartu gonbidatu gisa <ph name="NETWORK_ID" /> sarea aktibatzeko</translation>
+<translation id="1099070179078143183">Azpikeria-hautematea eta antzeko eginbideak eskaintzeko, Chrome-k gailuan zuzenean exekutatzen diren AAko ereduak erabil ditzake, zure datuak Google-ren zerbitzarietara bidali gabe. Desaktibatuta badago, baliteke eginbide horiek ez funtzionatzea. <ph name="BEGIN_LINK" />Lortu gailuko AAri buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> gailutik kopiatu da irudia</translation>
 <translation id="1100504063505580045">Une honetako ikonoa</translation>
 <translation id="1102759278139578486">Ezin dira deskargatu nodo nagusiko oharpen-fitxategiak. Saiatu berriro geroago.</translation>
@@ -4772,7 +4773,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4206585797409671301">Eskaerak erakusteko baimena du</translation>
 <translation id="4207144975205749656">Nabigazio-eskaerak enkriptatzen ditu, sare bereko erasotzaileek trafikoa ikus ez dezaten</translation>
 <translation id="4207932031282227921">Baimena eskatu da. Erantzuteko, sakatu F6.</translation>
-<translation id="4208390505124702064">Bilatu <ph name="SITE_NAME" /> webgunean</translation>
 <translation id="4209092469652827314">Handia</translation>
 <translation id="4209247656298167054">Eguneratzerik ez</translation>
 <translation id="4209251085232852247">Desaktibatuta</translation>
@@ -5604,6 +5604,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> webguneak diru-zorro digitaleko informazio pertsonala erabili nahi du.</translation>
 <translation id="4785719467058219317">Webgune honetan erregistratuta ez dagoen segurtasun-giltza bat erabiltzen ari zara</translation>
 <translation id="4785914069240823137">Utzi ebaketa bertan behera</translation>
+<translation id="4786430656008801173">Gailuko AA</translation>
 <translation id="4787471921443575924">Editatu <ph name="USER_EMAIL" /> erabiltzaile-izenari dagokion sarbide-gakoa</translation>
 <translation id="4788092183367008521">Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="4789348252524569426">Ezin dira instalatu hizketa-fitxategiak. Gailua eguneratu behar da. Berrabiarazi gailua eta saiatu berriro.</translation>

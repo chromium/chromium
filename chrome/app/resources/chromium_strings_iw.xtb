@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">‏ל-Chromium נדרשת גישה ל-Bluetooth כדי למצוא 
  מכשירי Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">זיהוי שפה אוטומטי</translation>
+<translation id="1330742950061766891">‏שימוש בהגדרות הדפדפן המומלצות של Chromium</translation>
 <translation id="1342274909142618978">‏אני רוצה למחוק את הנתונים גם מ-Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">התכונה הוצמדה. מעכשיו אפשר לגשת לחיפוש התמונות דרך הכפתור החדש בסרגל הכלים</translation>
 <translation id="1356661055722410047">חדש! אפשר לתרגם טקסט ותמונות במסך</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1397530502368084401">‏&amp;ניהול הפרופילים ב-Chromium</translation>
+<translation id="1404026649028693342">‏תמיד להציג את מצב AI</translation>
 <translation id="141901961143729572">כאן אפשר לשתף את המחשבות שלך</translation>
 <translation id="1465192221147974788">‏כדי לשתף את החלון, צריך לאפשר הקלטת מסך ב-Chromium בקטע "הגדרות המערכת".</translation>
 <translation id="1478370723027452770">‏קבלת עזרה לגבי Chrome for Testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">הגדרות.</translation>
 <translation id="2049376729098081731">‏בוחרים אם לכלול את ההיסטוריה ב-Chromium להתאמה אישית מדויקת יותר בשירותי Google</translation>
 <translation id="2064856577282482477">‏אפשר ללחוץ על הכפתור "התאמה אישית של Chromium" בדף הכרטיסייה החדשה כדי לשנות את המראה שלו</translation>
+<translation id="2066690553719545730">‏תמיד להציג את מצב AI</translation>
 <translation id="2086476982681781442">‏Chromium חסם את ההורדה הזאת כי הקובץ מטעה ועשוי לבצע שינויים לא צפויים במכשיר שלך</translation>
 <translation id="208726765006323911">‏בפעם הבאה ש-Chromium ייפתח ב-iOS, תופיע הנחיה לנסות את <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">‏הסיסמאות ונתונים אחרים מ-Chromium ששמרת בחשבון שלך ב-Google יוסרו מהמכשיר הזה. כדי להשתמש בהם שוב ב-Chromium, צריך להיכנס בחזרה לחשבון.</translation>
@@ -194,6 +197,7 @@
 <translation id="3103660991484857065">‏המתקין לא הצליח לבטל את דחיסת הארכיון. יש להוריד שוב את Chromium.</translation>
 <translation id="310459126943037700">סיום המשימות נכשל.</translation>
 <translation id="3104828284009500087">אפשר לחפש משהו בדף הזה</translation>
+<translation id="3126784891977756556">‏רוצה לסנכרן את הסיסמאות, הסימניות וההיסטוריה שלך באופן מושלם בין המכשירים? כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך לעדכן את דפדפן ברירת המחדל ל-Chromium.</translation>
 <translation id="3130323860337406239">‏Chromium משתמש במיקרופון שלך.</translation>
 <translation id="3130333203120345554">חיפוש חדש</translation>
 <translation id="3137969841538672700">צריך לגרור כדי לחפש</translation>
@@ -304,6 +308,7 @@
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4334241893986177674">חיפוש צילום המסך הזה</translation>
 <translation id="4334294535648607276">ההורדה הושלמה.</translation>
+<translation id="4384993550046411228">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך להגדיר את Chromium בתור דפדפן ברירת המחדל. לגישה מהירה, Chromium יוצמד לסרגל האפליקציות.</translation>
 <translation id="439358628917130594">‏לפי דרישת <ph name="MANAGER" />, יש לקרוא את התנאים וההגבלות הבאים ולהסכים להם לפני השימוש במכשיר הזה. תנאים אלה לא מרחיבים, משנים או מגבילים את התנאים של ChromiumOS.</translation>
 <translation id="4407044323746248786">‏לסגור את Chromium בכל זאת?</translation>
 <translation id="4413205837991854510">תמיד להציג את קיצור הדרך לחיפוש תמונות</translation>
@@ -371,7 +376,6 @@
 <translation id="5289287148052354622">‏הורדת אפליקציית Chromium</translation>
 <translation id="5294316920224716406">‏בגלישה במצב פרטי, Chromium יציג אזהרה לפני טעינת אתר באמצעות חיבור לא מאובטח</translation>
 <translation id="5313228254328109263">‏שירות פנימי לעדכון של Chromium</translation>
-<translation id="5346059693449184483">מה חשבת לעשות?</translation>
 <translation id="5346389065299425353">כדי להעמיק את החיפוש, אפשר להוסיף כמה כרטיסיות, קבצים וכלים</translation>
 <translation id="5352264705793813212">‏יש ל-Chromium כמה המלצות לגבי בטיחות שכדאי לבדוק</translation>
 <translation id="5352361688875342522">‏פרופילים אחרים ב-Chromium</translation>
@@ -636,7 +640,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8177472873527554730">לא נמצא תוכן בדף</translation>
 <translation id="8200109504272824693">‏כדי להשתמש בנתונים של Chromium ולשמור אותם בחשבון <ph name="USER_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="8221491193165283816">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות יש ללחוץ כאן.</translation>
-<translation id="8223142476690844338">היי <ph name="USER_NAME" />, איך אני יכול לעזור לך?</translation>
 <translation id="8223363452568144035">‏כדי להשתמש במצלמה, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chromium גישה</translation>
 <translation id="8232193495299001329">‏‫Chromium לא יכול לאמת את מקור התוסף הזה ויכול להיות שהוא לא בטוח. צריך להסיר אותו מ-Chromium כדי לא לאפשר לו יותר לראות ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
 <translation id="8248265253516264921">‏אם אין לתמונה תיאור מועיל, Chromium ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google. אפשר להשבית את האפשרות הזו בכל זמן דרך ההגדרות.</translation>

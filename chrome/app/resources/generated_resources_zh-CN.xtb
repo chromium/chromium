@@ -160,6 +160,7 @@
 <translation id="109647177154844434">卸载 Parallels Desktop 会删除您的 Windows 映像，包括其所有应用、设置和数据。确定要继续吗？</translation>
 <translation id="1097016918605049747">无法翻译此网页</translation>
 <translation id="1097658378307015415">登录前，请先以访客身份进入，以便激活“<ph name="NETWORK_ID" />”网络。</translation>
+<translation id="1099070179078143183">为提供诈骗检测等功能，Chrome 可使用直接在您设备上运行的 AI 模型，而无需将您的数据发送到 Google 服务器。如果关闭此设置，这些功能可能无法正常运行。<ph name="BEGIN_LINK" />详细了解设备端 AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">从“<ph name="DEVICE_NAME" />”复制的图片</translation>
 <translation id="1100504063505580045">当前图标</translation>
 <translation id="1102759278139578486">无法下载主要节点标注文件。请稍后再试。</translation>
@@ -4763,7 +4764,6 @@
 <translation id="4206585797409671301">可以显示请求</translation>
 <translation id="4207144975205749656">对导航请求进行加密，防止同一网络上的攻击者看到您的流量</translation>
 <translation id="4207932031282227921">收到了权限请求，按 F6 即可回复</translation>
-<translation id="4208390505124702064">使用 <ph name="SITE_NAME" /> 搜索</translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4209247656298167054">无更新</translation>
 <translation id="4209251085232852247">已关闭</translation>
@@ -5595,6 +5595,7 @@
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。</translation>
 <translation id="4785719467058219317">您使用的安全密钥尚未在此网站注册</translation>
 <translation id="4785914069240823137">取消剪裁</translation>
+<translation id="4786430656008801173">设备端 AI</translation>
 <translation id="4787471921443575924">修改以下用户名的通行密钥：<ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">请检查您的网络连接，然后重试。</translation>
 <translation id="4789348252524569426">无法安装语音文件。您的设备需要更新。请重启设备，然后重试。</translation>

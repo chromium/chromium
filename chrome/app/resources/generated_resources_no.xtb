@@ -2635,6 +2635,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2749836841884031656">SIM-kort</translation>
 <translation id="2749881179542288782">Kontroller·grammatikk·og·staving</translation>
 <translation id="2750020734439919571">Flere innstillinger og tillatelser for Chrome-apper</translation>
+<translation id="275010360476017464">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Aktivitet i Gemini-apper (hvis dette er slått på).</translation>
 <translation id="2750602041558385535">En ubekreftet nedlasting ble blokkert</translation>
 <translation id="2751454300227269244">Beveg munnen til høyre</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> vil vite ID-nummeret for sikkerhetsnøkkelen din. Nettstedet får vite nøyaktig hvilken sikkerhetsnøkkel du bruker.</translation>
@@ -4780,7 +4781,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4206585797409671301">Tillatt å vise forespørsler</translation>
 <translation id="4207144975205749656">Krypterer navigasjonsforespørsler, slik at angripere på det samme nettverket ikke kan se trafikken din</translation>
 <translation id="4207932031282227921">Nettstedet ber om tillatelse. Trykk på F6 for å svare</translation>
-<translation id="4208390505124702064">Søk på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4209247656298167054">Ingen oppdatering</translation>
 <translation id="4209251085232852247">Slått av</translation>
@@ -5767,6 +5767,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4881685975363383806">Ikke minn meg på dette neste gang</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="4882312758060467256">Har tilgang til dette nettstedet</translation>
+<translation id="4882848900607400156">Når du deler den nøyaktige posisjonen din, kan Gemini svare på spørsmål mer nøyaktig. Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="4882919381756638075">Nettsteder bruker vanligvis mikrofonen din for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-nettsteder</translation>
 <translation id="48838266408104654">&amp;Oppgavebehandling</translation>
@@ -5857,6 +5858,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4945439665401275950">For å konfigurere fingeravtrykk, få barnet ditt til å berøre av/på-knappen. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">Appoversikt-tasten + oppoverpil</translation>
 <translation id="4947376546135294974">Data fra nettstedet du besøker</translation>
+<translation id="4948370357877377178">Fortsett med oppgavene dine</translation>
 <translation id="4950100687509657457">Opprett profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Handlinger</translation>
@@ -9080,6 +9082,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
 <translation id="7207457272187520234">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="7207631048330366454">Søk etter apper</translation>
+<translation id="7209958456051239069">Når du deler den nøyaktige posisjonen din, kan Gemini svare på spørsmål mer nøyaktig</translation>
 <translation id="7210257969463271891">Nettprogrammer du installerer, vises her</translation>
 <translation id="7210432570808024354">Trykk og dra for å flytte elementer</translation>
 <translation id="7210499381659830293">Utvidelsesskrivere</translation>
@@ -10699,6 +10702,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8288032458496410887">Avinstaller <ph name="APP" /></translation>
 <translation id="8288553158681886528">Hent ut tekst fra PDF</translation>
 <translation id="8289128870594824098">Diskstørrelse</translation>
+<translation id="8289200713453671499">Bytt raskt mellom fanegrupper og nylige AI-samtaler uten å miste plassen din.</translation>
 <translation id="8289509909262565712">Velkommen til <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Last ned Chrome</translation>
 <translation id="8291942417224950075">For personlig bruk</translation>
@@ -11679,6 +11683,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="8946359700442089734">Feilsøkingsfunksjonene ble ikke påslått på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten.</translation>
 <translation id="8946954897220903437">Skjul alle forespørsler i adressefeltet</translation>
+<translation id="8946996840522387154">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Aktivitet i Gemini-apper (hvis dette er slått på). Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="894763922177556086">God</translation>
 <translation id="895054485242522631">Nettsteder kan bruke bevegelsessensorer</translation>
 <translation id="8951256747718668828">Kunne ikke fullføre gjenopprettingen på grunn av en feil</translation>

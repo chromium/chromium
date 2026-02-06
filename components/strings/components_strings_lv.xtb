@@ -1277,6 +1277,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3052868890529250114">Parasti jūs izveidojat drošu savienojumu ar vietnēm, taču šoreiz Chrome nevarēja izmantot drošu savienojumu. Iespējams, kāds uzbrucējs mēģina izsekot jūsu darbības vai mainīt jūsu tīkla savienojumu. <ph name="BEGIN_LEARN_MORE_LINK" />Uzzināt vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
 <translation id="3056660797732519147">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” kļūdas ekrāns. Tastatūra ir paslēpta.</translation>
+<translation id="3057844102210575426">Pārvaldīt ceļojumu informāciju</translation>
 <translation id="3061707000357573562">Ielāpu pakalpojums</translation>
 <translation id="3062655045399308513">Dzēst pārlūkošanas datus…</translation>
 <translation id="3063453392496098461">Neizdevās instalēt VPN fona pakalpojumus.</translation>
@@ -2005,6 +2006,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4203769790323223880">Piekļuve kamerai nav atļauta</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Pārbaudiet ugunsmūri un pretvīrusu programmu konfigurācijas<ph name="END_LINK" />.</translation>
 <translation id="4207195957038009075">Google diska</translation>
+<translation id="4208390505124702064">Meklēt vietnē <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Liels</translation>
 <translation id="4210602799576081649">Verifikācijas koda termiņš ir beidzies. Pieprasiet jaunu kodu.</translation>
 <translation id="421066178035138955">izmantot virtuālās realitātes ierīces un datus</translation>
@@ -2061,6 +2063,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4270541775497538019">6. izvades vieta</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Skatīt 0 atsauksmes. Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}=1{Skatīt 1 atsauksmi. Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}zero{Skatīt visas atsauksmes (#). Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}one{Skatīt visas atsauksmes (#). Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}other{Skatīt visas atsauksmes (#). Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}}</translation>
 <translation id="4271652479722040953">Kad pārlūkam Chrome tiek pievienoti paplašinājumi, atbilstošie dati par šiem paplašinājumiem tiek nosūtīti trešajām pusēm, lai veiktu analīzi, un var būt redzami jūsu administratoram. Šie dati ietver informāciju par paplašinājumiem, piemēram, nosaukumu, instalēšanas laiku un instalēšanas avotu, kā arī ar šiem paplašinājumiem saistītās darbības, piemēram, ciļņu pārslēgšanu, saziņu ar tīmekļa vietnēm vai piekļuvi sīkfailiem. Šie dati tiek vākti gan par paplašinājumiem, kas instalēti no Chrome interneta veikala, gan par tādiem, kuri nav instalēti no veikala.</translation>
+<translation id="4275788652681621337">Aizvērt sānu paneli</translation>
 <translation id="4275830172053184480">Ierīces restartēšana</translation>
 <translation id="4276974990916607331">Nē, paldies</translation>
 <translation id="4277028893293644418">Atiestatīt paroli</translation>
@@ -2624,6 +2627,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5209670883520018268">20. paplāte</translation>
 <translation id="5212364581680288382">Motociklu sacīkstes</translation>
 <translation id="5214542134842513912">Izvēlieties, kuras plašās tēmu kategorijas drīkst izmantot, lai personalizētu reklāmas. Izslēdzot plašāku kategoriju, tiks bloķētas arī ar to saistītās tēmas.</translation>
+<translation id="52163492208010719">Pārvaldīt identifikācijas dokumentus</translation>
 <translation id="521659676233207110">13. paplāte</translation>
 <translation id="5216942107514965959">Pēdējoreiz apmeklēta šodien</translation>
 <translation id="5217759126664161410">Nederīgs protokola formāts.</translation>
@@ -2708,6 +2712,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5344522958567249764">Pārvaldīt reklāmu konfidencialitāti</translation>
 <translation id="5344579389779391559">Šajā lapā var tikt mēģināts pieprasīt naudu</translation>
 <translation id="5345249337934847112">Papīrs (pārklāts, augsta gramāža)</translation>
+<translation id="5346059693449184483">Kas jums padomā?</translation>
 <translation id="5348330584842140856">Šis fails netika pārvietots, jo tas vairs nepastāv</translation>
 <translation id="5349543692327946794">Etiķešu papīrs (tintes strūklai)</translation>
 <translation id="5351548097010183514">Celtniecības materiāli un piederumi</translation>
@@ -4504,6 +4509,7 @@ Papildu informācija:
 <translation id="8216640997712497593">14 x 18 collas</translation>
 <translation id="8218327578424803826">Piešķirtā atrašanās vieta:</translation>
 <translation id="8220602974062798186">Vai bloķēt tēmu <ph name="TOPIC" /> un saistītās tēmas?</translation>
+<translation id="8223142476690844338">Labdien, <ph name="USER_NAME" />! Kas jums padomā?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, jautāt <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Divu lappušu skats</translation>
 <translation id="822925450938886901">Lai iegūtu papildu informāciju un skatītu piemērojamās politikas, pārlūkprogrammā atveriet vietni chrome://management.</translation>

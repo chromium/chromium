@@ -1277,6 +1277,7 @@
 <translation id="3052868890529250114">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
 <translation id="3056660797732519147">“先买后付”错误界面。键盘已隐藏。</translation>
+<translation id="3057844102210575426">管理旅行信息</translation>
 <translation id="3061707000357573562">修补服务</translation>
 <translation id="3062655045399308513">删除浏览数据…</translation>
 <translation id="3063453392496098461">VPN 后台服务安装失败。</translation>
@@ -2003,6 +2004,7 @@
 <translation id="4203769790323223880">已拒绝授予摄像头使用权限</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />检查防火墙和防病毒配置<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google 云端硬盘</translation>
+<translation id="4208390505124702064">使用 <ph name="SITE_NAME" /> 搜索</translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">验证码已失效，请申请新的验证码</translation>
 <translation id="421066178035138955">使用虚拟现实设备和数据</translation>
@@ -2059,6 +2061,7 @@
 <translation id="4270541775497538019">堆叠出纸器 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{查看 0 条评价。平均评分为 <ph name="STARS" /> 星。}=1{查看 1 条评价。平均评分为 <ph name="STARS" /> 星。}other{查看全部 # 条评价。平均评分为 <ph name="STARS" /> 星。}}</translation>
 <translation id="4271652479722040953">在 Chrome 中添加扩展程序时，系统会将这些扩展程序的相关数据发送给第三方进行分析，您的管理员也可能会看到这些数据。这些数据包括扩展程序的相关信息，例如名称、安装时间、安装来源以及与这些扩展程序相关的活动（例如更改标签页、连接网站或访问 Cookie）。无论扩展程序是否通过 Chrome 应用商店进行安装，系统都会收集此类数据。</translation>
+<translation id="4275788652681621337">关闭侧边栏</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4276974990916607331">不用了</translation>
 <translation id="4277028893293644418">重置密码</translation>
@@ -2622,6 +2625,7 @@
 <translation id="5209670883520018268">纸匣 20</translation>
 <translation id="5212364581680288382">摩托车赛</translation>
 <translation id="5214542134842513912">选择可用于帮助展示个性化广告的大类主题。如果停用某个更宽泛的类别，系统也会屏蔽其相关主题。</translation>
+<translation id="52163492208010719">管理身份证件</translation>
 <translation id="521659676233207110">纸匣 13</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
 <translation id="5217759126664161410">协议格式无效。</translation>
@@ -2706,6 +2710,7 @@
 <translation id="5344522958567249764">管理广告隐私设置</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
 <translation id="5345249337934847112">纸（重磅涂布纸）</translation>
+<translation id="5346059693449184483">想聊点什么？</translation>
 <translation id="5348330584842140856">此文件已不存在，因此无法移动</translation>
 <translation id="5349543692327946794">标签（喷墨纸）</translation>
 <translation id="5351548097010183514">建材和建筑用品</translation>
@@ -4501,6 +4506,7 @@
 <translation id="8216640997712497593">14 x 18 英寸</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
 <translation id="8220602974062798186">要屏蔽“<ph name="TOPIC" />”及所有相关主题吗？</translation>
+<translation id="8223142476690844338"><ph name="USER_NAME" />，您好！想聊点什么？</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />，询问<ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">双页视图</translation>
 <translation id="822925450938886901">如需了解其他信息和可能适用的政策，请在浏览器中打开 chrome://management。</translation>

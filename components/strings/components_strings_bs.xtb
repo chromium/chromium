@@ -1277,6 +1277,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3052868890529250114">Inače se sigurno povezujete s ovom web lokacijom, ali Chrome ovaj put nije mogao koristiti sigurnu vezu. Moguće je da napadač pokušava prisluškivati ili izmijeniti vašu mrežnu vezu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Pad cijene od <ph name="PRICE_DROP" /> za proizvod <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Ekran greške naknadnog plaćanja. Tastatura je sakrivena.</translation>
+<translation id="3057844102210575426">Upravljajte informacijama o putovanju</translation>
 <translation id="3061707000357573562">Usluga za zakrpe</translation>
 <translation id="3062655045399308513">Izbrišite podatke pregledanja…</translation>
 <translation id="3063453392496098461">Instalacija VPN usluga u pozadini nije uspjela.</translation>
@@ -2007,6 +2008,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4203769790323223880">Kamera nije dozvoljena</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Provjeriti konfiguracije zaštitnog zida i antivirusa<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Disku</translation>
+<translation id="4208390505124702064">Pretraži <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Veliki</translation>
 <translation id="4210602799576081649">Kôd za potvrdu je istekao. Zatražite novi</translation>
 <translation id="421066178035138955">Koristi uređaje za virtuelnu realnost i podatke</translation>
@@ -2063,6 +2065,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4270541775497538019">Slagač 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Prikazuje se 0 recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}=1{Prikazuje se 1 recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}one{Prikazuje se # recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}few{Prikazuju se sve # recenzije. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}other{Prikazuje se svih # recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}}</translation>
 <translation id="4271652479722040953">Kada se ekstenzije dodaju u Chrome, relevantni podaci o tim ekstenzijama se šalju trećim stranama radi analize i mogu biti vidljivi vašem administratoru. Podaci sadržavaju informacije o ekstenzijama kao što su naziv, vrijeme instaliranja, izvor instaliranja, kao i aktivnost povezana s tim ekstenzijama (npr. promjena kartica, kontaktiranje web lokacija ili pristup kolačićima). Ti podaci se prikupljaju za ekstenzije koje su instalirane iz Chrome Web trgovine, kao i za ekstenzije koje nisu iz trgovine.</translation>
+<translation id="4275788652681621337">Zatvori bočnu ploču</translation>
 <translation id="4275830172053184480">Ponovo pokrenite uređaj</translation>
 <translation id="4276974990916607331">Ne, hvala</translation>
 <translation id="4277028893293644418">Ponovo postavi lozinku</translation>
@@ -2626,6 +2629,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5209670883520018268">Ladica 20</translation>
 <translation id="5212364581680288382">Motociklističke trke</translation>
 <translation id="5214542134842513912">Odaberite koje široke kategorije tema se mogu koristiti kao pomoć za personaliziranje oglasa. Isključivanjem šire kategorije blokiraju se i povezane teme.</translation>
+<translation id="52163492208010719">Upravljajte ličnim dokumentima</translation>
 <translation id="521659676233207110">Ladica 13</translation>
 <translation id="5216942107514965959">Posljednji put je posjećeno danas</translation>
 <translation id="5217759126664161410">Nevažeći format protokola.</translation>
@@ -2710,6 +2714,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5344522958567249764">Upravljajte privatnošću pri izloženosti oglasima</translation>
 <translation id="5344579389779391559">Ova stranica vam može pokušati nešto naplatiti</translation>
 <translation id="5345249337934847112">Papir (s teškim premazom)</translation>
+<translation id="5346059693449184483">O čemu razmišljate?</translation>
 <translation id="5348330584842140856">Fajl nije premješten jer više ne postoji</translation>
 <translation id="5349543692327946794">Naljepnice (inkjet)</translation>
 <translation id="5351548097010183514">Građevinski materijali i potrepštine</translation>
@@ -4506,6 +4511,7 @@ Dodatni detalji:
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">Dodijeljena lokacija:</translation>
 <translation id="8220602974062798186">Blokirati temu <ph name="TOPIC" /> i sve povezane teme?</translation>
+<translation id="8223142476690844338">Zdravo, <ph name="USER_NAME" />, o čemu razmišljate?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, postavljanje pitanja asistentu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Prikaži na dvije stranice</translation>
 <translation id="822925450938886901">Za dodatne informacije i pravila koja se možda primjenjuju otvorite chrome://management u pregledniku.</translation>

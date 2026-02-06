@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">محصول به فهرست محصولات ردیابی‌شده‌تان افزوده شد.</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
+<translation id="2237869114829007407">نمای کلی و اطلاعات آماری کلیدی هر صفحه یا موضوعی را دریافت کنید</translation>
 <translation id="2240256190924001613">پیکربندی نمایه دردسترس است</translation>
 <translation id="2244080985779413662">این وب‌سایت می‌خواهد فایلی را بارگیری کند و آن را در «کیف پول» شما باز کند.</translation>
 <translation id="2245007488813216650">درحال ترجمه کردن…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">بیشتر</translation>
 <translation id="3311748811247479259">خاموش</translation>
 <translation id="3312300514034250578">مرور ایمن پیشرفته</translation>
+<translation id="3315786055700307152">محصول شما اکنون ۱۵٪ تخفیف دارد</translation>
 <translation id="3324193307694657476">آدرس ۲</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
 <translation id="333229797575847124">نحوه فعال کردن این ویژگی</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">ایجاد گذرکلید برای</translation>
 <translation id="3380352560400387991">این سایت تلاش می‌کند برنامه‌ای را باز کند. با این کار، از حالت «ناشناس» خارج خواهید شد.</translation>
 <translation id="3385742921291399323">گذرواژه‌ها، زبانه‌ها، نشانک‌ها، و دیگر موارد ذخیره‌شده را دریافت کنید.</translation>
+<translation id="3391765987934722383">کاهش قیمت را ازدست ندهید</translation>
 <translation id="3392923070107623576">با ایجاد گروه زبانه، منظم بمانید</translation>
 <translation id="3404232721752787413">‏ذخیره در Google Photos</translation>
 <translation id="3406506285180498376">هم‌رسانی کردن صفحه…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3955740319737378355">تمام</translation>
 <translation id="3955822496205734389">چند گذرواژه ضعیف دارید.</translation>
+<translation id="3957016963627617921">‏با Gemini در Chrome کارهای بیشتری انجام دهید</translation>
 <translation id="3958312024468322930">آن را به جایگاه واقع در پایین «صفحه اصلی» بکشید</translation>
 <translation id="3962326069546168954">ذخیره</translation>
 <translation id="3967327056943561740">نشانک‌ها</translation>
@@ -2163,6 +2167,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8803639129939845298">ایمن</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
 <translation id="8814719628147284151">ادامه</translation>
+<translation id="8817524703470045896">قیمت‌ها را ردگیری کنید و برای کاهش قیمت در هر سایتی هشدار دریافت کنید</translation>
 <translation id="8819155700324279105">اضافه شدن لایه محافظتی بیشتر دربرابر تهدیدهای آنلاین</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8822421075653507124">برای اطمینان از اینکه می‌توان به‌طور ایمن از این دستگاه استفاده کرد، شاید لازم باشد سازمانتان اطلاعاتی درباره سیستم‌عامل، مرورگر، تنظیمات خود، و نرم‌افزارهایی که در دستگاه نصب شده است ببیند.</translation>
@@ -2170,6 +2175,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8829809207373502270">این گذرکلید دیگر کار نمی‌کند. این گذرکلید از <ph name="WEBSITE" /> حذف شده است و به‌زودی از اینجا حذف خواهد شد. <ph name="BEGIN_LINK" />درباره گذرکلیدها<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">بستن همه برگه‌های غیرفعال</translation>
 <translation id="8837654851594567190">مرتب کردن براساس ناشر</translation>
+<translation id="8844136307393039959">کاهش قیمت محصول ردیگیری‌شده</translation>
 <translation id="8848286253339013170">‏درحال ذخیره کردن تصویر در Google Photos برای <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">پنهان</translation>
 <translation id="8855242995793521265">باعث نمی‌شود سرعت مرورگر یا دستگاه شما به‌طور قابل‌توجهی کاهش یابد.</translation>
@@ -2213,6 +2219,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8976382372951310360">راهنما</translation>
 <translation id="8976414606286374109">‏کارت‌ها در «حساب Google» شما ذخیره می‌شوند.</translation>
 <translation id="8981454092730389528">‏کنترل‌های فعالیت Google</translation>
+<translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، سایت سنجاق‌شده</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9000532564152265066">همه زبانه‌ها</translation>
 <translation id="9003677638446136377">بررسی مجدد</translation>

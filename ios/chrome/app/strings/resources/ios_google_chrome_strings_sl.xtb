@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1035560095760914532">Chrome postavite v spodnje območje, da lahko kadar koli dostopate do njega</translation>
 <translation id="1076643793026027628">Chrome samodejno odpre povezave v anonimnem načinu v YouTubu v anonimnem načinu.</translation>
 <translation id="1081114897601629648">Googlov upravitelj gesel ni mogel uvoziti naslednjih gesel, ker se ne ujemajo z zahtevami.</translation>
 <translation id="1086486568852410168">Iskanje z Googlom Lens</translation>
@@ -89,6 +90,7 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="288992067439702510">Dosegli ste omejitev Google Chroma za toliko zaznamkov: <ph name="LIMIT" />, zato nekateri zaznamki še niso bili shranjeni v računu Google.
 
 Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Če se odjavite zdaj, bodo neshranjeni zaznamki izbrisani.</translation>
+<translation id="2901621928549457170">Takoj odprite Chrome, ko uporabljate iPad</translation>
 <translation id="2922914028977213693">Dotaknite se tukaj, če želite kar najbolje izkoristiti Chrome v iPadu.</translation>
 <translation id="292371311537977079">Chromove nastavitve</translation>
 <translation id="2923827943290349720">Zaklepanje anonimnih zavihkov po zaprtju Chroma</translation>
@@ -173,6 +175,8 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="5119391094379141756">Izberite Chrome.</translation>
 <translation id="5123188916260706415">Iskanje z govorom v Chromu</translation>
 <translation id="5162467219239570114">Chrome je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chroma.</translation>
+<translation id="5172049865623113551">Takoj odprite Chrome, ko uporabljate iPhone</translation>
+<translation id="5179095426828744632">Hitrejši dostop do Chroma v vrstici Dock</translation>
 <translation id="5184329579814168207">Odpri v Chromu</translation>
 <translation id="5190139289262548459">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chroma.</translation>
 <translation id="5209238444239954363">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>

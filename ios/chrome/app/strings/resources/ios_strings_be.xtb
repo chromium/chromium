@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Тавар дададзены ў спіс тавараў, якія вы адсочваеце.</translation>
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="2236949375853147973">Мае дзеянні</translation>
+<translation id="2237869114829007407">Атрымлівайце агляд і асноўныя статыстычныя паказчыкі для любой старонкі або тэмы</translation>
 <translation id="2240256190924001613">Даступны профіль канфігурацыі</translation>
 <translation id="2244080985779413662">Гэты сайт хоча спампаваць файл і адкрыць яго ў Кашальку.</translation>
 <translation id="2245007488813216650">Ідзе пераклад…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">яшчэ</translation>
 <translation id="3311748811247479259">Выключана</translation>
 <translation id="3312300514034250578">Палепшаны Бяспечны прагляд</translation>
+<translation id="3315786055700307152">Цана на ваш тавар зніжана на 15%</translation>
 <translation id="3324193307694657476">Радок адраса 2</translation>
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
 <translation id="333229797575847124">Як уключыць гэту функцыю</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Стварыце ключ доступу для</translation>
 <translation id="3380352560400387991">Гэты сайт спрабуе адкрыць праграму. У такім выпадку вы выйдзеце з рэжыму інкогніта.</translation>
 <translation id="3385742921291399323">Выкарыстоўвайце захаваныя паролі, укладкі, закладкі і іншыя даныя.</translation>
+<translation id="3391765987934722383">Не прапусціце зніжэнне цаны</translation>
 <translation id="3392923070107623576">Упарадкоўвайце ўкладкі, аб’ядноўваючы іх у групы</translation>
 <translation id="3404232721752787413">Захаваць у Google Фота</translation>
 <translation id="3406506285180498376">Абагуліць старонку…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3955740319737378355">Гатова</translation>
 <translation id="3955822496205734389">У вас ёсць ненадзейныя паролі.</translation>
+<translation id="3957016963627617921">Gemini ў Chrome дае новыя магчымасці</translation>
 <translation id="3958312024468322930">Перацягніце значок на панэль Dock галоўнага экрана</translation>
 <translation id="3962326069546168954">Захаваць</translation>
 <translation id="3967327056943561740">Закладкі</translation>
@@ -2163,6 +2167,7 @@
 <translation id="8803639129939845298">Бяспечны сайт</translation>
 <translation id="8813277370772331957">Нагадаць пазней</translation>
 <translation id="8814719628147284151">Працягнуць</translation>
+<translation id="8817524703470045896">Адсочвайце цэны і атрымлівайце абвесткі пры зніжэнні цаны на любым сайце</translation>
 <translation id="8819155700324279105">Задайце дадатковы ўзровень бяспекі ад пагроз у інтэрнэце</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="8822421075653507124">Каб гарантаваць, што гэта прылада выкарыстоўваецца бяспечным спосабам, вашай арганізацыі можа спатрэбіцца інфармацыя пра яе аперацыйную сістэму, браўзер, налады і ўсталяванае на ёй праграмнае забеспячэнне.</translation>
@@ -2170,6 +2175,7 @@
 <translation id="8829809207373502270">Гэты ключ доступу больш не працуе. Ён быў выдалены з вэб-сайта "<ph name="WEBSITE" />" і неўзабаве будзе выдалены адсюль. <ph name="BEGIN_LINK" />Пра ключы доступу<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Закрыць усе неактыўныя</translation>
 <translation id="8837654851594567190">Сартаваць па выдаўцу</translation>
+<translation id="8844136307393039959">Зніжэнне цаны на тавар, які вы адсочваеце</translation>
 <translation id="8848286253339013170">Ідзе захаванне відарыса ў Google Фота пад уліковым запісам <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Схавана</translation>
 <translation id="8855242995793521265">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>
@@ -2213,6 +2219,7 @@
 <translation id="8976382372951310360">Даведка</translation>
 <translation id="8976414606286374109">Карткі захоўваюцца ў ваш Уліковы запіс Google.</translation>
 <translation id="8981454092730389528">Параметры дзейнасці для Уліковых запісаў Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, замацаваны сайт</translation>
 <translation id="8998289560386111590">Недаступна на вашай прыладзе</translation>
 <translation id="9000532564152265066">Усе ўкладкі</translation>
 <translation id="9003677638446136377">Паўтарыць праверку</translation>

@@ -160,6 +160,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="109647177154844434">Če odstranite program Parallels Desktop, boste izbrisali sliko sistema Windows. To vključuje aplikacije, nastavitve in podatke v njem. Ali res želite nadaljevati?</translation>
 <translation id="1097016918605049747">Te strani ni bilo mogoče prevesti</translation>
 <translation id="1097658378307015415">Pred prijavo vstopite kot gost, da aktivirate omrežje <ph name="NETWORK_ID" />.</translation>
+<translation id="1099070179078143183">Chrome lahko za omogočanje funkcij, kot je zaznavanje prevar, uporablja modele umetne inteligence, ki se izvajajo neposredno v vaši napravi, ne da bi vaše podatke pošiljal v Googlove strežnike. Če je to izklopljeno, te funkcije morda ne bodo delovale. <ph name="BEGIN_LINK" />Preberite več o umetni inteligenci v napravi<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Slika je kopirana iz naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Trenutna ikona</translation>
 <translation id="1102759278139578486">Datotek z obvestili glavnega vozlišča ni mogoče prenesti. Poskusite pozneje.</translation>
@@ -2643,6 +2644,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Preverjanje slovnice in črkovanja</translation>
 <translation id="2750020734439919571">Več nastavitev in dovoljenj za aplikacije za Chrome</translation>
+<translation id="275010360476017464">Uporabite mikrofon za klepet z Geminijem. Ko govorite z Geminijem, se zvok shrani v dejavnosti v aplikacijah Gemini (če je vklopljena)</translation>
 <translation id="2750602041558385535">Nepreverjen prenos je blokiran</translation>
 <translation id="2751454300227269244">Premaknite usta desno</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> želi izvedeti številko ID-ja vašega varnostnega ključa. Spletno mesto bo vedelo, kateri varnostni ključ uporabljate.</translation>
@@ -4790,7 +4792,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4206585797409671301">Prikazovanje zahtev je dovoljeno</translation>
 <translation id="4207144975205749656">Šifrira zahteve za premikanje, da napadalci v istem omrežju ne morejo videti vašega prometa</translation>
 <translation id="4207932031282227921">Zahtevano je dovoljenje; pritisnite F6, če se želite odzvati.</translation>
-<translation id="4208390505124702064">Iskanje po: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velika</translation>
 <translation id="4209247656298167054">Ni posodobitve</translation>
 <translation id="4209251085232852247">Izklopljeno</translation>
@@ -5622,6 +5623,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> želi uporabiti osebne podatke iz vaše digitalne denarnice.</translation>
 <translation id="4785719467058219317">Varnostni ključ, ki ga uporabljate, ni registriran na tem spletnem mestu</translation>
 <translation id="4785914069240823137">Prekliči obrezovanje</translation>
+<translation id="4786430656008801173">Umetna inteligenca v napravi</translation>
 <translation id="4787471921443575924">Uredi ključ za dostop za uporabniško ime: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Preverite omrežno povezavo in poskusite znova.</translation>
 <translation id="4789348252524569426">Datotek za govor ni mogoče namestiti. Napravo je treba posodobiti. Znova zaženite napravo in poskusite znova.</translation>
@@ -5777,6 +5779,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4881685975363383806">Ne opomni me naslednjič</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4882312758060467256">Ima dostop do tega spletnega mesta</translation>
+<translation id="4882848900607400156">Ko delite natančno lokacijo, lahko Gemini natančneje odgovori na vaša vprašanja. Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="4882919381756638075">Spletna mesta običajno uporabljajo mikrofon za komunikacijske funkcije, kot je videoklepet.</translation>
 <translation id="4883436287898674711">Vsa spletna mesta <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Upravitelj opravil</translation>
@@ -5867,6 +5870,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4945439665401275950">Če želite nastaviti prstni odtis, naj se otrok dotakne gumba za vklop. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">zaganjalnik in puščica gor</translation>
 <translation id="4947376546135294974">Podatki s spletnega mesta, ki ste ga obiskali</translation>
+<translation id="4948370357877377178">Nadaljujte opravila</translation>
 <translation id="4950100687509657457">Ustvarite profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{datoteko}one{# datoteko}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="495170559598752135">Dejanja</translation>
@@ -9100,6 +9104,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zapri stran}one{Zapri strani}two{Zapri strani}few{Zapri strani}other{Zapri strani}}</translation>
 <translation id="7207457272187520234">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To nastavitev je uveljavil lastnik naprave. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google.</translation>
 <translation id="7207631048330366454">Iščite aplikacije</translation>
+<translation id="7209958456051239069">Ko delite natančno lokacijo, lahko Gemini natančneje odgovori na vaša vprašanja</translation>
 <translation id="7210257969463271891">Spletne aplikacije, ki jih namestite, so prikazane tukaj</translation>
 <translation id="7210432570808024354">Dotik in vlečenje za premikanje predmetov</translation>
 <translation id="7210499381659830293">Tiskalniki razširitev</translation>
@@ -10719,6 +10724,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8288032458496410887">Odmeščanje aplikacije <ph name="APP" /> …</translation>
 <translation id="8288553158681886528">Pridobivanje besedila iz datoteke PDF</translation>
 <translation id="8289128870594824098">Velikost diska</translation>
+<translation id="8289200713453671499">Hitro preklapljajte med skupinami zavihkov in nedavnimi pogovori z umetno inteligenco, ne da bi izgubili točko, kjer ste ostali.</translation>
 <translation id="8289509909262565712">Pozdravljeni v sistemu <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Prenesi Chrome</translation>
 <translation id="8291942417224950075">Za osebno uporabo</translation>
@@ -11702,6 +11708,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8945508919180478719">Mikrofon v studijskem slogu</translation>
 <translation id="8946359700442089734">V tej napravi niso bile v celoti omogočene funkcije za odpravljanje napak: <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Strni vse zahteve v naslovni vrstici</translation>
+<translation id="8946996840522387154">Uporabite mikrofon za klepet z Geminijem. Ko govorite z Geminijem, se zvok shrani v dejavnost v aplikacijah Gemini (če je vklopljena). Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="894763922177556086">Dobra</translation>
 <translation id="895054485242522631">Spletna mesta lahko uporabljajo tipala gibanja</translation>
 <translation id="8951256747718668828">Obnovitve ni bilo mogoče dokončati zaradi napake</translation>

@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Това означава, че всеки път Chromium ще заявява мобилната версия на сайта.</translation>
 <translation id="1115463765356382667">Изпълнете предложените действия по-долу, за да се възползвате максимално от Chromium.</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
+<translation id="119044033865561140">Отваряйте Chromium незабавно, когато използвате своя iPad</translation>
 <translation id="1211450393895337634">Отваряйте Chromium по-бързо, когато сте готови да сърфирате на своя iPad.</translation>
 <translation id="1229234641991056119">Използвайте в Chromium паролите, историята, отметките и кредитните си карти от Safari</translation>
 <translation id="1257458525759135959">За да запазвате изображения, докоснете Settings и разрешете на Chromium да добавя снимки</translation>
 <translation id="1260702988262336471">Отваряне на менюто на Chromium</translation>
 <translation id="12739128458173458">За да изпратите този раздел до друго устройство, влезте в профила си в Chromium и на двете устройства.</translation>
+<translation id="1279797561821266129">Осъществявайте по-бърз достъп до Chromium от лентата Dock</translation>
 <translation id="1361748954329991663">Chromium не е актуален. Ако не виждате налични актуализации в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, е възможно устройството ви да не поддържа новите версии на Chromium.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1423007117030725713">Започнете търсене в нов раздел в Chromium.</translation>
@@ -176,6 +178,7 @@
 <translation id="4790638144988730920">Продължете да използвате данните от Chromium в профила си в Google.</translation>
 <translation id="4828317641996116749">Chromium не успя да провери всички пароли. Опитайте отново по-късно.</translation>
 <translation id="4856138222358683580">Действия от Chromium</translation>
+<translation id="4869706986935301458">Отваряйте Chromium незабавно, когато използвате своя iPhone</translation>
 <translation id="4904452304169763785">Сигнали за всички проблеми с поверителността и сигурността, които Chromium открие.</translation>
 <translation id="4908570938463711775">За да започнете, научете полезните основни неща за Chromium</translation>
 <translation id="4962295957157529683">Довършете действията си в другия отворен прозорец на Chromium.</translation>
@@ -295,6 +298,7 @@
 <translation id="7395825497086981028">Паролата ви ще бъде запазена в мениджъра на паролите за <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Този ключ за достъп ще бъде запазен в Мениджър на пароли за <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Отворете Chromium.</translation>
+<translation id="7507535968973352823">Поставете Chromium в долната лента, за да имате достъп до браузъра по всяко време</translation>
 <translation id="7531461704633548377">От Chromium</translation>
 <translation id="7554983317097061001">Съвет за Chromium: Преместете Chromium в лентата Dock</translation>
 <translation id="7576863740961052505">Управление на настройките на Chromium</translation>

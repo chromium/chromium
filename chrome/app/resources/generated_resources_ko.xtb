@@ -160,6 +160,7 @@
 <translation id="109647177154844434">Parallels Desktop을 제거하면 Windows 이미지가 삭제됩니다. 여기에는 애플리케이션, 설정, 데이터가 포함됩니다. 계속하시겠습니까?</translation>
 <translation id="1097016918605049747">페이지를 번역할 수 없습니다</translation>
 <translation id="1097658378307015415">로그인하기 전에 게스트로 로그인하여 <ph name="NETWORK_ID" /> 네트워크를 활성화하세요.</translation>
+<translation id="1099070179078143183">사기 탐지와 같은 기능을 지원하기 위해 Chrome은 Google 서버로 데이터를 전송하지 않고 기기에서 직접 실행되는 AI 모델을 사용할 수 있습니다. 이 기능이 사용 중지되면 이러한 기능이 작동하지 않을 수 있습니다. <ph name="BEGIN_LINK" />온디바이스 AI 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />에서 이미지가 복사됨</translation>
 <translation id="1100504063505580045">현재 아이콘</translation>
 <translation id="1102759278139578486">기본 노드 사이트설정 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
@@ -4787,7 +4788,6 @@
 <translation id="4206585797409671301">요청 표시가 허용됨</translation>
 <translation id="4207144975205749656">동일한 네트워크의 공격자가 트래픽을 볼 수 없도록 탐색 요청을 암호화합니다.</translation>
 <translation id="4207932031282227921">권한 요청됨, F6 키를 눌러 응답</translation>
-<translation id="4208390505124702064"><ph name="SITE_NAME" /> 검색</translation>
 <translation id="4209092469652827314">크게</translation>
 <translation id="4209247656298167054">업데이트 없음</translation>
 <translation id="4209251085232852247">사용 중지됨</translation>
@@ -5620,6 +5620,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다.</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4785914069240823137">자르기 취소</translation>
+<translation id="4786430656008801173">온디바이스 AI</translation>
 <translation id="4787471921443575924">사용자 이름(<ph name="USER_EMAIL" />)의 패스키 수정</translation>
 <translation id="4788092183367008521">네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
 <translation id="4789348252524569426">음성 파일을 설치할 수 없습니다. 기기를 업데이트해야 합니다. 기기를 재시작한 후 다시 시도해 보세요.</translation>

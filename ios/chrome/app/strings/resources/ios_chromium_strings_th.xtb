@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">ซึ่งหมายความว่า Chromium จะขอเว็บไซต์เวอร์ชันมือถือทุกครั้ง</translation>
 <translation id="1115463765356382667">โปรดดำเนินการตามที่แนะนําด้านล่างเพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
+<translation id="119044033865561140">เปิด Chromium ได้ทันทีเมื่อคุณใช้ iPad</translation>
 <translation id="1211450393895337634">เปิด Chromium ได้เร็วขึ้นเมื่อคุณพร้อมท่องเว็บใน iPad</translation>
 <translation id="1229234641991056119">ใช้รหัสผ่าน ประวัติการเข้าชม บุ๊กมาร์ก และบัตรเครดิตจาก Safari ใน Chromium</translation>
 <translation id="1257458525759135959">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chromium เพิ่มไปยังรูปภาพ</translation>
 <translation id="1260702988262336471">เปิดเมนู Chromium</translation>
 <translation id="12739128458173458">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
+<translation id="1279797561821266129">เข้าถึง Chromium ได้เร็วขึ้นจากแถบแอป</translation>
 <translation id="1361748954329991663">Chromium เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chromium เวอร์ชันใหม่อีกต่อไป</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1423007117030725713">เริ่มการค้นหาในแท็บใหม่ของ Chromium</translation>
@@ -176,6 +178,7 @@
 <translation id="4790638144988730920">ใช้ข้อมูล Chromium ในบัญชี Google ต่อไป</translation>
 <translation id="4828317641996116749">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="4856138222358683580">การดำเนินการใน Chromium</translation>
+<translation id="4869706986935301458">เปิด Chromium ได้ทันทีเมื่อคุณใช้ iPhone</translation>
 <translation id="4904452304169763785">การแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chromium ตรวจหาให้คุณ</translation>
 <translation id="4908570938463711775">เรียนรู้ข้อมูลพื้นฐานที่เป็นประโยชน์เกี่ยวกับ Chromium เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="4962295957157529683">ทำสิ่งที่กำลังทำในหน้าต่าง Chromium ที่เปิดอยู่อีกหน้าต่างหนึ่งให้เสร็จสิ้น</translation>
@@ -295,6 +298,7 @@
 <translation id="7395825497086981028">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านสำหรับ <ph name="EMAIL" /></translation>
 <translation id="7434848749522628428">ระบบจะบันทึกพาสคีย์นี้ไว้ในเครื่องมือจัดการรหัสผ่านสำหรับ <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">เปิด Chromium</translation>
+<translation id="7507535968973352823">วาง Chromium ไว้บริเวณด้านล่างเพื่อให้เข้าถึงได้ตลอดเวลา</translation>
 <translation id="7531461704633548377">จาก Chromium</translation>
 <translation id="7554983317097061001">เคล็ดลับสำหรับ Chromium: ย้าย Chromium ไปที่แถบแอป</translation>
 <translation id="7576863740961052505">จัดการการตั้งค่า Chromium</translation>

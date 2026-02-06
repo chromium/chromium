@@ -160,6 +160,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="109647177154844434">Si desinstalas Parallels Desktop, se borrará la imagen de Windows. Esto incluye sus aplicaciones, opciones de configuración y datos. ¿Confirmas que deseas continuar?</translation>
 <translation id="1097016918605049747">No se pudo traducir esta página.</translation>
 <translation id="1097658378307015415">Antes de acceder, ingresa como Invitado para activar la red <ph name="NETWORK_ID" />.</translation>
+<translation id="1099070179078143183">Para potenciar funciones como la detección de estafas, Chrome puede usar modelos de IA que se ejecutan directamente en tu dispositivo sin enviar tus datos a los servidores de Google. Si desactivas esta opción, es posible que estas funciones no tengan un comportamiento adecuado. <ph name="BEGIN_LINK" />Más información sobre la IA integrada en el dispositivo<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Imagen copiada de <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Ícono actual</translation>
 <translation id="1102759278139578486">No se pueden descargar los archivos de anotaciones de nodos principales. Vuelve a intentarlo más tarde.</translation>
@@ -4771,7 +4772,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4206585797409671301">Puede mostrar solicitudes</translation>
 <translation id="4207144975205749656">Encriptar las solicitudes de navegación para que los atacantes de la misma red no puedan ver tu tráfico</translation>
 <translation id="4207932031282227921">Se solicitó un permiso; para responder, presiona F6</translation>
-<translation id="4208390505124702064">Buscar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209247656298167054">Sin actualizaciones</translation>
 <translation id="4209251085232852247">Desactivados</translation>
@@ -5603,6 +5603,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quiere usar información personal de tu billetera digital.</translation>
 <translation id="4785719467058219317">Estás usando una llave de seguridad que no se registró con este sitio web</translation>
 <translation id="4785914069240823137">Cancelar recorte</translation>
+<translation id="4786430656008801173">IA integrada en el dispositivo</translation>
 <translation id="4787471921443575924">Editar la llave de acceso para el nombre de usuario: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Comprueba la conexión de red y vuelve a intentarlo.</translation>
 <translation id="4789348252524569426">No se pueden instalar los archivos de voz. Debes actualizar el dispositivo. Reinicia el dispositivo y vuelve a intentarlo.</translation>

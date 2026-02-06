@@ -1277,6 +1277,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3052868890529250114">Kadalasang secure kang nakakakonekta sa mga site, pero hindi makagamit ng secure na koneksyon ang Chrome sa ngayon. Posibleng may attacker na sumusubok na alamin o baguhin ang iyong koneksyon ng network. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Screen ng error ng Buy-Now-Pay-Later. Naka-hide ang keyboard.</translation>
+<translation id="3057844102210575426">Pamahalaan ang impormasyon ng biyahe</translation>
 <translation id="3061707000357573562">Serbisyo sa Pag-patch</translation>
 <translation id="3062655045399308513">I-delete ang Data mula sa Pag-browse...</translation>
 <translation id="3063453392496098461">Hindi na-install ang mga serbisyo sa background ng VPN.</translation>
@@ -2007,6 +2008,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4203769790323223880">Hindi pinapayagan ang camera</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Suriin ang mga configuration ng firewall at antivirus<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Hanapin sa <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Malaki</translation>
 <translation id="4210602799576081649">Nag-expire na ang code sa pag-verify, humiling ng bagong code</translation>
 <translation id="421066178035138955">Gumamit ng mga virtual reality device at data</translation>
@@ -2063,6 +2065,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4270541775497538019">Stacker 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Tingnan ang 0 na review. Ang average na rating ay <ph name="STARS" /> star.}=1{Tingnan ang 1 review. Ang average na rating ay <ph name="STARS" /> star.}one{Tingnan ang lahat ng # review. Ang average na rating ay <ph name="STARS" /> star.}other{Tingnan ang lahat ng # na review. Ang average na rating ay <ph name="STARS" /> star.}}</translation>
 <translation id="4271652479722040953">Kapag nagdagdag ng mga extension sa Chrome, ipinapadala ang nauugnay na data tungkol sa mga extension na ito sa mga third party para sa pagsusuri at posibleng nakikita ang mga ito ng iyong administrator. Kasama sa data ang impormasyon tungkol sa mga extension gaya ng pangalan, oras ng pag-install, source ng pag-install pati na rin ang aktibidad na nauugnay sa mga extension na ito (tulad ng pagbabago ng mga tab, pakikipag-ugnayan sa mga website, o pag-access sa cookies). Kinokolekta ang data na ito para sa mga extension na naka-install mula sa Chrome Web Store pati na rin ang mga extension na hindi galing sa store.</translation>
+<translation id="4275788652681621337">Isara ang panel sa gilid</translation>
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4276974990916607331">Huwag na lang</translation>
 <translation id="4277028893293644418">I-reset ang password</translation>
@@ -2626,6 +2629,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5209670883520018268">Tray 20</translation>
 <translation id="5212364581680288382">Karera ng Motorsiklo</translation>
 <translation id="5214542134842513912">Piliin kung aling malalawak na kategorya ng mga paksa ang puwedeng gamitin para tumulong na mag-personalize ng mga ad. Kapag in-off ang isang mas malawak na kategorya, maba-block din ang mga kaugnay na paksa.</translation>
+<translation id="52163492208010719">Pamahalaan ang mga dokumento ng pagkakakilanlan</translation>
 <translation id="521659676233207110">Tray 13</translation>
 <translation id="5216942107514965959">Huling binisita ngayong araw</translation>
 <translation id="5217759126664161410">Invalid na format ng protocol.</translation>
@@ -2710,6 +2714,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5344522958567249764">Pamahalaan ang privacy sa mga ad</translation>
 <translation id="5344579389779391559">Maaari kang singilin ng pera ng page na ito</translation>
 <translation id="5345249337934847112">Papel (Heavyweight Coated)</translation>
+<translation id="5346059693449184483">Ano'ng iniisip mo?</translation>
 <translation id="5348330584842140856">Hindi nailipat ang file na ito dahil wala na ito</translation>
 <translation id="5349543692327946794">Mga Label (Inkjet)</translation>
 <translation id="5351548097010183514">Mga Materyales at Supply sa Konstruksyon</translation>
@@ -4506,6 +4511,7 @@ Mga karagdagang detalye:
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">Itinakdang Lokasyon:</translation>
 <translation id="8220602974062798186">I-block ang <ph name="TOPIC" /> at anumang kaugnay na paksa?</translation>
+<translation id="8223142476690844338">Kumusta <ph name="USER_NAME" />, ano'ng iniisip mo?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Mag-ask sa <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Dalawang page na view</translation>
 <translation id="822925450938886901">Para sa karagdagang impormasyon at mga patakaran na posibleng malapat, buksan ang chrome://management sa iyong browser.</translation>

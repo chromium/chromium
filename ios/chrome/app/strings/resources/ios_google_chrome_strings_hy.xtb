@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1035560095760914532">Տեղադրեք Chrome-ը ներքևի հատվածում՝ այն ցանկացած պահի արագ բացելու համար</translation>
 <translation id="1076643793026027628">Chrome-ը ինկոգնիտո ռեժիմում YouTube տեսանյութերի հղումները ավտոմատ բացում է ինկոգնիտո ռեժիմում։</translation>
 <translation id="1081114897601629648">Գաղտնաբառերը չեն ներմուծվել Google գաղտնաբառերի կառավարիչ, քանի որ չեն համապատասխանում պահանջներին։</translation>
 <translation id="1086486568852410168">Որոնել Google Տեսապակու միջոցով</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Դուք Chrome-ում արդեն առավելագույն թույլատրելի թվով (<ph name="LIMIT" />) էջանիշներ եք պահել, ուստի ձեր էջանիշներից մի քանիսը դեռ չեն պահվել ձեր Google հաշվում։
 
 Դուք չեք կարող նոր էջանիշներ պահել ձեր հաշվում, մինչև չջնջեք մի քանիսը։ Եթե դուրս գաք հիմա, չպահված էջանիշները կջնջվեն։</translation>
+<translation id="2901621928549457170">Ակնթարթորեն բացեք Chrome-ը, երբ iPad-ով եք</translation>
 <translation id="2922914028977213693">Հպեք այստեղ՝ ձեր iPad-ում Chrome-ի բոլոր հնարավորություններից օգտվելու համար։</translation>
 <translation id="292371311537977079">Chrome-ի կարգավորումներ</translation>
 <translation id="2923827943290349720">Կողպել ինկոգնիտո ներդիրները, երբ փակում եք Chrome-ը</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Ընտրեք Chrome-ը։</translation>
 <translation id="5123188916260706415">Որոնել ձայնի միջոցով Chrome-ում</translation>
 <translation id="5162467219239570114">Chrome-ը հնացած է։ Եթե <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />-ում թարմացում հասանելի չէ, ապա հնարավոր է՝ ձեր սարքը Chrome-ի նոր տարբերակներն այլևս չի աջակցում։</translation>
+<translation id="5172049865623113551">Ակնթարթորեն բացեք Chrome-ը, երբ iPhone-ով եք</translation>
+<translation id="5179095426828744632">Ավելի արագ բացեք Chrome-ը Dock վահանակից</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5190139289262548459">Ձեր կազմակերպությունը (<ph name="DOMAIN" />) կառավարում է ձեր մտած հաշիվը և այն, թե ինչպես է Chrome-ն օգտագործվում։</translation>
 <translation id="5209238444239954363">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը։ Փորձեք ավելի ուշ։</translation>

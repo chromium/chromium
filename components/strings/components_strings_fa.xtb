@@ -1278,6 +1278,7 @@
 <translation id="3052868890529250114">‏معمولاً ازطریق اتصال ایمن به سایت‌ها متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">صفحه خطای «حالا خرید کنید، بعداً بپردازید». صفحه‌کلید پنهان است.</translation>
+<translation id="3057844102210575426">مدیریت اطلاعات سفر</translation>
 <translation id="3061707000357573562">سرویس وصله</translation>
 <translation id="3062655045399308513">حذف کردن داده‌های مرور…</translation>
 <translation id="3063453392496098461">سرویس‌های پس‌زمینه‌ای وی‌پی‌ان نصب نشدند.</translation>
@@ -2008,6 +2009,7 @@
 <translation id="4203769790323223880">دوربین مجاز نیست</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />بررسی پیکربندی آنتی‌ویروس و دیوار آتش<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">جستجوی <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">بزرگ</translation>
 <translation id="4210602799576081649">کد درستی‌سنجی منقضی شده است؛ کد جدیدی درخواست کنید</translation>
 <translation id="421066178035138955">از دستگاه‌ها و داده‌های واقعیت مجازی استفاده کند</translation>
@@ -2064,6 +2066,7 @@
 <translation id="4270541775497538019">پشته‌ساز ۶</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{مشاهده ۰ مرور. میانگین رده‌بندی <ph name="STARS" /> ستاره است.}=1{مشاهده ۱ مرور. میانگین رده‌بندی <ph name="STARS" /> ستاره است.}one{مشاهده همه # مرور. میانگین رده‌بندی <ph name="STARS" /> ستاره است.}other{مشاهده همه # مرور. میانگین رده‌بندی <ph name="STARS" /> ستاره است.}}</translation>
 <translation id="4271652479722040953">‏وقتی افزونه‌ها به Chrome اضافه می‌شود، داده‌های مرتبط درباره این افزونه‌ها برای تجزیه‌وتحلیل به طرف‌های سوم ارسال می‌شود و ممکن است برای سرپرستتان قابل‌مشاهده باشد. داده‌ها شامل اطلاعاتی درباره افزونه‌ها مثل نام، زمان نصب، منبع نصب، و همچنین فعالیت مرتبط با این افزونه‌ها (مثل تغییر دادن زبانه‌ها، تماس گرفتن با وب‌سایت‌ها، یا دسترسی یافتن به کوکی‌ها) است. این داده‌ها برای افزونه‌های نصب‌شده از «نت‌بازار Chrome» و همچنین افزونه‌های خارج از فروشگاه جمع‌آوری می‌شود.</translation>
+<translation id="4275788652681621337">بستن پانل کناری</translation>
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
 <translation id="4276974990916607331">نه متشکرم</translation>
 <translation id="4277028893293644418">بازنشانی گذرواژه</translation>
@@ -2627,6 +2630,7 @@
 <translation id="5209670883520018268">سینی ۲۰</translation>
 <translation id="5212364581680288382">مسابقه موتورسواری</translation>
 <translation id="5214542134842513912">انتخاب کنید کدام دسته‌های گسترده از موضوع‌ها می‌توانند برای شخصی‌سازی کردن آگهی‌ها استفاده شوند. خاموش کردن یکی از دسته‌های گسترده باعث مسدود شدن موضوع‌های مرتبط با آن نیز می‌شود</translation>
+<translation id="52163492208010719">مدیریت مدارک شناسایی</translation>
 <translation id="521659676233207110">سینی ۱۳</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>
 <translation id="5217759126664161410">قالب پروتکل نامعتبر است.</translation>
@@ -2711,6 +2715,7 @@
 <translation id="5344522958567249764">مدیریت حریم خصوصی آگهی‌ها</translation>
 <translation id="5344579389779391559">این صفحه ممکن است تلاش کند از شما پول دریافت کند</translation>
 <translation id="5345249337934847112">کاغذ (با پوشش سنگین)</translation>
+<translation id="5346059693449184483">در فکر چه هستید؟</translation>
 <translation id="5348330584842140856">این فایل منتقل نشد چون دیگر وجود ندارد</translation>
 <translation id="5349543692327946794">برچسب (جوهرافشان)</translation>
 <translation id="5351548097010183514">مصالح و لوازم ساختمانی</translation>
@@ -4507,6 +4512,7 @@
 <translation id="8216640997712497593">۱۸ × ۱۴ اینچ</translation>
 <translation id="8218327578424803826">مکان اختصاص یافته:</translation>
 <translation id="8220602974062798186"><ph name="TOPIC" /> و همه موضوع‌های مرتبط مسدود شود؟</translation>
+<translation id="8223142476690844338">سلام <ph name="USER_NAME" />، در فکر چه هستید؟</translation>
 <translation id="8226408512771130794">‫<ph name="KEYWORD_SHORTCUT" />، پرسیدن از <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">نمای دوصفحه‌ای</translation>
 <translation id="822925450938886901">‏برای اطلاعات بیشتر و خط‌مشی‌هایی که ممکن است اعمال شود، chrome://management را در مرورگرتان باز کنید.</translation>

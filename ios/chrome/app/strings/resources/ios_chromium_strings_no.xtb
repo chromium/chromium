@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Dette betyr at Chromium kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="1115463765356382667">Fullfør de foreslåtte handlingene under for å få mest mulig ut av Chromium.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
+<translation id="119044033865561140">Åpne Chromium umiddelbart når du er på iPad</translation>
 <translation id="1211450393895337634">Åpne Chromium raskere når du er klar til å surfe på iPad.</translation>
 <translation id="1229234641991056119">Bruk Safari-passordene, -loggen, -bokmerkene og -kredittkortene dine i Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
 <translation id="1260702988262336471">Åpne Chromium-menyen</translation>
 <translation id="12739128458173458">For å sende denne fanen til en annen enhet, logg på Chromium på begge enhetene</translation>
+<translation id="1279797561821266129">Få raskere tilgang til Chromium fra dokken</translation>
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1423007117030725713">Start et søk på en ny Chromium-fane.</translation>
@@ -176,6 +178,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="4790638144988730920">Fortsett å bruke Chromium-dataene i Google-kontoen din.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
 <translation id="4856138222358683580">Chromium-handlinger</translation>
+<translation id="4869706986935301458">Åpne Chromium umiddelbart når du er på iPhone</translation>
 <translation id="4904452304169763785">Varsler om eventuelle personvern- eller sikkerhetsproblemer som Chromium oppdager for deg.</translation>
 <translation id="4908570938463711775">Lær deg det grunnleggende om Chromium for å komme i gang</translation>
 <translation id="4962295957157529683">Gjør deg ferdig med det du holdt på med i det andre åpne Chromium-vinduet.</translation>
@@ -295,6 +298,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7395825497086981028">Passordet blir lagret i Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Denne passnøkkelen lagres i Google Passordlagring for <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Åpne Chromium</translation>
+<translation id="7507535968973352823">Plasser Chromium i det nederste området for å få tilgang til den når som helst</translation>
 <translation id="7531461704633548377">Fra Chromium</translation>
 <translation id="7554983317097061001">Chromium-tips: Flytt Chromium til dokken</translation>
 <translation id="7576863740961052505">Administrer Chromium-innstillingene</translation>

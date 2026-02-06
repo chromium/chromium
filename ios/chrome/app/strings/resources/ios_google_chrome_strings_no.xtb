@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1035560095760914532">Plasser Chrome i det nederste området for å få tilgang til den når som helst</translation>
 <translation id="1076643793026027628">Chrome åpner automatisk YouTube-inkognitolinker i inkognitomodus.</translation>
 <translation id="1081114897601629648">Følgende passord ble ikke importert til Google Passordlagring fordi de ikke oppfyller kravene.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
@@ -89,6 +90,7 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="288992067439702510">Du har nådd Google Chrome sin grense på <ph name="LIMIT" /> bokmerker, så noen av bokmerkene dine er ikke lagret i Google-kontoen din ennå.
 
 Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logger av nå, slettes bokmerker som ikke er lagret.</translation>
+<translation id="2901621928549457170">Åpne Chrome umiddelbart når du er på iPad</translation>
 <translation id="2922914028977213693">Trykk her for å få mest mulig ut av Chrome på iPad.</translation>
 <translation id="292371311537977079">Chrome-innstillinger</translation>
 <translation id="2923827943290349720">Lås inkognitofanene dine når du lukker Chrome</translation>
@@ -173,6 +175,8 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="5119391094379141756">Velg Chrome</translation>
 <translation id="5123188916260706415">Søk med stemmen i Chrome</translation>
 <translation id="5162467219239570114">Chrome er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chrome lenger.</translation>
+<translation id="5172049865623113551">Åpne Chrome umiddelbart når du er på iPhone</translation>
+<translation id="5179095426828744632">Få raskere tilgang til Chrome fra dokken</translation>
 <translation id="5184329579814168207">Åpne i Chrome</translation>
 <translation id="5190139289262548459">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du er logget på, og hvordan Chrome brukes.</translation>
 <translation id="5209238444239954363">Chrome kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>

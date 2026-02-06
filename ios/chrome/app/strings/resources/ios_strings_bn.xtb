@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">আপনার ট্র্যাক করা প্রোডাক্টের তালিকায় প্রোডাক্টটি যোগ করা হয়েছে।</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
+<translation id="2237869114829007407">যেকোনও পৃষ্ঠা বা বিষয়ের ওভারভিউ ও মূল ইনসাইট পান</translation>
 <translation id="2240256190924001613">কনফিগারেশন প্রোফাইল উপলভ্য আছে</translation>
 <translation id="2244080985779413662">এই ওয়েবসাইটটি একটি ফাইল ডাউনলোড করে সেটি আপনার Wallet-এ খুলতে চায়।</translation>
 <translation id="2245007488813216650">অনুবাদ করা হচ্ছে…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">আরও</translation>
 <translation id="3311748811247479259">বন্ধ করা আছে</translation>
 <translation id="3312300514034250578">উন্নত Safe Browsing</translation>
+<translation id="3315786055700307152">আপনার আইটেমে এখন ১৫% ছাড় আছে</translation>
 <translation id="3324193307694657476">ঠিকানা ২</translation>
 <translation id="3328801116991980348">সাইট তথ্য</translation>
 <translation id="333229797575847124">কীভাবে এই ফিচার চালু করতে হয়</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">এর জন্য পাসকী তৈরি করুন</translation>
 <translation id="3380352560400387991">এই সাইট কোনও অ্যাপ্লিকেশন খোলার চেষ্টা করছে। এটি করলে আপনাকে ছদ্মবেশী মোড ছেড়ে বেরিয়ে যেতে হবে।</translation>
 <translation id="3385742921291399323">আপনার সেভ করা পাসওয়ার্ড, ট্যাব, বুকমার্ক ও আরও অনেক কিছু পান।</translation>
+<translation id="3391765987934722383">দাম কমার কোনও সুযোগ মিস করবেন না</translation>
 <translation id="3392923070107623576">ট্যাব গ্রুপ তৈরি করে সাজিয়ে রাখুন</translation>
 <translation id="3404232721752787413">Google Photos-এ সেভ করুন</translation>
 <translation id="3406506285180498376">পৃষ্ঠা শেয়ার করুন…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3955740319737378355">হয়ে গেছে</translation>
 <translation id="3955822496205734389">আপনার দুর্বল পাসওয়ার্ড আছে।</translation>
+<translation id="3957016963627617921">Chrome-এ Gemini ব্যবহার করে আরও অনেক কিছু করুন</translation>
 <translation id="3958312024468322930">আপনার হোম স্ক্রিনের নিচে ডকে এটি টেনে নিয়ে আসুন</translation>
 <translation id="3962326069546168954">সেভ করুন</translation>
 <translation id="3967327056943561740">বুকমার্ক</translation>
@@ -2164,6 +2168,7 @@
 <translation id="8803639129939845298">সুরক্ষিত</translation>
 <translation id="8813277370772331957">আমাকে পরে মনে করানো হোক</translation>
 <translation id="8814719628147284151">চালিয়ে যান</translation>
+<translation id="8817524703470045896">দাম ট্র্যাক করুন এবং কোনও সাইটে দাম কমে গেলে সেই সম্পর্কিত সতর্কতা পান</translation>
 <translation id="8819155700324279105">অনলাইন ঝুঁকির বিরুদ্ধে অতিরিক্ত সুরক্ষার স্তর যোগ করুন</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8822421075653507124">এই ডিভাইসের নিরাপদ ব্যবহার সুনিশ্চিত করতে, আপনার প্রতিষ্ঠান, ডিভাইসের অপারেটিং সিস্টেম, ব্রাউজার ও সেটিংস এবং ডিভাইসে কোন সফ্টওয়্যার ইনস্টল করা আছে তার ব্যাপারে বিভিন্ন তথ্য দেখতে চাইতে পারে।</translation>
@@ -2171,6 +2176,7 @@
 <translation id="8829809207373502270">এই পাসকী আর কাজ করে না। এটি <ph name="WEBSITE" /> থেকে মুছে দেওয়া হয়েছে এবং শীঘ্রই এটি এখান থেকেও মুছে দেওয়া হবে। <ph name="BEGIN_LINK" />পাসকী সম্পর্কে<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">সব ইনঅ্যাক্টিভ ট্যাব বন্ধ করুন</translation>
 <translation id="8837654851594567190">প্রকাশক অনুযায়ী সাজান</translation>
+<translation id="8844136307393039959">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমেছে</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" />-এর জন্য Google Photos-এ ছবি সেভ করা হচ্ছে…</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8855242995793521265">উল্লেখযোগ্যভাবে আপনার ব্রাউজার বা ডিভাইসের পারফর্ম্যান্স ধীর গতির করে দেয় না।</translation>
@@ -2214,6 +2220,7 @@
 <translation id="8976382372951310360">সহায়তা</translation>
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, পিন করা সাইট</translation>
 <translation id="8998289560386111590">আপনার ডিভাইসে উপলভ্য নয়</translation>
 <translation id="9000532564152265066">সব ট্যাব</translation>
 <translation id="9003677638446136377">আবার পরীক্ষা করুন</translation>

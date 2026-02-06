@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">商品已添加到跟踪的商品列表。</translation>
 <translation id="2230173723195178503">已加载网页</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
+<translation id="2237869114829007407">获取任何网页或主题的概览与关键要点</translation>
 <translation id="2240256190924001613">有可用的配置文件</translation>
 <translation id="2244080985779413662">此网站想下载文件并在“钱包”中打开该文件。</translation>
 <translation id="2245007488813216650">正在翻译…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">已关闭</translation>
 <translation id="3312300514034250578">增强型安全浏览</translation>
+<translation id="3315786055700307152">商品现已降价 15%</translation>
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="333229797575847124">如何启用此功能</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">使用以下名称创建通行密钥</translation>
 <translation id="3380352560400387991">此网站正在尝试打开某款应用。这会使您退出无痕模式。</translation>
 <translation id="3385742921291399323">获取您保存的密码、标签页、书签等。</translation>
+<translation id="3391765987934722383">别错过降价</translation>
 <translation id="3392923070107623576">创建标签页分组，让一切井井有条</translation>
 <translation id="3404232721752787413">保存在 Google 相册中</translation>
 <translation id="3406506285180498376">分享页面…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">登录</translation>
 <translation id="3955740319737378355">完成</translation>
 <translation id="3955822496205734389">您有些密码的安全系数较低。</translation>
+<translation id="3957016963627617921">使用 Chrome 中的 Gemini 提高效率</translation>
 <translation id="3958312024468322930">将图标拖动到主屏幕底部的程序坞中</translation>
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">书签</translation>
@@ -2163,6 +2167,7 @@
 <translation id="8803639129939845298">安全</translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8814719628147284151">继续</translation>
+<translation id="8817524703470045896">跟踪价格，并在有网站降价时收到提醒</translation>
 <translation id="8819155700324279105">增添一层额外的安全保障，防范在线威胁</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="8822421075653507124">为确保您可以安全地使用此设备，您的组织可能需要查看设备操作系统、浏览器、设置以及设备上安装的软件等相关信息。</translation>
@@ -2170,6 +2175,7 @@
 <translation id="8829809207373502270">此通行密钥已失效，目前已从 <ph name="WEBSITE" /> 中删除，很快也会从此处删除。<ph name="BEGIN_LINK" />关于通行密钥<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">关闭所有闲置标签页</translation>
 <translation id="8837654851594567190">按发布者排序</translation>
+<translation id="8844136307393039959">您跟踪的商品降价了</translation>
 <translation id="8848286253339013170">正在将图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册…</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8855242995793521265">不会显著减慢浏览器或设备的运行速度。</translation>
@@ -2213,6 +2219,7 @@
 <translation id="8976382372951310360">帮助</translation>
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 账号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的网站</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9000532564152265066">所有标签页</translation>
 <translation id="9003677638446136377">再次检查</translation>

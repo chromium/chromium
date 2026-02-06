@@ -160,6 +160,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="109647177154844434">La disinstallazione di Parallels Desktop comporterà l'eliminazione dell'immagine di Windows, inclusi dati, applicazioni e impostazioni associati. Vuoi continuare?</translation>
 <translation id="1097016918605049747">Impossibile tradurre questa pagina</translation>
 <translation id="1097658378307015415">Prima di accedere, entra come Ospite per attivare la rete <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Per supportare funzionalità come la protezione antifrode, Chrome può utilizzare modelli di AI che vengono eseguiti direttamente sul tuo dispositivo senza inviare i tuoi dati ai server Google. Se questa opzione è disattivata, queste funzionalità potrebbero non funzionare. <ph name="BEGIN_LINK" />Scopri di più sull'AI on-device<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Immagine copiata da <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Icona attuale</translation>
 <translation id="1102759278139578486">Impossibile scaricare i file di annotazioni del nodo principale. Riprova più tardi.</translation>
@@ -4774,7 +4775,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4206585797409671301">Autorizzate a mostrare richieste</translation>
 <translation id="4207144975205749656">Cripta le richieste di navigazione in modo che i malintenzionati sulla stessa rete non possano vedere il tuo traffico</translation>
 <translation id="4207932031282227921">Autorizzazione richiesta, premi F6 per rispondere</translation>
-<translation id="4208390505124702064">Cerca su <ph name="SITE_NAME" />:</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209247656298167054">Nessun aggiornamento</translation>
 <translation id="4209251085232852247">Disattivato</translation>
@@ -5606,6 +5606,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vuole usare le informazioni personali del tuo portafoglio digitale.</translation>
 <translation id="4785719467058219317">Stai usando un token di sicurezza non registrato su questo sito web</translation>
 <translation id="4785914069240823137">Annulla ritaglio</translation>
+<translation id="4786430656008801173">AI on-device</translation>
 <translation id="4787471921443575924">Modifica passkey per il nome utente: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Controlla la connessione di rete e riprova.</translation>
 <translation id="4789348252524569426">Impossibile installare file di contenuti vocali. Il dispositivo deve essere aggiornato. Riavvialo e riprova.</translation>

@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Bidhaa imewekwa kwenye orodha yako ya bidhaa unazofuatilia.</translation>
 <translation id="2230173723195178503">Ukurasa wa Wavuti umepakiwa</translation>
 <translation id="2236949375853147973">Shughuli Zangu</translation>
+<translation id="2237869114829007407">Pata muhtasari na maarifa muhimu kuhusu ukurasa au mada yoyote</translation>
 <translation id="2240256190924001613">Wasifu wa mipangilio unapatikana</translation>
 <translation id="2244080985779413662">Tovuti hii ingependa kupakua faili na kuifungua katika Pochi yako.</translation>
 <translation id="2245007488813216650">Inatafsiri…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">zaidi</translation>
 <translation id="3311748811247479259">Imezimwa</translation>
 <translation id="3312300514034250578">Kipengele cha Kuvinjari Salama Kilichoboreshwa</translation>
+<translation id="3315786055700307152">Sasa bei ya bidhaa yako imepunguzwa kwa asilimia 15</translation>
 <translation id="3324193307694657476">Anwani ya 2</translation>
 <translation id="3328801116991980348">Maelezo ya tovuti</translation>
 <translation id="333229797575847124">Jinsi ya kuwasha kipengele hiki</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Unda ufunguo wa siri wa</translation>
 <translation id="3380352560400387991">Tovuti hii inajaribu kufungua programu. Hatua hii itakuondoa kwenye hali ya faraghani.</translation>
 <translation id="3385742921291399323">Pata manenosiri, vichupo, alamisho ulizohifadhi na zaidi.</translation>
+<translation id="3391765987934722383">Usikose punguzo la bei</translation>
 <translation id="3392923070107623576">Panga shughuli zako kwa kuanzisha vikundi vya vichupo</translation>
 <translation id="3404232721752787413">Hifadhi katika Picha kwenye Google</translation>
 <translation id="3406506285180498376">Tuma ukurasa…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Ingia katika akaunti</translation>
 <translation id="3955740319737378355">Nimemaliza</translation>
 <translation id="3955822496205734389">Una manenosiri dhaifu.</translation>
+<translation id="3957016963627617921">Fanya mengi ukitumia Gemini kwenye Chrome</translation>
 <translation id="3958312024468322930">Iburute hadi sehemu iliyopachikwa upande wa chini wa Skrini yako ya Kwanza</translation>
 <translation id="3962326069546168954">Hifadhi</translation>
 <translation id="3967327056943561740">Alamisho</translation>
@@ -2163,6 +2167,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8803639129939845298">Salama</translation>
 <translation id="8813277370772331957">Nikumbushe baadaye</translation>
 <translation id="8814719628147284151">Endelea</translation>
+<translation id="8817524703470045896">Fuatilia bei na upate arifa bei inaposhuka kwenye tovuti yoyote</translation>
 <translation id="8819155700324279105">Weka safu ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni</translation>
 <translation id="8820817407110198400">Alamisho</translation>
 <translation id="8822421075653507124">Ili kuhakikisha kuwa kifaa hiki kinaweza kutumika kwa usalama, huenda shirika lako likahitaji kuona maelezo kuhusu mfumo wa uendeshaji, kivinjari, mipangilio na programu zilizowekwa kwenye kifaa.</translation>
@@ -2170,6 +2175,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8829809207373502270">Ufunguo huu wa siri hautumiki tena. Ulifutwa kwenye <ph name="WEBSITE" /> na utafutwa hapa hivi karibuni. <ph name="BEGIN_LINK" />Kuhusu funguo za siri<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Kufunga vichupo visivyotumika</translation>
 <translation id="8837654851594567190">Panga kulingana na mchapishaji</translation>
+<translation id="8844136307393039959">Punguzo la bei kwenye bidhaa unayofuatilia</translation>
 <translation id="8848286253339013170">Inahifadhi picha katika Picha kwenye Google kwa <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Kimefichwa</translation>
 <translation id="8855242995793521265">Haipunguzi kasi ya utendaji wa kivinjari au kifaa chako kwa njia inayoweza kugunduliwa.</translation>
@@ -2213,6 +2219,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8976382372951310360">Usaidizi</translation>
 <translation id="8976414606286374109">Kadi huhifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="8981454092730389528">Vidhibiti vya Shughuli za Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, tovuti imebandikwa</translation>
 <translation id="8998289560386111590">Haipatikani katika kifaa chako</translation>
 <translation id="9000532564152265066">Vichupo Vyote</translation>
 <translation id="9003677638446136377">Angalia tena</translation>

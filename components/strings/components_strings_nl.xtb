@@ -2002,6 +2002,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4203769790323223880">Camera niet toegestaan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controleer firewall- en antivirusconfiguraties<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Zoeken op <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4210602799576081649">De verificatiecode is verlopen. Vraag een nieuwe code aan.</translation>
 <translation id="421066178035138955">Virtualreality-apparaten en -gegevens gebruiken</translation>
@@ -2058,6 +2059,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4270541775497538019">Stapeleenheid 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 reviews bekijken. De gemiddelde beoordeling is <ph name="STARS" /> sterren.}=1{1 review bekijken. De gemiddelde beoordeling is <ph name="STARS" /> sterren.}other{Alle # reviews bekijken. De gemiddelde beoordeling is <ph name="STARS" /> sterren.}}</translation>
 <translation id="4271652479722040953">Als er extensies aan Chrome worden toegevoegd, worden relevante gegevens over deze extensies naar derden gestuurd voor analyse en zijn ze mogelijk zichtbaar voor je beheerder. De gegevens bevatten informatie over de extensies, zoals de naam, installatietijd en installatiebron, en activiteit die is gekoppeld aan deze extensies (zoals tabbladen wijzigen, contact opnemen met websites of toegang krijgen tot cookies). Deze gegevens worden verzameld voor extensies die zijn geïnstalleerd via de Chrome Web Store en voor extensies die niet via de Chrome Web Store zijn geïnstalleerd.</translation>
+<translation id="4275788652681621337">Zijvenster sluiten</translation>
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4276974990916607331">Nee, bedankt</translation>
 <translation id="4277028893293644418">Wachtwoord opnieuw instellen</translation>
@@ -2706,6 +2708,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5344522958567249764">Advertentieprivacy beheren</translation>
 <translation id="5344579389779391559">Deze pagina brengt je mogelijk kosten in rekening</translation>
 <translation id="5345249337934847112">Papier (zwaargewicht gecoat)</translation>
+<translation id="5346059693449184483">Waar denk je aan?</translation>
 <translation id="5348330584842140856">Dit bestand is niet verplaatst omdat het niet meer bestaat</translation>
 <translation id="5349543692327946794">Labels (inkjet)</translation>
 <translation id="5351548097010183514">Bouwmaterialen en -benodigdheden</translation>
@@ -4501,6 +4504,7 @@ Aanvullende informatie:
 <translation id="8216640997712497593">14 x 18 inch</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>
 <translation id="8220602974062798186"><ph name="TOPIC" /> en gerelateerde onderwerpen blokkeren?</translation>
+<translation id="8223142476690844338">Hallo <ph name="USER_NAME" />, waar denk je aan?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Vragen aan <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Weergave met twee pagina's</translation>
 <translation id="822925450938886901">Open chrome://management in je browser voor meer informatie en beleid dat van toepassing kan zijn.</translation>

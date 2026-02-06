@@ -160,6 +160,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="109647177154844434">Durch die Deinstallation von Parallels Desktop wird dein Windows-Image gelöscht. Dazu gehören auch die darin enthaltenen Anwendungen, Einstellungen und Daten. Möchtest du wirklich fortfahren?</translation>
 <translation id="1097016918605049747">Diese Seite konnte nicht übersetzt werden</translation>
 <translation id="1097658378307015415">Melde dich vor der Anmeldung als Gast an, um das Netzwerk <ph name="NETWORK_ID" /> zu aktivieren.</translation>
+<translation id="1099070179078143183">Für Funktionen wie die Betrugserkennung kann Chrome KI-Modelle verwenden, die direkt auf deinem Gerät ausgeführt werden, ohne deine Daten an Google-Server zu senden. Wenn diese Option deaktiviert ist, funktionieren diese Funktionen möglicherweise nicht. <ph name="BEGIN_LINK" />Weitere Informationen zu On-Device-KI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Bild kopiert von <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Aktuelles Symbol</translation>
 <translation id="1102759278139578486">Dateien zur Annotation von Hauptknoten können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
@@ -4769,7 +4770,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4206585797409671301">Dürfen Anfragen anzeigen</translation>
 <translation id="4207144975205749656">Verschlüsselt Navigationsanfragen, damit Angreifer im selben Netzwerk deinen Traffic nicht sehen können</translation>
 <translation id="4207932031282227921">Berechtigung angefordert. Drücke „F6“, um zu reagieren.</translation>
-<translation id="4208390505124702064"><ph name="SITE_NAME" /> durchsuchen</translation>
 <translation id="4209092469652827314">Groß</translation>
 <translation id="4209247656298167054">Kein Update</translation>
 <translation id="4209251085232852247">Deaktiviert</translation>
@@ -5601,6 +5601,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> möchte personenbezogene Daten aus deinem digitalen Wallet verwenden.</translation>
 <translation id="4785719467058219317">Du verwendest einen Sicherheitsschlüssel, der nicht auf dieser Website registriert ist</translation>
 <translation id="4785914069240823137">Zuschneiden abbrechen</translation>
+<translation id="4786430656008801173">On-Device-KI</translation>
 <translation id="4787471921443575924">Passkey für Nutzername <ph name="USER_EMAIL" /> bearbeiten</translation>
 <translation id="4788092183367008521">Bitte überprüfe die Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="4789348252524569426">Sprachdateien können nicht installiert werden. Dein Gerät muss aktualisiert werden. Starte das Gerät neu und versuche es noch einmal.</translation>

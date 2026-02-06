@@ -1278,6 +1278,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3052868890529250114">Anda biasanya terhubung ke situs dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman untuk saat ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Layar error Beli Sekarang, Bayar Nanti. Keyboard disembunyikan.</translation>
+<translation id="3057844102210575426">Kelola info perjalanan</translation>
 <translation id="3061707000357573562">Layanan Patch</translation>
 <translation id="3062655045399308513">Hapus Data Penjelajahan...</translation>
 <translation id="3063453392496098461">Penginstalan layanan latar belakang VPN gagal.</translation>
@@ -2007,6 +2008,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4203769790323223880">Kamera tidak diizinkan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Periksa konfigurasi antivirus dan firewall<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Telusuri <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4210602799576081649">Kode verifikasi sudah tidak berlaku, minta kode baru</translation>
 <translation id="421066178035138955">Gunakan perangkat dan data virtual reality</translation>
@@ -2063,6 +2065,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4270541775497538019">Tempat kertas 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Lihat 0 ulasan. Rating rata-rata adalah <ph name="STARS" /> bintang.}=1{Lihat 1 ulasan. Rating rata-rata adalah <ph name="STARS" /> bintang.}other{Lihat semua (#) ulasan. Rating rata-rata adalah <ph name="STARS" /> bintang.}}</translation>
 <translation id="4271652479722040953">Saat ekstensi ditambahkan ke Chrome, data yang relevan tentang ekstensi ini akan dikirim ke pihak ketiga untuk dianalisis dan dapat dilihat oleh administrator Anda. Data mencakup informasi tentang ekstensi seperti nama, waktu penginstalan, sumber penginstalan, serta aktivitas yang terkait dengan ekstensi ini (seperti mengubah tab, menghubungi situs, atau mengakses cookie). Data ini dikumpulkan untuk ekstensi yang diinstal dari Chrome Web Store serta ekstensi di luar Chrome Web Store.</translation>
+<translation id="4275788652681621337">Tutup panel samping</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4276974990916607331">Lain kali</translation>
 <translation id="4277028893293644418">Reset sandi</translation>
@@ -2626,6 +2629,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5209670883520018268">Baki 20</translation>
 <translation id="5212364581680288382">Balap Motor</translation>
 <translation id="5214542134842513912">Pilih kategori topik luas mana yang dapat digunakan untuk membantu mempersonalisasi iklan. Menonaktifkan kategori yang lebih luas juga akan memblokir topik terkaitnya.</translation>
+<translation id="52163492208010719">Kelola dokumen identitas</translation>
 <translation id="521659676233207110">Baki 13</translation>
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>
 <translation id="5217759126664161410">Format protokol tidak valid.</translation>
@@ -2710,6 +2714,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5344522958567249764">Kelola privasi iklan</translation>
 <translation id="5344579389779391559">Halaman ini mungkin mencoba menagih Anda</translation>
 <translation id="5345249337934847112">Kertas (Berlapis Bahan Berat)</translation>
+<translation id="5346059693449184483">Apa yang sedang Anda pikirkan?</translation>
 <translation id="5348330584842140856">File ini tidak dipindahkan karena sudah tidak ada</translation>
 <translation id="5349543692327946794">Label (Inkjet)</translation>
 <translation id="5351548097010183514">Bahan &amp; Perlengkapan Bangunan</translation>
@@ -4504,6 +4509,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8216640997712497593">14 x 18 inci (35 x 45 cm)</translation>
 <translation id="8218327578424803826">Lokasi yang Ditetapkan:</translation>
 <translation id="8220602974062798186">Blokir <ph name="TOPIC" /> dan topik terkait?</translation>
+<translation id="8223142476690844338">Halo <ph name="USER_NAME" />, apa yang sedang Anda pikirkan?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Minta <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Tampilan dua halaman</translation>
 <translation id="822925450938886901">Untuk mengetahui kebijakan dan informasi tambahan yang mungkin berlaku, buka chrome://management di browser Anda.</translation>

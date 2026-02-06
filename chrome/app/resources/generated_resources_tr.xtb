@@ -160,6 +160,7 @@
 <translation id="109647177154844434">Parallels Desktop'ı kaldırmak Windows görüntünüzü silecek. Bu işlem, Parallels Desktop'ın uygulamalarını, ayarlarını ve verilerini içerir. Devam etmek istediğinizden emin misiniz?</translation>
 <translation id="1097016918605049747">Bu sayfa çevrilemedi</translation>
 <translation id="1097658378307015415">Oturum açmadan önce <ph name="NETWORK_ID" /> ağını etkinleştirmek için lütfen Misafir olarak giriş yapın</translation>
+<translation id="1099070179078143183">Chrome, Dolandırıcılık Tespiti gibi özellikleri desteklemek için verilerinizi Google sunucularına göndermeden doğrudan cihazınızda çalışan yapay zeka modellerini kullanabilir. Bu ayar kapalıyken bu özellikler çalışmayabilir. <ph name="BEGIN_LINK" />Cihaz üzerinde yapay zeka hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="1099962274138857708">Resim, <ph name="DEVICE_NAME" /> cihazından kopyalandı</translation>
 <translation id="1100504063505580045">Mevcut simge</translation>
 <translation id="1102759278139578486">Ana düğüm ek açıklama dosyaları indirilemiyor. Daha sonra tekrar deneyin.</translation>
@@ -4770,7 +4771,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4206585797409671301">İstek göstermesine izin verilen siteler</translation>
 <translation id="4207144975205749656">Aynı ağdaki saldırganların trafiğinizi görememesi için gezinme isteklerini şifreler</translation>
 <translation id="4207932031282227921">İzin istendi, yanıtlamak için F6 tuşuna basın</translation>
-<translation id="4208390505124702064">Ara <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Büyük</translation>
 <translation id="4209247656298167054">Güncelleme Yok</translation>
 <translation id="4209251085232852247">Kapatıldı</translation>
@@ -5602,6 +5602,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />, dijital cüzdanınızdaki kişisel bilgileri kullanmak istiyor.</translation>
 <translation id="4785719467058219317">Bu web sitesine kaydettirilmemiş bir anahtar kullanıyorsunuz</translation>
 <translation id="4785914069240823137">Kırpmayı İptal Et</translation>
+<translation id="4786430656008801173">Cihaz üzerinde yapay zeka</translation>
 <translation id="4787471921443575924"><ph name="USER_EMAIL" /> kullanıcı adı için geçiş anahtarını düzenleyin</translation>
 <translation id="4788092183367008521">Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
 <translation id="4789348252524569426">Konuşma dosyaları yüklenemiyor. Cihazınızın güncellenmesi gerekiyor. Cihazınızı yeniden başlatıp işlemi tekrar deneyin.</translation>

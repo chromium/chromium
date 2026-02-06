@@ -2008,6 +2008,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4203769790323223880">Accès à l'appareil photo non autorisé</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />De vérifier les configurations du pare-feu et de l'antivirus<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Disque</translation>
+<translation id="4208390505124702064">Rechercher sur <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grand</translation>
 <translation id="4210602799576081649">Le code de vérification a expiré, demandez un nouveau code</translation>
 <translation id="421066178035138955">Utiliser les appareils et les données de réalité virtuelle</translation>
@@ -2064,6 +2065,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4270541775497538019">Empileur 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Afficher 0 avis. La note moyenne est de <ph name="STARS" /> étoiles.}=1{Afficher 1 avis. La note moyenne est de <ph name="STARS" /> étoiles.}one{Afficher # avis. La note moyenne est de <ph name="STARS" /> étoiles.}other{Afficher les # avis. La note moyenne est de <ph name="STARS" /> étoiles.}}</translation>
 <translation id="4271652479722040953">Lorsque des extensions sont ajoutées à Chrome, les données pertinentes sur ces extensions sont envoyées à des tiers pour analyse et peuvent être visibles par votre administrateur. Les données incluent des informations sur les extensions comme le nom, l'heure d'installation, la source d'installation ainsi que l'activité associée à ces extensions (comme le changement d'onglets, la prise de contact avec des sites Web ou l'accès aux témoins). Ces données sont collectées pour les extensions installées à partir de la boutique en ligne Chrome Web Store ainsi que pour les extensions en dehors de la boutique.</translation>
+<translation id="4275788652681621337">Fermer le panneau latéral</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4276974990916607331">Non merci</translation>
 <translation id="4277028893293644418">Réinitialiser le mot de passe</translation>
@@ -2712,6 +2714,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5344522958567249764">Gérer la confidentialité des annonces</translation>
 <translation id="5344579389779391559">L'accès à cette page peut engendrer des frais</translation>
 <translation id="5345249337934847112">Papier (couché épais)</translation>
+<translation id="5346059693449184483">À quoi pensez-vous?</translation>
 <translation id="5348330584842140856">Ce fichier n'a pas été déplacé parce qu'il n'existe plus</translation>
 <translation id="5349543692327946794">Étiquettes (jet d'encre)</translation>
 <translation id="5351548097010183514">Fournitures et matériaux de construction</translation>
@@ -4507,6 +4510,7 @@ Détails supplémentaires :
 <translation id="8216640997712497593">14 po x 18 po</translation>
 <translation id="8218327578424803826">Emplacement attribué :</translation>
 <translation id="8220602974062798186">Bloquer <ph name="TOPIC" /> et tout sujet connexe?</translation>
+<translation id="8223142476690844338">Bonjour <ph name="USER_NAME" />, à quoi pensez-vous?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, demander à <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Affichage de deux pages</translation>
 <translation id="822925450938886901">Pour obtenir des informations supplémentaires et connaître les politiques qui peuvent s'appliquer, ouvrez la page chrome://management dans votre navigateur.</translation>

@@ -160,6 +160,7 @@
 <translation id="109647177154844434">Parallels Desktopin poistaminen poistaa Windows-näköistiedoston. Se sisältää sen sovellukset, asetukset ja datan. Haluatko varmasti jatkaa?</translation>
 <translation id="1097016918605049747">Sivua ei voitu kääntää</translation>
 <translation id="1097658378307015415">Aloita vierailijakäyttö ennen sisäänkirjautumista aktivoidaksesi verkon <ph name="NETWORK_ID" />.</translation>
+<translation id="1099070179078143183">Chrome voi käyttää tekoälymalleja, jotka toimivat suoraan laitteellasi lähettämättä dataasi Googlen palvelimille. Näin Chrome voi tarjota esimerkiksi huijausten tunnistuksen. Kun asetus on pois päältä, nämä ominaisuudet eivät välttämättä toimi. <ph name="BEGIN_LINK" />Lue lisää laitepohjaisesta tekoälystä<ph name="END_LINK" />.</translation>
 <translation id="1099962274138857708">Kuva kopioitu laitteelta <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Nykyinen kuvake</translation>
 <translation id="1102759278139578486">Pääsolmun merkintätiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
@@ -4783,7 +4784,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4206585797409671301">Pyyntöjen näyttäminen sallittu</translation>
 <translation id="4207144975205749656">Salaa siirtymispyynnöt, jotta samassa verkossa olevat hyökkääjät eivät näe liikennettäsi</translation>
 <translation id="4207932031282227921">Lupaa pyydetty, vastaa painamalla F6</translation>
-<translation id="4208390505124702064">Haku sivustolta <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Suuri</translation>
 <translation id="4209247656298167054">Ei päivitystä</translation>
 <translation id="4209251085232852247">Poistettu käytöstä</translation>
@@ -5615,6 +5615,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> haluaa käyttää henkilökohtaisia tietoja digitaalisesta lompakostasi.</translation>
 <translation id="4785719467058219317">Käytät suojausavainta, jota ei ole rekisteröity tällä sivustolla.</translation>
 <translation id="4785914069240823137">Peru rajaus</translation>
+<translation id="4786430656008801173">Laitepohjainen tekoäly</translation>
 <translation id="4787471921443575924">Muokkaa avainkoodia: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="4789348252524569426">Puhetiedostojen asentaminen ei onnistu. Laite on päivitettävä. Käynnistä laite uudelleen ja yritä sitten.</translation>

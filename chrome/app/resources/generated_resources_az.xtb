@@ -160,6 +160,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="109647177154844434">Parallels Desktop ləğv edilsə, Windows şəkli də silinəcək. Buraya onun tətbiqləri, ayarları və datası daxildir. Davam etmək istədiyinizə əminsiniz?</translation>
 <translation id="1097016918605049747">Bu səhifəni tərcümə etmək mümkün olmadı</translation>
 <translation id="1097658378307015415">Hesaba girmədən öncə <ph name="NETWORK_ID" /> şəbəkəsini aktivləşdirmək üçün Qonaq olaraq daxil olun.</translation>
+<translation id="1099070179078143183">Dələduzluq aşkarlanması kimi funksiyaları dəstəkləmək üçün Chrome datanızı Google serverlərinə göndərmədən birbaşa cihazınızdakı Sİ modellərindən istifadə edə bilər. Cihazda Sİ deaktiv olduqda bu funksiyalar işləməyə bilər. <ph name="BEGIN_LINK" />Cihazda Sİ haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Şəkil <ph name="DEVICE_NAME" /> cihazından kopyalanıb</translation>
 <translation id="1100504063505580045">Cari işarə</translation>
 <translation id="1102759278139578486">Əsas düyün annotasiya fayllarını endirmək mümkün deyil. Sonra cəhd edin.</translation>
@@ -4775,7 +4776,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4206585797409671301">Sorğular göstərməsinə icazə verilib</translation>
 <translation id="4207144975205749656">Naviqasiya sorğularını şifrələdiyi üçün eyni şəbəkədəki hücumçular trafikinizi görə bilməz</translation>
 <translation id="4207932031282227921">İcazə tələb edilib, cavablandırmaq üçün F6 düyməsini basın</translation>
-<translation id="4208390505124702064"><ph name="SITE_NAME" /> axtarın</translation>
 <translation id="4209092469652827314">Böyük</translation>
 <translation id="4209247656298167054">Güncəllənmə yoxdur</translation>
 <translation id="4209251085232852247">Deaktivdir</translation>
@@ -5607,6 +5607,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> rəqəmsal pulqabınızdakı şəxsi məlumatlardan istifadə etmək istəyir.</translation>
 <translation id="4785719467058219317">Bu veb saytda qeydiyyatda olmayan təhlükəsizlik açarından istifadə edirsiniz</translation>
 <translation id="4785914069240823137">Kəsilməni ləğv edin</translation>
+<translation id="4786430656008801173">Cihazda Sİ</translation>
 <translation id="4787471921443575924">İstifadəçi adı üçün giriş açarını redaktə edin: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin.</translation>
 <translation id="4789348252524569426">Nitq fayllarını quraşdırmaq olmur. Cihazınız güncəllənməlidir. Cihazı yenidən başladıb təkrar cəhd edin.</translation>

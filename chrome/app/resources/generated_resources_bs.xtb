@@ -160,6 +160,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="109647177154844434">Ako deinstalirate Parallels Desktop, izbrisat ćete sliku Windowsa. To obuhvata aplikacije, postavke i podatke. Jeste li sigurni da želite nastaviti?</translation>
 <translation id="1097016918605049747">Prijevod stranice nije uspio</translation>
 <translation id="1097658378307015415">Prije nego se prijavite, pristupite kao gost da aktivirate mrežu <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Da omogući funkcije kao što je otkrivanje prevara, Chrome može koristiti AI modele koji se pokreću direktno na vašem uređaju bez slanja vaših podataka na Googleove servere. Kada je ovo isključeno, ove funkcije možda neće funkcionirati. <ph name="BEGIN_LINK" />Saznajte više o AI-ju na uređaju<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Slika je kopirana s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Trenutna ikona</translation>
 <translation id="1102759278139578486">Nije moguće preuzeti fajlove s bilješkama o glavnom čvoru. Pokušajte ponovo kasnije.</translation>
@@ -4786,7 +4787,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4206585797409671301">Dozvoljeno je prikazivanje zahtjeva</translation>
 <translation id="4207144975205749656">Šifrira zahtjeve za navigaciju da napadači na istoj mreži ne mogu vidjeti vaš saobraćaj</translation>
 <translation id="4207932031282227921">Zatraženo je odobrenje. Pritisnite F6 da odgovorite</translation>
-<translation id="4208390505124702064">Pretraži <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Veliki</translation>
 <translation id="4209247656298167054">Nema ažuriranja</translation>
 <translation id="4209251085232852247">Isključeno</translation>
@@ -5618,6 +5618,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> želi koristiti lične informacije iz vašeg digitalnog novčanika.</translation>
 <translation id="4785719467058219317">Koristite sigurnosni ključ koji nije registriran na ovoj web lokaciji</translation>
 <translation id="4785914069240823137">Otkažite izrezivanje</translation>
+<translation id="4786430656008801173">AI na uređaju</translation>
 <translation id="4787471921443575924">Izmjena pristupnog ključa za korisničko ime <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="4789348252524569426">Nije moguće instalirati fajlove za govor. Potrebno je ažurirati uređaj. Ponovo pokrenite uređaj i pokušajte ponovo.</translation>

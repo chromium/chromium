@@ -1277,6 +1277,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3052868890529250114">Jy verbind gewoonlik veilig aan werwe, maar Chrome kon nie hierdie keer ’n veilige verbinding gebruik nie. ’n Aanvaller probeer dalk afluister of jou netwerkverbinding wysig. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prysverlaging van <ph name="PRICE_DROP" /> op <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Koop-Nou-Betaal-Later-foutskerm. Sleutelbord is versteek.</translation>
+<translation id="3057844102210575426">Bestuur reisinligting</translation>
 <translation id="3061707000357573562">Regstellingdiens</translation>
 <translation id="3062655045399308513">Vee blaaierdata uit ...</translation>
 <translation id="3063453392496098461">Installasie van VPN-agtergronddienste het misluk.</translation>
@@ -2007,6 +2008,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4203769790323223880">Kamera nie toegelaat nie</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Die brandmuur- en antivirus-opstellings nagaan<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Deursoek <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4210602799576081649">Verifikasiekode het verval; vra vir 'n nuwe kode</translation>
 <translation id="421066178035138955">Gebruik virtuelerealiteittoestelle en -data</translation>
@@ -2063,6 +2065,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4270541775497538019">Stapelaar 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Bekyk 0 resensies. Gemiddelde gradering is <ph name="STARS" /> sterre.}=1{Bekyk 1 resensie. Gemiddelde gradering is <ph name="STARS" /> sterre.}other{Bekyk al # resensies. Gemiddelde gradering is <ph name="STARS" /> sterre.}}</translation>
 <translation id="4271652479722040953">Wanneer uitbreidings by Chrome gevoeg word, word relevante data oor hierdie uitbreidings na derde partye vir ontleding gestuur, en kan dit vir jou admin sigbaar wees. Die data sluit inligting oor die uitbreidings in, soos naam, installeertyd, bron van installasie asook aktiwiteit in verband met hierdie uitbreidings (soos oortjies wat verander word, webwerwe wat gekontak word of toegang wat tot webkoekies verkry word). Hierdie data word ingesamel vanaf die Chrome Webwinkel- en buitewinkeluitbreidings.</translation>
+<translation id="4275788652681621337">Maak kantpaneel toe</translation>
 <translation id="4275830172053184480">Herbegin jou toestel</translation>
 <translation id="4276974990916607331">Nee, dankie</translation>
 <translation id="4277028893293644418">Stel wagwoord terug</translation>
@@ -2626,6 +2629,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5209670883520018268">Laai 20</translation>
 <translation id="5212364581680288382">Motorfietswedrenne</translation>
 <translation id="5214542134842513912">Kies watter breë kategorieë onderwerpe gebruik kan word om te help om advertensies te personaliseer. As ’n breër kategorie afgeskakel word, sal dit ook die verwante onderwerpe van die kategorie blokkeer.</translation>
+<translation id="52163492208010719">Bestuur identiteitsdokumente</translation>
 <translation id="521659676233207110">Laai 13</translation>
 <translation id="5216942107514965959">Laas vandag besoek</translation>
 <translation id="5217759126664161410">Ongeldige protokolformaat.</translation>
@@ -2710,6 +2714,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5344522958567249764">Bestuur advertensieprivaatheid</translation>
 <translation id="5344579389779391559">Hierdie bladsy kan dalk geld van jou probeer hef</translation>
 <translation id="5345249337934847112">Papier (swaar bestryk)</translation>
+<translation id="5346059693449184483">Waaraan dink jy?</translation>
 <translation id="5348330584842140856">Hierdie lêer is nie geskuif nie omdat dit nie meer bestaan nie</translation>
 <translation id="5349543692327946794">Etikette (inkstraal)</translation>
 <translation id="5351548097010183514">Boumateriale en -benodigdhede</translation>
@@ -4505,6 +4510,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8216640997712497593">14x18 dm.</translation>
 <translation id="8218327578424803826">Toegewysde ligging:</translation>
 <translation id="8220602974062798186">Blokkeer <ph name="TOPIC" /> en enige verwante onderwerpe?</translation>
+<translation id="8223142476690844338">Hallo <ph name="USER_NAME" />, waaraan dink jy?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, vra <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Tweebladsyaansig</translation>
 <translation id="822925450938886901">Maak chrome://management in jou blaaier oop vir bykomende inligting en beleide wat van toepassing kan wees.</translation>

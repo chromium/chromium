@@ -495,6 +495,7 @@
 <translation id="6085954183010297841">要撤消文件修改权限吗？<ph name="FILE" /></translation>
 <translation id="6104860901391833523">开启此设置后，网站可以自动进入画中画模式。关闭此设置后，网站无法自动进入画中画模式。</translation>
 <translation id="6120483543004435978">开启此设置后，网站可以请求监测您是否正在使用设备。关闭此设置后，网站无法得知您是否正在使用设备。</translation>
+<translation id="6132075343662013154">Chrome 会询问您是否保存密码</translation>
 <translation id="615886654739818377">不允许网站管理所有显示屏上的窗口</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6171020522141473435">开启此设置后，网站可以请求使用蓝牙设备。关闭此设置后，网站无法使用蓝牙设备。</translation>

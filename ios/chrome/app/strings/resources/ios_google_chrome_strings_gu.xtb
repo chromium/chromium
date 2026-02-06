@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1035560095760914532">Chromeને કોઈપણ સમયે ઍક્સેસ કરવા માટે, તેને નીચેના વિસ્તારમાં મૂકો</translation>
 <translation id="1076643793026027628">Chrome ઑટોમૅટિક રીતે YouTube છૂપા મોડની લિંકને છૂપા મોડમાં ખોલે છે.</translation>
 <translation id="1081114897601629648">નીચેના પાસવર્ડ Google Password Manager પર આયાત કરવામાં આવ્યા ન હતા, કારણ કે તે જરૂરી શરતો સાથે મેળ ખાતા નથી.</translation>
 <translation id="1086486568852410168">Google Lens વડે શોધો</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">તમે Google Chromeની <ph name="LIMIT" /> બુકમાર્કની મર્યાદાએ પહોંચી ગયા છો, તેથી તમારા અમુક બુકમાર્ક હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યા નથી.
 
 જ્યાં સુધી તમે અમુક બુકમાર્ક ડિલીટ ન કરો, ત્યાં સુધી નવા બુકમાર્ક તમારા એકાઉન્ટમાં સાચવી શકાશે નહીં. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો ન સચવાયેલા બુકમાર્ક ડિલીટ કરવામાં આવશે.</translation>
+<translation id="2901621928549457170">જ્યારે તમે તમારા iPad પર હો, ત્યારે Chromeને ઝટપટ ખોલો</translation>
 <translation id="2922914028977213693">તમારા iPad પર Chromeનો વધુમાં વધુ લાભ લેવા માટે અહીં ટૅપ કરો.</translation>
 <translation id="292371311537977079">Chrome સેટિંગ</translation>
 <translation id="2923827943290349720">તમે Chrome બંધ કરો ત્યારે છૂપી ટૅબ લૉક કરો</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome પસંદ કરો</translation>
 <translation id="5123188916260706415">Chromeમાં વૉઇસની સુવિધા વડે શોધો.</translation>
 <translation id="5162467219239570114">Chrome જૂનું થઈ ગયું છે. જો <ph name="BEGIN_LINK" />ઍપ સ્ટોર<ph name="END_LINK" />માં કોઈ અપડેટ ઉપલબ્ધ ન હોય, તો એવું બની શકે છે કે તમારું ડિવાઇસ હવેથી Chromeના નવા વર્ઝનને સપોર્ટ ન કરતું હોય.</translation>
+<translation id="5172049865623113551">જ્યારે તમે તમારા iPhone પર હો, ત્યારે Chromeને ઝટપટ ખોલો</translation>
+<translation id="5179095426828744632">તમારા ડૉકમાંથી Chromeને વધુ ઝડપથી ઍક્સેસ કરો</translation>
 <translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5190139289262548459">તમારી સંસ્થા <ph name="DOMAIN" />, તમે જેમાં સાઇન ઇન કર્યું હોય તે એકાઉન્ટને અને Chromeના વપરાશની રીતને મેનેજ કરે છે.</translation>
 <translation id="5209238444239954363">Chrome અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>

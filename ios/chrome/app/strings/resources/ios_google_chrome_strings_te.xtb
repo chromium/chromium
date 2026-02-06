@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1035560095760914532">Chromeను ఎప్పుడైనా యాక్సెస్ చేయడానికి దాన్ని దిగువ ప్రాంతంలో ఉంచండి</translation>
 <translation id="1076643793026027628">Chrome ఆటోమేటిక్‌గా అజ్ఞాత విండోలో YouTube అజ్ఞాత లింక్‌లను తెరుస్తుంది.</translation>
 <translation id="1081114897601629648">కింది పాస్‌వర్డ్‌లు Google Password Managerకు దిగుమతి కాలేదు, ఎందుకంటే అవి ఆవశ్యకతలతో మ్యాచ్ కాలేదు.</translation>
 <translation id="1086486568852410168">Google Lensతో సెర్చ్ చేయండి</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Google Chrome <ph name="LIMIT" /> బుక్‌మార్క్‌ల పరిమితిని మీరు చేరుకున్నారు, కాబట్టి మీ బుక్‌మార్క్‌లలో కొన్ని ఇంకా మీ Google ఖాతాలో సేవ్ కాలేదు.
 
 మీరు కొన్ని బుక్‌మార్క్‌లను తొలగించే వరకు మీ ఖాతాలో కొత్త బుక్‌మార్క్‌లను సేవ్ చేయడం సాధ్యపడదు. మీరు ఇప్పుడు సైన్ అవుట్ చేస్తే, సేవ్ చేయని బుక్‌మార్క్‌లు తొలగించబడతాయి.</translation>
+<translation id="2901621928549457170">మీరు iPadలో ఉన్నప్పుడు Chromeను తక్షణమే తెరవండి</translation>
 <translation id="2922914028977213693">మీ iPadలో Chrome నుండి అత్యధిక ప్రయోజనాలను పొందడానికి ఇక్కడ ట్యాప్ చేయండి.</translation>
 <translation id="292371311537977079">Chrome సెట్టింగ్‌లు</translation>
 <translation id="2923827943290349720">మీరు Chromeను మూసివేసినప్పుడు అజ్ఞాత ట్యాబ్‌లను లాక్ చేయండి</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chromeను ఎంచుకోండి</translation>
 <translation id="5123188916260706415">Chromeలో Voiceతో సెర్చ్ చేయండి</translation>
 <translation id="5162467219239570114">Chrome వెర్షన్ కాలం చెల్లింది. <ph name="BEGIN_LINK" />యాప్ స్టోర్<ph name="END_LINK" />లో ఎలాంటి అప్‌డేట్ అందుబాటులో లేకపోతే, మీ పరికరం ఇకపై కొత్త Chrome వెర్షన్‌లను సపోర్ట్ చేయకపోవచ్చు.</translation>
+<translation id="5172049865623113551">మీరు మీ iPhoneలో ఉన్నప్పుడు Chromeను తక్షణమే తెరవండి</translation>
+<translation id="5179095426828744632">మీ డాక్ నుండి Chromeను మరింత వేగంగా యాక్సెస్ చేయండి</translation>
 <translation id="5184329579814168207">Chromeలో తెరువు</translation>
 <translation id="5190139289262548459">మీరు సైన్ ఇన్ చేసి ఉన్న ఖాతాను, Chrome ఎలా ఉపయోగించబడుతుంది అనే విషయాన్ని మీ సంస్థ, <ph name="DOMAIN" /> మేనేజ్ చేస్తాయి.</translation>
 <translation id="5209238444239954363">Chrome అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>

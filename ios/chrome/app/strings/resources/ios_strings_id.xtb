@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Produk ditambahkan ke daftar produk yang dipantau.</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
+<translation id="2237869114829007407">Dapatkan ringkasan dan insight utama untuk halaman atau topik apa pun</translation>
 <translation id="2240256190924001613">Profil konfigurasi tersedia</translation>
 <translation id="2244080985779413662">Situs ini ingin mendownload file dan membukanya di Wallet Anda.</translation>
 <translation id="2245007488813216650">Menerjemahkan…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">lainnya</translation>
 <translation id="3311748811247479259">Nonaktif</translation>
 <translation id="3312300514034250578">Safe Browsing yang Disempurnakan</translation>
+<translation id="3315786055700307152">Item Anda kini diskon 15%</translation>
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="333229797575847124">Cara mengaktifkan fitur ini</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Buat kunci sandi untuk</translation>
 <translation id="3380352560400387991">Situs ini mencoba membuka aplikasi. Tindakan ini akan membuat Anda keluar dari mode Samaran.</translation>
 <translation id="3385742921291399323">Dapatkan sandi, tab, bookmark, dan info tersimpan Anda lainnya.</translation>
+<translation id="3391765987934722383">Jangan lewatkan penurunan harga</translation>
 <translation id="3392923070107623576">Tetap teratur dengan membuat grup tab</translation>
 <translation id="3404232721752787413">Simpan di Google Foto</translation>
 <translation id="3406506285180498376">Bagikan halaman…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Login</translation>
 <translation id="3955740319737378355">Selesai</translation>
 <translation id="3955822496205734389">Anda memiliki sandi lemah.</translation>
+<translation id="3957016963627617921">Lakukan lebih banyak hal dengan Gemini di Chrome</translation>
 <translation id="3958312024468322930">Tarik ikon aplikasi ke dock di bagian bawah Layar Utama</translation>
 <translation id="3962326069546168954">Simpan</translation>
 <translation id="3967327056943561740">Bookmark</translation>
@@ -2164,6 +2168,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8803639129939845298">Aman</translation>
 <translation id="8813277370772331957">Ingatkan saya nanti</translation>
 <translation id="8814719628147284151">Lanjutkan</translation>
+<translation id="8817524703470045896">Pantau harga dan dapatkan notifikasi saat ada penurunan harga di situs mana pun</translation>
 <translation id="8819155700324279105">Berikan lapisan perlindungan tambahan terhadap ancaman online</translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8822421075653507124">Untuk memastikan perangkat ini dapat digunakan dengan aman, organisasi Anda mungkin perlu melihat informasi tentang sistem operasi, browser, setelan, dan software apa yang diinstal di perangkat.</translation>
@@ -2171,6 +2176,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8829809207373502270">Kunci sandi ini tidak berfungsi lagi. Kunci sandi ini telah dihapus dari <ph name="WEBSITE" /> dan akan segera dihapus dari sini. <ph name="BEGIN_LINK" />Tentang kunci sandi<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Tutup semua tab tidak aktif</translation>
 <translation id="8837654851594567190">Urutkan menurut penayang</translation>
+<translation id="8844136307393039959">Penurunan harga produk yang Anda pantau</translation>
 <translation id="8848286253339013170">Menyimpan gambar di Google Foto untuk <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Tersembunyi</translation>
 <translation id="8855242995793521265">Tidak memperlambat browser atau perangkat Anda.</translation>
@@ -2214,6 +2220,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8976382372951310360">Bantuan</translation>
 <translation id="8976414606286374109">Kartu disimpan ke Akun Google Anda.</translation>
 <translation id="8981454092730389528">Kontrol Aktivitas Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, situs yang disematkan</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
 <translation id="9000532564152265066">Semua Tab</translation>
 <translation id="9003677638446136377">Periksa lagi</translation>

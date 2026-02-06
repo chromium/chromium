@@ -1277,6 +1277,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3052868890529250114">Rydych chi fel arfer yn cysylltu â gwefannau yn ddiogel, ond ni allai Chrome ddefnyddio cysylltiad diogel y tro hwn. Mae'n bosib bod ymosodwr yn ceisio clustfeinio neu addasu eich cysylltiad rhwydwaith. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Gostyngiad pris o <ph name="PRICE_DROP" /> ar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Sgrîn gwall Prynu-Nawr-Talu-Yn-Ddiweddarach. Mae'r bysellfwrdd wedi'i guddio.</translation>
+<translation id="3057844102210575426">Rheoli gwybodaeth teithio</translation>
 <translation id="3061707000357573562">Gwasanaeth Trwsio</translation>
 <translation id="3062655045399308513">Dileu Data Pori...</translation>
 <translation id="3063453392496098461">Wedi methu â gosod gwasanaethau cefndir VPN.</translation>
@@ -2007,6 +2008,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4203769790323223880">Ni chaniateir camera</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Gwirio ffurfweddiadau wal dân a gwrthfeirysau<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Chwilio <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Mawr</translation>
 <translation id="4210602799576081649">Mae'r cod dilysu wedi darfod, gofynnwch am god newydd</translation>
 <translation id="421066178035138955">Defnyddiwch ddyfeisiau a data rhithwirionedd</translation>
@@ -2063,6 +2065,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4270541775497538019">Pentyrrwr 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Gweld 0 adolygiadau. Y sgôr gyfartalog yw <ph name="STARS" /> seren.}=1{Gweld 1 adolygiad. Y sgôr gyfartalog yw <ph name="STARS" /> seren.}two{Gweld pob un o'r # adolygiad. Y sgôr gyfartalog yw <ph name="STARS" /> seren.}few{Gweld pob un o'r # adolygiad. Y sgôr gyfartalog yw <ph name="STARS" /> seren.}many{Gweld pob un o'r # adolygiad. Y sgôr gyfartalog yw <ph name="STARS" /> seren.}other{Gweld pob un o'r # adolygiad. Y sgôr gyfartalog yw <ph name="STARS" /> seren.}}</translation>
 <translation id="4271652479722040953">Pan ychwanegir estyniadau at Chrome, anfonir data perthnasol am yr estyniadau hyn at drydydd partïon i'w dadansoddi a gallant fod yn weladwy i'ch gweinyddwr. Mae'r data'n cynnwys gwybodaeth am yr estyniadau megis enw, amser gosod, ffynhonnell gosod yn ogystal â gweithgarwch sy'n gysylltiedig â'r estyniadau hyn (megis newid tabiau, cysylltu â gwefannau, neu gyrchu cwcis). Cesglir y data hyn ar gyfer estyniadau a osodwyd o Chrome Web Store yn ogystal ag estyniadau oddi ar y siop.</translation>
+<translation id="4275788652681621337">Cau'r panel ochr</translation>
 <translation id="4275830172053184480">Ailgychwynnwch eich dyfais</translation>
 <translation id="4276974990916607331">Dim diolch</translation>
 <translation id="4277028893293644418">Ailosod cyfrinair</translation>
@@ -2626,6 +2629,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5209670883520018268">Hambwrdd 20</translation>
 <translation id="5212364581680288382">Rasio Beiciau Modur</translation>
 <translation id="5214542134842513912">Dewiswch pa gategorïau eang o bynciau y gellir eu defnyddio i helpu i bersonoleiddio hysbysebion. Bydd diffodd categori ehangach hefyd yn rhwystro ei bynciau cysylltiedig.</translation>
+<translation id="52163492208010719">Rheoli dogfennau adnabod</translation>
 <translation id="521659676233207110">Hambwrdd 13</translation>
 <translation id="5216942107514965959">Ymwelwyd ddiwethaf heddiw</translation>
 <translation id="5217759126664161410">Fformat protocol annilys.</translation>
@@ -2710,6 +2714,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5344522958567249764">Rheoli preifatrwydd hysbyseb</translation>
 <translation id="5344579389779391559">Gallai'r dudalen hon geisio codi arian arnoch</translation>
 <translation id="5345249337934847112">Papur (Wedi'i Orchuddio â Phwysau Trwm)</translation>
+<translation id="5346059693449184483">Beth sydd ar eich meddwl?</translation>
 <translation id="5348330584842140856">Ni symudwyd y ffeil hon oherwydd nad yw'n bodoli mwyach</translation>
 <translation id="5349543692327946794">Labeli (Inkjet)</translation>
 <translation id="5351548097010183514">Deunyddiau a Chyflenwadau Adeiladu</translation>
@@ -4505,6 +4510,7 @@ Manylion ychwanegol:
 <translation id="8216640997712497593">14 x 18 modfedd</translation>
 <translation id="8218327578424803826">Lleoliad a Aseiniwyd:</translation>
 <translation id="8220602974062798186">Rhwystro <ph name="TOPIC" /> ac unrhyw bynciau cysylltiedig?</translation>
+<translation id="8223142476690844338">Helo <ph name="USER_NAME" />, beth sydd ar eich meddwl?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Gofyn i <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Gwedd ddwy dudalen</translation>
 <translation id="822925450938886901">I gael gwybodaeth ychwanegol a pholisïau a allai fod yn berthnasol, agorwch chrome://management yn eich porwr.</translation>

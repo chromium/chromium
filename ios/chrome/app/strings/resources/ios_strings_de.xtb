@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Das Produkt wurde deiner Liste mit beobachteten Produkten hinzugefügt.</translation>
 <translation id="2230173723195178503">Webseite geladen</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
+<translation id="2237869114829007407">Du erhältst eine Übersicht und wichtige Informationen zu jeder Seite und jedem Thema</translation>
 <translation id="2240256190924001613">Konfigurationsprofil verfügbar</translation>
 <translation id="2244080985779413662">Diese Website möchte eine Datei herunterladen und in Wallet öffnen.</translation>
 <translation id="2245007488813216650">Wird übersetzt…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">mehr</translation>
 <translation id="3311748811247479259">Aus</translation>
 <translation id="3312300514034250578">Erweitertes Safe Browsing</translation>
+<translation id="3315786055700307152">Dein Artikel ist jetzt 15 % günstiger</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="333229797575847124">So aktivierst du diese Funktion</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Passkey für dieses Konto erstellen</translation>
 <translation id="3380352560400387991">Diese Website versucht, eine App zu öffnen. Dadurch verlässt du den Inkognitomodus.</translation>
 <translation id="3385742921291399323">Du kannst deine gespeicherten Passwörter, Tabs, Lesezeichen und andere Daten abrufen.</translation>
+<translation id="3391765987934722383">Keine Preissenkung verpassen</translation>
 <translation id="3392923070107623576">Mit Tabgruppen den Überblick behalten</translation>
 <translation id="3404232721752787413">In Google Fotos speichern</translation>
 <translation id="3406506285180498376">Seite teilen…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3955740319737378355">Fertig</translation>
 <translation id="3955822496205734389">Du nutzt schwache Passwörter.</translation>
+<translation id="3957016963627617921">Mehr Möglichkeiten mit Gemini in Chrome</translation>
 <translation id="3958312024468322930">Ziehe es ins Dock am unteren Rand des Startbildschirms</translation>
 <translation id="3962326069546168954">Speichern</translation>
 <translation id="3967327056943561740">Lesezeichen</translation>
@@ -2163,6 +2167,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8803639129939845298">Sicher</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8814719628147284151">Weiter</translation>
+<translation id="8817524703470045896">Du kannst Preise beobachten und dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="8819155700324279105">Du kannst dich durch zusätzliche Schutzmaßnahmen besser vor Onlinebedrohungen schützen lassen</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8822421075653507124">Damit dieses Gerät sicher verwendet werden kann, muss deine Organisation möglicherweise Informationen zu Betriebssystem, Browser und Einstellungen sowie zu der Software abrufen, die auf dem Gerät installiert ist.</translation>
@@ -2170,6 +2175,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8829809207373502270">Dieser Passkey funktioniert nicht mehr. Er wurde von <ph name="WEBSITE" /> gelöscht und wird demnächst auch von hier entfernt. <ph name="BEGIN_LINK" />Info zu Passkeys<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Alle inaktiven Tabs schließen</translation>
 <translation id="8837654851594567190">Nach Publisher sortieren</translation>
+<translation id="8844136307393039959">Preissenkung bei deinem beobachteten Produkt</translation>
 <translation id="8848286253339013170">Bild für <ph name="USER_EMAIL" /> wird in Google Fotos gespeichert…</translation>
 <translation id="8849001918648564819">Verborgen</translation>
 <translation id="8855242995793521265">Dein Browser oder Gerät wird nicht merklich verlangsamt.</translation>
@@ -2213,6 +2219,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8976382372951310360">Hilfe</translation>
 <translation id="8976414606286374109">Karten werden in deinem Google-Konto gespeichert.</translation>
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, angepinnte Website</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
 <translation id="9000532564152265066">Alle Tabs</translation>
 <translation id="9003677638446136377">Erneut prüfen</translation>

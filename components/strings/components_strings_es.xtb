@@ -1277,6 +1277,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Pantalla de error de pago aplazado. Teclado oculto.</translation>
+<translation id="3057844102210575426">Gestionar información de viaje</translation>
 <translation id="3061707000357573562">Aplicar parche a servicio</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación...</translation>
 <translation id="3063453392496098461">No se han podido instalar los servicios en segundo plano de VPN.</translation>
@@ -2007,6 +2008,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4203769790323223880">Cámara no permitida</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar la configuración del cortafuegos y del antivirus<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Buscar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">El código de verificación ha caducado. Solicita uno nuevo.</translation>
 <translation id="421066178035138955">Usar dispositivos y datos de realidad virtual</translation>
@@ -2063,6 +2065,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4270541775497538019">Apilador 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Ver 0 reseñas. La valoración media es de <ph name="STARS" /> estrellas.}=1{Ver 1 reseña. La valoración media es de <ph name="STARS" /> estrellas.}other{Ver las # reseñas. La valoración media es de <ph name="STARS" /> estrellas.}}</translation>
 <translation id="4271652479722040953">Cuando se añaden extensiones a Chrome, los datos pertinentes sobre estas extensiones se envían a terceros para analizarlos, y tu administrador podría verlos. Los datos incluyen información sobre las extensiones, como el nombre, la fecha de instalación y la fuente de la instalación, así como la actividad asociada a estas extensiones (como cambiar de pestaña, contactar con sitios web o acceder a cookies). Estos datos se recogen de las extensiones instaladas desde Chrome Web Store y de las que no se han instalado desde la tienda.</translation>
+<translation id="4275788652681621337">Cerrar panel lateral</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4276974990916607331">No, gracias</translation>
 <translation id="4277028893293644418">Cambiar contraseña</translation>
@@ -2626,6 +2629,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5209670883520018268">Bandeja 20</translation>
 <translation id="5212364581680288382">Carreras de motos</translation>
 <translation id="5214542134842513912">Elige qué categorías amplias de temas se pueden usar para personalizar los anuncios. Si desactivas una categoría más amplia, también se bloquearán los temas relacionados con ella.</translation>
+<translation id="52163492208010719">Gestionar documentos de identificación</translation>
 <translation id="521659676233207110">Bandeja 13</translation>
 <translation id="5216942107514965959">Última visita: hoy</translation>
 <translation id="5217759126664161410">Formato de protocolo no válido.</translation>
@@ -2710,6 +2714,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5344522958567249764">Gestionar la privacidad en la publicidad</translation>
 <translation id="5344579389779391559">Es posible que esta página intente aplicar algún cargo</translation>
 <translation id="5345249337934847112">Papel (revestido grueso)</translation>
+<translation id="5346059693449184483">¿Qué tienes en mente?</translation>
 <translation id="5348330584842140856">Este archivo no se ha movido porque ya no existe</translation>
 <translation id="5349543692327946794">Etiquetas (inyección de tinta)</translation>
 <translation id="5351548097010183514">Materiales y suministros de construcción</translation>
@@ -4506,6 +4511,7 @@ Más información:
 <translation id="8216640997712497593">14x18 pulgadas</translation>
 <translation id="8218327578424803826">Ubicación asignada:</translation>
 <translation id="8220602974062798186">¿Bloquear <ph name="TOPIC" /> y todos los temas relacionados?</translation>
+<translation id="8223142476690844338">Hola, <ph name="USER_NAME" />. ¿En qué estás pensando?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, pedir a <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Vista de dos páginas</translation>
 <translation id="822925450938886901">Para obtener más información y ver las políticas que pueden aplicarse, abre chrome://management en tu navegador.</translation>

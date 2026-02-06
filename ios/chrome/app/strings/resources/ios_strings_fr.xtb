@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Produit ajouté à votre liste de produits suivis.</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
 <translation id="2236949375853147973">Mon activité</translation>
+<translation id="2237869114829007407">Obtenez une vue d'ensemble et des informations clés pour n'importe quelle page ou n'importe quel thème</translation>
 <translation id="2240256190924001613">Profil de configuration disponible</translation>
 <translation id="2244080985779413662">Ce site veut télécharger un fichier et l'ouvrir dans Cartes.</translation>
 <translation id="2245007488813216650">Traduction…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
 <translation id="3312300514034250578">Navigation sécurisée avec protection renforcée</translation>
+<translation id="3315786055700307152">Votre article est maintenant à -15 %</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>
 <translation id="333229797575847124">Comment activer cette fonctionnalité</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Créer une clé d'accès pour</translation>
 <translation id="3380352560400387991">Ce site essaie d'ouvrir une appli. Vous allez quitter le mode navigation privée.</translation>
 <translation id="3385742921291399323">Accédez à vos mots de passe, onglets, favoris et plus encore.</translation>
+<translation id="3391765987934722383">Ne manquez pas une baisse de prix</translation>
 <translation id="3392923070107623576">Restez organisé en créant des groupes d'onglets</translation>
 <translation id="3404232721752787413">Enregistrer dans Google Photos</translation>
 <translation id="3406506285180498376">Partager la page…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3955740319737378355">OK</translation>
 <translation id="3955822496205734389">Vous avez des mots de passe peu sécurisés.</translation>
+<translation id="3957016963627617921">Faites-en plus avec Gemini dans Chrome</translation>
 <translation id="3958312024468322930">Faites-la glisser vers le Dock en bas de l'écran d'accueil</translation>
 <translation id="3962326069546168954">Enregistrer</translation>
 <translation id="3967327056943561740">Favoris</translation>
@@ -2163,6 +2167,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8803639129939845298">Sécurisé</translation>
 <translation id="8813277370772331957">Plus tard</translation>
 <translation id="8814719628147284151">Continuer</translation>
+<translation id="8817524703470045896">Suivez des prix et recevez des alertes en cas de baisse de prix sur un site</translation>
 <translation id="8819155700324279105">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8822421075653507124">Pour une utilisation sécurisée de cet appareil, votre organisation peut avoir besoin d'informations le concernant (système d'exploitation, navigateur, paramètres et logiciels installés).</translation>
@@ -2170,6 +2175,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8829809207373502270">Cette clé d'accès ne fonctionne plus. Elle a été supprimée de <ph name="WEBSITE" /> et sera bientôt supprimée ici. <ph name="BEGIN_LINK" />À propos des clés d'accès<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Fermer tous les onglets inactifs</translation>
 <translation id="8837654851594567190">Trier par éditeur</translation>
+<translation id="8844136307393039959">Baisse de prix sur le produit que vous suivez</translation>
 <translation id="8848286253339013170">Enregistrement de l'image dans Google Photos pour <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Masqué</translation>
 <translation id="8855242995793521265">Ne ralentit pas sensiblement votre navigateur ni votre appareil.</translation>
@@ -2213,6 +2219,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes sont enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes relatives à l'activité Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9000532564152265066">Tous les onglets</translation>
 <translation id="9003677638446136377">Revérifier</translation>

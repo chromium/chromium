@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1035560095760914532">Įdėkite „Chrome“ į apatinę sritį, kad bet kada galėtumėte ją pasiekti</translation>
 <translation id="1076643793026027628">„Chrome“ automatiškai atidaro „YouTube“ inkognito nuorodas inkognito režimu.</translation>
 <translation id="1081114897601629648">Toliau nurodyti slaptažodžiai nebuvo importuoti į „Google“ slaptažodžių tvarkyklę, nes jie neatitinka reikalavimų.</translation>
 <translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
@@ -89,6 +90,7 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="288992067439702510">Pasiekėte „Google Chrome“ žymių apribojimą (<ph name="LIMIT" />), todėl kai kurios žymės dar neišsaugotos „Google“ paskyroje.
 
 Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes. Jei atsijungsite dabar, neišsaugotos žymės bus ištrintos.</translation>
+<translation id="2901621928549457170">Akimirksniu atidarykite „Chrome“ „iPad“ įrenginyje</translation>
 <translation id="2922914028977213693">Palieskite čia, kad išnaudotumėte visas „Chrome“ galimybes „iPad“ įrenginyje.</translation>
 <translation id="292371311537977079">„Chrome“ nustatymai</translation>
 <translation id="2923827943290349720">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
@@ -173,6 +175,8 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="5119391094379141756">Pasirinkite „Chrome“</translation>
 <translation id="5123188916260706415">Paieška balsu naršyklėje „Chrome“</translation>
 <translation id="5162467219239570114">„Chrome“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chrome“.</translation>
+<translation id="5172049865623113551">Akimirksniu atidarykite „Chrome“ „iPhone“ įrenginyje</translation>
+<translation id="5179095426828744632">Greičiau pasiekite „Chrome“ naudodami doką</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5190139289262548459">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chrome“.</translation>
 <translation id="5209238444239954363">„Chrome“ nepavyko patikrinti, ar yra naujinių. Vėliau bandykite dar kartą.</translation>

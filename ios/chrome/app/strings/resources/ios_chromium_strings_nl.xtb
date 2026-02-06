@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Dit betekent dat Chromium altijd de mobiele site opvraagt.</translation>
 <translation id="1115463765356382667">Voer de voorgestelde acties hieronder uit om het maximale uit Chromium te halen.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
+<translation id="119044033865561140">Open Chromium meteen als je je iPad gebruikt</translation>
 <translation id="1211450393895337634">Open Chromium sneller wanneer je wilt browsen op je iPad.</translation>
 <translation id="1229234641991056119">Gebruik je Safari-wachtwoorden, geschiedenis, bookmarks en creditcards in Chromium</translation>
 <translation id="1257458525759135959">Als je afbeeldingen wilt opslaan, tik je op Instellingen om ze door Chromium aan je foto's te laten toevoegen</translation>
 <translation id="1260702988262336471">Het Chromium-menu openen</translation>
 <translation id="12739128458173458">Als je dit tabblad naar een ander apparaat wilt sturen, log je op beide apparaten in bij Chromium.</translation>
+<translation id="1279797561821266129">Chromium sneller openen via het dock</translation>
 <translation id="1361748954329991663">Chromium is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chromium mogelijk niet.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1423007117030725713">Start een zoekopdracht op een nieuw Chromium-tabblad.</translation>
@@ -176,6 +178,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="4790638144988730920">Blijf de Chromium-gegevens in je Google-account gebruiken.</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="4856138222358683580">Chromium-acties</translation>
+<translation id="4869706986935301458">Open Chromium meteen als je je iPhone gebruikt</translation>
 <translation id="4904452304169763785">Meldingen over privacy- of beveiligingsproblemen die Chromium voor je opspoort.</translation>
 <translation id="4908570938463711775">Ontdek nuttige basisprincipes van Chromium om aan de slag te gaan</translation>
 <translation id="4962295957157529683">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
@@ -295,6 +298,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7395825497086981028">Je wachtwoord wordt opgeslagen in Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Deze toegangssleutel wordt opgeslagen in Wachtwoordmanager voor <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Open Chromium</translation>
+<translation id="7507535968973352823">Plaats Chromium in het onderste gedeelte om er op elk moment toegang toe te hebben</translation>
 <translation id="7531461704633548377">Van Chromium</translation>
 <translation id="7554983317097061001">Chromium-tip: verplaats Chromium naar het dock</translation>
 <translation id="7576863740961052505">Chromium-instellingen beheren</translation>

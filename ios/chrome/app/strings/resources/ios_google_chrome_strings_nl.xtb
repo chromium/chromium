@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1035560095760914532">Plaats Chrome in het onderste gedeelte om er op elk moment toegang toe te hebben</translation>
 <translation id="1076643793026027628">Chrome opent YouTube-incognitolinks automatisch in de incognitomodus.</translation>
 <translation id="1081114897601629648">De volgende wachtwoorden zijn niet geïmporteerd in Google Wachtwoordmanager omdat ze niet voldoen aan de vereisten.</translation>
 <translation id="1086486568852410168">Zoeken met Google Lens</translation>
@@ -89,6 +90,7 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="288992067439702510">Je hebt de limiet van <ph name="LIMIT" /> bookmarks van Google Chrome bereikt. Sommige van je bookmarks zijn daarom nog niet opgeslagen in je Google-account.
 
 Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwijderd. Als je nu uitlogt, worden niet-opgeslagen bookmarks verwijderd.</translation>
+<translation id="2901621928549457170">Open Chrome meteen als je je iPad gebruikt</translation>
 <translation id="2922914028977213693">Tik hier om het maximale uit Chrome op je iPad te halen.</translation>
 <translation id="292371311537977079">Chrome-instellingen</translation>
 <translation id="2923827943290349720">Incognitotabbladen vergrendelen als je Chrome sluit</translation>
@@ -173,6 +175,8 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="5119391094379141756">Selecteer Chrome</translation>
 <translation id="5123188916260706415">Zoeken met je stem in Chrome</translation>
 <translation id="5162467219239570114">Chrome is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chrome mogelijk niet.</translation>
+<translation id="5172049865623113551">Open Chrome meteen als je je iPhone gebruikt</translation>
+<translation id="5179095426828744632">Chrome sneller openen via het dock</translation>
 <translation id="5184329579814168207">Openen in Chrome</translation>
 <translation id="5190139289262548459">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je bent ingelogd en hoe Chrome wordt gebruikt.</translation>
 <translation id="5209238444239954363">Chrome kan niet checken op updates. Probeer het later opnieuw.</translation>

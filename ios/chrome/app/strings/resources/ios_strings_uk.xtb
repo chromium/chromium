@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Товар додано в список відстежуваних.</translation>
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="2236949375853147973">Мої дії</translation>
+<translation id="2237869114829007407">Отримуйте огляди й ключову статистику для будь-якої сторінки або теми</translation>
 <translation id="2240256190924001613">Доступний профіль конфігурації</translation>
 <translation id="2244080985779413662">Цей вебсайт просить дозвіл завантажити файл і відкрити його в Гаманці.</translation>
 <translation id="2245007488813216650">Переклад…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">більше</translation>
 <translation id="3311748811247479259">Вимкнено</translation>
 <translation id="3312300514034250578">Безпечний перегляд із розширеним захистом</translation>
+<translation id="3315786055700307152">Зараз на товар, який ви відстежуєте, діє знижка 15%</translation>
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="333229797575847124">Як увімкнути цю функцію</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Створити ключ доступу для додатка</translation>
 <translation id="3380352560400387991">Цей сайт намагається відкрити додаток. Ви вийдете з анонімного режиму.</translation>
 <translation id="3385742921291399323">Отримайте доступ до своїх збережених паролів, вкладок, закладок тощо.</translation>
+<translation id="3391765987934722383">Не пропустіть зниження ціни</translation>
 <translation id="3392923070107623576">Упорядковуйте вкладки за допомогою груп</translation>
 <translation id="3404232721752787413">Зберегти в Google Фото</translation>
 <translation id="3406506285180498376">Поділитися сторінкою…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">У вас є ненадійні паролі.</translation>
+<translation id="3957016963627617921">Більше можливостей із Gemini у Chrome</translation>
 <translation id="3958312024468322930">Перетягніть його на нижню панель головного екрана</translation>
 <translation id="3962326069546168954">Зберегти</translation>
 <translation id="3967327056943561740">Закладки</translation>
@@ -2163,6 +2167,7 @@
 <translation id="8803639129939845298">Безпечно</translation>
 <translation id="8813277370772331957">Нагадати пізніше</translation>
 <translation id="8814719628147284151">Продовжити</translation>
+<translation id="8817524703470045896">Відстежуйте ціни й отримуйте сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="8819155700324279105">Додайте ще один рівень захисту від загроз в Інтернеті</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8822421075653507124">Щоб переконатися, що цей пристрій придатний для безпечного використання, вашій організації може знадобитись інформація про його операційну систему, вебпереглядач і налаштування, а також про встановлене на ньому програмне забезпечення.</translation>
@@ -2170,6 +2175,7 @@
 <translation id="8829809207373502270">Цей ключ доступу більше не працює. Його видалено із сайту <ph name="WEBSITE" />. Невдовзі він зникне й звідси. <ph name="BEGIN_LINK" />Про ключі доступу<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Закрити всі неактивні</translation>
 <translation id="8837654851594567190">Сортувати за категорією "Видавець"</translation>
+<translation id="8844136307393039959">Зниження ціни на відстежуваний товар</translation>
 <translation id="8848286253339013170">Зображення зберігається в Google Фото в обліковому записі <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Приховано</translation>
 <translation id="8855242995793521265">Не сповільнює роботу веб-переглядача або пристрою.</translation>
@@ -2213,6 +2219,7 @@
 <translation id="8976382372951310360">Довідка</translation>
 <translation id="8976414606286374109">Картки зберігаються у вашому обліковому записі Google.</translation>
 <translation id="8981454092730389528">Відстеження дій у Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, закріплений сайт</translation>
 <translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="9000532564152265066">Усі вкладки</translation>
 <translation id="9003677638446136377">Перевірити ще раз</translation>

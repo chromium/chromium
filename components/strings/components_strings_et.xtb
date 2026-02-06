@@ -1277,6 +1277,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3052868890529250114">Tavaliselt loote saitidega turvaliselt ühenduse, kuid Chrome ei saanud seekord turvalist ühendust kasutada. Ründaja võib püüda teie võrguühendust pealt kuulata või seda muuta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> hinnalangus teenuse <ph name="PRODUCT_NAME" /> puhul</translation>
 <translation id="3056660797732519147">Järelmaksu veakuva. Klaviatuur on peidetud.</translation>
+<translation id="3057844102210575426">Reisiteabe haldamine</translation>
 <translation id="3061707000357573562">Teenuse paikamine</translation>
 <translation id="3062655045399308513">Sirvimisandmete kustutamine …</translation>
 <translation id="3063453392496098461">VPN-i taustateenuste installimine ebaõnnestus.</translation>
@@ -2007,6 +2008,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4203769790323223880">Kaamera ei ole lubatud</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kontrollige tulemüüri ja viirusetõrje seadistusi<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Otsige saidilt <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Suur</translation>
 <translation id="4210602799576081649">Kinnituskood on aegunud, taotlege uut koodi</translation>
 <translation id="421066178035138955">Kasutada virtuaalreaalsuse seadmeid ja andmeid</translation>
@@ -2063,6 +2065,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4270541775497538019">Virnastaja 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Kuva 0 arvustust. Keskmine hinnang on <ph name="STARS" /> tärni.}=1{Kuva 1 arvustus. Keskmine hinnang on <ph name="STARS" /> tärni.}other{Kuva kõik # arvustust. Keskmine hinnang on <ph name="STARS" /> tärni.}}</translation>
 <translation id="4271652479722040953">Kui Chrome'i lisatakse laiendused, saadetakse nende laienduste asjakohased andmed kolmandatele osapooltele analüüsiks ja andmed võivad olla administraatorile nähtavad. Andmed hõlmavad laiendustega seotud teavet, nagu nimi, installimisaeg ja installimisallikas, ning lisaks nende laiendustega seotud tegevusi, nagu vahelehtede vahetamine, veebisaitidega ühenduse võtmine või küpsistele juurdepääs. Neid andmeid kogutakse Chrome'i veebipoe kaudu installitud laienduste ja ka poeväliste laienduste kohta.</translation>
+<translation id="4275788652681621337">Sule külgpaneel</translation>
 <translation id="4275830172053184480">Taaskäivitage seade</translation>
 <translation id="4276974990916607331">Tänan, ei</translation>
 <translation id="4277028893293644418">Lähtesta parool</translation>
@@ -2626,6 +2629,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5209670883520018268">Salv 20</translation>
 <translation id="5212364581680288382">Mootorrattasõit</translation>
 <translation id="5214542134842513912">Valige, milliseid üldiseid teemade kategooriaid võib kasutada reklaamide isikupärastamise hõlbustamiseks. Üldisema kategooria väljalülitamine blokeerib ka sellega seotud teemad.</translation>
+<translation id="52163492208010719">Isikut tõendavate dokumentide haldamine</translation>
 <translation id="521659676233207110">Salv 13</translation>
 <translation id="5216942107514965959">Viimati külastati täna</translation>
 <translation id="5217759126664161410">Vale protokolli vorming.</translation>
@@ -2710,6 +2714,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5344522958567249764">Hallake reklaamide privaatsust</translation>
 <translation id="5344579389779391559">Leht võib üritada teilt tasu võtta</translation>
 <translation id="5345249337934847112">Paber (raske kaetud paber)</translation>
+<translation id="5346059693449184483">Mis teil meeles mõlgub?</translation>
 <translation id="5348330584842140856">Seda faili ei teisaldatud, kuna seda pole enam olemas</translation>
 <translation id="5349543692327946794">Etiketid (tindiprinter)</translation>
 <translation id="5351548097010183514">Ehitusmaterjalid ja -tarbed</translation>
@@ -4506,6 +4511,7 @@ Lisateave:
 <translation id="8216640997712497593">14 × 18 tolli</translation>
 <translation id="8218327578424803826">Määratud asukoht:</translation>
 <translation id="8220602974062798186">Kas blokeerida <ph name="TOPIC" /> ja kõik seotud teemad?</translation>
+<translation id="8223142476690844338">Tere, <ph name="USER_NAME" />! Mis teil meeles mõlgub?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, küsige: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Kahe lehe vaade</translation>
 <translation id="822925450938886901">Lisateabe ja rakendatavate reeglite vaatamiseks avage brauseris chrome://management.</translation>

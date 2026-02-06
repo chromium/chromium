@@ -563,6 +563,17 @@ Als je het beleid uitzet of niet instelt, krijgen apparaten geen updates meer na
 Dit beleid is alleen relevant voor oudere modellen die niet automatisch uitgebreide updates krijgen.
 
 Ga voor meer informatie naar https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
+<translation id="1432008122934973720">Standaard kunnen de rechten voor lokale netwerktoegang (Local Network Access, LNA) alleen worden aangevraagd in cross-origin-subframes als ze expliciet zijn gemachtigd. Je kunt dit beleid gebruiken om dit standaardgedrag te overschrijven, zodat LNA-rechten standaard worden overgenomen in subframes, tenzij expliciet geweigerd in het rechtenbeleid.
+
+Als je dit beleid toepast, worden subframes standaard gemachtigd voor alle functies voor LNA-rechtenbeleid en kunnen ze lokale netwerkverzoeken doen (waardoor de rechtenprompt wordt geactiveerd).
+
+Als je dit beleid niet toepast of niet instelt, moeten subframes expliciet de functie voor rechtenbeleid krijgen om lokale netwerkverzoeken te doen en de rechtenprompt te activeren.
+
+Dit beleid is van toepassing op de functies <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />, <ph name="LOOPBACK_NETWORK_FEATURE_NAME" /> en <ph name="LOCAL_NETWORK_FEATURE_NAME" /> van het rechtenbeleid.
+
+Ga voor meer informatie over lokale netwerktoegang naar https://wicg.github.io/local-network-access/ en https://developer.chrome.com/blog/local-network-access.
+
+Ga naar https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy voor meer informatie over rechtenbeleid.</translation>
 <translation id="1432834104376790711">Met dit beleid kun je de instelling Batterijbesparing aan- of uitzetten.
       In Chrome wordt met deze instelling de framesnelheid beperkt voor een lager stroomverbruik. Als je dit beleid niet instelt, kan de eindgebruiker deze instelling beheren in chrome://settings/performance.
       In ChromeOS zorgt deze instelling ervoor dat de framesnelheid en CPU-frequentie worden beperkt, achtergrondverlichting wordt gedimd en Android in de modus Batterijbesparing wordt gezet. Op apparaten met meerdere CPU's worden sommige CPU's uitgezet.
@@ -1565,6 +1576,7 @@ Dit apparaatbeleid is vergelijkbaar met het bestaande gebruikersbeleid <ph name=
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
       Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, kunnen gebruikers ervoor kiezen de functie te gebruiken.</translation>
+<translation id="2091689441590064807">LNA-verzoeken in subframes niet toestaan zonder expliciete machtiging</translation>
 <translation id="2093552723795057221">Audiostatus niet rapporteren</translation>
 <translation id="209388704279338003">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="2093951844062548778">Dit beleid geeft Snelle antwoorden toegang tot geselecteerde content en toestemming om de informatie naar de server te sturen om definitieresultaten te krijgen.
@@ -7553,6 +7565,7 @@ Dit beleid kan worden gebruikt als de lopende beëindiging van ondersteuning voo
 OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
 <translation id="6083281887050888160">Just Works-koppeling voor bluetooth aanzetten</translation>
 <translation id="6083631234867522991">Windows (Windows-clients):</translation>
+<translation id="6085580138417523410">Verzoeken voor lokale netwerktoegang (Local Network Access, LNA) in subframes toestaan zonder expliciete machtiging</translation>
 <translation id="6087413944876892918">Het algoritme <ph name="HAPPY_EYEBALLS_V3" /> gebruiken</translation>
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
@@ -10071,6 +10084,7 @@ Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleer
 <translation id="7669630878711068277">Als je dit beleid toepast of niet instelt, kunnen gebruikers afdrukken in <ph name="PRODUCT_NAME" /> en kunnen ze deze instelling niet wijzigen.
 
       Als je het beleid niet hebt toegepast, kunnen gebruikers ook niet afdrukken vanaf <ph name="PRODUCT_NAME" />. Afdrukken is niet mogelijk vanuit het menu met 3 stippen, extensies en JavaScript-apps.</translation>
+<translation id="7672510074688643558">LNA-verzoeken in subframes toestaan zonder expliciete machtiging</translation>
 <translation id="7673194325208122247">Periode (milliseconden)</translation>
 <translation id="7677220829878081413">
       Als dit beleid is ingesteld op ArcSession, wordt het apparaat gedwongen opnieuw opgestart na het uitloggen van een gebruiker als Android is gestart.

@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Produkt byl přidán do seznamu sledovaných produktů.</translation>
 <translation id="2230173723195178503">Webová stránka byla načtena</translation>
 <translation id="2236949375853147973">Moje aktivita</translation>
+<translation id="2237869114829007407">Nechte si vygenerovat přehled a klíčové informace o libovolné stránce nebo tématu</translation>
 <translation id="2240256190924001613">Je k dispozici konfigurační profil</translation>
 <translation id="2244080985779413662">Tento web chce stáhnout soubor a otevřít ho ve vaší Peněžence.</translation>
 <translation id="2245007488813216650">Překlad…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">více</translation>
 <translation id="3311748811247479259">Vypnuto</translation>
 <translation id="3312300514034250578">Vylepšené Bezpečné prohlížení</translation>
+<translation id="3315786055700307152">Vaše položka je teď o 15 % levnější</translation>
 <translation id="3324193307694657476">Druhý řádek adresy</translation>
 <translation id="3328801116991980348">Informace o stránkách</translation>
 <translation id="333229797575847124">Jak tuto funkci povolit</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Vytvoření přístupového klíče pro</translation>
 <translation id="3380352560400387991">Tento web se pokouší otevřít aplikaci. Tím opustíte anonymní režim.</translation>
 <translation id="3385742921291399323">Pohodlně používejte svá uložená hesla, karty, záložky a další položky.</translation>
+<translation id="3391765987934722383">Nenechte si ujít pokles ceny</translation>
 <translation id="3392923070107623576">Uspořádejte si karty do skupin</translation>
 <translation id="3404232721752787413">Uložit do Fotek Google</translation>
 <translation id="3406506285180498376">Sdílet stránku…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="3955740319737378355">Hotovo</translation>
 <translation id="3955822496205734389">Máte slabá hesla.</translation>
+<translation id="3957016963627617921">S Gemini v Chromu toho zvládnete víc</translation>
 <translation id="3958312024468322930">Přetáhněte ho do Docku v dolní části plochy</translation>
 <translation id="3962326069546168954">Uložit</translation>
 <translation id="3967327056943561740">Záložky</translation>
@@ -2163,6 +2167,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8803639129939845298">Zabezpečeno</translation>
 <translation id="8813277370772331957">Připomenout později</translation>
 <translation id="8814719628147284151">Pokračovat</translation>
+<translation id="8817524703470045896">Nechte si sledovat ceny a zaslat upozornění, když cena na kterémkoli webu klesne</translation>
 <translation id="8819155700324279105">Využijte další vrstvu ochrany proti online hrozbám</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8822421075653507124">Kvůli ověření, zda lze toto zařízení bezpečně používat, může vaše organizace potřebovat přístup k informacím o jeho operačním systému, prohlížeči a nastaveních a také o tom, jaký software je v něm nainstalován.</translation>
@@ -2170,6 +2175,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8829809207373502270">Tenhle přístupový klíč už nefunguje. Byl z webu <ph name="WEBSITE" /> smazán a brzy bude smazán i odtud. <ph name="BEGIN_LINK" />O přístupových klíčích<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Zavřít všechny neaktivní</translation>
 <translation id="8837654851594567190">Seřadit podle vydavatele</translation>
+<translation id="8844136307393039959">Snížení ceny u sledovaného produktu</translation>
 <translation id="8848286253339013170">Ukládání obrázku do Fotek Google pro <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Skryté</translation>
 <translation id="8855242995793521265">Nijak znatelně nezpomaluje prohlížeč ani zařízení.</translation>
@@ -2213,6 +2219,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8976382372951310360">Nápověda</translation>
 <translation id="8976414606286374109">Karty se ukládají do vašeho účtu Google.</translation>
 <translation id="8981454092730389528">Ovládací prvky aktivity Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, připnutý web</translation>
 <translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
 <translation id="9000532564152265066">Všechny karty</translation>
 <translation id="9003677638446136377">Zkontrolovat znovu</translation>

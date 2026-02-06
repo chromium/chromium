@@ -2628,6 +2628,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2749836841884031656">Simkaart</translation>
 <translation id="2749881179542288782">Controleer grammatica met spelling</translation>
 <translation id="2750020734439919571">Meer instellingen en rechten voor de Chrome-app</translation>
+<translation id="275010360476017464">Gebruik je microfoon om te chatten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini Apps-activiteit (als dit aanstaat).</translation>
 <translation id="2750602041558385535">Niet-geverifieerde download geblokkeerd</translation>
 <translation id="2751454300227269244">Beweeg je mond naar rechts</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> wil het ID-nummer van je beveiligingssleutel weten. De site weet dan precies welke beveiligingssleutel je gebruikt.</translation>
@@ -4772,7 +4773,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4206585797409671301">Toestemming om verzoeken te tonen</translation>
 <translation id="4207144975205749656">Versleutelt navigatieverzoeken zodat aanvallers in hetzelfde netwerk je verkeer niet kunnen zien</translation>
 <translation id="4207932031282227921">Rechten gevraagd, druk op F6 om te reageren</translation>
-<translation id="4208390505124702064">Zoeken op <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4209247656298167054">Geen update</translation>
 <translation id="4209251085232852247">Uitgezet</translation>
@@ -5759,6 +5759,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4881685975363383806">Niet opnieuw herinneren</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4882312758060467256">Heeft toegang tot deze site</translation>
+<translation id="4882848900607400156">Als je je exacte locatie deelt, kan Gemini je vragen nauwkeuriger beantwoorden. Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="4882919381756638075">Sites gebruiken je microfoon vaak voor communicatiefuncties zoals videochatten</translation>
 <translation id="4883436287898674711">Alle sites op <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Taakbeheer</translation>
@@ -5849,6 +5850,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4945439665401275950">Laat je kind de aan/uit-knop aanraken om een vingerafdruk in te stellen. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="4946998421534856407">Launcher + pijl-omhoog</translation>
 <translation id="4947376546135294974">Gegevens van de site die je bezoekt</translation>
+<translation id="4948370357877377178">Doorgaan met je taken</translation>
 <translation id="4950100687509657457">Profiel maken</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{een bestand}other{# bestanden}}</translation>
 <translation id="495170559598752135">Acties</translation>
@@ -9070,6 +9072,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
 <translation id="7207457272187520234">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="7207631048330366454">Apps zoeken</translation>
+<translation id="7209958456051239069">Als je je exacte locatie deelt, kan Gemini je vragen nauwkeuriger beantwoorden</translation>
 <translation id="7210257969463271891">Web-apps die je installeert, worden hier getoond</translation>
 <translation id="7210432570808024354">Tik en sleep om items te verplaatsen</translation>
 <translation id="7210499381659830293">Printers via extensie</translation>
@@ -10688,6 +10691,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8288032458496410887"><ph name="APP" /> verwijderen...</translation>
 <translation id="8288553158681886528">Tekst uit pdf extraheren</translation>
 <translation id="8289128870594824098">Schijfgrootte</translation>
+<translation id="8289200713453671499">Wissel snel tussen je tabbladgroepen en je recente AI-gesprekken zonder kwijt te raken waar je was.</translation>
 <translation id="8289509909262565712">Welkom bij <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Chrome downloaden</translation>
 <translation id="8291942417224950075">Voor persoonlijk gebruik</translation>
@@ -11669,6 +11673,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8945508919180478719">Studiomicrofoon</translation>
 <translation id="8946359700442089734">Foutopsporingsfuncties zijn niet volledig aangezet op dit <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat.</translation>
 <translation id="8946954897220903437">Alle verzoeken in de adresbalk samenvouwen</translation>
+<translation id="8946996840522387154">Gebruik je microfoon om te chatten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini Apps-activiteit (als dit aanstaat). Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="894763922177556086">Goed</translation>
 <translation id="895054485242522631">Sites kunnen bewegingssensoren gebruiken</translation>
 <translation id="8951256747718668828">De herstelactie kan niet worden voltooid door een fout</translation>

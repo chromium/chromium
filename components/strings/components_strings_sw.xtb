@@ -1277,6 +1277,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3052868890529250114">Kwa kawaida huwa unatembelea tovuti kwa usalama, lakini wakati huu, Chrome imeshindwa kutumia muunganisho salama. Huenda mvamizi anajaribu kufuatilia au kurekebisha muunganisho wako wa mtandao. <ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi kuhusu tahadhari hii<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Punguzo la bei la <ph name="PRICE_DROP" /> kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Skrini ya hitilafu ya mbinu ya Nunua Sasa, Lipa Baadaye. Kibodi imefichwa.</translation>
+<translation id="3057844102210575426">Dhibiti maelezo ya usafiri</translation>
 <translation id="3061707000357573562">Huduma ya Kurekebisha</translation>
 <translation id="3062655045399308513">Futa Data ya Kuvinjari...</translation>
 <translation id="3063453392496098461">Imeshindwa kuweka huduma za chinichini za VPN.</translation>
@@ -2007,6 +2008,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4203769790323223880">Ufikiaji wa kamera hauruhusiwi</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kuangalia mipangilio ya kinga mtandao na kingavirusi<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Hifadhi ya Google</translation>
+<translation id="4208390505124702064">Tafuta <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Kubwa</translation>
 <translation id="4210602799576081649">Muda wa kutumia namba hii ya kuthibitisha umeisha, omba utumiwe namba mpya ya kuthibitisha</translation>
 <translation id="421066178035138955">Tumia data na vifaa vya uhalisia pepe</translation>
@@ -2063,6 +2065,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4270541775497538019">Tupio la kutoa la printa la sita</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Angalia maoni 0. Ukadiriaji wa wastani ni nyota <ph name="STARS" />.}=1{Angalia maoni 1. Ukadiriaji wa wastani ni nyota <ph name="STARS" />.}other{Angalia maoni yote #. Ukadiriaji wa wastani ni nyota <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Viendelezi vinapowekwa kwenye Chrome, data inayofaa inayohusu viendelezi hivi hutumwa kwa washirika wengine ili ifanyiwe uchambuzi na inaweza kuonwa na msimamizi wako. Data hii inajumuisha maelezo kuhusu viendelezi kama vile jina, muda wa kukiweka, chanzo cha kukiweka pamoja na shughuli zinazohusiana na viendelezi hivi (kama vile kubadilisha vichupo, kuwasiliana na tovuti au kufikia vidakuzi). Data hii inakusanywa kwa viendelezi vilivyowekwa kutoka Duka la Chrome kwenye Wavuti na pia viendelezi kutoka nje ya duka.</translation>
+<translation id="4275788652681621337">Funga kidirisha cha pembeni</translation>
 <translation id="4275830172053184480">Washa upya kifaa chako</translation>
 <translation id="4276974990916607331">Hapana</translation>
 <translation id="4277028893293644418">Badilisha nenosiri</translation>
@@ -2626,6 +2629,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5209670883520018268">Trei ya 20</translation>
 <translation id="5212364581680288382">Mbio za Pikipiki</translation>
 <translation id="5214542134842513912">Chagua ni aina gani pana za mada zinazoweza kutumiwa kusaidia kuwekea matangazo mapendeleo. Hatua ya kuzima aina pana zaidi, itazuia pia mada zinazohusiana.</translation>
+<translation id="52163492208010719">Dhibiti hati za utambulisho</translation>
 <translation id="521659676233207110">Trei ya 13</translation>
 <translation id="5216942107514965959">Ilitembelewa mara ya mwisho leo</translation>
 <translation id="5217759126664161410">Muundo wa itifaki si sahihi.</translation>
@@ -2710,6 +2714,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5344522958567249764">Dhibiti faragha ya matangazo</translation>
 <translation id="5344579389779391559">Ukurasa huu huenda ukajaribu kukutoza pesa</translation>
 <translation id="5345249337934847112">Karatasi (Yenye Mpako Mzito)</translation>
+<translation id="5346059693449184483">Unafikiria nini?</translation>
 <translation id="5348330584842140856">Faili hii haikuhamishwa kwa sababu haipatikani tena</translation>
 <translation id="5349543692327946794">Lebo (Inkijeti)</translation>
 <translation id="5351548097010183514">Vifaa na Nyenzo za Ujenzi</translation>
@@ -4504,6 +4509,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8216640997712497593">Inchi 14 x 18</translation>
 <translation id="8218327578424803826">Mahali Palipohawilishwa:</translation>
 <translation id="8220602974062798186">Ungependa kuzuia <ph name="TOPIC" /> na mada zozote zinazohusiana?</translation>
+<translation id="8223142476690844338">Hujambo <ph name="USER_NAME" />, unafikiria nini?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Uliza <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Mwonekano wa kurasa mbili</translation>
 <translation id="822925450938886901">Kwa maelezo ya ziada na sera zinazoweza kutumika, fungua chrome://management katika kivinjari chako.</translation>

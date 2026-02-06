@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">เพิ่มสินค้าในรายการสินค้าที่ติดตามแล้ว</translation>
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>
 <translation id="2236949375853147973">กิจกรรมของฉัน</translation>
+<translation id="2237869114829007407">ดูภาพรวมและข้อมูลเชิงลึกที่สำคัญสำหรับหน้าเว็บหรือหัวข้อใดก็ได้</translation>
 <translation id="2240256190924001613">มีโปรไฟล์การกำหนดค่า</translation>
 <translation id="2244080985779413662">เว็บไซต์นี้ต้องการดาวน์โหลดไฟล์และเปิดไฟล์ใน Wallet</translation>
 <translation id="2245007488813216650">กำลังแปล…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">เพิ่มเติม</translation>
 <translation id="3311748811247479259">ปิด</translation>
 <translation id="3312300514034250578">Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
+<translation id="3315786055700307152">ตอนนี้สินค้าที่คุณติดตามอยู่ลดราคา 15%</translation>
 <translation id="3324193307694657476">ที่อยู่ 2</translation>
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
 <translation id="333229797575847124">วิธีเปิดใช้ฟีเจอร์นี้</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">สร้างพาสคีย์สำหรับ</translation>
 <translation id="3380352560400387991">เว็บไซต์นี้พยายามเปิดแอปพลิเคชัน การดำเนินการนี้จะนำคุณออกจากโหมดไม่ระบุตัวตน</translation>
 <translation id="3385742921291399323">ดูรหัสผ่าน แท็บ บุ๊กมาร์ก และอื่นๆ ที่บันทึกไว้</translation>
+<translation id="3391765987934722383">ไม่พลาดเมื่อราคาต่ำลง</translation>
 <translation id="3392923070107623576">จัดระเบียบด้วยการสร้างกลุ่มแท็บ</translation>
 <translation id="3404232721752787413">บันทึกใน Google Photos</translation>
 <translation id="3406506285180498376">แชร์หน้าเว็บ…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3955740319737378355">เสร็จ</translation>
 <translation id="3955822496205734389">คุณมีรหัสผ่านที่ไม่รัดกุม</translation>
+<translation id="3957016963627617921">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Gemini ใน Chrome</translation>
 <translation id="3958312024468322930">ลากแอปไปยังแถบแอปที่ด้านล่างของหน้าจอหลัก</translation>
 <translation id="3962326069546168954">บันทึก</translation>
 <translation id="3967327056943561740">บุ๊กมาร์ก</translation>
@@ -1662,6 +1666,7 @@
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">ตั้งเป็นค่าเริ่มต้นในการตั้งค่า…</translation>
 <translation id="7007970306646738803">เลือกว่าจะทำอย่างไรกับข้อมูลการท่องเว็บที่มีอยู่ในอุปกรณ์นี้ เช่น แท็บ ประวัติการเข้าชม และรหัสผ่าน</translation>
+<translation id="7012978439516925343">ยืนยันตัวตนเพื่อสร้างพาสคีย์</translation>
 <translation id="7015418667643980944">มุมมองแบบแยก</translation>
 <translation id="7016070607649558507">คุณมีรหัสผ่านที่ไม่รัดกุม 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="7016958933495968912">ตัวเลือกสำหรับฟีเจอร์สำรวจ</translation>
@@ -2163,6 +2168,7 @@
 <translation id="8803639129939845298">ปลอดภัย</translation>
 <translation id="8813277370772331957">เตือนฉันภายหลัง</translation>
 <translation id="8814719628147284151">ดำเนินการต่อ</translation>
+<translation id="8817524703470045896">ติดตามราคาและรับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="8819155700324279105">เพิ่มการป้องกันภัยคุกคามทางออนไลน์อีกชั้นหนึ่ง</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8822421075653507124">องค์กรของคุณอาจต้องดูข้อมูลเกี่ยวกับระบบปฏิบัติการ เบราว์เซอร์ การตั้งค่า รวมทั้งซอฟต์แวร์ที่ติดตั้งในอุปกรณ์เพื่อให้ใช้อุปกรณ์นี้ได้อย่างปลอดภัย</translation>
@@ -2170,6 +2176,7 @@
 <translation id="8829809207373502270">พาสคีย์นี้ใช้งานไม่ได้แล้ว เนื่องจากถูกลบออกจาก <ph name="WEBSITE" /> และจะถูกลบออกจากที่นี่ในเร็วๆ นี้ <ph name="BEGIN_LINK" />เกี่ยวกับพาสคีย์<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>
 <translation id="8837654851594567190">จัดเรียงตามผู้เผยแพร่เนื้อหา</translation>
+<translation id="8844136307393039959">สินค้าที่คุณติดตามราคาต่ำลง</translation>
 <translation id="8848286253339013170">กำลังบันทึกรูปภาพใน Google Photos สำหรับ <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">ซ่อน</translation>
 <translation id="8855242995793521265">ไม่ทำให้เบราว์เซอร์หรืออุปกรณ์ของคุณทำงานช้าลงอย่างเห็นได้ชัด</translation>
@@ -2213,6 +2220,7 @@
 <translation id="8976382372951310360">ความช่วยเหลือ</translation>
 <translation id="8976414606286374109">บันทึกบัตรในบัญชี Google ของคุณแล้ว</translation>
 <translation id="8981454092730389528">ส่วนควบคุมกิจกรรมของ Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, เว็บไซต์ที่ปักหมุด</translation>
 <translation id="8998289560386111590">ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
 <translation id="9000532564152265066">แท็บทั้งหมด</translation>
 <translation id="9003677638446136377">ตรวจสอบอีกครั้ง</translation>

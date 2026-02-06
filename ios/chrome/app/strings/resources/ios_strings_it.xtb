@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Prodotto aggiunto all'elenco di prodotti monitorati.</translation>
 <translation id="2230173723195178503">Pagina web caricata</translation>
 <translation id="2236949375853147973">Le mie attività</translation>
+<translation id="2237869114829007407">Ottieni una panoramica e informazioni chiave per qualsiasi pagina o argomento</translation>
 <translation id="2240256190924001613">Profilo di configurazione disponibile</translation>
 <translation id="2244080985779413662">Questo sito web vuole scaricare un file e aprirlo in Wallet.</translation>
 <translation id="2245007488813216650">Traduzione in corso…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">altro</translation>
 <translation id="3311748811247479259">Off</translation>
 <translation id="3312300514034250578">Navigazione sicura avanzata</translation>
+<translation id="3315786055700307152">Il tuo articolo è ora scontato del 15%</translation>
 <translation id="3324193307694657476">Indirizzo 2</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="333229797575847124">Come attivare questa funzionalità</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Crea una passkey per</translation>
 <translation id="3380352560400387991">Questo sito sta tentando di aprire un'applicazione. Uscirai dalla modalità di navigazione in incognito.</translation>
 <translation id="3385742921291399323">Trova le password, le schede, i preferiti e altri dati salvati.</translation>
+<translation id="3391765987934722383">Non perderti un calo di prezzo</translation>
 <translation id="3392923070107623576">Mantieni l'organizzazione creando gruppi di schede</translation>
 <translation id="3404232721752787413">Salva in Google Foto</translation>
 <translation id="3406506285180498376">Condividi pagina…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3955740319737378355">Fine</translation>
 <translation id="3955822496205734389">Hai password inefficaci.</translation>
+<translation id="3957016963627617921">Fai di più con Gemini in Chrome</translation>
 <translation id="3958312024468322930">Trascinala sul Dock nella parte inferiore della schermata Home</translation>
 <translation id="3962326069546168954">Salva</translation>
 <translation id="3967327056943561740">Preferiti</translation>
@@ -2163,6 +2167,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8803639129939845298">Sicuro</translation>
 <translation id="8813277370772331957">Ricordamelo dopo</translation>
 <translation id="8814719628147284151">Continua</translation>
+<translation id="8817524703470045896">Monitora i prezzi e ricevi avvisi quando il prezzo cala su qualsiasi sito</translation>
 <translation id="8819155700324279105">Aggiungi un ulteriore livello di protezione dalle minacce online</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8822421075653507124">Per garantire che questo dispositivo possa essere usato in sicurezza, la tua organizzazione potrebbe dover accedere alle informazioni relative al sistema operativo, al browser, alle impostazioni e al software installato sul dispositivo.</translation>
@@ -2170,6 +2175,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8829809207373502270">Questa passkey non funziona più. È stata eliminata da <ph name="WEBSITE" /> e verrà eliminata anche da qui a breve. <ph name="BEGIN_LINK" />Informazioni sulle passkey<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Chiudi tutte le schede non attive</translation>
 <translation id="8837654851594567190">Ordina per publisher</translation>
+<translation id="8844136307393039959">Calo di prezzo sul prodotto monitorato</translation>
 <translation id="8848286253339013170">Salvataggio immagine in Google Foto per <ph name="USER_EMAIL" /> in corso…</translation>
 <translation id="8849001918648564819">Nascosto</translation>
 <translation id="8855242995793521265">Non rallenta in modo significativo il browser o il dispositivo.</translation>
@@ -2213,6 +2219,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8976382372951310360">Guida</translation>
 <translation id="8976414606286374109">Le carte di credito vengono salvate nel tuo Account Google.</translation>
 <translation id="8981454092730389528">Gestione attività di Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sito fissato</translation>
 <translation id="8998289560386111590">Non disponibile sul tuo dispositivo</translation>
 <translation id="9000532564152265066">Tutte le schede</translation>
 <translation id="9003677638446136377">Controlla</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1035560095760914532">ວາງ Chrome ໄວ້ໃນພື້ນທີ່ລຸ່ມສຸດເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ຕະຫຼອດເວລາ</translation>
 <translation id="1076643793026027628">Chrome ເປີດລິ້ງ YouTube ແບບບໍ່ເປີດເຜີຍຕົວຕົນໂດຍອັດຕະໂນມັດໃນແບບບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="1081114897601629648">ລະບົບບໍ່ໄດ້ນຳເຂົ້າລະຫັດຜ່ານຕໍ່ໄປນີ້ໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google, ເນື່ອງຈາກບໍ່ກົງຕາມຂໍ້ກຳນົດ.</translation>
 <translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">ທ່ານບັນທຶກບຸກມາກຂອງ Google Chrome ຮອດຂີດຈຳກັດ <ph name="LIMIT" /> ລາຍການແລ້ວ, ດັ່ງນັ້ນລະບົບຈຶ່ງຍັງບໍ່ໄດ້ບັນທຶກບຸກມາກບາງລາຍການຂອງທ່ານໃສ່ໃນບັນຊີ Google ຂອງທ່ານເທື່ອ.
 
 ທ່ານຈະບໍ່ສາມາດບັນທຶກບຸກມາກໃໝ່ໃສ່ໃນບັນຊີຂອງທ່ານໄດ້ຈົນກວ່າທ່ານຈະລຶບບຸກມາກບາງລາຍການອອກ. ຫາກທ່ານອອກຈາກລະບົບຕອນນີ້, ລະບົບຈະລຶບບຸກມາກທີ່ຍັງບໍ່ໄດ້ບັນທຶກໄວ້ອອກ.</translation>
+<translation id="2901621928549457170">ເປີດ Chrome ໄດ້ທັນທີເມື່ອທ່ານໃຊ້ iPad ຂອງທ່ານ</translation>
 <translation id="2922914028977213693">ແຕະບ່ອນນີ້ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome ຢູ່ iPad ຂອງທ່ານ.</translation>
 <translation id="292371311537977079">ການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2923827943290349720">ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chrome</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">ເລືອກ Chrome</translation>
 <translation id="5123188916260706415">ຊອກຫາດ້ວຍສຽງໃນ Chrome</translation>
 <translation id="5162467219239570114">Chrome ເກົ່າແລ້ວ. ຖ້າບໍ່ມີການອັບເດດໃນ <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ມັນເປັນໄປໄດ້ວ່າອຸປະກອນຂອງທ່ານບໍ່ຮອງຮັບ Chrome ເວີຊັນໃໝ່ອີກຕໍ່ໄປ.</translation>
+<translation id="5172049865623113551">ເປີດ Chrome ໄດ້ທັນທີເມື່ອທ່ານໃຊ້ iPhone ຂອງທ່ານ</translation>
+<translation id="5179095426828744632">ເຂົ້າເຖິງ Chrome ໄດ້ໄວຂຶ້ນຈາກດັອກຂອງທ່ານ</translation>
 <translation id="5184329579814168207">ເປີດ​ຢູ່ໃນ Chrome</translation>
 <translation id="5190139289262548459">ອົງກອນຂອງທ່ານ, <ph name="DOMAIN" />, ຈະເປັນຜູ້ຈັດການບັນຊີທີ່ທ່ານເຂົ້າສູ່ລະບົບ ແລະ ວິທີໃຊ້ Chrome.</translation>
 <translation id="5209238444239954363">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>

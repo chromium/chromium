@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">ምርት ወደ የእርስዎ ክትትል የሚደረግባቸው ምርቶች ዝርዝር ታክሏል።</translation>
 <translation id="2230173723195178503">ድረ-ገፅ ተጭኗል</translation>
 <translation id="2236949375853147973">የእኔ እንቅስቃሴ</translation>
+<translation id="2237869114829007407">ለማንኛውም ገጽ ወይም ርዕስ አጠቃላይ ዕይታ እና ቁልፍ ግንዛቤዎችን ያግኙ</translation>
 <translation id="2240256190924001613">የውቅረት መገለጫ ይገኛል</translation>
 <translation id="2244080985779413662">ይህ ድር ጣቢያ አንድን ፋይል ማውረድ እና በእርስዎ Wallet ውስጥ መክፈት ይፈልጋል።</translation>
 <translation id="2245007488813216650">በመተርጎም ላይ…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">ተጨማሪ</translation>
 <translation id="3311748811247479259">ጠፍቷል</translation>
 <translation id="3312300514034250578">የተሻሻለ የደህንነት አሰሳ</translation>
+<translation id="3315786055700307152">ንጥልዎ አሁን የ15% ቅናሽ አለው</translation>
 <translation id="3324193307694657476">አድራሻ 2</translation>
 <translation id="3328801116991980348">የጣቢያ መረጃ</translation>
 <translation id="333229797575847124">እንዴት ይህን ባህሪ ማብራት እንደሚቻል</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">ለሚከተለው የይለፍ ቁልፍ ይፍጠሩ</translation>
 <translation id="3380352560400387991">ይህ ጣቢያ መተግበሪያን ለመክፈት እየሞከረ ነው። ይህ እርስዎን ከማንነት የማያሳውቅ ያወጣል።</translation>
 <translation id="3385742921291399323">የእርስዎን የተቀመጡ የይለፍ ቃላት፣ ትሮች፣ እልባቶች እና ሌሎችንም ያግኙ።</translation>
+<translation id="3391765987934722383">የዋጋ ቅናሽ እንዳያመልጥዎ</translation>
 <translation id="3392923070107623576">የትር ቡድኖችን በመፍጠር ተደራጅተው ይቆዩ</translation>
 <translation id="3404232721752787413">Google ፎቶዎች ውስጥ አስቀምጥ</translation>
 <translation id="3406506285180498376">ገፅን አጋራ…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="3955740319737378355">ተከናውኗል</translation>
 <translation id="3955822496205734389">ደካማ የይለፍ ቃላት አሉዎት።</translation>
+<translation id="3957016963627617921">በGemini በChrome ውስጥ ተጨማሪ ያድርጉ</translation>
 <translation id="3958312024468322930">በመነሻ ማያዎ ግርጌ ላይ ወደሚገኘው መትከያ ይውሰዱት</translation>
 <translation id="3962326069546168954">ያስቀምጡ</translation>
 <translation id="3967327056943561740">ዕልባቶች</translation>
@@ -2163,6 +2167,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8803639129939845298">ደህንነቱ የተጠበቀ ነው</translation>
 <translation id="8813277370772331957">ቆይተህ አስታውሰኝ</translation>
 <translation id="8814719628147284151">ቀጥል</translation>
+<translation id="8817524703470045896">ዋጋዎችን ይከታተሉ እና በማንኛውም ጣቢያ ላይ ዋጋው ሲቀንስ ማንቂያዎችን ያግኙ</translation>
 <translation id="8819155700324279105">ከመስመር ላይ ዛቻዎች ለመጠበቅ ተጨማሪ የጥበቃ ንብርብር ያክሉ</translation>
 <translation id="8820817407110198400">ዕልባቶች</translation>
 <translation id="8822421075653507124">ይህ መሣሪያ ደህንነቱ በተጠበቀ ሁኔታ ጥቅም ላይ መዋል መቻሉን ለማረጋገጥ ድርጅትዎ ስለሥርዓተ ክወናው፣ አሳሹ እና ቅንብሮቹ እና በመሣሪያው ላይ ምን ዓይነት ሶፍትዌር እንደተጫነ መረጃ ማየት ሊኖርበት ይችላል።</translation>
@@ -2170,6 +2175,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8829809207373502270">ይህ የይለፍ ቁልፍ ከእንግዲህ አይሠራም። ከ<ph name="WEBSITE" /> ላይ ተሰርዟል እና በቅርቡ ከዚህ ይሰረዛል። <ph name="BEGIN_LINK" />ስለ ይለፍ ቁልፎች<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ሁሉንም ገቢር ያልሆኑትን ዝጋ</translation>
 <translation id="8837654851594567190">በአታሚ ደርድር</translation>
+<translation id="8844136307393039959">ክትትል በተደረገበት ምርትዎ ላይ የዋጋ ቅናሽ</translation>
 <translation id="8848286253339013170">በGoogle ፎቶዎች ውስጥ ለ<ph name="USER_EMAIL" /> ምስልን በማስቀመጥ ላይ…</translation>
 <translation id="8849001918648564819">ተደብቋል</translation>
 <translation id="8855242995793521265">በሚታወቅ መልኩ የእርስዎን አሳሸ ወይም መሣሪያ ቀስ አይደርግም።</translation>
@@ -2213,6 +2219,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8976382372951310360">እገዛ</translation>
 <translation id="8976414606286374109">ካርዶች ወደ የእርስዎ Google መለያ ተቀምጠዋል።</translation>
 <translation id="8981454092730389528">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />፣ የተሰካ ጣቢያ</translation>
 <translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
 <translation id="9000532564152265066">ሁሉም ትሮች</translation>
 <translation id="9003677638446136377">እንደገና ፈትሽ</translation>

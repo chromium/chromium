@@ -380,7 +380,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5289287148052354622">Get the Chromium app</translation>
 <translation id="5294316920224716406">When browsing in Incognito mode, Chromium will warn you before loading a site using an insecure connection</translation>
 <translation id="5313228254328109263">Chromium updater internal service</translation>
-<translation id="5346059693449184483">What's on your mind?</translation>
 <translation id="5346389065299425353">Deepen your search by adding multiple tabs, files and tools</translation>
 <translation id="5352264705793813212">Chromium found some safety recommendations for your review</translation>
 <translation id="5352361688875342522">Other Chromium profiles</translation>
@@ -645,7 +644,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8177472873527554730">Can't find content in page</translation>
 <translation id="8200109504272824693">Enter your passphrase to use and save Chromium data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
-<translation id="8223142476690844338">Hi <ph name="USER_NAME" />, what's on your mind?</translation>
 <translation id="8223363452568144035">To use your camera, give Chromium access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium can't verify where this extension comes from, and it might be unsafe. Remove it from Chromium so that it can no longer see and change your data on sites that you visit, including personal info.</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>

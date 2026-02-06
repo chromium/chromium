@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Vöru bætt við lista yfir vörur í rakningu</translation>
 <translation id="2230173723195178503">Vefsíða sótt</translation>
 <translation id="2236949375853147973">Mín virkni</translation>
+<translation id="2237869114829007407">Fáðu yfirlit og innsýn í lykilatriði hvaða síðu eða umfjöllunarefnis sem er</translation>
 <translation id="2240256190924001613">Uppsetningarprófíll í boði</translation>
 <translation id="2244080985779413662">Þetta vefsvæði vill sækja skrá og opna hana í veskinu þínu.</translation>
 <translation id="2245007488813216650">Þýðir…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">meira</translation>
 <translation id="3311748811247479259">Slökkt</translation>
 <translation id="3312300514034250578">Enn öruggari vefskoðun</translation>
+<translation id="3315786055700307152">Varan þín er nú á 15% afslætti</translation>
 <translation id="3324193307694657476">Heimilisfang 2</translation>
 <translation id="3328801116991980348">Upplýsingar um vefsvæði</translation>
 <translation id="333229797575847124">Hvernig á að virkja þennan eiginleika</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Búðu til aðgangslykil að:</translation>
 <translation id="3380352560400387991">Þetta vefsvæði er að reyna að opna forrit. Slökkt verður á huliðsstillingu í kjölfarið.</translation>
 <translation id="3385742921291399323">Sæktu vistuðu aðgangsorðin, flipana, bókamerkin og fleira.</translation>
+<translation id="3391765987934722383">Ekki missa af verðlækkun</translation>
 <translation id="3392923070107623576">Haltu skipulagi með því að búa til flipahópa</translation>
 <translation id="3404232721752787413">Vista í Google-myndum</translation>
 <translation id="3406506285180498376">Deila síðu…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3955740319737378355">Lokið</translation>
 <translation id="3955822496205734389">Þú ert með léleg aðgangsorð.</translation>
+<translation id="3957016963627617921">Komdu meira í verk með Gemini í Chrome</translation>
 <translation id="3958312024468322930">Dragðu það í dokkuna neðst á heimaskjánum</translation>
 <translation id="3962326069546168954">Vista</translation>
 <translation id="3967327056943561740">Bókamerki</translation>
@@ -2164,6 +2168,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8803639129939845298">Öruggt</translation>
 <translation id="8813277370772331957">Minna mig á seinna</translation>
 <translation id="8814719628147284151">Halda áfram</translation>
+<translation id="8817524703470045896">Vaktaðu verð og fáðu tilkynningar þegar verð lækka á vefsvæðum</translation>
 <translation id="8819155700324279105">Auktu vörn gegn netógnum</translation>
 <translation id="8820817407110198400">Bókamerki</translation>
 <translation id="8822421075653507124">Til að ganga úr skugga um að hægt sé að nota þetta tæki á öruggan hátt þarf fyrirtækið þitt hugsanlega aðgang að upplýsingum um stýrikerfi, vafra, stillingar og uppsettan hugbúnað tækisins.</translation>
@@ -2171,6 +2176,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8829809207373502270">Þessi aðgangslykill virkar ekki lengur. Honum var eytt á <ph name="WEBSITE" /> og verður eytt héðan innan skamms. <ph name="BEGIN_LINK" />Um aðgangslykla<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Loka öllum óvirkum</translation>
 <translation id="8837654851594567190">Raða eftir útgefanda</translation>
+<translation id="8844136307393039959">Vara sem þú ert með í rakningu lækkaði í verði</translation>
 <translation id="8848286253339013170">Vistar mynd í Google-myndum fyrir „<ph name="USER_EMAIL" />“…</translation>
 <translation id="8849001918648564819">Falið</translation>
 <translation id="8855242995793521265">Hægir ekki greinilega á vafranum eða tækinu.</translation>
@@ -2214,6 +2220,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8976382372951310360">Hjálp</translation>
 <translation id="8976414606286374109">Kort verða vistuð á Google reikningnum þínum.</translation>
 <translation id="8981454092730389528">Virknistýringar Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fest vefsvæði</translation>
 <translation id="8998289560386111590">Ekki í boði í tækinu þínu</translation>
 <translation id="9000532564152265066">Allir flipar</translation>
 <translation id="9003677638446136377">Prófa aftur</translation>

@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Se agregó el producto a tu lista de productos con seguimiento.</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2236949375853147973">Mi actividad</translation>
+<translation id="2237869114829007407">Obtén un resumen y datos clave de cualquier página o tema</translation>
 <translation id="2240256190924001613">Perfil de configuración disponible</translation>
 <translation id="2244080985779413662">Este sitio web quiere descargar un archivo y abrirlo en tu Billetera.</translation>
 <translation id="2245007488813216650">Traduciendo…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">más</translation>
 <translation id="3311748811247479259">No</translation>
 <translation id="3312300514034250578">Navegación segura mejorada</translation>
+<translation id="3315786055700307152">Tu artículo ahora tiene un 15% de descuento</translation>
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="333229797575847124">Cómo habilitar esta función</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Crea una llave de acceso para</translation>
 <translation id="3380352560400387991">Este sitio está intentando abrir una aplicación. Saldrás del modo Incógnito.</translation>
 <translation id="3385742921291399323">Accede a tus contraseñas, pestañas, favoritos y otros datos guardados.</translation>
+<translation id="3391765987934722383">No te pierdas ninguna reducción de precio</translation>
 <translation id="3392923070107623576">Crea grupos de pestañas para mantener tu organización</translation>
 <translation id="3404232721752787413">Guardar en Google Fotos</translation>
 <translation id="3406506285180498376">Compartir página…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3955740319737378355">Listo</translation>
 <translation id="3955822496205734389">Tienes contraseñas poco seguras.</translation>
+<translation id="3957016963627617921">Haz más con Gemini en Chrome</translation>
 <translation id="3958312024468322930">Arrástrala al Dock que se encuentra en la parte inferior de la pantalla de inicio</translation>
 <translation id="3962326069546168954">Guardar</translation>
 <translation id="3967327056943561740">Favoritos</translation>
@@ -2163,6 +2167,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8813277370772331957">Recordarme más tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
+<translation id="8817524703470045896">Haz un seguimiento de los precios y recibe alertas cuando bajen en cualquier sitio</translation>
 <translation id="8819155700324279105">Agrega una capa adicional de protección contra las amenazas en línea</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8822421075653507124">Para garantizar que este dispositivo se pueda usar de forma segura, es posible que tu organización deba consultar información sobre el sistema operativo, el navegador, la configuración y el software instalado en el dispositivo.</translation>
@@ -2170,6 +2175,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8829809207373502270">Esta llave de acceso ya no funciona. Se borró de <ph name="WEBSITE" /> y pronto se borrará de aquí. <ph name="BEGIN_LINK" />Acerca de las llaves de acceso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Cerrar todas las pestañas inactivas</translation>
 <translation id="8837654851594567190">Ordenar por publicador</translation>
+<translation id="8844136307393039959">Reducción de precio en tu producto con seguimiento</translation>
 <translation id="8848286253339013170">Guardando imagen en Google Fotos para <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Oculta</translation>
 <translation id="8855242995793521265">No ralentiza mucho tu navegador ni dispositivo.</translation>
@@ -2213,6 +2219,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8976414606286374109">Las tarjetas se guardan en tu Cuenta de Google.</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fijado</translation>
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="9000532564152265066">Todas las pestañas</translation>
 <translation id="9003677638446136377">Volver a comprobar</translation>

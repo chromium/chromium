@@ -2614,6 +2614,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Sprawdzaj gramatykę razem z pisownią</translation>
 <translation id="2750020734439919571">Więcej ustawień i uprawnień aplikacji Chrome</translation>
+<translation id="275010360476017464">Używaj mikrofonu do czatowania z Gemini. Gdy rozmawiasz z Gemini, dźwięk jest zapisywany w aktywności w aplikacjach z Gemini (jeśli ta opcja jest włączona).</translation>
 <translation id="2750602041558385535">Pobieranie niezweryfikowanych plików zablokowane</translation>
 <translation id="2751454300227269244">Porusz ustami w prawo</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> chce poznać numer identyfikacyjny Twojego klucza bezpieczeństwa. Strona rozpozna konkretny klucz bezpieczeństwa, którego używasz.</translation>
@@ -4710,6 +4711,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4169535189173047238">Nie zezwalaj</translation>
 <translation id="4170314459383239649">Wyczyść przy zamykaniu</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Udostępnij kartę usłudze Gemini}few{Udostępnij # karty usłudze Gemini}many{Udostępnij # kart usłudze Gemini}other{Udostępnij # karty usłudze Gemini}}</translation>
+<translation id="4172944993779635350">Hasło do strony „<ph name="URL" />” jest zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie.</translation>
 <translation id="4173129130568053653">Gemini może pomagać Ci w rezerwowaniu terminów, tworzeniu koszyków zakupowych i wykonywaniu innych zadań.</translation>
 <translation id="4175137578744761569">Jasnofioletowo-biały</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
@@ -4755,7 +4757,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4206585797409671301">Zezwolono na wyświetlanie żądań</translation>
 <translation id="4207144975205749656">Szyfruje żądania dotyczące nawigacji, aby osoby przeprowadzające atak w tej samej sieci nie mogły zobaczyć ruchu</translation>
 <translation id="4207932031282227921">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij F6.</translation>
-<translation id="4208390505124702064">Szukaj na stronie <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Duży</translation>
 <translation id="4209247656298167054">Nie zaktualizowano</translation>
 <translation id="4209251085232852247">Wyłączony</translation>
@@ -5027,6 +5028,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4386604394450371010">podsumowanie</translation>
 <translation id="4387890294700445764">Przejęte hasła</translation>
 <translation id="4388650384344483842">Użyj co najmniej 8 znaków</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Hasło do strony <ph name="URL" />}few{Hasła do strony <ph name="URL" /> ({COUNT})}many{Hasła do strony <ph name="URL" /> ({COUNT})}other{Hasła do strony <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i jeszcze <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Konfiguracją Bluetooth zarządza <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edytuj plik konfiguracji</translation>
@@ -5556,6 +5558,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4762849514113423887">Błędne hasło. Spróbuj ponownie.</translation>
 <translation id="4763408175235639573">Podczas wyświetlania strony zostały utworzone te pliki cookie</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> nie jest prawidłowym kontem Google for Education. Skontaktuj się z administratorem. Jeśli jesteś administratorem, możesz skonfigurować usługę dla swojej organizacji na stronie: g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} hasło do strony „<ph name="URL" />” zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie.}few{{COUNT} hasła do strony „<ph name="URL" />” zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{{COUNT} haseł do strony „<ph name="URL" />” zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{{COUNT} hasła do strony „<ph name="URL" />” zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{To urządzenie będzie zapisane przez miesiąc. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}few{To urządzenie będzie zapisane przez {MONTHS} miesiące. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}many{To urządzenie będzie zapisane przez {MONTHS} miesięcy. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}other{To urządzenie będzie zapisane przez {MONTHS} miesiąca. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}}</translation>
 <translation id="476563889641554689">Wybierz obszar do wyszukiwania za pomocą Obiektywu</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Sprawdzam klucz publiczny i blokadę integralności… Pozostało mniej niż 1 minuta}=1{Sprawdzam klucz publiczny i blokadę integralności… Pozostała 1 minuta}few{Sprawdzam klucz publiczny i blokadę integralności… Pozostały # minuty}many{Sprawdzam klucz publiczny i blokadę integralności… Pozostało # minut}other{Sprawdzam klucz publiczny i blokadę integralności… Pozostało # minuty}}</translation>
@@ -5742,6 +5745,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4881685975363383806">Nie przypominaj mi następnym razem</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4882312758060467256">Ma dostęp do tej strony</translation>
+<translation id="4882848900607400156">Gdy udostępniasz swoją dokładną lokalizację, Gemini może dokładniej odpowiadać na Twoje pytania. Nie używamy Twoich danych do ulepszania modeli generatywnej AI.</translation>
 <translation id="4882919381756638075">Strony zwykle używają mikrofonu na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="4883436287898674711">Wszystkie strony <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Menedżer zadań</translation>
@@ -5832,6 +5836,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4945439665401275950">Aby skonfigurować odcisk palca, Twoje dziecko musi dotknąć przycisku zasilania. Odciski palców Twojego dziecka są przechowywane w bezpieczny sposób i wyłącznie na tym urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">Menu z aplikacjami + strzałka w górę</translation>
 <translation id="4947376546135294974">Dane z odwiedzanej witryny</translation>
+<translation id="4948370357877377178">Kontynuuj zadania</translation>
 <translation id="4950100687509657457">Utwórz profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="495170559598752135">Czynności</translation>
@@ -6025,6 +6030,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5088534251099454936">PKCS #1, SHA-512 z szyfrowaniem RSA</translation>
 <translation id="5090637338841444533">Nie zezwolono na śledzenie pozycji kamery</translation>
 <translation id="5091636240353511739">Pokaż kod PIN</translation>
+<translation id="5093447877601682598">Prześlij opinię o pasku kart</translation>
 <translation id="5093477827231450397">Lista zablokowanych przez Ciebie witryn, którym nie pozwalasz na sugerowanie reklam innym witrynom</translation>
 <translation id="5093569275467863761">Ramka podrzędna w trybie incognito w pamięci podręcznej stanu strony internetowej: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">W tej aplikacji możesz otwierać i edytować obsługiwane pliki, do których uzyskujesz dostęp za pomocą aplikacji Pliki lub innych aplikacji. Aby określić, które pliki powinny się domyślnie otwierać w tej aplikacji, <ph name="BEGIN_LINK" />dowiedz się, jak ustawić domyślne aplikacje na urządzeniu<ph name="END_LINK" />.</translation>
@@ -8857,6 +8863,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7057567173736333354">Opisz obraz</translation>
 <translation id="70577934383983846">Używaj tego hasła na wszystkich swoich urządzeniach</translation>
 <translation id="7058024590501568315">Sieć ukryta</translation>
+<translation id="7058325593717863084">Prześlij opinię o pasku kart</translation>
 <translation id="7059858479264779982">Ustaw automatyczne uruchamianie</translation>
 <translation id="7060004353663489242">Pole <ph name="FIELD_LIST" /> jest wymagane</translation>
 <translation id="7063129466199351735">Przetwarzam skróty...</translation>
@@ -9057,6 +9064,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
 <translation id="7207457272187520234">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="7207631048330366454">Szukaj aplikacji</translation>
+<translation id="7209958456051239069">Gdy udostępniasz swoją dokładną lokalizację, Gemini może dokładniej odpowiadać na Twoje pytania</translation>
 <translation id="7210257969463271891">Tutaj pojawią się aplikacje internetowe, które zainstalujesz</translation>
 <translation id="7210432570808024354">Kliknij i przeciągnij, aby przenieść elementy</translation>
 <translation id="7210499381659830293">Drukarki dostępne za pomocą rozszerzeń</translation>
@@ -10675,6 +10683,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8288032458496410887">Odinstaluj aplikację <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Wyodrębnianie tekstu z pliku PDF</translation>
 <translation id="8289128870594824098">Rozmiar dysku</translation>
+<translation id="8289200713453671499">Szybko przełączaj się między grupami kart i ostatnimi rozmowami z AI, nie tracąc kontekstu.</translation>
 <translation id="8289509909262565712">Witamy w <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Pobierz Chrome</translation>
 <translation id="8291942417224950075">Na użytek osobisty</translation>
@@ -11653,6 +11662,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8945508919180478719">Mikrofon studyjny</translation>
 <translation id="8946359700442089734">Funkcje debugowania nie zostały w pełni włączone na urządzeniu <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Zwiń wszystkie żądania na pasku adresu</translation>
+<translation id="8946996840522387154">Używaj mikrofonu do czatowania z Gemini. Gdy rozmawiasz z Gemini, dźwięk jest zapisywany w aktywności w aplikacjach z Gemini (jeśli ta opcja jest włączona). Nie używamy Twoich danych do ulepszania modeli generatywnej AI.</translation>
 <translation id="894763922177556086">Dobra</translation>
 <translation id="895054485242522631">Strony mogą używać czujników ruchu</translation>
 <translation id="8951256747718668828">Przywracanie nie powiodło się z powodu błędu</translation>

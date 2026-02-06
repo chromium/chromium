@@ -1276,6 +1276,7 @@
 <translation id="3052868890529250114">你通常可以經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>
 <translation id="3056660797732519147">「先買後付」錯誤畫面。鍵盤已隱藏。</translation>
+<translation id="3057844102210575426">管理旅遊資訊</translation>
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="3062655045399308513">刪除瀏覽資料…</translation>
 <translation id="3063453392496098461">無法安裝 VPN 背景服務。</translation>
@@ -2005,6 +2006,7 @@
 <translation id="4203769790323223880">不允許使用相機</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />檢查防火牆和防毒軟體設定<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google 雲端硬碟</translation>
+<translation id="4208390505124702064">搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">驗證碼已過期，請申請新的驗證碼</translation>
 <translation id="421066178035138955">使用虛擬實境裝置和資料</translation>
@@ -2061,6 +2063,7 @@
 <translation id="4270541775497538019">堆疊出紙器 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{查看 0 則評論，平均評分為 <ph name="STARS" /> 顆星。}=1{查看 1 則評論，平均評分為 <ph name="STARS" /> 顆星。}other{查看全部 # 則評論，平均評分為 <ph name="STARS" /> 顆星。}}</translation>
 <translation id="4271652479722040953">在 Chrome 中新增擴充功能時，系統會將擴充功能相關資料傳送給第三方進行分析，系統管理員也可能會看到這些資料。這類資料包括擴充功能相關資訊，例如名稱、安裝時間、安裝來源，以及與擴充功能相關的活動 (例如變更分頁、聯絡網站或存取 Cookie)。無論擴充功能是否透過 Chrome 線上應用程式商店安裝，系統都會收集上述資料。</translation>
+<translation id="4275788652681621337">關閉側邊面板</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4276974990916607331">不用了，謝謝</translation>
 <translation id="4277028893293644418">重設密碼</translation>
@@ -2624,6 +2627,7 @@
 <translation id="5209670883520018268">紙匣 20</translation>
 <translation id="5212364581680288382">摩托車競速</translation>
 <translation id="5214542134842513912">選擇系統可根據哪些廣泛的主題類別放送個人化廣告。如果封鎖廣泛類別，系統也會一併封鎖相關主題。</translation>
+<translation id="52163492208010719">管理身分證明文件</translation>
 <translation id="521659676233207110">紙匣 13</translation>
 <translation id="5216942107514965959">上次造訪日期：今天</translation>
 <translation id="5217759126664161410">通訊協定格式無效。</translation>
@@ -2708,6 +2712,7 @@
 <translation id="5344522958567249764">管理廣告隱私權設定</translation>
 <translation id="5344579389779391559">進入接下來的頁面後，系統可能會向您收費</translation>
 <translation id="5345249337934847112">紙 (厚塗布紙)</translation>
+<translation id="5346059693449184483">想討論什麼嗎？</translation>
 <translation id="5348330584842140856">這個檔案已不存在，因此無法移動</translation>
 <translation id="5349543692327946794">標籤 (省墨)</translation>
 <translation id="5351548097010183514">建築材料與用品</translation>
@@ -4504,6 +4509,7 @@
 <translation id="8216640997712497593">14 x 18 吋</translation>
 <translation id="8218327578424803826">指派的位置：</translation>
 <translation id="8220602974062798186">要封鎖「<ph name="TOPIC" />」和所有相關主題嗎？</translation>
+<translation id="8223142476690844338"><ph name="USER_NAME" />，你好！想討論什麼？</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />，問問「<ph name="KEYWORD_SUFFIX" />」</translation>
 <translation id="8228419419708659934">雙頁檢視</translation>
 <translation id="822925450938886901">如需其他資訊與可能適用的政策，請使用瀏覽器開啟 chrome://management。</translation>

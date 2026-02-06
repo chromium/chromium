@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Oznacza to, że Chromium będzie za każdym razem wyświetlać witrynę mobilną.</translation>
 <translation id="1115463765356382667">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
+<translation id="119044033865561140">Błyskawicznie otwieraj Chromium na iPadzie</translation>
 <translation id="1211450393895337634">Uruchamiaj Chromium szybciej, gdy chcesz przeglądać strony na iPadzie.</translation>
 <translation id="1229234641991056119">Korzystaj w Chromium z haseł, historii, zakładek i kart kredytowych z Safari</translation>
 <translation id="1257458525759135959">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chromium na dodanie ich do Twoich zdjęć</translation>
 <translation id="1260702988262336471">Otwórz menu Chromium</translation>
 <translation id="12739128458173458">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chromium.</translation>
+<translation id="1279797561821266129">Szybszy dostęp do Chromium z Docka</translation>
 <translation id="1361748954329991663">Przeglądarka Chromium jest nieaktualna. Jeśli w <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nie ma dostępnej aktualizacji, Twoje urządzenie może już nie obsługiwać nowych wersji Chromium.</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1423007117030725713">Rozpocznij wyszukiwanie na nowej karcie Chromium.</translation>
@@ -176,6 +178,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="4790638144988730920">Nadal korzystaj z danych Chromium na koncie Google.</translation>
 <translation id="4828317641996116749">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie później.</translation>
 <translation id="4856138222358683580">Działania w Chromium</translation>
+<translation id="4869706986935301458">Błyskawicznie otwieraj Chromium na iPhonie</translation>
 <translation id="4904452304169763785">Alerty dotyczące wszelkich problemów z prywatnością i bezpieczeństwem, które wykrywa Chromium.</translation>
 <translation id="4908570938463711775">Aby zacząć, zapoznaj się z najważniejszymi przydatnymi informacjami o Chromium</translation>
 <translation id="4962295957157529683">Dokończ czynności rozpoczęte w innym otwartym oknie Chromium.</translation>
@@ -295,6 +298,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="7395825497086981028">Hasło zostanie zapisane w menedżerze haseł na koncie <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Ten klucz dostępu zostanie zapisany w Menedżerze haseł na koncie <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Otwórz Chromium</translation>
+<translation id="7507535968973352823">Umieść ikonę Chromium u dołu ekranu, aby mieć łatwy dostęp do przeglądarki</translation>
 <translation id="7531461704633548377">Z Chromium</translation>
 <translation id="7554983317097061001">Wskazówka dotycząca Chromium: przenieś Chromium do Docka</translation>
 <translation id="7576863740961052505">Zarządzaj ustawieniami Chromium</translation>

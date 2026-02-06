@@ -2008,6 +2008,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4203769790323223880">Adgang til kamera er ikke tilladt</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Tjekke firewall- og antiviruskonfigurationer<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drev</translation>
+<translation id="4208390505124702064">Søg på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4210602799576081649">Verificeringskoden udløb. Anmod om en ny kode.</translation>
 <translation id="421066178035138955">Anvende virtual reality-enheder og -data</translation>
@@ -2064,6 +2065,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4270541775497538019">Stabler 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Se 0 anmeldelser. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}=1{Se 1 anmeldelse. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}one{Se # anmeldelse. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}other{Se # anmeldelser. Den gennemsnitlige bedømmelse er <ph name="STARS" /> stjerner.}}</translation>
 <translation id="4271652479722040953">Når udvidelser føjes til Chrome, sendes relevante data om disse udvidelser til analyse hos tredjeparter, og de kan muligvis ses af din administrator. Dataene omfatter oplysninger om udvidelserne, f.eks. navn, installationstidspunkt, installationskilde samt aktivitet, der er knyttet til disse udvidelser (f.eks. skift mellem faner, kontakt til websites eller adgang til cookies). Disse data indsamles for udvidelser, der er installeret via Chrome Webshop, samt for udvidelser, der ikke er fra Chrome Webshop.</translation>
+<translation id="4275788652681621337">Luk sidepanelet</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
 <translation id="4276974990916607331">Nej tak</translation>
 <translation id="4277028893293644418">Nulstil adgangskoden</translation>
@@ -2712,6 +2714,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5344522958567249764">Administrer privatliv vedrørende annoncering</translation>
 <translation id="5344579389779391559">Denne side forsøger muligvis at opkræve penge af dig</translation>
 <translation id="5345249337934847112">Papir (tungt, bestrøget)</translation>
+<translation id="5346059693449184483">Hvad har du på hjerte?</translation>
 <translation id="5348330584842140856">Denne fil kunne ikke flyttes, fordi den ikke længere findes</translation>
 <translation id="5349543692327946794">Etiketter (blæk)</translation>
 <translation id="5351548097010183514">Byggematerialer</translation>
@@ -4508,6 +4511,7 @@ Yderligere oplysninger:
 <translation id="8216640997712497593">14 x 18 tommer</translation>
 <translation id="8218327578424803826">Tildelt placering:</translation>
 <translation id="8220602974062798186">Vil du blokere <ph name="TOPIC" /> og alle relaterede emner?</translation>
+<translation id="8223142476690844338">Hej <ph name="USER_NAME" />! Hvad har du på hjerte?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Spørg <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Tosidet visning</translation>
 <translation id="822925450938886901">Åbn chrome://management i din browser for at få flere oplysninger og se de politikker, der kan være gældende.</translation>

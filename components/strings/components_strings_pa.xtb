@@ -2005,6 +2005,7 @@
 <translation id="4203769790323223880">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ਫ਼ਾਇਰਵਾਲ ਅਤੇ ਐਂਟੀਵਾਇਰਸ ਸੰਰੂਪਣਾਂ ਦੀ ਜਾਂਚ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064"><ph name="SITE_NAME" /> ਖੋਜੋ</translation>
 <translation id="4209092469652827314">ਵੱਡਾ</translation>
 <translation id="4210602799576081649">ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ, ਨਵੇਂ ਕੋਡ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="421066178035138955">ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤੋ</translation>
@@ -2061,6 +2062,7 @@
 <translation id="4270541775497538019">ਸਟੈਕਰ 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{ਦੇਖਣ ਲਈ ਕੋਈ ਸਮੀਖਿਆ ਨਹੀਂ ਹੈ। ਔਸਤ ਰੇਟਿੰਗ <ph name="STARS" /> ਸਟਾਰ ਹੈ।}=1{1 ਸਮੀਖਿਆ ਦੇਖੋ। ਔਸਤ ਰੇਟਿੰਗ <ph name="STARS" /> ਸਟਾਰ ਹੈ।}other{ਸਾਰੀਆਂ # ਸਮੀਖਿਆਵਾਂ ਦੇਖੋ। ਔਸਤ ਰੇਟਿੰਗ <ph name="STARS" /> ਸਟਾਰ ਹੈ।}}</translation>
 <translation id="4271652479722040953">ਜਦੋਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ Chrome ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਇਨ੍ਹਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦਾ ਢੁਕਵਾਂ ਡਾਟਾ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਇਹ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਦਿਖਾਈ ਦੇ ਸਕਦਾ ਹੈ। ਇਸ ਡਾਟੇ ਵਿੱਚ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ, ਜਿਵੇਂ ਕਿ ਨਾਮ, ਸਥਾਪਤ ਕਰਨ ਦਾ ਸਮਾਂ, ਸਥਾਪਨਾ ਦੇ ਸਰੋਤ ਅਤੇ ਇਨ੍ਹਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨਾਲ ਸੰਬੰਧਿਤ ਸਰਗਰਮੀ (ਜਿਵੇਂ ਕਿ ਟੈਬਾਂ ਨੂੰ ਬਦਲਣਾ, ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਸੰਪਰਕ ਕਰਨਾ ਜਾਂ ਕੁਕੀਜ਼ ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ) ਸ਼ਾਮਲ ਹੁੰਦੀ ਹੈ। ਇਹ ਡਾਟਾ Chrome ਵੈੱਬ ਸਟੋਰ ਤੋਂ ਸਥਾਪਤ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਆਫ਼-ਸਟੋਰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਲਈ ਇਕੱਤਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="4275788652681621337">ਸਾਈਡ ਪੈਨਲ ਬੰਦ ਕਰੋ</translation>
 <translation id="4275830172053184480">ਆਪਣੀ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4276974990916607331">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="4277028893293644418">ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
@@ -2709,6 +2711,7 @@
 <translation id="5344522958567249764">ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5344579389779391559">ਸ਼ਾਇਦ ਇਸ ਪੰਨੇ 'ਤੇ ਤੁਹਾਡੇ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾਵੇ</translation>
 <translation id="5345249337934847112">ਪੇਪਰ (ਹੈਵੀਵੇਟ ਕੋਟੇਡ)</translation>
+<translation id="5346059693449184483">ਤੁਹਾਡੇ ਮਨ ਵਿੱਚ ਕੀ ਹੈ?</translation>
 <translation id="5348330584842140856">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਲਿਜਾਇਆ ਨਹੀਂ ਗਿਆ, ਕਿਉਂਕਿ ਇਹ ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="5349543692327946794">ਲੇਬਲ (ਇੰਕਜੈੱਟ)</translation>
 <translation id="5351548097010183514">ਨਿਰਮਾਣ ਸੰਬੰਧੀ ਸਮੱਗਰੀਆਂ ਅਤੇ ਸਪਲਾਈਆਂ</translation>
@@ -4503,6 +4506,7 @@
 <translation id="8216640997712497593">14 x 18 ਇੰਚ</translation>
 <translation id="8218327578424803826">ਅਸਾਈਨ ਕੀਤਾ ਗਿਆ ਨਿਰਧਾਰਿਤ ਸਥਾਨ:</translation>
 <translation id="8220602974062798186">ਕੀ <ph name="TOPIC" /> ਅਤੇ ਇਸ ਨਾਲ ਸੰਬੰਧਿਤ ਸਾਰੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਬਲਾਕ ਕਰਨਾ ਹੈ?</translation>
+<translation id="8223142476690844338">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="USER_NAME" />, ਤੁਹਾਡੇ ਮਨ ਵਿੱਚ ਕੀ ਹੈ?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="8228419419708659934">ਦੋ ਪੰਨਾ-ਦ੍ਰਿਸ਼</translation>
 <translation id="822925450938886901">ਵਧੀਕ ਜਾਣਕਾਰੀ ਅਤੇ ਲਾਗੂ ਹੋ ਸਕਣ ਵਾਲੀਆਂ ਨੀਤੀਆਂ ਲਈ, ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ chrome://management in ਨੂੰ ਖੋਲ੍ਹੋ।</translation>

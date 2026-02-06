@@ -2008,6 +2008,7 @@
 <translation id="4203769790323223880">કૅમેરાની મંજૂરી નથી</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ફાયરવોલ અને એન્ટીવાઇરસ ગોઠવણી તપાસીને<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064"><ph name="SITE_NAME" /> શોધો</translation>
 <translation id="4209092469652827314">મોટું</translation>
 <translation id="4210602799576081649">ચકાસણી કોડની સમયસીમા સમાપ્ત થઈ ગઈ છે, નવા કોડની વિનંતી કરો</translation>
 <translation id="421066178035138955">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરો</translation>
@@ -2064,6 +2065,7 @@
 <translation id="4270541775497538019">સ્ટૅકર 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 રિવ્યૂ જુઓ. સરેરાશ રેટિંગ <ph name="STARS" /> સ્ટાર છે.}=1{1 રિવ્યૂ જુઓ. સરેરાશ રેટિંગ <ph name="STARS" /> સ્ટાર છે.}one{# રિવ્યૂ જુઓ. સરેરાશ રેટિંગ <ph name="STARS" /> સ્ટાર છે.}other{બધા જ # રિવ્યૂ જુઓ. સરેરાશ રેટિંગ <ph name="STARS" /> સ્ટાર છે.}}</translation>
 <translation id="4271652479722040953">જ્યારે Chromeમાં એક્સ્ટેન્શન ઉમેરવામાં આવે છે, ત્યારે આ એક્સ્ટેન્શન વિશેનો સંબંધિત ડેટા વિશ્લેષણ માટે ત્રીજા પક્ષને મોકલવામાં આવે છે અને તમારા ઍડમિનિસ્ટ્રેટર કદાચ તેને જોઈ શકે છે. આ ડેટામાં એક્સ્ટેન્શન વિશેની માહિતી શામેલ હોય છે, જેમ કે નામ, ઇન્સ્ટૉલ કર્યાનો સમય, ક્યાંથી ઇન્સ્ટૉલ કરવામાં આવ્યું તે સૉર્સ ઉપરાંત આ એક્સ્ટેન્શન સાથે સંકળાયેલી ઍક્ટિવિટી (જેમ કે ટૅબ બદલવા, વેબસાઇટને સંપર્ક કરવો કે કુકી ઍક્સેસ કરવી). આ ડેટા Chrome વેબ સ્ટોરમાંથી ઇન્સ્ટૉલ કરવામાં આવેલા એક્સ્ટેન્શન ઉપરાંત સ્ટોરની બહારના એક્સ્ટેન્શન માટે એકત્ર કરવામાં આવે છે.</translation>
+<translation id="4275788652681621337">બાજુની પૅનલ બંધ કરો</translation>
 <translation id="4275830172053184480">તમારું ઉપકરણ પુનઃપ્રારંભ કરો</translation>
 <translation id="4276974990916607331">ના, આભાર</translation>
 <translation id="4277028893293644418">પાસવર્ડ રીસેટ કરો</translation>
@@ -2712,6 +2714,7 @@
 <translation id="5344522958567249764">જાહેરાત સંબંધી પ્રાઇવસી મેનેજ કરો</translation>
 <translation id="5344579389779391559">આ પેજ કદાચ તમારી પાસેથી શુલ્ક વસૂલ કરવાનો પ્રયાસ કરી શકે છે</translation>
 <translation id="5345249337934847112">પેપર (હેવીવેઇટ કોટેડ)</translation>
+<translation id="5346059693449184483">તમારા મનમાં શું છે?</translation>
 <translation id="5348330584842140856">આ ફાઇલ ખસેડી શકાતી નથી કારણ કે તે હવે અસ્તિત્વમાં નથી</translation>
 <translation id="5349543692327946794">લેબલ (ઇંકજેટ)</translation>
 <translation id="5351548097010183514">બાંધકામ સામગ્રીઓ અને પુરવઠા</translation>
@@ -4508,6 +4511,7 @@
 <translation id="8216640997712497593">14 x 18 ઇંચ</translation>
 <translation id="8218327578424803826">સોંપાયેલ સ્થાન:</translation>
 <translation id="8220602974062798186"><ph name="TOPIC" /> અને કોઈપણ સંબંધિત વિષયોને બ્લૉક કરીએ?</translation>
+<translation id="8223142476690844338">નમસ્તે <ph name="USER_NAME" />, તમારા મનમાં શું છે?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" />ને પૂછો</translation>
 <translation id="8228419419708659934">બે પેજવાળો વ્યૂ</translation>
 <translation id="822925450938886901">લાગુ થઈ શકતી હોય એવી વધારાની માહિતી અને પૉલિસીઓ માટે, તમારા બ્રાઉઝરમાં chrome://management ખોલો.</translation>

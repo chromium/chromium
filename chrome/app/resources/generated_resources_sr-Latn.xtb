@@ -160,6 +160,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="109647177154844434">Ako deinstalirate Parallels Desktop, izbrisaćete sliku Windows-a. To obuhvata njene aplikacije, podešavanja i podatke. Želite li stvarno da nastavite?</translation>
 <translation id="1097016918605049747">Prevođenje ove stranice nije uspelo</translation>
 <translation id="1097658378307015415">Pre prijavljivanja pristupite kao gost da biste aktivirali mrežu <ph name="NETWORK_ID" /></translation>
+<translation id="1099070179078143183">Da bi omogućio funkcije kao što je otkrivanje prevara, Chrome može da koristi modele veštačke inteligencije koji se pokreću direktno na uređaju bez slanja podataka na Google servere. Ako je to isključeno, te funkcije možda neće raditi. <ph name="BEGIN_LINK" />Saznajte više o veštačkoj inteligenciji na uređaju<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Slika je kopirana sa uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Aktuelna ikona</translation>
 <translation id="1102759278139578486">Preuzimanje fajlova sa komentarima o glavnom čvoru nije uspelo. Probajte ponovo kasnije.</translation>
@@ -4772,7 +4773,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4206585797409671301">Dozvoljeno je prikazivanje zahteva</translation>
 <translation id="4207144975205749656">Šifruje zahteve za navigaciju tako da napadači na istoj mreži ne mogu da vide vaš saobraćaj</translation>
 <translation id="4207932031282227921">Zatražena je dozvola. Pritisnite F6 da biste odgovorili</translation>
-<translation id="4208390505124702064">Pretraži <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velika</translation>
 <translation id="4209247656298167054">Nema ažuriranja</translation>
 <translation id="4209251085232852247">Isključeno</translation>
@@ -5604,6 +5604,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> želi da koristi lične podatke iz digitalnog novčanika.</translation>
 <translation id="4785719467058219317">Koristite bezbednosni ključ koji nije registrovan za ovaj veb-sajt</translation>
 <translation id="4785914069240823137">Otkažite opsecanje</translation>
+<translation id="4786430656008801173">Veštačka inteligencija na uređaju</translation>
 <translation id="4787471921443575924">Izmenite pristupni ključ za korisničko ime: <ph name="USER_EMAIL" /></translation>
 <translation id="4788092183367008521">Proverite mrežnu vezu i probajte ponovo.</translation>
 <translation id="4789348252524569426">Instaliranje fajlova za govor nije uspelo. Uređaj treba da se ažurira. Restartujte uređaj i probajte ponovo.</translation>

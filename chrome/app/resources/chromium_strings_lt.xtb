@@ -380,7 +380,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="5289287148052354622">Gauti „Chromium“ programą</translation>
 <translation id="5294316920224716406">Kai naršysite inkognito režimu, „Chromium“ perspės jus prieš įkeliant svetainę, kurioje naudojamas nesaugus ryšys</translation>
 <translation id="5313228254328109263">„Chromium“ naujinimo priemonės vidinė paslauga</translation>
-<translation id="5346059693449184483">Apie ką galvojate?</translation>
 <translation id="5346389065299425353">Išplėskite paiešką pridėdami kelis skirtukus, failus ir įrankius</translation>
 <translation id="5352264705793813212">„Chromium“ rado kelias saugos rekomendacijas, kurias reikia peržiūrėti</translation>
 <translation id="5352361688875342522">Kiti „Chromium“ profiliai</translation>
@@ -645,7 +644,6 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8177472873527554730">Nepavyko rasti puslapio turinio</translation>
 <translation id="8200109504272824693">Įveskite slaptafrazę, kad galėtumėte naudoti ir išsaugoti „Chromium“ duomenis paskyroje <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Įprastai blokuojate pranešimus. Jei norite leisti šiai svetainei siųsti pranešimus, spustelėkite čia.</translation>
-<translation id="8223142476690844338">Sveiki, <ph name="USER_NAME" />, apie ką galvojate?</translation>
 <translation id="8223363452568144035">Jei norite naudoti vaizdo kamerą, suteikite „Chromium“ prieigą <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">„Chromium“ negali patvirtinti, iš kur gaunamas šis plėtinys, ir jis gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="8248265253516264921">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>

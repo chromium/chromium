@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Ürün, takip edilen ürünler listenize eklendi.</translation>
 <translation id="2230173723195178503">Web sayfası yüklendi</translation>
 <translation id="2236949375853147973">Etkinliğim</translation>
+<translation id="2237869114829007407">Herhangi bir sayfa veya konuyla ilgili genel bakış ve önemli analizler alın</translation>
 <translation id="2240256190924001613">Yapılandırma profili mevcut</translation>
 <translation id="2244080985779413662">Bu web sitesi bir dosyayı indirip Cüzdanınızda açmak istiyor.</translation>
 <translation id="2245007488813216650">Çevriliyor…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">daha fazla</translation>
 <translation id="3311748811247479259">Kapalı</translation>
 <translation id="3312300514034250578">Gelişmiş Güvenli Tarama</translation>
+<translation id="3315786055700307152">Öğeniz %15 indirimde</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site bilgileri</translation>
 <translation id="333229797575847124">Bu özellik nasıl etkinleştirilir?</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Şunun için geçiş anahtarı oluşturun:</translation>
 <translation id="3380352560400387991">Bu site bir uygulamayı açmaya çalışıyor. Bu işlem sonrasında Gizli moddan çıkarsınız.</translation>
 <translation id="3385742921291399323">Kayıtlı şifreleriniz, sekmeleriniz, yer işaretleriniz ve daha fazlasına erişin.</translation>
+<translation id="3391765987934722383">Fiyat düşüşlerini kaçırmayın</translation>
 <translation id="3392923070107623576">Sekme grupları oluşturarak düzenli kalın</translation>
 <translation id="3404232721752787413">Google Fotoğraflar'a kaydet</translation>
 <translation id="3406506285180498376">Sayfayı paylaş…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3955740319737378355">Bitti</translation>
 <translation id="3955822496205734389">Zayıf şifreleriniz var.</translation>
+<translation id="3957016963627617921">Chrome'da Gemini ile daha fazlasını yapın</translation>
 <translation id="3958312024468322930">Simgeyi ana ekranınızın alt kısmındaki yuvaya sürükleyin</translation>
 <translation id="3962326069546168954">Kaydet</translation>
 <translation id="3967327056943561740">Yer İşaretleri</translation>
@@ -2163,6 +2167,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8803639129939845298">Güvenli</translation>
 <translation id="8813277370772331957">Sonra hatırlat</translation>
 <translation id="8814719628147284151">Devam</translation>
+<translation id="8817524703470045896">Fiyatları takip edin ve herhangi bir sitede fiyat düştüğünde uyarı alın</translation>
 <translation id="8819155700324279105">İnternet ortamındaki tehditlere karşı ek koruma katmanı sağlayın</translation>
 <translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="8822421075653507124">Kuruluşunuzun, bu cihazın güvenli bir şekilde kullanıldığından emin olmak için işletim sistemi, tarayıcısı, ayarları ve cihazda hangi yazılımların yüklü olduğu ile ilgili bilgileri görmesi gerekebilir.</translation>
@@ -2170,6 +2175,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8829809207373502270">Bu geçiş anahtarı artık kullanılamıyor. Geçiş anahtarı, <ph name="WEBSITE" /> web sitesinden silinmiş olup yakında buradan da silinecektir. <ph name="BEGIN_LINK" />Geçiş anahtarları hakkında<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Etkin olmayanların tümünü kapat</translation>
 <translation id="8837654851594567190">Yayıncıya göre sırala</translation>
+<translation id="8844136307393039959">Takip ettiğiniz ürünün fiyatı düştü</translation>
 <translation id="8848286253339013170">Resim, <ph name="USER_EMAIL" /> için Google Fotoğraflar'a kaydediliyor…</translation>
 <translation id="8849001918648564819">Gizli</translation>
 <translation id="8855242995793521265">Tarayıcınızı veya cihazınızı önemli ölçüde yavaşlatmaz.</translation>
@@ -2213,6 +2219,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8976382372951310360">Yardım</translation>
 <translation id="8976414606286374109">Kartlar Google Hesabı'nıza kaydedildi.</translation>
 <translation id="8981454092730389528">Google Etkinlik Kontrolleri</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sabitlenmiş site</translation>
 <translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
 <translation id="9000532564152265066">Tüm Sekmeler</translation>
 <translation id="9003677638446136377">Tekrar kontrol et</translation>

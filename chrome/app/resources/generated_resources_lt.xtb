@@ -2644,6 +2644,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2749836841884031656">SIM kortelė</translation>
 <translation id="2749881179542288782">Tikrinti gramatiką ir rašybą</translation>
 <translation id="2750020734439919571">Daugiau „Chrome“ programos nustatymų ir leidimų</translation>
+<translation id="275010360476017464">Naudokite mikrofoną, kad galėtumėte kalbėtis su „Gemini“. Kai kalbate su „Gemini“, garso įrašas saugomas „Gemini Apps“ veikloje (jei ji įjungta).</translation>
 <translation id="2750602041558385535">Nepatvirtintas atsisiuntimas užblokuotas</translation>
 <translation id="2751454300227269244">Pakreipkite lūpas dešinėn</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> nori sužinoti jūsų saugos rakto ID numerį. Svetainė tiksliai žinos, kurį saugos raktą naudojate.</translation>
@@ -4791,7 +4792,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4206585797409671301">Leidžiama rodyti užklausas</translation>
 <translation id="4207144975205749656">Šifruojamos naršymo užklausos, kad tame pačiame tinkle esantys atakos vykdytojai negalėtų peržiūrėti jūsų srauto</translation>
 <translation id="4207932031282227921">Pateikta užklausa dėl leidimo; paspauskite F6, kad atsakytumėte</translation>
-<translation id="4208390505124702064">Ieškoti <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Didelis</translation>
 <translation id="4209247656298167054">Nėra jokių naujinių</translation>
 <translation id="4209251085232852247">Išjungta</translation>
@@ -5779,6 +5779,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4881685975363383806">Nepriminti kitą kartą</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
 <translation id="4882312758060467256">Turi prieigą prie šios svetainės</translation>
+<translation id="4882848900607400156">Kai bendrinate tikslią vietovę, „Gemini“ gali tiksliau atsakyti į jūsų klausimus. Jūsų duomenys nenaudojami generatyviniams DI modeliams tobulinti.</translation>
 <translation id="4882919381756638075">Paprastai svetainėse naudojamas mikrofonas bendravimo funkcijoms, pvz., vaizdo pokalbiams, vykdyti</translation>
 <translation id="4883436287898674711">Visos <ph name="WEBSITE_1" /> svetainės</translation>
 <translation id="48838266408104654">&amp;Užduočių tvarkytuvė</translation>
@@ -5869,6 +5870,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4945439665401275950">Jei norite nustatyti kontrolinį kodą, paprašykite, kad vaikas paliestų maitinimo mygtuką. Vaiko kontrolinio kodo duomenys saugomi saugiai ir niekada nepatenka už įrenginio „<ph name="DEVICE_TYPE" />“ ribų.</translation>
 <translation id="4946998421534856407">paleidimo priemonės klavišas + rodyklė aukštyn</translation>
 <translation id="4947376546135294974">Svetainės, kurioje lankotės, duomenys</translation>
+<translation id="4948370357877377178">Tęskite užduotis</translation>
 <translation id="4950100687509657457">Kurti profilį</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{failą}one{# failą}few{# failus}many{# failo}other{# failų}}</translation>
 <translation id="495170559598752135">Veiksmai</translation>
@@ -9101,6 +9103,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Išeiti iš puslapio}one{Išeiti iš puslapių}few{Išeiti iš puslapių}many{Išeiti iš puslapių}other{Išeiti iš puslapių}}</translation>
 <translation id="7207457272187520234">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Šį nustatymą taiko savininkas. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
 <translation id="7207631048330366454">Ieškoti programų</translation>
+<translation id="7209958456051239069">Kai bendrinate tikslią vietovę, „Gemini“ gali tiksliau atsakyti į jūsų klausimus</translation>
 <translation id="7210257969463271891">Čia rodomos įdiegtos žiniatinklio programos</translation>
 <translation id="7210432570808024354">Palieskite ir vilkite, kad perkeltumėte elementus</translation>
 <translation id="7210499381659830293">Plėtinio spausdintuvai</translation>
@@ -10720,6 +10723,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8288032458496410887">Pašalinti „<ph name="APP" />“...</translation>
 <translation id="8288553158681886528">Išskirti tekstą iš PDF</translation>
 <translation id="8289128870594824098">Disko dydis</translation>
+<translation id="8289200713453671499">Greitai perjunkite skirtukų grupes ir naujausius DI pokalbius neprarasdami vietos.</translation>
 <translation id="8289509909262565712">Sveiki! Tai – „<ph name="DEVICE_OS" />“</translation>
 <translation id="8291415872436043161">Atsisiųsti „Chrome“</translation>
 <translation id="8291942417224950075">Naudojimas asmeniniais tikslais</translation>
@@ -11703,6 +11707,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="8945508919180478719">Studijos stiliaus mikrofonas</translation>
 <translation id="8946359700442089734">Šiame „<ph name="IDS_SHORT_PRODUCT_NAME" />“ įrenginyje įgalintos ne visos derinimo funkcijos.</translation>
 <translation id="8946954897220903437">Sutraukti visas užklausas adreso juostoje</translation>
+<translation id="8946996840522387154">Naudokite mikrofoną, kad galėtumėte kalbėtis su „Gemini“. Kai kalbate su „Gemini“, garso įrašas saugomas „Gemini Apps“ veikloje (jei ji įjungta). Jūsų duomenys nenaudojami generatyviniams DI modeliams tobulinti.</translation>
 <translation id="894763922177556086">Geras</translation>
 <translation id="895054485242522631">Svetainėse galima naudoti judesio jutiklius</translation>
 <translation id="8951256747718668828">Nepavyko atkurti dėl klaidos</translation>

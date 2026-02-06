@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">S'ha afegit el producte a la llista de productes que segueixes.</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
+<translation id="2237869114829007407">Obtén una visió general i informació clau de qualsevol pàgina o tema</translation>
 <translation id="2240256190924001613">Perfil de configuració disponible</translation>
 <translation id="2244080985779413662">Aquest lloc web vol baixar un fitxer i obrir-lo a Wallet.</translation>
 <translation id="2245007488813216650">S'està traduint…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">més</translation>
 <translation id="3311748811247479259">Desactivat</translation>
 <translation id="3312300514034250578">Navegació segura millorada</translation>
+<translation id="3315786055700307152">Ara l'article té un 15 % de descompte</translation>
 <translation id="3324193307694657476">Adreça 2</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>
 <translation id="333229797575847124">Com pots activar aquesta funció</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Crea una clau d'accés per a</translation>
 <translation id="3380352560400387991">Aquest lloc web està provant d'obrir una aplicació. Aquesta acció farà que surtis del mode d'incògnit.</translation>
 <translation id="3385742921291399323">Accedeix a les teves contrasenyes, pestanyes, adreces d'interès i altres elements desats.</translation>
+<translation id="3391765987934722383">No et perdis cap baixada de preu</translation>
 <translation id="3392923070107623576">Organitza't creant grups de pestanyes</translation>
 <translation id="3404232721752787413">Desa a Google Fotos</translation>
 <translation id="3406506285180498376">Comparteix la pàgina…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3955740319737378355">Fet</translation>
 <translation id="3955822496205734389">Tens contrasenyes poc segures.</translation>
+<translation id="3957016963627617921">Fes més coses amb Gemini a Chrome</translation>
 <translation id="3958312024468322930">Arrossega-la a la base que hi ha a la part inferior de la pantalla d'inici</translation>
 <translation id="3962326069546168954">Desa</translation>
 <translation id="3967327056943561740">Adreces d'interès</translation>
@@ -2163,6 +2167,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8803639129939845298">Segur</translation>
 <translation id="8813277370772331957">Recorda-m'ho més tard</translation>
 <translation id="8814719628147284151">Continua</translation>
+<translation id="8817524703470045896">Fes un seguiment dels preus i rep alertes quan el preu baixi en qualsevol lloc web</translation>
 <translation id="8819155700324279105">Afegeix una capa addicional de protecció contra les amenaces en línia</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8822421075653507124">Per assegurar-se que aquest dispositiu es pot utilitzar de manera segura, és possible que la teva organització necessiti veure informació sobre el sistema operatiu, el navegador, la configuració i el programari que hi ha instal·lat al dispositiu.</translation>
@@ -2170,6 +2175,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8829809207373502270">Aquesta clau d'accés ja no funciona. S'ha suprimit de <ph name="WEBSITE" /> i aviat se suprimirà d'aquí. <ph name="BEGIN_LINK" />Sobre les claus d'accés<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Tanca totes les inactives</translation>
 <translation id="8837654851594567190">Ordena per editor</translation>
+<translation id="8844136307393039959">Baixada de preu en el producte que segueixes</translation>
 <translation id="8848286253339013170">S'està desant la imatge de <ph name="USER_EMAIL" /> a Google Fotos…</translation>
 <translation id="8849001918648564819">Amagat</translation>
 <translation id="8855242995793521265">No redueix significativament la velocitat del navegador ni del dispositiu.</translation>
@@ -2213,6 +2219,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Les targetes es desen al teu Compte de Google.</translation>
 <translation id="8981454092730389528">Controls d'activitat de Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, lloc web fixat</translation>
 <translation id="8998289560386111590">No disponible al teu dispositiu</translation>
 <translation id="9000532564152265066">Totes les pestanyes</translation>
 <translation id="9003677638446136377">Torna-ho a provar</translation>

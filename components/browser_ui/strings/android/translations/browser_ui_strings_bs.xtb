@@ -495,6 +495,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="6085954183010297841">Izbrisati odobrenje za uređivanje fajla? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kada je ovo uključeno, web lokacije mogu automatski aktivirati sliku u slici. Kada je ovo isključeno, web lokacije ne mogu automatski aktivirati sliku u slici.</translation>
 <translation id="6120483543004435978">Kada je postavka uključena, web lokacije mogu zatražiti informacije o tome kada aktivno koristite uređaj. Kada je postavka isključena, web lokacije ne mogu znati kada aktivno koristite uređaj.</translation>
+<translation id="6132075343662013154">Chrome će ponuditi opciju da sačuva lozinku</translation>
 <translation id="615886654739818377">Nemoj dozvoliti web lokacijama da upravljaju prozorima na svim mojim ekranima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6171020522141473435">Kada je postavka uključena, web lokacije mogu zatražiti da koriste Bluetooth uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti Bluetooth uređaje.</translation>

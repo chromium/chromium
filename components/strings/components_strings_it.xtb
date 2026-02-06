@@ -1277,6 +1277,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3052868890529250114">In genere ti connetti ai siti in modo sicuro, ma questa volta Chrome non ha potuto usare una connessione sicura. Un malintenzionato potrebbe tentare di intercettare o modificare la connessione di rete. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> in meno su <ph name="PRODUCT_NAME" /></translation>
 <translation id="3056660797732519147">Schermata di errore di Buy now, pay later. Tastiera nascosta.</translation>
+<translation id="3057844102210575426">Gestisci informazioni di viaggio</translation>
 <translation id="3061707000357573562">Servizio di applicazione patch</translation>
 <translation id="3062655045399308513">Elimina dati di navigazione…</translation>
 <translation id="3063453392496098461">Installazione dei servizi in background della VPN non riuscita.</translation>
@@ -2004,6 +2005,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4203769790323223880">Fotocamera non consentita</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controllare le configurazioni del firewall e antivirus<ph name="END_LINK" /></translation>
 <translation id="4207195957038009075">Google Drive</translation>
+<translation id="4208390505124702064">Cerca su <ph name="SITE_NAME" />:</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">Codice di verifica scaduto, richiedi nuovo codice</translation>
 <translation id="421066178035138955">Usare dati e dispositivi per realtà virtuale</translation>
@@ -2060,6 +2062,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4270541775497538019">Fascicolatore 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Visualizza 0 recensioni. La valutazione media è di <ph name="STARS" /> stelle.}=1{Visualizza 1 recensione. La valutazione media è di <ph name="STARS" /> stelle.}other{Visualizza # recensioni. La valutazione media è di <ph name="STARS" /> stelle.}}</translation>
 <translation id="4271652479722040953">Quando vengono aggiunte estensioni a Chrome, i relativi dati pertinenti vengono inviati a terze parti a scopo di analisi e potrebbero essere visibili all'amministratore. I dati includono informazioni sulle estensioni, come nome, momento di installazione, origine dell'installazione, nonché l'attività associata a queste estensioni (ad esempio, cambio di schede, contatto con siti web o accesso ai cookie). Questi dati vengono raccolti per le estensioni installate dal Chrome Web Store e per le estensioni non disponibili nel negozio.</translation>
+<translation id="4275788652681621337">Chiudi riquadro laterale</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4276974990916607331">No, grazie</translation>
 <translation id="4277028893293644418">Reimposta password</translation>
@@ -2623,6 +2626,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5209670883520018268">Vassoio 20</translation>
 <translation id="5212364581680288382">Gare motociclistiche</translation>
 <translation id="5214542134842513912">Scegli quali categorie di argomenti possono essere utilizzate per personalizzare gli annunci. Se disattivi una categoria più ampia, verranno bloccati anche i suoi argomenti correlati.</translation>
+<translation id="52163492208010719">Gestisci documenti di identità</translation>
 <translation id="521659676233207110">Vassoio 13</translation>
 <translation id="5216942107514965959">Ultima visita: oggi</translation>
 <translation id="5217759126664161410">Formato del protocollo non valido.</translation>
@@ -2707,6 +2711,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5344522958567249764">Gestisci privacy per gli annunci</translation>
 <translation id="5344579389779391559">Questa pagina potrebbe tentare di addebitarti dei costi</translation>
 <translation id="5345249337934847112">Carta (patinata pesante)</translation>
+<translation id="5346059693449184483">A cosa stai pensando?</translation>
 <translation id="5348330584842140856">Questo file non è stato spostato perché non esiste più</translation>
 <translation id="5349543692327946794">Etichette (getto di inchiostro)</translation>
 <translation id="5351548097010183514">Materiali e forniture edili</translation>
@@ -4502,6 +4507,7 @@ Ulteriori dettagli:
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">Posizione assegnata:</translation>
 <translation id="8220602974062798186">Bloccare <ph name="TOPIC" /> e i suoi argomenti correlati?</translation>
+<translation id="8223142476690844338">Ciao <ph name="USER_NAME" />, a cosa stai pensando?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, chiedi <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Visualizzazione a due pagine</translation>
 <translation id="822925450938886901">Per scoprire ulteriori informazioni e policy eventualmente applicabili, apri chrome://management nel browser.</translation>

@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Tuote lisätty seurattuihin tuotteisiin.</translation>
 <translation id="2230173723195178503">Verkkosivu ladattiin.</translation>
 <translation id="2236949375853147973">Omat tapahtumat</translation>
+<translation id="2237869114829007407">Saat yleiskatsauksen ja tärkeimmät tiedot mistä tahansa sivusta tai aiheesta</translation>
 <translation id="2240256190924001613">Konfigurointiprofiili saatavilla</translation>
 <translation id="2244080985779413662">Verkkosivusto haluaa ladata tiedoston ja avata sen Walletissa.</translation>
 <translation id="2245007488813216650">Käännetään…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">lisää</translation>
 <translation id="3311748811247479259">Pois päältä</translation>
 <translation id="3312300514034250578">Parannettu selaussuoja</translation>
+<translation id="3315786055700307152">Tuote on nyt 15 % edullisempi</translation>
 <translation id="3324193307694657476">Osoite 2</translation>
 <translation id="3328801116991980348">Tietoja sivustosta</translation>
 <translation id="333229797575847124">Näin otat ominaisuuden käyttöön</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Luo avainkoodi:</translation>
 <translation id="3380352560400387991">Sivusto yrittää avata sovellusta. Tämä poistaa sinut incognito-tilasta.</translation>
 <translation id="3385742921291399323">Tallennetut salasanat, välilehdet, kirjanmerkit ja paljon muuta.</translation>
+<translation id="3391765987934722383">Älä missaa hinnanlaskua</translation>
 <translation id="3392923070107623576">Pidä asiat järjestyksessä luomalla välilehtiryhmiä</translation>
 <translation id="3404232721752787413">Tallenna Google Kuviin</translation>
 <translation id="3406506285180498376">Jaa sivu…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3955740319737378355">Valmis</translation>
 <translation id="3955822496205734389">Sinulla on heikkoja salasanoja.</translation>
+<translation id="3957016963627617921">Tee enemmän Gemini in Chromella</translation>
 <translation id="3958312024468322930">Vedä se aloitusnäytön alapalkkiin</translation>
 <translation id="3962326069546168954">Tallenna</translation>
 <translation id="3967327056943561740">Kirjanmerkit</translation>
@@ -2163,6 +2167,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8803639129939845298">Turvallinen</translation>
 <translation id="8813277370772331957">Muistuta myöhemmin</translation>
 <translation id="8814719628147284151">Jatka</translation>
+<translation id="8817524703470045896">Seuraa hintoja ja saat ilmoituksia, kun hinta laskee millä tahansa sivustolla</translation>
 <translation id="8819155700324279105">Lisäsuojaus verkkouhkia vastaan</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="8822421075653507124">Organisaatiosi on ehkä voitava nähdä tietoja laitteen käyttöjärjestelmästä, selaimesta ja asetuksista sekä laitteelle asennetuista ohjelmistoista. Näin varmistetaan, että laitetta voi käyttää turvallisesti.</translation>
@@ -2170,6 +2175,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8829809207373502270">Tämä avainkoodi ei enää toimi. Se on poistettu osoitteesta <ph name="WEBSITE" /> ja poistetaan pian myös täältä. <ph name="BEGIN_LINK" />Avainkoodin tiedot<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Sulje kaikki ei-aktiiviset</translation>
 <translation id="8837654851594567190">Lajittele julkaisijan mukaan</translation>
+<translation id="8844136307393039959">Seuraamasi tuotteen hinta on laskenut</translation>
 <translation id="8848286253339013170">Tallennetaan tilin <ph name="USER_EMAIL" /> kuvaa Google Kuviin…</translation>
 <translation id="8849001918648564819">Piilotettu</translation>
 <translation id="8855242995793521265">Se ei hidasta selainta tai laitetta merkittävästi.</translation>
@@ -2213,6 +2219,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8976382372951310360">Ohje</translation>
 <translation id="8976414606286374109">Kortit tallennetaan Google-tilillesi.</translation>
 <translation id="8981454092730389528">Googlen toimintojen hallinta</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kiinnitetty sivusto</translation>
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
 <translation id="9000532564152265066">Kaikki välilehdet</translation>
 <translation id="9003677638446136377">Tarkista uudelleen</translation>
