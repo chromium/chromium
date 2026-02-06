@@ -4329,8 +4329,11 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   }
 
   // Clean up the unnecessary explicitly set custom element registry
-  // in element rare data set in RemovedFrom.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+  // in element rare data set in RemovedFrom. Note that we only need
+  // to do such bookkeeping when scoped custom element registry is actually
+  // used.
+  if (GetDocument().ScopedCustomElementRegistryUsed()) {
+    DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     if (ElementRareDataVector* rare_data = RareData()) {
       if (rare_data->HasCustomElementRegistrySet() &&
           insertion_point.IsInTreeScope()) {
@@ -4497,8 +4500,10 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   }
 
   // Make sure the element's custom element registry is explicitly set
-  // before moved.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+  // before moved. Note that we only need to do such bookkeeping when
+  // scoped custom element registry is actually used.
+  if (GetDocument().ScopedCustomElementRegistryUsed()) {
+    DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     EnsureRareData();
     ElementRareDataVector* data = RareData();
     if (!data->HasCustomElementRegistrySet() &&

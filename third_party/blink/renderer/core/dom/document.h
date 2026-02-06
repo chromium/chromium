@@ -2280,6 +2280,14 @@ class CORE_EXPORT Document : public ContainerNode,
   // nullptr.
   CustomElementRegistry* EffectiveGlobalCustomElementRegistry() const;
 
+  void SetScopedCustomElementRegistryUsed() {
+    DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+    scoped_custom_element_registry_used_ = true;
+  }
+  bool ScopedCustomElementRegistryUsed() const {
+    return scoped_custom_element_registry_used_;
+  }
+
   ViewTransitionSupplement* GetViewTransitionsIfExists() const {
     return view_transitions_;
   }
@@ -2981,6 +2989,11 @@ class CORE_EXPORT Document : public ContainerNode,
   // resource, they would have incremented the delay count during the layout
   // tree update and further blocked the load event.
   bool delay_load_event_until_layout_tree_update_ = false;
+
+  // Flag indicating if any scoped custom element registry was created/used
+  // in the document. We're able to skip some expensive operations if
+  // scoped registry was never exercised in the given document.
+  bool scoped_custom_element_registry_used_ = false;
 
   HeapTaskRunnerTimer<Document> load_event_delay_timer_;
   HeapTaskRunnerTimer<Document> plugin_loading_timer_;

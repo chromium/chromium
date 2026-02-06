@@ -96,6 +96,11 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
         if (!registry || registry->IsGlobalRegistry()) {
           element->SetCustomElementRegistry(
               new_document.EffectiveGlobalCustomElementRegistry());
+        } else {
+          // When a scoped registry is moved into a document, we need to ensure
+          // the document is aware and will start running SCER related
+          // operations.
+          new_document.SetScopedCustomElementRegistryUsed();
         }
       }
     }
@@ -134,12 +139,18 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
   // inclusiveDescendant's custom element registry to document's effective
   // global custom element registry.
   auto* shadow_root_registry = shadow_root.customElementRegistry();
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      ((!shadow_root_registry &&
-        !shadow_root.ShouldKeepCustomElementRegistryNull()) ||
-       (shadow_root_registry && shadow_root_registry->IsGlobalRegistry()))) {
-    shadow_root_registry = new_document.EffectiveGlobalCustomElementRegistry();
-    shadow_root.SetCustomElementRegistry(shadow_root_registry);
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    if ((!shadow_root_registry &&
+         !shadow_root.ShouldKeepCustomElementRegistryNull()) ||
+        (shadow_root_registry && shadow_root_registry->IsGlobalRegistry())) {
+      shadow_root_registry =
+          new_document.EffectiveGlobalCustomElementRegistry();
+      shadow_root.SetCustomElementRegistry(shadow_root_registry);
+    } else {
+      // When a scoped registry is moved into a document, we need to ensure
+      // the document is aware and will start running SCER related operations.
+      new_document.SetScopedCustomElementRegistryUsed();
+    }
   }
 
   if (shadow_root_registry) {
@@ -197,10 +208,12 @@ void TreeScopeAdopter::WillMoveTreeToNewDocument(Node& root) const {
       // the element's registry here to ensure the knowledge is kept even with
       // the scope change.
       auto* registry = element->customElementRegistry();
-      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-          registry && registry == old_document.customElementRegistry()) {
-        element->SetCustomElementRegistry(element->customElementRegistry(),
-                                          /*explicitly_set=*/true);
+      if (old_document.ScopedCustomElementRegistryUsed()) {
+        DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+        if (registry && registry == old_document.customElementRegistry()) {
+          element->SetCustomElementRegistry(element->customElementRegistry(),
+                                            /*explicitly_set=*/true);
+        }
       }
       if (ShadowRoot* shadow_root = element->GetShadowRoot())
         WillMoveTreeToNewDocument(*shadow_root);

@@ -86,8 +86,9 @@ bool ThrowIfValidName(const AtomicString& name,
 CustomElementRegistry* CustomElementRegistry::Create(
     ScriptState* script_state) {
   DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  return MakeGarbageCollected<CustomElementRegistry>(
-      LocalDOMWindow::From(script_state));
+  auto* window = LocalDOMWindow::From(script_state);
+  window->document()->SetScopedCustomElementRegistryUsed();
+  return MakeGarbageCollected<CustomElementRegistry>(window);
 }
 
 CustomElementRegistry* CustomElementRegistry::DefaultRegistry(
@@ -437,6 +438,15 @@ void CustomElementRegistry::initialize(Node* root,
         DOMExceptionCode::kNotSupportedError,
         "The registry provided is a global registry from another document");
     return;
+  }
+
+  // An iframe may not be aware of the existence of a scoped registry since the
+  // the created scoped registry's local dom window is not tied to the iframe's
+  // document. In such case, when we initialize nodes in the iframe with scoped
+  // registry using CustomElementRegistry::initialize, we should let the
+  // iframe's document know that scoped registry is used.
+  if (!IsGlobalRegistry()) {
+    root->GetDocument().SetScopedCustomElementRegistryUsed();
   }
 
   // 2. If root is a Document node whose custom element registry is null, then
