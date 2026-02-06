@@ -696,17 +696,15 @@ class AutocompleteMediator
      */
     @Override
     public void onRefineSuggestion(AutocompleteMatch suggestion) {
+        if (!isInInputSession()) return;
         stopAutocomplete(false);
         boolean isSearchSuggestion = suggestion.isSearchSuggestion();
-        boolean isZeroPrefix =
-                TextUtils.isEmpty(mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
+        boolean isZeroPrefix = mAutocompleteInput.isInZeroPrefixContext();
         String refineText = suggestion.getFillIntoEdit();
         if (isSearchSuggestion) refineText = TextUtils.concat(refineText, " ").toString();
 
         mDelegate.setOmniboxEditingText(refineText);
-        onTextChanged(
-                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                /* isOnFocusContext= */ false);
+        onTextChanged(refineText, /* isOnFocusContext= */ false);
 
         if (isSearchSuggestion) {
             // Note: the logic below toggles assumes individual values to be represented by
@@ -1012,7 +1010,7 @@ class AutocompleteMediator
         String inlineAutocompleteText =
                 defaultMatch != null ? defaultMatch.getInlineAutocompletion() : "";
 
-        String userText = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
+        String userText = mAutocompleteInput.getUserText();
         mUrlTextAfterSuggestionsReceived = userText + inlineAutocompleteText;
 
         if (!(mAutocompleteResult != null && mAutocompleteResult.equals(autocompleteResult))) {
@@ -1030,9 +1028,7 @@ class AutocompleteMediator
 
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
         if (!isInInputSession()) return;
-        onTextChanged(
-                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                /* isOnFocusContext= */ false);
+        onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
     }
 
     private void onFuseboxStateChanged(@FuseboxState int fuseboxState) {
@@ -1413,7 +1409,7 @@ class AutocompleteMediator
             long elapsedTimeSinceModified = getElapsedTimeSinceInputChange();
             int autocompleteLength =
                     mUrlBarEditingTextProvider.getTextWithAutocomplete().length()
-                            - mUrlBarEditingTextProvider.getTextWithoutAutocomplete().length();
+                            - mAutocompleteInput.getUserText().length();
             var tab = mDataProvider.getTab();
             WebContents webContents = tab != null ? tab.getWebContents() : null;
 
@@ -1625,9 +1621,7 @@ class AutocompleteMediator
 
         mAutocompleteInput.setHasAttachments(mFuseboxCoordinator.getAttachmentsCount() > 0);
         // Re-request ZPS in the event of attachments being removed/replaced.
-        onTextChanged(
-                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                /* isOnFocusContext= */ false);
+        onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
     }
 
     /**
@@ -1638,9 +1632,7 @@ class AutocompleteMediator
         if (!isInInputSession()) return;
 
         // Re-request ZPS in the event of new attachments being uploaded.
-        onTextChanged(
-                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                /* isOnFocusContext= */ false);
+        onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
     }
 
     @Override

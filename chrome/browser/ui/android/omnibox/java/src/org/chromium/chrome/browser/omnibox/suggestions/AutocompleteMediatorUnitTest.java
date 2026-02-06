@@ -1658,12 +1658,13 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
         var input = new AutocompleteInput();
-        input.setPageClassification(
-                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
-        input.setRequestType(AutocompleteRequestType.AI_MODE);
-        mMediator.beginInput(input);
+        input.setUserText("test")
+                .setPageClassification(
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
+                .setRequestType(AutocompleteRequestType.AI_MODE);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
+        mMediator.beginInput(input);
         GURL url = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
@@ -1696,16 +1697,17 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
         var input = new AutocompleteInput();
-        input.setPageClassification(
-                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
-        input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        mMediator.beginInput(input);
+        input.setUserText("test")
+                .setPageClassification(
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
+                .setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         setUpLocationBarDataProvider(
                 JUnitTestGURLs.NTP_URL,
                 "New Tab Page",
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
+        mMediator.beginInput(input);
         GURL url2 = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
