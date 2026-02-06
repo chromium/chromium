@@ -66,9 +66,13 @@ void STGTabsMenuModel::Build(
     base::RepeatingCallback<int()> get_next_command_id) {
   command_id_to_action_.clear();
   should_enable_move_menu_item_ = true;
+  should_enable_open_menu_item_ = true;
   sync_id_ = saved_group.saved_guid();
-
   // Add item: open in browser.
+  if (saved_group.local_group_id().has_value()) {
+    should_enable_open_menu_item_ = false;
+  }
+
   int latest_command_id = get_next_command_id.Run();
   AddItemWithStringIdAndIcon(
       latest_command_id, IDS_OPEN_GROUP_IN_BROWSER_MENU,
@@ -205,15 +209,17 @@ void STGTabsMenuModel::Build(
     const Browser* const browser_with_local_group_id =
         SavedTabGroupUtils::GetBrowserWithTabGroupId(
             saved_group.local_group_id().value());
-    const TabStripModel* const tab_strip_model =
-        browser_with_local_group_id->tab_strip_model();
+    if (browser_with_local_group_id) {
+      const TabStripModel* const tab_strip_model =
+          browser_with_local_group_id->tab_strip_model();
 
-    // Show the menu item if there are tabs outside of the saved group.
-    should_enable_move_menu_item_ =
-        tab_strip_model->count() !=
-        tab_strip_model->group_model()
-            ->GetTabGroup(saved_group.local_group_id().value())
-            ->tab_count();
+      // Show the menu item if there are tabs outside of the saved group.
+      should_enable_move_menu_item_ =
+          tab_strip_model->count() !=
+          tab_strip_model->group_model()
+              ->GetTabGroup(saved_group.local_group_id().value())
+              ->tab_count();
+    }
   }
 }
 
@@ -228,6 +234,9 @@ bool STGTabsMenuModel::IsCommandIdEnabled(int command_id) const {
   CHECK(it != command_id_to_action_.end());
   if (it->second.type == TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW) {
     return should_enable_move_menu_item_;
+  }
+  if (it->second.type == TabGroupMenuAction::Type::OPEN_IN_BROWSER) {
+    return should_enable_open_menu_item_;
   }
   return true;
 }

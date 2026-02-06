@@ -71,6 +71,7 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   raw_ptr<Browser> browser_;
   base::CancelableTaskTracker cancelable_task_tracker_;
   bool should_enable_move_menu_item_;
+  bool should_enable_open_menu_item_;
   std::optional<base::Uuid> sync_id_ = std::nullopt;
   TabGroupMenuContext context_;
 

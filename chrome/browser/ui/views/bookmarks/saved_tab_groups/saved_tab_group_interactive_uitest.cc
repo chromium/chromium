@@ -1399,12 +1399,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
       // Use the keyboard shortcut command to create a new tab group.
       SendAccelerator(kBrowserViewElementId, create_accelerator),
       EnsurePresent(kTabGroupHeaderElementId),
-      // Refocus the first tab in the group to close the tab group editor
-      // bubble. We do this by opening the group.
-      PressButton(kSavedTabGroupButtonElementId),
-      PressButton(kSavedTabGroupButtonElementId),
-      WaitForShow(STGTabsMenuModel::kOpenGroup),
-      SelectMenuItem(STGTabsMenuModel::kOpenGroup),
+      // Close the tab group editor bubble.
+      SendAccelerator(kTabGroupEditorBubbleId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(kTabGroupEditorBubbleId), FinishTabstripAnimations(),
       // Use the keyboard shortcut command to add a new tab at the end of the
       // group.
       SendAccelerator(kBrowserViewElementId, add_new_tab_to_group_accelerator),
@@ -1443,11 +1441,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
       // Use the keyboard shortcut command to create a new tab group.
       SendAccelerator(kBrowserViewElementId, create_accelerator),
       EnsurePresent(kTabGroupHeaderElementId),
-      // Refocus the first tab in the group to close the tab group editor
-      // bubble. We do this by opening the group.
-      PressButton(kSavedTabGroupButtonElementId),
-      WaitForShow(STGTabsMenuModel::kOpenGroup),
-      SelectMenuItem(STGTabsMenuModel::kOpenGroup),
+      // Close the tab group editor bubble.
+      SendAccelerator(kTabGroupEditorBubbleId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(kTabGroupEditorBubbleId), FinishTabstripAnimations(),
       // Use the keyboard shortcut command to close the tab group.
       SendAccelerator(kBrowserViewElementId, close_accelerator),
       WaitForHide(kTabGroupHeaderElementId),
