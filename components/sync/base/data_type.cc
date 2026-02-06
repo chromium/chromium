@@ -478,7 +478,8 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 DataTypeSet AlwaysPreferredUserTypes() {
-  // TODO(crbug.com/471795213): add SKILL to a corresponding UserSelectableType.
+  // TODO(crbug.com/477624427): add SKILL to a corresponding UserSelectableType
+  // or another toggle.
   DataTypeSet types = {ACCOUNT_SETTING,
                        DEVICE_INFO,
                        USER_CONSENTS,
