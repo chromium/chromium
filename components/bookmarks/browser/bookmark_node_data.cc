@@ -143,8 +143,7 @@ base::Pickle BookmarkNodeData::Element::ToPickle() const {
   return pickle;
 }
 
-bool BookmarkNodeData::Element::FromPickle(const base::Pickle& pickle) {
-  base::PickleIterator iterator(pickle);
+bool BookmarkNodeData::Element::FromPickle(base::PickleIterator iterator) {
   std::string url_spec;
   if (!iterator.ReadBool(&is_url) || !iterator.ReadString(&url_spec) ||
       !iterator.ReadString16(&title) || !iterator.ReadInt64(&id_)) {
@@ -196,7 +195,7 @@ bool BookmarkNodeData::Element::FromPickle(const base::Pickle& pickle) {
         return false;
       }
       if (!children.back().FromPickle(
-              base::Pickle::WithUnownedBuffer(span.value()))) {
+              base::PickleIterator::WithData(span.value()))) {
         return false;
       }
     }
@@ -325,9 +324,8 @@ bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
       /* data_dst = */ nullptr, &data);
 
   if (!data.empty()) {
-    base::Pickle pickle =
-        base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
-    if (ReadFromPickle(&pickle)) {
+    if (ReadFromPickle(
+            base::PickleIterator::WithData(base::as_byte_span(data)))) {
       CHECK(is_valid());
       return true;
     }
@@ -369,8 +367,7 @@ void BookmarkNodeData::WriteToPickle(const base::FilePath& profile_path,
   }
 }
 
-bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
-  base::PickleIterator data_iterator(*pickle);
+bool BookmarkNodeData::ReadFromPickle(base::PickleIterator data_iterator) {
   uint32_t element_count_tmp = 0;
   if (!profile_path_.ReadFromPickle(&data_iterator) ||
       !data_iterator.ReadUInt32(&element_count_tmp)) {
@@ -413,7 +410,7 @@ bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
       }
       tmp_elements.emplace_back();
       if (!tmp_elements.back().FromPickle(
-              base::Pickle::WithUnownedBuffer(span.value()))) {
+              base::PickleIterator::WithData(span.value()))) {
         return false;
       }
     }

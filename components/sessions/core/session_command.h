@@ -16,6 +16,7 @@
 
 namespace base {
 class Pickle;
+class PickleIterator;
 }
 
 namespace sessions {
@@ -71,8 +72,8 @@ class SESSIONS_EXPORT SessionCommand {
   // count is not equal to the size of data this command contains.
   bool GetPayload(void* dest, size_t count) const;
 
-  // Returns the contents as a pickle.
-  base::Pickle PayloadAsPickle() const;
+  // Returns an iterator for reading the payload.
+  base::PickleIterator PayloadAsPickle() const;
 
  private:
   const id_type id_;

@@ -97,9 +97,9 @@ struct BookmarkNodeData {
 
     // Serializes this Element to a pickle.
     base::Pickle ToPickle() const;
-    // Deserializes this Element from a pickle. Returns true if the operation
-    // succeeds.
-    bool FromPickle(const base::Pickle& pickle);
+    // Deserializes this Element from an iterator. Returns true if the
+    // operation succeeds.
+    bool FromPickle(base::PickleIterator iterator);
 #endif
 
     // ID of the node.
@@ -168,10 +168,10 @@ struct BookmarkNodeData {
   void WriteToPickle(const base::FilePath& profile_path,
                      base::Pickle* pickle) const;
 
-  // Reads the data for a drag from a `pickle`.
+  // Reads the data for a drag from `data_iterator`.
   // Returns true if the operation succeeds, which also implies that this
   // contains valid data (is non-empty).
-  bool ReadFromPickle(base::Pickle* pickle);
+  bool ReadFromPickle(base::PickleIterator data_iterator);
 #endif
 
   // Returns the nodes represented by this DragData. If this DragData was

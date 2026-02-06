@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -83,12 +84,11 @@ base::Pickle SerializeAlternativeElementVector(
 }
 
 AlternativeElementVector DeserializeAlternativeElementVector(
-    const base::Pickle& p) {
+    base::PickleIterator iterator) {
   AlternativeElementVector ret;
   std::u16string value;
   std::u16string field_name;
 
-  base::PickleIterator iterator(p);
   while (iterator.ReadString16(&value)) {
     bool name_success = iterator.ReadString16(&field_name);
     DCHECK(name_success);
@@ -111,11 +111,11 @@ base::Pickle SerializeGaiaIdHashVector(const std::vector<GaiaIdHash>& hashes) {
   return p;
 }
 
-std::vector<GaiaIdHash> DeserializeGaiaIdHashVector(const base::Pickle& p) {
+std::vector<GaiaIdHash> DeserializeGaiaIdHashVector(
+    base::PickleIterator iterator) {
   std::vector<GaiaIdHash> hashes;
   std::string hash;
 
-  base::PickleIterator iterator(p);
   while (iterator.ReadString(&hash)) {
     hashes.push_back(GaiaIdHash::FromBinary(std::move(hash)));
     hash = {};
@@ -1742,17 +1742,14 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   base::span<const uint8_t> possible_username_pairs_blob =
       s.ColumnBlob(COLUMN_POSSIBLE_USERNAME_PAIRS);
   if (!possible_username_pairs_blob.empty()) {
-    base::Pickle pickle =
-        base::Pickle::WithUnownedBuffer(possible_username_pairs_blob);
-    form.all_alternative_usernames =
-        DeserializeAlternativeElementVector(pickle);
+    form.all_alternative_usernames = DeserializeAlternativeElementVector(
+        base::PickleIterator::WithData(possible_username_pairs_blob));
   }
   form.times_used_in_html_form = s.ColumnInt(COLUMN_TIMES_USED);
   base::span<const uint8_t> form_data_blob = s.ColumnBlob(COLUMN_FORM_DATA);
   if (!form_data_blob.empty()) {
-    base::Pickle form_data_pickle =
-        base::Pickle::WithUnownedBuffer(form_data_blob);
-    base::PickleIterator form_data_iter(form_data_pickle);
+    base::PickleIterator form_data_iter =
+        base::PickleIterator::WithData(form_data_blob);
     autofill::DeserializeFormData(&form_data_iter, &form.form_data);
   }
   form.display_name = s.ColumnString16(COLUMN_DISPLAY_NAME);
@@ -1768,9 +1765,8 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   base::span<const uint8_t> moving_blocked_for_blob =
       s.ColumnBlob(COLUMN_MOVING_BLOCKED_FOR);
   if (!moving_blocked_for_blob.empty()) {
-    base::Pickle pickle =
-        base::Pickle::WithUnownedBuffer(moving_blocked_for_blob);
-    form.moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
+    form.moving_blocked_for_list = DeserializeGaiaIdHashVector(
+        base::PickleIterator::WithData(moving_blocked_for_blob));
   }
   form.date_password_modified = s.ColumnTime(COLUMN_DATE_PASSWORD_MODIFIED);
   form.sender_email = s.ColumnString16(COLUMN_SENDER_EMAIL);

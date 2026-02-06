@@ -53,7 +53,7 @@ bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
     if (std::optional<base::Pickle> drag_data_pickle =
             data.GetPickledData(GetBookmarkFormatType());
         drag_data_pickle.has_value()) {
-      if (!ReadFromPickle(&drag_data_pickle.value())) {
+      if (!ReadFromPickle(base::PickleIterator(*drag_data_pickle))) {
         return false;
       }
     }

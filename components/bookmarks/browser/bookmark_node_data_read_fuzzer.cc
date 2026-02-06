@@ -25,9 +25,8 @@ class Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(UNSAFE_TODO(base::span(data, size)));
   bookmarks::BookmarkNodeData bookmark_node_data;
-  bookmark_node_data.ReadFromPickle(&pickle);
+  bookmark_node_data.ReadFromPickle(
+      base::PickleIterator::WithData(UNSAFE_TODO(base::span(data, size))));
   return 0;
 }

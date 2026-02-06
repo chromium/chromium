@@ -293,8 +293,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
   auto type = sessions::SessionWindow::TYPE_NORMAL;
 
   if (command->id() == kCommandWindow) {
-    base::Pickle pickle = command->PayloadAsPickle();
-    base::PickleIterator it(pickle);
+    base::PickleIterator it = command->PayloadAsPickle();
     WindowCommandFields parsed_fields;
 
     // The first version of the pickle contains all of the following fields, so
@@ -420,8 +419,7 @@ std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
     const SessionCommand* command,
     SessionID* session_id,
     int32_t* num_tabs) {
-  base::Pickle pickle = command->PayloadAsPickle();
-  base::PickleIterator it(pickle);
+  base::PickleIterator it = command->PayloadAsPickle();
   GroupCommandFields parsed_fields;
 
   // The first version of the pickle contains all of the following fields, so
@@ -1257,8 +1255,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
           // Should be in a tab when we get this.
           return;
         }
-        base::Pickle pickle = command.PayloadAsPickle();
-        base::PickleIterator iter(pickle);
+        base::PickleIterator iter = command.PayloadAsPickle();
         std::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         std::u16string title;
         uint32_t color_int;

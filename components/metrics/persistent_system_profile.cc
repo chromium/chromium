@@ -457,9 +457,8 @@ void PersistentSystemProfile::MergeUpdateRecords(
           }
         }
 
-        base::Pickle pickler =
-            base::Pickle::WithUnownedBuffer(base::as_byte_span(record));
-        base::PickleIterator iter(pickler);
+        base::PickleIterator iter =
+            base::PickleIterator::WithData(base::as_byte_span(record));
         std::string_view trial;
         std::string_view group;
         if (iter.ReadStringPiece(&trial) && iter.ReadStringPiece(&group)) {

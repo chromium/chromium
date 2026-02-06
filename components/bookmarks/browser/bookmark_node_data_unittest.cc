@@ -485,9 +485,9 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_TooManyNodes) {
   // Test case determined by a fuzzer. See https://crbug.com/956583.
   const uint8_t pickled_data[] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0x00, 0x00, 0xff, 0x03, 0x03, 0x41};
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(pickled_data);
   BookmarkNodeData bookmark_node_data;
-  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(
+      base::PickleIterator::WithData(pickled_data)));
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_NoNodes) {
@@ -495,7 +495,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_NoNodes) {
   base::FilePath().WriteToPickle(&pickle);
   pickle.WriteUInt32(0);  // element_count
   BookmarkNodeData bookmark_node_data;
-  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_InvalidElementCount) {
@@ -503,7 +503,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_InvalidElementCount) {
   base::FilePath().WriteToPickle(&pickle);
   pickle.WriteString("0");  // element_count
   BookmarkNodeData bookmark_node_data;
-  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_ValidData) {
@@ -528,7 +528,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_ValidData) {
   pickle.WriteUInt32(0);  // children_size
 
   BookmarkNodeData bookmark_node_data;
-  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
   ASSERT_EQ(1u, bookmark_node_data.size());
   ASSERT_EQ(1u, bookmark_node_data.elements[0].children.size());
   auto& parent_element = bookmark_node_data.elements[0];
@@ -545,9 +545,9 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_TooManyNodes) {
   const uint8_t pickled_data[] = {0x0C, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0xff, 0x03, 0x03, 0x41};
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(pickled_data);
   BookmarkNodeData bookmark_node_data;
-  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(
+      base::PickleIterator::WithData(pickled_data)));
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickle_NoNodes) {
@@ -556,7 +556,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_NoNodes) {
   pickle.WriteUInt32(0);  // backward compatibility flag
   pickle.WriteUInt32(0);  // element_count
   BookmarkNodeData bookmark_node_data;
-  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickle_InvalidElementCount) {
@@ -565,7 +565,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_InvalidElementCount) {
   pickle.WriteUInt32(0);    // backward compatibility flag
   pickle.WriteString("0");  // element_count
   BookmarkNodeData bookmark_node_data;
-  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
 }
 
 TEST_F(BookmarkNodeDataTest, ReadFromPickle_ValidData) {
@@ -596,7 +596,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickle_ValidData) {
   pickle.WriteData(parent_pickle);
 
   BookmarkNodeData bookmark_node_data;
-  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
   ASSERT_EQ(1u, bookmark_node_data.size());
   ASSERT_EQ(1u, bookmark_node_data.elements[0].children.size());
   auto& parent_element = bookmark_node_data.elements[0];
@@ -627,7 +627,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleLegacyFormat) {
   }
 
   BookmarkNodeData bookmark_node_data;
-  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
 
   EXPECT_TRUE(bookmark_node_data.is_valid());
   ASSERT_EQ(1u, bookmark_node_data.size());
@@ -665,7 +665,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleNewFormat) {
   }
 
   BookmarkNodeData bookmark_node_data;
-  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(&pickle));
+  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
 
   EXPECT_TRUE(bookmark_node_data.is_valid());
   ASSERT_EQ(1u, bookmark_node_data.size());

@@ -257,9 +257,10 @@ os_crypt_async::Encryptor GetInstanceSync(
 base::Pickle SerializeAlternativeElementVector(
     const AlternativeElementVector& vector);
 AlternativeElementVector DeserializeAlternativeElementVector(
-    const base::Pickle& pickle);
+    base::PickleIterator iterator);
 base::Pickle SerializeGaiaIdHashVector(const std::vector<GaiaIdHash>& hashes);
-std::vector<GaiaIdHash> DeserializeGaiaIdHashVector(const base::Pickle& p);
+std::vector<GaiaIdHash> DeserializeGaiaIdHashVector(
+    base::PickleIterator iterator);
 
 class LoginDatabaseTestBase : public testing::Test {
  protected:
@@ -1120,7 +1121,8 @@ TEST_F(LoginDatabaseTest, VectorSerialization) {
   // Empty vector.
   AlternativeElementVector vec;
   base::Pickle temp = SerializeAlternativeElementVector(vec);
-  AlternativeElementVector output = DeserializeAlternativeElementVector(temp);
+  AlternativeElementVector output =
+      DeserializeAlternativeElementVector(base::PickleIterator(temp));
   EXPECT_THAT(output, Eq(vec));
 
   // Normal data.
@@ -1148,7 +1150,7 @@ TEST_F(LoginDatabaseTest, VectorSerialization) {
                         AlternativeElement::Name(u"id3"));
 
   temp = SerializeAlternativeElementVector(vec);
-  output = DeserializeAlternativeElementVector(temp);
+  output = DeserializeAlternativeElementVector(base::PickleIterator(temp));
   EXPECT_THAT(output, Eq(expected));
 }
 
@@ -1156,7 +1158,8 @@ TEST_F(LoginDatabaseTest, GaiaIdHashVectorSerialization) {
   // Empty vector.
   std::vector<GaiaIdHash> vec;
   base::Pickle temp = SerializeGaiaIdHashVector(vec);
-  std::vector<GaiaIdHash> output = DeserializeGaiaIdHashVector(temp);
+  std::vector<GaiaIdHash> output =
+      DeserializeGaiaIdHashVector(base::PickleIterator(temp));
   EXPECT_THAT(output, Eq(vec));
 
   // Normal data.
@@ -1165,7 +1168,7 @@ TEST_F(LoginDatabaseTest, GaiaIdHashVectorSerialization) {
   vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("third")));
 
   temp = SerializeGaiaIdHashVector(vec);
-  output = DeserializeGaiaIdHashVector(temp);
+  output = DeserializeGaiaIdHashVector(base::PickleIterator(temp));
   EXPECT_THAT(output, Eq(vec));
 }
 

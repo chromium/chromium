@@ -166,11 +166,12 @@ std::optional<DebugStreamData> DeserializeDebugStreamData(
   std::string binary_data;
   if (!base::Base64Decode(base64_encoded, &binary_data))
     return std::nullopt;
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(binary_data));
   DebugStreamData result;
-  if (!UnpickleDebugStreamData(base::PickleIterator(pickle), result))
+  if (!UnpickleDebugStreamData(
+          base::PickleIterator::WithData(base::as_byte_span(binary_data)),
+          result)) {
     return std::nullopt;
+  }
   return result;
 }
 

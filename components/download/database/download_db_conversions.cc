@@ -244,13 +244,11 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
   info.mime_type = proto.mime_type();
   info.original_mime_type = proto.original_mime_type();
   info.total_bytes = proto.total_bytes();
-  base::Pickle current_path_pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(proto.current_path()));
-  base::PickleIterator current_path(current_path_pickle);
+  base::PickleIterator current_path =
+      base::PickleIterator::WithData(base::as_byte_span(proto.current_path()));
   info.current_path.ReadFromPickle(&current_path);
-  base::Pickle target_path_pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(proto.target_path()));
-  base::PickleIterator target_path(target_path_pickle);
+  base::PickleIterator target_path =
+      base::PickleIterator::WithData(base::as_byte_span(proto.target_path()));
   info.target_path.ReadFromPickle(&target_path);
   info.received_bytes = proto.received_bytes();
   info.start_time = proto.start_time() == -1

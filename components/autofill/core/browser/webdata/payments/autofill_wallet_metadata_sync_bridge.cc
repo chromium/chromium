@@ -98,9 +98,8 @@ struct TypeAndMetadataId {
 
 TypeAndMetadataId ParseWalletMetadataStorageKey(
     const std::string& storage_key) {
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(storage_key));
-  base::PickleIterator iterator(pickle);
+  base::PickleIterator iterator =
+      base::PickleIterator::WithData(base::as_byte_span(storage_key));
   int type_int;
   std::string specifics_id;
   if (!iterator.ReadInt(&type_int) || !iterator.ReadString(&specifics_id)) {
