@@ -65,7 +65,7 @@ class InfoBarManager {
   // If infobars are disabled for this tab, this will do nothing, on the
   // assumption that the matching AddInfoBar() call will have already deleted
   // the infobar (see above).
-  void RemoveInfoBar(InfoBar* infobar);
+  virtual void RemoveInfoBar(InfoBar* infobar);
 
   // Removes all the infobars.
   void RemoveAllInfoBars(bool animate);
