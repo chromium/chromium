@@ -1377,13 +1377,4 @@ TabListInterface* ExtensionTabUtil::GetEditableTabList(
   return TabListInterface::From(&browser);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// static
-TabStripModel* ExtensionTabUtil::GetEditableTabStripModel(Browser* browser) {
-  if (!IsTabStripEditable())
-    return nullptr;
-  return browser->tab_strip_model();
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 }  // namespace extensions

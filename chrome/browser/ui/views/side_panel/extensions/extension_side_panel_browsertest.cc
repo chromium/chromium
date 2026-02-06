@@ -1091,8 +1091,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 
   // Open a new browser window.
   Browser* second_browser = CreateBrowser(browser()->profile());
-  TabStripModel* target_tab_strip =
-      ExtensionTabUtil::GetEditableTabStripModel(second_browser);
+  TabStripModel* target_tab_strip = second_browser->tab_strip_model();
 
   // Detach the second tab from `browser()` and add it to the new browser.
   std::unique_ptr<tabs::TabModel> detached_tab =

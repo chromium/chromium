@@ -340,13 +340,6 @@ class ExtensionTabUtil {
   // and only if every browser's tab list is editable. See comments above
   // IsTabStripEditable() for details.
   static TabListInterface* GetEditableTabList(BrowserWindowInterface& browser);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Retrieve a TabStripModel only if every browser is editable.
-  // TODO(https://crbug.com/430344931): Remove this in favor of
-  // GetEditableTabList().
-  static TabStripModel* GetEditableTabStripModel(Browser* browser);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
 }  // namespace extensions
