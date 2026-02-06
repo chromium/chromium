@@ -240,7 +240,7 @@ IwaBundleIdToUpdateOptionsMap GetBundleIdToIsolatedWebAppsUpdateOptionsMap(
   return result;
 }
 
-bool ShouldProceedWithVersionChange(
+bool ShouldProceedWithAppUpdate(
     const IwaVersion& pinned_version,
     bool allow_downgrades,
     const web_package::SignedWebBundleId& web_bundle_id,
@@ -268,7 +268,7 @@ bool ShouldProceedWithVersionChange(
   return false;
 }
 
-std::vector<webapps::AppId> GetIwasAffectedByKeyRotation(
+std::vector<webapps::AppId> GetIwasAffectedByRecentKeyRotation(
     WebAppProvider& provider) {
   std::vector<webapps::AppId> iwa_ids;
 
@@ -536,7 +536,7 @@ void IsolatedWebAppUpdateManager::OnRuntimeDataChanged() {
 
 void IsolatedWebAppUpdateManager::QueueUpdatesForIwasAffectedByKeyRotation() {
   std::vector<webapps::AppId> iwa_ids =
-      GetIwasAffectedByKeyRotation(*provider_);
+      GetIwasAffectedByRecentKeyRotation(*provider_);
   if (iwa_ids.empty()) {
     key_rotation_backoff_retry_entry_.Reset();
     return;
@@ -619,7 +619,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
                   });
 
   if (update_options->pinned_version.has_value() &&
-      !ShouldProceedWithVersionChange(
+      !ShouldProceedWithAppUpdate(
           *update_options->pinned_version, update_options->allow_downgrades,
           url_info.web_bundle_id(), isolation_data.value())) {
     // By default, pinning an app to a lower version than the current one is
