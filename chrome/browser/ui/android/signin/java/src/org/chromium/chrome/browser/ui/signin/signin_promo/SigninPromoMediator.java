@@ -320,6 +320,10 @@ final class SigninPromoMediator
         mModel.set(
                 SigninPromoProperties.PRIMARY_BUTTON_TEXT,
                 mPromoDelegate.getTextForPrimaryButton(profileData));
+        mModel.set(
+                SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON,
+                !mPromoDelegate.canBeDismissedPermanently()
+                        || mPromoDelegate.shouldDisplayLoadingState());
     }
 
     private void updateVisibility() {

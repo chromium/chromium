@@ -10,9 +10,12 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -52,7 +55,9 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 /**
@@ -150,6 +155,34 @@ public class NewTabPageSigninPromoTest {
         openNewTabPage();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/twoButtons"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    public void testSigninPromoLoadingState() {
+        openNewTabPage();
+        // An account with an unknown hosted domain emulates a long sign-in. This way the loading
+        // state will be shown for a longer time.
+        AccountInfo accountHostedDomainUnknown =
+                new AccountInfo.Builder(
+                                "test@example.com",
+                                FakeAccountManagerFacade.toGaiaId("test@example.com"))
+                        .build();
+        mSigninTestRule.addAccount(accountHostedDomainUnknown);
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+
+        onView(withId(R.id.signin_promo_primary_button)).perform(scrollTo(), click());
+        onView(withId(R.id.signin_promo_primary_button))
+                .check(matches(allOf(isDisplayed(), not(isEnabled()))));
+        onView(withId(R.id.signin_promo_dismiss_button))
+                .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
     }
 
     @Test
