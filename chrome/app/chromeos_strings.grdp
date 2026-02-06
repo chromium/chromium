@@ -1278,6 +1278,12 @@
   <message name="IDS_FJORD_STATION_SETUP_DONE_BUTTON_TEXT" desc="Button shown to the user to indicate they have finished the setup flow.">
     Done
   </message>
+  <message name="IDS_FJORD_FW_UPDATE_TITLE" desc="Title of OOBE screen to indicate that device peripherals are updating.">
+    Updating device peripherals
+  </message>
+  <message name="IDS_FJORD_FW_UPDATE_SUBTITLE" desc="Subtitle shown to indicate the peripheral updates may take up to 30 minutes.">
+    This may take up to 30 minutes
+  </message>
 
   <!-- Strings for parental handoff login screen -->
   <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE" desc="Title of screen which tells user that the parent can handoff the device to supervised user.">
