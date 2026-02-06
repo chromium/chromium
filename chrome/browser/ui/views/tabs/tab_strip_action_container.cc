@@ -283,7 +283,8 @@ TabStripActionContainer::TabStripActionContainer(
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(
           browser_window_interface_->GetProfile())) {
-    if (features::kGlicActorUiTaskIcon.Get()) {
+    if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+        features::kGlicActorUiTaskIcon.Get()) {
       glic_actor_button_container_ =
           AddChildView(CreateGlicActorButtonContainer());
       glic_actor_task_icon_ =

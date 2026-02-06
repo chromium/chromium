@@ -33,7 +33,8 @@ void ContextSharingBorderViewControllerImpl::Initialize(
       GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
 
   // Subscribe to glow updates from the actor border controller.
-  if (features::kGlicActorUiBorderGlow.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiBorderGlow.Get()) {
     actor_border_view_controller_subscription_ =
         ActorBorderViewController::From(browser)
             ->AddOnActorBorderGlowUpdatedCallback(

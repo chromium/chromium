@@ -265,7 +265,8 @@ void ToastService::RegisterToasts(
           .SetToastAsActionable()
           .Build());
 
-  if (features::kGlicActorUiToast.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiToast.Get()) {
     toast_registry_->RegisterToast(
         ToastId::kGeminiWorkingOnTask,
         ToastSpecification::Builder(GetTaskInProgressIcon(),

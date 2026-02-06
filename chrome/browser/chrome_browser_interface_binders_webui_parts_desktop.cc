@@ -248,7 +248,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
                                            lens::LensOverlayUntrustedUI>(map);
   }
 
-  if (features::kGlicActorUiOverlay.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiOverlay.Get()) {
     RegisterWebUIControllerInterfaceBinder<
         actor::ui::mojom::ActorOverlayPageHandlerFactory,
         actor::ui::ActorOverlayUI>(map);

@@ -420,7 +420,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
 #endif  // defined(USE_AURA)
 
-  if (features::kGlicActorUiBorderGlow.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiBorderGlow.Get()) {
     actor_border_view_controller_ =
         std::make_unique<ActorBorderViewController>(browser);
   }
@@ -763,7 +764,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
                   kTabStripActionContainerElementId),
           glic_service);
 
-      if (features::kGlicActorUiTaskIcon.Get() &&
+      if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+          features::kGlicActorUiTaskIcon.Get() &&
           browser_->GetProfile()->IsRegularProfile()) {
         // Will be referenced in GlicActorNudgeController and thus needs to be
         // instantiated first.

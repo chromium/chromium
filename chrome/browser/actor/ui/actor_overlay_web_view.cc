@@ -32,6 +32,7 @@ ActorOverlayWebView::~ActorOverlayWebView() {
 
 void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab,
                                  base::OnceClosure callback) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActorUi));
   CHECK(features::kGlicActorUiOverlay.Get());
   if (!web_contents()) {
     // Creates a new web contents if one doesn't exist.

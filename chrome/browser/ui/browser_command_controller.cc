@@ -2295,7 +2295,8 @@ void BrowserCommandController::UpdateCommandsForFind() {
   bool is_actor_overlay_visible = false;
 
   // If the actor overlay is visible, we disable find and close it if it's open.
-  if (features::kGlicActorUiOverlay.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiOverlay.Get()) {
     if (BrowserView* browser_view =
             BrowserView::GetBrowserViewForBrowser(browser_)) {
       if (auto* active_container =

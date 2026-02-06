@@ -113,7 +113,8 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
   contents_scrim_view_->layer()->SetName("ContentsScrimView");
 
-  if (features::kGlicActorUiOverlay.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiOverlay.Get()) {
     auto actor_overlay_web_view =
         std::make_unique<ActorOverlayWebView>(browser_view->browser());
     actor_overlay_web_view->SetID(VIEW_ID_ACTOR_OVERLAY);

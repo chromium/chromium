@@ -238,7 +238,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, FirstActionIsntTabScoped) {
 class GlicActorWithActorDisabledUiTest : public test::InteractiveGlicTest {
  public:
   GlicActorWithActorDisabledUiTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kGlicActor);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features*/ {},
+        /*disabled_features*/ {features::kGlicActor, features::kGlicActorUi});
   }
   ~GlicActorWithActorDisabledUiTest() override = default;
 

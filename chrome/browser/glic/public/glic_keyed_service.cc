@@ -179,7 +179,9 @@ GlicKeyedService::GlicKeyedService(
     : profile_(profile),
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: Actor
       actor_policy_checker_(
-          std::make_unique<GlicActorPolicyChecker>(*profile_)),
+          actor_keyed_service
+              ? std::make_unique<GlicActorPolicyChecker>(*profile_)
+              : nullptr),
 #endif
       enabling_(std::make_unique<GlicEnabling>(
           profile,
@@ -210,18 +212,17 @@ GlicKeyedService::GlicKeyedService(
                                     GetSingleInstanceWindowController())
                               : nullptr),
       actor_task_manager_(
-          std::make_unique<GlicActorTaskManager>(profile,
-                                                 actor_keyed_service,
-                                                 *actor_policy_checker_)),
+          actor_keyed_service
+              ? std::make_unique<GlicActorTaskManager>(profile,
+                                                       actor_keyed_service,
+                                                       *actor_policy_checker_)
+              : nullptr),
 #endif
       tab_data_observer_(std::make_unique<GlicTabDataObserver>()),
       web_contents_warming_pool_(
           std::make_unique<GlicWebContentsWarmingPool>(profile)),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-  CHECK(actor_keyed_service);
-#endif
 
   // TODO(crbug.com/450026474): Consider not constructing this metrics
   // instance for multi-instance
@@ -599,47 +600,75 @@ void GlicKeyedService::CreateTask(
     base::WeakPtr<actor::ActorTaskDelegate> delegate,
     actor::webui::mojom::TaskOptionsPtr options,
     mojom::WebClientHandler::CreateTaskCallback callback) {
-  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(options), std::move(callback));
+  if (actor_task_manager_) {
+    actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(options), std::move(callback));
+  } else {
+    std::move(callback).Run(
+        base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
+  }
 }
 
 void GlicKeyedService::PerformActions(
     const std::vector<uint8_t>& actions_proto,
     mojom::WebClientHandler::PerformActionsCallback callback) {
-  actor_task_manager_->PerformActions(actions_proto, std::move(callback));
+  if (actor_task_manager_) {
+    actor_task_manager_->PerformActions(actions_proto, std::move(callback));
+  } else {
+    std::move(callback).Run(
+        base::unexpected(mojom::PerformActionsErrorReason::kUnknown));
+  }
 }
 
 void GlicKeyedService::CancelActions(
     actor::TaskId task_id,
     mojom::WebClientHandler::CancelActionsCallback callback) {
-  actor_task_manager_->CancelActions(task_id, std::move(callback));
+  if (actor_task_manager_) {
+    actor_task_manager_->CancelActions(task_id, std::move(callback));
+  } else {
+    std::move(callback).Run(mojom::CancelActionsResult::kUnknown);
+  }
 }
 
 void GlicKeyedService::StopActorTask(actor::TaskId task_id,
                                      mojom::ActorTaskStopReason stop_reason) {
-  actor_task_manager_->StopActorTask(task_id, stop_reason);
+  if (actor_task_manager_) {
+    actor_task_manager_->StopActorTask(task_id, stop_reason);
+  }
 }
 
 void GlicKeyedService::PauseActorTask(actor::TaskId task_id,
                                       mojom::ActorTaskPauseReason pause_reason,
                                       tabs::TabInterface::Handle tab_handle) {
-  actor_task_manager_->PauseActorTask(task_id, pause_reason, tab_handle);
+  if (actor_task_manager_) {
+    actor_task_manager_->PauseActorTask(task_id, pause_reason, tab_handle);
+  }
 }
 
 void GlicKeyedService::ResumeActorTask(
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
-  actor_task_manager_->ResumeActorTask(task_id, context_options,
-                                       std::move(callback));
+  if (actor_task_manager_) {
+    actor_task_manager_->ResumeActorTask(task_id, context_options,
+                                         std::move(callback));
+  } else {
+    std::move(callback).Run(mojom::GetContextResultWithActionResultCode::New(
+        mojom::GetContextResult::NewErrorReason("Actor not enabled"),
+        std::nullopt));
+  }
 }
 
 void GlicKeyedService::InterruptActorTask(actor::TaskId task_id) {
-  actor_task_manager_->InterruptActorTask(task_id);
+  if (actor_task_manager_) {
+    actor_task_manager_->InterruptActorTask(task_id);
+  }
 }
 
 void GlicKeyedService::UninterruptActorTask(actor::TaskId task_id) {
-  actor_task_manager_->UninterruptActorTask(task_id);
+  if (actor_task_manager_) {
+    actor_task_manager_->UninterruptActorTask(task_id);
+  }
 }
 
 void GlicKeyedService::CreateActorTab(
@@ -648,9 +677,13 @@ void GlicKeyedService::CreateActorTab(
     const std::optional<int32_t>& initiator_tab_id,
     const std::optional<int32_t>& initiator_window_id,
     glic::mojom::WebClientHandler::CreateActorTabCallback callback) {
-  actor_task_manager_->CreateActorTab(task_id, open_in_background,
-                                      initiator_tab_id, initiator_window_id,
-                                      std::move(callback));
+  if (actor_task_manager_) {
+    actor_task_manager_->CreateActorTab(task_id, open_in_background,
+                                        initiator_tab_id, initiator_window_id,
+                                        std::move(callback));
+  } else {
+    std::move(callback).Run(nullptr);
+  }
 }
 
 void GlicKeyedService::OnTabAddedToTask(
@@ -855,7 +888,9 @@ void GlicKeyedService::Archive(
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::OnWebClientCleared() {
-  actor_task_manager_->CancelTask();
+  if (actor_task_manager_) {
+    actor_task_manager_->CancelTask();
+  }
 }
 
 void GlicKeyedService::OnInteractionModeChange(mojom::WebClientMode new_mode) {

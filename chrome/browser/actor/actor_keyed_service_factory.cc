@@ -43,12 +43,9 @@ bool ActorKeyedServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 std::unique_ptr<KeyedService>
 ActorKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // TODO(b:480230075): Remove Android restriction.
-#if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ActorKeyedService>(profile);
 }
