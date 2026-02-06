@@ -7979,6 +7979,12 @@ void Document::FinishedParsing() {
             : "Blink.XMLParsing.NonXsltXmlParsingTime.Libxml2";
     base::UmaHistogramCustomTimes(histogram_name, parse_time,
                                   base::Milliseconds(1), base::Seconds(2), 100);
+    // In an experiment, switching the backends to compare Rust
+    // vs. Libxml2 it's handy to have the experiment tooling separate
+    // the metric and combine the measurements into one.
+    base::UmaHistogramCustomTimes(
+        "Blink.XMLParsing.NonXsltXmlParsingTime.Combined", parse_time,
+        base::Milliseconds(1), base::Seconds(2), 100);
     data_->xml_parser_start_time_.reset();
   }
 
