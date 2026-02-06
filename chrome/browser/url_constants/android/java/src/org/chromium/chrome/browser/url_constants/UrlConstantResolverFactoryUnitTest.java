@@ -65,6 +65,7 @@ public class UrlConstantResolverFactoryUnitTest {
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(false);
         ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(false);
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(false);
+        PolicyUrlOverrideRegistry.resetRegistry();
         UrlConstantResolverFactory.resetResolvers();
     }
 
@@ -194,5 +195,42 @@ public class UrlConstantResolverFactoryUnitTest {
 
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
         assertEquals(mNtpGurl, incognitoResolver.getNtpGurl());
+    }
+
+    @Test
+    public void testOriginalResolver_PolicyNtpOverride() {
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+
+        PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(true);
+        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
+
+        PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(false);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    public void testOriginalResolver_ExtensionsAndPolicyNtpOverride() {
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+
+        ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
+        PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(true);
+        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
+
+        ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(false);
+        PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(false);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+    }
+
+    @Test
+    public void testIncognitoResolver_PolicyNtpOverrideIgnored() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+
+        PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(true);
+        // Policy override should not affect incognito NTP if not explicitly enabled for incognito.
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+
+        PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(false);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
     }
 }

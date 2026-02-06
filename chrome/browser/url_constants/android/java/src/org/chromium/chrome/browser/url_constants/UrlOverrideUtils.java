@@ -14,7 +14,8 @@ import org.chromium.build.annotations.NullMarked;
 public class UrlOverrideUtils {
     /** Returns true if the NTP is overridden. */
     public static boolean isNtpOverrideEnabled() {
-        return ExtensionsUrlOverrideRegistry.getNtpOverrideEnabled();
+        return ExtensionsUrlOverrideRegistry.getNtpOverrideEnabled()
+                || PolicyUrlOverrideRegistry.getNewTabPageLocationOverrideEnabled();
     }
 
     /** Returns true if the bookmarks page is overridden. */

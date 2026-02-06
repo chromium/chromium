@@ -589,6 +589,10 @@ public final class ChromePreferenceKeys {
     public static final String NOTIFICATION_PERMISSION_REQUEST_COUNT =
             "Chrome.NotificationPermission.RequestCount";
 
+    /** Indicates whether a chrome page URL has been overridden by an enterprise policy. */
+    public static final String NTP_LOCATION_POLICY_ENABLED =
+            "Chrome.PolicyUrlOverrides.NewTabPageLocation";
+
     public static final String NTP_SNIPPETS_IS_SCHEDULED = "ntp_snippets.is_scheduled";
 
     // Name of an application preference variable used to track whether or not the in-progress
@@ -1284,6 +1288,7 @@ public final class ChromePreferenceKeys {
                 MULTI_WINDOW_MODE_START_TIME2.pattern(),
                 NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
                 NOTIFICATION_PERMISSION_REQUEST_COUNT,
+                NTP_LOCATION_POLICY_ENABLED,
                 OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
                 OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
                 OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS,
