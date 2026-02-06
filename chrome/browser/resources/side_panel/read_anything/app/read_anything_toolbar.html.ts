@@ -6,34 +6,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 
-function getRateButtonHtml(this: ReadAnythingToolbarElement) {
-  return html`
-    <cr-button class="toolbar-button" id="rate"
-        tabindex="${this.getRateTabIndex_()}"
-        aria-label="${this.getVoiceSpeedLabel_()}"
-        title="${this.i18n('voiceSpeedLabel')}"
-        aria-haspopup="menu"
-        @click="${this.onShowRateMenuClick_}">
-        ${this.getFormattedSpeechRate_()}
-    </cr-button>`;
-}
-
-function renderTextStyleOptions(this: ReadAnythingToolbarElement) {
-  return this.textStyleOptions_.map((item, index) => html`
-      ${item.announceBlock ?? html``}
-      <cr-icon-button class="toolbar-button text-style-button"
-          id="${item.id}"
-          tabindex="-1"
-          data-index="${index}"
-          aria-label="${item.ariaLabel}"
-          title="${item.ariaLabel}"
-          aria-haspopup="menu"
-          iron-icon="${item.icon}"
-          @click="${this.onTextStyleMenuButtonClick_}">
-      </cr-icon-button>
-    `);
-}
-
 export function getHtml(this: ReadAnythingToolbarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
@@ -82,48 +54,32 @@ export function getHtml(this: ReadAnythingToolbarElement) {
             @click="${this.onNextGranularityClick_}">
         </cr-icon-button>
       </span>
-      ${this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
+      ${this.isImmersiveEnabled_ ? html`
+        <cr-button class="toolbar-button" id="rate"
+            tabindex="${this.getRateTabIndex_()}"
+            aria-label="${this.getVoiceSpeedLabel_()}"
+            title="${this.i18n('voiceSpeedLabel')}"
+            aria-haspopup="menu"
+            @click="${this.onShowRateMenuClick_}">
+            ${this.getFormattedSpeechRate_()}
+        </cr-button>
+      ` : ''}
     </span>
-    ${!this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
-    <rate-menu
-        id="rateMenu"
-        .settingsPrefs="${this.settingsPrefs}"
+    ${!this.isImmersiveEnabled_ ? html`
+      <cr-button class="toolbar-button" id="rate"
+          tabindex="${this.getRateTabIndex_()}"
+          aria-label="${this.getVoiceSpeedLabel_()}"
+          title="${this.i18n('voiceSpeedLabel')}"
+          aria-haspopup="menu"
+          @click="${this.onShowRateMenuClick_}">
+          ${this.getFormattedSpeechRate_()}
+      </cr-button>
+    ` : ''}
+    <rate-menu id="rateMenu" .settingsPrefs="${this.settingsPrefs}"
         @rate-change="${this.onRateChange_}">
     </rate-menu>
   ` : ''}
-  ${this.isImmersiveEnabled_ ? html`
-    ${renderTextStyleOptions.call(this)}
-    <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
-        class="toolbar-button"
-        title="$i18n{moreOptionsLabel}"
-        aria-haspopup="menu"
-        iron-icon="read-anything:settings"
-        @click="${this.onMoreOptionsClick_}">
-    </cr-icon-button>
-    ${this.isImmersiveMode ? html`
-      <cr-icon-button id="close" tabindex="-1"
-          class="toolbar-button"
-          aria-label="$i18n{readingModeLanguageMenuClose}"
-          title="$i18n{readingModeLanguageMenuClose}"
-          iron-icon="cr:close"
-          @click="${this.onCloseClick_}">
-      </cr-icon-button>
-    ` : ''}
-    <settings-menu
-      id="settingsMenu"
-      .settingsPrefs="${this.settingsPrefs}"
-      .isImmersiveMode="${this.isImmersiveMode}"
-      .isReadAnythingPinned="${this.isReadAnythingPinned}"
-      @close-submenu-requested="${this.onCloseSubmenuRequested_}"
-      @close-all-menus="${this.onCloseAllMenus_}"
-      @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
-    </settings-menu>
-    <presentation-menu id="presentationMenu"
-      class="settings-submenu"
-      .presentationState="${this.presentationState}"
-      @close-all-menus="${this.onCloseAllMenus_}">
-    </presentation-menu>
-  ` : html`
+  ${!this.isImmersiveEnabled_ ? html`
     ${this.isReadAloudEnabled_ ? html`
       <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
           aria-label="$i18n{voiceSelectionLabel}"
@@ -167,17 +123,61 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     <hr class="separator" aria-hidden="true">
 
     ${this.textStyleToggles_.map((item) => html`
-    <cr-icon-button tabindex="-1" class="toolbar-button"
-        ?disabled="${this.isSpeechActive}"
-        id="${item.id}"
-        aria-label="${item.title}"
-        title="${item.title}"
-        iron-icon="${item.icon}"
-        @click="${this.onToggleButtonClick_}">
-    </cr-icon-button>
+      <cr-icon-button tabindex="-1" class="toolbar-button"
+          ?disabled="${this.isSpeechActive}"
+          id="${item.id}"
+          aria-label="${item.title}"
+          title="${item.title}"
+          iron-icon="${item.icon}"
+          @click="${this.onToggleButtonClick_}">
+      </cr-icon-button>
     `)}
-
-    ${renderTextStyleOptions.call(this)}
+  ` : ''}
+  ${this.textStyleOptions_.map((item, index) => html`
+    ${item.announceBlock ?? html``}
+    <cr-icon-button class="toolbar-button text-style-button"
+        id="${item.id}"
+        tabindex="-1"
+        data-index="${index}"
+        aria-label="${item.ariaLabel}"
+        title="${item.ariaLabel}"
+        aria-haspopup="menu"
+        iron-icon="${item.icon}"
+        @click="${this.onTextStyleMenuButtonClick_}">
+    </cr-icon-button>
+  `)};
+  ${this.isImmersiveEnabled_ ? html`
+    <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
+        class="toolbar-button"
+        title="$i18n{moreOptionsLabel}"
+        aria-haspopup="menu"
+        iron-icon="read-anything:settings"
+        @click="${this.onMoreOptionsClick_}">
+    </cr-icon-button>
+    ${this.isImmersiveMode ? html`
+      <cr-icon-button id="close" tabindex="-1"
+          class="toolbar-button"
+          aria-label="$i18n{readingModeLanguageMenuClose}"
+          title="$i18n{readingModeLanguageMenuClose}"
+          iron-icon="cr:close"
+          @click="${this.onCloseClick_}">
+      </cr-icon-button>
+    ` : ''}
+    <settings-menu
+      id="settingsMenu"
+      .settingsPrefs="${this.settingsPrefs}"
+      .isImmersiveMode="${this.isImmersiveMode}"
+      .isReadAnythingPinned="${this.isReadAnythingPinned}"
+      @close-submenu-requested="${this.onCloseSubmenuRequested_}"
+      @close-all-menus="${this.onCloseAllMenus_}"
+      @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
+    </settings-menu>
+    <presentation-menu id="presentationMenu"
+      class="settings-submenu"
+      .presentationState="${this.presentationState}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+    </presentation-menu>
+  ` : html`
     <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
         class="hidden"
         title="$i18n{moreOptionsLabel}"
