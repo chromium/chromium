@@ -105,8 +105,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             (OmniboxAutocompleteController*)autocompleteController
                                            hasSuggestions:(BOOL)hasSuggestions
                                                isFocusing:(BOOL)isFocusing {
-  [self.consumer setKeyboardAttachedBottomOmniboxHeight:
-                     self.presenter.keyboardAttachedBottomOmniboxHeight];
+  if (!base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    [self.consumer setKeyboardAttachedBottomOmniboxHeight:
+                       self.presenter.keyboardAttachedBottomOmniboxHeight];
+  }
+
   [self.consumer newResultsAvailable];
   [_consumer setUseBottomOmniboxInPopup:self.presenter.useBottomOmniboxInPopup];
 
