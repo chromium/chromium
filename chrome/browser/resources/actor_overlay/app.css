@@ -96,17 +96,52 @@
   will-change: transform;
 }
 
-@keyframes loading-state {
-  0% {
+/*
+ * Loading State Animation Specs:
+ *
+ * Travel Speed: 750ms per 4px (Origin to Peak).
+ * Micro Holds:  100ms pause at the top and bottom.
+ *
+ * Keyframe percentages are derived from these durations relative to the
+ * 3200ms total cycle.
+ */
+@keyframes loading-intro {
+  from {
+    transform: translateY(0px);
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  to {
     transform: translateY(-4px);
   }
-  100% {
+}
+
+@keyframes loading-loop {
+  0%,
+  3.125% {
+    transform: translateY(-4px);
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  50% {
     transform: translateY(4px);
+    animation-timing-function: linear;
+  }
+
+  50%,
+  53.125% {
+    transform: translateY(4px);
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  100% {
+    transform: translateY(-4px);
   }
 }
 
 #magicCursor.loading #cursorImage {
-  animation: loading-state 1000ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite alternate;
+  animation:
+    loading-intro 750ms forwards,
+    loading-loop 3200ms infinite 750ms;
 }
 
 @keyframes cursor-click {
