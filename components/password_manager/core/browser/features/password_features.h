@@ -72,10 +72,6 @@ BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 // login success/failure.
 BASE_DECLARE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved);
 
-// Checks if the new password field is visible in the viewport before returning
-// the form in the ChangePasswordFormWaiter.
-BASE_DECLARE_FEATURE(kCheckVisibilityInChangePasswordFormWaiter);
-
 // Delete undecryptable passwords from the login database.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
 
