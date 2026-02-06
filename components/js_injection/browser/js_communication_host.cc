@@ -265,6 +265,7 @@ JsCommunicationHost::GetWebMessageHostFactories() {
     factories[i].js_name = js_objects_[i]->name;
     factories[i].allowed_origin_rules = js_objects_[i]->allowed_origin_rules;
     factories[i].factory = js_objects_[i]->factory.get();
+    factories[i].world_id = js_objects_[i]->world_id;
   }
   return factories;
 }

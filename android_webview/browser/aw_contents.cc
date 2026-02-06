@@ -129,7 +129,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwContents_jni.h"
 #include "android_webview/browser_jni_headers/AwSiteVisitLogger_jni.h"
-#include "android_webview/browser_jni_headers/StartupJavascriptInfo_jni.h"
+#include "android_webview/browser_jni_headers/PersistentJavascriptInfo_jni.h"
 
 struct AwDrawSWFunctionTable;
 
@@ -1435,8 +1435,8 @@ std::vector<ScopedJavaLocalRef<jobject>> AwContents::GetWebMessageListenerInfos(
   return {};
 }
 
-std::vector<ScopedJavaLocalRef<jobject>>
-AwContents::GetDocumentStartupJavascripts(JNIEnv* env) {
+std::vector<ScopedJavaLocalRef<jobject>> AwContents::GetPersistentJavascripts(
+    JNIEnv* env) {
   if (!js_communication_host_.get()) {
     return {};
   }
@@ -1448,12 +1448,9 @@ AwContents::GetDocumentStartupJavascripts(JNIEnv* env) {
   for (const auto& script : scripts) {
     const std::vector<std::string> rules =
         script.allowed_origin_rules_.Serialize();
-    if (script.event_type_ ==
-        js_injection::mojom::DocumentInjectionTime::kDocumentStart) {
-      script_objects.push_back(Java_StartupJavascriptInfo_create(
-          env, base::android::ConvertUTF16ToJavaString(env, script.script_),
-          base::android::ToJavaArrayOfStrings(env, rules)));
-    }
+    script_objects.push_back(Java_PersistentJavascriptInfo_create(
+        env, script.script_, rules, script.world_identifier_,
+        script.event_type_));
   }
 
   return script_objects;
@@ -1829,4 +1826,4 @@ void AwContents::OnSafeBrowsingAllowListSet() {
 
 DEFINE_JNI(AwContents)
 DEFINE_JNI(AwSiteVisitLogger)
-DEFINE_JNI(StartupJavascriptInfo)
+DEFINE_JNI(PersistentJavascriptInfo)
