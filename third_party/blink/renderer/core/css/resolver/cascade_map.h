@@ -98,7 +98,7 @@ class CORE_EXPORT CascadeMap {
           : priority(priority), next_index(next_index) {}
 
       CascadePriority priority;
-      // 0 for null; Otherwise, next_index - 1 is index in the backing vector.
+      // Index in the backing vector, or kNotFound for "none".
       wtf_size_t next_index;
     };
 
@@ -111,8 +111,8 @@ class CORE_EXPORT CascadeMap {
     CascadePriorityList() = default;
     inline CascadePriorityList(BackingVector& backing_vector,
                                CascadePriority priority)
-        : head_index_(backing_vector.size() + 1) {
-      backing_vector.emplace_back(priority, 0);
+        : head_index_(backing_vector.size()) {
+      backing_vector.emplace_back(priority, kNotFound);
     }
 
     class Iterator {
@@ -147,7 +147,7 @@ class CORE_EXPORT CascadeMap {
    private:
     friend class Iterator;
 
-    wtf_size_t head_index_ = 0;
+    wtf_size_t head_index_ = kNotFound;
   };
 
   class NativeMap {
@@ -207,10 +207,10 @@ CascadeMap::CascadePriorityList::Iterator::operator->() const {
 
 inline CascadeMap::CascadePriorityList::Iterator&
 CascadeMap::CascadePriorityList::Iterator::operator++() {
-  if (!backing_node_->next_index) {
+  if (backing_node_->next_index == kNotFound) {
     backing_node_ = nullptr;
   } else {
-    backing_node_ = &backing_vector_->at(backing_node_->next_index - 1);
+    backing_node_ = &backing_vector_->at(backing_node_->next_index);
   }
   return *this;
 }
@@ -225,10 +225,10 @@ inline bool CascadeMap::CascadePriorityList::Iterator::operator!=(
 inline CascadeMap::CascadePriorityList::Iterator
 CascadeMap::CascadePriorityList ::Begin(
     const BackingVector& backing_vector) const {
-  if (!head_index_) {
+  if (head_index_ == kNotFound) {
     return Iterator(&backing_vector, nullptr);
   }
-  return Iterator(&backing_vector, &backing_vector[head_index_ - 1]);
+  return Iterator(&backing_vector, &backing_vector[head_index_]);
 }
 
 inline CascadeMap::CascadePriorityList::Iterator
@@ -251,12 +251,12 @@ inline CascadePriority& CascadeMap::CascadePriorityList::Top(
 
 inline void CascadeMap::CascadePriorityList::Push(BackingVector& backing_vector,
                                                   CascadePriority priority) {
-  backing_vector.push_back(Node(priority, head_index_));
-  head_index_ = backing_vector.size();
+  backing_vector.emplace_back(priority, head_index_);
+  head_index_ = backing_vector.size() - 1;
 }
 
 inline bool CascadeMap::CascadePriorityList::IsEmpty() const {
-  return !head_index_;
+  return head_index_ == kNotFound;
 }
 
 }  // namespace blink
