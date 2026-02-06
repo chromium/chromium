@@ -1542,9 +1542,12 @@ void BrowserView::OnProjectsPanelStateChanged(
 // BrowserView, BrowserWindow implementation:
 
 void BrowserView::Show() {
-  if (InitialWebUIManager::From(browser()) &&
-      InitialWebUIManager::From(browser())->ShouldDeferShow()) {
-    return;
+  if (auto* manager = InitialWebUIManager::From(browser())) {
+    if (manager->ShouldDeferShow()) {
+      manager->SetWebUIReadyCallback(base::BindOnce(
+          &BrowserView::OnInitialWebUIReady, weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
   }
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
@@ -6230,6 +6233,10 @@ void BrowserView::OnFirstPresentation(
     manager->OnBrowserWindowFirstPresentation(
         frame_timing_details.presentation_feedback.timestamp);
   }
+}
+
+void BrowserView::OnInitialWebUIReady() {
+  Show();
 }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
