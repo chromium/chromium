@@ -62,8 +62,8 @@ class WebAppBrowserControllerBrowserTest : public WebAppBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
                        ToolbarUpdatedOnReinstall) {
-  webapps::ManifestId manifest_id =
-      embedded_test_server()->GetURL("/web_apps/scope_updating/");
+  webapps::ManifestId manifest_id = webapps::ManifestId(
+      embedded_test_server()->GetURL("/web_apps/scope_updating/"));
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/scope_updating/page.html");
   GURL out_of_scope_url = embedded_test_server()->GetURL(
@@ -108,8 +108,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
                        ToolbarAppearsOnReinstallNarrowing) {
-  webapps::ManifestId manifest_id =
-      embedded_test_server()->GetURL("/web_apps/scope_updating/");
+  webapps::ManifestId manifest_id = webapps::ManifestId(
+      embedded_test_server()->GetURL("/web_apps/scope_updating/"));
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/scope_updating/page.html");
   GURL out_of_scope_url = embedded_test_server()->GetURL(

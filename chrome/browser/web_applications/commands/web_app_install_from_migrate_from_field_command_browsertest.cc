@@ -94,11 +94,15 @@ class WebAppInstallFromMigrateFromFieldCommandBrowserTest
   GURL GetSourceStartUrl() {
     return https_server()->GetURL("/banners/manifest_test_page.html");
   }
-  webapps::ManifestId GetSourceManifestId() { return GetSourceStartUrl(); }
+  webapps::ManifestId GetSourceManifestId() {
+    return webapps::ManifestId(GetSourceStartUrl());
+  }
   GURL GetTargetStartUrl() {
     return https_server()->GetURL("/banners/target_app.html");
   }
-  webapps::ManifestId GetTargetManifestId() { return GetTargetStartUrl(); }
+  webapps::ManifestId GetTargetManifestId() {
+    return webapps::ManifestId(GetTargetStartUrl());
+  }
   webapps::AppId GetTargetAppId() {
     return GenerateAppIdFromManifestId(GetTargetManifestId());
   }

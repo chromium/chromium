@@ -456,7 +456,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(noop_lock_), *app_lock_,
-      {GenerateAppIdFromManifestId(opt_manifest_->id)},
+      {GenerateAppIdFromManifestId(webapps::ManifestId(opt_manifest_->id))},
       base::BindOnce(
           &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
           weak_ptr_factory_.GetWeakPtr()));

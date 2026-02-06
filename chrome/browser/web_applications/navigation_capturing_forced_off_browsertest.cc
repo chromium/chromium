@@ -56,7 +56,7 @@ class NavigationCapturingForcedOffTest
            {GetParam() == NavCaptureOffConfig::kFeatureOnInitialNavOff
                 ? "initial_nav_forced_off_apps"
                 : "user_settings_forced_off_apps",
-            GenerateAppIdFromManifestId(GURL(kTestAppUrl))}});
+            GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kTestAppUrl)))}});
     }
   }
 

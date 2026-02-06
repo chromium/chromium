@@ -65,10 +65,10 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
   }
 
   GURL app_url() const { return app_url_; }
-  GURL manifest_id() const { return manifest_id_; }
+  webapps::ManifestId manifest_id() const { return manifest_id_; }
   GURL parent_app_url() const { return parent_app_url_; }
-  GURL parent_manifest_id() const { return parent_manifest_id_; }
-  GURL wrong_parent_manifest_id() const { return wrong_parent_manifest_id_; }
+  webapps::ManifestId parent_manifest_id() const { return parent_manifest_id_; }
+  webapps::ManifestId wrong_parent_manifest_id() const { return wrong_parent_manifest_id_; }
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
   FakeWebContentsManager& web_contents_manager() {

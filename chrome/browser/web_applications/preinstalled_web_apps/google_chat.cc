@@ -54,7 +54,7 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
   // or it was policy installed.)
   if (use_dedicated_origin_chat) {
     options.SetOnlyUninstallAndReplaceWhenCompatible(
-        GenerateAppIdFromManifestId(GURL(kOldManifestId)),
+        GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kOldManifestId))),
         ExternalInstallOptions::
             SetOnlyUninstallAndReplaceWhenCompatiblePassKey());
   }

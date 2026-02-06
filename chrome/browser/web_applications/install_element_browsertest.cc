@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
 
   // Verify the app is installed.
   webapps::AppId app_id =
-      GenerateAppIdFromManifestId(https_server()->GetURL("/some_id"));
+      GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL("/some_id")));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
 
   // Verify the app is installed.
   webapps::AppId app_id = GenerateAppIdFromManifestId(
-      https_server()->GetURL(kInstallElementPageId));
+      webapps::ManifestId(https_server()->GetURL(kInstallElementPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
   EXPECT_EQ(app_controller->GetTitle(), u"Simple web app");
 
   // Verify the app is installed.
-  webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
 
   // Verify the app is not installed.
   webapps::AppId app_id =
-      GenerateAppIdFromManifestId(https_server()->GetURL(kCustomIdPageId));
+      GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL(kCustomIdPageId)));
   EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 }
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
 
   // Verify the app is installed.
   webapps::AppId app_id = GenerateAppIdFromManifestId(
-      https_server()->GetURL(kInstallElementPageId));
+      webapps::ManifestId(https_server()->GetURL(kInstallElementPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 }
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 
   // Verify the app is installed.
   webapps::AppId app_id =
-      GenerateAppIdFromManifestId(https_server()->GetURL(kCustomIdPageId));
+      GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL(kCustomIdPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 }
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   // Generate the app id from the manifest id and verify it matches the app just
   // installed.
   const GURL manifest_id = https_server()->GetURL(kCustomIdPageId);
-  webapps::AppId generated_app_id = GenerateAppIdFromManifestId(manifest_id);
+  webapps::AppId generated_app_id = GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   EXPECT_EQ(installed_app_id, generated_app_id);
 
   // Verify that the app was installed and launched.
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 
   webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
       browser(), background_doc_install_url);
-  EXPECT_EQ(app_id, GenerateAppIdFromManifestId(manifest_id));
+  EXPECT_EQ(app_id, GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id)));
 
   // Verify that the app was installed.
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(

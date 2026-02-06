@@ -326,7 +326,8 @@ class WebAppPolicyManagerTestBase : public WebAppTest {
 
   bool IsPreventCloseEnabled(const std::string& manifest_id) {
     return policy_manager().IsPreventCloseEnabled(
-        web_app::GenerateAppIdFromManifestId(GURL(manifest_id)));
+        web_app::GenerateAppIdFromManifestId(
+            webapps::ManifestId(GURL(manifest_id))));
   }
 
   void WaitForAppsToSynchronize() {

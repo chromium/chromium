@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
                        RedirectedPlaceholderAppHasNameIcon) {
   base::DictValue app = GetCustomAppIconAndNameItem();
   app.Set(kUrlKey, GetRedirectingOtherOriginInstallUrl().spec());
-  webapps::AppId app_id =
-      GenerateAppIdFromManifestId(GetRedirectingOtherOriginInstallUrl());
+  webapps::AppId app_id = GenerateAppIdFromManifestId(
+      webapps::ManifestId(GetRedirectingOtherOriginInstallUrl()));
   ASSERT_TRUE(SetPolicyAndWaitForInstall(std::move(app), app_id));
 
   // We should have the custom name and icon.

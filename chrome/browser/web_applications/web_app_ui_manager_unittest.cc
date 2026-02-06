@@ -41,8 +41,8 @@ class WebAppUiManagerTest : public testing::Test {
  protected:
   void InitAppWithDisplayMode(DisplayMode display_mode) {
     GURL test_app_url = GURL(kTestAppId);
-    auto web_app =
-        std::make_unique<WebApp>(test_app_url, test_app_url, test_app_url);
+    auto web_app = std::make_unique<WebApp>(webapps::ManifestId(test_app_url),
+                                            test_app_url, test_app_url);
     web_app->SetDisplayMode(display_mode);
     if (display_mode == DisplayMode::kBrowser) {
       web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);

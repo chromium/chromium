@@ -68,7 +68,8 @@ class RewriteDiyIconsCommandTest : public WebAppTest {
   // Explicitly sets the DIY app's masked state to `masked_on_mac`.
   webapps::AppId InstallDiyApp(bool set_masked_on_mac = false) {
     auto install_info = std::make_unique<WebAppInstallInfo>(
-        GURL("https://example.com/manifest"), GURL("https://example.com/app"));
+        webapps::ManifestId(GURL("https://example.com/manifest")),
+        GURL("https://example.com/app"));
     install_info->title = u"Test DIY App";
     install_info->scope = GURL("https://example.com/");
     install_info->is_diy_app = true;
@@ -97,7 +98,8 @@ class RewriteDiyIconsCommandTest : public WebAppTest {
 
   webapps::AppId InstallNonDiyApp() {
     auto install_info = std::make_unique<WebAppInstallInfo>(
-        GURL("https://example.com/manifest"), GURL("https://example.com/app"));
+        webapps::ManifestId(GURL("https://example.com/manifest")),
+        GURL("https://example.com/app"));
     install_info->title = u"Test Regular App";
     install_info->scope = GURL("https://example.com/");
     install_info->is_diy_app = false;

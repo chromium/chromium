@@ -676,7 +676,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateMigrationSourcesApproved) {
   static_cast<FakeWebAppOriginAssociationManager&>(
       provider().origin_association_manager())
       .SetMigrationSourcesData(
-          {webapps::ManifestId("https://migration.foo.example/")});
+          {webapps::ManifestId(GURL("https://migration.foo.example/"))});
 
   EXPECT_CALL(*mock_scheduler_, ScheduleResolveWebAppPendingMigrationInfo(_, _))
       .WillOnce(base::test::RunOnceClosure<0>());
@@ -757,7 +757,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, MigrationSourceChangeSchedulesSync) {
   static_cast<FakeWebAppOriginAssociationManager&>(
       provider().origin_association_manager())
       .SetMigrationSourcesData(
-          {webapps::ManifestId("https://migration.foo.example/")});
+          {webapps::ManifestId(GURL("https://migration.foo.example/"))});
 
   // 1. Install without migration sources.
   {
