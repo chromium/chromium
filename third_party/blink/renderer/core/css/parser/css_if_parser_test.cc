@@ -26,9 +26,6 @@ class CSSIfParserTest : public PageTestBase {
 };
 
 TEST_F(CSSIfParserTest, ConsumeValidCondition) {
-  ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
-  ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
-  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
   const char* valid_tests[] = {
       // clang-format off
     "style(--x)",
@@ -71,9 +68,6 @@ TEST_F(CSSIfParserTest, ConsumeValidCondition) {
 }
 
 TEST_F(CSSIfParserTest, ConsumeInvalidCondition) {
-  ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
-  ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
-  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
   const char* invalid_parse_time_tests[] = {
       // clang-format off
     "invalid",

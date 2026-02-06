@@ -355,10 +355,6 @@ class ValidIfTest : public testing::Test,
 INSTANTIATE_TEST_SUITE_P(All, ValidIfTest, testing::ValuesIn(valid_if_values));
 
 TEST_P(ValidIfTest, ContainsValidIf) {
-  ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
-  ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
-  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
-
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -379,10 +375,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(invalid_if_values));
 
 TEST_P(InvalidIfTest, ContainsInvalidIf) {
-  ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
-  ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
-  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
-
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
   auto* context = MakeGarbageCollected<CSSParserContext>(

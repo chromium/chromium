@@ -1648,8 +1648,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       CSSParserTokenStream::BlockGuard guard(stream);
       success &=
           ResolveAutoBaseInto(stream, tree_scope, resolver, context, out);
-    } else if (token.FunctionId() == CSSValueID::kIf &&
-               RuntimeEnabledFeatures::CSSInlineIfForStyleQueriesEnabled()) {
+    } else if (token.FunctionId() == CSSValueID::kIf) {
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveIfInto(stream, tree_scope, resolver, context,
                                function_context, out);
@@ -2743,7 +2742,6 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
 
     KleeneValue EvaluateMediaQuerySet(const MediaQuerySet& query) override {
       // Evaluate media() function
-      DCHECK(RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled());
       resolver_state_.StyleBuilder().SetAffectedByFunctionalMedia();
       StyleEngine& style_engine =
           resolver_state_.GetDocument().GetStyleEngine();

@@ -612,9 +612,6 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           has_references = true;
           continue;
         case CSSValueID::kIf:
-          if (!RuntimeEnabledFeatures::CSSInlineIfForStyleQueriesEnabled()) {
-            break;
-          }
           if (!ConsumeIf(stream, has_references, has_font_units,
                          has_root_font_units, has_line_height_units,
                          has_dashed_functions, context)) {

@@ -1518,27 +1518,6 @@
       status: "experimental",
     },
     {
-      // CSS if() function for custom properties. Flag is used only for media
-      // queries support in conditions.
-      // https://drafts.csswg.org/css-values-5/#if-notation.
-      name: "CSSInlineIfForMediaQueries",
-      status: "stable",
-    },
-    {
-      // CSS if() function for custom properties. Flag is used only for style
-      // queries support in conditions.
-      // https://drafts.csswg.org/css-values-5/#if-notation.
-      name: "CSSInlineIfForStyleQueries",
-      status: "stable",
-    },
-    {
-      // CSS if() function for custom properties. Flag is used only for supports
-      // queries support in conditions.
-      // https://drafts.csswg.org/css-values-5/#if-notation.
-      name: "CSSInlineIfForSupportsQueries",
-      status: "stable",
-    },
-    {
       // https://chromestatus.com/feature/6289894144212992
       name: "CSSKeyframesRuleLength",
       status: "stable",
