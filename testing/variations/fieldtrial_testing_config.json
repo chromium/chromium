@@ -17503,6 +17503,21 @@
             ]
         }
     ],
+    "NTPBackgroundImageCache": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableNTPBackgroundImageCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "NTPPopularSites": [
         {
             "platforms": [

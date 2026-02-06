@@ -591,7 +591,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 - (void)setCustomBackground:(HomeCustomBackground)customBackground
                       image:(UIImage*)image
                       cache:(BOOL)cache {
-  if (cache && _backgroundImageCacheService) {
+  if (cache && _backgroundImageCacheService &&
+      IsNTPBackgroundImageCacheEnabled()) {
     _backgroundImageCacheService->SetCachedBackgroundImage(image);
   }
   HomeCustomizationFramingCoordinates* coordinates =

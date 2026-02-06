@@ -345,6 +345,9 @@ extern const char kEnableFileDownloadConnectorIOSDescription[];
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 
+extern const char kEnableNTPBackgroundImageCacheName[];
+extern const char kEnableNTPBackgroundImageCacheDescription[];
+
 extern const char kEnableNewStartupFlowName[];
 extern const char kEnableNewStartupFlowDescription[];
 

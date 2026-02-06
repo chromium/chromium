@@ -575,6 +575,11 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
     "when Google is the selected search engine, accessible from the omnibox or "
     "popup menu.";
 
+const char kEnableNTPBackgroundImageCacheName[] =
+    "Enable NTP Background Image Cache";
+const char kEnableNTPBackgroundImageCacheDescription[] =
+    "Enables the NTP background image cache service to improve performance.";
+
 const char kEnableNewStartupFlowName[] = "EnableNewStartupFlow";
 const char kEnableNewStartupFlowDescription[] =
     "Enables the EnableNewStartupFlow feature.";

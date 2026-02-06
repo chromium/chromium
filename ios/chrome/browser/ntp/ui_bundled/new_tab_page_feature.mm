@@ -29,6 +29,8 @@ BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMostVisitedTilesCustomizationIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableNTPBackgroundImageCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kConsistentLogoDoodleHeight, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
@@ -133,6 +135,10 @@ bool ShouldEnlargeNTPFakeboxForMIA() {
 
 bool IsContentSuggestionsCustomizable() {
   return base::FeatureList::IsEnabled(kMostVisitedTilesCustomizationIOS);
+}
+
+bool IsNTPBackgroundImageCacheEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNTPBackgroundImageCache);
 }
 
 bool IsConsistentLogoDoodleHeightEnabled() {
