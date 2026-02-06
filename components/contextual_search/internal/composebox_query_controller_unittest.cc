@@ -3825,4 +3825,25 @@ TEST_F(ComposeboxQueryControllerTest,
       aim_url, kVisualInputTypeQueryParameter, &vit_value));
 }
 
+TEST_F(ComposeboxQueryControllerTest, MimeTypeToString) {
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(lens::MimeType::kPdf),
+            "application/pdf");
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(lens::MimeType::kHtml),
+            "text/html");
+  EXPECT_EQ(
+      ComposeboxQueryController::MimeTypeToString(lens::MimeType::kPlainText),
+      "text/plain");
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(lens::MimeType::kImage),
+            "image/jpeg");
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(
+                lens::MimeType::kAnnotatedPageContent),
+            "application/x-protobuf");
+  EXPECT_EQ(
+      ComposeboxQueryController::MimeTypeToString(lens::MimeType::kUnknown),
+      "image/jpeg");
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(
+                static_cast<lens::MimeType>(100)),
+            std::nullopt);
+}
+
 }  // namespace contextual_search

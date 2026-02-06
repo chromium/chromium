@@ -251,26 +251,6 @@ lens::LensOverlayVisualInputType MediaTypeToVisualInputType(
   }
 }
 
-std::string MimeTypeToString(lens::MimeType mime_type) {
-  switch (mime_type) {
-    case lens::MimeType::kPdf:
-      return "application/pdf";
-    case lens::MimeType::kHtml:
-      return "text/html";
-    case lens::MimeType::kPlainText:
-      return "text/plain";
-    case lens::MimeType::kImage:
-      // Images always use jpeg encoding.
-      // TODO(crbug.com/481835802): Update this logic if webp encoding is
-      // turned on.
-      return "image/jpeg";
-    case lens::MimeType::kAnnotatedPageContent:
-      return "application/x-protobuf";
-    default:
-      NOTREACHED() << "Unsupported mime type";
-  }
-}
-
 int64_t RandInt64() {
   int64_t number;
   base::RandBytes(base::byte_span_from_ref(number));
@@ -331,6 +311,36 @@ ComposeboxQueryController::ComposeboxQueryController(
 
 ComposeboxQueryController::~ComposeboxQueryController() = default;
 
+// static
+std::optional<std::string> ComposeboxQueryController::MimeTypeToString(
+    lens::MimeType mime_type) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      return "application/pdf";
+    case lens::MimeType::kHtml:
+      return "text/html";
+    case lens::MimeType::kPlainText:
+      return "text/plain";
+    case lens::MimeType::kImage:
+      // Images always use jpeg encoding.
+      // TODO(crbug.com/481835802): Update this logic if webp encoding is
+      // turned on.
+      return "image/jpeg";
+    case lens::MimeType::kAnnotatedPageContent:
+      return "application/x-protobuf";
+    case lens::MimeType::kUnknown:
+      // The mime type may be unknown for image-only LensOverlay flows, as the
+      // LensOverlay does not set the primary content type unless it is a pdf or
+      // webpage contextual query. In this case, return the mime type for an
+      // image.
+      return "image/jpeg";
+    default:
+      // Fail gracefully, as the mime type value is optional to set in the
+      // proto.
+      return std::nullopt;
+  }
+}
+
 void ComposeboxQueryController::InitializeIfNeeded() {
   if (query_controller_state_ == QueryControllerState::kOff) {
     // The query controller state starts at kOff. If it is set to any other
@@ -374,7 +384,10 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
         added_inputs.add_added_inputs()->mutable_lens_file();
     lens_file->set_vsrid(lens::Base64EncodeRequestId(file_info->request_id));
     lens_file->set_sticky_cluster_token(cluster_info_->search_session_id());
-    lens_file->set_mime_type(MimeTypeToString(file_info->mime_type));
+    auto mime_type = MimeTypeToString(file_info->mime_type);
+    if (mime_type.has_value()) {
+      lens_file->set_mime_type(mime_type.value());
+    }
     lens_file->set_file_name(file_info->file_name);
     if (file_info->tab_title.has_value()) {
       lens_file->set_page_title(file_info->tab_title.value());
