@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/dbus/fjord_oobe_service_provider.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_state_manager.h"
+#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
+#include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -12,17 +15,36 @@
 
 namespace ash {
 FjordOobeServiceProvider::FjordOobeServiceProvider() = default;
-FjordOobeServiceProvider::~FjordOobeServiceProvider() = default;
+
+FjordOobeServiceProvider::~FjordOobeServiceProvider() {
+  FjordOobeStateManager::Get()->RemoveObserver(this);
+  FjordOobeStateManager::Shutdown();
+}
 
 void FjordOobeServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
-  exported_object->ExportMethod(
+  exported_object_ = exported_object;
+  exported_object_->ExportMethod(
       chromeos::kFjordOobeServiceInterface,
       chromeos::kFjordOobeServiceExitTcSetupMethod,
       base::BindRepeating(&FjordOobeServiceProvider::ExitTouchControllerScreen,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FjordOobeServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
+  exported_object_->ExportMethod(
+      chromeos::kFjordOobeServiceInterface,
+      chromeos::kFjordOobeServiceGetFjordOobeStateMethod,
+      base::BindRepeating(&FjordOobeServiceProvider::GetOobeState,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FjordOobeServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // FjordOobeServiceProvider owns the initialization and shutdown of this
+  // service to ensure that the state manager is available when the dbus service
+  // starts.
+  FjordOobeStateManager::Initialize();
+  FjordOobeStateManager* manager = FjordOobeStateManager::Get();
+  manager->AddObserver(this);
 }
 
 void FjordOobeServiceProvider::OnExported(const std::string& interface_name,
@@ -31,6 +53,16 @@ void FjordOobeServiceProvider::OnExported(const std::string& interface_name,
   if (!success) {
     LOG(ERROR) << "Failed to export " << interface_name << "." << method_name;
   }
+}
+
+void FjordOobeServiceProvider::OnFjordOobeStateChanged(
+    fjord_oobe_state::proto::FjordOobeStateInfo new_state) {
+  dbus::Signal signal(chromeos::kFjordOobeServiceInterface,
+                      chromeos::kFjordOobeServiceFjordOobeStateChangedSignal);
+
+  dbus::MessageWriter writer(&signal);
+  writer.AppendProtoAsArrayOfBytes(new_state);
+  exported_object_->SendSignal(&signal);
 }
 
 void FjordOobeServiceProvider::ExitTouchControllerScreen(
@@ -47,6 +79,21 @@ void FjordOobeServiceProvider::ExitTouchControllerScreen(
   dbus::MessageWriter writer(response.get());
   writer.AppendBool(is_success);
 
+  std::move(response_sender).Run(std::move(response));
+}
+
+void FjordOobeServiceProvider::GetOobeState(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  FjordOobeStateManager* manager = FjordOobeStateManager::Get();
+  DCHECK(manager);
+
+  fjord_oobe_state::proto::FjordOobeStateInfo state =
+      manager->GetFjordOobeStateInfo();
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+  writer.AppendProtoAsArrayOfBytes(state);
   std::move(response_sender).Run(std::move(response));
 }
 }  // namespace ash

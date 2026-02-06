@@ -3825,7 +3825,7 @@ void WizardController::MaybeNotifyFjordOobeStateManager(
     return;
   }
 
-  state_manager->OnFjordOobeStateChanged(state);
+  state_manager->SetFjordOobeState(state);
 }
 
 }  // namespace ash

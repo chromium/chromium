@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
+#include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
 
 namespace ash {
 namespace {
@@ -39,6 +40,8 @@ FjordOobeStateManager::FjordOobeStateManager() {
                              FJORD_OOBE_STATE_UNIMPLEMENTED;
 }
 
+FjordOobeStateManager::~FjordOobeStateManager() = default;
+
 fjord_oobe_state::proto::FjordOobeStateInfo
 FjordOobeStateManager::GetFjordOobeStateInfo() {
   fjord_oobe_state::proto::FjordOobeStateInfo message;
@@ -46,7 +49,7 @@ FjordOobeStateManager::GetFjordOobeStateInfo() {
   return message;
 }
 
-void FjordOobeStateManager::OnFjordOobeStateChanged(
+void FjordOobeStateManager::SetFjordOobeState(
     fjord_oobe_state::proto::FjordOobeStateInfo::FjordOobeState new_state) {
   if (!fjord_util::ShouldShowFjordOobe()) {
     LOG(ERROR) << "Cannot set OOBE state when feature is not enabled";
@@ -54,5 +57,18 @@ void FjordOobeStateManager::OnFjordOobeStateChanged(
   }
   VLOG(1) << "Setting OOBE state to: " << new_state;
   current_state_ = new_state;
+  fjord_oobe_state::proto::FjordOobeStateInfo state;
+  state.set_oobe_state(current_state_);
+  for (auto& observer : observers_) {
+    observer.OnFjordOobeStateChanged(state);
+  }
+}
+
+void FjordOobeStateManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FjordOobeStateManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 }  // namespace ash
