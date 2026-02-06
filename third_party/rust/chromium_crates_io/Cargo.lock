@@ -173,6 +173,7 @@ dependencies = [
  "llguidance",
  "log",
  "minijinja",
+ "num-traits",
  "ordered-float",
  "png",
  "proc-macro2",
