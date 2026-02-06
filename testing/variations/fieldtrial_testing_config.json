@@ -17942,6 +17942,30 @@
             ]
         }
     ],
+    "NotificationTelemetrySwb": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "NotificationTelemetrySwbPollingInterval": "60",
+                        "NotificationTelemetrySwbReportingProbability": "1.0",
+                        "NotificationTelemetrySwbSendReports": "true"
+                    },
+                    "enable_features": [
+                        "NotificationTelemetrySwb"
+                    ]
+                }
+            ]
+        }
+    ],
     "NotificationWidthIncrease": [
         {
             "platforms": [
