@@ -192,7 +192,7 @@ public class TabStateStore implements TabPersistentStore {
         // additional work is required for that.
 
         saveTabIfNotClean(mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
-        if (mHasCipherFactory) {
+        if (mModelTrackingManager.isSynchronizerPresent(/* incognito= */ true)) {
             saveTabIfNotClean(mTabModelSelector.getModel(true).getCurrentTabSupplier().get());
         }
 

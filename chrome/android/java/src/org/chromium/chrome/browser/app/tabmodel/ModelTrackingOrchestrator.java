@@ -271,6 +271,17 @@ public class ModelTrackingOrchestrator {
         synchronizer.saveTab(tab);
     }
 
+    /**
+     * Whether the synchronizer for the given model is present.
+     *
+     * @param incognito Whether the synchronizer is for an incognito model.
+     */
+    public boolean isSynchronizerPresent(boolean incognito) {
+        StorageCollectionSynchronizer synchronizer =
+                incognito ? mIncognitoSynchronizer : mRegularSynchronizer;
+        return synchronizer != null;
+    }
+
     private StorageCollectionSynchronizer getSynchronizer(
             ProfileAndCollection profileAndCollection, boolean incognito) {
         if (incognito) {
