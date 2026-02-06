@@ -2055,4 +2055,46 @@ suite('ReadAloudModel', () => {
         expectHighlightAtIndexMatchesEmpty((segment4 + node2Text).length - 1);
         expectHighlightAtIndexMatchesEmpty((segment4 + node2Text).length);
       });
+
+  test(
+      'getCurrentText does not return hidden text from image captions',
+      async () => {
+        const visibleTextBefore = document.createElement('p');
+        visibleTextBefore.textContent = 'Look at this photograph';
+
+        // This structure mimics a hidden image with a caption.
+        const hiddenFigure = document.createElement('figure');
+        hiddenFigure.style.display = 'none';
+        const img = document.createElement('img');
+        img.src = 'image.png';
+        const figcaption = document.createElement('figcaption');
+        figcaption.textContent =
+            'Every time I do, every time I do it makes me laugh.';
+        hiddenFigure.appendChild(img);
+        hiddenFigure.appendChild(figcaption);
+
+        const visibleTextAfter = document.createElement('p');
+        visibleTextAfter.textContent =
+            'Every memory of looking out the back door.';
+
+        document.body.appendChild(visibleTextBefore);
+        document.body.appendChild(hiddenFigure);
+        document.body.appendChild(visibleTextAfter);
+
+        await microtasksFinished();
+
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        assertEquals(
+            visibleTextBefore.textContent,
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            visibleTextAfter.textContent,
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
 });

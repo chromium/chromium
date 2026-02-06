@@ -435,7 +435,18 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     if (!node) {
       return textNodes;
     }
-    const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL);
+    const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, {
+      acceptNode: (node) => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as HTMLElement;
+          if (element.style.display === 'none') {
+            // We should not read aloud text from a hidden element.
+            return NodeFilter.FILTER_REJECT;
+          }
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
     let currentNode;
 
     while (currentNode = treeWalker.nextNode()) {
