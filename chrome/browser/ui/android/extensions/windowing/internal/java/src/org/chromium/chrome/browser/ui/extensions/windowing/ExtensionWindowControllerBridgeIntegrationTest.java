@@ -30,8 +30,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityTypeTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -127,6 +129,21 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
         var extensionWindowControllerBridge =
                 getExtensionWindowControllerBridge(
                         taskId, mWebappActivityTestRule.getActivityTab().getProfile());
+        assertNotNull(extensionWindowControllerBridge);
+    }
+
+    @Test
+    @MediumTest
+    public void startTwa_addsExtensionWindowControllerBridgeToChromeAndroidTask() throws Exception {
+        // Act.
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.TRUSTED_WEB_ACTIVITY, mCustomTabActivityTestRule, "about:blank");
+
+        // Assert.
+        int taskId = mCustomTabActivityTestRule.getActivity().getTaskId();
+        var extensionWindowControllerBridge =
+                getExtensionWindowControllerBridge(
+                        taskId, mCustomTabActivityTestRule.getActivityTab().getProfile());
         assertNotNull(extensionWindowControllerBridge);
     }
 
@@ -277,6 +294,41 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    public void startTwa_notifyExtensionInternalsOfWindowCreation() throws Exception {
+        // Arrange:
+        // (1) Launch ChromeTabbedActivity. We need this to initialize native
+        // libraries, which is a prerequisite for Step (2).
+        // (2) Add a native WindowControllerListObserverForTesting to capture extension internal
+        // events.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        ExtensionWindowControllerBridgeImpl.initializeWindowControllerListObserverForTesting();
+
+        // Act: Start TWA.
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.TRUSTED_WEB_ACTIVITY, mCustomTabActivityTestRule, "about:blank");
+
+        int twaTaskId = mCustomTabActivityTestRule.getActivity().getTaskId();
+        var extensionWindowControllerBridge =
+                getExtensionWindowControllerBridge(
+                        twaTaskId, mCustomTabActivityTestRule.getActivityTab().getProfile());
+        assertNotNull(extensionWindowControllerBridge);
+        var extensionWindowId = extensionWindowControllerBridge.getExtensionWindowIdForTesting();
+
+        // Assert.
+        var extensionInternalEvents =
+                ExtensionWindowControllerBridgeImpl.getExtensionInternalEventsForTesting()
+                        .get(extensionWindowId);
+        assertNotNull(extensionInternalEvents);
+        assertEquals(
+                ExtensionInternalWindowEventForTesting.CREATED,
+                (int) extensionInternalEvents.get(0));
+
+        // Cleanup.
+        mCustomTabActivityTestRule.getActivity().finish();
+    }
+
+    @Test
+    @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
     public void startChromeTabbedActivity_triggerTaskFocusChange_notifyExtensionWindowController() {
         // Arrange:
@@ -418,6 +470,26 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    public void destroyTwa_destroysExtensionWindowControllerBridge() throws Exception {
+        // Arrange.
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.TRUSTED_WEB_ACTIVITY, mCustomTabActivityTestRule, "about:blank");
+        int taskId = mCustomTabActivityTestRule.getActivity().getTaskId();
+        var extensionWindowControllerBridge =
+                getExtensionWindowControllerBridge(
+                        taskId, mCustomTabActivityTestRule.getActivityTab().getProfile());
+        assertNotNull(extensionWindowControllerBridge);
+        assertNotEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+
+        // Act.
+        mCustomTabActivityTestRule.finishActivity();
+
+        // Assert.
+        assertEquals(0, extensionWindowControllerBridge.getNativePtrForTesting());
+    }
+
+    @Test
+    @MediumTest
     public void destroyChromeTabbedActivity_notifyExtensionInternalsOfWindowDestruction() {
         // Arrange:
         // (1) Launch ChromeTabbedActivity (the first window).
@@ -495,6 +567,37 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
         // Act.
         mWebappActivityTestRule.finishActivity();
+
+        // Assert.
+        var extensionInternalEvents =
+                ExtensionWindowControllerBridgeImpl.getExtensionInternalEventsForTesting()
+                        .get(extensionWindowId);
+        assertNotNull(extensionInternalEvents);
+        assertEquals(
+                ExtensionInternalWindowEventForTesting.REMOVED,
+                (int) extensionInternalEvents.get(extensionInternalEvents.size() - 1));
+    }
+
+    @Test
+    @MediumTest
+    public void destroyTwa_notifyExtensionInternalsOfWindowDestruction() throws Exception {
+        // Arrange:
+        // (1) Start TWA.
+        // (2) Add a native WindowControllerListObserverForTesting to capture extension internal
+        // events.
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.TRUSTED_WEB_ACTIVITY, mCustomTabActivityTestRule, "about:blank");
+
+        int taskId = mCustomTabActivityTestRule.getActivity().getTaskId();
+        var extensionWindowControllerBridge =
+                getExtensionWindowControllerBridge(
+                        taskId, mCustomTabActivityTestRule.getActivityTab().getProfile());
+        assertNotNull(extensionWindowControllerBridge);
+        var extensionWindowId = extensionWindowControllerBridge.getExtensionWindowIdForTesting();
+        ExtensionWindowControllerBridgeImpl.initializeWindowControllerListObserverForTesting();
+
+        // Act.
+        mCustomTabActivityTestRule.finishActivity();
 
         // Assert.
         var extensionInternalEvents =
