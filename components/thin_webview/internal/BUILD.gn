@@ -33,6 +33,7 @@ android_library("internal_java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/thinwebview/internal/CompositorViewImpl.java",
+    "java/src/org/chromium/components/thinwebview/internal/ThinWebViewActionModeCallback.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewImpl.java",
   ]
 

@@ -21,13 +21,17 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
+import org.chromium.content_public.browser.SelectionClient;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
-/** An android view backed by a {@link Surface} that is able to display a live {@link WebContents}. */
+/**
+ * An android view backed by a {@link Surface} that is able to display a live {@link WebContents}.
+ */
 @JNINamespace("thin_webview::android")
 @NullMarked
 public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
@@ -110,6 +114,12 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         mWebContentsDelegate = delegate;
         setContentView(contentView);
         ThinWebViewImplJni.get().setWebContents(mNativeThinWebViewImpl, webContents, delegate);
+
+        // Allow highlighting text.
+        SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
+        controller.setActionModeCallback(new ThinWebViewActionModeCallback(webContents));
+        controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
+
         webContents.updateWebContentsVisibility(Visibility.VISIBLE);
     }
 
