@@ -17,6 +17,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -280,6 +281,14 @@ public class IncognitoReauthControllerImpl
             mIncognitoReauthCoordinator.destroy();
             mIncognitoReauthCoordinator = null;
         }
+    }
+
+    /** Returns whether an app update has happened. */
+    public static boolean isFromUpdate(@Nullable PersistableBundle persistableBundle) {
+        if (persistableBundle == null) return false;
+
+        return BuildConfig.VERSION_CODE
+                != persistableBundle.getLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
     }
 
     /** Override from {@link IncognitoReauthController}. */

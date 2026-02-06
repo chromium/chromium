@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.tasks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.isFromUpdate;
 
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -123,9 +125,12 @@ public final class ReturnToChromeUtil {
 
     /** Returns whether should show a NTP as the home surface at startup. */
     public static boolean shouldShowNtpAsHomeSurfaceAtStartup(
-            Intent intent, Bundle bundle, ChromeInactivityTracker inactivityTracker) {
+            Intent intent,
+            Bundle bundle,
+            PersistableBundle persistableBundle,
+            ChromeInactivityTracker inactivityTracker) {
         // If the current session is due to recreated, don't show a NTP homepage.
-        if (isFromRecreate(bundle)) {
+        if (isFromRecreate(bundle) || isFromUpdate(persistableBundle)) {
             return false;
         }
 

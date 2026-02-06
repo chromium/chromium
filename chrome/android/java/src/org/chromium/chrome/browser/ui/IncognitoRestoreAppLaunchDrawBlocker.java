@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
-import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.isFromUpdate;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -228,8 +227,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
 
         // Only restore incognito state if the data was persisted for an app update.
         // TODO(crbug.com/474348773): Test more rigorously to see whether this check is needed.
-        if (BuildConfig.VERSION_CODE
-                == persistentState.getLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE)) {
+        if (!isFromUpdate(persistentState)) {
             return false;
         }
 

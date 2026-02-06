@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING;
 import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.isFromUpdate;
 import static org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.INVALID_TIPS_NOTIFICATION_FEATURE_TYPE;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
@@ -2207,10 +2208,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             boolean hadCipherData = false;
             PersistableBundle persistentState = getPersistentInstanceState();
             if (shouldPersistAcrossReboots() && persistentState != null) {
-                boolean appWasUpdated =
-                        BuildConfig.VERSION_CODE
-                                != persistentState.getLong(
-                                        PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
                 // Only restore incognito state if the data was persisted for an app update.
                 // It is possible for an app update to follow a device reboot, before the app is
                 // restored by the OS. In this case, the OS drops and clears the PersistableBundle
@@ -2218,7 +2215,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 // should not be restored incorrectly if an app update immediately after a reboot
                 // "hides" the occurrence of the reboot, as incognito state should not be restored
                 // after a reboot.
-                if (appWasUpdated) {
+                if (isFromUpdate(persistentState)) {
                     hadCipherData =
                             CipherLazyHolder.sCipherInstance.restoreFromPersistableBundle(
                                     persistentState);
@@ -4919,7 +4916,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         assert mInactivityTrackerSupplier.get() != null;
         return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                getIntent(), getSavedInstanceState(), mInactivityTrackerSupplier.get());
+                getIntent(),
+                getSavedInstanceState(),
+                getPersistentInstanceState(),
+                mInactivityTrackerSupplier.get());
     }
 
     /**
