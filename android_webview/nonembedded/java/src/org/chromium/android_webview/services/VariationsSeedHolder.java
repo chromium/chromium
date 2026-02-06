@@ -41,7 +41,7 @@ public class VariationsSeedHolder {
     private static void writeSeedWithoutClosing(SeedInfo seed, ParcelFileDescriptor destination) {
         // writeSeed() will close "out", but closing "out" will not close "destination".
         FileOutputStream out = new FileOutputStream(destination.getFileDescriptor());
-        VariationsUtils.writeSeed(out, seed);
+        VariationsUtils.writeSeed(out, seed, AwEntropyState.getLowEntropySource());
     }
 
     // Use mSeedHandler to send tasks to mSeedThread.
@@ -123,7 +123,7 @@ public class VariationsSeedHolder {
                     Log.e(TAG, "Failed to open seed file " + newSeedFile + " for update");
                     return;
                 }
-                if (!VariationsUtils.writeSeed(out, VariationsSeedHolder.this.mSeed)) {
+                if (!VariationsUtils.writeSeed(out, VariationsSeedHolder.this.mSeed, -1)) {
                     Log.e(TAG, "Failed to write seed file " + newSeedFile + " for update");
                     return;
                 }

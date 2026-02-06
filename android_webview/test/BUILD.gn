@@ -621,6 +621,7 @@ android_library("base_webview_instrumentation_test_java") {
   deps = [
     "//android_webview:browser_java",
     "//android_webview:common_java",
+    "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/test:base_webview_instrumentation_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -712,10 +713,12 @@ android_library("webview_instrumentation_test_utils_java") {
   srcjar_deps = [ ":webview_instrumentation_test_native_jni" ]
   deps = [
     "//android_webview:common_variations_java",
+    "//android_webview/proto:aw_variations_seed_proto_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
     "//components/component_updater/android:embedded_component_loader_java",
     "//components/variations/android:variations_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/blink/public/common",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
@@ -780,6 +783,7 @@ test("android_webview_unittests") {
     "//android_webview/browser/lifecycle",
     "//android_webview/browser/metrics",
     "//android_webview/browser/metrics:test_support",
+    "//android_webview/browser/variations",
     "//android_webview/common",
     "//android_webview/nonembedded",
     "//base/test:test_support",

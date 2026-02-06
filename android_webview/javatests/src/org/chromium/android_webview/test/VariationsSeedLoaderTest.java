@@ -16,6 +16,8 @@ import android.os.Looper;
 
 import androidx.test.filters.MediumTest;
 
+import com.google.protobuf.ByteString;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,6 +30,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.proto.AwVariationsSeedOuterClass.AwVariationsSeed;
 import org.chromium.android_webview.test.services.MockVariationsSeedServer;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
@@ -36,8 +39,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -383,6 +388,45 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
             seedRequested = runTestLoaderBlocking();
             Assert.assertFalse(
                     "New seed was requested when it should not have been", seedRequested);
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+        }
+    }
+
+    // Test the case that:
+    // VariationsUtils.getSeedFile() - exists, timestamp = now (Old Raw Format)
+    // VariationsUtils.getNewSeedFile() - doesn't exist
+    // Verifies that native code can still parse the old format.
+    @Test
+    @MediumTest
+    public void testHaveFreshNewFormatSeed() throws Exception {
+        try {
+            File oldFile = VariationsUtils.getSeedFile();
+            Assert.assertTrue("Seed file already exists", oldFile.createNewFile());
+
+            // Write a seed with the new format, including a low_entropy_source.
+            SeedInfo mockSeed = VariationsTestUtils.createMockSeed();
+            final int lowEntropySource = 123;
+            FileOutputStream out = new FileOutputStream(oldFile);
+            AwVariationsSeed proto =
+                    AwVariationsSeed.newBuilder()
+                            .setSignature(mockSeed.signature)
+                            .setCountry(mockSeed.country)
+                            .setDate(mockSeed.date)
+                            .setIsGzipCompressed(mockSeed.isGzipCompressed)
+                            .setSeedData(ByteString.copyFrom(mockSeed.seedData))
+                            .setLowEntropySource(lowEntropySource)
+                            .build();
+            proto.writeTo(out);
+            out.close();
+
+            boolean seedRequested = runTestLoaderBlocking();
+
+            // Since there was a fresh (new format) seed, and the parser should handle it,
+            // we should not request another seed.
+            Assert.assertFalse(
+                    "New seed was requested when it should not have been (C++ parser failed?)",
+                    seedRequested);
         } finally {
             VariationsTestUtils.deleteSeeds();
         }

@@ -46,6 +46,53 @@ public class VariationsUtilsTest {
         }
     }
 
+    // Test writing a seed when an entropy source IS available.
+    // The resulting file should contain the entropy source.
+    @Test
+    @MediumTest
+    public void testWriteSeedWithEntropy() throws IOException {
+        File file = null;
+        try {
+            file = File.createTempFile("seed", null, null);
+            SeedInfo mockSeed = VariationsTestUtils.createMockSeed();
+            int testEntropy = 123;
+
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                VariationsUtils.writeSeed(out, mockSeed, testEntropy);
+            }
+
+            AwVariationsSeed readProto = VariationsTestUtils.readProtoFromFile(file);
+            Assert.assertTrue("Seed should have entropy source", readProto.hasLowEntropySource());
+            Assert.assertEquals(
+                    "Entropy source mismatch", testEntropy, readProto.getLowEntropySource());
+        } finally {
+            if (file != null) file.delete();
+        }
+    }
+
+    // Test writing a seed when an entropy source is NOT available.
+    // The resulting file should not contain the entropy source.
+    @Test
+    @MediumTest
+    public void testWriteSeedWithoutEntropy() throws IOException {
+        File file = null;
+        try {
+            file = File.createTempFile("seed", null, null);
+            SeedInfo mockSeed = VariationsTestUtils.createMockSeed();
+
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                VariationsUtils.writeSeed(out, mockSeed, -1);
+            }
+
+            // Verify the file does NOT contain the entropy source.
+            AwVariationsSeed readProto = VariationsTestUtils.readProtoFromFile(file);
+            Assert.assertFalse(
+                    "Seed should not have entropy source", readProto.hasLowEntropySource());
+        } finally {
+            if (file != null) file.delete();
+        }
+    }
+
     // Test reading a seed that has some but not all fields, which should fail.
     @Test
     @MediumTest

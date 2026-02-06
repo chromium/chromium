@@ -76,7 +76,7 @@ public class VariationsTest extends AwParameterizedTest {
         seedInfo.date = new Date().getTime();
         seedInfo.seedData = seed.toByteArray();
         FileOutputStream out = new FileOutputStream(VariationsUtils.getNewSeedFile());
-        VariationsUtils.writeSeed(out, seedInfo);
+        VariationsUtils.writeSeed(out, seedInfo, -1);
 
         // Because our tests bypass WebView's glue layer, we need to load the seed manually.
         ThreadUtils.runOnUiThreadBlocking(

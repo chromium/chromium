@@ -138,18 +138,26 @@ public class VariationsUtils {
         }
     }
 
-    // Returns true on success. "out" will always be closed, regardless of success.
-    public static boolean writeSeed(FileOutputStream out, SeedInfo info) {
+    /**
+     * Returns true on success. "out" will always be closed, regardless of success.
+     *
+     * @param lowEntropySource The low entropy source value to embed in the seed. If -1, the field
+     *     will be omitted.
+     */
+    public static boolean writeSeed(FileOutputStream out, SeedInfo info, int lowEntropySource) {
         try {
-            AwVariationsSeed proto =
+            AwVariationsSeed.Builder builder =
                     AwVariationsSeed.newBuilder()
                             .setSignature(info.signature)
                             .setCountry(info.country)
                             .setDate(info.date)
                             .setIsGzipCompressed(info.isGzipCompressed)
-                            .setSeedData(ByteString.copyFrom(info.seedData))
-                            .build();
-            proto.writeTo(out);
+                            .setSeedData(ByteString.copyFrom(info.seedData));
+
+            if (lowEntropySource != -1) {
+                builder.setLowEntropySource(lowEntropySource);
+            }
+            builder.build().writeTo(out);
             return true;
         } catch (IOException e) {
             Log.e(TAG, "Failed writing seed file: " + e.getMessage());
