@@ -25,8 +25,11 @@ source_set("actor") {
     "execution_engine.h",
     "origin_checker.h",
     "site_policy.h",
+    "tools/attempt_form_filling_tool_request.h",
     "tools/click_tool_request.h",
     "tools/drag_and_release_tool_request.h",
+    "tools/history_tool_request.h",
+    "tools/media_control_tool_request.h",
     "tools/move_mouse_tool_request.h",
     "tools/navigate_tool_request.h",
     "tools/observation_delay_controller.h",
@@ -68,11 +71,8 @@ source_set("actor") {
       ":browser_tests",
     ]
     public += [
-      "tools/attempt_form_filling_tool_request.h",
       "tools/attempt_login_tool_request.h",
-      "tools/history_tool_request.h",
       "tools/load_and_extract_content_tool_request.h",
-      "tools/media_control_tool_request.h",
       "tools/tab_management_tool_request.h",
       "tools/window_management_tool_request.h",
     ]
@@ -164,13 +164,21 @@ source_set("impl") {
     "//chrome/browser/actor/ui:event_dispatcher",
     "//chrome/browser/affiliations",
     "//chrome/browser/favicon",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/signin",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/common",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/content_settings/core/common",
+    "//components/favicon/core",
+    "//components/lookalikes/core",
     "//components/page_load_metrics/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
@@ -178,9 +186,15 @@ source_set("impl") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/tracing:tracing_metrics",
     "//components/variations/service",
+    "//content/public/browser",
+    "//net",
+    "//pdf:features",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/perfetto:libperfetto",
     "//third_party/perfetto/protos/perfetto/config:zero_gen",
     "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
     "//ui/base/metadata",
+    "//url",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -204,29 +218,11 @@ source_set("impl") {
       "tools/window_management_tool.h",
       "tools/window_management_tool_request.cc",
     ]
-
     deps += [
-      ":variants",
-      "//chrome/browser/actor/ui",
-      "//chrome/browser/actor/ui:event_dispatcher",
       "//chrome/browser/autofill/glic",
-      "//chrome/browser/optimization_guide",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui:browser_navigator_params_headers",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
-      "//chrome/common",
-      "//components/content_settings/core/common",
-      "//components/favicon/core",
-      "//components/lookalikes/core",
-      "//content/public/browser",
-      "//net",
-      "//pdf:features",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/perfetto:libperfetto",
-      "//url",
     ]
   }
 }
@@ -385,6 +381,10 @@ source_set("browser_tests") {
     ":test_support",
     ":tools_test_support",
     "ui:event_dispatcher",
+    "//chrome/browser/affiliations",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/subscription_eligibility",
@@ -392,16 +392,20 @@ source_set("browser_tests") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/zoom",
     "//chrome/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/favicon/core/test:test_support",
     "//components/javascript_dialogs",
     "//components/optimization_guide/core:bloomfilter",
     "//components/optimization_guide/core:model_execution_test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_load_metrics/browser:test_support",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//content/test:browsertest_support",
+    "//pdf:features",
     "//testing/gtest",
+    "//ui/base:ozone_buildflags",
   ]
 
   if (enable_glic) {
@@ -414,6 +418,8 @@ source_set("browser_tests") {
     deps += [ "//chrome/test:test_support_ui" ]
   }
 
+  # TODO(crbug.com/482145079): Migrate over history_tool, media_control_tool, and
+  # attempt_form_filling_tool tests once flakiness is resolved.
   if (!skip_android_unmigrated_actor_files && enable_glic) {
     sources += [
       "actor_functional_browsertest.cc",
@@ -445,14 +451,8 @@ source_set("browser_tests") {
       "tools/window_management_tool_browsertest.cc",
     ]
     deps += [
-      "//chrome/browser/affiliations",
       "//chrome/browser/autofill/glic:test_support",
-      "//chrome/browser/glic/test_support",
       "//chrome/browser/ui/views:file_system_access_test_support",
-      "//components/affiliations/core/browser:test_support",
-      "//components/page_load_metrics/browser:test_support",
-      "//pdf:features",
-      "//ui/base:ozone_buildflags",
     ]
   }
 }

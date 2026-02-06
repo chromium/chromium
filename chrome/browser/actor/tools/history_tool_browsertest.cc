@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -43,7 +44,7 @@ class ActorHistoryToolBrowserTest : public ActorToolsTest {
  public:
   ActorHistoryToolBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/{features::kGlicActor},
         /*disabled_features=*/{kGlicCrossOriginNavigationGating});
   }
   ~ActorHistoryToolBrowserTest() override = default;
