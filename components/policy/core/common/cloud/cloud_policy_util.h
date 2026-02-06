@@ -87,10 +87,10 @@ POLICY_EXPORT bool IsMachineLevelPolicyType(const std::string& policy_type);
 // Returns true if the given policy type is a user-level policy type.
 POLICY_EXPORT bool IsUserLevelPolicyType(const std::string& policy_type);
 
-// Returns a log tag for the given policy type and settings entity id. This is
+// Returns a log prefix for the given policy type and settings entity id. This is
 // used for logging purposes only.
-POLICY_EXPORT std::string PolicyTypeLogTag(std::string_view policy_type,
-                                           std::string_view settings_entity_id);
+POLICY_EXPORT std::string PolicyTypeLogPrefix(std::string_view policy_type,
+                                              std::string_view settings_entity_id);
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_UTIL_H_

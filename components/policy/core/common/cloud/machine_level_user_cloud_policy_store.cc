@@ -130,6 +130,7 @@ void MachineLevelUserCloudPolicyStore::LoadImmediately() {
   // succeeded.
   if (!machine_dm_token_.is_valid()) {
     VLOG_POLICY(1, POLICY_FETCHING)
+        << PolicyTypeLogPrefix(policy_type(), std::string())
         << "LoadImmediately ignored, no DM token present.";
 #if BUILDFLAG(IS_ANDROID)
     // On Android, some dependencies (e.g. FirstRunActivity) are blocked until
@@ -150,7 +151,9 @@ void MachineLevelUserCloudPolicyStore::LoadImmediately() {
 #endif  // BUILDFLAG(IS_ANDROID)
     return;
   }
-  VLOG_POLICY(1, POLICY_FETCHING) << "Load policy cache Immediately.";
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << PolicyTypeLogPrefix(policy_type(), std::string())
+      << "Load policy cache Immediately.";
   DesktopCloudPolicyStore::LoadImmediately();
 }
 
@@ -158,10 +161,13 @@ void MachineLevelUserCloudPolicyStore::Load() {
   // There is no global dm token, stop loading the policy cache. The policy will
   // be fetched in the end of enrollment process.
   if (!machine_dm_token_.is_valid()) {
-    VLOG_POLICY(1, POLICY_FETCHING) << "Load ignored, no DM token present.";
+    VLOG_POLICY(1, POLICY_FETCHING)
+        << PolicyTypeLogPrefix(policy_type(), std::string())
+        << "Load ignored, no DM token present.";
     return;
   }
-  VLOG_POLICY(1, POLICY_FETCHING) << "Load policy cache.";
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << PolicyTypeLogPrefix(policy_type(), std::string()) << "Load policy cache.";
   DesktopCloudPolicyStore::Load();
 }
 
@@ -219,6 +225,8 @@ PolicyLoadResult MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
   // use it to verify all Chrome and components policies. The browser will
   // redownload the policeis in case of validation failure.
   VLOG_POLICY(1, POLICY_PROCESSING)
+      << "LoadExternalCachedPolicies: " << policy_cache_path << " "
+      << policy_info_path << " "
       << (policy_info_load_result.policy.has_new_public_key()
               ? "External policy has public key."
               : "External policy doesn't have public key.");

@@ -313,14 +313,14 @@ bool IsUserLevelPolicyType(const std::string& policy_type) {
          policy_type == dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
 }
 
-std::string PolicyTypeLogTag(std::string_view policy_type,
-                             std::string_view settings_entity_id) {
+std::string PolicyTypeLogPrefix(std::string_view policy_type,
+                                std::string_view settings_entity_id) {
   if (settings_entity_id.empty()) {
-    return base::StrCat({"[policy_type=", policy_type, "]"});
+    return base::StrCat({"[policy_type=", policy_type, "] "});
   }
 
   return base::StrCat({"[policy_type=", policy_type,
-                       "settings_entity_id=", settings_entity_id, "]"});
+                       "settings_entity_id=", settings_entity_id, "] "});
 }
 
 }  // namespace policy
