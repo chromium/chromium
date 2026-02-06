@@ -95,6 +95,20 @@ public class TabStateStorageService {
                 .loadAllData(mNativeTabStateStorageService, windowTag, isOffTheRecord, callback);
     }
 
+    /**
+     * Counts the number of tabs for a given window.
+     *
+     * @param windowTag The window tag to count tabs for.
+     * @param isOffTheRecord Whether the tabs are off the record.
+     * @param callback The callback to be called with the number of tabs.
+     */
+    public void countTabsForWindow(
+            String windowTag, boolean isOffTheRecord, Callback<Integer> callback) {
+        TabStateStorageServiceJni.get()
+                .countTabsForWindow(
+                        mNativeTabStateStorageService, windowTag, isOffTheRecord, callback);
+    }
+
     /** Clears all the tabs from persistent storage. */
     public void clearState() {
         TabStateStorageServiceJni.get().clearState(mNativeTabStateStorageService);
@@ -192,6 +206,12 @@ public class TabStateStorageService {
                 @JniType("std::string") String windowTag,
                 boolean isOffTheRecord,
                 Callback<StorageLoadedData> loadedDataCallback);
+
+        void countTabsForWindow(
+                long nativeTabStateStorageServiceAndroid,
+                @JniType("std::string") String windowTag,
+                boolean isOffTheRecord,
+                Callback<Integer> countCallback);
 
         void clearState(long nativeTabStateStorageServiceAndroid);
 

@@ -52,6 +52,12 @@ void RunJavaCallbackLoadAll(JNIEnv* env,
                                           data_android->GetJavaObject());
 }
 
+void RunJavaCallbackCountTabsForWindow(JNIEnv* env,
+                                       const JavaRef<jobject>& j_count_callback,
+                                       int count) {
+  base::android::RunIntCallbackAndroid(j_count_callback, count);
+}
+
 // Recursively crawls the entire tree and retrieves storage ids for all nodes.
 class CollectionStorageIdCrawler : public DirectChildWalker::Processor {
  public:
@@ -120,6 +126,18 @@ void TabStateStorageServiceAndroid::LoadAllData(
       jni_zero::ScopedJavaGlobalRef<jobject>(j_loaded_data_callback));
   tab_state_storage_service_->LoadAllNodes(window_tag, is_off_the_record,
                                            std::move(load_data_callback));
+}
+
+void TabStateStorageServiceAndroid::CountTabsForWindow(
+    JNIEnv* env,
+    const std::string& window_tag,
+    bool is_off_the_record,
+    const jni_zero::JavaRef<jobject>& j_callback) {
+  auto count_callback =
+      base::BindOnce(&RunJavaCallbackCountTabsForWindow, env,
+                     jni_zero::ScopedJavaGlobalRef<jobject>(j_callback));
+  tab_state_storage_service_->CountTabsForWindow(window_tag, is_off_the_record,
+                                                 std::move(count_callback));
 }
 
 void TabStateStorageServiceAndroid::ClearState(JNIEnv* env) {

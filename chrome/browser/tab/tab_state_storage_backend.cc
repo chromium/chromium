@@ -104,6 +104,18 @@ void TabStateStorageBackend::LoadAllNodes(
                      std::move(on_storage_loaded_data)));
 }
 
+void TabStateStorageBackend::CountTabsForWindow(
+    std::string_view window_tag,
+    bool is_off_the_record,
+    OnCountTabsForWindow on_counted) {
+  db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TabStateStorageDatabase::CountTabsForWindow,
+                     base::Unretained(database_.get()), std::string(window_tag),
+                     is_off_the_record),
+      std::move(on_counted));
+}
+
 void TabStateStorageBackend::ClearAllNodes() {
   db_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearAllNodes,

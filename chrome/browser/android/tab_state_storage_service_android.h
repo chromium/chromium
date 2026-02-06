@@ -42,6 +42,11 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
                    bool is_off_the_record,
                    const jni_zero::JavaRef<jobject>& j_loaded_data_callback);
 
+  void CountTabsForWindow(JNIEnv* env,
+                          const std::string& window_tag,
+                          bool is_off_the_record,
+                          const jni_zero::JavaRef<jobject>& j_count_callback);
+
   void ClearState(JNIEnv* env);
 
   void ClearWindow(JNIEnv* env, const std::string& window_tag);

@@ -116,6 +116,9 @@ class TabStateStorageDatabase {
                                  bool is_off_the_record,
                                  const std::vector<StorageId>& ids);
 
+  // Counts the number of tabs for a given window.
+  int CountTabsForWindow(std::string_view window_tag, bool is_off_the_record);
+
   // Sets the key to seal OTR payloads with. The window tag is moved
   // internally and this is always called in a posted callback hence
   // the use of std::string.

@@ -50,6 +50,7 @@ class TabStateStorageService : public KeyedService,
  public:
   using LoadDataCallback =
       base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
+  using CountTabsForWindowCallback = base::OnceCallback<void(int)>;
 
   // A scoped helper to batch storage operations. All operations performed on
   // the service while this object is alive will be batched and committed
@@ -96,6 +97,10 @@ class TabStateStorageService : public KeyedService,
   void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,
                     LoadDataCallback callback);
+
+  void CountTabsForWindow(std::string_view window_tag,
+                          bool is_off_the_record,
+                          CountTabsForWindowCallback callback);
 
   void ClearState();
 

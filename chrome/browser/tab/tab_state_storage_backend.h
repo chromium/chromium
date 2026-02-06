@@ -48,6 +48,11 @@ class TabStateStorageBackend {
                     std::unique_ptr<StorageLoadedData::Builder> builder,
                     OnStorageLoadedData on_storage_loaded_data);
 
+  using OnCountTabsForWindow = base::OnceCallback<void(int)>;
+  void CountTabsForWindow(std::string_view window_tag,
+                          bool is_off_the_record,
+                          OnCountTabsForWindow on_counted);
+
   void ClearAllNodes();
 
   void ClearWindow(std::string_view window_tag);

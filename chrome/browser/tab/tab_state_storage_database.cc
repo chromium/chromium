@@ -391,6 +391,20 @@ std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
   return builder->Build();
 }
 
+int TabStateStorageDatabase::CountTabsForWindow(std::string_view window_tag,
+                                                bool is_off_the_record) {
+  static constexpr char kCountTabsForWindowSql[] =
+      "SELECT COUNT(*) FROM nodes WHERE window_tag = ? AND is_off_the_record = "
+      "? AND type = ?";
+  sql::Statement count(
+      db_.GetCachedStatement(SQL_FROM_HERE, kCountTabsForWindowSql));
+  count.BindString(0, window_tag);
+  count.BindInt(1, static_cast<int>(is_off_the_record));
+  count.BindInt(2, static_cast<int>(TabStorageType::kTab));
+  DCHECK(count.Step());
+  return count.ColumnInt(0);
+}
+
 void TabStateStorageDatabase::ClearAllNodes() {
   static constexpr char kDeleteAllNodesSql[] = "DELETE FROM nodes";
   sql::Statement delete_statement(
