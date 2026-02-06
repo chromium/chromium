@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/passwords/password_breach/public/password_breach_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"

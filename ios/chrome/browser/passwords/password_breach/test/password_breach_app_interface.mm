@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_breach_app_interface.h"
+#import "ios/chrome/browser/passwords/password_breach/test/password_breach_app_interface.h"
 
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"

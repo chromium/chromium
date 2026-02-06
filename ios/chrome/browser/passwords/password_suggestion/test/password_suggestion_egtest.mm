@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"

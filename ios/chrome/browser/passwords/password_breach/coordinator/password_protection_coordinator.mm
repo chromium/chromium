@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator.h"
+#import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator.h"
 
 #import "base/check.h"
 #import "base/notreached.h"
 #import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator_delegate.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_protection_view_controller.h"
+#import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
+#import "ios/chrome/browser/passwords/password_breach/ui/password_protection_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"

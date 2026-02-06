@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_breach_coordinator.h"
+#import "ios/chrome/browser/passwords/password_breach/coordinator/password_breach_coordinator.h"
 
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -12,9 +12,9 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_breach_mediator.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_breach_presenter.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_breach_view_controller.h"
+#import "ios/chrome/browser/passwords/password_breach/coordinator/password_breach_mediator.h"
+#import "ios/chrome/browser/passwords/password_breach/coordinator/password_breach_presenter.h"
+#import "ios/chrome/browser/passwords/password_breach/ui/password_breach_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"

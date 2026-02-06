@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_BREACH_COORDINATOR_PASSWORD_BREACH_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_BREACH_COORDINATOR_PASSWORD_BREACH_COORDINATOR_H_
 
-#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Presents and stops the Password Breach feature, which consists in alerting
@@ -24,4 +24,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_BREACH_COORDINATOR_PASSWORD_BREACH_COORDINATOR_H_

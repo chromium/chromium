@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_breach_view_controller.h"
+#import "ios/chrome/browser/passwords/password_breach/ui/password_breach_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/passwords/password_breach/public/password_breach_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
