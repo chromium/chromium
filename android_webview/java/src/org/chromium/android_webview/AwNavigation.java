@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.net.NetError;
 
 /** Represents a navigation and is exposed to embedders. See also AwNavigationListener */
 @NullMarked
@@ -77,5 +78,11 @@ public class AwNavigation extends AwSupportLibIsomorphic {
 
     public int getStatusCode() {
         return mNavigationHandle.httpStatusCode();
+    }
+
+    public @Nullable AwWebResourceError getWebResourceError() {
+        if (mNavigationHandle.errorCode() == NetError.OK) return null;
+        return AwWebResourceError.createFromNetError(
+                    mNavigationHandle.errorCode(), mNavigationHandle.errorDescription());
     }
 }

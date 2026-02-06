@@ -1,18 +1,66 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.android_webview;
 
+import org.jni_zero.JNINamespace;
+
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.NetError;
 
 /**
- * This is a helper class to map native error code about loading a page to Android specific ones.
+ * Parameters for {@link AwContentsClient#onReceivedError} method and for reporting error
+ * information in {@link AwNavigation}
  */
+@Lifetime.Temporary
+@JNINamespace("android_webview")
 @NullMarked
-public final class ErrorCodeConversionHelper {
-    static @WebviewErrorCode int convertErrorCode(@NetError int netError) {
+public class AwWebResourceError {
+    private @NetError int mNetError = NetError.ERR_FAILED;
+    private @WebviewErrorCode int mWebviewError = WebviewErrorCode.ERROR_UNKNOWN;
+    private @Nullable String mDescription;
+
+    private AwWebResourceError() {}
+
+    private AwWebResourceError(@NetError int netError, @Nullable String description) {
+        mNetError = netError;
+        mWebviewError = convertErrorCode(netError);
+        mDescription = description;
+    }
+
+    public static AwWebResourceError createEmpty() {
+        return new AwWebResourceError();
+    }
+
+    public static AwWebResourceError createFromNetError(
+            @NetError int netError, @Nullable String description) {
+        return new AwWebResourceError(netError, description);
+    }
+
+    public int getNetError() {
+        return mNetError;
+    }
+
+    public int getWebviewError() {
+        return mWebviewError;
+    }
+
+    public void setWebviewError(@WebviewErrorCode int webviewError) {
+        mWebviewError = webviewError;
+    }
+
+    public @Nullable String getDescription() {
+        return mDescription;
+    }
+
+    public void setDescription(String description) {
+        mDescription = description;
+    }
+
+    private @WebviewErrorCode int convertErrorCode(@NetError int netError) {
         // Note: many NetError.Error constants don't have an obvious mapping.
         // These will be handled by the default case, ERROR_UNKNOWN.
         switch (netError) {
@@ -89,8 +137,8 @@ public final class ErrorCodeConversionHelper {
             case NetError.ERR_UNEXPECTED_PROXY_AUTH:
                 return WebviewErrorCode.ERROR_PROXY_AUTHENTICATION;
 
-                // The certificate errors are handled by onReceivedSslError
-                // and don't need to be reported here.
+            // The certificate errors are handled by onReceivedSslError
+            // and don't need to be reported here.
             case NetError.ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
             case NetError.ERR_CERT_COMMON_NAME_INVALID:
             case NetError.ERR_CERT_DATE_INVALID:
@@ -108,7 +156,4 @@ public final class ErrorCodeConversionHelper {
                 return WebviewErrorCode.ERROR_UNKNOWN;
         }
     }
-
-    // Do not instantiate this class.
-    private ErrorCodeConversionHelper() {}
 }

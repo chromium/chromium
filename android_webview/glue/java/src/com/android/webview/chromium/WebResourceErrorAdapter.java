@@ -6,7 +6,7 @@ package com.android.webview.chromium;
 
 import android.webkit.WebResourceError;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
+import org.chromium.android_webview.AwWebResourceError;
 
 /** Chromium implementation of {@link WebResourceError}. */
 public class WebResourceErrorAdapter extends WebResourceError {
@@ -22,11 +22,11 @@ public class WebResourceErrorAdapter extends WebResourceError {
 
     @Override
     public int getErrorCode() {
-        return mError.errorCode;
+        return mError.getWebviewError();
     }
 
     @Override
     public CharSequence getDescription() {
-        return mError.description;
+        return mError.getDescription();
     }
 }

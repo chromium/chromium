@@ -21,8 +21,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClientCallbackHelper;
+import org.chromium.android_webview.AwWebResourceError;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.OnLoadResourceHelper;
@@ -77,7 +77,8 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
 
     static final float NEW_SCALE = 1.0f;
     static final float OLD_SCALE = 2.0f;
-    static final int ERROR_CODE = 2;
+    static final int NET_ERROR_CODE = -2;
+    static final int WEBVIEW_ERROR_CODE = -1;
     static final String ERROR_MESSAGE = "A horrible thing has occurred!";
 
     private TestAwContentsClient mContentsClient;
@@ -209,13 +210,13 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
                         /* isRedirect= */ false,
                         "GET",
                         Collections.emptyMap());
-        AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
-        error.errorCode = ERROR_CODE;
-        error.description = ERROR_MESSAGE;
+        AwWebResourceError error =
+                AwWebResourceError.createFromNetError(NET_ERROR_CODE, ERROR_MESSAGE);
         mClientHelper.postOnReceivedError(request, error);
         receivedErrorHelper.waitForCallback(onReceivedErrorCount);
-        Assert.assertEquals(ERROR_CODE, receivedErrorHelper.getError().errorCode);
-        Assert.assertEquals(ERROR_MESSAGE, receivedErrorHelper.getError().description);
+        Assert.assertEquals(NET_ERROR_CODE, receivedErrorHelper.getError().getNetError());
+        Assert.assertEquals(WEBVIEW_ERROR_CODE, receivedErrorHelper.getError().getWebviewError());
+        Assert.assertEquals(ERROR_MESSAGE, receivedErrorHelper.getError().getDescription());
         Assert.assertEquals(TEST_URL, receivedErrorHelper.getRequest().getUrl());
     }
 

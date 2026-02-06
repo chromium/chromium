@@ -86,7 +86,7 @@ NSInteger GetIOSErrorForNetError(int net_error_code) {
       return kCFURLErrorClientCertificateRequired;
     default:
       // There are 200+ net error codes but only ~40 iOS error codes.
-      // Following Android WebView's pattern (ErrorCodeConversionHelper.java),
+      // Following Android WebView's pattern (AwWebResourceError.java),
       // we return a generic error for unmapped codes rather than maintaining
       // an exhaustive mapping.
       return kCFURLErrorUnknown;

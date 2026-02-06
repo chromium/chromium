@@ -352,9 +352,7 @@ public class AwContentsClientBridge {
             @JniType("std::string") String description,
             boolean safebrowsingHit,
             boolean shouldOmitNotificationsForSafeBrowsingHit) {
-        AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
-        error.errorCode = ErrorCodeConversionHelper.convertErrorCode(errorCode);
-        error.description = description;
+        AwWebResourceError error = AwWebResourceError.createFromNetError(errorCode, description);
 
         String unreachableWebDataUrl = AwContentsStatics.getUnreachableWebDataUrl();
         boolean isErrorUrl =
@@ -375,7 +373,7 @@ public class AwContentsClientBridge {
                     // dismissed.
                     return;
                 } else {
-                    error.errorCode = WebviewErrorCode.ERROR_UNSAFE_RESOURCE;
+                    error.setWebviewError(WebviewErrorCode.ERROR_UNSAFE_RESOURCE);
                 }
             }
             if (request.isOutermostMainFrame()

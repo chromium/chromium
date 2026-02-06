@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwHistogramRecorder;
 import org.chromium.android_webview.AwRenderProcess;
+import org.chromium.android_webview.AwWebResourceError;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
@@ -131,11 +132,12 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
         try (TraceEvent event = TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedError")) {
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_ERROR);
-            if (error.description == null || error.description.isEmpty()) {
+            if (error.getDescription() == null || error.getDescription().isEmpty()) {
                 // ErrorStrings is @hidden, so we can't do this in AwContents.  Normally the net/
                 // layer will set a valid description, but for synthesized callbacks (like in the
                 // case for intercepted requests) AwContents will pass in null.
-                error.description = mWebViewDelegate.getErrorString(mContext, error.errorCode);
+                error.setDescription(
+                        mWebViewDelegate.getErrorString(mContext, error.getWebviewError()));
             }
             if (TRACE) Log.i(TAG, "onReceivedError=" + request.getUrl());
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_WEB_RESOURCE_ERROR)) {

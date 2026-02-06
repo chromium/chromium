@@ -11,7 +11,7 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
+import org.chromium.android_webview.AwWebResourceError;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;

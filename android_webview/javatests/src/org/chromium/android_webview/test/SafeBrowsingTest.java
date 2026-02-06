@@ -595,7 +595,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), WEB_UI_MALWARE_URL);
         errorHelper.waitForCallback(errorCount);
         Assert.assertEquals(
-                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().errorCode);
+                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().getWebviewError());
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 WEB_UI_MALWARE_URL,
@@ -688,7 +688,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         clickBackToSafety();
         errorHelper.waitForCallback(errorCount);
         Assert.assertEquals(
-                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().errorCode);
+                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().getWebviewError());
         final String responseUrl = mTestServer.getURL(MALWARE_HTML_PATH);
         Assert.assertEquals(
                 "Network error is for the malicious page",
@@ -769,7 +769,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
         errorHelper.waitForCallback(errorCount);
         Assert.assertEquals(
-                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().errorCode);
+                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().getWebviewError());
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,
@@ -887,7 +887,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
         errorHelper.waitForCallback(errorCount);
         Assert.assertEquals(
-                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().errorCode);
+                WebviewErrorCode.ERROR_UNSAFE_RESOURCE, errorHelper.getError().getWebviewError());
         Assert.assertEquals(
                 "Network error is for the malicious page",
                 responseUrl,

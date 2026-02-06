@@ -129,12 +129,6 @@ public abstract class AwContentsClient {
     //             WebView specific methods that map directly to WebViewClient / WebChromeClient
     // --------------------------------------------------------------------------------------------
 
-    /** Parameters for {@link AwContentsClient#onReceivedError} method. */
-    public static class AwWebResourceError {
-        public @WebviewErrorCode int errorCode = WebviewErrorCode.ERROR_UNKNOWN;
-        public String description;
-    }
-
     /** Allow default implementations in chromium code. */
     public abstract boolean hasWebViewClient();
 

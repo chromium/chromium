@@ -68,10 +68,9 @@ public class AwContentsClientCallbackHelper {
 
     private static class OnReceivedErrorInfo {
         final AwWebResourceRequest mRequest;
-        final AwContentsClient.AwWebResourceError mError;
+        final AwWebResourceError mError;
 
-        OnReceivedErrorInfo(
-                AwWebResourceRequest request, AwContentsClient.AwWebResourceError error) {
+        OnReceivedErrorInfo(AwWebResourceRequest request, AwWebResourceError error) {
             mRequest = request;
             mError = error;
         }
@@ -317,8 +316,7 @@ public class AwContentsClientCallbackHelper {
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_LOGIN_REQUEST, info));
     }
 
-    public void postOnReceivedError(
-            AwWebResourceRequest request, AwContentsClient.AwWebResourceError error) {
+    public void postOnReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
         OnReceivedErrorInfo info = new OnReceivedErrorInfo(request, error);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_ERROR, info));
     }

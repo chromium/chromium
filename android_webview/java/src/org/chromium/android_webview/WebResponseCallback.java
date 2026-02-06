@@ -62,7 +62,7 @@ public final class WebResponseCallback {
             callbackHelper.postOnReceivedError(
                     mRequest,
                     /* error description filled in by the glue layer */
-                    new AwContentsClient.AwWebResourceError());
+                    AwWebResourceError.createEmpty());
         }
     }
 

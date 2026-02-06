@@ -22,7 +22,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
+import org.chromium.android_webview.AwWebResourceError;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
@@ -104,8 +104,8 @@ public class LoadUrlTest extends AwParameterizedTest {
                 ASSET_FILE_URL);
 
         AwWebResourceError error = onReceivedErrorHelper.getError();
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertEquals("net::ERR_ACCESS_DENIED", error.description);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertEquals("net::ERR_ACCESS_DENIED", error.getDescription());
     }
 
     @Test

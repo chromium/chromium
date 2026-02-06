@@ -23,7 +23,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
+import org.chromium.android_webview.AwWebResourceError;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
@@ -137,8 +137,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -172,8 +172,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -203,8 +203,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -243,8 +243,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -275,8 +275,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         AwWebResourceError error = onReceivedErrorHelper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -304,8 +304,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         Assert.assertFalse(request.isOutermostMainFrame());
         Assert.assertFalse(request.hasUserGesture());
         AwWebResourceError error = onReceivedErrorHelper.getError();
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME, error.errorCode);
-        Assert.assertNotNull(error.description);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -336,8 +336,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         Assert.assertFalse(request.isOutermostMainFrame());
         Assert.assertFalse(request.hasUserGesture());
         AwWebResourceError error = onReceivedErrorHelper.getError();
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -368,8 +368,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         Assert.assertFalse(request.isOutermostMainFrame());
         Assert.assertFalse(request.hasUserGesture());
         AwWebResourceError error = onReceivedErrorHelper.getError();
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -400,8 +400,8 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
         Assert.assertFalse(request.isOutermostMainFrame());
         Assert.assertFalse(request.hasUserGesture());
         AwWebResourceError error = onReceivedErrorHelper.getError();
-        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
-        Assert.assertNotNull(error.description);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.getWebviewError());
+        Assert.assertNotNull(error.getDescription());
     }
 
     @Test
@@ -472,6 +472,6 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
                 TimeUnit.MILLISECONDS);
         Assert.assertEquals(onReceivedErrorCount + 1, onReceivedErrorHelper.getCallCount());
         AwWebResourceError error = onReceivedErrorHelper.getError();
-        Assert.assertEquals("net::ERR_UNSAFE_REDIRECT", error.description);
+        Assert.assertEquals("net::ERR_UNSAFE_REDIRECT", error.getDescription());
     }
 }

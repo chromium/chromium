@@ -109,7 +109,7 @@ public class PolicyUrlFilteringTest extends AwParameterizedTest {
                 mFooTestUrl, /* startingErrorCount= */ 0, /* expectedErrorCount= */ 1);
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_CONNECT,
-                mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
+                mContentsClient.getOnReceivedErrorHelper().getError().getWebviewError());
     }
 
     // Tests getting a successful navigation with an allowlist.
@@ -134,7 +134,7 @@ public class PolicyUrlFilteringTest extends AwParameterizedTest {
                 mBarTestUrl, /* startingErrorCount= */ 0, /* expectedErrorCount= */ 1);
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_CONNECT,
-                mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
+                mContentsClient.getOnReceivedErrorHelper().getError().getWebviewError());
     }
 
     // Tests that bad policy values are properly handled
