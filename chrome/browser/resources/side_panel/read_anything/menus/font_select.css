@@ -14,7 +14,7 @@
 .md-select {
   --md-select-text-color: var(--cr-primary-text-color);
   --md-select-width: fit-content;
-  margin: 4px 0px;
+  margin: 4px 0;
 }
 
 .md-select option {

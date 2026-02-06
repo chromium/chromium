@@ -58,7 +58,7 @@
 }
 
 .audio-controls {
-  margin: 0px;
+  margin: 0;
 }
 
 #audio-controls cr-icon-button {
@@ -170,7 +170,7 @@
   display: inline;
   height: 20px;
   margin: 6px 8px;
-  width: 0px;
+  width: 0;
 }
 
 .spinner {

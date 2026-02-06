@@ -25,7 +25,7 @@
   --color-toast-foreground: #474747;
   --cr-icon-button-fill-color: #5E5E5E;
   border-radius: 12px;
-  box-shadow: 0px 2px 6px 0px rgba(23, 23, 23, 0.32);
+  box-shadow: 0 2px 6px 0 rgba(23, 23, 23, 0.32);
   display: flex;
   height: 48px;
   left: 0;

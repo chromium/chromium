@@ -113,7 +113,7 @@
   }
 
   #related-searches {
-    margin: 16px var(--cluster-padding-horizontal) 0px;
+    margin: 16px var(--cluster-padding-horizontal) 0;
   }
 
   :host([in-side-panel]) #related-searches {

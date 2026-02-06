@@ -55,7 +55,7 @@
 cr-icon {
   --icon-size: 20px;
   height: var(--icon-size);
-  margin: 0px 8px 0px 4px;
+  margin: 0 8px 0 4px;
   width: var(--icon-size);
 }
 

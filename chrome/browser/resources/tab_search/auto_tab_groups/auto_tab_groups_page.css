@@ -33,7 +33,7 @@ auto-tab-groups-not-started:not([shown]),
 auto-tab-groups-in-progress:not([shown]),
 auto-tab-groups-results:not([shown]),
 auto-tab-groups-failure:not([shown]) {
-  height: 0px;
+  height: 0;
   position: absolute;
   visibility: hidden;
 }

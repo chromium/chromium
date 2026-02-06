@@ -108,7 +108,7 @@ cr-most-visited {
  * and it needs to be segregated to get the OGB scrimmed. */
 #oneGoogleBarStackingContext {
   display: flex;
-  border: 0px;
+  border: 0;
   top: 0;
   width: 100%;
   /* OGB is above any other element by default to keep the original behavior. */

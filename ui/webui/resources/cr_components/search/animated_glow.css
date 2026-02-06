@@ -216,7 +216,7 @@
       var(--color-search-animated-glow-background));
   border-radius: inherit;
   content: '';
-  inset: 0px;
+  inset: 0;
   opacity: 0;
   pointer-events: none;
   position: absolute;

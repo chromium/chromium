@@ -86,7 +86,7 @@
   align-items: center;
   overflow: hidden;
   background-color: var(--cr-fallback-color-inverse-primary);
-  border-radius: 8px 8px 8px 0px;
+  border-radius: 8px 8px 8px 0;
 }
 
 #illustration img {

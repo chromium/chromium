@@ -82,7 +82,7 @@
   gap: 6px;
   height: 44px;
   overflow: hidden;
-  padding: 0px 12px 0px 8px;
+  padding: 0 12px 0 8px;
   position: relative;
   width: var(--thumbnail-chip-width, 154px);
 }

@@ -13,7 +13,7 @@
 cr-icon {
   --icon-size: 20px;
   height: var(--icon-size);
-  margin: 0px 8px 0px 4px;
+  margin: 0 8px 0 4px;
   width: var(--icon-size);
 }
 
@@ -60,7 +60,7 @@ cr-action-menu[non-modal]::part(dialog) {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding: 0px 24px 0px 20px;
+  padding: 0 24px 0 20px;
   width: 100%;
 }
 
@@ -120,4 +120,3 @@ cr-action-menu[non-modal]::part(dialog) {
     color: LinkText;
   }
 }
-

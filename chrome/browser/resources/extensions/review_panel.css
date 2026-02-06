@@ -13,7 +13,7 @@
   /* label in panel-header's cr-expand-button adds its own vertical padding.
      Thus, we need to subtract it from the panel-header padding */
   padding: calc(var(--cr-section-padding) -
-      var(--cr-section-vertical-padding)) 0px;
+      var(--cr-section-vertical-padding)) 0;
 }
 
 .header-group-wrapper {
@@ -42,7 +42,7 @@ cr-icon[icon='cr:check'] {
 .panel-extension-info {
   flex: 1;
   margin-top: 15px;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .bulk-action-button {

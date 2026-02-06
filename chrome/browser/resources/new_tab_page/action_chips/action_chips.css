@@ -20,7 +20,7 @@
 
 @keyframes chips-slide {
   to {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 }
 
@@ -150,7 +150,7 @@
   border-radius: 12px;
   gap: 16px;
   height: 36px;
-  padding: 0px 10px;
+  padding: 0 10px;
   width: 100%;
 }
 
@@ -245,7 +245,7 @@
 }
 
 :host(:not([show-simplified-ui_])) .deep-dive-chip .action-chip-text-container {
-  padding: 2px 0px;
+  padding: 2px 0;
 }
 
 :host([show-simplified-ui_]) .action-chip-text-container {

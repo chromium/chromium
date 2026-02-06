@@ -33,14 +33,14 @@
   align-items: flex-start;
   display: flex;
   justify-content: space-between;
-  padding: 0px;
+  padding: 0;
 }
 
 #title {
   font-size: 18px;
   font-weight: 500;
   line-height: 24px;
-  margin: 0px;
+  margin: 0;
   width: 260px;
 }
 
@@ -72,8 +72,8 @@
 
 .v1Chip, .v2Chip, .v3Chip {
   border-radius: var(--zero-state-promo-chip-border-radius);
-  padding: 0px;
-  gap: 0px;
+  padding: 0;
+  gap: 0;
   --cr-chip-border-radius: var(--zero-state-promo-chip-border-radius);
 }
 

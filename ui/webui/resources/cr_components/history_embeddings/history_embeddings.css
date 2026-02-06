@@ -114,7 +114,7 @@ hr {
   height: 1px;
   background: var(--color-history-embeddings-divider,
       var(--cr-fallback-color-divider));
-  margin: 0px 24px;
+  margin: 0 24px;
 }
 
 :host([enable-answers_]) hr {

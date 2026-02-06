@@ -38,7 +38,7 @@
      it is a line. */
   box-shadow: var(--line-focus-shadow);
   /* Clip path ensures the box shadow doesn't go beyond the content window. */
-  clip-path: inset(var(--line-focus-clip-top) 0px var(--line-focus-clip-bottom) 0px round 12px);
+  clip-path: inset(var(--line-focus-clip-top) 0 var(--line-focus-clip-bottom) 0 round 12px);
   pointer-events: none;
 }
 
@@ -90,7 +90,7 @@
   flex-grow:1;
   height: 100%;
   margin-bottom: var(--sp-card-block-padding);
-  min-height:0px;
+  min-height: 0;
   min-width: var(--container-min-width);
   padding-top: 2px;
   padding-left: var(--sp-card-block-padding);
@@ -202,7 +202,7 @@
 #docs-load-more-button {
   background: var(--color-sys-tonal-container);
   margin: 0 auto;
-  border-width: 0px;
+  border-width: 0;
   width: 10em;
   max-width: 100%;
   height: 3em;

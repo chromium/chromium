@@ -44,7 +44,7 @@ cr-button#entrypoint.ai-mode-button {
 
 @keyframes slide-in {
   to {
-    transform: translateX(0px);
+    transform: translateX(0);
   }
 }
 
@@ -112,7 +112,7 @@ cr-button#entrypoint.ai-mode-button {
 .aim-gradient-outer-blur {
   filter: blur(2px);
   opacity: 0.35;
-  transform: translate3d(0px, 0px, 0px);
+  transform: translate3d(0, 0, 0);
 }
 
 .dark .aim-gradient-outer-blur {

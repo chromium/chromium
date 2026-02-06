@@ -26,13 +26,13 @@
 
 #errorIcon {
   height: 48px;
-  margin: 156px auto 0px;
+  margin: 156px auto 0;
   width: 40px;
 }
 
 :host([is-protected-error]) #errorIcon {
   height: 58px;
-  margin: 152px auto 0px;
+  margin: 152px auto 0;
   width: 58px;
 }
 
@@ -83,4 +83,3 @@
 :host(:not([is-protected-error])) #protectedIcon {
   display: none;
 }
-

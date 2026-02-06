@@ -24,7 +24,7 @@ cr-url-list-item[size=compact] {
 }
 
 :host(:not([has-folders])) cr-url-list-item {
-  margin-inline-start: 0px;
+  margin-inline-start: 0;
   padding-inline-start: 8px;
 }
 

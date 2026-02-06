@@ -72,7 +72,7 @@
 }
 
 :host-context([has-secondary-side]):host-context([can-show-secondary-side]) .container:not(.actions) {
-  margin-inline-end: 0px;
+  margin-inline-end: 0;
 }
 
 .container:not(.actions):hover {
@@ -102,8 +102,8 @@
   flex-grow: 1;
   flex-shrink: 0;
   padding-bottom: 0;
-  padding-inline-end: 0px;
-  padding-inline-start: 0px;
+  padding-inline-end: 0;
+  padding-inline-start: 0;
   padding-top: 0;
   display: none;
 }

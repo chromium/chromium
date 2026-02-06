@@ -102,7 +102,7 @@
 
 @keyframes slideOut {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 
   100% {
@@ -116,6 +116,6 @@
   }
 
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 }

@@ -143,7 +143,7 @@ cr-searchbox[dropdown-is-visible] {
 #locationIcon {
   fill: var(--color-searchbox-foreground);
   stroke: var(--color-searchbox-foreground);
-  stroke-width: 0px;
+  stroke-width: 0;
   stroke-linecap: round;
   shape-rendering: geometricPrecision;
 }
