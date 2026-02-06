@@ -796,9 +796,63 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
       "Omnibox.AimEligibility.EligibilityRequestStatus.NetworkChange", 2);
 }
 
+class ChromeAimEligibilityServicePecApiEnabledBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ChromeAimEligibilityServicePecApiEnabledBrowserTest() = default;
+  ~ChromeAimEligibilityServicePecApiEnabledBrowserTest() override = default;
+
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {omnibox::kAimEnabled, omnibox::kAimServerEligibilityEnabled,
+         omnibox::kAimServerRequestOnStartupEnabled, omnibox::kAimUsePecApi},
+        {contextual_tasks::kContextualTasks});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class ChromeAimEligibilityServicePecApiDisabledBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ChromeAimEligibilityServicePecApiDisabledBrowserTest() = default;
+  ~ChromeAimEligibilityServicePecApiDisabledBrowserTest() override = default;
+
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {omnibox::kAimEnabled, omnibox::kAimServerEligibilityEnabled,
+         omnibox::kAimServerRequestOnStartupEnabled},
+        {contextual_tasks::kContextualTasks, omnibox::kAimUsePecApi});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test that `GetSearchboxConfig` correctly retrieves and parses the config when
 // provided by the server.
-IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
                        GetSearchboxConfig_ReturnsConfigWhenPresent) {
   // Prepare a response containing a `SearchboxConfig`.
   omnibox::AimEligibilityResponse response;
@@ -833,20 +887,21 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
             omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
 }
 
-// Test that when the server sends legacy boolean fields but NO
-// `SearchboxConfig`, the service correctly backfills (generates) a
-// `SearchboxConfig` locally.
-IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+// Test that when the server sends legacy boolean fields and the PEC API feature
+// is disabled, the service correctly backfills (generates) a `SearchboxConfig`
+// locally.
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiDisabledBrowserTest,
                        GetSearchboxConfig_BackfillsFromLegacyFields) {
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
 
-  // Set legacy boolean fields and clear `SearchboxConfig`.
+  // Set legacy boolean fields AND `SearchboxConfig`.
   // This forces the service to generate the config locally using the backfill
-  // logic.
+  // logic because the `kAimUsePecApi` feature is disabled.
   response.set_is_deep_search_eligible(true);
   response.set_is_canvas_eligible(true);
-  response.clear_searchbox_config();
+  response.mutable_searchbox_config()->set_initial_tool_mode(
+      omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 
   base::test::TestFuture<bool> request_handled_future;
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
@@ -892,7 +947,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
   EXPECT_TRUE(has_canvas);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
                        RespectsAllowedToolsConfig) {
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
@@ -926,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
   EXPECT_FALSE(service->IsCreateImagesEligible());
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
                        RespectsPdfUploadConfig) {
   // Prepare a response that explicitly allows PDF uploads via
   // `SearchboxConfig`. This verifies that the service checks the
