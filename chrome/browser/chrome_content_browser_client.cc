@@ -1403,10 +1403,8 @@ ChromeContentBrowserClient::ChromeContentBrowserClient() {
   extra_parts_.push_back(
       std::make_unique<ChromeContentBrowserClientExtensionsPart>());
 #elif BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kGlic)) {
-    extra_parts_.push_back(
-        std::make_unique<android::ChromeContentBrowserClientGuestViewPart>());
-  }
+  extra_parts_.push_back(
+      std::make_unique<android::ChromeContentBrowserClientGuestViewPart>());
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -7051,7 +7049,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
   // Rewrite chrome://settings/enhancedAutofill to chrome://settings/autofill.
   if (url->SchemeIs(content::kChromeUIScheme) &&
       url->GetHost() == chrome::kChromeUISettingsHost &&
-       url->GetPath() == chrome::kChromeUIAutofillAiPath &&
+      url->GetPath() == chrome::kChromeUIAutofillAiPath &&
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPage)) {
     GURL::Replacements replacements;
