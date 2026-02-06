@@ -113,7 +113,6 @@ class LensOverlayController : public OverlayBaseController,
                         PrefService* pref_service);
   ~LensOverlayController() override;
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
 
   // A simple utility that gets the the LensOverlayController TabFeature set by
@@ -202,10 +201,6 @@ class LensOverlayController : public OverlayBaseController,
 
   // Whether it's possible to capture a screenshot. virtual for testing.
   virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
-
-  // Returns the tab interface that that owns the search controller that owns
-  // this overlay controller.
-  tabs::TabInterface* GetTabInterface();
 
   // Queues a tutorial IPH to be shown if the given URL is eligible. Cancels any
   // queued IPH.
@@ -593,7 +588,7 @@ class LensOverlayController : public OverlayBaseController,
       const SkBitmap& screenshot,
       const std::vector<gfx::Rect>& all_bounds,
       std::optional<uint32_t> pdf_current_page,
-      std::optional<base::TimeTicks> screenshot_bitmap_start_time,
+      base::TimeTicks screenshot_bitmap_start_time,
       SkBitmap rgb_screenshot);
 
   // Stores the page content and continues the initialization process. Also
@@ -612,10 +607,6 @@ class LensOverlayController : public OverlayBaseController,
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when
   // the page bytes can't be uploaded.
   void SuppressGhostLoader();
-
-  // Called when the UI needs to show the overlay via a view that is a child of
-  // the tab contents view.
-  void ShowOverlay();
 
   // Hide the shared overlay view if it is not being used by another tab. This
   // is determined by checking if any of the children of the overlay view are
@@ -645,9 +636,10 @@ class LensOverlayController : public OverlayBaseController,
   // OverlayBaseController overrides:
   bool IsResultsSidePanelShowing() override;
   void RequestSyncClose(DismissalSource source) override;
-
-  // Called when the UI needs to create the view to show in the overlay.
-  raw_ptr<views::View> CreateViewForOverlay();
+  GURL GetInitialURL() override;
+  void NotifyIsOverlayShowing(bool is_showing) override;
+  int GetToolResourceId() override;
+  ui::ElementIdentifier GetViewContainerId() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -687,22 +679,9 @@ class LensOverlayController : public OverlayBaseController,
   // another side panel opens.
   void OnSidePanelDidOpen();
 
-  // Sets the top right or top left corner of the overlay to be rounded if the
-  // side panel is open and the `SideBySide` feature is enabled. This is
-  // necessary because rounded corners are owned by the `MultiContentsView`,
-  // and the overlay is shown on top of it.
-  // TODO(crbug.com/443102583): Remove this block if `overlay_view_` ends up
-  // getting reparented into `MultiContentsView`.
-  void SetOverlayRoundedCorner();
-
   // Called to continue the screenshot process while opening lens overlay.
   void FinishedWaitingForReflow(
       std::optional<base::TimeTicks> reflow_start_time);
-
-  // content::RenderProcessHostObserver:
-  void RenderProcessExited(
-      content::RenderProcessHost* host,
-      const content::ChildProcessTerminationInfo& info) override;
 
   // Called when the associated tab enters the foreground.
   void TabForegrounded(tabs::TabInterface* tab);
@@ -807,9 +786,6 @@ class LensOverlayController : public OverlayBaseController,
   // Notifies the entry point controller to update the state of the entry
   // points since the state of the overlay has changed.
   void UpdateEntryPointsState();
-
-  // Notifies the side panel whether the overlay is showing.
-  void NotifyIsOverlayShowing(bool is_showing);
 
   // Callback to run when the partial page text is retrieved from the PDF.
   void OnPdfPartialPageTextRetrieved(

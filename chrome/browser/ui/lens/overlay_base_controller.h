@@ -20,6 +20,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -40,6 +41,8 @@ class OverlayBaseController : public content::WebContentsDelegate,
                               public content::RenderProcessHostObserver,
                               public ImmersiveModeController::Observer {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
   OverlayBaseController(tabs::TabInterface* tab, PrefService* pref_service);
   ~OverlayBaseController() override;
 
@@ -110,6 +113,10 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Returns true if the overlay is currently in the process of closing.
   bool IsOverlayClosing();
 
+  // Returns the tab interface that that owns the search controller that owns
+  // this overlay controller.
+  tabs::TabInterface* GetTabInterface();
+
  private:
   // ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
@@ -126,17 +133,62 @@ class OverlayBaseController : public content::WebContentsDelegate,
   void OnImmersiveFullscreenEntered() override;
   void OnImmersiveFullscreenExited() override;
 
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+
+  // Called when the UI needs to create the view to show in the overlay.
+  raw_ptr<views::View> CreateViewForOverlay();
+
  protected:
   // Whether the side panel is showing.
   virtual bool IsResultsSidePanelShowing() = 0;
 
+  // Returns the initial WebUI URL.
+  virtual GURL GetInitialURL() = 0;
+
   enum class DismissalSource {
     kPreselectionToastExitButton,
-    kPreselectionToastEscapeKeyPress
+    kPreselectionToastEscapeKeyPress,
+    kErrorScreenshotCreationFailed,
+    kOverlayRendererClosedNormally,
+    kOverlayRendererClosedUnexpectedly
   };
 
   // Request synchronous close of the overlay.
   virtual void RequestSyncClose(DismissalSource source) = 0;
+
+  // Notifies whether the overlay is showing.
+  virtual void NotifyIsOverlayShowing(bool is_showing) = 0;
+
+  // Returns the resource id for this overlay.
+  virtual int GetToolResourceId() = 0;
+
+  // Return the ID of the view we attach this overlay to.
+  virtual ui::ElementIdentifier GetViewContainerId() = 0;
+
+  // Process the bitmap and creates all necessary data to initialize the
+  // overlay. Happens on a separate thread to prevent main thread from hanging.
+  // Callback is called after creating the RGB bitmap and we are back on the
+  // main thread.
+  void InitializeScreenshot(const SkBitmap& screenshot,
+                            base::OnceCallback<void(SkBitmap)> callback);
+
+  // Enable/Disable live blur.
+  void SetLiveBlurImpl(bool enabled);
+
+  // Sets the top right or top left corner of the overlay to be rounded if the
+  // side panel is open and the `SideBySide` feature is enabled. This is
+  // necessary because rounded corners are owned by the `MultiContentsView`,
+  // and the overlay is shown on top of it.
+  // TODO(crbug.com/443102583): Remove this block if `overlay_view_` ends up
+  // getting reparented into `MultiContentsView`.
+  void SetOverlayRoundedCorner();
+
+  // Called when the UI needs to show the overlay via a view that is a child of
+  // the tab contents view.
+  void ShowOverlay();
 
   // Show preselection toast bubble. Creates a preselection bubble if it does
   // not exist.

@@ -90,7 +90,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
-#include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -117,7 +116,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
@@ -327,7 +325,6 @@ LensOverlayController::~LensOverlayController() {
   tab_contents_observer_.reset();
 }
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController,
                                       kOverlaySidePanelWebViewId);
 
@@ -599,10 +596,6 @@ bool LensOverlayController::HasRegionSelection() const {
 bool LensOverlayController::IsScreenshotPossible(
     content::RenderWidgetHostView* view) {
   return view && view->IsSurfaceAvailableForCopy();
-}
-
-tabs::TabInterface* LensOverlayController::GetTabInterface() {
-  return tab_;
 }
 
 void LensOverlayController::IssueLensRegionRequestForTesting(
@@ -1393,27 +1386,21 @@ void LensOverlayController::CreateInitializationData(
     const SkBitmap& screenshot,
     const std::vector<gfx::Rect>& all_bounds,
     std::optional<uint32_t> pdf_current_page) {
-  // Create the new RGB bitmap async to prevent the main thread from blocking on
-  // the encoding.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&CreateRgbBitmap, screenshot),
-      base::BindOnce(
-          &LensOverlayController::ContinueCreateInitializationData,
-          weak_factory_.GetWeakPtr(), screenshot, all_bounds, pdf_current_page,
-          std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
+  InitializeScreenshot(
+      screenshot,
+      base::BindOnce(&LensOverlayController::ContinueCreateInitializationData,
+                     weak_factory_.GetWeakPtr(), screenshot, all_bounds,
+                     pdf_current_page, base::TimeTicks::Now()));
 }
 
 void LensOverlayController::ContinueCreateInitializationData(
     const SkBitmap& screenshot,
     const std::vector<gfx::Rect>& all_bounds,
     std::optional<uint32_t> pdf_current_page,
-    std::optional<base::TimeTicks> screenshot_bitmap_start_time,
+    base::TimeTicks screenshot_bitmap_start_time,
     SkBitmap rgb_screenshot) {
-  if (screenshot_bitmap_start_time.has_value()) {
-    lens::RecordTimeToCreateScreenshotBitmap(
-        base::TimeTicks::Now() - screenshot_bitmap_start_time.value());
-  }
+  lens::RecordTimeToCreateScreenshotBitmap(base::TimeTicks::Now() -
+                                           screenshot_bitmap_start_time);
   if (state_ != State::kStartingWebUI || rgb_screenshot.drawsNothing()) {
     // TODO(b/334185985): Handle case when screenshot RGB encoding fails.
     lens_search_controller_->CloseLensSync(
@@ -1520,89 +1507,6 @@ void LensOverlayController::SuppressGhostLoader() {
     page_->SuppressGhostLoader();
   }
   GetLensOverlaySidePanelCoordinator()->SuppressGhostLoader();
-}
-
-void LensOverlayController::SetLiveBlur(bool enabled) {
-  if (!lens_overlay_blur_layer_delegate_) {
-    return;
-  }
-
-  if (enabled) {
-    lens_overlay_blur_layer_delegate_->StartBackgroundImageCapture();
-    return;
-  }
-
-  lens_overlay_blur_layer_delegate_->StopBackgroundImageCapture();
-}
-
-void LensOverlayController::ShowOverlay() {
-  auto* contents_web_view =
-      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
-          ->RetrieveView(kActiveContentsWebViewRetrievalId);
-  CHECK(contents_web_view);
-
-  NotifyIsOverlayShowing(true);
-  // If the view already exists, we just need to reshow it.
-  if (overlay_view_) {
-    // Restore the state to show the overlay.
-    overlay_view_->SetVisible(true);
-    preselection_widget_anchor_->SetVisible(true);
-    overlay_web_view_->SetVisible(true);
-    SetOverlayRoundedCorner();
-
-    // Restart the live blur since the view is visible again.
-    SetLiveBlur(should_enable_live_blur_on_show_);
-
-    // The overlay needs to be focused on show to immediately begin
-    // receiving key events.
-    overlay_web_view_->RequestFocus();
-
-    // Disable mouse and keyboard inputs to the tab contents web view. Do this
-    // after the overlay takes focus. If it is done before, focus will move from
-    // the contents web view to another Chrome UI element before the overlay can
-    // take focus.
-    contents_web_view->SetEnabled(false);
-    return;
-  }
-
-  // Create the views that will house our UI.
-  overlay_view_ = CreateViewForOverlay();
-  overlay_view_->SetVisible(true);
-  SetOverlayRoundedCorner();
-
-  // Sanity check that the overlay view is above the contents web view.
-  auto* parent_view = overlay_view_->parent();
-  views::View* child_contents_view = contents_web_view;
-  // TODO(crbug.com/443102583): Remove this block if overlay_view_ ends up
-  // getting reparented such that it always shares a parent with
-  // contents_web_view.
-  // The hierarchy to access the contents web view is:
-  // BrowserView->MultiContentsView->ContentsContainerView->ContentsWebView
-  // Since the overlay view is parented by BrowserView, to properly pass the
-  // check below, we should only compare direct children of BrowserView.
-  child_contents_view = child_contents_view->parent()->parent();
-  CHECK(parent_view->GetIndexOf(overlay_view_) >
-        parent_view->GetIndexOf(child_contents_view));
-
-  // Observe the overlay view to handle resizing the background blur layer.
-  tab_contents_view_observer_.Observe(overlay_view_);
-
-  // The overlay needs to be focused on show to immediately begin
-  // receiving key events.
-  CHECK(overlay_web_view_);
-  overlay_web_view_->RequestFocus();
-
-  // Disable mouse and keyboard inputs to the tab contents web view. Do this
-  // after the overlay takes focus. If it is done before, focus will move from
-  // the contents web view to another Chrome UI element before the overlay can
-  // take focus.
-  contents_web_view->SetEnabled(false);
-
-  // Listen to the render process housing out overlay.
-  overlay_web_view_->GetWebContents()
-      ->GetPrimaryMainFrame()
-      ->GetProcess()
-      ->AddObserver(this);
 }
 
 void LensOverlayController::MaybeHideSharedOverlayView() {
@@ -1773,49 +1677,16 @@ bool LensOverlayController::IsContextualSearchbox() {
       ->IsContextualSearchbox();
 }
 
-raw_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
-  // Grab the host view for the overlay which is owned by the browser view.
-  auto* const host_view =
-      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
-          ->GetView(kLensOverlayViewElementId);
-  CHECK(host_view);
+GURL LensOverlayController::GetInitialURL() {
+  return GURL(chrome::kChromeUILensOverlayUntrustedURL);
+}
 
-  // Setup a preselection anchor view. Usually bubbles are anchored to top
-  // chrome, but top chrome is not always visible when our overlay is visible.
-  // Instead of anchroing to top chrome, we anchor to this view because 1) it
-  // always exists when the overlay exists and 2) it is before the WebView in
-  // the view hierarchy and therefore will receive focus first when tabbing from
-  // top chrome.
-  std::unique_ptr<views::View> anchor_view = std::make_unique<views::View>();
-  anchor_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-  preselection_widget_anchor_ = host_view->AddChildView(std::move(anchor_view));
+int LensOverlayController::GetToolResourceId() {
+  return IDS_LENS_OVERLAY_RENDERER_LABEL;
+}
 
-  // Create the web view.
-  std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
-      tab_->GetContents()->GetBrowserContext());
-  content::WebContents* web_view_contents = web_view->GetWebContents();
-  web_view->SetProperty(views::kElementIdentifierKey, kOverlayId);
-  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      web_view_contents, SK_ColorTRANSPARENT);
-
-  // Set the label for the renderer process in Chrome Task Manager.
-  task_manager::WebContentsTags::CreateForToolContents(
-      web_view_contents, IDS_LENS_OVERLAY_RENDERER_LABEL);
-
-  // As the embedder for the lens overlay WebUI content we must set the
-  // appropriate tab interface here.
-  webui::SetTabInterface(web_view_contents, GetTabInterface());
-
-  // Set the web contents delegate to this controller so we can handle keyboard
-  // events. Allow accelerators (e.g. hotkeys) to work on this web view.
-  web_view->set_allow_accelerators(true);
-  web_view->GetWebContents()->SetDelegate(this);
-
-  // Load the untrusted WebUI into the web view.
-  web_view->LoadInitialURL(GURL(chrome::kChromeUILensOverlayUntrustedURL));
-
-  overlay_web_view_ = host_view->AddChildView(std::move(web_view));
-  return host_view;
+ui::ElementIdentifier LensOverlayController::GetViewContainerId() {
+  return kLensOverlayViewElementId;
 }
 
 bool LensOverlayController::HandleContextMenu(
@@ -1920,37 +1791,6 @@ void LensOverlayController::OnSidePanelDidOpen() {
   }
 }
 
-void LensOverlayController::SetOverlayRoundedCorner() {
-  CHECK(overlay_view_ && overlay_web_view_);
-
-  const bool should_round_corner = IsResultsSidePanelShowing();
-  const float radius =
-      should_round_corner
-          ? overlay_web_view_->GetLayoutProvider()->GetCornerRadiusMetric(
-                views::ShapeContextTokens::kContentSeparatorRadius)
-          : 0;
-  const bool right_aligned =
-      pref_service_->GetBoolean(prefs::kSidePanelHorizontalAlignment);
-  const gfx::RoundedCornersF radii = gfx::RoundedCornersF{
-      right_aligned ? 0 : radius, right_aligned ? radius : 0, 0, 0};
-
-  overlay_web_view_->holder()->SetCornerRadii(radii);
-
-  // If we show the overlay with overlay_view_ being painted to a layer,
-  // there is a visual bug where the background is momentarily transparent,
-  // causing flickering. When we don't want the corner to be rounded,
-  // instead of setting the corner radii to 0, destroy the layer instead.
-  // See crbug.com/437355402.
-  if (!should_round_corner) {
-    overlay_view_->DestroyLayer();
-    return;
-  }
-
-  overlay_view_->SetPaintToLayer();
-  overlay_view_->layer()->SetIsFastRoundedCorner(true);
-  overlay_view_->layer()->SetRoundedCornerRadius(radii);
-}
-
 void LensOverlayController::FinishedWaitingForReflow(
     std::optional<base::TimeTicks> reflow_start_time) {
   if (state_ == State::kClosingOpenedSidePanel) {
@@ -1966,31 +1806,6 @@ void LensOverlayController::FinishedWaitingForReflow(
         &LensOverlayController::OnScreenshotTaken, weak_factory_.GetWeakPtr(),
         std::make_optional(base::TimeTicks::Now())));
   }
-}
-
-void LensOverlayController::RenderProcessExited(
-    content::RenderProcessHost* host,
-    const content::ChildProcessTerminationInfo& info) {
-  // Exit early if the overlay is already closing.
-  if (IsOverlayClosing()) {
-    return;
-  }
-
-  // The overlay's primary main frame process has exited, either cleanly or
-  // unexpectedly. Close the overlay so that the user does not get into a broken
-  // state where the overlay cannot be dismissed. Note that RenderProcessExited
-  // can be called during the destruction of a frame in the overlay, so it is
-  // important to post a task to close the overlay to avoid double-freeing the
-  // overlay's frames. See https://crbug.com/371643466.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LensSearchController::CloseLensSync,
-          lens_search_controller_->GetWeakPtr(),
-          info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
-              ? lens::LensOverlayDismissalSource::kOverlayRendererClosedNormally
-              : lens::LensOverlayDismissalSource::
-                    kOverlayRendererClosedUnexpectedly));
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
@@ -2075,6 +1890,10 @@ void LensOverlayController::AddBackgroundBlur() {
       overlay_web_view_->GetLocalBounds());
 
   lens_overlay_blur_layer_delegate_->FetchBackgroundImage();
+}
+
+void LensOverlayController::SetLiveBlur(bool enabled) {
+  SetLiveBlurImpl(enabled);
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
@@ -2968,5 +2787,12 @@ lens::LensOverlayDismissalSource LensOverlayController::ConvertDismissalSource(
       return lens::LensOverlayDismissalSource::kPreselectionToastExitButton;
     case DismissalSource::kPreselectionToastEscapeKeyPress:
       return lens::LensOverlayDismissalSource::kPreselectionToastEscapeKeyPress;
+    case DismissalSource::kErrorScreenshotCreationFailed:
+      return lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed;
+    case DismissalSource::kOverlayRendererClosedNormally:
+      return lens::LensOverlayDismissalSource::kOverlayRendererClosedNormally;
+    case DismissalSource::kOverlayRendererClosedUnexpectedly:
+      return lens::LensOverlayDismissalSource::
+          kOverlayRendererClosedUnexpectedly;
   }
 }

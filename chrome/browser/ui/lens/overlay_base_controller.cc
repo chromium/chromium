@@ -4,13 +4,52 @@
 
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
 
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/child_process_termination_info.h"
+#include "content/public/browser/render_process_host.h"
 #include "net/base/network_change_notifier.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_class_properties.h"
+
+namespace {
+
+// Given a BGR bitmap, converts into a RGB bitmap instead. Returns empty bitmap
+// if creation fails.
+SkBitmap CreateRgbBitmap(const SkBitmap& bgr_bitmap) {
+  // Convert bitmap from color type `kBGRA_8888_SkColorType` into a new Bitmap
+  // with color type `kRGBA_8888_SkColorType` which will allow the bitmap to
+  // render properly in the WebUI.
+  sk_sp<SkColorSpace> srgb_color_space =
+      bgr_bitmap.colorSpace()->makeSRGBGamma();
+  SkImageInfo rgb_info = bgr_bitmap.info()
+                             .makeColorType(kRGBA_8888_SkColorType)
+                             .makeColorSpace(SkColorSpace::MakeSRGB());
+  SkBitmap rgb_bitmap;
+  rgb_bitmap.setInfo(rgb_info);
+  rgb_bitmap.allocPixels(rgb_info);
+  if (rgb_bitmap.writePixels(bgr_bitmap.pixmap())) {
+    return rgb_bitmap;
+  }
+
+  // Bitmap creation failed.
+  return SkBitmap();
+}
+
+}  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OverlayBaseController, kOverlayId);
 
 OverlayBaseController::OverlayBaseController(tabs::TabInterface* tab,
                                              PrefService* pref_service)
@@ -36,6 +75,10 @@ bool OverlayBaseController::IsOverlayInitializing() {
 
 bool OverlayBaseController::IsOverlayClosing() {
   return state_ == State::kClosing;
+}
+
+tabs::TabInterface* OverlayBaseController::GetTabInterface() {
+  return tab_;
 }
 
 void OverlayBaseController::OnViewBoundsChanged(views::View* observed_view) {
@@ -106,6 +149,218 @@ void OverlayBaseController::OnImmersiveFullscreenExited() {
   if (IsOverlayShowing()) {
     CloseAndReshowPreselectionBubble();
   }
+}
+
+void OverlayBaseController::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  // Exit early if the overlay is already closing.
+  if (IsOverlayClosing()) {
+    return;
+  }
+
+  // The overlay's primary main frame process has exited, either cleanly or
+  // unexpectedly. Close the overlay so that the user does not get into a broken
+  // state where the overlay cannot be dismissed. Note that RenderProcessExited
+  // can be called during the destruction of a frame in the overlay, so it is
+  // important to post a task to close the overlay to avoid double-freeing the
+  // overlay's frames. See https://crbug.com/371643466.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &OverlayBaseController::RequestSyncClose, weak_factory_.GetWeakPtr(),
+          info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
+              ? DismissalSource::kOverlayRendererClosedNormally
+              : DismissalSource::kOverlayRendererClosedUnexpectedly));
+}
+
+raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
+  // Grab the host view for the overlay which is owned by the browser view.
+  auto* const host_view =
+      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+          ->GetView(GetViewContainerId());
+  CHECK(host_view);
+
+  // Setup a preselection anchor view. Usually bubbles are anchored to top
+  // chrome, but top chrome is not always visible when our overlay is visible.
+  // Instead of anchroing to top chrome, we anchor to this view because 1) it
+  // always exists when the overlay exists and 2) it is before the WebView in
+  // the view hierarchy and therefore will receive focus first when tabbing from
+  // top chrome.
+  std::unique_ptr<views::View> anchor_view = std::make_unique<views::View>();
+  anchor_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  preselection_widget_anchor_ = host_view->AddChildView(std::move(anchor_view));
+
+  // Create the web view.
+  std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
+      tab_->GetContents()->GetBrowserContext());
+  content::WebContents* web_view_contents = web_view->GetWebContents();
+  web_view->SetProperty(views::kElementIdentifierKey, kOverlayId);
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      web_view_contents, SK_ColorTRANSPARENT);
+
+  // Set the label for the renderer process in Chrome Task Manager.
+  task_manager::WebContentsTags::CreateForToolContents(web_view_contents,
+                                                       GetToolResourceId());
+
+  // As the embedder for the lens overlay WebUI content we must set the
+  // appropriate tab interface here.
+  webui::SetTabInterface(web_view_contents, GetTabInterface());
+
+  // Set the web contents delegate to this controller so we can handle keyboard
+  // events. Allow accelerators (e.g. hotkeys) to work on this web view.
+  web_view->set_allow_accelerators(true);
+  web_view->GetWebContents()->SetDelegate(this);
+
+  // Load the untrusted WebUI into the web view.
+  web_view->LoadInitialURL(GetInitialURL());
+
+  overlay_web_view_ = host_view->AddChildView(std::move(web_view));
+  return host_view;
+}
+
+void OverlayBaseController::InitializeScreenshot(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(SkBitmap)> callback) {
+  // While capturing a screenshot the overlay was cancelled. Do nothing.
+  if (state_ == State::kOff || IsOverlayClosing()) {
+    return;
+  }
+
+  // The documentation for CopyFromSurface claims that the copy can fail, but
+  // without providing information about how this can happen.
+  // Supposedly IsSurfaceAvailableForCopy() should guard against this case, but
+  // this is a multi-process, multi-threaded environment so there may be a
+  // TOCTTOU race condition.
+  if (bitmap.drawsNothing()) {
+    RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
+    return;
+  }
+
+  // The following two methods happen async to parallelize the two bottlenecks
+  // in our invocation flow.
+  // Create the new RGB bitmap async to prevent the main thread from blocking on
+  // the encoding.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&CreateRgbBitmap, bitmap), std::move(callback));
+  ShowOverlay();
+
+  state_ = State::kStartingWebUI;
+}
+
+void OverlayBaseController::SetLiveBlurImpl(bool enabled) {
+  if (!lens_overlay_blur_layer_delegate_) {
+    return;
+  }
+
+  if (enabled) {
+    lens_overlay_blur_layer_delegate_->StartBackgroundImageCapture();
+    return;
+  }
+
+  lens_overlay_blur_layer_delegate_->StopBackgroundImageCapture();
+}
+
+void OverlayBaseController::ShowOverlay() {
+  auto* contents_web_view =
+      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+          ->RetrieveView(kActiveContentsWebViewRetrievalId);
+  CHECK(contents_web_view);
+
+  NotifyIsOverlayShowing(true);
+  // If the view already exists, we just need to reshow it.
+  if (overlay_view_) {
+    // Restore the state to show the overlay.
+    overlay_view_->SetVisible(true);
+    preselection_widget_anchor_->SetVisible(true);
+    overlay_web_view_->SetVisible(true);
+    SetOverlayRoundedCorner();
+
+    // Restart the live blur since the view is visible again.
+    SetLiveBlurImpl(should_enable_live_blur_on_show_);
+
+    // The overlay needs to be focused on show to immediately begin
+    // receiving key events.
+    overlay_web_view_->RequestFocus();
+
+    // Disable mouse and keyboard inputs to the tab contents web view. Do this
+    // after the overlay takes focus. If it is done before, focus will move from
+    // the contents web view to another Chrome UI element before the overlay can
+    // take focus.
+    contents_web_view->SetEnabled(false);
+    return;
+  }
+
+  // Create the views that will house our UI.
+  overlay_view_ = CreateViewForOverlay();
+  overlay_view_->SetVisible(true);
+  SetOverlayRoundedCorner();
+
+  // Sanity check that the overlay view is above the contents web view.
+  auto* parent_view = overlay_view_->parent();
+  views::View* child_contents_view = contents_web_view;
+  // TODO(crbug.com/443102583): Remove this block if overlay_view_ ends up
+  // getting reparented such that it always shares a parent with
+  // contents_web_view.
+  // The hierarchy to access the contents web view is:
+  // BrowserView->MultiContentsView->ContentsContainerView->ContentsWebView
+  // Since the overlay view is parented by BrowserView, to properly pass the
+  // check below, we should only compare direct children of BrowserView.
+  child_contents_view = child_contents_view->parent()->parent();
+  CHECK(parent_view->GetIndexOf(overlay_view_) >
+        parent_view->GetIndexOf(child_contents_view));
+
+  // Observe the overlay view to handle resizing the background blur layer.
+  tab_contents_view_observer_.Observe(overlay_view_);
+
+  // The overlay needs to be focused on show to immediately begin
+  // receiving key events.
+  CHECK(overlay_web_view_);
+  overlay_web_view_->RequestFocus();
+
+  // Disable mouse and keyboard inputs to the tab contents web view. Do this
+  // after the overlay takes focus. If it is done before, focus will move from
+  // the contents web view to another Chrome UI element before the overlay can
+  // take focus.
+  contents_web_view->SetEnabled(false);
+
+  // Listen to the render process housing out overlay.
+  overlay_web_view_->GetWebContents()
+      ->GetPrimaryMainFrame()
+      ->GetProcess()
+      ->AddObserver(this);
+}
+
+void OverlayBaseController::SetOverlayRoundedCorner() {
+  CHECK(overlay_view_ && overlay_web_view_);
+
+  const bool should_round_corner = IsResultsSidePanelShowing();
+  const float radius =
+      should_round_corner
+          ? overlay_web_view_->GetLayoutProvider()->GetCornerRadiusMetric(
+                views::ShapeContextTokens::kContentSeparatorRadius)
+          : 0;
+  const bool right_aligned =
+      pref_service_->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  const gfx::RoundedCornersF radii = gfx::RoundedCornersF{
+      right_aligned ? 0 : radius, right_aligned ? radius : 0, 0, 0};
+
+  overlay_web_view_->holder()->SetCornerRadii(radii);
+
+  // If we show the overlay with overlay_view_ being painted to a layer,
+  // there is a visual bug where the background is momentarily transparent,
+  // causing flickering. When we don't want the corner to be rounded,
+  // instead of setting the corner radii to 0, destroy the layer instead.
+  // See crbug.com/437355402.
+  if (!should_round_corner) {
+    overlay_view_->DestroyLayer();
+    return;
+  }
+
+  overlay_view_->SetPaintToLayer();
+  overlay_view_->layer()->SetIsFastRoundedCorner(true);
+  overlay_view_->layer()->SetRoundedCornerRadius(radii);
 }
 
 void OverlayBaseController::ShowPreselectionBubble() {
