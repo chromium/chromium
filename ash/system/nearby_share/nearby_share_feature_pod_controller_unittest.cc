@@ -46,6 +46,8 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
     tile_.reset();
     pod_controller_.reset();
     scoped_feature_list_.Reset();
+    nearby_share_controller_ = nullptr;
+    test_delegate_ = nullptr;
     NoSessionAshTestBase::TearDown();
   }
 
@@ -82,9 +84,8 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
   std::unique_ptr<NearbyShareFeaturePodController> pod_controller_;
   std::unique_ptr<FeatureTile> tile_;
 
-  raw_ptr<TestNearbyShareDelegate, DanglingUntriaged> test_delegate_ = nullptr;
-  raw_ptr<NearbyShareController, DanglingUntriaged> nearby_share_controller_ =
-      nullptr;
+  raw_ptr<TestNearbyShareDelegate> test_delegate_ = nullptr;
+  raw_ptr<NearbyShareController> nearby_share_controller_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
