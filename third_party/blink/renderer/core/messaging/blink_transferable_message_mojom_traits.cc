@@ -171,10 +171,8 @@ bool StructTraits<blink::mojom::blink::SerializedArrayBufferContents::DataView,
   blink::ArrayBufferContents array_buffer_contents(
       contents_data.size(), max_data_size, 1,
       blink::ArrayBufferContents::kNotShared,
-      blink::ArrayBufferContents::kDontInitialize);
-  if (contents_data.size() != array_buffer_contents.DataLength()) {
-    return false;
-  }
+      blink::ArrayBufferContents::kDontInitialize,
+      blink::ArrayBufferContents::AllocationFailureBehavior::kCrash);
   array_buffer_contents.ByteSpan().copy_from(contents_data);
   *out = std::move(array_buffer_contents);
   return true;
