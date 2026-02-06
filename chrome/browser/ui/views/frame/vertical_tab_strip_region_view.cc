@@ -12,6 +12,8 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -581,6 +583,8 @@ bool VerticalTabStripRegionView::IsFrameActive() const {
 
 void VerticalTabStripRegionView::RecordNewTabButtonPressed() {
   new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
+
+  base::RecordAction(base::UserMetricsAction("NewTab_Button"));
 }
 
 void VerticalTabStripRegionView::OnChildrenAdded() {
