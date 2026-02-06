@@ -357,6 +357,10 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
     &kSkiaGraphite, "dawn_backend_debug_labels", DCHECK_IS_ON()};
 
+// Enables automatic buffer mappings in Dawn's backend.
+const base::FeatureParam<bool> kSkiaGraphiteDawnEnableAutoMap{
+    &kSkiaGraphite, "dawn_enable_auto_map", true};
+
 // Whether to use PersistentCache for Dawn's pipeline cache.
 BASE_FEATURE_PARAM(bool,
                    kSkiaGraphiteDawnUsePersistentCache,

@@ -163,6 +163,13 @@ std::vector<const char*> GetEnabledToggles(
     enabled_toggles.push_back("skip_validation");
   }
 
+  if (features::kSkiaGraphiteDawnEnableAutoMap.Get()) {
+    // Tell Dawn to automatically map buffers when they are not in use by the
+    // GPU. This allows Skia to access buffer contents on the CPU without
+    // blocking, making operations faster.
+    enabled_toggles.push_back("auto_map_backend_buffer");
+  }
+
   enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
 
