@@ -8,7 +8,7 @@ License: Apache-2.0
 License File: LICENSE
 Shipped: yes
 Security Critical: no
-Description: A javascript library to distill the dom.
+Description: A JavaScript library to distill the DOM.
 Local Modifications:
 
 Readability.js and Readability-readerable.js are cloned into the
@@ -22,4 +22,7 @@ update the modded_src/version and update the list of changes below.
   before the main article content. The affected containers are removed after
   extraction to prevent duplication. The extracted data are added as a <figure>
   element that's added to the start of returned content.
+- When extracting title from JSON-LD, fix logic re. choosing name or headline
+  crbug.com/467368520): If these both match or both mismatch the title,
+  choose the longer string.
 
