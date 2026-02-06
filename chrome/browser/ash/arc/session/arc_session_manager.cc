@@ -526,7 +526,6 @@ ArcSessionManager::ArcSessionManager(
       android_management_checker_factory_(
           ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory()),
       arc_dlc_installer_(arc_dlc_installer),
-      attempt_user_exit_callback_(base::BindRepeating(chrome::AttemptUserExit)),
       attempt_restart_callback_(base::BindRepeating(chrome::AttemptRestart)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_arc_session_manager);
@@ -1980,12 +1979,6 @@ void ArcSessionManager::SetArcSessionRunnerForTesting(
 
 ArcSessionRunner* ArcSessionManager::GetArcSessionRunnerForTesting() {
   return arc_session_runner_.get();
-}
-
-void ArcSessionManager::SetAttemptUserExitCallbackForTesting(
-    const base::RepeatingClosure& callback) {
-  DCHECK(!callback.is_null());
-  attempt_user_exit_callback_ = callback;
 }
 
 void ArcSessionManager::SetAttemptRestartCallbackForTesting(

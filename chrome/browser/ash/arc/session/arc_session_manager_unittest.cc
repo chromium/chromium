@@ -2070,21 +2070,11 @@ TEST_F(ArcSessionManagerPublicSessionTest, AuthFailure) {
   arc_session_manager()->RequestEnable();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
-  // Replace chrome::AttemptUserExit() for testing.
-  // At the end of test, leave the dangling pointer |terminated|,
-  // assuming the callback is never invoked in OnProvisioningFinished()
-  // and not invoked then, including TearDown().
-  bool terminated = false;
-  arc_session_manager()->SetAttemptUserExitCallbackForTesting(
-      base::BindRepeating([](bool* terminated) { *terminated = true; },
-                          &terminated));
-
   arc::mojom::ArcSignInResultPtr result = arc::mojom::ArcSignInResult::NewError(
       arc::mojom::ArcSignInError::NewGeneralError(
           arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR));
   arc_session_manager()->OnProvisioningFinished(
       ArcProvisioningResult(std::move(result)));
-  EXPECT_FALSE(terminated);
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 

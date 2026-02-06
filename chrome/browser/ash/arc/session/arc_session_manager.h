@@ -349,8 +349,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void SetArcSessionRunnerForTesting(
       std::unique_ptr<ArcSessionRunner> arc_session_runner);
   ArcSessionRunner* GetArcSessionRunnerForTesting();
-  void SetAttemptUserExitCallbackForTesting(
-      const base::RepeatingClosure& callback);
   void SetAttemptRestartCallbackForTesting(
       const base::RepeatingClosure& callback);
   void SetAndroidManagementCheckerFactoryForTesting(
@@ -618,8 +616,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     bool deferred;
   };
   std::optional<UserSessionStartUpTaskTimer> user_session_start_up_task_timer_;
-
-  base::RepeatingClosure attempt_user_exit_callback_;
 
   base::RepeatingClosure attempt_restart_callback_;
 
