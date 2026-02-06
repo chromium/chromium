@@ -11,6 +11,9 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -31,7 +34,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionRegistrationTest,
   const ExtensionFunctionRegistry::FactoryMap& factories =
       ExtensionFunctionRegistry::GetInstance().GetFactoriesForTesting();
   // Sanity check: Many, many functions should have been registered.
+#if BUILDFLAG(IS_ANDROID)
+  // Android has fewer supported APIs than Win/Mac/Linux.
+  EXPECT_GT(factories.size(), 400u);
+#else
   EXPECT_GT(factories.size(), 500u);
+#endif
 
   std::set<std::string> seen_names;
   std::map<functions::HistogramValue, std::string> seen_histograms;
