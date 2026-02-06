@@ -1564,15 +1564,15 @@ bool TimelineTriggerBoundariesMatch(
 
 bool TimelineTriggerRangeBoundariesUnchanged(
     TimelineTrigger* const trigger,
-    TimelineTrigger::RangeBoundary* new_entry_range_start,
-    const TimelineTrigger::RangeBoundary* new_entry_range_end,
+    TimelineTrigger::RangeBoundary* new_activation_range_start,
+    const TimelineTrigger::RangeBoundary* new_activation_range_end,
     const TimelineTrigger::RangeBoundary* new_active_range_start,
     const TimelineTrigger::RangeBoundary* new_active_range_end) {
   DCHECK(trigger);
   return TimelineTriggerBoundariesMatch(trigger->EntryRangeStart(),
-                                        new_entry_range_start) &&
+                                        new_activation_range_start) &&
          TimelineTriggerBoundariesMatch(trigger->EntryRangeEnd(),
-                                        new_entry_range_end) &&
+                                        new_activation_range_end) &&
          TimelineTriggerBoundariesMatch(trigger->ActiveRangeStart(),
                                         new_active_range_start) &&
          TimelineTriggerBoundariesMatch(trigger->ActiveRangeEnd(),
@@ -1601,12 +1601,12 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
     new_timeline = &element->GetDocument().Timeline();
   }
 
-  const std::optional<TimelineOffset>& new_entry_start_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerEntryRangeStartList(),
-                                    animation_index);
-  const std::optional<TimelineOffset>& new_entry_end_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerEntryRangeEndList(),
-                                    animation_index);
+  const std::optional<TimelineOffset>& new_activation_start_offset =
+      CSSAnimationData::GetRepeated(
+          data->TimelineTriggerActivationRangeStartList(), animation_index);
+  const std::optional<TimelineOffset>& new_activation_end_offset =
+      CSSAnimationData::GetRepeated(
+          data->TimelineTriggerActivationRangeEndList(), animation_index);
   const TimelineOffsetOrAuto& new_active_start_offset =
       CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeStartList(),
                                     animation_index);
@@ -1614,24 +1614,25 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
       CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeEndList(),
                                     animation_index);
 
-  Animation::RangeBoundary* new_entry_range_start =
-      Animation::ToRangeBoundary(new_entry_start_offset, zoom);
-  Animation::RangeBoundary* new_entry_range_end =
-      Animation::ToRangeBoundary(new_entry_end_offset, zoom);
+  Animation::RangeBoundary* new_activation_range_start =
+      Animation::ToRangeBoundary(new_activation_start_offset, zoom);
+  Animation::RangeBoundary* new_activation_range_end =
+      Animation::ToRangeBoundary(new_activation_end_offset, zoom);
   Animation::RangeBoundary* new_active_range_start =
       Animation::ToRangeBoundary(new_active_start_offset, zoom);
   Animation::RangeBoundary* new_active_range_end =
       Animation::ToRangeBoundary(new_active_end_offset, zoom);
 
-  bool need_new_trigger =
-      !existing_trigger || existing_timeline != new_timeline ||
-      !TimelineTriggerRangeBoundariesUnchanged(
-          existing_trigger, new_entry_range_start, new_entry_range_end,
-          new_active_range_start, new_active_range_end);
+  bool need_new_trigger = !existing_trigger ||
+                          existing_timeline != new_timeline ||
+                          !TimelineTriggerRangeBoundariesUnchanged(
+                              existing_trigger, new_activation_range_start,
+                              new_activation_range_end, new_active_range_start,
+                              new_active_range_end);
 
   if (need_new_trigger) {
     TimelineTriggerRange* range = MakeGarbageCollected<TimelineTriggerRange>(
-        new_timeline, new_entry_range_start, new_entry_range_end,
+        new_timeline, new_activation_range_start, new_activation_range_end,
         new_active_range_start, new_active_range_end);
 
     HeapVector<Member<TimelineTriggerRange>> ranges;

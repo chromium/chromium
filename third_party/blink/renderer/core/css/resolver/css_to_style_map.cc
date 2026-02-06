@@ -747,14 +747,14 @@ EAnimationTriggerBehavior CSSToStyleMap::MapAnimationTimelineTriggerBehavior(
 }
 
 std::optional<TimelineOffset>
-CSSToStyleMap::MapAnimationTimelineTriggerEntryRangeStart(
+CSSToStyleMap::MapAnimationTimelineTriggerActivationRangeStart(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationRange(state, value, 0);
 }
 
 std::optional<TimelineOffset>
-CSSToStyleMap::MapAnimationTimelineTriggerEntryRangeEnd(
+CSSToStyleMap::MapAnimationTimelineTriggerActivationRangeEnd(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationRange(state, value, 100);

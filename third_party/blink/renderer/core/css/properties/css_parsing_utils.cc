@@ -4751,7 +4751,7 @@ bool ConsumeTimelineTriggerShorthand(
           longhand_value = css_parsing_utils::GetImpliedRangeEnd(
               trigger_exit_range_start_value);
         } else if (property_id ==
-                   CSSPropertyID::kTimelineTriggerEntryRangeEnd) {
+                   CSSPropertyID::kTimelineTriggerActivationRangeEnd) {
           longhand_value =
               css_parsing_utils::GetImpliedRangeEnd(trigger_range_start_value);
         }

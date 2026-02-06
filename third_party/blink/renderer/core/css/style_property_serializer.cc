@@ -717,8 +717,8 @@ String StylePropertySerializer::SerializeShorthand(
       return TextSpacingValue();
     case CSSPropertyID::kTimelineTrigger:
       return GetLayeredShorthandValue(timelineTriggerShorthand());
-    case CSSPropertyID::kTimelineTriggerEntryRange:
-      return TimelineTriggerRangeShorthandValue();
+    case CSSPropertyID::kTimelineTriggerActivationRange:
+      return TimelineTriggerActivationRangeShorthandValue();
     case CSSPropertyID::kTimelineTriggerActiveRange:
       return TimelineTriggerExitRangeShorthandValue();
     case CSSPropertyID::kWebkitTextStroke:
@@ -1161,19 +1161,20 @@ String StylePropertySerializer::AnimationRangeShorthandValue() const {
   return list->CssText();
 }
 
-String StylePropertySerializer::TimelineTriggerRangeShorthandValue() const {
-  CHECK_EQ(timelineTriggerEntryRangeShorthand().length(), 2u);
-  CHECK_EQ(timelineTriggerEntryRangeShorthand().properties()[0],
-           &GetCSSPropertyTimelineTriggerEntryRangeStart());
-  CHECK_EQ(timelineTriggerEntryRangeShorthand().properties()[1],
-           &GetCSSPropertyTimelineTriggerEntryRangeEnd());
+String StylePropertySerializer::TimelineTriggerActivationRangeShorthandValue()
+    const {
+  CHECK_EQ(timelineTriggerActivationRangeShorthand().length(), 2u);
+  CHECK_EQ(timelineTriggerActivationRangeShorthand().properties()[0],
+           &GetCSSPropertyTimelineTriggerActivationRangeStart());
+  CHECK_EQ(timelineTriggerActivationRangeShorthand().properties()[1],
+           &GetCSSPropertyTimelineTriggerActivationRangeEnd());
 
   const CSSValueList& start_list =
       To<CSSValueList>(*property_set_.GetPropertyCSSValue(
-          GetCSSPropertyTimelineTriggerEntryRangeStart()));
+          GetCSSPropertyTimelineTriggerActivationRangeStart()));
   const CSSValueList& end_list =
       To<CSSValueList>(*property_set_.GetPropertyCSSValue(
-          GetCSSPropertyTimelineTriggerEntryRangeEnd()));
+          GetCSSPropertyTimelineTriggerActivationRangeEnd()));
   if (start_list.length() != end_list.length()) {
     return "";
   }
@@ -1958,7 +1959,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             omit_value = true;
           }
         } else if (property->IDEquals(
-                       CSSPropertyID::kTimelineTriggerEntryRangeStart)) {
+                       CSSPropertyID::kTimelineTriggerActivationRangeStart)) {
           if (const auto* start_identifier =
                   DynamicTo<CSSIdentifierValue>(value)) {
             // Only 'normal' is stored as an identifier, other values are lists.
@@ -1967,13 +1968,13 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             omit_value = true;
           }
         } else if (property->IDEquals(
-                       CSSPropertyID::kTimelineTriggerEntryRangeEnd)) {
+                       CSSPropertyID::kTimelineTriggerActivationRangeEnd)) {
           if (const auto* end_identifier =
                   DynamicTo<CSSIdentifierValue>(value)) {
             DCHECK(end_identifier->GetValueID() == CSSValueID::kNormal);
             omit_value = true;
           } else {
-            // Get timeline-trigger-entry-range-start.
+            // Get timeline-trigger-activation-range-start.
             // The form "name X name 100%" must contract to "name X".
             //
             // https://github.com/w3c/csswg-drafts/issues/8438

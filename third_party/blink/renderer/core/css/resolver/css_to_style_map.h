@@ -127,11 +127,11 @@ class CSSToStyleMap {
       StyleResolverState&,
       const CSSValue&);
   static std::optional<TimelineOffset>
-  MapAnimationTimelineTriggerEntryRangeStart(StyleResolverState&,
-                                             const CSSValue&);
-  static std::optional<TimelineOffset> MapAnimationTimelineTriggerEntryRangeEnd(
-      StyleResolverState&,
-      const CSSValue&);
+  MapAnimationTimelineTriggerActivationRangeStart(StyleResolverState&,
+                                                  const CSSValue&);
+  static std::optional<TimelineOffset>
+  MapAnimationTimelineTriggerActivationRangeEnd(StyleResolverState&,
+                                                const CSSValue&);
   static TimelineOffsetOrAuto MapAnimationTimelineTriggerActiveRangeStart(
       StyleResolverState&,
       const CSSValue&);

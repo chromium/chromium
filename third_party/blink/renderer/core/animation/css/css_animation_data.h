@@ -72,12 +72,12 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return timeline_trigger_name_list_;
   }
   const Vector<std::optional<TimelineOffset>>&
-  TimelineTriggerEntryRangeStartList() const {
-    return timeline_trigger_entry_range_start_list_;
+  TimelineTriggerActivationRangeStartList() const {
+    return timeline_trigger_activation_range_start_list_;
   }
   const Vector<std::optional<TimelineOffset>>&
-  TimelineTriggerEntryRangeEndList() const {
-    return timeline_trigger_entry_range_end_list_;
+  TimelineTriggerActivationRangeEndList() const {
+    return timeline_trigger_activation_range_end_list_;
   }
   const Vector<TimelineOffsetOrAuto>& TimelineTriggerActiveRangeStartList()
       const {
@@ -124,11 +124,13 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   HeapVector<Member<const ScopedCSSName>>& TimelineTriggerNameList() {
     return timeline_trigger_name_list_;
   }
-  Vector<std::optional<TimelineOffset>>& TimelineTriggerEntryRangeStartList() {
-    return timeline_trigger_entry_range_start_list_;
+  Vector<std::optional<TimelineOffset>>&
+  TimelineTriggerActivationRangeStartList() {
+    return timeline_trigger_activation_range_start_list_;
   }
-  Vector<std::optional<TimelineOffset>>& TimelineTriggerEntryRangeEndList() {
-    return timeline_trigger_entry_range_end_list_;
+  Vector<std::optional<TimelineOffset>>&
+  TimelineTriggerActivationRangeEndList() {
+    return timeline_trigger_activation_range_end_list_;
   }
   Vector<TimelineOffsetOrAuto>& TimelineTriggerActiveRangeStartList() {
     return timeline_trigger_active_range_start_list_;
@@ -175,10 +177,12 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return EffectModel::CompositeOperation::kCompositeReplace;
   }
   static const ScopedCSSName* InitialTimelineTriggerName() { return nullptr; }
-  static std::optional<TimelineOffset> InitialTimelineTriggerEntryRangeStart() {
+  static std::optional<TimelineOffset>
+  InitialTimelineTriggerActivationRangeStart() {
     return std::nullopt;
   }
-  static std::optional<TimelineOffset> InitialTimelineTriggerEntryRangeEnd() {
+  static std::optional<TimelineOffset>
+  InitialTimelineTriggerActivationRangeEnd() {
     return std::nullopt;
   }
   static TimelineOffsetOrAuto InitialTimelineTriggerActiveRangeStart() {
@@ -208,8 +212,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
 
   HeapVector<Member<const ScopedCSSName>> timeline_trigger_name_list_;
   Vector<std::optional<TimelineOffset>>
-      timeline_trigger_entry_range_start_list_;
-  Vector<std::optional<TimelineOffset>> timeline_trigger_entry_range_end_list_;
+      timeline_trigger_activation_range_start_list_;
+  Vector<std::optional<TimelineOffset>>
+      timeline_trigger_activation_range_end_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_active_range_start_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_active_range_end_list_;
   Vector<StyleTimeline> timeline_trigger_source_list_;

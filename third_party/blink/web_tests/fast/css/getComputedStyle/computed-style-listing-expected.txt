@@ -414,10 +414,10 @@ text-underline-position: auto
 text-wrap-mode: wrap
 text-wrap-style: auto
 timeline-scope: none
+timeline-trigger-activation-range-end: normal
+timeline-trigger-activation-range-start: normal
 timeline-trigger-active-range-end: auto
 timeline-trigger-active-range-start: auto
-timeline-trigger-entry-range-end: normal
-timeline-trigger-entry-range-start: normal
 timeline-trigger-name: none
 timeline-trigger-source: auto
 top: auto

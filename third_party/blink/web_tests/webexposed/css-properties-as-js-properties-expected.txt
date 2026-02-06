@@ -559,12 +559,12 @@ textWrapMode
 textWrapStyle
 timelineScope
 timelineTrigger
+timelineTriggerActivationRange
+timelineTriggerActivationRangeEnd
+timelineTriggerActivationRangeStart
 timelineTriggerActiveRange
 timelineTriggerActiveRangeEnd
 timelineTriggerActiveRangeStart
-timelineTriggerEntryRange
-timelineTriggerEntryRangeEnd
-timelineTriggerEntryRangeStart
 timelineTriggerName
 timelineTriggerSource
 top

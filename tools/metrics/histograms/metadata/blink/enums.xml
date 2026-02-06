@@ -8251,11 +8251,11 @@ Called by update_use_counter_css.py.-->
   <int value="914" label="rule-edge-inset"/>
   <int value="915" label="rule-interior-inset"/>
   <int value="916" label="page-margin-safety"/>
-  <int value="917" label="timeline-trigger-entry-range-start"/>
-  <int value="918" label="timeline-trigger-entry-range-end"/>
+  <int value="917" label="timeline-trigger-entry-range-start (obsolete)"/>
+  <int value="918" label="timeline-trigger-entry-range-end (obsolete)"/>
   <int value="919" label="timeline-trigger-active-range-start"/>
   <int value="920" label="timeline-trigger-active-range-end"/>
-  <int value="921" label="timeline-trigger-entry-range"/>
+  <int value="921" label="timeline-trigger-entry-range (obsolete)"/>
   <int value="922" label="timeline-trigger-active-range"/>
   <int value="923" label="grid-lanes-pack"/>
   <int value="924" label="text-fit"/>
@@ -8264,6 +8264,9 @@ Called by update_use_counter_css.py.-->
   <int value="927" label="frame-sizing"/>
   <int value="928" label="image-animation"/>
   <int value="929" label="margin-trim"/>
+  <int value="930" label="timeline-trigger-activation-range-start"/>
+  <int value="931" label="timeline-trigger-activation-range-end"/>
+  <int value="932" label="timeline-trigger-activation-range"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

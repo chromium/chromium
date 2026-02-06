@@ -4530,8 +4530,9 @@ const CSSValue* TimelineTrigger::CSSValueFromComputedStyleInternal(
 
       const CSSValueList* enter_range =
           SingleAnimationRangeCSSValueFromComputedStyle(
-              style, animation_data->TimelineTriggerEntryRangeStartList().at(i),
-              animation_data->TimelineTriggerEntryRangeEndList().at(i),
+              style,
+              animation_data->TimelineTriggerActivationRangeStartList().at(i),
+              animation_data->TimelineTriggerActivationRangeEndList().at(i),
               default_start, default_end);
       DCHECK(enter_range->length());
       // Skip a value of 'normal' as that is the default for the enter range.
@@ -4609,42 +4610,44 @@ bool TimelineTrigger::ParseShorthand(
   return true;
 }
 
-const CSSValue* TimelineTriggerEntryRange::CSSValueFromComputedStyleInternal(
+const CSSValue*
+TimelineTriggerActivationRange::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   const Vector<std::optional<TimelineOffset>>& trigger_range_start_list =
       style.Animations()
-          ? style.Animations()->TimelineTriggerEntryRangeStartList()
+          ? style.Animations()->TimelineTriggerActivationRangeStartList()
           : Vector<std::optional<TimelineOffset>>{
-                CSSAnimationData::InitialTimelineTriggerEntryRangeStart()};
+                CSSAnimationData::InitialTimelineTriggerActivationRangeStart()};
   const Vector<std::optional<TimelineOffset>>& trigger_range_end_list =
       style.Animations()
-          ? style.Animations()->TimelineTriggerEntryRangeEndList()
+          ? style.Animations()->TimelineTriggerActivationRangeEndList()
           : Vector<std::optional<TimelineOffset>>{
-                CSSAnimationData::InitialTimelineTriggerEntryRangeEnd()};
+                CSSAnimationData::InitialTimelineTriggerActivationRangeEnd()};
 
   return AnimationRangeCSSValueFromComputedStyle(
       style, trigger_range_start_list, trigger_range_end_list);
 }
 
-bool TimelineTriggerEntryRange::ParseShorthand(
+bool TimelineTriggerActivationRange::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  const StylePropertyShorthand shorthand = timelineTriggerEntryRangeShorthand();
+  const StylePropertyShorthand shorthand =
+      timelineTriggerActivationRangeShorthand();
   DCHECK_EQ(2u, shorthand.length());
-  DCHECK_EQ(&GetCSSPropertyTimelineTriggerEntryRangeStart(),
+  DCHECK_EQ(&GetCSSPropertyTimelineTriggerActivationRangeStart(),
             shorthand.properties()[0]);
-  DCHECK_EQ(&GetCSSPropertyTimelineTriggerEntryRangeEnd(),
+  DCHECK_EQ(&GetCSSPropertyTimelineTriggerActivationRangeEnd(),
             shorthand.properties()[1]);
   return ParseAnimationRangeShorthand(
-      shorthand, CSSPropertyID::kTimelineTriggerEntryRangeStart,
-      CSSPropertyID::kTimelineTriggerEntryRangeEnd, important, stream, context,
-      local_context, properties,
+      shorthand, CSSPropertyID::kTimelineTriggerActivationRangeStart,
+      CSSPropertyID::kTimelineTriggerActivationRangeEnd, important, stream,
+      context, local_context, properties,
       /*allow_auto=*/false);
 }
 

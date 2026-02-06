@@ -984,11 +984,13 @@ enum CSSSampleId {
     kRuleEdgeInset = 914,
     kRuleInteriorInset = 915,
     kPageMarginSafety = 916,
-    kTimelineTriggerEntryRangeStart = 917,
-    kTimelineTriggerEntryRangeEnd = 918,
+    // Renamed to TimelineTriggerActivationRange*
+    // kTimelineTriggerEntryRangeStart = 917,
+    // kTimelineTriggerEntryRangeEnd = 918,
     kTimelineTriggerActiveRangeStart = 919,
     kTimelineTriggerActiveRangeEnd = 920,
-    kTimelineTriggerEntryRange = 921,
+    // Renamed to TimelineTriggerActivationRange
+    // kTimelineTriggerEntryRange = 921,
     kTimelineTriggerActiveRange = 922,
     kGridLanesPack = 923,
     kTextFit = 924,
@@ -997,6 +999,9 @@ enum CSSSampleId {
     kFrameSizing = 927,
     kImageAnimation = 928,
     kMarginTrim = 929,
+    kTimelineTriggerActivationRangeStart = 930,
+    kTimelineTriggerActivationRangeEnd = 931,
+    kTimelineTriggerActivationRange = 932,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

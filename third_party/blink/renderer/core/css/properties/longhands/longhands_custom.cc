@@ -729,7 +729,7 @@ const CSSValue* TimelineTriggerName::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
-const CSSValue* TimelineTriggerEntryRangeStart::ParseSingleValue(
+const CSSValue* TimelineTriggerActivationRangeStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -739,20 +739,20 @@ const CSSValue* TimelineTriggerEntryRangeStart::ParseSingleValue(
 }
 
 const CSSValue*
-TimelineTriggerEntryRangeStart::CSSValueFromComputedStyleInternal(
+TimelineTriggerActivationRangeStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForTimelineTriggerEntryRangeStartList(
+  return ComputedStyleUtils::ValueForTimelineTriggerActivationRangeStartList(
       style.Animations(), style);
 }
 
-const CSSValue* TimelineTriggerEntryRangeStart::InitialValue() const {
+const CSSValue* TimelineTriggerActivationRangeStart::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
-const CSSValue* TimelineTriggerEntryRangeEnd::ParseSingleValue(
+const CSSValue* TimelineTriggerActivationRangeEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
@@ -761,16 +761,17 @@ const CSSValue* TimelineTriggerEntryRangeEnd::ParseSingleValue(
       /* default_offset_percent */ 100.0, /*allow_auto=*/false);
 }
 
-const CSSValue* TimelineTriggerEntryRangeEnd::CSSValueFromComputedStyleInternal(
+const CSSValue*
+TimelineTriggerActivationRangeEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForTimelineTriggerEntryRangeEndList(
+  return ComputedStyleUtils::ValueForTimelineTriggerActivationRangeEndList(
       style.Animations(), style);
 }
 
-const CSSValue* TimelineTriggerEntryRangeEnd::InitialValue() const {
+const CSSValue* TimelineTriggerActivationRangeEnd::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
