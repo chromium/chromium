@@ -1025,7 +1025,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sSearchInCCTIfEnabledByEmbedder =
             newCachedFlag(SEARCH_IN_CCT_IF_ENABLED_BY_EMBEDDER, true);
-    public static final CachedFlag sSearchInSettings = newCachedFlag(SEARCH_IN_SETTINGS, false);
+    public static final CachedFlag sSearchInSettings =
+            newCachedFlag(
+                    SEARCH_IN_SETTINGS, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sSettingsMultiColumn =
             newCachedFlag(
                     SETTINGS_MULTI_COLUMN,

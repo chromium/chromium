@@ -24416,6 +24416,21 @@
             ]
         }
     ],
+    "SearchInSettings": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchPrefetchHighPriorityPrefetches": [
         {
             "platforms": [
