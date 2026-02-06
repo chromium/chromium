@@ -6091,9 +6091,7 @@ void AXNodeObject::AddPseudoElementChildrenFromLayoutTree() {
     // All added pseudo-element descendants are included in the tree.
     if (AXObject* ax_child = AXObjectCache().GetOrCreate(child, this)) {
       DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(*child));
-      if (ax_child->IsIncludedInTree()) {
-        AddChildAndCheckIncluded(ax_child);
-      }
+      AddChildAndCheckIncluded(ax_child);
     }
     child = child->NextSibling();
   }
@@ -6174,6 +6172,14 @@ void AXNodeObject::AddChildrenImpl() {
 #define CHECK_ATTACHED()                                  \
   if (IsDetached()) {                                     \
     NOTREACHED() << "Detached adding children: " << this; \
+  }
+
+  // Don't add children if inside an inactive scroll marker tab or
+  // inside an inactive column scroll marker tab.
+  if (InsideInactiveScrollMarkerTab() ||
+      IsIgnoredAsInsideInactiveColumnTab(GetNode())) {
+    CHECK_ATTACHED();
+    return;
   }
 
   CHECK(NeedsToUpdateChildren());
