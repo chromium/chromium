@@ -766,9 +766,10 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   // The same group must never be shared twice at the same time.
   CHECK(shared_group.is_transitioning_to_shared());
   CHECK(!tab_group_sharing_timeout_info_.contains(shared_group.saved_guid()));
-  tab_group_sharing_timeout_info_[shared_group.saved_guid()].callback =
-      std::move(callback);
-  tab_group_sharing_timeout_info_[shared_group.saved_guid()].timer.Start(
+  TabGroupSharingTimeoutInfo& timeout_info =
+      tab_group_sharing_timeout_info_[shared_group.saved_guid()];
+  timeout_info.callback = std::move(callback);
+  timeout_info.timer.Start(
       FROM_HERE, base::Seconds(10),
       base::BindOnce(&TabGroupSyncServiceImpl::OnTabGroupSharingTimeout,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -1349,8 +1350,8 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     return;
   }
 
-  if (empty_groups_.contains(group_guid)) {
-    empty_groups_.erase(group_guid);
+  if (auto it = empty_groups_.find(group_guid); it != empty_groups_.end()) {
+    empty_groups_.erase(it);
     // This is the first time we are notifying the observers about the group as
     // it was empty before.
     HandleTabGroupAdded(group_guid, source);
@@ -2128,11 +2129,11 @@ void TabGroupSyncServiceImpl::NotifyTabGroupSharingResult(
     const base::Uuid& group_guid,
     TabGroupSharingResult result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  CHECK(tab_group_sharing_timeout_info_.contains(group_guid));
+  auto it = tab_group_sharing_timeout_info_.find(group_guid);
+  CHECK(it != tab_group_sharing_timeout_info_.end());
 
-  TabGroupSharingCallback callback =
-      std::move(tab_group_sharing_timeout_info_[group_guid].callback);
-  tab_group_sharing_timeout_info_.erase(group_guid);
+  TabGroupSharingCallback callback = std::move(it->second.callback);
+  tab_group_sharing_timeout_info_.erase(it);
   std::move(callback).Run(result);
 }
 
