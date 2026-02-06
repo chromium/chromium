@@ -3663,7 +3663,7 @@ IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledMigrateSyncingUserToSignedIn,
     PRE_SyncToSigninMigration) {
   ASSERT_TRUE(SetupClients());
-  AddFolder(kSingleProfileIndex, kTestTitle);
+  AddFolder(kSingleProfileIndex, kTestTitle, StoreType::kLocalOrSyncableStore);
 
   // Setup sync, wait for its completion, and make sure changes were synced.
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
