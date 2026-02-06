@@ -1,0 +1,44 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package wallet;
+
+import "client_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Pass data to be created or updated.
+// Next ID: 7
+message Pass {
+  // The unique identifier of the pass.
+  optional string pass_id = 1;
+
+  // Loyalty card data.
+  message LoyaltyCard {
+    // The name of the merchant.
+    optional string merchant_name = 1;
+
+    // The unique identification number associated with the loyalty card.
+    optional string loyalty_number = 2;
+
+    // The name of the loyalty program.
+    optional string program_name = 3;
+  }
+
+  // The pass data to be created or updated.
+  oneof data {
+    // The vehicle registration pass data.
+    // VehicleRegistration vehicle_registration = 2;
+
+    // The loyalty card pass data.
+    LoyaltyCard loyalty_card = 3;
+  }
+
+  // Client data for the pass.
+  optional ClientData client_data = 4;
+
+  reserved 2, 5, 6;
+}

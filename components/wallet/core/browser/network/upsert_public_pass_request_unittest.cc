@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/wallet/core/browser/network/upsert_pass_request.h"
+#include "components/wallet/core/browser/network/upsert_public_pass_request.h"
 
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
@@ -18,7 +18,7 @@ namespace wallet {
 
 namespace {
 
-class UpsertPassRequestTest : public testing::Test {
+class UpsertPublicPassRequestTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 };
@@ -27,16 +27,16 @@ using UpsertPassCallback = base::test::TestFuture<
     const base::expected<WalletPass, WalletHttpClient::WalletRequestError>&>;
 
 // Tests that GetRequestUrlPath returns the correct URL path.
-TEST_F(UpsertPassRequestTest, GetRequestUrlPath) {
+TEST_F(UpsertPublicPassRequestTest, GetRequestUrlPath) {
   UpsertPassCallback callback;
-  UpsertPassRequest request(WalletPass(), callback.GetCallback());
+  UpsertPublicPassRequest request(WalletPass(), callback.GetCallback());
 
   EXPECT_EQ(request.GetRequestUrlPath(), "v1/passes:upsert");
 }
 
 // Tests that GetRequestContent generates the correct JSON request body
 // for a LoyaltyCard pass.
-TEST_F(UpsertPassRequestTest, GetRequestContent_LoyaltyCard) {
+TEST_F(UpsertPublicPassRequestTest, GetRequestContent_LoyaltyCard) {
   LoyaltyCard loyalty_card;
   loyalty_card.plan_name = "p1";
   loyalty_card.issuer_name = "i1";
@@ -46,7 +46,7 @@ TEST_F(UpsertPassRequestTest, GetRequestContent_LoyaltyCard) {
   pass.pass_data = loyalty_card;
 
   UpsertPassCallback callback;
-  UpsertPassRequest request(pass, callback.GetCallback());
+  UpsertPublicPassRequest request(pass, callback.GetCallback());
 
   std::string request_body = request.GetRequestContent();
   std::optional<base::Value> root =
@@ -88,12 +88,12 @@ TEST_F(UpsertPassRequestTest, GetRequestContent_LoyaltyCard) {
 
 // Tests that GetRequestContent correctly includes the pass_id when
 // available.
-TEST_F(UpsertPassRequestTest, GetRequestContent_WithPassId) {
+TEST_F(UpsertPublicPassRequestTest, GetRequestContent_WithPassId) {
   WalletPass pass;
   pass.id = "pass-id";
 
   UpsertPassCallback callback;
-  UpsertPassRequest request(pass, callback.GetCallback());
+  UpsertPublicPassRequest request(pass, callback.GetCallback());
 
   std::string request_body = request.GetRequestContent();
   std::optional<base::Value> root =
@@ -107,9 +107,9 @@ TEST_F(UpsertPassRequestTest, GetRequestContent_WithPassId) {
 }
 
 // Tests that OnResponse handles a successful HTTP response.
-TEST_F(UpsertPassRequestTest, OnResponse_Success) {
+TEST_F(UpsertPublicPassRequestTest, OnResponse_Success) {
   UpsertPassCallback callback;
-  UpsertPassRequest request(WalletPass(), callback.GetCallback());
+  UpsertPublicPassRequest request(WalletPass(), callback.GetCallback());
 
   std::move(request).OnResponse("{}");
 
@@ -118,9 +118,9 @@ TEST_F(UpsertPassRequestTest, OnResponse_Success) {
 }
 
 // Tests that OnResponse handles an error HTTP response.
-TEST_F(UpsertPassRequestTest, OnResponse_Error) {
+TEST_F(UpsertPublicPassRequestTest, OnResponse_Error) {
   UpsertPassCallback callback;
-  UpsertPassRequest request(WalletPass(), callback.GetCallback());
+  UpsertPublicPassRequest request(WalletPass(), callback.GetCallback());
 
   std::move(request).OnResponse(base::unexpected(
       WalletHttpClient::WalletRequestError::kAccessTokenFetchFailed));

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WALLET_CORE_BROWSER_NETWORK_UPSERT_PASS_REQUEST_H_
-#define COMPONENTS_WALLET_CORE_BROWSER_NETWORK_UPSERT_PASS_REQUEST_H_
+#ifndef COMPONENTS_WALLET_CORE_BROWSER_NETWORK_UPSERT_PUBLIC_PASS_REQUEST_H_
+#define COMPONENTS_WALLET_CORE_BROWSER_NETWORK_UPSERT_PUBLIC_PASS_REQUEST_H_
 
 #include <string>
 
@@ -13,11 +13,11 @@
 
 namespace wallet {
 
-class UpsertPassRequest : public WalletRequest {
+class UpsertPublicPassRequest : public WalletRequest {
  public:
-  UpsertPassRequest(WalletPass pass,
-                    WalletHttpClient::UpsertPassCallback callback);
-  ~UpsertPassRequest() override;
+  UpsertPublicPassRequest(WalletPass pass,
+                          WalletHttpClient::UpsertPassCallback callback);
+  ~UpsertPublicPassRequest() override;
 
   // WalletRequest:
   std::string GetRequestUrlPath() const override;
@@ -31,4 +31,4 @@ class UpsertPassRequest : public WalletRequest {
 
 }  // namespace wallet
 
-#endif  // COMPONENTS_WALLET_CORE_BROWSER_NETWORK_UPSERT_PASS_REQUEST_H_
+#endif  // COMPONENTS_WALLET_CORE_BROWSER_NETWORK_UPSERT_PUBLIC_PASS_REQUEST_H_

@@ -17,8 +17,8 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/network/get_unmasked_pass_request.h"
-#include "components/wallet/core/browser/network/upsert_pass_request.h"
 #include "components/wallet/core/browser/network/upsert_private_pass_request.h"
+#include "components/wallet/core/browser/network/upsert_public_pass_request.h"
 #include "components/wallet/core/browser/network/wallet_request.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -69,8 +69,8 @@ void WalletHttpClientImpl::UpsertPass(WalletPass pass,
     case PassCategory::kEventPass:
     case PassCategory::kTransitTicket:
     case PassCategory::kBoardingPass:
-      SendRequest(std::make_unique<UpsertPassRequest>(std::move(pass),
-                                                      std::move(callback)));
+      SendRequest(std::make_unique<UpsertPublicPassRequest>(
+          std::move(pass), std::move(callback)));
       break;
     case PassCategory::kPassport:
     case PassCategory::kDriverLicense:

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/wallet/core/browser/network/upsert_pass_request.h"
+#include "components/wallet/core/browser/network/upsert_public_pass_request.h"
 
 #include "base/json/json_writer.h"
 #include "base/notimplemented.h"
@@ -62,20 +62,20 @@ base::DictValue BuildPassDict(const WalletPass& pass) {
 
 }  // namespace
 
-UpsertPassRequest::UpsertPassRequest(
+UpsertPublicPassRequest::UpsertPublicPassRequest(
     WalletPass pass,
     WalletHttpClient::UpsertPassCallback callback)
     : pass_(std::move(pass)), callback_(std::move(callback)) {
   CHECK(callback_);
 }
 
-UpsertPassRequest::~UpsertPassRequest() = default;
+UpsertPublicPassRequest::~UpsertPublicPassRequest() = default;
 
-std::string UpsertPassRequest::GetRequestUrlPath() const {
+std::string UpsertPublicPassRequest::GetRequestUrlPath() const {
   return "v1/passes:upsert";
 }
 
-std::string UpsertPassRequest::GetRequestContent() const {
+std::string UpsertPublicPassRequest::GetRequestContent() const {
   const base::DictValue request_dict =
       base::DictValue()
           .Set("pass", BuildPassDict(pass_))
@@ -83,7 +83,7 @@ std::string UpsertPassRequest::GetRequestContent() const {
   return base::WriteJson(request_dict).value_or("");
 }
 
-void UpsertPassRequest::OnResponse(
+void UpsertPublicPassRequest::OnResponse(
     WalletHttpClient::HttpResponse http_response) && {
   if (!http_response.has_value()) {
     std::move(callback_).Run(base::unexpected(http_response.error()));

@@ -9,6 +9,7 @@ syntax = "proto2";
 package wallet.api;
 
 import "client_info.proto";
+import "pass.proto";
 import "private_pass.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -17,6 +18,15 @@ option optimize_for = LITE_RUNTIME;
 message UpsertPrivatePassRequest {
   // Pass to upsert.
   optional PrivatePass private_pass = 1;
+
+  // Information about the client making the request.
+  optional ClientInfo client_info = 2;
+}
+
+// Request for the UpsertPass RPC.
+message UpsertPassRequest {
+  // Pass to upsert.
+  optional Pass pass = 1;
 
   // Information about the client making the request.
   optional ClientInfo client_info = 2;
