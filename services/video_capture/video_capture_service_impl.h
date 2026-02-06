@@ -17,13 +17,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
-#include "services/video_capture/ash/video_capture_device_factory_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
@@ -61,9 +58,6 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
                                  accelerator_factory) override;
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge> receiver)
-      override;
-  void BindVideoCaptureDeviceFactory(
-      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver)
       override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   void ConnectToVideoSourceProvider(
@@ -103,15 +97,6 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   std::unique_ptr<VirtualDeviceEnabledDeviceFactory> device_factory_;
   std::unique_ptr<VideoSourceProviderImpl> video_source_provider_;
   std::unique_ptr<GpuDependenciesContext> gpu_dependencies_context_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Must be destroyed before |device_factory_|.
-  std::unique_ptr<crosapi::VideoCaptureDeviceFactoryAsh>
-      device_factory_ash_adapter_;
-  // Must be destroyed before |device_factory_ash_adapter_|.
-  mojo::ReceiverSet<crosapi::mojom::VideoCaptureDeviceFactory>
-      factory_receivers_ash_;
-#endif
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
   class VizGpuContextProvider;

@@ -55,10 +55,6 @@ class FakeVideoCaptureService
       mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
           accelerator_factory) override {}
 
-  void BindVideoCaptureDeviceFactory(
-      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver)
-      override {}
-
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge>) override {}
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -57,10 +57,6 @@ class FakeVideoCaptureService
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge> receiver)
       override {}
 
-  void BindVideoCaptureDeviceFactory(
-      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver)
-      override {}
-
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override {

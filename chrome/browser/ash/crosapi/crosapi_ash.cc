@@ -211,12 +211,6 @@ void CrosapiAsh::BindTelemetryProbeService(
   probe_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindVideoCaptureDeviceFactory(
-    mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
-  content::GetVideoCaptureService().BindVideoCaptureDeviceFactory(
-      std::move(receiver));
-}
-
 void CrosapiAsh::OnDisconnected() {
   auto it = disconnect_handler_map_.find(receiver_set_.current_receiver());
   if (it == disconnect_handler_map_.end()) {

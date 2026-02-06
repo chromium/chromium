@@ -64,8 +64,6 @@ source_set("lib") {
     sources += [
       "ash/video_capture_device_ash.cc",
       "ash/video_capture_device_ash.h",
-      "ash/video_capture_device_factory_ash.cc",
-      "ash/video_capture_device_factory_ash.h",
       "ash/video_frame_handler_ash.cc",
       "ash/video_frame_handler_ash.h",
     ]

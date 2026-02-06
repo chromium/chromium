@@ -248,12 +248,7 @@ interface Crosapi {
   // BindTimeZoneService@65 was removed.
   // BindTts@58 was removed.
   // BindUrlHandler@18 was removed.
-
-  // Binds the device factory in video capture service.
-  // Added in M90.
-  [MinVersion=20] BindVideoCaptureDeviceFactory@25(
-      pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
-
+  // BindVideoCaptureDeviceFactory@25 was removed.
   // BindVideoConferenceManager@102 was removed.
   // BindVirtualKeyboard@91 was removed.
   // BindVpnExtensionObserver@78 was removed.

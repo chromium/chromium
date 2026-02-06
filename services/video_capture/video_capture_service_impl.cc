@@ -15,7 +15,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
-#include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "media/capture/video/video_capture_buffer_tracker.h"
 #include "media/capture/video/video_capture_system_impl.h"
@@ -252,10 +251,6 @@ VideoCaptureServiceImpl::VideoCaptureServiceImpl(
 }
 
 VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
-#if BUILDFLAG(IS_CHROMEOS)
-  factory_receivers_ash_.Clear();
-  device_factory_ash_adapter_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS)
   device_factory_.reset();
 
   if (gpu_dependencies_context_) {
@@ -279,13 +274,6 @@ void VideoCaptureServiceImpl::ConnectToCameraAppDeviceBridge(
   LazyInitializeDeviceFactory();
   media::CameraAppDeviceBridgeImpl::GetInstance()->BindReceiver(
       std::move(receiver));
-}
-
-void VideoCaptureServiceImpl::BindVideoCaptureDeviceFactory(
-    mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver) {
-  LazyInitializeDeviceFactory();
-  factory_receivers_ash_.Add(device_factory_ash_adapter_.get(),
-                             std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -352,9 +340,6 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
               &GpuDependenciesContext::CreateJpegDecodeAccelerator,
               gpu_dependencies_context_->GetWeakPtr()),
           gpu_dependencies_context_->GetTaskRunner()));
-  device_factory_ash_adapter_ =
-      std::make_unique<crosapi::VideoCaptureDeviceFactoryAsh>(
-          device_factory_.get());
 #else
   device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
       std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system)));

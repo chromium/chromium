@@ -195,16 +195,3 @@ interface VideoCaptureDevice {
   [MinVersion = 1]
   RequestRefreshFrame@7();
 };
-
-// Similar to |video_capture.mojom.DeviceFactory| but depends on simplified
-// structures.
-// Next min method ID: 2
-[Uuid="b79ed8be-cf39-4d0d-a819-2d299022124a"]
-interface VideoCaptureDeviceFactory {
-  GetDeviceInfos@0()
-      => (array<media.mojom.VideoCaptureDeviceInfo> device_infos);
-
-  CreateDevice@1(string device_id,
-                 pending_receiver<VideoCaptureDevice> device_receiver)
-      => (DeviceAccessResultCode result_code);
-};

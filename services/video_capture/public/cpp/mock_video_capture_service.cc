@@ -23,11 +23,6 @@ void MockVideoCaptureService::InjectGpuDependencies(
         accelerator_factory) {
   DoInjectGpuDependencies(std::move(accelerator_factory));
 }
-
-void MockVideoCaptureService::BindVideoCaptureDeviceFactory(
-    mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver) {
-  DoBindVideoCaptureDeviceFactory(std::move(receiver));
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace video_capture
