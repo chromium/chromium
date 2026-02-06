@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
@@ -60,10 +59,6 @@ PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  // Don't run the experiment for clients with history embeddings enabled.
-  if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile)) {
-    return nullptr;
-  }
 
   // Don't bother running if we don't have a model observer since we won't have
   // a model to run.

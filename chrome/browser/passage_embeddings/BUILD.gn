@@ -26,9 +26,6 @@ source_set("passage_embeddings") {
 
   deps = [
     "//chrome/browser:browser_process",
-
-    # For chrome/browser/history_embeddings/history_embeddings_utils.h.
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles",
