@@ -12033,6 +12033,28 @@
             ]
         }
     ],
+    "GeminiAntiscamProtectionForMetricsCollection": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "GeminiAntiscamProtectionMinScamScoreLogPageContent": "0.5"
+                    },
+                    "enable_features": [
+                        "GeminiAntiscamProtectionForMetricsCollection"
+                    ]
+                }
+            ]
+        }
+    ],
     "GeminiCopresence": [
         {
             "platforms": [
