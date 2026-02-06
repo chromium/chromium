@@ -10,6 +10,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './error_page.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -21,6 +24,44 @@ import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
 
 const DEFAULT_EMOJI: string = '⚡';
 const MAX_PROMPT_CHAR_COUNT = 20000;
+const REFINE_SKILL_TIMEOUT_MS = 5000;
+
+let windowProxyInstance: WindowProxy|null = null;
+
+export interface WindowProxy {
+  setTimeout(handler: TimerHandler, timeout?: number): number;
+}
+
+export class WindowProxyImpl implements WindowProxy {
+  setTimeout(handler: TimerHandler, timeout?: number): number {
+    return window.setTimeout(handler, timeout);
+  }
+
+  static getInstance(): WindowProxy {
+    return windowProxyInstance || (windowProxyInstance = new WindowProxyImpl());
+  }
+
+  static setInstance(obj: WindowProxy) {
+    windowProxyInstance = obj;
+  }
+}
+
+export interface SkillsDialogAppElement {
+  $: {
+    accountEmail: HTMLElement,
+    cancelButton: HTMLElement,
+    emojiTrigger: HTMLInputElement,
+    errorMessage: HTMLElement,
+    header: HTMLElement,
+    iconRedo: CrIconButtonElement,
+    iconRefine: CrIconButtonElement,
+    iconUndo: CrIconButtonElement,
+    instructionsText: HTMLTextAreaElement,
+    nameText: CrInputElement,
+    saveButton: CrButtonElement,
+    textareaWrapper: HTMLElement,
+  };
+}
 
 export class SkillsDialogAppElement extends CrLitElement {
   static get is() {
@@ -43,6 +84,8 @@ export class SkillsDialogAppElement extends CrLitElement {
       canRedoRefine_: {type: Boolean},
       shouldShowErrorPage_: {type: Boolean},
       signedInEmail_: {type: String},
+      hasRefineError_: {type: Boolean},
+      isRefineLoading_: {type: Boolean},
     };
   }
 
@@ -65,6 +108,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor shouldShowErrorPage_: boolean =
       !loadTimeData.getBoolean('isGlicEnabled');
   protected accessor signedInEmail_: string = '';
+  protected accessor hasRefineError_: boolean = false;
+  protected accessor isRefineLoading_: boolean = false;
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
@@ -75,24 +120,24 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   /** Initializes dialog. */
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
-
-    const initialSkill =
-        (await SkillsDialogBrowserProxy.getInstance().handler.getInitialSkill())
-            .skill;
-    if (initialSkill) {
-      this.skill_ = initialSkill;
-      this.skill_.icon = initialSkill.icon || DEFAULT_EMOJI;
-      // TODO(marissashen): Update to passing in dialogType from dialog creation
-      if (!initialSkill.id || initialSkill.source === SkillSource.kFirstParty) {
-        // Creating a new skill or remixing a first party skill.
-        this.dialogTitle_ = 'Add skill';
-      } else {
-        // Editing a user created skill.
-        this.dialogTitle_ = 'Edit skill';
-      }
-    }
+    SkillsDialogBrowserProxy.getInstance().handler.getInitialSkill().then(
+        ({skill}) => {
+          if (skill) {
+            this.skill_ = skill;
+            this.skill_.icon = skill.icon || DEFAULT_EMOJI;
+            // TODO(marissashen): Update to passing in dialogType from dialog
+            // creation
+            if (!skill.id || skill.source === SkillSource.kFirstParty) {
+              // Creating a new skill or remixing a first party skill.
+              this.dialogTitle_ = 'Add skill';
+            } else {
+              // Editing a user created skill.
+              this.dialogTitle_ = 'Edit skill';
+            }
+          }
+        });
     SkillsDialogBrowserProxy.getInstance().handler.getSignedInEmail().then(
         ({email}) => {
           this.signedInEmail_ = email;
@@ -136,15 +181,16 @@ export class SkillsDialogAppElement extends CrLitElement {
     input.blur();
   }
 
-  protected get isRefineDisabled_() {
-    return !this.skill_.prompt || this.skill_.prompt.length === 0;
+  protected isRefineDisabled_(): boolean {
+    return !this.skill_.prompt || this.skill_.prompt.length === 0 ||
+        this.isRefineLoading_;
   }
 
   protected onNameChanged_(e: CustomEvent<{value: string}>) {
     this.skill_ = {...this.skill_, name: e.detail.value};
   }
 
-  protected onInstructionsChanged_(e: Event) {
+  protected onInstructionsInput_(e: Event) {
     const target = e.target as HTMLTextAreaElement;
     const newValue = target.value;
 
@@ -152,6 +198,7 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.canRedoRefine_ = false;
     this.originalPrompt_ = '';
     this.refinedPrompt_ = '';
+    this.hasRefineError_ = false;
 
     this.skill_ = {...this.skill_, prompt: newValue};
   }
@@ -161,8 +208,9 @@ export class SkillsDialogAppElement extends CrLitElement {
 
     this.canUndoRefine_ = false;
     this.canRedoRefine_ = true;
+    this.hasRefineError_ = false;
 
-    this.shadowRoot?.querySelector<HTMLElement>('#instructionsText')?.focus();
+    this.$.instructionsText.focus();
   }
 
   protected onRedoClick_() {
@@ -170,19 +218,36 @@ export class SkillsDialogAppElement extends CrLitElement {
 
     this.canUndoRefine_ = true;
     this.canRedoRefine_ = false;
+    this.hasRefineError_ = false;
 
-    this.shadowRoot?.querySelector<HTMLElement>('#instructionsText')?.focus();
+    this.$.instructionsText.focus();
   }
 
   protected onRefineClick_() {
-    this.originalPrompt_ = this.skill_.prompt;
+    this.$.instructionsText.focus();
+    if (this.isRefineLoading_) {
+      return;
+    }
 
-    return SkillsDialogBrowserProxy.getInstance()
-        .handler.refineSkill(this.skill_)
+    this.isRefineLoading_ = true;
+    this.hasRefineError_ = false;
+
+    const refineRequest =
+        SkillsDialogBrowserProxy.getInstance().handler.refineSkill(this.skill_);
+
+    const timeout = new Promise<never>((_, reject) => {
+      WindowProxyImpl.getInstance().setTimeout(
+          () => reject(new Error('Refine skill timed out')),
+          REFINE_SKILL_TIMEOUT_MS);
+    });
+
+    // Race the request against the timeout
+    return Promise.race([refineRequest, timeout])
         .then(({refinedSkill}) => {
           // If the server returned null, do not overwrite the current state.
-          if (refinedSkill) {
+          if (refinedSkill && !this.hasRefineError_) {
             // Only update if we have a valid result.
+            this.originalPrompt_ = this.skill_.prompt;
             this.skill_ = {
               ...this.skill_,
               // If the refined prompt is missing or empty, keep the original
@@ -192,9 +257,13 @@ export class SkillsDialogAppElement extends CrLitElement {
             this.refinedPrompt_ = refinedSkill.prompt;
             this.canUndoRefine_ = true;
             this.canRedoRefine_ = false;
-            this.shadowRoot?.querySelector<HTMLElement>('#instructionsText')
-                ?.focus();
           }
+        })
+        .catch(() => {
+          this.hasRefineError_ = true;
+        })
+        .finally(() => {
+          this.isRefineLoading_ = false;
         });
   }
 

@@ -59,27 +59,36 @@ cr-input {
   font-weight: 500;
 }
 
-.textarea-wrapper {
+#textareaWrapper {
   display: flex;
   flex-direction: column;
   position: relative;
 
   border: 1px solid var(--cr-fallback-color-neutral-outline);
   border-radius: 8px;
-  background-color: white;
+  background-color: var(--color-sys-surface);
 
   transition: background-color 200ms ease-in-out;
   overflow: hidden;
 }
 
-.textarea-wrapper:focus-within {
+#textareaWrapper:focus-within {
   border-color: var(--cr-focus-outline-color);
   box-shadow: 0 0 0 1px var(--cr-focus-outline-color);
-  background-color: var(--google-grey-100);
+  background-color: var(--color-sys-surface-variant);
 }
 
-.textarea-wrapper:hover {
-  background-color: var(--google-grey-100);
+#textareaWrapper:hover {
+  background-color: var(--color-sys-surface-variant);
+}
+
+#textareaWrapper[error] {
+  border-color: var(--color-sys-error);
+}
+
+#textareaWrapper[error]:focus-within {
+  border-color: var(--color-sys-error);
+  box-shadow: 0 0 0 1px var(--color-sys-error);
 }
 
 textarea {
@@ -109,15 +118,15 @@ cr-icon-button {
   margin: 0;
 }
 
-.icon-undo {
+#iconUndo {
   --cr-icon-image: url('images/skills_undo.svg');
 }
 
-.icon-redo {
+#iconRedo {
   --cr-icon-image: url('images/skills_redo.svg');
 }
 
-.icon-refine {
+#iconRefine {
   --cr-icon-image: url('images/skills_pen_spark.svg');
 }
 
@@ -179,4 +188,22 @@ cr-icon-button {
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
+}
+
+#errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-sys-error);
+  font-weight: 500;
+}
+
+#errorMessage a {
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  outline: none;
 }

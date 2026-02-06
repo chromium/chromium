@@ -23,7 +23,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
     <cr-input class="no-error stroked" id="nameText" type="text"
           placeholder="Simplify For A Kid" .value="${this.skill_.name}"
           @value-changed="${this.onNameChanged_}">
-      <input class="emoji-trigger"
+      <input id="emojiTrigger" class="emoji-trigger"
           type="text"
           .value="${this.skill_.icon}"
           @click="${this.onEmojiBtnClick_}"
@@ -35,30 +35,33 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
     </cr-input>
     <div id="label" class="cr-form-field-label" aria-hidden="true">Instructions
     </div>
-    <div class="textarea-wrapper">
+    <div id="textareaWrapper" ?error="${this.hasRefineError_}">
       <textarea id="instructionsText" aria-label="Instructions"
           maxlength="${MAX_PROMPT_CHAR_COUNT}"
           placeholder="Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under ${MAX_PROMPT_CHAR_COUNT} words."
           .value="${this.skill_.prompt}"
-          @input="${this.onInstructionsChanged_}">
+          @input="${this.onInstructionsInput_}">
       </textarea>
       <div class="textarea-actions">
-        <cr-icon-button class="icon-undo" title="Undo"
-            aria-label="Undo"
+        <cr-icon-button id="iconUndo" title="undo"
+            aria-label="undo"
             ?disabled="${!this.canUndoRefine_}"
             @click="${this.onUndoClick_}">
         </cr-icon-button>
-        <cr-icon-button class="icon-redo" title="Redo"
-            aria-label="Redo"
+        <cr-icon-button id="iconRedo" title="redo"
+            aria-label="redo"
             ?disabled="${!this.canRedoRefine_}"
             @click="${this.onRedoClick_}">
         </cr-icon-button>
-        <cr-icon-button class="icon-refine" title="Refine"
+        <cr-icon-button id="iconRefine" title="Refine"
             aria-label="Refine"
-            ?disabled="${this.isRefineDisabled_}"
+            ?disabled="${this.isRefineDisabled_()}"
             @click="${this.onRefineClick_}">
         </cr-icon-button>
       </div>
+    </div>
+    <div id="errorMessage" ?hidden="${!this.hasRefineError_}">
+      Something went wrong.
     </div>
   </div>
   <div id="accountInfo">
