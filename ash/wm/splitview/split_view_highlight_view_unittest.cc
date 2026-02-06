@@ -44,6 +44,14 @@ class SplitViewHighlightViewTest : public AshTestBase {
             std::make_unique<SplitViewHighlightView>(true));
   }
 
+  // AshTestBase:
+  void TearDown() override {
+    right_highlight_ = nullptr;
+    left_highlight_ = nullptr;
+    widget_.reset();
+    AshTestBase::TearDown();
+  }
+
   void SetLeftBounds(const gfx::Rect& bounds, bool animate) {
     SetBounds(bounds, /*is_left=*/true, animate);
   }
@@ -53,8 +61,8 @@ class SplitViewHighlightViewTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SplitViewHighlightView, DanglingUntriaged> left_highlight_;
-  raw_ptr<SplitViewHighlightView, DanglingUntriaged> right_highlight_;
+  raw_ptr<SplitViewHighlightView> left_highlight_;
+  raw_ptr<SplitViewHighlightView> right_highlight_;
   std::unique_ptr<views::Widget> widget_;
 
  private:
