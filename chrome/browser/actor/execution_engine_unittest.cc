@@ -1076,43 +1076,6 @@ TEST_F(ExecutionEngineNavigationGatingTest,
                                  /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
-TEST_F(ExecutionEngineNavigationGatingTest,
-       NavigationGatingMetricsRecordInitiatorOrigin_SameOriginBlocked) {
-  const GURL kInitiatorUrl("https://initiator.com/");
-  const url::Origin kInitiatorOrigin = url::Origin::Create(kInitiatorUrl);
-  const GURL kDestinationUrl("https://destination.com/");
-
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             kDestinationUrl);
-  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
-    {
-        "navigation_blocked": [
-          {
-            "from": "*",
-            "to": "destination.com"
-          }
-        ]
-    })json");
-
-  content::MockNavigationHandle navigation_handle(kDestinationUrl, main_rfh());
-  navigation_handle.set_initiator_origin(kInitiatorOrigin);
-
-  EXPECT_EQ(task_->GetExecutionEngine().ShouldDeferNavigation(
-                navigation_handle, base::NullCallback()),
-            content::NavigationThrottle::CANCEL_AND_IGNORE);
-
-  histograms_.ExpectUniqueSample(
-      "Actor.NavigationGating.GatingDecision",
-      /*sample=*/ExecutionEngine::GatingDecision::kBlockByStaticList,
-      /*expected_bucket_count=*/1);
-  // The navigation is cross-origin and cross-site since initiator !=
-  // destination.
-  histograms_.ExpectUniqueSample("Actor.NavigationGating.CrossOrigin2",
-                                 /*sample=*/true, /*expected_bucket_count=*/1);
-  histograms_.ExpectUniqueSample("Actor.NavigationGating.CrossSite2",
-                                 /*sample=*/true, /*expected_bucket_count=*/1);
-}
-
 }  // namespace
 
 }  // namespace actor

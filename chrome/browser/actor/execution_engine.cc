@@ -339,19 +339,14 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
       *SafetyListManager::GetInstance();
 
   if (url::IsSameOriginWith(source_url, destination_url)) {
-    // The static blocklist can still block same-origin navigations. A wildcard
-    // source entry like `[*, foo.com]` will block a `foo.com -> foo.com`
-    // navigation. The reasoning is that a URL globally blocked as a
-    // destination should not be reachable from anywhere, including itself.
-    // Conversely, a source-specific entry like `[foo.com, *]` will *not* block
-    // a `foo.com -> foo.com` navigation. This is because a global block on
-    // navigations *from* a URL is intended to prevent leaving that origin, not
-    // moving within it.
-    return safety_list_manager.get_blocked_list()
-                   .ContainsUrlPairWithWildcardSource(source_url,
-                                                      destination_url)
-               ? GatingDecision::kBlockByStaticList
-               : GatingDecision::kAllowSameOrigin;
+    // The static blocklist should never need to block same-origin navigations.
+    // This is because SafetyChecksForNextAction prevents action on an origin if
+    // it is already on the blocklist, and navigation gating prevents the actor
+    // from navigating to a blocked origin after. We apply a CHECK to enforce
+    // this invariant.
+    CHECK(!safety_list_manager.get_blocked_list()
+               .ContainsUrlPairWithWildcardSource(source_url, destination_url));
+    return GatingDecision::kAllowSameOrigin;
   }
 
   if (safety_list_manager.get_blocked_list().ContainsUrlPair(source_url,
@@ -709,6 +704,18 @@ void ExecutionEngine::SafetyChecksForNextAction() {
     return;
   }
 
+  const SafetyListManager& safety_list_manager =
+      *SafetyListManager::GetInstance();
+  const GURL& url =
+      tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+  if (safety_list_manager.get_blocked_list()
+          .ContainsPatternMatchingSelfNavigation(url)) {
+    OnMayActOnTabDecision(
+        tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+        MayActOnUrlBlockReason::kBlockedByStaticList);
+    return;
+  }
+
   // Asynchronously check if we can act on the tab. NOTE that the MayActOnTab
   // check uses `GetLastCommittedURL()` from the tab. For opaque origins, this
   // means that we'll get the precursor URL. For this reason, we previously
@@ -748,6 +755,7 @@ void ExecutionEngine::OnMayActOnTabDecision(
     case MayActOnUrlBlockReason::kUrlNotInAllowlist:
     case MayActOnUrlBlockReason::kWrongScheme:
     case MayActOnUrlBlockReason::kEnterprisePolicy:
+    case MayActOnUrlBlockReason::kBlockedByStaticList:
       DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/false);
   }
 }

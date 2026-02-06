@@ -264,6 +264,89 @@ TEST(SafetyListTest, ContainsUrlPairWithWildcardSource) {
   }
 }
 
+TEST(SafetyListTest, ContainsPatternMatchingSelfNavigation) {
+  const struct {
+    const std::string desc;
+    const ContentSettingsPattern source_pattern;
+    const ContentSettingsPattern destination_pattern;
+    const char* url;
+    bool expected;
+  } kTestCases[] = {
+      {
+          "wildcard_source_and_matches_domain",
+          ContentSettingsPattern::FromString("*"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://blocked.com",
+          true,
+      },
+      {
+          "wildcard_source_and_matches_host",
+          ContentSettingsPattern::FromString("*"),
+          ContentSettingsPattern::FromString("[*.]bad.blocked.com"),
+          "https://bad.blocked.com",
+          true,
+      },
+      {
+          "wildcard_source_and_does_not_match_domain",
+          ContentSettingsPattern::FromString("*"),
+          ContentSettingsPattern::FromString("[*.]blocked.com"),
+          "https://allowed.com",
+          false,
+      },
+      {
+          "wildcard_source_and_does_not_match_host",
+          ContentSettingsPattern::FromString("*"),
+          ContentSettingsPattern::FromString("[*.]bad.blocked.com"),
+          "https://good.blocked.com",
+          false,
+      },
+      {
+          "matches_both_domains",
+          ContentSettingsPattern::FromString("blocked.com"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://blocked.com",
+          true,
+      },
+      {
+          "matches_both_hosts",
+          ContentSettingsPattern::FromString("[*.]bad.blocked.com"),
+          ContentSettingsPattern::FromString("[*.]bad.blocked.com"),
+          "https://bad.blocked.com",
+          true,
+      },
+      {
+          "source_does_not_match_source_domain",
+          ContentSettingsPattern::FromString("another.com"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://blocked.com",
+          false,
+      },
+      {
+          "source_does_not_match_source_host",
+          ContentSettingsPattern::FromString("[*.]other.blocked.com"),
+          ContentSettingsPattern::FromString("[*.]bad.blocked.com"),
+          "https://bad.blocked.com",
+          false,
+      },
+      {
+          "source_does_not_match_source_host_wildcard",
+          ContentSettingsPattern::FromString("[*.]other.blocked.com"),
+          ContentSettingsPattern::FromString("*"),
+          "https://bad.blocked.com",
+          false,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SafetyList::Patterns list;
+    list.push_back({test_case.source_pattern, test_case.destination_pattern});
+    SCOPED_TRACE(test_case.desc);
+    EXPECT_EQ(test_case.expected,
+              SafetyList(list).ContainsPatternMatchingSelfNavigation(
+                  GURL(test_case.url)));
+  }
+}
+
 }  // namespace
 
 }  // namespace actor

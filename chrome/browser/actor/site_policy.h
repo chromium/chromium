@@ -39,6 +39,7 @@ enum class MayActOnUrlBlockReason {
   kUrlNotInAllowlist,
   kWrongScheme,
   kEnterprisePolicy,
+  kBlockedByStaticList,
 };
 
 using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;

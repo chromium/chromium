@@ -271,6 +271,7 @@ void ActorNavigationThrottle::OnMayActOnUrlResult(
       case MayActOnUrlBlockReason::kUrlNotInAllowlist:
       case MayActOnUrlBlockReason::kWrongScheme:
       case MayActOnUrlBlockReason::kEnterprisePolicy:
+      case MayActOnUrlBlockReason::kBlockedByStaticList:
         tool_failure_code =
             mojom::ActionResultCode::kTriggeredNavigationBlocked;
         break;
