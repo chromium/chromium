@@ -131,8 +131,9 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
     StopBeginFrame();
   }
 
-  // Remove the old DisplayLinkMac.
+  // Remove the old DisplayLinkMac or timer.
   display_link_mac_.reset();
+  time_source_.reset();
 
   display_id_ = display_id;
 
