@@ -57,6 +57,19 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"errorPageDescription", IDS_SKILLS_ERROR_PAGE_DESCRIPTION},
       {"footerText", IDS_SKILLS_SIDEBAR_FOOTER_TEXT},
       {"footerBranding", IDS_SKILLS_SIDEBAR_FOOTER_BRANDING},
+      {"addSkillHeader", IDS_SKILLS_DIALOG_ADD_SKILL_HEADER},
+      {"editSkillHeader", IDS_SKILLS_DIALOG_EDIT_SKILL_HEADER},
+      {"skillDescription", IDS_SKILLS_DIALOG_DESCRIPTION},
+      {"name", IDS_SKILLS_DIALOG_NAME_LABEL},
+      {"namePlaceholder", IDS_SKILLS_DIALOG_NAME_PLACEHOLDER},
+      {"chooseIcon", IDS_SKILLS_DIALOG_CHOOSE_ICON_TOOLTIP},
+      {"instructions", IDS_SKILLS_DIALOG_INSTRUCTIONS_LABEL},
+      {"instructionsPlaceholder", IDS_SKILLS_DIALOG_INSTRUCTIONS_PLACEHOLDER},
+      {"undo", IDS_SKILLS_DIALOG_UNDO_TOOLTIP},
+      {"redo", IDS_SKILLS_DIALOG_REDO_TOOLTIP},
+      {"refine", IDS_SKILLS_DIALOG_REFINE_TOOLTIP},
+      {"refineError", IDS_SKILLS_DIALOG_REFINE_ERROR},
+      {"accountInfo", IDS_SKILLS_DIALOG_ACCOUNT_INFO},
   };
 
   source->AddLocalizedStrings(kStrings);

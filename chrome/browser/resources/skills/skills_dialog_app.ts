@@ -131,10 +131,10 @@ export class SkillsDialogAppElement extends CrLitElement {
             // creation
             if (!skill.id || skill.source === SkillSource.kFirstParty) {
               // Creating a new skill or remixing a first party skill.
-              this.dialogTitle_ = 'Add skill';
+              this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
             } else {
               // Editing a user created skill.
-              this.dialogTitle_ = 'Edit skill';
+              this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
             }
           }
         });

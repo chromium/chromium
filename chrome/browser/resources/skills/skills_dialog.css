@@ -27,15 +27,15 @@ h1 {
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
-  margin: 0;
+  margin: 0px;
 }
 
 p.description {
   color: var(--color-sys-on-surface-subtle);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 20px;
-  margin: 0;
+  margin: 0px;
 }
 
 .form-group {
@@ -168,7 +168,7 @@ cr-icon-button {
 }
 
 #accountInfo {
-  background-color: var(--color-sys-primary-container);
+  background-color: var(--color-sys-base-container);
   border-radius: 8px;
   display: flex;
   flex-direction: column;

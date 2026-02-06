@@ -60,4 +60,45 @@
   <message name="IDS_SKILL_PAGE_USER_SKILLS_DESCRIPTION" desc="Text for the description of the chrome://skills/user-skills page." translateable="false">
     Skills allow you to easily reuse prompts for repetitive tasks
   </message>
+
+  <!-- chrome://skills/dialog -->
+  <message name="IDS_SKILLS_DIALOG_ADD_SKILL_HEADER" desc="Header for the add skill dialog" translateable="false">
+    Add skill
+  </message>
+  <message name="IDS_SKILLS_DIALOG_EDIT_SKILL_HEADER" desc="Header for the edit skill dialog" translateable="false">
+    Edit skill
+  </message>
+  <message name="IDS_SKILLS_DIALOG_DESCRIPTION" desc="Description of what a skill is" translateable="false">
+    Skills allow you to easily reuse prompts for repetitive tasks
+  </message>
+  <message name="IDS_SKILLS_DIALOG_NAME_LABEL" desc="Label for the skill name input" translateable="false">
+    Name
+  </message>
+  <message name="IDS_SKILLS_DIALOG_NAME_PLACEHOLDER" desc="A placeholder for the skill name input" translateable="false">
+    Give your skill a name
+  </message>
+  <message name="IDS_SKILLS_DIALOG_CHOOSE_ICON_TOOLTIP" desc="Tooltip text to choose an icon for the skill" translateable="false">
+    Choose icon
+  </message>
+  <message name="IDS_SKILLS_DIALOG_INSTRUCTIONS_LABEL" desc="Label for the skill instructions input" translateable="false">
+    Instructions
+  </message>
+  <message name="IDS_SKILLS_DIALOG_INSTRUCTIONS_PLACEHOLDER" desc="A placeholder for the skill instructions input" translateable="false">
+    Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under 150 words.
+  </message>
+  <message name="IDS_SKILLS_DIALOG_UNDO_TOOLTIP" desc="Tooltip text to undo skill refinement" translateable="false">
+    Undo
+  </message>
+  <message name="IDS_SKILLS_DIALOG_REDO_TOOLTIP" desc="Tooltip text to redo skill refinement" translateable="false">
+    Redo
+  </message>
+  <message name="IDS_SKILLS_DIALOG_REFINE_TOOLTIP" desc="Tooltip text to refine a skill" translateable="false">
+    Improve with Gemini
+  </message>
+  <message name="IDS_SKILLS_DIALOG_REFINE_ERROR" desc="Error message for skill refinement" translateable="false">
+    Something went wrong
+  </message>
+  <message name="IDS_SKILLS_DIALOG_ACCOUNT_INFO" desc="Text for account info in the skills dialog" translateable="false">
+    This skill will save to your Google Account
+  </message>
 </grit-part>
