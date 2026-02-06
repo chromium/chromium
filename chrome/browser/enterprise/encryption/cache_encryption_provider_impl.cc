@@ -42,18 +42,41 @@ void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
 
   if (!encrypted_primary_key_.empty()) {
     // Validate the key by trying to decrypt it
+    os_crypt_async::Encryptor::DecryptFlags flags;
     std::optional<std::string> decrypted =
-        encryptor.DecryptData(encrypted_primary_key_);
+        encryptor.DecryptData(encrypted_primary_key_, &flags);
     if (decrypted && decrypted->length() == kPrimaryKeySizeInBytes) {
-      DVLOG(1) << "Successfully validated existing encrypted cache encryption key.";
+      DVLOG(1)
+          << "Successfully validated existing encrypted cache encryption key.";
       needs_new_key = false;
+
+      // If the key is valid, but needs to be re-encrypted, then do so.
+      if (flags.should_reencrypt) {
+        DVLOG(1) << "Re-encrypting cache encryption key.";
+        std::optional<std::vector<uint8_t>> encrypted =
+            encryptor.EncryptString(*decrypted);
+        if (encrypted) {
+          encrypted_primary_key_ = *encrypted;
+          store_key_callback_.Run(encrypted_primary_key_);
+          DVLOG(1) << "Successfully re-encrypted and stored cache encryption "
+                      "key.";
+        } else {
+          LOG(ERROR) << "Failed to re-encrypt cache encryption key. "
+                        "Cache encryption will be disabled for this session.";
+          LOG_POLICY(ERROR, POLICY_PROCESSING)
+              << "Failed to re-encrypt cache encryption key.";
+          encrypted_primary_key_.clear();
+        }
+      }
     } else {
       // TODO: crbug.com/475800166 - Log errors in UMA.
       LOG(ERROR) << "Failed to decrypt/validate existing cache encryption key.";
       LOG_POLICY(ERROR, POLICY_PROCESSING)
           << "Failed to decrypt/validate existing cache encryption key.";
-      // TODO: crbug.com/476958143 - Check flags returned by os_crypt, implement
-      // retries if needed.
+
+      // TODO: crbug.com/482044872 - Check flags returned by os_crypt, implement
+      // retries if temporarily_unavailable is returned. Do not reset the
+      // cache in such case.
       encrypted_primary_key_.clear();
     }
   } else {
