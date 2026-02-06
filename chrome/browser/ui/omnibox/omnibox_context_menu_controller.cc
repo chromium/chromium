@@ -143,11 +143,11 @@ OmniboxContextMenuController::~OmniboxContextMenuController() = default;
 
 void OmniboxContextMenuController::BuildMenu() {
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
-    if (IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
+    if (IsInputTypeVisible(omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
       AddRecentTabItems();
     }
-    if (IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_LENS_IMAGE) ||
-        IsInputTypeAllowed(omnibox::InputType::INPUT_TYPE_LENS_FILE)) {
+    if (IsInputTypeVisible(omnibox::InputType::INPUT_TYPE_LENS_IMAGE) ||
+        IsInputTypeVisible(omnibox::InputType::INPUT_TYPE_LENS_FILE)) {
       AddSeparator();
       AddContextualInputItems();
     }
@@ -508,7 +508,7 @@ omnibox::InputType OmniboxContextMenuController::GetInputTypeForCommandId(
   }
 }
 
-bool OmniboxContextMenuController::IsInputTypeAllowed(
+bool OmniboxContextMenuController::IsInputTypeVisible(
     omnibox::InputType input_type) const {
   return std::any_of(input_state_.allowed_input_types.begin(),
                      input_state_.allowed_input_types.end(),
@@ -517,13 +517,13 @@ bool OmniboxContextMenuController::IsInputTypeAllowed(
                      });
 }
 
-bool OmniboxContextMenuController::IsInputTypeDisabled(
+bool OmniboxContextMenuController::IsInputTypeEnabled(
     omnibox::InputType input_type) const {
-  return std::any_of(input_state_.disabled_input_types.begin(),
-                     input_state_.disabled_input_types.end(),
-                     [&](omnibox::InputType disabled_input_type) {
-                       return disabled_input_type == input_type;
-                     });
+  return std::none_of(input_state_.disabled_input_types.begin(),
+                      input_state_.disabled_input_types.end(),
+                      [&](omnibox::InputType disabled_input_type) {
+                        return disabled_input_type == input_type;
+                      });
 }
 
 omnibox::ToolMode OmniboxContextMenuController::GetToolModeForCommandId(
@@ -553,15 +553,14 @@ OmniboxContextMenuController::GetToolSectionConfig() const {
   return input_state_.tools_section_config;
 }
 
-bool OmniboxContextMenuController::IsToolAllowed(omnibox::ToolMode tool) const {
+bool OmniboxContextMenuController::IsToolVisible(omnibox::ToolMode tool) const {
   return std::any_of(
       input_state_.allowed_tools.begin(), input_state_.allowed_tools.end(),
       [&](omnibox::ToolMode allowed_tool) { return allowed_tool == tool; });
 }
 
-bool OmniboxContextMenuController::IsToolDisabled(
-    omnibox::ToolMode tool) const {
-  return std::any_of(
+bool OmniboxContextMenuController::IsToolEnabled(omnibox::ToolMode tool) const {
+  return std::none_of(
       input_state_.disabled_tools.begin(), input_state_.disabled_tools.end(),
       [&](omnibox::ToolMode disabled_tool) { return disabled_tool == tool; });
 }
@@ -595,20 +594,20 @@ OmniboxContextMenuController::GetModelSectionConfig() const {
   return input_state_.model_section_config;
 }
 
-bool OmniboxContextMenuController::IsModelAllowed(
+bool OmniboxContextMenuController::IsModelVisible(
     omnibox::ModelMode model) const {
   return std::any_of(
       input_state_.allowed_models.begin(), input_state_.allowed_models.end(),
       [&](omnibox::ModelMode allowed_model) { return allowed_model == model; });
 }
 
-bool OmniboxContextMenuController::IsModelDisabled(
+bool OmniboxContextMenuController::IsModelEnabled(
     omnibox::ModelMode model) const {
-  return std::any_of(input_state_.disabled_models.begin(),
-                     input_state_.disabled_models.end(),
-                     [&](omnibox::ModelMode disabled_model) {
-                       return disabled_model == model;
-                     });
+  return std::none_of(input_state_.disabled_models.begin(),
+                      input_state_.disabled_models.end(),
+                      [&](omnibox::ModelMode disabled_model) {
+                        return disabled_model == model;
+                      });
 }
 
 raw_ptr<OmniboxController> OmniboxContextMenuController::GetOmniboxController()
@@ -803,21 +802,21 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     // Command ID corresponds to "Most recent tabs" menu item.
     if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
         command_id < next_command_id_) {
-      return !IsInputTypeDisabled(GetInputTypeForCommandId(command_id));
+      return IsInputTypeEnabled(GetInputTypeForCommandId(command_id));
     }
 
     switch (command_id) {
       case IDC_OMNIBOX_CONTEXT_ADD_IMAGE:
       case IDC_OMNIBOX_CONTEXT_ADD_FILE:
-        return !IsInputTypeDisabled(GetInputTypeForCommandId(command_id));
+        return IsInputTypeEnabled(GetInputTypeForCommandId(command_id));
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
       case IDC_OMNIBOX_CONTEXT_CANVAS:
-        return !IsToolDisabled(GetToolModeForCommandId(command_id));
+        return IsToolEnabled(GetToolModeForCommandId(command_id));
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO:
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
-        return !IsModelDisabled(GetModelModeForCommandId(command_id));
+        return IsModelEnabled(GetModelModeForCommandId(command_id));
       default:
         return true;
     }
@@ -860,7 +859,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
       command_id < next_command_id_) {
     return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
-               ? IsInputTypeAllowed(GetInputTypeForCommandId(command_id))
+               ? IsInputTypeVisible(GetInputTypeForCommandId(command_id))
                : true;
   }
 
@@ -885,22 +884,22 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
     if (command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
         command_id == IDC_OMNIBOX_CONTEXT_ADD_FILE) {
       return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
-                 ? IsInputTypeAllowed(GetInputTypeForCommandId(command_id))
+                 ? IsInputTypeVisible(GetInputTypeForCommandId(command_id))
                  : IsContentSharingEnabled();
     } else if (command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH) {
       return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
-                 ? IsToolAllowed(GetToolModeForCommandId(command_id))
+                 ? IsToolVisible(GetToolModeForCommandId(command_id))
                  : omnibox::IsDeepSearchEnabled(profile);
     } else if (command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
       return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
-                 ? IsToolAllowed(GetToolModeForCommandId(command_id))
+                 ? IsToolVisible(GetToolModeForCommandId(command_id))
                  : omnibox::IsCreateImagesEnabled(profile);
     } else if (command_id == IDC_OMNIBOX_CONTEXT_CANVAS) {
-      return IsToolAllowed(GetToolModeForCommandId(command_id));
+      return IsToolVisible(GetToolModeForCommandId(command_id));
     } else if (command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO ||
                command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR ||
                command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING) {
-      return IsModelAllowed(GetModelModeForCommandId(command_id));
+      return IsModelVisible(GetModelModeForCommandId(command_id));
     }
   }
 
