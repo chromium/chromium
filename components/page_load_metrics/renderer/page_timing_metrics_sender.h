@@ -144,7 +144,7 @@ class PageTimingMetricsSender {
   std::unique_ptr<base::OneShotTimer> timer_;
   mojom::PageLoadTimingPtr last_timing_;
   mojom::CpuTimingPtr last_cpu_timing_;
-  mojom::InputTimingPtr input_timing_delta_;
+  std::vector<mojom::EventTimingPtr> event_timings_;
   std::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
 
   // The the sender keep track of metadata as it comes in, because the sender is

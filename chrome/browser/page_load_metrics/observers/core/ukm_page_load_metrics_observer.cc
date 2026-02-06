@@ -697,32 +697,32 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     }
   }
 
-  const page_load_metrics::ResponsivenessMetricsNormalization&
-      soft_nav_responsiveness_metrics_normalization =
+  const page_load_metrics::InteractionToNextPaintCalculator&
+      soft_nav_interaction_to_next_paint_calculator =
           GetDelegate()
-              .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
+              .GetSoftNavigationIntervalInteractionToNextPaintCalculator();
 
-  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
-      soft_nav_responsiveness_metrics_normalization.ApproximateHighPercentile();
+  std::optional<page_load_metrics::mojom::EventTiming> inp =
+      soft_nav_interaction_to_next_paint_calculator.ApproximateHighPercentile();
   if (inp.has_value()) {
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            inp->interaction_latency.InMilliseconds());
+            inp->duration.InMilliseconds());
 
     UmaHistogramCustomTimes("PageLoad.SoftNavigation.InteractionToNextPaint",
-                            inp->interaction_latency, base::Milliseconds(1),
+                            inp->duration, base::Milliseconds(1),
                             base::Seconds(60), 50);
 
     // For soft navigations, the interaction offset is the offset _after_ the
     // soft navigation occurred. So we want to start the offset at the number
     // of interactions which had occurred before this soft navigation.
-    const page_load_metrics::ResponsivenessMetricsNormalization&
-        responsiveness_metrics_normalization =
-            GetDelegate().GetResponsivenessMetricsNormalization();
+    const page_load_metrics::InteractionToNextPaintCalculator&
+        interaction_to_next_paint_calculator =
+            GetDelegate().GetInteractionToNextPaintCalculator();
     uint64_t previous_interaction_count =
-        (responsiveness_metrics_normalization.num_user_interactions() -
-         soft_nav_responsiveness_metrics_normalization.num_user_interactions());
-    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset -
+        (interaction_to_next_paint_calculator.num_user_interactions() -
+         soft_nav_interaction_to_next_paint_calculator.num_user_interactions());
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_id -
                                            previous_interaction_count);
     // For soft navigations, the interaction time should be reported as the
     // TimeDelta between the interaction and the soft navigation start. Since
@@ -731,12 +731,12 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     // TimeTicks to the soft_navigation start_time TimeDeltat and then subtract
     // that from the interaction_time TimeTicks.
     base::TimeDelta interaction_time =
-        inp->interaction_time - (GetDelegate().GetNavigationStart() +
-                                 soft_navigation_metrics.start_time);
+        inp->start_time - (GetDelegate().GetNavigationStart() +
+                           soft_navigation_metrics.start_time);
     builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            soft_nav_responsiveness_metrics_normalization
+            soft_nav_interaction_to_next_paint_calculator
                 .num_user_interactions()));
   }
 
@@ -781,29 +781,29 @@ void UkmPageLoadMetricsObserver::
 void UkmPageLoadMetricsObserver::
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::ResponsivenessMetricsNormalization&
-      responsiveness_metrics_normalization_before_soft_nav =
+  const page_load_metrics::InteractionToNextPaintCalculator&
+      interaction_to_next_paint_calculator_before_soft_nav =
           GetDelegate()
-              .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
-  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
-      responsiveness_metrics_normalization_before_soft_nav
+              .GetSoftNavigationIntervalInteractionToNextPaintCalculator();
+  std::optional<page_load_metrics::mojom::EventTiming> inp =
+      interaction_to_next_paint_calculator_before_soft_nav
           .ApproximateHighPercentile();
   if (inp.has_value()) {
     builder
         .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            inp->interaction_latency.InMilliseconds());
+            inp->duration.InMilliseconds());
     UmaHistogramCustomTimes(
-        "PageLoad.BeforeSoftNavigation.InteractionToNextPaint",
-        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
+        "PageLoad.BeforeSoftNavigation.InteractionToNextPaint", inp->duration,
+        base::Milliseconds(1), base::Seconds(60), 50);
     builder.SetInteractiveTimingBeforeSoftNavigation_INPOffset(
-        inp->interaction_offset);
+        inp->interaction_id);
     base::TimeDelta interaction_time =
-        inp->interaction_time - GetDelegate().GetNavigationStart();
+        inp->start_time - GetDelegate().GetNavigationStart();
     builder.SetInteractiveTimingBeforeSoftNavigation_INPTime(
         interaction_time.InMilliseconds());
     builder.SetInteractiveTimingBeforeSoftNavigation_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            responsiveness_metrics_normalization_before_soft_nav
+            interaction_to_next_paint_calculator_before_soft_nav
                 .num_user_interactions()));
   }
   builder.Record(ukm::UkmRecorder::Get());
@@ -1439,27 +1439,27 @@ void UkmPageLoadMetricsObserver::ReportResponsivenessAfterFirstForeground() {
   DCHECK(!last_time_shown_.is_null());
 
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::ResponsivenessMetricsNormalization&
-      responsiveness_metrics_normalization =
-          GetDelegate().GetResponsivenessMetricsNormalization();
+  const page_load_metrics::InteractionToNextPaintCalculator&
+      interaction_to_next_paint_calculator =
+          GetDelegate().GetInteractionToNextPaintCalculator();
 
-  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
-      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  std::optional<page_load_metrics::mojom::EventTiming> inp =
+      interaction_to_next_paint_calculator.ApproximateHighPercentile();
   if (inp.has_value()) {
     builder
         .SetInteractiveTiming_UserInteractionLatencyAtFirstOnHidden_HighPercentile2_MaxEventDuration(
-            inp->interaction_latency.InMilliseconds());
+            inp->duration.InMilliseconds());
 
-    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset);
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_id);
     base::TimeDelta interaction_time =
-        inp->interaction_time - GetDelegate().GetNavigationStart();
+        inp->start_time - GetDelegate().GetNavigationStart();
     builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
 
     UmaHistogramCustomTimes(
         "PageLoad.InteractiveTiming.UserInteractionLatencyAtFirstOnHidden."
         "HighPercentile2."
         "MaxEventDuration",
-        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
+        inp->duration, base::Milliseconds(1), base::Seconds(60), 50);
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -1622,28 +1622,28 @@ UkmPageLoadMetricsObserver::GetThirdPartyCookieBlockingEnabled() const {
 
 void UkmPageLoadMetricsObserver::RecordResponsivenessMetrics() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::ResponsivenessMetricsNormalization&
-      responsiveness_metrics_normalization =
-          GetDelegate().GetResponsivenessMetricsNormalization();
-  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
-      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  const page_load_metrics::InteractionToNextPaintCalculator&
+      interaction_to_next_paint_calculator =
+          GetDelegate().GetInteractionToNextPaintCalculator();
+  std::optional<page_load_metrics::mojom::EventTiming> inp =
+      interaction_to_next_paint_calculator.ApproximateHighPercentile();
   if (inp.has_value()) {
     builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
-        responsiveness_metrics_normalization.worst_latency()
+        interaction_to_next_paint_calculator.worst_latency()
             .value()
-            .interaction_latency.InMilliseconds());
+            .duration.InMilliseconds());
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            inp->interaction_latency.InMilliseconds());
+            inp->duration.InMilliseconds());
 
-    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset);
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_id);
     base::TimeDelta interaction_time =
-        inp->interaction_time - GetDelegate().GetNavigationStart();
+        inp->start_time - GetDelegate().GetNavigationStart();
     builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
 
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            responsiveness_metrics_normalization.num_user_interactions()));
+            interaction_to_next_paint_calculator.num_user_interactions()));
   }
   builder.Record(ukm::UkmRecorder::Get());
 }

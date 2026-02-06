@@ -407,7 +407,7 @@ void AssertPageLoadMetricsObserver::OnUserInput(
   }
 }
 
-void AssertPageLoadMetricsObserver::OnPageInputTimingUpdate(
+void AssertPageLoadMetricsObserver::OnPageEventTimingUpdate(
     uint64_t num_interactions) {
   CHECK(committed_);
   // If prerendered, input events are triggered after activation.
@@ -416,9 +416,10 @@ void AssertPageLoadMetricsObserver::OnPageInputTimingUpdate(
   }
 }
 
-void AssertPageLoadMetricsObserver::OnInputTimingUpdate(
+void AssertPageLoadMetricsObserver::OnEventTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
-    const page_load_metrics::mojom::InputTiming& input_timing_delta) {
+    const std::vector<page_load_metrics::mojom::EventTimingPtr>&
+        event_timings) {
   // This callback is triggered even if there's no input, even before
   // activation.
   CHECK(committed_);

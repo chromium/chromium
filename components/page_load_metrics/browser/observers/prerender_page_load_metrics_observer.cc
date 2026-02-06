@@ -402,45 +402,37 @@ void PrerenderPageLoadMetricsObserver::RecordLayoutShiftScoreMetrics(
 void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
 
-  const page_load_metrics::ResponsivenessMetricsNormalization&
-      responsiveness_metrics_normalization =
-          GetDelegate().GetResponsivenessMetricsNormalization();
-  if (!responsiveness_metrics_normalization.num_user_interactions()) {
+  const page_load_metrics::InteractionToNextPaintCalculator& inp_calculator =
+      GetDelegate().GetInteractionToNextPaintCalculator();
+  if (!inp_calculator.num_user_interactions()) {
     return;
   }
 
   base::TimeDelta high_percentile2_max_event_duration =
-      responsiveness_metrics_normalization.ApproximateHighPercentile()
-          .value()
-          .interaction_latency;
+      inp_calculator.ApproximateHighPercentile().value().duration;
 
   UmaHistogramCustomTimes(
       internal::kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration,
-      responsiveness_metrics_normalization.worst_latency()
-          .value()
-          .interaction_latency,
-      base::Milliseconds(1), base::Seconds(60), 50);
+      inp_calculator.worst_latency().value().duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::
           kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
       high_percentile2_max_event_duration, base::Milliseconds(1),
       base::Seconds(60), 50);
-  base::UmaHistogramCounts1000(
-      internal::kHistogramPrerenderNumInteractions,
-      responsiveness_metrics_normalization.num_user_interactions());
+  base::UmaHistogramCounts1000(internal::kHistogramPrerenderNumInteractions,
+                               inp_calculator.num_user_interactions());
 
   ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
   builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
-      responsiveness_metrics_normalization.worst_latency()
-          .value()
-          .interaction_latency.InMilliseconds());
+      inp_calculator.worst_latency().value().duration.InMilliseconds());
 
   builder
       .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
   builder.SetInteractiveTiming_NumInteractions(
       ukm::GetExponentialBucketMinForCounts1000(
-          responsiveness_metrics_normalization.num_user_interactions()));
+          inp_calculator.num_user_interactions()));
 
   builder.Record(ukm::UkmRecorder::Get());
 }

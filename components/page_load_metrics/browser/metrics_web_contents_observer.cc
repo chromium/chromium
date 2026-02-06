@@ -1176,7 +1176,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
-    mojom::InputTimingPtr input_timing_delta,
+    std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
@@ -1184,7 +1184,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     tracker->UpdateMetrics(
         render_frame_host, std::move(timing), std::move(metadata),
         std::move(new_features), resources, std::move(render_data),
-        std::move(cpu_timing), std::move(input_timing_delta),
+        std::move(cpu_timing), std::move(event_timings),
         subresource_load_metrics, std::move(soft_navigation_metrics));
   }
 }
@@ -1224,7 +1224,7 @@ void MetricsWebContentsObserver::UpdateTiming(
     std::vector<mojom::ResourceDataUpdatePtr> resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
-    mojom::InputTimingPtr input_timing_delta,
+    std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
@@ -1232,7 +1232,7 @@ void MetricsWebContentsObserver::UpdateTiming(
       page_load_metrics_receivers_.GetCurrentTargetFrame();
   OnTimingUpdated(render_frame_host, std::move(timing), std::move(metadata),
                   new_features, resources, std::move(render_data),
-                  std::move(cpu_timing), std::move(input_timing_delta),
+                  std::move(cpu_timing), std::move(event_timings),
                   subresource_load_metrics, std::move(soft_navigation_metrics));
 }
 

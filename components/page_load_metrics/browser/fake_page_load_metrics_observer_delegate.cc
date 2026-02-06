@@ -149,20 +149,15 @@ const NormalizedCLSData& FakePageLoadMetricsObserverDelegate::
   return normalized_cls_data_;
 }
 
-const ResponsivenessMetricsNormalization&
-FakePageLoadMetricsObserverDelegate::GetResponsivenessMetricsNormalization()
+const InteractionToNextPaintCalculator&
+FakePageLoadMetricsObserverDelegate::GetInteractionToNextPaintCalculator()
     const {
-  return responsiveness_metrics_normalization_;
+  return interaction_to_next_paint_calculator_;
 }
 
-const ResponsivenessMetricsNormalization& FakePageLoadMetricsObserverDelegate::
-    GetSoftNavigationIntervalResponsivenessMetricsNormalization() const {
-  return responsiveness_metrics_normalization_;
-}
-
-const mojom::InputTiming&
-FakePageLoadMetricsObserverDelegate::GetPageInputTiming() const {
-  return page_input_timing_;
+const InteractionToNextPaintCalculator& FakePageLoadMetricsObserverDelegate::
+    GetSoftNavigationIntervalInteractionToNextPaintCalculator() const {
+  return interaction_to_next_paint_calculator_;
 }
 
 const std::optional<blink::SubresourceLoadMetrics>&

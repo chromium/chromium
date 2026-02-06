@@ -13,8 +13,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
-ForegroundDurationUKMObserver::ForegroundDurationUKMObserver()
-    : last_page_input_timing_(page_load_metrics::mojom::InputTiming::New()) {}
+ForegroundDurationUKMObserver::ForegroundDurationUKMObserver() = default;
 
 ForegroundDurationUKMObserver::~ForegroundDurationUKMObserver() = default;
 

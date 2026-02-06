@@ -397,7 +397,6 @@ PageLoadMetricsUpdateDispatcher::PageLoadMetricsUpdateDispatcher(
       pending_merged_page_timing_(CreatePageLoadTiming()),
       main_frame_metadata_(mojom::FrameMetadata::New()),
       subframe_metadata_(mojom::FrameMetadata::New()),
-      page_input_timing_(mojom::InputTiming::New()),
       is_prerendered_page_load_(navigation_handle->IsInPrerenderedMainFrame()) {
 }
 
@@ -426,7 +425,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
-    mojom::InputTimingPtr input_timing_delta,
+    std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
@@ -454,7 +453,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     if (subresource_load_metrics) {
       UpdateMainFrameSubresourceLoadMetrics(*subresource_load_metrics);
     }
-    UpdateSoftNavigationIntervalResponsivenessMetrics(*input_timing_delta);
+    UpdateSoftNavigationIntervalInteractionToNextPaint(event_timings);
     UpdateSoftNavigationIntervalLayoutShift(*render_data);
     UpdateSoftNavigation(std::move(*soft_navigation_metrics));
   } else {
@@ -470,9 +469,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
     // This path is just for the AMP metrics.
-    UpdateSubFrameInputTiming(render_frame_host, *input_timing_delta);
+    UpdateSubFrameEventTiming(render_frame_host, event_timings);
   }
-  UpdatePageInputTiming(*input_timing_delta);
+  UpdatePageEventTiming(event_timings);
   UpdatePageRenderData(*render_data, is_main_frame);
   if (!is_main_frame) {
     // This path is just for the AMP metrics.
@@ -562,10 +561,10 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameTiming(
   MaybeDispatchTimingUpdates(merger.should_buffer_timing_update_callback());
 }
 
-void PageLoadMetricsUpdateDispatcher::UpdateSubFrameInputTiming(
+void PageLoadMetricsUpdateDispatcher::UpdateSubFrameEventTiming(
     content::RenderFrameHost* render_frame_host,
-    const mojom::InputTiming& input_timing_delta) {
-  client_->OnSubFrameInputTimingChanged(render_frame_host, input_timing_delta);
+    const std::vector<mojom::EventTimingPtr>& event_timings) {
+  client_->OnSubFrameEventTimingChanged(render_frame_host, event_timings);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateFrameCpuTiming(
@@ -620,12 +619,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
 }
 
 void PageLoadMetricsUpdateDispatcher::
-    UpdateSoftNavigationIntervalResponsivenessMetrics(
-        const mojom::InputTiming& input_timing_delta) {
-  if (!page_load_metrics::IsEmpty(input_timing_delta)) {
-    soft_navigation_interval_responsiveness_metrics_normalization_
-        .AddNewUserInteractionLatencies(
-            input_timing_delta.user_interaction_latencies);
+    UpdateSoftNavigationIntervalInteractionToNextPaint(
+        const std::vector<mojom::EventTimingPtr>& event_timings) {
+  if (!event_timings.empty()) {
+    soft_navigation_interval_interaction_to_next_paint_calculator_
+        .AddNewEventTimings(event_timings);
   }
 }
 
@@ -759,13 +757,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMetadata(
   }
 }
 
-void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
-    const mojom::InputTiming& input_timing_delta) {
-  if (!page_load_metrics::IsEmpty(input_timing_delta)) {
-    responsiveness_metrics_normalization_.AddNewUserInteractionLatencies(
-        input_timing_delta.user_interaction_latencies);
-    client_->OnPageInputTimingChanged(
-        input_timing_delta.user_interaction_latencies.size());
+void PageLoadMetricsUpdateDispatcher::UpdatePageEventTiming(
+    const std::vector<mojom::EventTimingPtr>& event_timings) {
+  if (!event_timings.empty()) {
+    interaction_to_next_paint_calculator_.AddNewEventTimings(event_timings);
+    client_->OnPageEventTimingChanged(event_timings.size());
   }
 }
 

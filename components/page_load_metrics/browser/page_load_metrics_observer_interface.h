@@ -360,13 +360,13 @@ class PageLoadMetricsObserverInterface {
   // OnInputTimingUpdate is triggered when an updated InputTiming is available
   // at the subframe level. This method may be called multiple times over the
   // course of the page load.
-  virtual void OnInputTimingUpdate(
+  virtual void OnEventTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
-      const mojom::InputTiming& input_timing_delta) = 0;
+      const std::vector<mojom::EventTimingPtr>& event_timings) = 0;
 
-  // OnPageInputTimingUpdate is triggered when an updated InputTiming is
+  // OnPageEventTimingUpdate is triggered when an updated InputTiming is
   // available at the page level.
-  virtual void OnPageInputTimingUpdate(uint64_t num_interactions) = 0;
+  virtual void OnPageEventTimingUpdate(uint64_t num_interactions) = 0;
 
   // OnPageRenderDataChanged is triggered when an updated PageRenderData is
   // available at the page level. This method may be called multiple times over

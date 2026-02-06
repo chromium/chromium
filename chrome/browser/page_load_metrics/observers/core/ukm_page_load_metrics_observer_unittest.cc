@@ -75,7 +75,6 @@ using page_load_metrics::PageVisitFinalStatus;
 using testing::AnyNumber;
 using testing::Mock;
 using testing::Return;
-using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
 
 namespace {
 
@@ -1298,18 +1297,17 @@ TEST_F(UkmPageLoadMetricsObserverTest,
 TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
   NavigateAndCommit(GURL(kTestUrl1));
 
-  page_load_metrics::mojom::InputTiming input_timing;
-  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
+  std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
 
   base::TimeTicks current_time = base::TimeTicks::Now();
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 1, current_time + base::Milliseconds(1000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 2, current_time + base::Milliseconds(2000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 3, current_time + base::Milliseconds(3000)));
 
-  tester()->SimulateInputTimingUpdate(input_timing);
+  tester()->SimulateEventTimingUpdate(event_timings);
 
   // Simulate closing the tab.
   DeleteContents();
@@ -1343,13 +1341,12 @@ TEST_F(UkmPageLoadMetricsObserverTest,
        NormalizedUserInteractionLatenciesRecordOnHidden) {
   NavigateAndCommit(GURL(kTestUrl1));
 
-  page_load_metrics::mojom::InputTiming input_timing;
-  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
+  std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
 
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 0, base::TimeTicks::Now()));
 
-  tester()->SimulateInputTimingUpdate(input_timing);
+  tester()->SimulateEventTimingUpdate(event_timings);
 
   // Simulate hiding the tab (the new INP metrics should be recorded at the
   // first hide).

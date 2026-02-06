@@ -559,19 +559,14 @@ struct CpuTiming {
   mojo_base.mojom.TimeDelta task_time;
 };
 
-// Data for user interaction latencies.
-struct InputTiming {
-  array<UserInteractionLatency> user_interaction_latencies;
-};
-
 // The latency and the type of a user interaction.
-struct UserInteractionLatency {
-  mojo_base.mojom.TimeDelta interaction_latency;
+struct EventTiming {
+  mojo_base.mojom.TimeDelta duration;
   // The one-based offset of the interaction in time-based order; 1 for the
   // first interaction, 2 for the second, etc.
-  uint64 interaction_offset;
+  uint64 interaction_id;
   // The time the interaction occurred.
-  mojo_base.mojom.TimeTicks interaction_time;
+  mojo_base.mojom.TimeTicks start_time;
 };
 
 // Sent from renderer to browser process when the PageLoadTiming for the
@@ -590,7 +585,7 @@ interface PageLoadMetrics {
                array<ResourceDataUpdate> resources,
                FrameRenderDataUpdate render_data,
                CpuTiming cpu_load_timing,
-               InputTiming input_timing_delta,
+               array<EventTiming> event_timings,
                SubresourceLoadMetrics? subresource_load_metrics,
                SoftNavigationMetrics soft_navigation_metrics);
 

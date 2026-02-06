@@ -33,7 +33,6 @@ using content::RenderFrameHost;
 using content::RenderFrameHostTester;
 using LargestContentTextOrImage =
     page_load_metrics::ContentfulPaintTimingInfo::LargestContentTextOrImage;
-using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
 
 namespace {
 
@@ -1136,17 +1135,16 @@ TEST_P(UmaPageLoadMetricsObserverTest,
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
-  page_load_metrics::mojom::InputTiming input_timing;
-  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
+  std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
   base::TimeTicks current_time = base::TimeTicks::Now();
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  tester()->SimulateInputTimingUpdate(input_timing);
+  tester()->SimulateEventTimingUpdate(event_timings);
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 

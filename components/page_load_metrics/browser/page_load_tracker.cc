@@ -1049,9 +1049,9 @@ void PageLoadTracker::OnTimingChanged() {
       metrics_update_dispatcher_.timing().Clone();
 }
 
-void PageLoadTracker::OnPageInputTimingChanged(uint64_t num_interactions) {
+void PageLoadTracker::OnPageEventTimingChanged(uint64_t num_interactions) {
   for (const auto& observer : observers_) {
-    observer->OnPageInputTimingUpdate(num_interactions);
+    observer->OnPageEventTimingUpdate(num_interactions);
   }
 }
 
@@ -1071,12 +1071,12 @@ void PageLoadTracker::OnSubFrameTimingChanged(
   }
 }
 
-void PageLoadTracker::OnSubFrameInputTimingChanged(
+void PageLoadTracker::OnSubFrameEventTimingChanged(
     content::RenderFrameHost* rfh,
-    const mojom::InputTiming& input_timing_delta) {
+    const std::vector<mojom::EventTimingPtr>& event_timings) {
   DCHECK(rfh->GetParentOrOuterDocument());
   for (const auto& observer : observers_) {
-    observer->OnInputTimingUpdate(rfh, input_timing_delta);
+    observer->OnEventTimingUpdate(rfh, event_timings);
   }
 }
 
@@ -1134,11 +1134,11 @@ void PageLoadTracker::OnSoftNavigationChanged(
   largest_contentful_paint_handler_.UpdateSoftNavigationLargestContentfulPaint(
       *new_soft_navigation_metrics.largest_contentful_paint);
 
-  // Reset the soft_navigation_interval_responsiveness_metrics_normalization_
+  // Reset the soft_navigation_interval_interaction_to_next_paint_calculator_
   // when a new soft nav comes in.
   if (new_soft_navigation_metrics.count > soft_navigation_metrics_->count) {
     metrics_update_dispatcher_
-        .ResetSoftNavigationIntervalResponsivenessMetricsNormalization();
+        .ResetSoftNavigationIntervalInteractionToNextPaintCalculator();
     metrics_update_dispatcher_.ResetSoftNavigationIntervalLayoutShift();
   }
 
@@ -1327,20 +1327,16 @@ PageLoadTracker::GetSoftNavigationIntervalNormalizedCLSData() const {
       .soft_navigation_interval_normalized_layout_shift();
 }
 
-const ResponsivenessMetricsNormalization&
-PageLoadTracker::GetResponsivenessMetricsNormalization() const {
-  return metrics_update_dispatcher_.responsiveness_metrics_normalization();
+const InteractionToNextPaintCalculator&
+PageLoadTracker::GetInteractionToNextPaintCalculator() const {
+  return metrics_update_dispatcher_.interaction_to_next_paint_calculator();
 }
 
-const ResponsivenessMetricsNormalization&
-PageLoadTracker::GetSoftNavigationIntervalResponsivenessMetricsNormalization()
+const InteractionToNextPaintCalculator&
+PageLoadTracker::GetSoftNavigationIntervalInteractionToNextPaintCalculator()
     const {
   return metrics_update_dispatcher_
-      .soft_navigation_interval_responsiveness_metrics_normalization();
-}
-
-const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
-  return metrics_update_dispatcher_.page_input_timing();
+      .soft_navigation_interval_interaction_to_next_paint_calculator();
 }
 
 const std::optional<blink::SubresourceLoadMetrics>&
@@ -1432,8 +1428,7 @@ void PageLoadTracker::OnEnterBackForwardCache() {
           &metrics_update_dispatcher_.timing()),
       /*permit_forwarding=*/false);
   metrics_update_dispatcher_.UpdateLayoutShiftNormalizationForBfcache();
-  metrics_update_dispatcher_
-      .UpdateResponsivenessMetricsNormalizationForBfcache();
+  metrics_update_dispatcher_.UpdateInteractionToNextPaintCalculatorForBfcache();
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
     PageHidden();
   }
@@ -1488,29 +1483,29 @@ void PageLoadTracker::OnAdAuctionComplete(bool is_server_auction,
 
 void PageLoadTracker::UpdateMetrics(
     content::RenderFrameHost* render_frame_host,
-    mojom::PageLoadTimingPtr timing,
-    mojom::FrameMetadataPtr metadata,
+    mojom::PageLoadTimingPtr new_timing,
+    mojom::FrameMetadataPtr new_metadata,
     const std::vector<blink::UseCounterFeature>& features,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
-    mojom::InputTimingPtr input_timing_delta,
+    std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
   if (parent_tracker_) {
     parent_tracker_->UpdateMetrics(
-        render_frame_host, timing.Clone(), metadata.Clone(), features,
+        render_frame_host, new_timing.Clone(), new_metadata.Clone(), features,
         resources, render_data.Clone(), cpu_timing.Clone(),
-        input_timing_delta.Clone(), subresource_load_metrics,
+        mojo::Clone(event_timings), subresource_load_metrics,
         soft_navigation_metrics.Clone());
   }
 
   metrics_update_dispatcher_.UpdateMetrics(
-      render_frame_host, std::move(timing), std::move(metadata),
+      render_frame_host, std::move(new_timing), std::move(new_metadata),
       std::move(features), resources, std::move(render_data),
-      std::move(cpu_timing), std::move(input_timing_delta),
-      subresource_load_metrics, std::move(soft_navigation_metrics), page_type_);
+      std::move(cpu_timing), std::move(event_timings), subresource_load_metrics,
+      std::move(soft_navigation_metrics), page_type_);
 }
 
 void PageLoadTracker::AddCustomUserTimings(

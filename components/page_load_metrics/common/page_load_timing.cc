@@ -48,10 +48,6 @@ bool IsEmpty(const page_load_metrics::mojom::InteractiveTiming& timing) {
          !timing.first_scroll_delay && !timing.first_scroll_timestamp;
 }
 
-bool IsEmpty(const page_load_metrics::mojom::InputTiming& timing) {
-  return timing.user_interaction_latencies.empty();
-}
-
 bool IsEmpty(const page_load_metrics::mojom::PaintTiming& timing) {
   return !timing.first_paint && !timing.first_image_paint &&
          !timing.first_contentful_paint && !timing.first_meaningful_paint &&

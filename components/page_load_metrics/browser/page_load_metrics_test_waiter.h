@@ -253,7 +253,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // Updates observed page fields when a input timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
   // after update.
-  void OnPageInputTimingUpdated(uint64_t num_interactions);
+  void OnPageEventTimingUpdated(uint64_t num_interactions);
 
   // Updates observed page fields when a timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied

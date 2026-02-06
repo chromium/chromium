@@ -138,10 +138,11 @@ class AssertPageLoadMetricsObserver final
   void OnUserInput(
       const blink::WebInputEvent& event,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnPageInputTimingUpdate(uint64_t num_interactions) override;
-  void OnInputTimingUpdate(
+  void OnPageEventTimingUpdate(uint64_t num_interactions) override;
+  void OnEventTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
-      const page_load_metrics::mojom::InputTiming& input_timing_delta) override;
+      const std::vector<page_load_metrics::mojom::EventTimingPtr>&
+          event_timings) override;
 
   // Page render data update
   void OnPageRenderDataUpdate(

@@ -94,9 +94,11 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateCpuTimingUpdate(const mojom::CpuTiming& cpu_timing);
   void SimulateCpuTimingUpdate(const mojom::CpuTiming& cpu_timing,
                                content::RenderFrameHost* rfh);
-  void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing);
-  void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing,
-                                 content::RenderFrameHost* rfh);
+  void SimulateEventTimingUpdate(
+      const std::vector<mojom::EventTimingPtr>& event_timings);
+  void SimulateEventTimingUpdate(
+      const std::vector<mojom::EventTimingPtr>& event_timings,
+      content::RenderFrameHost* rfh);
   void SimulateTimingAndMetadataUpdate(const mojom::PageLoadTiming& timing,
                                        const mojom::FrameMetadata& metadata);
   void SimulateMetadataUpdate(const mojom::FrameMetadata& metadata,
@@ -176,7 +178,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const std::vector<blink::UseCounterFeature>& new_features,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTiming& cpu_timing,
-      const mojom::InputTiming& input_timing,
+      const std::vector<mojom::EventTimingPtr>& event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       content::RenderFrameHost* rfh,

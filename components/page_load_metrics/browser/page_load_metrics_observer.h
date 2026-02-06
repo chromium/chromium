@@ -154,10 +154,10 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override {}
   void OnSoftNavigationUpdated(const mojom::SoftNavigationMetrics&) override {}
-  void OnInputTimingUpdate(
+  void OnEventTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
-      const mojom::InputTiming& input_timing_delta) override {}
-  void OnPageInputTimingUpdate(uint64_t num_interactions) override {}
+      const std::vector<mojom::EventTimingPtr>& event_timings) override {}
+  void OnPageEventTimingUpdate(uint64_t num_interactions) override {}
   void OnPageRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
                               bool is_main_frame) override {}
   void OnSubFrameRenderDataUpdate(

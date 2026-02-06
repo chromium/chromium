@@ -8,9 +8,9 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/features.h"
+#include "components/page_load_metrics/browser/interaction_to_next_paint_calculator.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
-#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -323,12 +323,11 @@ void BackForwardCachePageLoadMetricsObserver::
   if (!has_ever_entered_back_forward_cache_) {
     return;
   }
-  // Normalized Responsiveness Metrics.
-  const page_load_metrics::ResponsivenessMetricsNormalization&
-      responsiveness_metrics_normalization =
-          GetDelegate().GetResponsivenessMetricsNormalization();
+  // Interaction to Next Paint (INP) Metrics.
+  const page_load_metrics::InteractionToNextPaintCalculator& inp_calculator =
+      GetDelegate().GetInteractionToNextPaintCalculator();
 
-  if (!responsiveness_metrics_normalization.num_user_interactions()) {
+  if (!inp_calculator.num_user_interactions()) {
     return;
   }
 
@@ -338,27 +337,21 @@ void BackForwardCachePageLoadMetricsObserver::
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder
       .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventDuration2(
-          responsiveness_metrics_normalization.worst_latency()
-              .value()
-              .interaction_latency.InMilliseconds());
+          inp_calculator.worst_latency().value().duration.InMilliseconds());
   UmaHistogramCustomTimes(
       internal::
           kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
-      responsiveness_metrics_normalization.worst_latency()
-          .value()
-          .interaction_latency,
-      base::Milliseconds(1), base::Seconds(60), 50);
+      inp_calculator.worst_latency().value().duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
 
   base::TimeDelta high_percentile2_max_event_duration =
-      responsiveness_metrics_normalization.ApproximateHighPercentile()
-          .value()
-          .interaction_latency;
+      inp_calculator.ApproximateHighPercentile().value().duration;
   builder
       .SetUserInteractionLatencyAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
   builder.SetNumInteractionsAfterBackForwardCacheRestore(
       ukm::GetExponentialBucketMinForCounts1000(
-          responsiveness_metrics_normalization.num_user_interactions()));
+          inp_calculator.num_user_interactions()));
 
   UmaHistogramCustomTimes(
       internal::
@@ -367,7 +360,7 @@ void BackForwardCachePageLoadMetricsObserver::
       base::Seconds(60), 50);
   base::UmaHistogramCounts1000(
       internal::kNumInteractions_AfterBackForwardCacheRestore,
-      responsiveness_metrics_normalization.num_user_interactions());
+      inp_calculator.num_user_interactions());
 
   builder.Record(ukm::UkmRecorder::Get());
 }

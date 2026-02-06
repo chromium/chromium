@@ -185,11 +185,11 @@ void PageLoadMetricsForwardObserver::OnTimingUpdate(
 void PageLoadMetricsForwardObserver::OnSoftNavigationUpdated(
     const mojom::SoftNavigationMetrics&) {}
 
-void PageLoadMetricsForwardObserver::OnInputTimingUpdate(
+void PageLoadMetricsForwardObserver::OnEventTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
-    const mojom::InputTiming& input_timing_delta) {}
+    const std::vector<mojom::EventTimingPtr>& event_timings) {}
 
-void PageLoadMetricsForwardObserver::OnPageInputTimingUpdate(
+void PageLoadMetricsForwardObserver::OnPageEventTimingUpdate(
     uint64_t num_interactions) {}
 
 void PageLoadMetricsForwardObserver::OnPageRenderDataUpdate(

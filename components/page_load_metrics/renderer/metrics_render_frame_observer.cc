@@ -65,7 +65,7 @@ class MojoPageTimingSender : public PageTimingSender {
       std::vector<mojom::ResourceDataUpdatePtr> resources,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
-      mojom::InputTimingPtr input_timing_delta,
+      std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override {
@@ -73,7 +73,7 @@ class MojoPageTimingSender : public PageTimingSender {
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
-        render_data.Clone(), cpu_timing->Clone(), std::move(input_timing_delta),
+        render_data.Clone(), cpu_timing->Clone(), std::move(event_timings),
         subresource_load_metrics, soft_navigation_metrics->Clone());
   }
 

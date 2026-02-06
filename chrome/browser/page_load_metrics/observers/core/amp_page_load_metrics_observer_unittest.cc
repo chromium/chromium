@@ -24,7 +24,6 @@
 #include "url/gurl.h"
 
 using content::NavigationSimulator;
-using page_load_metrics::mojom::UserInteractionLatency;
 
 class AMPPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness,
@@ -512,7 +511,7 @@ TEST_P(AMPPageLoadMetricsObserverTest,
 }
 
 TEST_P(AMPPageLoadMetricsObserverTest,
-       SubFrameResponsivenessMetricsNormalization) {
+       SubFrameInteractionToNextPaintCalculator) {
   GURL amp_url("https://ampviewer.com/page");
   NavigationSimulator::CreateRendererInitiated(GURL("https://ampviewer.com/"),
                                                main_rfh())
@@ -531,17 +530,16 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
-  page_load_metrics::mojom::InputTiming input_timing;
-  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
+  std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
   base::TimeTicks current_time = base::TimeTicks::Now();
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
 
-  tester()->SimulateInputTimingUpdate(input_timing, subframe);
+  tester()->SimulateEventTimingUpdate(event_timings, subframe);
 
   // Navigate the main frame to trigger metrics recording.
   NavigationSimulator::CreateRendererInitiated(
@@ -577,7 +575,7 @@ TEST_P(AMPPageLoadMetricsObserverTest,
 }
 
 TEST_P(AMPPageLoadMetricsObserverTest,
-       SubFrameResponsivenessMetricsNormalizations) {
+       SubFrameInteractionToNextPaintCalculators) {
   GURL amp_url("https://ampviewer.com/page");
 
   NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())->Commit();
@@ -593,17 +591,16 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
-  page_load_metrics::mojom::InputTiming input_timing;
+  std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
   base::TimeTicks current_time = base::TimeTicks::Now();
-  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
-  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
       base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
 
-  tester()->SimulateInputTimingUpdate(input_timing, subframe);
+  tester()->SimulateEventTimingUpdate(event_timings, subframe);
 
   // Navigate the main frame to trigger metrics recording.
   NavigationSimulator::CreateRendererInitiated(

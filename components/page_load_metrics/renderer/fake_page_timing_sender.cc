@@ -25,12 +25,12 @@ void FakePageTimingSender::SendTiming(
     std::vector<mojom::ResourceDataUpdatePtr> resources,
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
-    const mojom::InputTimingPtr new_input_timing,
+    std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
-                           render_data, cpu_timing, new_input_timing,
+                           render_data, cpu_timing, event_timings,
                            subresource_load_metrics, soft_navigation_metrics);
 }
 
@@ -98,19 +98,15 @@ void FakePageTimingSender::PageTimingValidator::UpdateExpectedInteractionTiming(
     const base::TimeDelta interaction_duration,
     uint64_t interaction_offset,
     const base::TimeTicks interaction_time) {
-  expected_input_timing_.user_interaction_latencies.emplace_back(
-      mojom::UserInteractionLatency::New(interaction_duration,
-                                         interaction_offset, interaction_time));
+  expected_event_timings_.push_back(mojom::EventTiming::New(
+      interaction_duration, interaction_offset, interaction_time));
 }
 void FakePageTimingSender::PageTimingValidator::
     VerifyExpectedInteractionTiming() const {
-  auto& expected_latencies = expected_input_timing_.user_interaction_latencies;
-  auto& actual_latencies = actual_input_timing_.user_interaction_latencies;
-
-  ASSERT_EQ(expected_latencies.size(), actual_latencies.size());
-  for (size_t i = 0; i < expected_latencies.size(); ++i) {
-    ASSERT_EQ(expected_latencies[i]->interaction_latency,
-              actual_latencies[i]->interaction_latency);
+  ASSERT_EQ(expected_event_timings_.size(), actual_event_timings_.size());
+  for (size_t i = 0; i < expected_event_timings_.size(); ++i) {
+    ASSERT_EQ(expected_event_timings_[i]->duration,
+              actual_event_timings_[i]->duration);
   }
 }
 
@@ -184,7 +180,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
-    const mojom::InputTimingPtr& new_input_timing,
+    const std::vector<mojom::EventTimingPtr>& event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
@@ -209,13 +205,10 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   actual_main_frame_intersection_rect_ = metadata->main_frame_intersection_rect;
   actual_main_frame_viewport_rect_ = metadata->main_frame_viewport_rect;
 
-  for (const mojom::UserInteractionLatencyPtr& user_interaction :
-       new_input_timing->user_interaction_latencies) {
-    actual_input_timing_.user_interaction_latencies.emplace_back(
-        mojom::UserInteractionLatency::New(
-            user_interaction->interaction_latency,
-            user_interaction->interaction_offset,
-            user_interaction->interaction_time));
+  for (const mojom::EventTimingPtr& user_interaction : event_timings) {
+    actual_event_timings_.emplace_back(mojom::EventTiming::New(
+        user_interaction->duration, user_interaction->interaction_id,
+        user_interaction->start_time));
   }
 
   actual_subresource_load_metrics_ = subresource_load_metrics;

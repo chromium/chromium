@@ -8,6 +8,8 @@ source_set("browser") {
   sources = [
     "features.cc",
     "features.h",
+    "interaction_to_next_paint_calculator.cc",
+    "interaction_to_next_paint_calculator.h",
     "layout_shift_normalization.cc",
     "layout_shift_normalization.h",
     "metrics_lifecycle_observer.cc",
@@ -85,8 +87,6 @@ source_set("browser") {
     "protocol_util.h",
     "resource_tracker.cc",
     "resource_tracker.h",
-    "responsiveness_metrics_normalization.cc",
-    "responsiveness_metrics_normalization.h",
   ]
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -144,6 +144,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "interaction_to_next_paint_calculator_unittest.cc",
     "layout_shift_normalization_unittest.cc",
     "metrics_web_contents_observer_unittest.cc",
     "observers/back_forward_cache_page_load_metrics_observer_unittest.cc",
@@ -165,7 +166,6 @@ source_set("unit_tests") {
     "page_load_metrics_util_unittest.cc",
     "page_load_tracker_unittest.cc",
     "resource_tracker_unittest.cc",
-    "responsiveness_metrics_normalization_unittest.cc",
   ]
   deps = [
     ":browser",

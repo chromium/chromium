@@ -67,9 +67,9 @@ Data about each interaction in the main frame and all subframes is sent from
 renderer to browser via the page load metrics infrastructure.
 [You can read more about the data flow here](../../passing_data_from_renderer_to_browser.md).
 
-[`PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc;l=726;drc=1d8b1965b96c021ee069a3ebda38be7aaf8a5786;bpv=1;bpt=1)
+[`PageLoadMetricsUpdateDispatcher::UpdatePageEventTiming`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/page_load_metrics_update_dispatcher.cc;l=726;drc=1d8b1965b96c021ee069a3ebda38be7aaf8a5786;bpv=1;bpt=1)
 calls
-[`ResponsivenessMetricsNormalization::AddNewUserInteractionLatencies`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/responsiveness_metrics_normalization.cc;l=61;drc=1d8b1965b96c021ee069a3ebda38be7aaf8a5786;bpv=1;bpt=1)
+[`InteractionToNextPaintCalculator::AddNewEventTimings`](https://source.chromium.org/chromium/chromium/src/+/main:components/page_load_metrics/browser/interaction_to_next_paint_calculator.cc;l=61;drc=1d8b1965b96c021ee069a3ebda38be7aaf8a5786;bpv=1;bpt=1)
 which aggregates the interactions across all subframes and calculates the 98th
 percentile latency which is reported as INP. Metrics from all frames are treated
 equally in the calculation.

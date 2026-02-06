@@ -698,15 +698,15 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/40937315): Test is flaky on MSAN.
 // TODO(https://crbug.com/40799125): Test is flaky on Windows and Mac.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
-  DISABLED_ResponsivenessMetricsNormalizationWithSendingAllLatencies
+#define MAYBE_InteractionToNextPaintCalculatorWithSendingAllLatencies \
+  DISABLED_InteractionToNextPaintCalculatorWithSendingAllLatencies
 #else
-#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
-  ResponsivenessMetricsNormalizationWithSendingAllLatencies
+#define MAYBE_InteractionToNextPaintCalculatorWithSendingAllLatencies \
+  InteractionToNextPaintCalculatorWithSendingAllLatencies
 #endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCachePageLoadMetricsObserverBrowserTest,
-    MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
+    MAYBE_InteractionToNextPaintCalculatorWithSendingAllLatencies) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));

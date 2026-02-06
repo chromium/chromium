@@ -9,9 +9,9 @@
 
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "components/page_load_metrics/browser/interaction_to_next_paint_calculator.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
-#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/scoped_visibility_tracker.h"
@@ -196,16 +196,14 @@ class PageLoadMetricsObserverDelegate {
       BfcacheStrategy bfcache_strategy) const = 0;
   virtual const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
       const = 0;
-  // Returns normalized responsiveness metrics data. Normalization explained in
+  // Returns Interaction to Next Paint (INP) data. Details in
   // https://web.dev/inp.
-  virtual const ResponsivenessMetricsNormalization&
-  GetResponsivenessMetricsNormalization() const = 0;
+  virtual const InteractionToNextPaintCalculator&
+  GetInteractionToNextPaintCalculator() const = 0;
 
-  virtual const ResponsivenessMetricsNormalization&
-  GetSoftNavigationIntervalResponsivenessMetricsNormalization() const = 0;
+  virtual const InteractionToNextPaintCalculator&
+  GetSoftNavigationIntervalInteractionToNextPaintCalculator() const = 0;
 
-  // InputTiming data accumulated across all frames.
-  virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
   virtual const PageRenderData& GetMainFrameRenderData() const = 0;
   virtual const ui::ScopedVisibilityTracker& GetVisibilityTracker() const = 0;
   virtual const ResourceTracker& GetResourceTracker() const = 0;

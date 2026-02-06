@@ -7,14 +7,15 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/page_load_metrics/browser/interaction_to_next_paint_calculator.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
-#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 
 namespace content {
@@ -123,7 +124,7 @@ class PageLoadMetricsUpdateDispatcher {
     virtual PrerenderingState GetPrerenderingState() const = 0;
     virtual bool IsPageMainFrame(content::RenderFrameHost* rfh) const = 0;
     virtual void OnTimingChanged() = 0;
-    virtual void OnPageInputTimingChanged(uint64_t num_interactions) = 0;
+    virtual void OnPageEventTimingChanged(uint64_t num_interactions) = 0;
     virtual void OnSubFrameTimingChanged(
         content::RenderFrameHost* rfh,
         const mojom::PageLoadTiming& timing) = 0;
@@ -131,9 +132,9 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnSubframeMetadataChanged(
         content::RenderFrameHost* rfh,
         const mojom::FrameMetadata& metadata) = 0;
-    virtual void OnSubFrameInputTimingChanged(
+    virtual void OnSubFrameEventTimingChanged(
         content::RenderFrameHost* rfh,
-        const mojom::InputTiming& input_timing_delta) = 0;
+        const std::vector<mojom::EventTimingPtr>& event_timings) = 0;
     virtual void OnPageRenderDataChanged(
         const mojom::FrameRenderDataUpdate& render_data,
         bool is_main_frame) = 0;
@@ -181,7 +182,7 @@ class PageLoadMetricsUpdateDispatcher {
                      const std::vector<mojom::ResourceDataUpdatePtr>& resources,
                      mojom::FrameRenderDataUpdatePtr render_data,
                      mojom::CpuTimingPtr new_cpu_timing,
-                     mojom::InputTimingPtr input_timing_delta,
+                     std::vector<mojom::EventTimingPtr> event_timings,
                      const std::optional<blink::SubresourceLoadMetrics>&
                          subresource_load_metrics,
                      mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
@@ -223,14 +224,14 @@ class PageLoadMetricsUpdateDispatcher {
                ? layout_shift_normalization_for_bfcache_.normalized_cls_data()
                : layout_shift_normalization_.normalized_cls_data();
   }
-  const ResponsivenessMetricsNormalization&
-  responsiveness_metrics_normalization() const {
-    return responsiveness_metrics_normalization_;
+  const InteractionToNextPaintCalculator& interaction_to_next_paint_calculator()
+      const {
+    return interaction_to_next_paint_calculator_;
   }
 
-  const ResponsivenessMetricsNormalization&
-  soft_navigation_interval_responsiveness_metrics_normalization() const {
-    return soft_navigation_interval_responsiveness_metrics_normalization_;
+  const InteractionToNextPaintCalculator&
+  soft_navigation_interval_interaction_to_next_paint_calculator() const {
+    return soft_navigation_interval_interaction_to_next_paint_calculator_;
   }
 
   const NormalizedCLSData& soft_navigation_interval_normalized_layout_shift()
@@ -238,23 +239,20 @@ class PageLoadMetricsUpdateDispatcher {
     return soft_nav_interval_layout_shift_normalization_.normalized_cls_data();
   }
 
-  void ResetSoftNavigationIntervalResponsivenessMetricsNormalization() {
-    soft_navigation_interval_responsiveness_metrics_normalization_
-        .ClearAllUserInteractionLatencies();
+  void ResetSoftNavigationIntervalInteractionToNextPaintCalculator() {
+    soft_navigation_interval_interaction_to_next_paint_calculator_
+        .ClearEventTimings();
   }
 
   const PageRenderData& main_frame_render_data() const {
     return main_frame_render_data_;
   }
-  const mojom::InputTiming& page_input_timing() const {
-    return *page_input_timing_;
-  }
   const std::optional<blink::SubresourceLoadMetrics>& subresource_load_metrics()
       const {
     return subresource_load_metrics_;
   }
-  void UpdateResponsivenessMetricsNormalizationForBfcache() {
-    responsiveness_metrics_normalization_.ClearAllUserInteractionLatencies();
+  void UpdateInteractionToNextPaintCalculatorForBfcache() {
+    interaction_to_next_paint_calculator_.ClearEventTimings();
   }
   void UpdateLayoutShiftNormalizationForBfcache() {
     layout_shift_normalization_for_bfcache_.ClearAllLayoutShifts();
@@ -274,8 +272,9 @@ class PageLoadMetricsUpdateDispatcher {
                             mojom::PageLoadTimingPtr new_timing);
   void UpdateFrameCpuTiming(content::RenderFrameHost* render_frame_host,
                             mojom::CpuTimingPtr new_timing);
-  void UpdateSubFrameInputTiming(content::RenderFrameHost* render_frame_host,
-                                 const mojom::InputTiming& input_timing_delta);
+  void UpdateSubFrameEventTiming(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<mojom::EventTimingPtr>& event_timings);
 
   void UpdateMainFrameMetadata(content::RenderFrameHost* render_frame_host,
                                mojom::FrameMetadataPtr new_metadata);
@@ -288,13 +287,14 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateSoftNavigation(
       const mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
-  void UpdateSoftNavigationIntervalResponsivenessMetrics(
-      const mojom::InputTiming& input_timing_delta);
+  void UpdateSoftNavigationIntervalInteractionToNextPaint(
+      const std::vector<mojom::EventTimingPtr>& event_timings);
 
   void UpdateSoftNavigationIntervalLayoutShift(
       const mojom::FrameRenderDataUpdate& render_data);
 
-  void UpdatePageInputTiming(const mojom::InputTiming& input_timing_delta);
+  void UpdatePageEventTiming(
+      const std::vector<mojom::EventTimingPtr>& event_timings);
 
   void MaybeUpdateMainFrameIntersectionRect(
       content::RenderFrameHost* render_frame_host,
@@ -342,9 +342,6 @@ class PageLoadMetricsUpdateDispatcher {
   // struct instead of using mojo.
   mojom::FrameMetadataPtr main_frame_metadata_;
   mojom::FrameMetadataPtr subframe_metadata_;
-
-  // InputTiming data accumulated across all frames.
-  mojom::InputTimingPtr page_input_timing_;
 
   // SubresourceLoadMetrics for the main frame.
   std::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
@@ -395,17 +392,17 @@ class PageLoadMetricsUpdateDispatcher {
   bool has_seen_input_or_scroll_ = false;
 
   // Where we receive user interaction latencies from all renderer frames and
-  // calculate a few normalized responsiveness metrics. It will be reset every
+  // calculate Interaction to Next Paint (INP). It will be reset every
   // time the page enters bfcache.
-  ResponsivenessMetricsNormalization responsiveness_metrics_normalization_;
+  InteractionToNextPaintCalculator interaction_to_next_paint_calculator_;
 
   // Keeps track of user interaction latencies on main frame for soft
   // navigation intervals. A soft navigation interval is either the
   // interval from page load start to 1st soft navigation, or an interval
   // between 2 soft navigations, or the interval from the last soft navigation
   // to the page load end.
-  ResponsivenessMetricsNormalization
-      soft_navigation_interval_responsiveness_metrics_normalization_;
+  InteractionToNextPaintCalculator
+      soft_navigation_interval_interaction_to_next_paint_calculator_;
 };
 
 }  // namespace page_load_metrics

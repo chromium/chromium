@@ -1089,33 +1089,31 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
 }
 
 void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
-  const page_load_metrics::ResponsivenessMetricsNormalization&
-      responsiveness_metrics_normalization =
-          GetDelegate().GetResponsivenessMetricsNormalization();
-  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
-      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  const page_load_metrics::InteractionToNextPaintCalculator&
+      interaction_to_next_paint_calculator =
+          GetDelegate().GetInteractionToNextPaintCalculator();
+  std::optional<page_load_metrics::mojom::EventTiming> inp =
+      interaction_to_next_paint_calculator.ApproximateHighPercentile();
   if (!inp.has_value()) {
     return;
   }
 
   UmaHistogramCustomTimes(
       internal::kHistogramWorstUserInteractionLatencyMaxEventDuration,
-      responsiveness_metrics_normalization.worst_latency()
-          .value()
-          .interaction_latency,
+      interaction_to_next_paint_calculator.worst_latency().value().duration,
       base::Milliseconds(1), base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
-      inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
+      inp->duration, base::Milliseconds(1), base::Seconds(60), 50);
   base::TimeDelta interaction_time =
-      inp->interaction_time - GetDelegate().GetNavigationStart();
+      inp->start_time - GetDelegate().GetNavigationStart();
   UmaHistogramCustomTimes(internal::kHistogramInpTime, interaction_time,
                           base::Milliseconds(1), base::Seconds(3600), 100);
   base::UmaHistogramCounts1000(internal::kHistogramInpOffset,
-                               inp->interaction_offset);
+                               inp->interaction_id);
   base::UmaHistogramCounts1000(
       internal::kHistogramNumInteractions,
-      responsiveness_metrics_normalization.num_user_interactions());
+      interaction_to_next_paint_calculator.num_user_interactions());
 }
 
 void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(

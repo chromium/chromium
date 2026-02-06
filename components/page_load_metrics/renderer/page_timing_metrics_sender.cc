@@ -67,7 +67,6 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       timer_(std::move(timer)),
       last_timing_(std::move(initial_timing)),
       last_cpu_timing_(mojom::CpuTiming::New()),
-      input_timing_delta_(mojom::InputTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
       soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
@@ -357,10 +356,10 @@ void PageTimingMetricsSender::SendNow() {
 
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(input_timing_delta_), subresource_load_metrics_,
+                      std::move(event_timings_), subresource_load_metrics_,
                       soft_navigation_metrics_);
 
-  input_timing_delta_ = mojom::InputTiming::New();
+  event_timings_.clear();
   new_features_.clear();
   metadata_->main_frame_intersection_rect.reset();
   metadata_->main_frame_viewport_rect.reset();
@@ -393,10 +392,9 @@ void PageTimingMetricsSender::DidObserveUserInteraction(
   metadata_recorder_.AddInteractionDurationAfterQueueingMetadata(
       max_event_start, max_event_queued_main_thread, max_event_commit_finish,
       max_event_end);
-  base::TimeDelta max_event_duration = max_event_end - max_event_start;
-  input_timing_delta_->user_interaction_latencies.emplace_back(
-      mojom::UserInteractionLatency::New(max_event_duration, interaction_offset,
-                                         max_event_start));
+  base::TimeDelta duration = max_event_end - max_event_start;
+  event_timings_.push_back(
+      mojom::EventTiming::New(duration, interaction_offset, max_event_start));
   EnsureSendTimer();
 }
 }  // namespace page_load_metrics

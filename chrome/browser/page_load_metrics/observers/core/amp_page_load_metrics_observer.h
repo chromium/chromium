@@ -10,9 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/page_load_metrics/browser/interaction_to_next_paint_calculator.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
-#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
 namespace content {
@@ -78,9 +78,10 @@ class AMPPageLoadMetricsObserver
   void OnTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnInputTimingUpdate(
+  void OnEventTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
-      const page_load_metrics::mojom::InputTiming& input_timing_delta) override;
+      const std::vector<page_load_metrics::mojom::EventTimingPtr>&
+          event_timings) override;
   void OnSubFrameRenderDataUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::FrameRenderDataUpdate& render_data)
@@ -127,8 +128,8 @@ class AMPPageLoadMetricsObserver
     page_load_metrics::mojom::PageLoadTimingPtr timing;
     page_load_metrics::PageRenderData render_data;
     page_load_metrics::LayoutShiftNormalization layout_shift_normalization;
-    page_load_metrics::ResponsivenessMetricsNormalization
-        responsiveness_metrics_normalization;
+    page_load_metrics::InteractionToNextPaintCalculator
+        interaction_to_next_paint_calculator;
 
     // Whether an AMP document was loaded, based on observed
     // LoadingBehaviorFlags for this frame.
@@ -137,8 +138,8 @@ class AMPPageLoadMetricsObserver
 
   void MaybeRecordLoadingBehaviorObserved();
   void RecordNormalizedResponsivenessMetrics(
-      const page_load_metrics::ResponsivenessMetricsNormalization&
-          responsiveness_metrics_normalization,
+      const page_load_metrics::InteractionToNextPaintCalculator&
+          interaction_to_next_paint_calculator,
       ukm::builders::AmpPageLoad& builder);
   void ProcessMainFrameNavigation(content::NavigationHandle* navigation_handle);
   void MaybeRecordAmpDocumentMetrics();
