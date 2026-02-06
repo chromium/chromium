@@ -6,28 +6,8 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CrUrlListItemElement} from './cr_url_list_item.js';
 
-function getImageHtml(this: CrUrlListItemElement, item: string, index: number) {
-  if (!this.shouldShowImageUrl_(item, index)) {
-    return '';
-  }
-
-  return html`
-<div class="image-container" ?hidden="${!this.firstImageLoaded_}">
-  <img class="folder-image" is="cr-auto-img" auto-src="${item}"
-      draggable="false">
-</div>`;
-}
-
-function getFolderImagesHtml(this: CrUrlListItemElement) {
-  if (!this.shouldShowFolderImages_()) {
-    return '';
-  }
-  return html`${
-      this.imageUrls.map(
-          (item, index) => getImageHtml.bind(this)(item, index))}`;
-}
-
 export function getHtml(this: CrUrlListItemElement) {
+  // clang-format off
   return html`
 <a id="anchor" .href="${this.url}" ?hidden="${!this.asAnchor}"
     target="${this.asAnchorTarget}"
@@ -52,7 +32,16 @@ export function getHtml(this: CrUrlListItemElement) {
       </div>
       <div class="folder-and-count"
           ?hidden="${!this.shouldShowFolderCount_()}">
-        ${getFolderImagesHtml.bind(this)()}
+        ${this.shouldShowFolderImages_() ? html`
+          ${this.imageUrls.map((item, index) => html`
+            ${this.shouldShowImageUrl_(item, index) ? html`
+              <div class="image-container" ?hidden="${!this.firstImageLoaded_}">
+                <img class="folder-image" is="cr-auto-img" auto-src="${item}"
+                    draggable="false">
+              </div>
+            ` : ''}
+          `)}
+        ` : ''}
         <slot id="folder-icon" name="folder-icon">
           <div class="folder cr-icon icon-folder-open"
               ?hidden="${!this.shouldShowFolderIcon_()}"></div>
@@ -85,4 +74,5 @@ export function getHtml(this: CrUrlListItemElement) {
 </div>
 <slot name="footer"></slot>
 `;
+  // clang-format on
 }
