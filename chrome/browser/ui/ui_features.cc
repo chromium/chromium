@@ -346,7 +346,7 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationZoom,
                    &kPageActionsMigration,
                    "zoom",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationOfferNotification,
