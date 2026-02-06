@@ -33,7 +33,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
@@ -70,10 +71,12 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private OnLongPressTabItemEventListener mOnLongPressListener;
     @Mock private Canvas mCanvas;
-    @Mock private MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private View mItemView1;
     @Mock private View mItemView2;
+
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
     private ViewHolder mMockViewHolder1;
     private ViewHolder mMockViewHolder2;
     private RecyclerView.ViewHolder mViewHolder;
@@ -82,10 +85,11 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     @Before
     public void setUp() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+
         mViewHolder = spy(new TestViewHolder(new View(context)));
 
         when(mRecyclerViewSupplier.get()).thenReturn(mRecyclerView);
-        when(mTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
         mMockViewHolder1 = prepareMockViewHolder(TAB_ID1, mItemView1, POSITION1);
         mMockViewHolder2 = prepareMockViewHolder(TAB_ID2, mItemView2, POSITION2);
 

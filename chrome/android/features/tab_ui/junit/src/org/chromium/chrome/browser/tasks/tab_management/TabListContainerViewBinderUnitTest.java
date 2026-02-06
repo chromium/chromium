@@ -77,13 +77,14 @@ public class TabListContainerViewBinderUnitTest {
     @Mock private Resources mResourcesMock;
     @Mock Callback<Function<Integer, View>> mFetchViewByIndexCallback;
     @Mock Callback<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCallback;
-    @Mock Callback<MonotonicObservableSupplier<Boolean>> mIsScrollingSupplierCallback;
     @Mock Callback<TabKeyEventData> mPageKeyEventDataCallback;
 
     @Captor ArgumentCaptor<Function<Integer, View>> mFetchViewByIndexCaptor;
     @Captor ArgumentCaptor<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCaptor;
     @Captor ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
     @Captor ArgumentCaptor<MonotonicObservableSupplier<Boolean>> mOnScrollingSupplierCaptor;
+
+    private MonotonicObservableSupplier<Boolean> mIsScrollingSupplier;
     private TabListContainerViewBinder.ViewHolder mViewHolder;
 
     @Before
@@ -157,28 +158,27 @@ public class TabListContainerViewBinderUnitTest {
     public void testIsScrollingSupplierCallback() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)
-                        .with(IS_SCROLLING_SUPPLIER_CALLBACK, mIsScrollingSupplierCallback)
+                        .with(
+                                IS_SCROLLING_SUPPLIER_CALLBACK,
+                                supplier -> mIsScrollingSupplier = supplier)
                         .build();
-
         TabListContainerViewBinder.bind(propertyModel, mViewHolder, IS_SCROLLING_SUPPLIER_CALLBACK);
 
         verify(mTabListRecyclerViewMock).addOnScrollListener(mOnScrollListenerCaptor.capture());
         OnScrollListener listener = mOnScrollListenerCaptor.getValue();
-        verify(mIsScrollingSupplierCallback).onResult(mOnScrollingSupplierCaptor.capture());
-        MonotonicObservableSupplier<Boolean> isScrollingSupplier =
-                mOnScrollingSupplierCaptor.getValue();
+        assertNotNull(mIsScrollingSupplier);
 
         listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_IDLE);
-        assertFalse(isScrollingSupplier.get());
+        assertFalse(mIsScrollingSupplier.get());
 
         listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_DRAGGING);
-        assertTrue(isScrollingSupplier.get());
+        assertTrue(mIsScrollingSupplier.get());
 
         listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_SETTLING);
-        assertTrue(isScrollingSupplier.get());
+        assertTrue(mIsScrollingSupplier.get());
 
         listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_IDLE);
-        assertFalse(isScrollingSupplier.get());
+        assertFalse(mIsScrollingSupplier.get());
     }
 
     @Test

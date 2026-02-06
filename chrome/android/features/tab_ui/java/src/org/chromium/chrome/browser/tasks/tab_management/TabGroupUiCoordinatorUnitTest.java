@@ -62,11 +62,12 @@ public class TabGroupUiCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private UndoBarThrottle mUndoBarThrottle;
-    @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private Activity mActivity;
 
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+            ObservableSuppliers.alwaysNull();
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =

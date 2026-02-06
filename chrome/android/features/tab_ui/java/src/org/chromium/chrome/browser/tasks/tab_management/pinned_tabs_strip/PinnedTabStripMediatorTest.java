@@ -90,7 +90,6 @@ public class PinnedTabStripMediatorTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private BookmarkModel mBookmarkModel;
-    @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
@@ -98,6 +97,8 @@ public class PinnedTabStripMediatorTest {
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+            ObservableSuppliers.alwaysNull();
     private TabListModel mTabListModel;
     private TabListModel mPinnedTabsModelList;
     private PropertyModel mStripPropertyModel;
@@ -118,6 +119,7 @@ public class PinnedTabStripMediatorTest {
     }
 
     void onActivity(TestActivity activity) {
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         mActivity = activity;
         mTabListModel = new TabListModel();
         mPinnedTabsModelList = new TabListModel();
@@ -147,7 +149,6 @@ public class PinnedTabStripMediatorTest {
         mTabListItemSizeChangedObserver = observerCaptor.getValue();
         when(mLayoutManager.getSpanCount()).thenReturn(2);
 
-        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         mMediator.setContextMenuCoordinatorForTesting(mMenuCoordinator);
         verify(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
     }

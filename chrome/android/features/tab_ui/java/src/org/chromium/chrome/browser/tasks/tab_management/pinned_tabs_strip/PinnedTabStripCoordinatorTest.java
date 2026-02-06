@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -57,12 +58,15 @@ public class PinnedTabStripCoordinatorTest {
     @Mock private TabListRecyclerView mTabGridListRecyclerView;
     @Mock private GridLayoutManager mLayoutManager;
     @Mock private PinnedTabStripMediator mMediator;
-    @Mock private MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     @Mock private ItemTouchHelper2 mItemTouchHelper;
-    @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
+
+    private final MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+            ObservableSuppliers.alwaysNull();
 
     private PinnedTabStripCoordinator mCoordinator;
 

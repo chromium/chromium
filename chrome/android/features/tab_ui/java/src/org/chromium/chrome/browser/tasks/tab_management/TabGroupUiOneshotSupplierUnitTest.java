@@ -75,12 +75,13 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private TabManagementDelegate mTabManagementDelegate;
     @Mock private TabGroupUi mTabGroupUi;
     @Mock private ThemeColorProvider mThemeColorProvider;
-    @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+            ObservableSuppliers.alwaysNull();
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier =
