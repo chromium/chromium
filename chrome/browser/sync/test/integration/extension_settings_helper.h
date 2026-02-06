@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_EXTENSION_SETTINGS_HELPER_H_
 
 #include <string>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 
 class Profile;
@@ -19,11 +21,14 @@ void SetExtensionSettings(Profile* profile,
                           const base::DictValue& settings);
 
 // Calls Set() with |settings| for all profiles the extension with ID |id|.
-void SetExtensionSettingsForAllProfiles(const std::string& id,
-                                        const base::DictValue& settings);
+void SetExtensionSettings(
+    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles,
+    const std::string& id,
+    const base::DictValue& settings);
 
 // Returns whether the extension settings are the same across all profiles.
-bool AllExtensionSettingsSameAsVerifier();
+bool AllExtensionSettingsSame(
+    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles);
 
 }  // namespace extension_settings_helper
 
