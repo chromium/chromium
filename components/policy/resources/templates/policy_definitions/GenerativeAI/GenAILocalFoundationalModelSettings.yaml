@@ -5,7 +5,7 @@ desc: |-
 
   When the policy is set to Allowed (0) or not set, the model is downloaded automatically, and used for inference.
 
-  When the policy is set to Disabled (1), the model will not be downloaded.
+  When the policy is set to Disabled (1), the model will not be downloaded, and the existing model (if already downloaded) will be deleted.
 
   On desktop platforms, model downloading can also be disabled by <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME">ComponentUpdatesEnabled</ph>.
 
