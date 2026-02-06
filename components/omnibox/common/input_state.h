@@ -6,15 +6,20 @@
 #define COMPONENTS_OMNIBOX_COMMON_INPUT_STATE_H_
 
 #include <cstddef>
+#include <optional>
 #include <vector>
 
 #include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/model_config.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/section_config.pb.h"
+#include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace omnibox {
 
 // Represents a valid searchbox inputs state.
+// LINT.IfChange(InputState)
 struct InputState {
   InputState();
   InputState(const InputState&);
@@ -34,7 +39,14 @@ struct InputState {
   std::vector<ToolMode> disabled_tools;
   std::vector<ModelMode> disabled_models;
   std::vector<InputType> disabled_input_types;
+  // Configs containing the header, chip label, and hint text.
+  std::vector<ToolConfig> tool_configs;
+  std::vector<ModelConfig> model_configs;
+  std::optional<SectionConfig> tools_section_config;
+  std::optional<SectionConfig> model_section_config;
+  std::string hint_text;
 };
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputState)
 
 }  // namespace omnibox
 

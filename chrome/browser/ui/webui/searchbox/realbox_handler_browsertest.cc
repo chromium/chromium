@@ -80,8 +80,7 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       composebox_query::mojom::FileUploadStatus status,
       std::optional<composebox_query::mojom::FileUploadErrorType> error_type)
       override {}
-  void OnInputStateChanged(
-      composebox_query::mojom::InputStatePtr input_state) override {}
+  void OnInputStateChanged(const omnibox::InputState& input_state) override {}
   void OnTabStripChanged() override {}
   void AddFileContext(
       const base::UnguessableToken& token,

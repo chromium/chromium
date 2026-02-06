@@ -501,9 +501,9 @@ void ContextualSearchboxHandler::InitializeInputStateModelForDebugging() {
 
 void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
   if (input_state_) {
-    std::move(callback).Run(contextual_search::ToMojom(*input_state_));
+    std::move(callback).Run(*input_state_);
   } else {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
   }
 }
 
@@ -513,7 +513,7 @@ void ContextualSearchboxHandler::OnInputStateChanged(
   if (!IsRemoteBound()) {
     return;
   }
-  page_->OnInputStateChanged(contextual_search::ToMojom(state));
+  page_->OnInputStateChanged(state);
 }
 
 void ContextualSearchboxHandler::InitializeInputStateModel() {

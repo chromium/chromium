@@ -108,6 +108,23 @@ InputStateModel::InputStateModel(
       state_.allowed_input_types.push_back(
           static_cast<omnibox::InputType>(input_type));
     }
+    state_.tool_configs.reserve(mutable_config.tool_configs_size());
+    for (const auto& tool_config : mutable_config.tool_configs()) {
+      state_.tool_configs.push_back(tool_config);
+    }
+    state_.model_configs.reserve(mutable_config.model_configs_size());
+    for (const auto& model_config : mutable_config.model_configs()) {
+      state_.model_configs.push_back(model_config);
+    }
+    if (mutable_config.has_tools_section_config()) {
+      state_.tools_section_config = mutable_config.tools_section_config();
+    }
+    if (mutable_config.has_model_section_config()) {
+      state_.model_section_config = mutable_config.model_section_config();
+    }
+    if (mutable_config.has_hint_text()) {
+      state_.hint_text = mutable_config.hint_text();
+    }
   }
 
   // TODO(crbug.com/479254789): Once `INPUT_TYPE_BROWSER_TAB` is available from
@@ -353,12 +370,12 @@ void InputStateModel::UpdateDisabledInputTypes() {
   const auto current_inputs = GetCurrentInputTypes(session_handle_.get());
 
   // Check max inputs reached.
-  bool input_limit_reached =
+  bool global_limit_reached =
       rule_set_.has_max_total_inputs() && rule_set_.max_total_inputs() > 0 &&
       current_inputs.size() >=
           static_cast<size_t>(rule_set_.max_total_inputs());
 
-  if (input_limit_reached) {
+  if (global_limit_reached) {
     state_.disabled_input_types = state_.allowed_input_types;
     return;
   }
@@ -375,6 +392,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
       GetToolRule(rule_set_, state_.active_tool);
 
   for (const auto& input_type : state_.allowed_input_types) {
+    bool input_limit_reached = false;
     if (limits.count(input_type)) {
       int limit = limits.at(input_type);
       if (limit > 0 && current_input_counts.count(input_type) &&

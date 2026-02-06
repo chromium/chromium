@@ -2615,6 +2615,11 @@ suite('NewTabPageComposeboxTest', () => {
       disabledModels: [],
       disabledTools: [],
       disabledInputTypes: [],
+      toolConfigs: [],
+      modelConfigs: [],
+      toolsSectionConfig: null,
+      modelSectionConfig: null,
+      hintText: '',
     } as InputState;
     searchboxCallbackRouterRemote.onInputStateChanged(inputState);
     await microtasksFinished();

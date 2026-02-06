@@ -96,20 +96,4 @@ FileUploadErrorType FromMojom(
   }
 }
 
-composebox_query::mojom::InputStatePtr ToMojom(const InputState& state) {
-  auto mojom_state = composebox_query::mojom::InputState::New();
-
-  mojom_state->active_tool = state.active_tool;
-  mojom_state->active_model = state.active_model;
-
-  mojom_state->disabled_tools = state.disabled_tools;
-  mojom_state->disabled_models = state.disabled_models;
-  mojom_state->disabled_input_types = state.disabled_input_types;
-
-  mojom_state->allowed_tools = state.allowed_tools;
-  mojom_state->allowed_models = state.allowed_models;
-  mojom_state->allowed_input_types = state.allowed_input_types;
-  return mojom_state;
-}
-
 }  // namespace contextual_search

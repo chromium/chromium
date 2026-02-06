@@ -9,6 +9,22 @@
 namespace omnibox {
 
 InputState::InputState() = default;
+
+size_t EstimateMemoryUsage(const ToolConfig& config) {
+  return base::trace_event::EstimateMemoryUsage(config.menu_label()) +
+         base::trace_event::EstimateMemoryUsage(config.chip_label()) +
+         base::trace_event::EstimateMemoryUsage(config.hint_text());
+}
+
+size_t EstimateMemoryUsage(const ModelConfig& config) {
+  return base::trace_event::EstimateMemoryUsage(config.menu_label()) +
+         base::trace_event::EstimateMemoryUsage(config.hint_text());
+}
+
+size_t EstimateMemoryUsage(const SectionConfig& config) {
+  return base::trace_event::EstimateMemoryUsage(config.header());
+}
+
 InputState::InputState(const InputState&) = default;
 InputState& InputState::operator=(const InputState&) = default;
 InputState::~InputState() = default;
@@ -22,6 +38,15 @@ size_t InputState::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(disabled_tools);
   res += base::trace_event::EstimateMemoryUsage(disabled_models);
   res += base::trace_event::EstimateMemoryUsage(disabled_input_types);
+  res += base::trace_event::EstimateMemoryUsage(tool_configs);
+  res += base::trace_event::EstimateMemoryUsage(model_configs);
+  if (tools_section_config.has_value()) {
+    res += omnibox::EstimateMemoryUsage(tools_section_config.value());
+  }
+  if (model_section_config.has_value()) {
+    res += omnibox::EstimateMemoryUsage(model_section_config.value());
+  }
+  res += base::trace_event::EstimateMemoryUsage(hint_text);
 
   return res;
 }
