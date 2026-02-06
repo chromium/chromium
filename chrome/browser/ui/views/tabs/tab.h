@@ -135,6 +135,7 @@ class Tab : public gfx::AnimationDelegate,
   bool IsActive() const override;
   bool IsValid() const override;
   const TabRendererData& data() const override;
+  views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   // Notifies the AlertIndicatorButton that the active state of this tab has
   // changed.
