@@ -357,6 +357,10 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
 BASE_FEATURE(kAutofillAndroidKeyboardAccessoryDynamicPositioning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If @memory is enabled, typing "@@" in an input field triggers search popup,
+// allowing to recall and insert the info anywhere using plain language.
+BASE_FEATURE(kAutofillAtMemory, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the placeholder is not considered a label fallback on the
 // renderer side anymore. Instead, local heuristic will match regexes against
 // either the label or the placeholder, depending on how high quality the label
