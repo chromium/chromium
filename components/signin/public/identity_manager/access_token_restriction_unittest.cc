@@ -63,7 +63,6 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kAuditRecordingOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCastBackdropOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kClearCutOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
- {GaiaConstants::kDriveOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kExperimentsAndConfigsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kGCMGroupServerOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kNearbyDevicesOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
