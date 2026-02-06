@@ -60,12 +60,12 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
     public void testDestroy() {
         RecentlyClosedEntriesManager manager =
                 mTracker.obtainManager(mMultiInstanceManager, mTabModelSelector);
-        assertTrue(mTracker.getManagers().contains(manager));
+        assertTrue(mTracker.getManagersForTesting().contains(manager));
 
         mTracker.destroy(manager);
 
         verify(mRecentlyClosedTabManager).destroy();
-        assertFalse(mTracker.getManagers().contains(manager));
+        assertFalse(mTracker.getManagersForTesting().contains(manager));
     }
 
     @Test

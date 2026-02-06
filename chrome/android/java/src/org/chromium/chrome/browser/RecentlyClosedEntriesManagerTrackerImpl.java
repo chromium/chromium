@@ -94,7 +94,7 @@ public final class RecentlyClosedEntriesManagerTrackerImpl
         return mOpenMostRecentTabEntryNext;
     }
 
-    /* package */ Set<RecentlyClosedEntriesManager> getManagers() {
+    public Set<RecentlyClosedEntriesManager> getManagersForTesting() {
         return mManagers;
     }
 }
