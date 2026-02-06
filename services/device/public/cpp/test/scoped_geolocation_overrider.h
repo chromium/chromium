@@ -21,10 +21,17 @@ namespace device {
 // same process that runs the Device Service implementation.
 class ScopedGeolocationOverrider {
  public:
-  explicit ScopedGeolocationOverrider(mojom::GeopositionResultPtr result);
+  // Overrides location with result. If a separate high_accuracy_result is
+  // specified, the latter will be returned if location is requested with
+  // enableHighAccuracy=true.
+  explicit ScopedGeolocationOverrider(
+      mojom::GeopositionResultPtr result,
+      mojom::GeopositionResultPtr high_accuracy_result = nullptr);
   ScopedGeolocationOverrider(double latitude, double longitude);
   ~ScopedGeolocationOverrider();
-  void OverrideGeolocation(mojom::GeopositionResultPtr result);
+  void OverrideGeolocation(
+      mojom::GeopositionResultPtr result,
+      mojom::GeopositionResultPtr high_accuracy_result = nullptr);
   void UpdateLocation(mojom::GeopositionResultPtr result);
   void UpdateLocation(double latitude, double longitude);
 

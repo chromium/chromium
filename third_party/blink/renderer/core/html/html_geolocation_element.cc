@@ -28,7 +28,7 @@ PositionOptions* CreateDefaultLocationOptions() {
   PositionOptions* options = PositionOptions::Create();
   options->setTimeout(kDefaultQueryLocationTimeoutMs);
   options->setMaximumAge(0);
-  options->setEnableHighAccuracy(false);
+  options->setEnableHighAccuracy(true);
   return options;
 }
 
