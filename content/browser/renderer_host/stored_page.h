@@ -6,12 +6,12 @@
 #define CONTENT_BROWSER_RENDERER_HOST_STORED_PAGE_H_
 
 #include <set>
-#include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "content/browser/site_instance_group.h"
 #include "content/public/browser/site_instance.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 
 namespace content {
@@ -30,8 +30,8 @@ class RenderViewHostImpl;
 class StoredPage : public SiteInstanceGroup::Observer {
  public:
   using RenderFrameProxyHostMap =
-      std::unordered_map<SiteInstanceGroupId,
-                         std::unique_ptr<RenderFrameProxyHost>>;
+      absl::flat_hash_map<SiteInstanceGroupId,
+                          std::unique_ptr<RenderFrameProxyHost>>;
 
   using RenderViewHostImplSafeRefSet =
       std::set<base::SafeRef<RenderViewHostImpl>>;

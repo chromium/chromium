@@ -14,6 +14,7 @@
 #include "content/browser/site_instance_group.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -75,8 +76,8 @@ class CONTENT_EXPORT BrowsingContextState
       public SiteInstanceGroup::Observer {
  public:
   using RenderFrameProxyHostMap =
-      std::unordered_map<SiteInstanceGroupId,
-                         std::unique_ptr<RenderFrameProxyHost>>;
+      absl::flat_hash_map<SiteInstanceGroupId,
+                          std::unique_ptr<RenderFrameProxyHost>>;
 
   // Currently `browsing_instance_id` will be null iff the legacy mode is
   // enabled, as the legacy mode BrowsingContextState is 1:1 with FrameTreeNode
