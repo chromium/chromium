@@ -65,8 +65,7 @@ found in the LICENSE file.
             android:id="@+id/two_cell_item_1_icon"
             android:layout_width="@dimen/educational_tip_two_cell_icon_container_size"
             android:layout_height="@dimen/educational_tip_two_cell_icon_container_size"
-            android:background="@drawable/educational_tip_module_content_image_background"
-            android:scaleType="center"
+            android:scaleType="fitCenter"
             android:importantForAccessibility="no" />
 
         <LinearLayout
@@ -111,8 +110,7 @@ found in the LICENSE file.
             android:id="@+id/two_cell_item_2_icon"
             android:layout_width="@dimen/educational_tip_two_cell_icon_container_size"
             android:layout_height="@dimen/educational_tip_two_cell_icon_container_size"
-            android:background="@drawable/educational_tip_module_content_image_background"
-            android:scaleType="center"
+            android:scaleType="fitCenter"
             android:importantForAccessibility="no" />
 
         <LinearLayout
