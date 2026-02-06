@@ -2226,6 +2226,27 @@
             ]
         }
     ],
+    "AutoDownloadTranslateLanguagePacks": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_EnEs_S1",
+                    "params": {
+                        "language_pairs": "en-es"
+                    },
+                    "enable_features": [
+                        "AutoDownloadTranslateLanguagePacks"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutoSpeculationRules": [
         {
             "platforms": [
