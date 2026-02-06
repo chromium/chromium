@@ -23,6 +23,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
@@ -116,14 +117,16 @@ bool ShouldRestrictMainThreadBigCoreAffinity() {
 BASE_FEATURE(kUsePerformanceHelper, base::FEATURE_DISABLED_BY_DEFAULT);
 
 enum class PerformanceHintMode {
-  kCompositor = 0,
+  kNone = 0,
+  kCompositor = 1,
 #if BUILDFLAG(IS_ANDROID)
-  kAffinity = 1,
-  kBoth = 2,
+  kAffinity = 2,
+  kBoth = 3,
 #endif
 };
 constexpr base::FeatureParam<
     PerformanceHintMode>::Option kUsePerformanceHelperModeOption[] = {
+    {PerformanceHintMode::kNone, "none"},
     // IMPORTANT: Must be used in conjunction with
     // "EnableAdpfEfficiencyMode:mode/adaptive" to take effect on Android.
     {PerformanceHintMode::kCompositor, "compositor"},
@@ -156,6 +159,28 @@ const base::FeatureParam<base::TimeDelta> kUserInputBoostParam{
     &kUsePerformanceHelper, "user_input_boost", base::Seconds(0.5)};
 const base::FeatureParam<base::TimeDelta> kScrollBoostParam{
     &kUsePerformanceHelper, "scroll_boost", base::Seconds(0.2)};
+
+namespace {
+PerformanceHintMode GetPerformanceHelperMode() {
+  // Devices with 3 classes of CPU are eligible to use affinity hints. Devices
+  // with a Google SoC are currently eligible to use ADPF. Establish whether
+  // we're in one of these groups before querying the UsePerformanceHelper
+  // feature, as then we'll be assigned an arm of the experiment. Keep
+  // ineligible devices as the control.
+#if BUILDFLAG(IS_ANDROID)
+  static bool is_google_soc = base::SysInfo::SocManufacturer() == "Google";
+  if (!(base::IsEligibleForBigCoreAffinityChange() || is_google_soc)) {
+    // Control.
+    return PerformanceHintMode::kNone;
+  }
+#endif
+  if (!base::FeatureList::IsEnabled(kUsePerformanceHelper)) {
+    return PerformanceHintMode::kNone;
+  }
+
+  return kUsePerformanceHelperParam.Get();
+}
+}  // namespace
 
 using base::sequence_manager::TaskQueue;
 using base::sequence_manager::TaskTimeObserver;
@@ -491,7 +516,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     // use a lot of resources.
     main_thread_only().affinity_boost = std::make_unique<ThreadAffinityBoost>();
   }
-  if (kUsePerformanceHelperParam.Get() >= PerformanceHintMode::kAffinity) {
+  if (GetPerformanceHelperMode() >= PerformanceHintMode::kAffinity) {
     // Ensure that there aren't two duelling versions of affinity hints.
     DCHECK(!base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity))
         << "feature UsePerformanceHelper:mode/{affinity, both} can't be "
@@ -504,7 +529,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       .loading_boost = kPageLoadBoostParam.Get(),
       .scrolling_boost = kScrollBoostParam.Get(),
       .input_boost = kUserInputBoostParam.Get(),
-      .callback = base::FeatureList::IsEnabled(kUsePerformanceHelper)
+      .callback = GetPerformanceHelperMode() != PerformanceHintMode::kNone
                       ? base::BindRepeating(
                             &MainThreadSchedulerImpl::ApplyPerformanceState,
                             base::Unretained(this))
@@ -2873,11 +2898,11 @@ void MainThreadSchedulerImpl::ApplyPerformanceState(
   DCHECK(base::FeatureList::IsEnabled(kUsePerformanceHelper));
   bool should_send_to_compositor = true;
 #if BUILDFLAG(IS_ANDROID)
-  if (kUsePerformanceHelperParam.Get() >= PerformanceHintMode::kAffinity) {
+  if (GetPerformanceHelperMode() >= PerformanceHintMode::kAffinity) {
     base::SetCanRunOnBigCore(base::PlatformThread::CurrentId(),
                              !prefer_efficient_scheduling);
     should_send_to_compositor =
-        kUsePerformanceHelperParam.Get() == PerformanceHintMode::kBoth;
+        GetPerformanceHelperMode() == PerformanceHintMode::kBoth;
   }
 #endif
   // Emit for tracking.
