@@ -17,6 +17,7 @@
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
+#import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
@@ -116,6 +117,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   base::WeakPtr<Browser> _regularBrowser;
   // Coordinator for the Tab Grid
   TabGridCoordinator* _tabGridCoordinator;
+  // Coordinator for the AppBar.
+  AppBarCoordinator* _appBarCoordinator;
   // Coordinator for the account menu.
   AccountMenuCoordinator* _accountMenuCoordinator;
   // Coordinator for the sign-in flow.
@@ -189,6 +192,14 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     [tabGridViewController didMoveToParentViewController:_viewController];
     self.sceneState.window.rootViewController = _viewController;
   }
+
+  if (IsChromeNextIaEnabled()) {
+    _appBarCoordinator =
+        [[AppBarCoordinator alloc] initWithRegularBrowser:_regularBrowser.get()
+                                         incognitoBrowser:_incognitoBrowser];
+    [_appBarCoordinator start];
+    [_viewController setAppBar:_appBarCoordinator.viewController];
+  }
 }
 
 - (void)stop {
@@ -207,6 +218,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   _AIPrototypingCoordinator = nil;
   [self stopAssistantSheetCoordinator];
   [_tabGridCoordinator stop];
+  [_appBarCoordinator stop];
 }
 
 #pragma mark - Public
@@ -1185,6 +1197,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
   _incognitoBrowser = incognitoBrowser;
   _tabGridCoordinator.incognitoBrowser = incognitoBrowser;
+  if (IsChromeNextIaEnabled()) {
+    _appBarCoordinator.incognitoBrowser = incognitoBrowser;
+  }
 }
 
 - (UIViewController*)activeViewController {

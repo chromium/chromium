@@ -14,6 +14,9 @@
 // A view to contain the TabGrid and BVC.
 @property(nonatomic, readonly) UIView* appContainer;
 
+// Sets the app bar.
+- (void)setAppBar:(UIViewController*)appBar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SCENE_UI_SCENE_VIEW_CONTROLLER_H_

@@ -178,8 +178,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL _backgroundedSinceEntering;
   // Current mode of the TabGrid.
   TabGridMode _mode;
-  // The app bar.
-  UIViewController* _appBar;
   // Top and bottom toolbar edge effects.
   UIScrollEdgeElementContainerInteraction* _topToolbarEdgeEffect
       API_AVAILABLE(ios(26.0));
@@ -206,9 +204,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self setupSearchUI];
   [self setupTopToolbar];
-  if (IsChromeNextIaEnabled()) {
-    [self setupAppBar];
-  }
   [self setupBottomToolbar];
 
   [self updateToolbarEdgeEffects];
@@ -457,11 +452,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.mutator pageChanged:newActivePage
                 interaction:TabSwitcherPageChangeInteraction::kNone];
   self.activePage = newActivePage;
-}
-
-- (void)setAppBar:(UIViewController*)appBar {
-  CHECK(IsChromeNextIaEnabled());
-  _appBar = appBar;
 }
 
 #pragma mark - Public Properties
@@ -838,35 +828,23 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// Adds the app bar.
-- (void)setupAppBar {
-  CHECK(IsChromeNextIaEnabled());
-  UIView* appBarView = _appBar.view;
-  appBarView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:appBarView];
-  [NSLayoutConstraint activateConstraints:@[
-    [self.view.leadingAnchor constraintEqualToAnchor:appBarView.leadingAnchor],
-    [self.view.trailingAnchor
-        constraintEqualToAnchor:appBarView.trailingAnchor],
-    [self.view.bottomAnchor constraintEqualToAnchor:appBarView.bottomAnchor],
-  ]];
-}
-
 // Adds the bottom toolbar and sets constraints.
 - (void)setupBottomToolbar {
   UIView* bottomToolbar = self.bottomToolbar;
   CHECK(bottomToolbar);
 
   if (IsChromeNextIaEnabled()) {
-    UIView* appBarView = _appBar.view;
-    [self.view insertSubview:bottomToolbar belowSubview:appBarView];
+    [self.view addSubview:bottomToolbar];
+    // TODO(crbug.com/472279443): Make sure the bottom toolbar is taking into
+    // account the AppBar.
 
     [NSLayoutConstraint activateConstraints:@[
       [bottomToolbar.leadingAnchor
           constraintEqualToAnchor:self.view.leadingAnchor],
       [bottomToolbar.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor],
-      [bottomToolbar.bottomAnchor constraintEqualToAnchor:appBarView.topAnchor],
+      [bottomToolbar.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
     ]];
   } else {
     [self.view addSubview:bottomToolbar];

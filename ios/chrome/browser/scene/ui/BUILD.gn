@@ -8,5 +8,8 @@ source_set("ui") {
     "scene_view_controller.mm",
   ]
 
-  deps = [ "//ios/chrome/common/ui/util" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/util",
+  ]
 }

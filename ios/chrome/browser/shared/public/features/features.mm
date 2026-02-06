@@ -1064,6 +1064,9 @@ BASE_FEATURE(kShareInVerbatimMatch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseSceneViewController, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsUseSceneViewControllerEnabled() {
+  if (IsChromeNextIaEnabled()) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kUseSceneViewController);
 }
 

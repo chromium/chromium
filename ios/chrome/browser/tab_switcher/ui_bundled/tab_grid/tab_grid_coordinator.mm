@@ -24,7 +24,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
-#import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
@@ -282,8 +281,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   GuidedTourCoordinator* _guidedTourCoordinator;
   // Completion block for when the `_guidedTourCoordinator` finishes.
   ProceduralBlock _guidedTourCompletionBlock;
-  // Coordinator for the AppBar.
-  AppBarCoordinator* _appBarCoordinator;
   // Coordinator for the Assistant Sheet.
   AssistantSheetCoordinator* _assistantSheetCoordinator;
   // The view controller for the Tab Grid, defined manually so that the type can
@@ -368,10 +365,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [incognitoBrowser->GetCommandDispatcher()
         startDispatchingToTarget:[self bookmarksCoordinator]
                      forProtocol:@protocol(BookmarksCommands)];
-  }
-
-  if (IsChromeNextIaEnabled()) {
-    _appBarCoordinator.incognitoBrowser = incognitoBrowser;
   }
 }
 
@@ -1076,14 +1069,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       _tabGroupsPanelCoordinator.disabledViewController;
   _viewController.tabGroupsGridContainerViewController =
       _tabGroupsPanelCoordinator.gridContainerViewController;
-
-  if (IsChromeNextIaEnabled()) {
-    _appBarCoordinator =
-        [[AppBarCoordinator alloc] initWithRegularBrowser:_regularBrowser
-                                         incognitoBrowser:_incognitoBrowser];
-    [_appBarCoordinator start];
-    [_viewController setAppBar:_appBarCoordinator.viewController];
-  }
 
   self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
       initWithBaseViewController:_viewController
