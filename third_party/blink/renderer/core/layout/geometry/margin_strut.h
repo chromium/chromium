@@ -29,6 +29,10 @@ struct CORE_EXPORT MarginStrut {
   // If set, we will discard all adjoining margins.
   bool discard_margins = false;
 
+  // Set by containers with `margin-trim: block-start`. Any margins adjacent to
+  // the block-start content edge of such containers are to be truncated.
+  bool trim_leading_margins = false;
+
   // Appends negative or positive value to the current margin strut.
   void Append(const LayoutUnit& value, bool is_quirky);
 

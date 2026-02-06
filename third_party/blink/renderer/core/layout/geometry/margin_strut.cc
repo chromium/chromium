@@ -12,6 +12,10 @@ void MarginStrut::Append(const LayoutUnit& value, bool is_quirky) {
   if (is_quirky_container_start && is_quirky)
     return;
 
+  if (trim_leading_margins) {
+    return;
+  }
+
   if (value < 0) {
     negative_margin = std::min(value, negative_margin);
   } else {
@@ -37,6 +41,7 @@ bool MarginStrut::operator==(const MarginStrut& other) const {
          negative_margin == other.negative_margin &&
          quirky_positive_margin == other.quirky_positive_margin &&
          discard_margins == other.discard_margins &&
+         trim_leading_margins == other.trim_leading_margins &&
          is_quirky_container_start == other.is_quirky_container_start;
 }
 

@@ -767,6 +767,12 @@ class CORE_EXPORT ConstraintSpace final {
     return rare_data_ && rare_data_->should_force_text_box_trim_end;
   }
 
+  // Trim trailing block-end margin, also margins on trailing self-collapsing
+  // children.
+  bool ShouldForceMarginTrimEnd() const {
+    return rare_data_ && rare_data_->should_force_margin_trim_end;
+  }
+
   // Return how percentage-based margins and padding should be resolved.
   DecorationPercentageResolutionType GetDecorationPercentageResolutionType()
       const {
@@ -917,6 +923,7 @@ class CORE_EXPORT ConstraintSpace final {
           should_force_text_box_trim_end(other.should_force_text_box_trim_end),
           should_text_box_trim_inside_when_line_clamp(
               other.should_text_box_trim_inside_when_line_clamp),
+          should_force_margin_trim_end(other.should_force_margin_trim_end),
           decoration_percentage_resolution_type(
               other.decoration_percentage_resolution_type),
           is_adjacent_to_paper_edge_inline_start(
@@ -1024,6 +1031,7 @@ class CORE_EXPORT ConstraintSpace final {
               other.should_force_text_box_trim_end ||
           should_text_box_trim_inside_when_line_clamp !=
               other.should_text_box_trim_inside_when_line_clamp ||
+          should_force_margin_trim_end != other.should_force_margin_trim_end ||
           decoration_percentage_resolution_type !=
               other.decoration_percentage_resolution_type ||
           safe_printable_inset != other.safe_printable_inset ||
@@ -1079,6 +1087,7 @@ class CORE_EXPORT ConstraintSpace final {
           should_text_box_trim_fragmentainer_end ||
           should_force_text_box_trim_end ||
           should_text_box_trim_inside_when_line_clamp ||
+          should_force_margin_trim_end ||
           decoration_percentage_resolution_type ||
           is_adjacent_to_paper_edge_inline_start ||
           is_adjacent_to_paper_edge_inline_end ||
@@ -1357,6 +1366,7 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned should_text_box_trim_fragmentainer_end : 1 = false;
     unsigned should_force_text_box_trim_end : 1 = false;
     unsigned should_text_box_trim_inside_when_line_clamp : 1 = false;
+    unsigned should_force_margin_trim_end : 1 = false;
     unsigned decoration_percentage_resolution_type : 1 = static_cast<unsigned>(
         DecorationPercentageResolutionType::kContainingBlockInlineSize);
     unsigned is_adjacent_to_paper_edge_inline_start : 1 = false;

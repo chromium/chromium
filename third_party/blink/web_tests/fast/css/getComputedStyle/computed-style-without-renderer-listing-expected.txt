@@ -260,6 +260,7 @@ margin-inline-start: 0px
 margin-left: 0px
 margin-right: 0px
 margin-top: 0px
+margin-trim: none
 marker-end: none
 marker-mid: none
 marker-start: none

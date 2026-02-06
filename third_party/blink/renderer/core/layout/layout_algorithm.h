@@ -123,6 +123,7 @@ class CORE_EXPORT LayoutAlgorithm {
     kRelayoutIgnoringChildScrollbarChanges = 32,
     kRelayoutAsLastTableBox = 64,
     kRelayoutClampingAfterLayoutObject = 128,
+    kRelayoutForMarginTrim = 256,
   };
   // Bitmask of active relayout types (`RelayoutType`).
   typedef int RelayoutMode;

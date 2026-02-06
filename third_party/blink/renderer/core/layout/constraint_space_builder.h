@@ -590,6 +590,10 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     EnsureRareData()->should_force_text_box_trim_end = true;
   }
 
+  void SetShouldForceMarginTrimEnd() {
+    EnsureRareData()->should_force_margin_trim_end = true;
+  }
+
   void SetDecorationPercentageResolutionType(
       DecorationPercentageResolutionType type) {
     EnsureRareData()->decoration_percentage_resolution_type =

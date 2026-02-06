@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property margin-trim has initial value none
-  assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
-[FAIL] Property margin-trim does not inherit
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

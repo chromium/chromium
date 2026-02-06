@@ -996,6 +996,7 @@ enum CSSSampleId {
     kRuleVisibilityItems = 926,
     kFrameSizing = 927,
     kImageAnimation = 928,
+    kMarginTrim = 929,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

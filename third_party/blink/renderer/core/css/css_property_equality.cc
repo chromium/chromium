@@ -586,6 +586,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MarginRight() == b.MarginRight();
     case CSSPropertyID::kMarginTop:
       return a.MarginTop() == b.MarginTop();
+    case CSSPropertyID::kMarginTrim:
+      return a.MarginTrim() == b.MarginTrim();
     case CSSPropertyID::kMarkerEnd:
       return a.MarkerEndResource() == b.MarkerEndResource();
     case CSSPropertyID::kMarkerMid:

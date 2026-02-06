@@ -8263,6 +8263,7 @@ Called by update_use_counter_css.py.-->
   <int value="926" label="rule-visibility-items"/>
   <int value="927" label="frame-sizing"/>
   <int value="928" label="image-animation"/>
+  <int value="929" label="margin-trim"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

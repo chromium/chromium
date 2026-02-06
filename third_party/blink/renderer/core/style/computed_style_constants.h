@@ -385,6 +385,23 @@ inline EContainerType& operator|=(EContainerType& a, EContainerType b) {
   return a = a | b;
 }
 
+typedef unsigned MarginTrimMask;
+enum EMarginTrim {
+  kMarginTrimNone = 0x0,
+  kMarginTrimBlockStart = 0x1,
+  kMarginTrimInlineStart = 0x2,
+  kMarginTrimBlockEnd = 0x4,
+  kMarginTrimInlineEnd = 0x8,
+  kMarginTrimBlock = kMarginTrimBlockStart | kMarginTrimBlockEnd,
+  kMarginTrimInline = kMarginTrimInlineStart | kMarginTrimInlineEnd,
+};
+inline EMarginTrim operator|(EMarginTrim a, EMarginTrim b) {
+  return EMarginTrim(int(a) | int(b));
+}
+inline EMarginTrim& operator|=(EMarginTrim& a, EMarginTrim b) {
+  return a = a | b;
+}
+
 static const size_t kTextUnderlinePositionBits = 4;
 enum class TextUnderlinePosition : unsigned {
   kAuto = 0x0,

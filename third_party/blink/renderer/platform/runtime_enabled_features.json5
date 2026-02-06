@@ -3435,6 +3435,11 @@
       base_feature: "none",
     },
     {
+      // CSS margin-trim property: https://drafts.csswg.org/css-box-4/#margin-trim
+      name: "MarginTrim",
+      status: "experimental",
+    },
+    {
       name: "MaskDeserializationTimeForCrossOriginMessages",
       status: "stable",
     },
