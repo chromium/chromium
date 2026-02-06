@@ -112,6 +112,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -1854,8 +1855,15 @@ class TabImpl implements Tab {
      * @param url The URL that was loaded.
      * @param transitionType The transition type to the current URL.
      * @param isPdf Whether the navigation is for PDF content.
+     * @param isRendererInitiated Whether the navigation is initiated by renderer.
+     * @param initiatorOrigin The Origin that initiated this navigation.
      */
-    void handleDidFinishNavigation(GURL url, int transitionType, boolean isPdf) {
+    void handleDidFinishNavigation(
+            GURL url,
+            int transitionType,
+            boolean isPdf,
+            boolean isRendererInitiated,
+            @Nullable Origin initiatorOrigin) {
         mIsNativePageCommitPending = false;
         boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
         // Set isPdf param based on the url. This is because the isPdf param in NavigationHandle is
@@ -1866,11 +1874,20 @@ class TabImpl implements Tab {
                 PdfUtils.shouldOpenPdfInline(isIncognito())
                         && PdfUtils.isDownloadedPdf(url.getSpec());
         if (!maybeShowNativePage(url.getSpec(), isReload, isPdf ? new PdfInfo() : null)) {
-            String downloadUrl = PdfUtils.decodePdfPageUrl(url.getSpec());
+            // This is restricted to HTTP(S) URLs specifically, as these are the only schemes that
+            // necessitate a PDF re-download.
+            String downloadUrl = PdfUtils.getPdfReDownloadUrl(url.getSpec());
             if (downloadUrl != null) {
-                // When the download url is not null, we are on a pdf native page which requires
-                // re-download. Load the download url to trigger the re-download.
-                loadUrl(new LoadUrlParams(downloadUrl));
+                // When the download url is not null, we are navigating to a pdf native page which
+                // requires re-download. Load the download url to trigger the re-download.
+                var param = new LoadUrlParams(downloadUrl);
+                // To avoid a SameSite=strict cookie bypass, it is important to preserve whether the
+                // navigation was renderer initiated and what its initiator origin was.
+                param.setIsRendererInitiated(isRendererInitiated);
+                if (initiatorOrigin != null) {
+                    param.setInitiatorOrigin(initiatorOrigin);
+                }
+                loadUrl(param);
             } else {
                 showRenderedPage();
             }

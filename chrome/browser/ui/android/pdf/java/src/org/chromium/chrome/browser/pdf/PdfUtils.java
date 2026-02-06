@@ -316,6 +316,30 @@ public class PdfUtils {
     }
 
     /**
+     * Extracts a valid HTTP(S) URL from a PDF page URL for re-downloading.
+     *
+     * <p>This method decodes the provided {@code originalUrl} and verifies that the result uses a
+     * supported scheme (HTTP or HTTPS).
+     *
+     * @param originalUrl The original, potentially encoded, URL string to process.
+     * @return The decoded URL string if it is a valid HTTP(S) URL; {@code null} otherwise.
+     */
+    public static @Nullable String getPdfReDownloadUrl(String originalUrl) {
+        String decodedUrl = decodePdfPageUrl(originalUrl);
+
+        if (decodedUrl == null) {
+            return null;
+        }
+
+        if (decodedUrl.startsWith(UrlConstants.HTTP_URL_PREFIX)
+                || decodedUrl.startsWith(UrlConstants.HTTPS_URL_PREFIX)) {
+            return decodedUrl;
+        }
+
+        return null;
+    }
+
+    /**
      * Encode content uri if it is PDF MIME type.
      *
      * @param uri The uri to be encoded.

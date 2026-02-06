@@ -49,6 +49,8 @@ public class PdfUtilsUnitTest {
     private static final String PDF_BLOB_URL = "blob:https://www.foo.com/abc";
     private static final String PDF_LINK_ENCODED =
             "chrome-native://pdf/link?url=https%3A%2F%2Fwww.foo.com%2Ftestfiles%2Fpdf%2Fsample.pdf";
+    private static final String PDF_LINK_ENCODED_INVALID =
+            "chrome-native://pdf/link?url=chrome%3A%2F%2Fversion";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
     private static final String FILE_NAME = "sample.pdf";
     private static final String IMAGE_FILE_URL = "file:///media/external/downloads/sample.jpg";
@@ -235,6 +237,18 @@ public class PdfUtilsUnitTest {
         String decodedUrl = PdfUtils.decodePdfPageUrl(PDF_LINK_ENCODED);
         Assert.assertEquals("The decoded url should match", PDF_LINK, decodedUrl);
         histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testGetPdfReDownloadUrl_Https() {
+        String downloadUrl = PdfUtils.getPdfReDownloadUrl(PDF_LINK_ENCODED);
+        Assert.assertEquals("The re-download url should match", PDF_LINK, downloadUrl);
+    }
+
+    @Test
+    public void testGetPdfReDownloadUrl_Invalid() {
+        String downloadUrl = PdfUtils.getPdfReDownloadUrl(PDF_LINK_ENCODED_INVALID);
+        Assert.assertNull("The re-download url should be null", downloadUrl);
     }
 
     @Test

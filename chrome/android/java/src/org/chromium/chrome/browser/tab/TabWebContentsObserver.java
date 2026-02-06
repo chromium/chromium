@@ -318,7 +318,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
             mTab.updateTitle();
             mTab.handleDidFinishNavigation(
-                    navigation.getUrl(), navigation.pageTransition(), navigation.isPdf());
+                    navigation.getUrl(),
+                    navigation.pageTransition(),
+                    navigation.isPdf(),
+                    navigation.isRendererInitiated(),
+                    navigation.getInitiatorOrigin());
             mTab.setIsShowingErrorPage(navigation.isErrorPage());
 
             // TODO(crbug.com/40264745) remove this call. onUrlUpdated should have been called
