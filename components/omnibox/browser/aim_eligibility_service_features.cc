@@ -33,4 +33,6 @@ const base::FeatureParam<bool> kRequestOnPrimaryAccountChanges{
     &kAimServerRequestOnIdentityChangeEnabled,
     "request_on_primary_account_changes", true};
 
+BASE_FEATURE(kAimUsePecApi, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox
