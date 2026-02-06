@@ -72,10 +72,6 @@ enum class WarningType;
 // Returns YES if the current Tab is available to present a view controller.
 - (BOOL)isTabAvailableToPresentViewController;
 
-// Stops all child coordinators then calls `completion`. `completion` is called
-// whether or not child coordinators exist.
-- (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion;
-
 // Displays the TabGrid at `page`.
 - (void)showTabGridPage:(TabGridPage)page;
 
@@ -202,6 +198,23 @@ enum class WarningType;
 // Closes presented views.
 - (void)closePresentedViews:(BOOL)animated
                  completion:(ProceduralBlock)completion;
+
+// Dismisses all modal dialogs.
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+                         dismissSnackbars:(BOOL)dismissSnackbars;
+
+// Dismisses all modal dialogs.
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox;
+
+// Dismisses all modal dialogs.
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
+
+// Dismisses all modal dialogs (if any) before showing the Password Checkup page
+// for `referrer`.
+- (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer;
 
 @end
 

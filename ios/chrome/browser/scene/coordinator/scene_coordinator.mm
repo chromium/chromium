@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
@@ -43,26 +45,31 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
 namespace {
 
@@ -231,10 +238,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     return NO;
   }
   return YES;
-}
-
-- (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
-  [_tabGridCoordinator stopChildCoordinatorsWithCompletion:completion];
 }
 
 - (void)showTabGridPage:(TabGridPage)page {
@@ -729,6 +732,98 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   _historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
   _historyCoordinator.delegate = self;
   [_historyCoordinator start];
+}
+
+- (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer {
+  __weak SceneCoordinator* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showPasswordCheckupPageForReferrer:referrer];
+  }];
+}
+
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox {
+  [self dismissModalDialogsWithCompletion:completion
+                           dismissOmnibox:dismissOmnibox
+                         dismissSnackbars:YES];
+}
+
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion {
+  [self dismissModalDialogsWithCompletion:completion dismissOmnibox:YES];
+}
+
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+                         dismissSnackbars:(BOOL)dismissSnackbars {
+  // Disconnected scenes should no-op, since browser objects may not exist.
+  // See crbug.com/371847600.
+  if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
+    return;
+  }
+  // During startup, there may be no current browser. Do nothing in that
+  // case.
+  if (!self.currentBrowser) {
+    return;
+  }
+
+  // Immediately hide modals from the provider (alert views, action sheets,
+  // popovers). They will be ultimately dismissed by their owners, but at least,
+  // they are not visible.
+  ios::provider::HideModalViewStack();
+
+  // Conditionally dismiss all snackbars.
+  if (dismissSnackbars) {
+    id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+        _regularBrowser->GetCommandDispatcher(), SnackbarCommands);
+    [snackbarHandler dismissAllSnackbars];
+  }
+
+  // Exit fullscreen mode for web page when we re-enter app through external
+  // intents.
+  web::WebState* webState =
+      _regularBrowser->GetWebStateList()->GetActiveWebState();
+  if (webState && webState->IsWebPageInFullscreenMode()) {
+    webState->CloseMediaPresentations();
+  }
+
+  // ChromeIdentityService is responsible for the dialogs displayed by the
+  // services it wraps.
+  GetApplicationContext()->GetSystemIdentityManager()->DismissDialogs();
+
+  // MailtoHandlerService is responsible for the dialogs displayed by the
+  // services it wraps.
+  MailtoHandlerServiceFactory::GetForProfile(self.currentBrowser->GetProfile())
+      ->DismissAllMailtoHandlerInterfaces();
+
+  id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), BookmarksCommands);
+  [bookmarksHandler dismissBookmarkModalControllerAnimated:NO];
+
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.currentBrowser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  ProceduralBlock completionWithBVC = ^{
+    DCHECK(!self.isTabGridActive);
+    DCHECK(!self.isSigninInProgress);
+    [browserCoordinatorHandler
+        clearPresentedStateWithCompletion:completion
+                           dismissOmnibox:dismissOmnibox];
+  };
+  ProceduralBlock completionWithoutBVC = ^{
+    // The BVC may exist but tab switcher should be active.
+    DCHECK(self.isTabGridActive);
+    DCHECK(!self.isSigninInProgress);
+    [self stopChildCoordinatorsWithCompletion:completion];
+  };
+
+  // Select a completion based on whether the BVC is shown.
+  ProceduralBlock chosenCompletion =
+      self.isTabGridActive ? completionWithoutBVC : completionWithBVC;
+
+  [self closePresentedViews:NO completion:chosenCompletion];
+
+  // Verify that no modal views are left presented.
+  ios::provider::LogIfModalViewsArePresented();
 }
 
 #pragma mark - SettingsCommands
@@ -1401,6 +1496,12 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 - (void)stopSafariDataImportCoordinator {
   [_safariDataImportCoordinator stop];
   _safariDataImportCoordinator = nil;
+}
+
+// Stops all child coordinators then calls `completion`. `completion` is called
+// whether or not child coordinators exist.
+- (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
+  [_tabGridCoordinator stopChildCoordinatorsWithCompletion:completion];
 }
 
 @end
