@@ -271,8 +271,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
     self.subtitle.hidden = NO;
     self.subtitle.text = subtitle;
   }
-  self.managementIconView.hidden =
-      !AreSeparateProfilesForManagedAccountsEnabled() || !managed;
+  self.managementIconView.hidden = !managed;
   // Update the style to reflect the management icon changes.
   [self updateStyle];
 }

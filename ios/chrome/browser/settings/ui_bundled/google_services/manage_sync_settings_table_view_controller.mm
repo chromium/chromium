@@ -195,46 +195,38 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-    NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSectionIndex:section];
-    switch (sectionIdentifier) {
-      case SyncDataTypeSectionIdentifier:
-        return UITableViewAutomaticDimension;
-      case AdvancedSettingsSectionIdentifier:
-        return kAdvancedSettingsSectionHeaderHeightPointSize;
-      case ManageAndSignOutSectionIdentifier:
-        if (![self.tableViewModel hasSectionForSectionIdentifier:
-                                      AdvancedSettingsSectionIdentifier]) {
-          return kSignOutSectionHeaderHeightPointSize;
-        }
-        break;
-      case SyncErrorsSectionIdentifier:
-      case BatchUploadSectionIdentifier:
-        return kDefaultSectionHeaderHeightPointSize;
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+  switch (sectionIdentifier) {
+    case SyncDataTypeSectionIdentifier:
+      return UITableViewAutomaticDimension;
+    case AdvancedSettingsSectionIdentifier:
+      return kAdvancedSettingsSectionHeaderHeightPointSize;
+    case ManageAndSignOutSectionIdentifier:
+      if (![self.tableViewModel hasSectionForSectionIdentifier:
+                                    AdvancedSettingsSectionIdentifier]) {
+        return kSignOutSectionHeaderHeightPointSize;
+      }
+      break;
+    case SyncErrorsSectionIdentifier:
+    case BatchUploadSectionIdentifier:
+      return kDefaultSectionHeaderHeightPointSize;
   }
   return ChromeTableViewHeightForHeaderInSection(section);
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-    NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSectionIndex:section];
-    switch (sectionIdentifier) {
-      case SyncDataTypeSectionIdentifier:
-        return UITableViewAutomaticDimension;
-      case ManageAndSignOutSectionIdentifier: {
-        if (AreSeparateProfilesForManagedAccountsEnabled()) {
-          break;
-        }
-        return UITableViewAutomaticDimension;
-      }
-      case SwitchAccountAndSignOutSectionIdentifier: {
-        CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-        return UITableViewAutomaticDimension;
-      }
-      case AdvancedSettingsSectionIdentifier:
-      case SyncErrorsSectionIdentifier:
-        break;
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+  switch (sectionIdentifier) {
+    case SyncDataTypeSectionIdentifier:
+    case SwitchAccountAndSignOutSectionIdentifier:
+      return UITableViewAutomaticDimension;
+    case ManageAndSignOutSectionIdentifier:
+    case AdvancedSettingsSectionIdentifier:
+    case SyncErrorsSectionIdentifier:
+      break;
   }
   return kDefaultSectionFooterHeightPointSize;
 }

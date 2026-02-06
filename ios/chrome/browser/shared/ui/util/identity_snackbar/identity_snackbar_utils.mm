@@ -93,28 +93,19 @@ SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
     // status.
     if (IsCompactWidth(browser->GetSceneState().window.rootViewController)) {
       message.subtitle = identity.userEmail;
-      if (AreSeparateProfilesForManagedAccountsEnabled()) {
-        message.secondarySubtitle =
-            l10n_util::GetNSString(management_state.is_browser_managed()
-                                       ? IDS_IOS_ENTERPRISE_BROWSER_MANAGED
-                                       : IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED);
-      } else {
-        message.secondarySubtitle = l10n_util::GetNSString(
-            IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
-      }
+      message.secondarySubtitle =
+          l10n_util::GetNSString(management_state.is_browser_managed()
+                                     ? IDS_IOS_ENTERPRISE_BROWSER_MANAGED
+                                     : IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED);
     } else {
       // On regular screens, combine email and management status into one line.
       if (management_state.is_browser_managed()) {
         message.subtitle = l10n_util::GetNSStringF(
             IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_BROWSER_WIDE_SCREEN,
             base::SysNSStringToUTF16(identity.userEmail));
-      } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
-        message.subtitle = l10n_util::GetNSStringF(
-            IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_ACCOUNT_WIDE_SCREEN,
-            base::SysNSStringToUTF16(identity.userEmail));
       } else {
         message.subtitle = l10n_util::GetNSStringF(
-            IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN,
+            IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_ACCOUNT_WIDE_SCREEN,
             base::SysNSStringToUTF16(identity.userEmail));
       }
     }

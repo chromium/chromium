@@ -78,11 +78,6 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
       break;
     }
     case TableViewAccountDetailImage::kManaged: {
-      if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-        // Hide the icon while the separate profile for managed accounts feature
-        // is not enabled.
-        break;
-      }
       ImageContentConfiguration* trailingImageConfiguration =
           [[ImageContentConfiguration alloc] init];
       trailingImageConfiguration.image =
@@ -112,7 +107,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
   // Add a custom accessibility label for managed accounts to append "managed by
   // your organization" so that the screen readers read this cell as "text,
   // detailText, managed by your organization".
-  if (AreSeparateProfilesForManagedAccountsEnabled() && isManaged) {
+  if (isManaged) {
     cell.accessibilityLabel =
         self.text && self.detailText
             ? l10n_util::GetNSStringF(

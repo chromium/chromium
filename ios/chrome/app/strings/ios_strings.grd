@@ -2826,9 +2826,6 @@
       <message name="IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_ACCOUNT_WIDE_SCREEN" desc="The snackbar message subtitle to confirm the signed-in account after a successful account switch. For enterprise users, we remind them that their Google Account is managed by their company, school, or organization. This string does not have line break, so terminal punctuation is required for sentence fragments. [iOS only]">
         <ph name="EMAIL">$1<ex>johndoe@acme.com</ex></ph>. This account is managed.
       </message>
-      <message name="IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN" desc="The snackbar message subtitle to confirm the signed-in account after a successful account switch. For enterprise users, we remind them that their Google Account is managed by their company, school, or organization. This string does not have line break, so terminal punctuation is required for sentence fragments. [iOS only]">
-        <ph name="EMAIL">$1<ex>johndoe@acme.com</ex></ph>. Managed by your organization.
-      </message>
       <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_WITH_UNO" desc="Message displayed in a prompt when saving data (like bookmarks/reading list/passwords…) is disabled due to an enterprise policy. Related with IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_UNO.">
         Some features no longer available
       </message>

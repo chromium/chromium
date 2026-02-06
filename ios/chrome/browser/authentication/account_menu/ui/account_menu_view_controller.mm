@@ -427,7 +427,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   configuration.leadingConfiguration = imageConfiguration;
 
-  if (isGaiaIDManaged && AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (isGaiaIDManaged) {
     ImageContentConfiguration* trailingImageConfiguration =
         [[ImageContentConfiguration alloc] init];
     trailingImageConfiguration.image = SymbolWithPalette(

@@ -58,7 +58,7 @@
   // Add a custom accessibility label for managed accounts to append "managed by
   // your organization" so that the screen readers read this cell as "name,
   // email, managed by your organization".
-  if (AreSeparateProfilesForManagedAccountsEnabled() && self.managed) {
+  if (self.managed) {
     cell.accessibilityLabel =
         self.name
             ? l10n_util::GetNSStringF(
