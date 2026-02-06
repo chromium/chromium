@@ -1150,8 +1150,6 @@ void TabStrip::Reset() {
   new_tab_button_pressed_start_time_.reset();
   mouse_entered_tabstrip_time_.reset();
   has_reported_time_mouse_entered_to_switch_ = false;
-  has_reported_tab_drag_metrics_ = false;
-  last_tab_drag_time_.reset();
 }
 
 void TabStrip::SetAvailableWidthCallback(
@@ -1919,7 +1917,6 @@ void TabStrip::MaybeStartDrag(TabSlotView* source,
       << "Drag source must be a valid tab or a tab group header.";
 
   drag_context_->MaybeStartDrag(source, event, original_selection);
-  has_reported_tab_drag_metrics_ = false;
 }
 
 TabSlotController::Liveness TabStrip::ContinueDrag(
@@ -1927,24 +1924,6 @@ TabSlotController::Liveness TabStrip::ContinueDrag(
     const ui::LocatedEvent& event) {
   // We enter here when dragging really happens.
   // Note that `MaybeStartDrag()` is invoked as soon as mouse pressed.
-  if (!has_reported_tab_drag_metrics_) {
-    base::TimeTicks drag_time = base::TimeTicks::Now();
-    if (mouse_entered_tabstrip_time_.has_value()) {
-      UmaHistogramMediumTimes("TabStrip.Dragging.TimeFromMouseEntered",
-                              drag_time - mouse_entered_tabstrip_time_.value());
-    }
-
-    tab_drag_count_30min_++;
-    tab_drag_count_5min_++;
-
-    if (last_tab_drag_time_.has_value()) {
-      UmaHistogramLongTimes("TabStrip.Dragging.TimeFromLastDrag",
-                            drag_time - last_tab_drag_time_.value());
-    }
-    last_tab_drag_time_ = drag_time;
-
-    has_reported_tab_drag_metrics_ = true;
-  }
   return drag_context_->ContinueDrag(view, event);
 }
 
@@ -2207,25 +2186,6 @@ void TabStrip::Init() {
   // So we only get enter/exit messages when the mouse enters/exits the whole
   // tabstrip, even if it is entering/exiting a specific Tab, too.
   SetNotifyEnterExitOnChild(true);
-
-  tab_drag_count_timer_5min_ = std::make_unique<base::RepeatingTimer>(
-      FROM_HERE, base::Minutes(5),
-      base::BindRepeating(
-          [](TabStrip* tab_strip) {
-            base::UmaHistogramCounts100("TabStrip.Dragging.Count5Min",
-                                        tab_strip->tab_drag_count_5min_);
-            tab_strip->tab_drag_count_5min_ = 0;
-          },
-          base::Unretained(this)));
-  tab_drag_count_timer_30min_ = std::make_unique<base::RepeatingTimer>(
-      FROM_HERE, base::Minutes(30),
-      base::BindRepeating(
-          [](TabStrip* tab_strip) {
-            base::UmaHistogramCounts100("TabStrip.Dragging.Count30Min",
-                                        tab_strip->tab_drag_count_30min_);
-            tab_strip->tab_drag_count_5min_ = 0;
-          },
-          base::Unretained(this)));
 }
 
 std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
