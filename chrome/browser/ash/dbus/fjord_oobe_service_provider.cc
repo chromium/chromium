@@ -32,15 +32,13 @@ void FjordOobeServiceProvider::Start(
       base::BindOnce(&FjordOobeServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object_->ExportMethod(
-      chromeos::kFjordOobeServiceInterface,
-      chromeos::kFjordOobeServiceGetFjordOobeStateMethod,
+      chromeos::kFjordOobeServiceInterface, "GetFjordOobeState",
       base::BindRepeating(&FjordOobeServiceProvider::GetOobeState,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FjordOobeServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object_->ExportMethod(
-      chromeos::kFjordOobeServiceInterface,
-      chromeos::kFjordOobeServiceSetFjordOobeStateMethod,
+      chromeos::kFjordOobeServiceInterface, "SetFjordOobeState",
       base::BindRepeating(&FjordOobeServiceProvider::SetOobeState,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FjordOobeServiceProvider::OnExported,
@@ -65,7 +63,7 @@ void FjordOobeServiceProvider::OnExported(const std::string& interface_name,
 void FjordOobeServiceProvider::OnFjordOobeStateChanged(
     fjord_oobe_state::proto::FjordOobeStateInfo new_state) {
   dbus::Signal signal(chromeos::kFjordOobeServiceInterface,
-                      chromeos::kFjordOobeServiceFjordOobeStateChangedSignal);
+                      "FjordOobeStateChanged");
 
   dbus::MessageWriter writer(&signal);
   writer.AppendProtoAsArrayOfBytes(new_state);
