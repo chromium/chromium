@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -58,6 +59,11 @@ class GlicCookieSynchronizer
       signin::IdentityManager* identity_manager) override;
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(GlicCookieSynchronizerTest,
+                           UnifiedFreUsesGlicPartitionWithBugfixFeature);
+  FRIEND_TEST_ALL_PREFIXES(GlicCookieSynchronizerTest,
+                           StandaloneFreUsesFrePartition);
+
   // Returns storage partition for this authentication request.
   // visible for testing.
   virtual content::StoragePartition* GetStoragePartition();
@@ -92,7 +98,7 @@ class GlicCookieSynchronizer
                           signin::IdentityManager::Observer>
       observation_{this};
 
-  // Whether to configure the storage partiion for use by the glic FRE webview.
+  // Whether to configure the storage partition for use by the glic FRE webview.
   bool use_for_fre_ = false;
 
   std::vector<base::OnceCallback<void(bool)>> callbacks_;

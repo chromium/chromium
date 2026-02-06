@@ -12,6 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -242,6 +244,78 @@ TEST_F(GlicCookieSynchronizerTest, WorksAfterTimeout) {
       result.GetCallback());
 
   EXPECT_TRUE(result.Get());
+}
+
+TEST_F(GlicCookieSynchronizerTest,
+       UnifiedFreUsesGlicPartitionWithBugfixFeature) {
+  base::test::ScopedFeatureList common_feature_list;
+  common_feature_list.InitWithFeatures(
+      {features::kGlicMultiInstance, features::kGlicUnifiedFreScreen}, {});
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kGlicUseMainPartitionForUnifiedFre);
+
+    ASSERT_TRUE(GlicEnabling::IsUnifiedFreEnabled(&test_profile_));
+    GlicCookieSynchronizer fre_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/true);
+    GlicCookieSynchronizer glic_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/false);
+    EXPECT_EQ(fre_cookie_synchronizer.GetStoragePartition()->GetConfig(),
+              glic_cookie_synchronizer.GetStoragePartition()->GetConfig());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kGlicUseMainPartitionForUnifiedFre);
+
+    ASSERT_TRUE(GlicEnabling::IsUnifiedFreEnabled(&test_profile_));
+    GlicCookieSynchronizer fre_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/true);
+    GlicCookieSynchronizer glic_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/false);
+    EXPECT_NE(fre_cookie_synchronizer.GetStoragePartition()->GetConfig(),
+              glic_cookie_synchronizer.GetStoragePartition()->GetConfig());
+  }
+}
+
+TEST_F(GlicCookieSynchronizerTest, StandaloneFreUsesFrePartition) {
+  base::test::ScopedFeatureList common_feature_list;
+  common_feature_list.InitWithFeatures({features::kGlicMultiInstance},
+                                       {features::kGlicUnifiedFreScreen});
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kGlicUseMainPartitionForUnifiedFre);
+    ASSERT_FALSE(GlicEnabling::IsUnifiedFreEnabled(&test_profile_));
+    GlicCookieSynchronizer fre_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/true);
+    GlicCookieSynchronizer glic_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/false);
+    EXPECT_NE(fre_cookie_synchronizer.GetStoragePartition()->GetConfig(),
+              glic_cookie_synchronizer.GetStoragePartition()->GetConfig());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kGlicUseMainPartitionForUnifiedFre);
+    ASSERT_FALSE(GlicEnabling::IsUnifiedFreEnabled(&test_profile_));
+    GlicCookieSynchronizer fre_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/true);
+    GlicCookieSynchronizer glic_cookie_synchronizer(
+        &test_profile_, identity_test_env_.identity_manager(),
+        /*use_for_fre=*/false);
+    EXPECT_NE(fre_cookie_synchronizer.GetStoragePartition()->GetConfig(),
+              glic_cookie_synchronizer.GetStoragePartition()->GetConfig());
+  }
 }
 
 }  // namespace glic

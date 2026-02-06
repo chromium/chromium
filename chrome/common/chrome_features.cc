@@ -486,6 +486,11 @@ BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,
 // main app.
 BASE_FEATURE(kGlicUnifiedFreScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the bugfix where the unified FRE synchronizes cookies to the wrong
+// storage partition.
+BASE_FEATURE(kGlicUseMainPartitionForUnifiedFre,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the Glic Trust First Onboarding experience.
 BASE_FEATURE(kGlicTrustFirstOnboarding, base::FEATURE_DISABLED_BY_DEFAULT);
 
