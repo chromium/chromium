@@ -2603,7 +2603,8 @@
                         "AutofillEnableBuyNowPayLaterForExternallyLinked",
                         "AutofillEnableBuyNowPayLaterForKlarna",
                         "AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString",
-                        "AutofillEnableTouchToFillReshowForBnpl"
+                        "AutofillEnableTouchToFillReshowForBnpl",
+                        "AutofillTouchToFillShowManualFillForVcnFix"
                     ]
                 }
             ]
