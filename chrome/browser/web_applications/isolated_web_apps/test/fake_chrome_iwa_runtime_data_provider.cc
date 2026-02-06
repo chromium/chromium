@@ -89,9 +89,15 @@ ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::SetBlocklist(
 
 ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::AddToKeyRotations(
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::span<const uint8_t> key_bytes) {
-  key_rotations_.insert_or_assign(web_bundle_id.id(),
-                                  KeyRotationInfo(base::ToVector(key_bytes)));
+    base::span<const uint8_t> key_bytes,
+    std::optional<base::span<const uint8_t>> previous_key_bytes) {
+  std::optional<KeyRotationInfo::PublicKeyData> previous_key;
+  if (previous_key_bytes) {
+    previous_key = base::ToVector(*previous_key_bytes);
+  }
+  key_rotations_.insert_or_assign(
+      web_bundle_id.id(),
+      KeyRotationInfo(base::ToVector(key_bytes), std::move(previous_key)));
   return *this;
 }
 

@@ -23,6 +23,15 @@ message IwaKeyRotations {
   message KeyRotationInfo {
     // base64-encoded public key that this IWA’s bundle must be signed with.
     string expected_key = 1;
+
+    // Optional base64-encoded public key that is still trusted for execution
+    // of existing installations, but triggers a mandatory update to
+    // `expected_key`.
+    //
+    // This is a temporary measure to allow devices to update more gracefully
+    // in case of network errors or other transient issues, instead of
+    // unconditionally bringing down existing apps.
+    string previous_key = 2;
   }
 
   // A list of key rotations mapping web bundle IDs to expected keys.

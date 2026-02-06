@@ -306,9 +306,19 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
       if (!decoded_public_key) {
         return base::unexpected(IwaComponentUpdateError::kMalformedBase64Key);
       }
-      key_rotations.emplace(web_bundle_id,
-                            IwaKeyDistributionInfoProvider::KeyRotationInfo(
-                                std::move(*decoded_public_key)));
+
+      std::optional<std::vector<uint8_t>> decoded_previous_key;
+      if (kr_info.has_previous_key()) {
+        decoded_previous_key = base::Base64Decode(kr_info.previous_key());
+        if (!decoded_previous_key) {
+          return base::unexpected(IwaComponentUpdateError::kMalformedBase64Key);
+        }
+      }
+
+      key_rotations.emplace(
+          web_bundle_id,
+          IwaKeyDistributionInfoProvider::KeyRotationInfo(
+              std::move(*decoded_public_key), std::move(decoded_previous_key)));
     }
   }
 

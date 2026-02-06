@@ -19,25 +19,34 @@ namespace web_app {
 
 namespace {
 
+using KeyRotationInfo = IwaRuntimeDataProvider::KeyRotationInfo;
+
+bool Matches(const web_package::PublicKey& public_key,
+             const KeyRotationInfo& kr_info) {
+  return std::visit(
+      [&](const auto& public_key) {
+        return std::ranges::equal(public_key.bytes(), kr_info.public_key) ||
+               (kr_info.previous_key &&
+                std::ranges::equal(public_key.bytes(), *kr_info.previous_key));
+      },
+      public_key);
+}
+
 base::expected<void, std::string>
 ValidateWebBundleIdentityAgainstKeyRotationInfo(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys,
-    const IwaRuntimeDataProvider::KeyRotationInfo& kr_info) {
-  if (!std::ranges::any_of(public_keys, [&](const auto& public_key) {
-        return std::visit(
-            [&](const auto& public_key) {
-              return std::ranges::equal(public_key.bytes(), kr_info.public_key);
-            },
-            public_key);
+    const KeyRotationInfo& kr_info) {
+  if (std::ranges::any_of(public_keys, [&](const auto& public_key) {
+        return Matches(public_key, kr_info);
       })) {
-    return base::unexpected(
-        base::StringPrintf("Rotated key for Web Bundle ID <%s> doesn't match "
-                           "any public key in the signature list.",
-                           web_bundle_id.c_str()));
+    return base::ok();
   }
 
-  return base::ok();
+  return base::unexpected(
+      base::StringPrintf("Rotated key for Web Bundle ID <%s> doesn't match "
+                         "any public key in the signature list.",
+                         web_bundle_id.c_str()));
 }
 
 }  // namespace

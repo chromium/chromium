@@ -1945,5 +1945,86 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
               test::IntegrityBlockDataPublicKeysAre(kKeyPair2.public_key))));
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
+                       SoftKeyRotation) {
+  data_provider_->Update(
+      [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
+  auto app_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
+          .app_id();
+
+  // Add a bundle with version 1.0.0 signed by the original key.
+  AddBundleSignedBy(kKeyPair1);
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::ListValue().Append(
+          iwa_test_update_server_.CreateForceInstallPolicyEntry(
+              web_bundle_id_)));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({app_id});
+
+  EXPECT_THAT(
+      GetIsolatedWebApp(app_id),
+      test::IwaIs(
+          Eq("app-1.0.0"),
+          test::IsolationDataIs(
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(kKeyPair1.public_key))));
+
+  // Trigger a soft key rotation: Key 2 is the new expected key, Key 1 is still
+  // trusted as a previous key.
+  data_provider_->Update([&](auto& update) {
+    update.AddToKeyRotations(web_bundle_id_, kKeyPair2.public_key.bytes(),
+                             kKeyPair1.public_key.bytes());
+  });
+
+  // The app should still be openable because Key 1 is in the `previous_key`
+  // slot.
+  {
+    auto* app_browser = LaunchWebAppBrowserAndWait(app_id);
+    content::WebContents* web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+
+    content::TitleWatcher title_watcher(web_contents, u"1.0.0");
+    EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"1.0.0");
+    ui_test_utils::BrowserDestroyedObserver observer(app_browser);
+    app_browser->window()->Close();
+    observer.Wait();
+  }
+
+  // Now add a new bundle signed by Key 2 to the update server.
+  // The update manager should discover it and update the app.
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({app_id});
+
+  iwa_test_update_server_.AddBundle(
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetName("app-1.0.1").SetVersion("1.0.1"))
+          .AddHtml("/", R"(<html><head><title>1.0.1</title></head></html>)")
+          .BuildBundle(web_bundle_id_, {kKeyPair2}));
+
+  EXPECT_EQ(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+            1u);
+  manifest_updated_observer.Wait();
+
+  // The app should now be at version 1.0.1 and signed by Key 2.
+  EXPECT_THAT(
+      GetIsolatedWebApp(app_id),
+      test::IwaIs(
+          Eq("app-1.0.1"),
+          test::IsolationDataIs(
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.1")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(kKeyPair2.public_key))));
+}
+
 }  // namespace
 }  // namespace web_app
