@@ -1426,12 +1426,6 @@ void CSSMathExpressionNumericLiteral::Trace(Visitor* visitor) const {
   CSSMathExpressionNode::Trace(visitor);
 }
 
-#if DCHECK_IS_ON()
-bool CSSMathExpressionNumericLiteral::InvolvesPercentageComparisons() const {
-  return false;
-}
-#endif
-
 // ------ End of CSSMathExpressionNumericLiteral member functions
 
 static constexpr std::array<std::array<CalculationResultCategory, kCalcOther>,
@@ -3669,20 +3663,6 @@ bool CSSMathExpressionOperation::HasInvalidAnchorFunctions(
   return false;
 }
 
-#if DCHECK_IS_ON()
-bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
-  if (IsMinOrMax() && Category() == kCalcPercent && operands_.size() > 1u) {
-    return true;
-  }
-  for (const CSSMathExpressionNode* operand : operands_) {
-    if (operand->InvolvesPercentageComparisons()) {
-      return true;
-    }
-  }
-  return false;
-}
-#endif
-
 // ------ End of CSSMathExpressionOperation member functions ------
 
 // ------ Start of CSSMathExpressionContainerProgress member functions ----
@@ -5648,14 +5628,6 @@ CSSMathExpressionRandomFunction::ToCalculationExpression(
   return CalculationExpressionOperationNode::CreateSimplified(
       std::move(operands), CalculationOperator::kRandom);
 }
-
-#if DCHECK_IS_ON()
-bool CSSMathExpressionRandomFunction::InvolvesPercentageComparisons() const {
-  return min_->InvolvesPercentageComparisons() ||
-         max_->InvolvesPercentageComparisons() ||
-         (step_ && step_->InvolvesPercentageComparisons());
-}
-#endif
 
 double CSSMathExpressionRandomFunction::ComputeDouble(
     const CSSLengthResolver& length_resolver) const {

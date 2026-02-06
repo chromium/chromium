@@ -328,14 +328,6 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope*) const = 0;
 
-#if DCHECK_IS_ON()
-  // There's a subtle issue in comparing two percentages, e.g., min(10%, 20%).
-  // It doesn't always resolve into 10%, because the reference value may be
-  // negative. We use this to prevent comparing two percentages without knowing
-  // the sign of the reference value.
-  virtual bool InvolvesPercentageComparisons() const = 0;
-#endif
-
   // Rewrite this function according to the specified TryTacticTransform,
   // e.g. anchor(left) -> anchor(right). If this function is not affected
   // by the transform, returns `this`.
@@ -431,10 +423,6 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final;
   void Trace(Visitor* visitor) const final;
 
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final;
-#endif
-
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
   std::optional<double> GetValueIfKnown() const final {
@@ -526,10 +514,6 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
   void Trace(Visitor* visitor) const final {
     CSSMathExpressionNode::Trace(visitor);
   }
-
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final { return false; }
-#endif
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
@@ -629,10 +613,6 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   void Trace(Visitor* visitor) const final {
     CSSMathExpressionNode::Trace(visitor);
   }
-
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final { return false; }
-#endif
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
@@ -822,10 +802,6 @@ class CORE_EXPORT CSSMathExpressionOperation final
   bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final;
   void Trace(Visitor* visitor) const final;
 
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final;
-#endif
-
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
   std::optional<double> GetValueIfKnown() const final {
@@ -945,10 +921,6 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
     CSSMathExpressionNode::Trace(visitor);
   }
 
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final { return false; }
-#endif
-
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
   std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
@@ -1029,10 +1001,6 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope*) const final;
   void Trace(Visitor* visitor) const final;
-
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final { return false; }
-#endif
 
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -1120,10 +1088,6 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
   bool operator==(const CSSMathExpressionNode& other) const final;
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope*) const final;
-
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final { return false; }
-#endif
 
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -1259,9 +1223,6 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
       const TreeScope*) const final {
     NOTREACHED();
   }
-#if DCHECK_IS_ON()
-  bool InvolvesPercentageComparisons() const final;
-#endif
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
       const TryTacticTransform&,
