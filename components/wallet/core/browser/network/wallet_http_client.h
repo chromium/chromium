@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
+#include "components/wallet/core/browser/proto/pass.pb.h"
 #include "components/wallet/core/browser/proto/private_pass.pb.h"
 
 namespace wallet {
@@ -24,11 +25,10 @@ class WalletHttpClient {
     // TODO(crbug.com/468915960): Add more error codes.
   };
 
-  // Callback for UpsertPass requests. On success, it returns the `WalletPass`
-  // as it is stored in the Wallet backend (including its `id`).
-  // TODO(crbug.com/478783796): Update to use protos.
-  using UpsertPassCallback = base::OnceCallback<void(
-      const base::expected<WalletPass, WalletRequestError>&)>;
+  // Callback for UpsertPass requests. On success, it returns the pass_id
+  // as it is stored in the Wallet backend.
+  using UpsertPublicPassCallback = base::OnceCallback<void(
+      const base::expected<std::string, WalletRequestError>&)>;
 
   using UpsertPrivatePassCallback = base::OnceCallback<void(
       const base::expected<PrivatePass, WalletRequestError>&)>;
@@ -46,8 +46,8 @@ class WalletHttpClient {
   // Upserts a pass to the Wallet backend. If the `pass.id` is missing, it
   // will save a new pass. If the `pass.id` is present, it will attempt to
   // update the existing pass.
-  // TODO(crbug.com/478783796): Update to use protos.
-  virtual void UpsertPass(WalletPass pass, UpsertPassCallback callback) = 0;
+  virtual void UpsertPublicPass(Pass pass,
+                                UpsertPublicPassCallback callback) = 0;
 
   // Upserts a pass to the Wallet backend. If the `pass.id` is missing, it
   // will save a new pass. If the `pass.id` is present, it will attempt to

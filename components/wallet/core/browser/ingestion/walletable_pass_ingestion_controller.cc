@@ -449,10 +449,7 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
   switch (result) {
     case kAccepted:
       if (base::FeatureList::IsEnabled(kWalletablePassSave)) {
-        client_->GetWalletHttpClient()->UpsertPass(
-            walletable_pass,
-            base::BindOnce(&WalletablePassIngestionController::OnPassSaved,
-                           weak_ptr_factory_.GetWeakPtr(), url));
+        // TODO(crbug.com/465616560): Call GetWalletHttpClient::UpsertPublicPass
       }
       save_strike_db_->ClearStrikes(
           WalletablePassSaveStrikeDatabaseByHost::GetId(category,

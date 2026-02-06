@@ -29,28 +29,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 
 namespace wallet {
-namespace {
-
-// Returns true if the feature corresponding to the pass's category is enabled.
-bool SatisfiesFeatureRequirements(const WalletPass& pass) {
-  switch (pass.GetPassCategory()) {
-    case PassCategory::kLoyaltyCard:
-    case PassCategory::kEventPass:
-    case PassCategory::kTransitTicket:
-    case PassCategory::kBoardingPass:
-      return base::FeatureList::IsEnabled(kWalletablePassDetection);
-    case PassCategory::kPassport:
-    case PassCategory::kDriverLicense:
-    case PassCategory::kNationalIdentityCard:
-    case PassCategory::kKTN:
-    case PassCategory::kRedressNumber:
-      return base::FeatureList::IsEnabled(kWalletApiPrivatePassesEnabled);
-    case PassCategory::kUnspecified:
-      return false;
-  }
-}
-
-}  // namespace
 
 WalletHttpClientImpl::WalletHttpClientImpl(
     signin::IdentityManager* identity_manager,
@@ -60,26 +38,11 @@ WalletHttpClientImpl::WalletHttpClientImpl(
 
 WalletHttpClientImpl::~WalletHttpClientImpl() = default;
 
-void WalletHttpClientImpl::UpsertPass(WalletPass pass,
-                                      UpsertPassCallback callback) {
-  CHECK(SatisfiesFeatureRequirements(pass));
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (pass.GetPassCategory()) {
-    case PassCategory::kLoyaltyCard:
-    case PassCategory::kEventPass:
-    case PassCategory::kTransitTicket:
-    case PassCategory::kBoardingPass:
-      SendRequest(std::make_unique<UpsertPublicPassRequest>(
-          std::move(pass), std::move(callback)));
-      break;
-    case PassCategory::kPassport:
-    case PassCategory::kDriverLicense:
-    case PassCategory::kNationalIdentityCard:
-    case PassCategory::kKTN:
-    case PassCategory::kRedressNumber:
-    case PassCategory::kUnspecified:
-      NOTREACHED();
-  }
+void WalletHttpClientImpl::UpsertPublicPass(Pass pass,
+                                            UpsertPublicPassCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(kWalletablePassDetection));
+  SendRequest(std::make_unique<UpsertPublicPassRequest>(std::move(pass),
+                                                        std::move(callback)));
 }
 
 void WalletHttpClientImpl::UpsertPrivatePass(

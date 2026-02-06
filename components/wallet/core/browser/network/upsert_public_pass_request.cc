@@ -9,62 +9,14 @@
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "components/wallet/core/browser/proto/api_v1.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace wallet {
 
-namespace {
-
-constexpr int kExternalIdNamespaceChrome = 1;
-
-base::DictValue BuildExternalId() {
-  return base::DictValue()
-      .Set("namespace", kExternalIdNamespaceChrome)
-      .Set("external_id", base::Uuid::GenerateRandomV4().AsLowercaseString());
-}
-
-base::DictValue BuildLoyaltyCardRequest(const LoyaltyCard& card) {
-  return base::DictValue().Set("loyalty_card",
-                               base::DictValue()
-                                   .Set("merchant_name", card.issuer_name)
-                                   .Set("loyalty_number", card.member_id)
-                                   .Set("program_name", card.plan_name));
-}
-
-base::DictValue BuildPassDict(const WalletPass& pass) {
-  base::DictValue response;
-  if (pass.id) {
-    response.Set("pass_id", *pass.id);
-  }
-  response.Set("external_id", BuildExternalId());
-  response.Merge(std::visit(
-      absl::Overload{
-          [](const LoyaltyCard& card) { return BuildLoyaltyCardRequest(card); },
-          [](const EventPass& pass) {
-            NOTIMPLEMENTED();
-            return base::DictValue();
-          },
-          [](const BoardingPass& pass) {
-            NOTIMPLEMENTED();
-            return base::DictValue();
-          },
-          [](const TransitTicket& ticket) {
-            NOTIMPLEMENTED();
-            return base::DictValue();
-          },
-          [](const auto&) {
-            NOTREACHED();
-            return base::DictValue();
-          }},
-      pass.pass_data));
-  return response;
-}
-
-}  // namespace
-
 UpsertPublicPassRequest::UpsertPublicPassRequest(
-    WalletPass pass,
-    WalletHttpClient::UpsertPassCallback callback)
+    Pass pass,
+    WalletHttpClient::UpsertPublicPassCallback callback)
     : pass_(std::move(pass)), callback_(std::move(callback)) {
   CHECK(callback_);
 }
@@ -76,10 +28,10 @@ std::string UpsertPublicPassRequest::GetRequestUrlPath() const {
 }
 
 std::string UpsertPublicPassRequest::GetRequestContent() const {
-  const base::DictValue request_dict =
-      base::DictValue().Set("pass", BuildPassDict(pass_));
-  // TODO(crbug.com/468916773): Include the client_info.
-  return base::WriteJson(request_dict).value_or("");
+  api::UpsertPassRequest request;
+  *request.mutable_pass() = pass_;
+  *request.mutable_client_info() = BuildClientInfo();
+  return request.SerializeAsString();
 }
 
 void UpsertPublicPassRequest::OnResponse(
@@ -89,8 +41,14 @@ void UpsertPublicPassRequest::OnResponse(
     return;
   }
 
-  // TODO(crbug.com/468916773): Parse the response body to extract the pass.
-  std::move(callback_).Run(WalletPass{});
+  api::UpsertPassResponse response;
+  if (!response.ParseFromString(http_response.value())) {
+    std::move(callback_).Run(base::unexpected(
+        WalletHttpClient::WalletRequestError::kParseResponseFailed));
+    return;
+  }
+
+  std::move(callback_).Run(std::move(*response.mutable_pass_id()));
 }
 
 }  // namespace wallet

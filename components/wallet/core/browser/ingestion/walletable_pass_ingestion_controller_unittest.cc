@@ -53,8 +53,8 @@ class MockWalletHttpClient : public WalletHttpClient {
  public:
   MockWalletHttpClient() = default;
   MOCK_METHOD(void,
-              UpsertPass,
-              (WalletPass pass, WalletHttpClient::UpsertPassCallback callback),
+              UpsertPublicPass,
+              (Pass pass, WalletHttpClient::UpsertPublicPassCallback callback),
               (override));
   MOCK_METHOD(void,
               UpsertPrivatePass,
@@ -789,7 +789,6 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
-  EXPECT_CALL(mock_wallet_http_client_, UpsertPass);
 
   test_api(controller()).ShowSaveBubble(url, walletable_pass);
 

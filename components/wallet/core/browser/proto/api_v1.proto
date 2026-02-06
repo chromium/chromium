@@ -39,3 +39,9 @@ message UpsertPassRequest {
   // Information about the client making the request.
   optional ClientInfo client_info = 2;
 }
+
+// Response for the UpsertPass RPC.
+message UpsertPassResponse {
+  // The unique identifier of the created or updated pass.
+  optional string pass_id = 1;
+}

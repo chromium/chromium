@@ -7,16 +7,16 @@
 
 #include <string>
 
-#include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/network/wallet_request.h"
+#include "components/wallet/core/browser/proto/pass.pb.h"
 
 namespace wallet {
 
 class UpsertPublicPassRequest : public WalletRequest {
  public:
-  UpsertPublicPassRequest(WalletPass pass,
-                          WalletHttpClient::UpsertPassCallback callback);
+  UpsertPublicPassRequest(Pass pass,
+                          WalletHttpClient::UpsertPublicPassCallback callback);
   ~UpsertPublicPassRequest() override;
 
   // WalletRequest:
@@ -25,8 +25,8 @@ class UpsertPublicPassRequest : public WalletRequest {
   void OnResponse(WalletHttpClient::HttpResponse http_response) && override;
 
  private:
-  const WalletPass pass_;
-  WalletHttpClient::UpsertPassCallback callback_;
+  const Pass pass_;
+  WalletHttpClient::UpsertPublicPassCallback callback_;
 };
 
 }  // namespace wallet
