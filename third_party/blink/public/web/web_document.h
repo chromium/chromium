@@ -45,6 +45,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/public/web/web_draggable_region.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -68,7 +69,6 @@ class WebFormElement;
 class WebFormControlElement;
 class WebElementCollection;
 class WebLocalFrame;
-class WebString;
 class WebURL;
 struct WebDistillabilityFeatures;
 
@@ -226,12 +226,24 @@ class BLINK_EXPORT WebDocument : public WebNode {
   //
   // The return value is a document-scoped execution ID which can be used to
   // cancel the tool execution.
-  enum class ScriptToolError {
-    kInvalidToolName,
-    kInvalidInputArguments,
-    kMissingRequiredSubmitButton,
-    kToolInvocationFailed,
-    kToolCancelled,
+  struct BLINK_EXPORT ScriptToolError {
+    enum Code {
+      kInvalidToolName,
+      kInvalidInputArguments,
+      kMissingRequiredSubmitButton,
+      kToolInvocationFailed,
+      kToolCancelled,
+    };
+    Code code;
+    WebString message;
+
+    ScriptToolError(Code code, WebString message = WebString())
+        : code(code), message(std::move(message)) {}
+
+    bool operator==(const ScriptToolError& other) const {
+      return code == other.code;
+    }
+    bool operator==(Code other_code) const { return code == other_code; }
   };
   using ScriptToolExecutedCallback =
       base::OnceCallback<void(base::expected<WebString, ScriptToolError>)>;

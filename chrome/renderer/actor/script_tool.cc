@@ -28,21 +28,26 @@ mojom::ActionResultPtr OnToolExecuted(
     base::expected<blink::WebString, blink::WebDocument::ScriptToolError>
         response) {
   if (!response.has_value()) {
-    switch (response.error()) {
+    mojom::ActionResultCode code;
+    switch (response.error().code) {
       case blink::WebDocument::ScriptToolError::kInvalidToolName:
-        return MakeResult(mojom::ActionResultCode::kScriptToolInvalidName);
+        code = mojom::ActionResultCode::kScriptToolInvalidName;
+        break;
       case blink::WebDocument::ScriptToolError::kInvalidInputArguments:
-        return MakeResult(
-            mojom::ActionResultCode::kScriptToolInvalidInputArguments);
+        code = mojom::ActionResultCode::kScriptToolInvalidInputArguments;
+        break;
       case blink::WebDocument::ScriptToolError::kMissingRequiredSubmitButton:
-        return MakeResult(
-            mojom::ActionResultCode::kScriptToolMissingRequiredSubmitButton);
+        code = mojom::ActionResultCode::kScriptToolMissingRequiredSubmitButton;
+        break;
       case blink::WebDocument::ScriptToolError::kToolInvocationFailed:
-        return MakeResult(mojom::ActionResultCode::kScriptToolInvocationFailed);
+        code = mojom::ActionResultCode::kScriptToolInvocationFailed;
+        break;
       case blink::WebDocument::ScriptToolError::kToolCancelled:
-        return MakeResult(mojom::ActionResultCode::kScriptToolCancelled);
+        code = mojom::ActionResultCode::kScriptToolCancelled;
+        break;
     }
-    NOTREACHED();
+    return MakeResult(code, /*requires_page_stabilization=*/false,
+                      response.error().message.Utf8());
   }
 
   auto result = MakeOkResult();

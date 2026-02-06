@@ -219,9 +219,10 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
   if (it == tool_map_.end()) {
     task_runner_->PostTask(
         FROM_HERE,
-        blink::BindOnce(
-            std::move(tool_executed_cb),
-            base::unexpected(WebDocument::ScriptToolError::kInvalidToolName)));
+        blink::BindOnce(std::move(tool_executed_cb),
+                        base::unexpected(WebDocument::ScriptToolError(
+                            WebDocument::ScriptToolError::kInvalidToolName,
+                            String("Tool not found: " + name)))));
     return std::nullopt;
   }
 
@@ -266,9 +267,9 @@ void ModelContext::CancelTool(uint32_t execution_id) {
 
   task_runner_->PostTask(
       FROM_HERE,
-      blink::BindOnce(
-          std::move(pending_execution->value.callback),
-          base::unexpected(WebDocument::ScriptToolError::kToolCancelled)));
+      blink::BindOnce(std::move(pending_execution->value.callback),
+                      base::unexpected(WebDocument::ScriptToolError(
+                          WebDocument::ScriptToolError::kToolCancelled))));
   pending_executions_.erase(pending_execution);
 }
 
@@ -338,11 +339,11 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
 
   if (try_catch.HasCaught() || script_value.IsEmpty()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        blink::BindOnce(
-            std::move(tool_executed_cb),
-            base::unexpected(
-                WebDocument::ScriptToolError::kInvalidInputArguments)));
+        FROM_HERE, blink::BindOnce(
+                       std::move(tool_executed_cb),
+                       base::unexpected(WebDocument::ScriptToolError(
+                           WebDocument::ScriptToolError::kInvalidInputArguments,
+                           "Failed to parse input arguments"))));
     return std::nullopt;
   }
 
@@ -476,8 +477,8 @@ void ModelContext::OnToolExecuted(uint32_t execution_id,
     std::move(it->value.callback).Run(*result);
   } else {
     std::move(it->value.callback)
-        .Run(base::unexpected(
-            WebDocument::ScriptToolError::kToolInvocationFailed));
+        .Run(base::unexpected(WebDocument::ScriptToolError(
+            WebDocument::ScriptToolError::kToolInvocationFailed)));
   }
   pending_executions_.erase(it);
 }

@@ -226,6 +226,39 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
             EXPECT_FALSE(res.has_value());
             EXPECT_EQ(res.error(),
                       WebDocument::ScriptToolError::kInvalidInputArguments);
+            EXPECT_EQ(res.error().message,
+                      "Input contains a parameter \"nonexistent\" but there is "
+                      "no such parameter for the tool");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidSelectValue) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"(
+    <form toolautosubmit toolname="select_tool" tooldescription="Select an option">
+      <select name="choice">
+        <option value="a">A</option>
+        <option value="b">B</option>
+      </select>
+    </form>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  model_context->ExecuteTool(
+      "select_tool", "{\"choice\": \"c\"}", /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            EXPECT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(),
+                      WebDocument::ScriptToolError::kInvalidInputArguments);
+            EXPECT_EQ(res.error().message, "Parameter didn't validate: choice");
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -308,6 +341,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
             ASSERT_FALSE(res.has_value());
             EXPECT_EQ(res.error(),
                       WebDocument::ScriptToolError::kToolInvocationFailed);
+            EXPECT_EQ(res.error().message, "respondWith promise was rejected");
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -780,6 +814,8 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Reset_Cancels) {
             ASSERT_FALSE(res.has_value());
             EXPECT_EQ(res.error(),
                       WebDocument::ScriptToolError::kToolCancelled);
+            EXPECT_EQ(res.error().message,
+                      "Tool execution cancelled by a form reset");
             run_loop.Quit();
           }));
 

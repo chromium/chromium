@@ -86,10 +86,15 @@ std::optional<WebDocument::ScriptToolError> FormMCPSchema::FillData(
     const String parameter_name = String(entry.first);
     auto it = name_to_controls_.find(parameter_name);
     if (it == name_to_controls_.end()) {
-      return WebDocument::ScriptToolError::kInvalidInputArguments;
+      return WebDocument::ScriptToolError(
+          WebDocument::ScriptToolError::kInvalidInputArguments,
+          String("Input contains a parameter \"" + parameter_name +
+                 "\" but there is no such parameter for the tool"));
     }
     if (!ValidateParameterData(parameter_name, *entry.second)) {
-      return WebDocument::ScriptToolError::kInvalidInputArguments;
+      return WebDocument::ScriptToolError(
+          WebDocument::ScriptToolError::kInvalidInputArguments,
+          String("Parameter didn't validate: " + parameter_name));
     }
   }
 
