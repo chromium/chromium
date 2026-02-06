@@ -1530,8 +1530,8 @@ const CSSValue* StyleCascade::ResolveRevertRule(const CSSProperty& property,
                                                 CascadePriority priority,
                                                 CascadeOrigin& origin,
                                                 CascadeResolver& resolver) {
-  const CascadePriority* p = map_.FindRevertRule(property.GetCSSPropertyName(),
-                                                 priority.GetRuleIndex());
+  const CascadePriority* p =
+      map_.FindRevertRule(property.GetCSSPropertyName(), priority);
   if (!p || !p->HasOrigin()) {
     origin = CascadeOrigin::kNone;
     return cssvalue::CSSUnsetValue::Create();

@@ -21,6 +21,12 @@ namespace blink {
 // Because using a HashMap for everything is quite expensive in terms of
 // performance, this class stores standard (non-custom) properties in a fixed-
 // size array, and only custom properties are stored in a HashMap.
+//
+// For each property, we ultimately just want one winning declaration
+// to apply to ComputeStyle(Builder). However, since a CSS declaration
+// can refer to a weaker declaration of the same property through various
+// "revert" mechanisms (revert-rule, revert-layer, etc), we maintain
+// a sorted list of all declarations seen per property.
 class CORE_EXPORT CascadeMap {
   STACK_ALLOCATED();
 
@@ -57,8 +63,12 @@ class CORE_EXPORT CascadeMap {
   // CascadePriority::ForLayerComparison().
   const CascadePriority* FindRevertLayer(const CSSPropertyName&,
                                          uint64_t) const;
+  // Find that CascadePriority in the cascade map weaker than `revert_from`
+  // that originates from a different rule.
+  //
+  // https://drafts.csswg.org/css-cascade-5/#revert-rule-keyword
   const CascadePriority* FindRevertRule(const CSSPropertyName&,
-                                        wtf_size_t) const;
+                                        CascadePriority revert_from) const;
   // Similar to Find(), if you already have the right CascadePriorityList.
   CascadePriority& Top(CascadePriorityList&);
   // Adds an entry to the map if the incoming priority is greater than or equal
@@ -84,9 +94,14 @@ class CORE_EXPORT CascadeMap {
   // Remove all properties (both native and custom) from the CascadeMap.
   void Reset();
 
-  // A list storing the highest CascadePriority from each cascade layer that has
-  // a higher-priority declaration than all the previous layers. The entries are
-  // in the ascending lexicographical order of (origin, tree scope, layer).
+  // A sorted list storing all declarations (CascadePriority objects) seen
+  // for a specific property, with the strongest CascadePriority appearing
+  // first.
+  //
+  // We generally only care about the strongest entry when computing values,
+  // except for "reverts" (revert-rule, etc) that explicitly target
+  // some weaker entry.
+  //
   // To avoid constructor and destructor calls on a large number of lists, the
   // list is implemented as a linked stack where nodes are backed by a vector.
   class CascadePriorityList {
@@ -143,6 +158,7 @@ class CORE_EXPORT CascadeMap {
     inline const CascadePriority& Top(const BackingVector&) const;
     inline CascadePriority& Top(BackingVector&);
     inline void Push(BackingVector&, CascadePriority priority);
+    inline void InsertKeepingSorted(BackingVector&, CascadePriority priority);
 
    private:
     friend class Iterator;
@@ -253,6 +269,43 @@ inline void CascadeMap::CascadePriorityList::Push(BackingVector& backing_vector,
                                                   CascadePriority priority) {
   backing_vector.emplace_back(priority, head_index_);
   head_index_ = backing_vector.size() - 1;
+}
+
+inline void CascadeMap::CascadePriorityList::InsertKeepingSorted(
+    BackingVector& backing_vector,
+    CascadePriority priority) {
+  // We're inserting `priority` into an already-sorted linked list
+  // (higher properties appear first in the list).
+  wtf_size_t prev_index = kNotFound;
+  wtf_size_t curr_index = head_index_;
+  while (curr_index != kNotFound) {
+    Node& curr_node = backing_vector[curr_index];
+    if (priority >= curr_node.priority) {
+      // The incoming priority is bigger (or equal) to this node;
+      // we'll insert before that node.
+      break;
+    }
+    prev_index = curr_index;
+    curr_index = curr_node.next_index;
+  }
+
+  // The new node exists at `new_index`, and points to the node
+  // at `curr_index`.
+  wtf_size_t new_index = backing_vector.size();
+  backing_vector.emplace_back(priority, curr_index);
+
+  // Now link the preceding node to our new node.
+  if (prev_index == kNotFound) {
+    // The new node had no preceding node (it was inserted at the front).
+    //
+    // While this is supported by this function for completeness, it should
+    // not really happen in normal circumstances; the call site should prefer
+    // to call Push() in this scenario.
+    head_index_ = new_index;
+  } else {
+    // Link the previous node to the new node.
+    backing_vector[prev_index].next_index = new_index;
+  }
 }
 
 inline bool CascadeMap::CascadePriorityList::IsEmpty() const {

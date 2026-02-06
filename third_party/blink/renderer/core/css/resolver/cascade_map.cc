@@ -106,13 +106,14 @@ const CascadePriority* CascadeMap::FindRevertLayer(const CSSPropertyName& name,
 
 const CascadePriority* CascadeMap::FindRevertRule(
     const CSSPropertyName& name,
-    wtf_size_t revert_from) const {
+    CascadePriority revert_from) const {
   auto find_revert_rule =
       [this](const CascadeMap::CascadePriorityList& list,
-             wtf_size_t revert_from) -> const CascadePriority* {
+             CascadePriority revert_from) -> const CascadePriority* {
     for (auto iter = list.Begin(backing_vector_);
          iter != list.End(backing_vector_); ++iter) {
-      if (iter->GetRuleIndex() < revert_from) {
+      if (*iter < revert_from &&
+          iter->GetRuleIndex() != revert_from.GetRuleIndex()) {
         return &(*iter);
       }
     }
@@ -171,6 +172,7 @@ void CascadeMap::Add(CascadePriorityList* list, CascadePriority priority) {
     if (priority.IsInlineStyle()) {
       inline_style_lost_ = true;
     }
+    list->InsertKeepingSorted(backing_vector_, priority);
     return;
   }
   if (top.IsInlineStyle()) {

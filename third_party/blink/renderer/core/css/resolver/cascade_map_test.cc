@@ -11,6 +11,9 @@
 
 namespace blink {
 
+using CascadePriorityList = CascadeMap::CascadePriorityList;
+using BackingVector = CascadeMap::CascadePriorityList::BackingVector;
+
 namespace {
 CascadePriority UaPriority(wtf_size_t position) {
   return CascadePriority(CascadeOrigin::kUserAgent,
@@ -51,6 +54,17 @@ bool AddTo(CascadeMap& map,
   }
   CascadePriority after = map.At(name);
   return before != after;
+}
+
+Vector<CascadePriority> ToCascadePriorityVector(
+    const CascadePriorityList& list,
+    const BackingVector& backing_vector) {
+  Vector<CascadePriority> v;
+  for (CascadePriorityList::Iterator i = list.Begin(backing_vector);
+       i != list.End(backing_vector); ++i) {
+    v.push_back(*i);
+  }
+  return v;
 }
 
 }  // namespace
@@ -306,6 +320,161 @@ TEST(CascadeMapTest, FindOrigin) {
   EXPECT_EQ(UaPriority(4), *map.Find(left, CascadeOrigin::kUserAgent));
   EXPECT_EQ(UaPriority(5), *map.Find(right, CascadeOrigin::kUserAgent));
   EXPECT_FALSE(map.Find(bottom, CascadeOrigin::kUserAgent));
+}
+
+TEST(CascadeMapTest, FindRevertRule) {
+  CascadeMap map;
+  CSSPropertyName color(CSSPropertyID::kColor);
+
+  CascadePriority p1 =
+      AuthorPriority(EncodeMatchResultPosition(/*block=*/0, /*declaration=*/0));
+  CascadePriority p2 =
+      AuthorPriority(EncodeMatchResultPosition(/*block=*/1, /*declaration=*/0));
+
+  map.Add(color.Id(), p1);
+  map.Add(color.Id(), p2);
+
+  {
+    const CascadePriority* p = map.FindRevertRule(color, /*revert_from=*/p2);
+    ASSERT_TRUE(p);
+    EXPECT_EQ(p1, *p);
+  }
+
+  {
+    const CascadePriority* p = map.FindRevertRule(color, /*revert_from=*/p1);
+    EXPECT_FALSE(p);
+  }
+}
+
+TEST(CascadeMapTest, FindRevertRuleDuplicateDeclarations) {
+  CascadeMap map;
+  CSSPropertyName color(CSSPropertyID::kColor);
+
+  CascadePriority p1 =
+      AuthorPriority(EncodeMatchResultPosition(/*block=*/0, /*declaration=*/0));
+  CascadePriority p2 =
+      AuthorPriority(EncodeMatchResultPosition(/*block=*/1, /*declaration=*/0));
+
+  // Add one declaration from one "rule".
+  map.Add(color.Id(), p1);
+  // Add the same declaration again from a separate "rule", twice.
+  // There is no known way to do this *currently*, but the scenario should still
+  // have a reasonable behavior in order to guard against future changes.
+  map.Add(color.Id(), p2);
+  map.Add(color.Id(), p2);
+
+  const CascadePriority* p = map.FindRevertRule(color, /*revert_from=*/p2);
+  ASSERT_TRUE(p);
+  // We should have reverted past both instances of p2.
+  EXPECT_EQ(p1, *p);
+}
+
+TEST(CascadeMapTest, InsertIntoEmptyList) {
+  CascadePriority p1 = AuthorPriority(1);
+
+  BackingVector backing_vector;
+  CascadePriorityList list;
+  EXPECT_TRUE(list.IsEmpty());
+
+  list.InsertKeepingSorted(backing_vector, p1);
+
+  EXPECT_EQ(Vector<CascadePriority>({p1}),
+            ToCascadePriorityVector(list, backing_vector));
+}
+
+TEST(CascadeMapTest, InsertStronger) {
+  CascadePriority p1 = AuthorPriority(1);
+  CascadePriority p2 = AuthorPriority(2);
+  CascadePriority p3 = AuthorPriority(3);
+
+  BackingVector backing_vector;
+  CascadePriorityList list;
+  EXPECT_TRUE(list.IsEmpty());
+
+  list.InsertKeepingSorted(backing_vector, p1);
+  EXPECT_EQ(Vector<CascadePriority>({p1}),
+            ToCascadePriorityVector(list, backing_vector));
+  list.InsertKeepingSorted(backing_vector, p2);
+  EXPECT_EQ(Vector<CascadePriority>({p2, p1}),
+            ToCascadePriorityVector(list, backing_vector));
+  list.InsertKeepingSorted(backing_vector, p3);
+  EXPECT_EQ(Vector<CascadePriority>({p3, p2, p1}),
+            ToCascadePriorityVector(list, backing_vector));
+}
+
+TEST(CascadeMapTest, InsertWeaker) {
+  CascadePriority p1 = AuthorPriority(1);
+  CascadePriority p2 = AuthorPriority(2);
+  CascadePriority p3 = AuthorPriority(3);
+
+  BackingVector backing_vector;
+  CascadePriorityList list;
+  EXPECT_TRUE(list.IsEmpty());
+
+  list.InsertKeepingSorted(backing_vector, p3);
+  EXPECT_EQ(Vector<CascadePriority>({p3}),
+            ToCascadePriorityVector(list, backing_vector));
+  list.InsertKeepingSorted(backing_vector, p2);
+  EXPECT_EQ(Vector<CascadePriority>({p3, p2}),
+            ToCascadePriorityVector(list, backing_vector));
+  list.InsertKeepingSorted(backing_vector, p1);
+  EXPECT_EQ(Vector<CascadePriority>({p3, p2, p1}),
+            ToCascadePriorityVector(list, backing_vector));
+}
+
+TEST(CascadeMapTest, InsertMiddle) {
+  CascadePriority p1 = AuthorPriority(1);
+  CascadePriority p2 = AuthorPriority(2);
+  CascadePriority p3 = AuthorPriority(3);
+
+  BackingVector backing_vector;
+  CascadePriorityList list;
+  EXPECT_TRUE(list.IsEmpty());
+
+  list.InsertKeepingSorted(backing_vector, p1);
+  EXPECT_EQ(Vector<CascadePriority>({p1}),
+            ToCascadePriorityVector(list, backing_vector));
+  list.InsertKeepingSorted(backing_vector, p3);
+  EXPECT_EQ(Vector<CascadePriority>({p3, p1}),
+            ToCascadePriorityVector(list, backing_vector));
+  list.InsertKeepingSorted(backing_vector, p2);
+  EXPECT_EQ(Vector<CascadePriority>({p3, p2, p1}),
+            ToCascadePriorityVector(list, backing_vector));
+}
+
+TEST(CascadeMapTest, InsertTwoListsInterleaved) {
+  CascadePriority p1 = AuthorPriority(1);
+  CascadePriority p2 = AuthorPriority(2);
+  CascadePriority p3 = AuthorPriority(3);
+  CascadePriority p4 = AuthorPriority(4);
+  CascadePriority p5 = AuthorPriority(5);
+  CascadePriority p6 = AuthorPriority(6);
+
+  BackingVector backing_vector;
+  CascadePriorityList list1;
+  CascadePriorityList list2;
+
+  list1.InsertKeepingSorted(backing_vector, p1);
+  list2.InsertKeepingSorted(backing_vector, p2);
+  EXPECT_EQ(Vector<CascadePriority>({p1}),
+            ToCascadePriorityVector(list1, backing_vector));
+  EXPECT_EQ(Vector<CascadePriority>({p2}),
+            ToCascadePriorityVector(list2, backing_vector));
+
+  list1.InsertKeepingSorted(backing_vector, p5);
+  list2.InsertKeepingSorted(backing_vector, p6);
+  EXPECT_EQ(Vector<CascadePriority>({p5, p1}),
+            ToCascadePriorityVector(list1, backing_vector));
+  EXPECT_EQ(Vector<CascadePriority>({p6, p2}),
+            ToCascadePriorityVector(list2, backing_vector));
+
+  // Inserts in the middle.
+  list1.InsertKeepingSorted(backing_vector, p3);
+  list2.InsertKeepingSorted(backing_vector, p4);
+  EXPECT_EQ(Vector<CascadePriority>({p5, p3, p1}),
+            ToCascadePriorityVector(list1, backing_vector));
+  EXPECT_EQ(Vector<CascadePriority>({p6, p4, p2}),
+            ToCascadePriorityVector(list2, backing_vector));
 }
 
 }  // namespace blink
