@@ -50,6 +50,7 @@ static bool IsTrackSizeIntrinsic(const Length& length,
       return type == Length::Type::kAuto || type == Length::Type::kMinContent ||
              type == Length::Type::kMaxContent;
     }
+    // TODO(almaher): This should no longer return false always.
     case kMinMaxTrackSizing:
       return false;
     case kFitContentTrackSizing:
@@ -102,6 +103,7 @@ class GridTrackSize {
         max_track_breadth_(max_track_breadth),
         fit_content_track_breadth_(Length::Fixed()),
         type_(kMinMaxTrackSizing),
+        // TODO(almaher): Update this to check if both min/max are intrinsic.
         track_size_definition_is_intrinsic_(false) {
     CacheMinMaxTrackBreadthTypes();
   }

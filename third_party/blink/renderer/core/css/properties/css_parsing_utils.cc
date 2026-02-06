@@ -6532,14 +6532,14 @@ bool IsGridBreadthFlexSized(const CSSValue& value) {
 }
 
 bool IsGridBreadthIntrinsicSized(const CSSValue& value) {
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
     return value_id == CSSValueID::kAuto ||
            value_id == CSSValueID::kMinContent ||
            value_id == CSSValueID::kMaxContent;
   }
 
-  if (auto* function = DynamicTo<CSSFunctionValue>(value)) {
+  if (const auto* function = DynamicTo<CSSFunctionValue>(value)) {
     return function->FunctionType() == CSSValueID::kFitContent;
   }
 
@@ -6551,10 +6551,7 @@ bool IsGridBreadthFixedSized(const CSSValue& value) {
 }
 
 bool IsGridTrackFixedSized(const CSSValue& value) {
-  // TODO(almaher): Do we want to update this definition for Grid Lanes?
-  //
-  // https://github.com/w3c/csswg-drafts/issues/12573
-  auto* function = DynamicTo<CSSFunctionValue>(value);
+  const auto* function = DynamicTo<CSSFunctionValue>(value);
   if (function && function->FunctionType() != CSSValueID::kFitContent) {
     const CSSValue& min_value = function->Item(0);
     const CSSValue& max_value = function->Item(1);
@@ -6565,8 +6562,20 @@ bool IsGridTrackFixedSized(const CSSValue& value) {
   return IsGridBreadthFixedSized(value);
 }
 
+bool IsGridTrackIntrinsicSized(const CSSValue& value) {
+  const auto* function = DynamicTo<CSSFunctionValue>(value);
+  if (function && function->FunctionType() != CSSValueID::kFitContent) {
+    const CSSValue& min_value = function->Item(0);
+    const CSSValue& max_value = function->Item(1);
+    return IsGridBreadthIntrinsicSized(min_value) &&
+           IsGridBreadthIntrinsicSized(max_value);
+  }
+
+  return IsGridBreadthIntrinsicSized(value);
+}
+
 bool IsGridTrackFixedOrIntrinsicSized(const CSSValue& value) {
-  return IsGridBreadthIntrinsicSized(value) || IsGridTrackFixedSized(value);
+  return IsGridTrackIntrinsicSized(value) || IsGridTrackFixedSized(value);
 }
 
 CSSValue* ConsumeGridTrackSize(CSSParserTokenStream& stream,
@@ -6727,13 +6736,12 @@ bool ConsumeGridTrackRepeatFunction(
         return false;
       }
       if (all_tracks_are_intrinsic_repeat_or_fixed_sized) {
-        // Whether repeat(auto-fill, <intrinsic-track-size>) should be allowed,
-        // and if it should apply to both grid and grid-lanes is still in
-        // discussion in the CSSWG.
+        // Whether repeat(auto-fill, <intrinsic-track-size>) should apply to
+        // grid is still in discussion in the CSSWG.
         //
         // TODO(almaher): Make adjustments once a resolution is made [1].
         //
-        // [1] https://github.com/w3c/csswg-drafts/issues/10915
+        // [1] https://github.com/w3c/csswg-drafts/issues/9321
         if (is_auto_repeat &&
             RuntimeEnabledFeatures::CSSGridLanesLayoutEnabled()) {
           all_tracks_are_intrinsic_repeat_or_fixed_sized =

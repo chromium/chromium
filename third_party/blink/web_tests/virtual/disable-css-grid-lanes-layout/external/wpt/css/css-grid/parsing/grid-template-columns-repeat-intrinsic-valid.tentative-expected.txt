@@ -7,6 +7,8 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fit, [three] auto [four])" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, minmax(auto, auto))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, min-content)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fit, min-content 100px min-content)" should set the property value
@@ -14,6 +16,8 @@ This is a testharness.js-based test.
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, minmax(30px, 5fr) [two] min-content)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fit, [three] min-content [four])" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, minmax(min-content, min-content))" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, max-content)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
@@ -23,6 +27,8 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fit, [three] max-content [four])" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, minmax(max-content, max-content))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, fit-content(200px))" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fit, fit-content(200px) 100px fit-content(200px))" should set the property value
@@ -30,6 +36,10 @@ This is a testharness.js-based test.
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, minmax(30px, 5fr) [two] fit-content(200px))" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['grid-template-columns'] = "repeat(auto-fit, [three] fit-content(200px) [four])" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, minmax(auto, min-content))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['grid-template-columns'] = "repeat(auto-fill, minmax(min-content, max-content))" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 
