@@ -29,8 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.url.GURL;
@@ -162,12 +161,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
                         new GestureDetector.SimpleOnGestureListener() {
                             @Override
                             public boolean onSingleTapConfirmed(MotionEvent e) {
-                                mOmniboxStub.setUrlBarFocus(
-                                        /* shouldBeFocused= */ false,
-                                        null,
-                                        /* selectText= */ false,
-                                        OmniboxFocusReason.UNFOCUS,
-                                        AutocompleteRequestType.SEARCH);
+                                mOmniboxStub.setUrlBarFocus(null);
                                 return false;
                             }
                         });
@@ -464,12 +458,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
     /** Performs the actual focus action and updates the state. */
     private void autofocus(Tab tab) {
         mIsAutofocusing = true;
-        mOmniboxStub.setUrlBarFocus(
-                /* shouldBeFocused= */ true,
-                null,
-                /* selectText= */ false,
-                OmniboxFocusReason.OMNIBOX_TAP,
-                AutocompleteRequestType.SEARCH);
+        mOmniboxStub.setUrlBarFocus(new AutocompleteInput());
 
         // Mark the tab as processed to prevent future autofocus attempts.
         markTabAsProcessed(tab);

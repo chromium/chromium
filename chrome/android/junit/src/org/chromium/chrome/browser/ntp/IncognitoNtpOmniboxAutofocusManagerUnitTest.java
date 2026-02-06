@@ -7,8 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,8 +44,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -187,16 +184,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
     private void verifyAutofocus(boolean shouldBeCalled) {
         if (shouldBeCalled) {
-            verify(mOmniboxStub)
-                    .setUrlBarFocus(
-                            /* shouldBeFocused= */ true,
-                            null,
-                            /* selectText= */ false,
-                            OmniboxFocusReason.OMNIBOX_TAP,
-                            AutocompleteRequestType.SEARCH);
+            verify(mOmniboxStub).setUrlBarFocus(isNotNull());
         } else {
-            verify(mOmniboxStub, never())
-                    .setUrlBarFocus(anyBoolean(), any(), anyBoolean(), anyInt(), anyInt());
+            verify(mOmniboxStub, never()).setUrlBarFocus(any());
         }
     }
 

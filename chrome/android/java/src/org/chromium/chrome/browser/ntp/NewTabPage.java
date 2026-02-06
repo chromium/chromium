@@ -124,6 +124,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -435,11 +436,10 @@ public class NewTabPage
                 }
 
                 mOmniboxStub.setUrlBarFocus(
-                        /* shouldBeFocused= */ true,
-                        pastedText,
-                        /* selectText= */ false,
-                        focusReason,
-                        requestType);
+                        new AutocompleteInput()
+                                .setUserText(pastedText)
+                                .setFocusReason(focusReason)
+                                .setRequestType(requestType));
             }
         }
 

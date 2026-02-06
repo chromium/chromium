@@ -1916,38 +1916,18 @@ class LocationBarMediator
     }
 
     // OmniboxStub implementation.
-
-    @Override
-    public void setUrlBarFocus(
-            boolean shouldBeFocused,
-            @Nullable String pastedText,
-            boolean selectText,
-            @OmniboxFocusReason int reason,
-            @AutocompleteRequestType int requestType) {
-        if (shouldBeFocused) {
-            int textLength = pastedText == null ? 0 : pastedText.length();
-            setUrlBarFocus(
-                    new AutocompleteInput()
-                            .setUserText(pastedText)
-                            .setSelection(selectText ? 0 : textLength, textLength)
-                            .setFocusReason(reason)
-                            .setRequestType(requestType));
-        } else {
-            setUrlBarFocus(null);
-        }
-    }
-
     /**
      * Set the omnibox to have focus or not.
      *
      * <p>Updates passed AutocompleteInput instance so it correctly reflects the current page URL,
-     * title, and classification, bringing the Fusebox to focus with the supplied data. When null
-     * instance is passed the focus is cleared.
+     * title, classification, and focus time, bringing the Fusebox to focus with the supplied data.
+     * When null instance is passed the focus is cleared.
      *
      * @param input The AutocompleteInput object with all the details for the focus operation. If
      *     null, the focus will be cleared.
      */
-    private void setUrlBarFocus(@Nullable AutocompleteInput input) {
+    @Override
+    public void setUrlBarFocus(@Nullable AutocompleteInput input) {
         if (input == null) {
             endInput();
             mUrlCoordinator.clearFocus();

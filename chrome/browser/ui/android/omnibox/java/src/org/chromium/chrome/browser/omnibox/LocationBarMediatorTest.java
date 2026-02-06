@@ -970,23 +970,14 @@ public class LocationBarMediatorTest {
     @Test
     public void testSetUrlBarFocus_focusedFromFakebox() {
         mMediator.setUrlBarFocus(
-                /* shouldBeFocused= */ true,
-                null,
-                /* selectText= */ false,
-                OmniboxFocusReason.FAKE_BOX_TAP,
-                AutocompleteRequestType.SEARCH);
+                new AutocompleteInput().setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP));
         assertTrue(mMediator.didFocusUrlFromFakebox());
         verify(mUrlCoordinator).requestFocus();
     }
 
     @Test
     public void testSetUrlBarFocus_notFocused() {
-        mMediator.setUrlBarFocus(
-                /* shouldBeFocused= */ false,
-                null,
-                /* selectText= */ false,
-                OmniboxFocusReason.FAKE_BOX_TAP,
-                AutocompleteRequestType.SEARCH);
+        mMediator.setUrlBarFocus(null);
         verify(mUrlCoordinator).clearFocus();
     }
 
@@ -996,11 +987,9 @@ public class LocationBarMediatorTest {
         mMediator.setProfile(mProfile);
 
         mMediator.setUrlBarFocus(
-                /* shouldBeFocused= */ true,
-                null,
-                /* selectText= */ false,
-                OmniboxFocusReason.NTP_AI_MODE,
-                AutocompleteRequestType.AI_MODE);
+                new AutocompleteInput()
+                        .setFocusReason(OmniboxFocusReason.NTP_AI_MODE)
+                        .setRequestType(AutocompleteRequestType.AI_MODE));
         verify(mUrlCoordinator).requestFocus();
         mMediator.onUrlFocusChange(true);
 
@@ -1016,12 +1005,8 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
-        mMediator.setUrlBarFocus(
-                /* shouldBeFocused= */ true,
-                "pastedText",
-                /* selectText= */ false,
-                OmniboxFocusReason.OMNIBOX_TAP,
-                AutocompleteRequestType.SEARCH);
+        mMediator.setUrlBarFocus(new AutocompleteInput().setUserText("pastedText"));
+
         verify(mUrlCoordinator).requestFocus();
         mMediator.onUrlFocusChange(true);
 
@@ -1229,11 +1214,9 @@ public class LocationBarMediatorTest {
 
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
         mMediator.setUrlBarFocus(
-                /* shouldBeFocused= */ true,
-                "text",
-                /* selectText= */ false,
-                OmniboxFocusReason.FAKE_BOX_TAP,
-                AutocompleteRequestType.SEARCH);
+                new AutocompleteInput()
+                        .setUserText("text")
+                        .setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP));
         mMediator.onUrlFocusChange(true);
 
         mMediator.setUrlFocusChangeInProgress(false);

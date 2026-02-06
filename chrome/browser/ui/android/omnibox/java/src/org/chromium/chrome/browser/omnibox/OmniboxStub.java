@@ -8,8 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.AutocompleteInput;
 
 /**
  * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as NTP
@@ -18,21 +17,16 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 @NullMarked
 public interface OmniboxStub {
     /**
-     * Signal a {@link UrlBar} focus change request.
+     * Set the omnibox to have focus or not.
      *
-     * @param shouldBeFocused Whether the focus should be requested or cleared. True requests focus
-     *     and False clears focus.
-     * @param pastedText The given pasted text when focus, which could be null.
-     * @param selectText Whether the pasted text should be selected.
-     * @param reason The given reason.
-     * @param requestType The request type (tool/mode) to focus the Omnibox for.
+     * <p>Updates passed AutocompleteInput instance so it correctly reflects the current page URL,
+     * title, classification, and focus time, bringing the Fusebox to focus with the supplied data.
+     * When null instance is passed the focus is cleared.
+     *
+     * @param input The AutocompleteInput object with all the details for the focus operation. If
+     *     null, the focus will be cleared.
      */
-    void setUrlBarFocus(
-            boolean shouldBeFocused,
-            @Nullable String pastedText,
-            boolean selectText,
-            @OmniboxFocusReason int reason,
-            @AutocompleteRequestType int requestType);
+    void setUrlBarFocus(@Nullable AutocompleteInput input);
 
     /**
      * @return Whether the URL bar is currently focused.

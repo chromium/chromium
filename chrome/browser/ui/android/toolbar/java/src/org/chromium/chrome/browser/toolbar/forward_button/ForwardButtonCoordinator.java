@@ -24,8 +24,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
-import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.function.Supplier;
@@ -198,14 +196,7 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
     private void maybeUnfocusUrlBar() {
         LocationBar locationBar = mLocationBarSupplier.get();
         if (locationBar != null && locationBar.getOmniboxStub() != null) {
-            locationBar
-                    .getOmniboxStub()
-                    .setUrlBarFocus(
-                            /* shouldBeFocused= */ false,
-                            null,
-                            /* selectText= */ false,
-                            OmniboxFocusReason.UNFOCUS,
-                            AutocompleteRequestType.SEARCH);
+            locationBar.getOmniboxStub().setUrlBarFocus(null);
         }
     }
 
