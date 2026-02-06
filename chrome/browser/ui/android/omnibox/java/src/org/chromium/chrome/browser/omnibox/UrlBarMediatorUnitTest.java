@@ -27,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
-import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
@@ -87,7 +86,9 @@ public class UrlBarMediatorUnitTest {
                         14,
                         "Bar");
 
-        Assert.assertTrue(mMediator.setUrlBarData(baseData, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
+        Assert.assertTrue(
+                mMediator.setUrlBarData(
+                        baseData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_END));
 
         @SuppressWarnings("unchecked")
         PropertyObserver<PropertyKey> observer = Mockito.mock(PropertyObserver.class);
@@ -96,13 +97,19 @@ public class UrlBarMediatorUnitTest {
 
         Assert.assertTrue(
                 mMediator.setUrlBarData(
-                        dataWithDifferentDisplay, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
+                        dataWithDifferentDisplay,
+                        UrlBar.ScrollType.SCROLL_TO_TLD,
+                        UrlBarData.SELECT_END));
         Assert.assertTrue(
                 mMediator.setUrlBarData(
-                        dataWithDifferentEditing, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
+                        dataWithDifferentEditing,
+                        UrlBar.ScrollType.SCROLL_TO_TLD,
+                        UrlBarData.SELECT_END));
         Assert.assertTrue(
                 mMediator.setUrlBarData(
-                        dataWithDifferentEditing, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 4));
+                        dataWithDifferentEditing,
+                        UrlBar.ScrollType.SCROLL_TO_BEGINNING,
+                        UrlBarData.SELECT_END));
 
         Mockito.verify(observer, Mockito.times(3))
                 .onPropertyChanged(mModel, UrlBarProperties.TEXT_STATE);
@@ -125,15 +132,21 @@ public class UrlBarMediatorUnitTest {
                         0,
                         "Blah");
 
-        Assert.assertTrue(mMediator.setUrlBarData(data1, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
+        Assert.assertTrue(
+                mMediator.setUrlBarData(
+                        data1, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_END));
 
         @SuppressWarnings("unchecked")
         PropertyObserver<PropertyKey> observer = Mockito.mock(PropertyObserver.class);
         mModel.addObserver(observer);
         Mockito.<PropertyObserver>reset(observer);
 
-        Assert.assertFalse(mMediator.setUrlBarData(data1, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
-        Assert.assertFalse(mMediator.setUrlBarData(data2, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
+        Assert.assertFalse(
+                mMediator.setUrlBarData(
+                        data1, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_END));
+        Assert.assertFalse(
+                mMediator.setUrlBarData(
+                        data2, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_END));
 
         Mockito.verifyNoMoreInteractions(observer);
     }
@@ -150,9 +163,7 @@ public class UrlBarMediatorUnitTest {
                         null);
         Assert.assertTrue(
                 mMediator.setUrlBarData(
-                        data,
-                        UrlBar.ScrollType.SCROLL_TO_TLD,
-                        UrlBarCoordinator.SelectionState.SELECT_ALL));
+                        data, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL));
 
         // The scroll state should be overridden to SCROLL_TO_BEGINNING for file-type schemes.
         Assert.assertEquals(
@@ -172,9 +183,7 @@ public class UrlBarMediatorUnitTest {
                         null);
         Assert.assertTrue(
                 mMediator.setUrlBarData(
-                        data,
-                        UrlBar.ScrollType.SCROLL_TO_TLD,
-                        UrlBarCoordinator.SelectionState.SELECT_ALL));
+                        data, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL));
 
         // The scroll state should be overridden to SCROLL_TO_BEGINNING for file-type schemes.
         Assert.assertEquals(
@@ -301,7 +310,7 @@ public class UrlBarMediatorUnitTest {
         mMediator.setUrlBarData(
                 UrlBarData.create(new GURL(url), displayText, 0, 12, editingText),
                 UrlBar.ScrollType.NO_SCROLL,
-                UrlBarCoordinator.SelectionState.SELECT_ALL);
+                UrlBarData.SELECT_ALL);
 
         // Replacement is only valid if selecting the full text.
         Assert.assertNull(mMediator.getReplacementCutCopyText(editingText, 1, 2));
@@ -341,7 +350,7 @@ public class UrlBarMediatorUnitTest {
                         "Blah");
         mMediator.setUrlBarHintText("Hint 1");
         Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
-        mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
         mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
         mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("");
 
@@ -349,7 +358,7 @@ public class UrlBarMediatorUnitTest {
 
         mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("f");
         Assert.assertFalse(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
-        mMediator.setUrlBarData(UrlBarData.EMPTY, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        mMediator.setUrlBarData(UrlBarData.EMPTY, ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
         Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
 
         mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(false);
@@ -372,8 +381,7 @@ public class UrlBarMediatorUnitTest {
                         0,
                         22,
                         "Blah");
-        mMediator.setUrlBarData(
-                baseData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_END);
+        mMediator.setUrlBarData(baseData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_END);
 
         Assert.assertEquals(
                 "http://www.example.com/a_path_to_ignore",
@@ -392,7 +400,7 @@ public class UrlBarMediatorUnitTest {
     @Test
     public void setShowOriginOnly_nonUrlText() {
         UrlBarData baseData = UrlBarData.forNonUrlText("non url");
-        mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
         Assert.assertEquals("non url", mModel.get(UrlBarProperties.TEXT_STATE).text.toString());
 
         mMediator.setShowOriginOnly(true);

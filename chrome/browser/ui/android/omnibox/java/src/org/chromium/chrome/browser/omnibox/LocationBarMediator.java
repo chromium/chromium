@@ -18,6 +18,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.FloatProperty;
+import android.util.Range;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -66,7 +67,6 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
-import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -417,8 +417,7 @@ class LocationBarMediator
             if (!mUrlFocusedWithPastedText
                     && !shouldRetainOmniboxOnFocus
                     && mLocationBarLayout.shouldClearTextOnFocus()) {
-                setUrlBarText(
-                        UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+                setUrlBarText(UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
             } else if (shouldRetainOmniboxOnFocus) {
                 mUrlCoordinator.setSelectAllOnFocus(true);
             }
@@ -628,7 +627,7 @@ class LocationBarMediator
                 setUrlBarText(
                         mLocationBarDataProvider.getUrlBarData(),
                         UrlBar.ScrollType.NO_SCROLL,
-                        SelectionState.SELECT_ALL);
+                        UrlBarData.SELECT_ALL);
             }
             mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
@@ -868,7 +867,7 @@ class LocationBarMediator
         }
 
         mOriginalUrl = currentUrl;
-        setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
+        setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL);
     }
 
     /* package */ void deleteButtonClicked(View view) {
@@ -1358,14 +1357,12 @@ class LocationBarMediator
      *
      * @param urlBarData The contents of the URL bar, both for editing and displaying.
      * @param scrollType Specifies how the text should be scrolled in the unfocused state.
-     * @param selectionState Specifies how the text should be selected in the focused state.
+     * @param selection Specifies the range of text to be selected in the focused state.
      * @return Whether the URL was changed as a result of this call.
      */
     /* package */ boolean setUrlBarText(
-            UrlBarData urlBarData,
-            @UrlBar.ScrollType int scrollType,
-            @SelectionState int selectionState) {
-        return mUrlCoordinator.setUrlBarData(urlBarData, scrollType, selectionState);
+            UrlBarData urlBarData, @UrlBar.ScrollType int scrollType, Range<Integer> selection) {
+        return mUrlCoordinator.setUrlBarData(urlBarData, scrollType, selection);
     }
 
     /**
@@ -1382,9 +1379,7 @@ class LocationBarMediator
         // TODO(crbug.com/475620206): move to AutocompleteMediator#beginInput() and retire method.
         boolean wasChanged =
                 mUrlCoordinator.setUrlBarData(
-                        data,
-                        UrlBar.ScrollType.NO_SCROLL,
-                        UrlBarCoordinator.SelectionState.SELECT_END);
+                        data, UrlBar.ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
         mUrlCoordinator.setSelection(
                 mCurrentInput.getSelectionStart(), mCurrentInput.getSelectionEnd());
         // Handle the case of active input with deleted user text: triggers Autocomplete restart.

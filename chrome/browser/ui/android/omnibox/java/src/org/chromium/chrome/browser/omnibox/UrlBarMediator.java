@@ -9,6 +9,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Range;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -19,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
-import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -39,7 +39,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
 
     private UrlBarData mUrlBarData = UrlBarData.EMPTY;
     private @ScrollType int mScrollType = UrlBar.ScrollType.NO_SCROLL;
-    private @SelectionState int mSelectionState = UrlBarCoordinator.SelectionState.SELECT_ALL;
+    private Range<Integer> mSelection = UrlBarData.SELECT_ALL;
 
     // For NTP, when in un-focus state, the search text hint color is fixed for the real search box
     // and we couldn't change it by the branded color scheme.
@@ -113,11 +113,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
      *
      * @param data The new data to be displayed.
      * @param scrollType The scroll type that should be applied to the data.
-     * @param selectionState Specifies how the text should be selected when focused.
+     * @param selection Specifies the range of text to be selected when focused.
      * @return Whether this data differs from the previously passed in values.
      */
     public boolean setUrlBarData(
-            UrlBarData data, @ScrollType int scrollType, @SelectionState int selectionState) {
+            UrlBarData data, @ScrollType int scrollType, Range<Integer> selection) {
         assert data != null;
 
         if (data.originEndIndex == data.originStartIndex) {
@@ -141,7 +141,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         }
         mUrlBarData = data;
         mScrollType = scrollType;
-        mSelectionState = selectionState;
+        mSelection = selection;
 
         pushTextToModel();
         return true;
@@ -175,7 +175,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                         textForAutofillServices,
                         scrollType,
                         mUrlBarData.originEndIndex,
-                        mSelectionState);
+                        mSelection);
         mModel.set(UrlBarProperties.TEXT_STATE, state);
         updateShowHintText(text.toString());
     }

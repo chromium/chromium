@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Range;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
@@ -74,11 +75,15 @@ class UrlBarViewBinder {
             view.setScrollState(state.scrollType, state.scrollToIndex);
             view.setIgnoreTextChangesForAutocomplete(false);
             if (view.hasFocus()) {
-                if (state.selectionState == UrlBarCoordinator.SelectionState.SELECT_ALL) {
-                    view.selectAll();
-                } else if (state.selectionState == UrlBarCoordinator.SelectionState.SELECT_END) {
-                    view.setSelection(view.getText().length());
+                int textLength = view.getText().length();
+                Range<Integer> selectionRange;
+                try {
+                    selectionRange = state.selection.intersect(0, textLength);
+                } catch (IllegalArgumentException rangesDoNotOverlap) {
+                    selectionRange = Range.create(textLength, textLength);
                 }
+
+                view.setSelection(selectionRange.getLower(), selectionRange.getUpper());
                 // Move the accessibility focus to the Omnibox.
                 // This ensures the updated field is announced to the user, especially when the user
                 // recently interacted with Refine button.

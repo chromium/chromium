@@ -5,13 +5,12 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.util.Range;
 import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-
-import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -25,9 +24,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ViewRectProvider;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Coordinates the interactions with the UrlBar text component. */
 @NullMarked
 public class UrlBarCoordinator
@@ -35,17 +31,6 @@ public class UrlBarCoordinator
                 UrlFocusChangeListener,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener {
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
-
-    /** Specified how the text should be selected when focused. */
-    @IntDef({SelectionState.SELECT_ALL, SelectionState.SELECT_END})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SelectionState {
-        /** Select all of the text. */
-        int SELECT_ALL = 0;
-
-        /** Selection (along with the input cursor) will be placed at the end of the text. */
-        int SELECT_END = 1;
-    }
 
     private final UrlBar mUrlBar;
     private final UrlBarMediator mMediator;
@@ -172,11 +157,11 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setUrlBarData(UrlBarData, int, int)
+     * @see UrlBarMediator#setUrlBarData(UrlBarData, int, Range<Integer>)
      */
     public boolean setUrlBarData(
-            UrlBarData data, @ScrollType int scrollType, @SelectionState int state) {
-        return mMediator.setUrlBarData(data, scrollType, state);
+            UrlBarData data, @ScrollType int scrollType, Range<Integer> selection) {
+        return mMediator.setUrlBarData(data, scrollType, selection);
     }
 
     /** Returns the UrlBarData representing the current contents of the UrlBar. */

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.util.Range;
 import android.view.ActionMode;
 import android.view.View;
 
@@ -13,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
-import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -39,30 +39,31 @@ class UrlBarProperties {
         public int scrollToIndex;
 
         /** Specifies how the text should be selected in the focused state. */
-        public final @SelectionState int selectionState;
+        public final Range<Integer> selection;
 
         public UrlBarTextState(
                 CharSequence text,
                 CharSequence textForAutofillServices,
                 @ScrollType int scrollType,
                 int scrollToIndex,
-                @SelectionState int selectionState) {
+                Range<Integer> selection) {
             this.text = text;
             this.textForAutofillServices = textForAutofillServices;
             this.scrollType = scrollType;
             this.scrollToIndex = scrollToIndex;
-            this.selectionState = selectionState;
+            this.selection = selection;
         }
 
         @Override
         public String toString() {
             return String.format(
                     Locale.US,
-                    "%s: text: %s; scrollType: %d; selectionState: %d",
+                    "%s: text: %s; scrollType: %d; selectionState: [%d-%d)",
                     getClass().getSimpleName(),
                     text,
                     scrollType,
-                    selectionState);
+                    selection.getLower(),
+                    selection.getUpper());
         }
     }
 
