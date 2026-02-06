@@ -72,6 +72,5 @@ int64_t StatusTrayChromeOS::NextIconId() {
 }
 
 std::unique_ptr<StatusTray> StatusTray::Create() {
-  // TODO(b:463428431): Return StatusTrayChromeOS when ready.
-  return nullptr;
+  return std::make_unique<StatusTrayChromeOS>();
 }
