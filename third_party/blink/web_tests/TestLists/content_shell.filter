@@ -587,7 +587,6 @@ external/wpt/html/rendering/widgets/baseline-alignment-and-overflow.tentative.ht
 external/wpt/html/rendering/widgets/input-time-content-size.html
 external/wpt/html/rendering/widgets/textarea-scrollbar-sizing-*
 external/wpt/html/rendering/widgets/the-select-element/option-empty-label-to-empty-string.html
-external/wpt/html/rendering/widgets/the-select-element/select-as-listbox-default-styles.tentative.html
 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-*
 external/wpt/html/semantics/embedded-content/the-canvas-element/toBlob-cross-realm-callback-report-exception.html
 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-*
