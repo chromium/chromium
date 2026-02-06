@@ -1275,6 +1275,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.NO_SELECTION_MENU_CACHING,
                 "When this flag is enabled, the menu which is shown when selecting text will not be"
                         + " cached. Instead, it is recomputed each time it is shown."),
+        Flag.baseFeature(
+                BlinkFeatures.XML_RUST_FOR_NON_XSLT,
+                "Enables the Rust based XML parser in situations where the XML document is"
+                    + " guaranteed to not trigger XSLT processing."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
