@@ -150,6 +150,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       presentationState: {type: Number},
       isImmersiveMode: {type: Boolean},
       isReadAnythingPinned: {type: Boolean},
+      isImmersiveEnabled_: {type: Boolean},
+      isReadAloudEnabled_: {type: Boolean},
     };
   }
 
@@ -176,8 +178,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor pageLanguage: string = '';
   accessor isImmersiveMode: boolean = false;
   protected accessor hideSpinner_: boolean = true;
-  protected isReadAloudEnabled_: boolean = true;
-  protected isImmersiveEnabled_: boolean = false;
+  protected accessor isReadAloudEnabled_: boolean = true;
+  protected accessor isImmersiveEnabled_: boolean = false;
   // Overflow buttons on the toolbar that open a menu of options.
   protected accessor moreOptionsButtons_: MenuButton[] = [];
   protected accessor speechRate_: number = 1;
@@ -957,6 +959,36 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   protected getVoiceSpeedLabel_(): string {
     return loadTimeData.getStringF('voiceSpeedWithRateLabel', this.speechRate_);
+  }
+
+  protected shouldShowToolbarAudioControls_(): boolean {
+    return this.isReadAloudEnabled_ || this.isImmersiveEnabled_;
+  }
+
+  protected getAudioState_(): string {
+    if (this.isImmersiveEnabled_) {
+      return 'immersive-enabled';
+    }
+    if (this.isSpeechActive) {
+      return 'active';
+    }
+    return 'inactive';
+  }
+
+  protected getToolbarContainerClass_(): string {
+    return this.isImmersiveEnabled_ ? 'immersive-toolbar-container' :
+                                      'toolbar-container';
+  }
+
+  protected getGranularityContainerClass_(): string {
+    return this.isSpeechActive || this.isImmersiveEnabled_ ?
+        'granularity-container-when-active-true' :
+        'granularity-container-when-active-false';
+  }
+
+  protected shouldDisableGranularityNavButtons_(): boolean {
+    return !this.isReadAloudPlayable ||
+        (this.isImmersiveEnabled_ && !this.isSpeechActive);
   }
 }
 

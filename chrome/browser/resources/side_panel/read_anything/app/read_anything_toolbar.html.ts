@@ -18,84 +18,6 @@ function getRateButtonHtml(this: ReadAnythingToolbarElement) {
     </cr-button>`;
 }
 
-function getCloseButton(this: ReadAnythingToolbarElement) {
-  if (this.isImmersiveMode) {
-    return html`
-  <cr-icon-button id="close" tabindex="-1"
-      class="toolbar-button"
-      aria-label="$i18n{readingModeLanguageMenuClose}"
-      title="$i18n{readingModeLanguageMenuClose}"
-      iron-icon="cr:close"
-      @click="${this.onCloseClick_}">
-  </cr-icon-button>`;
-  }
-  return html``;
-}
-
-function getToolbarAudioControlsHtml(this: ReadAnythingToolbarElement) {
-  let audioState = 'inactive';
-  if (this.isImmersiveEnabled_) {
-    audioState = 'immersive-enabled';
-  } else if (this.isSpeechActive) {
-    audioState = 'active';
-  }
-  const shouldBeActive = this.isSpeechActive || this.isImmersiveEnabled_;
-  const prevNextAreDisabled = !this.isReadAloudPlayable ||
-      (this.isImmersiveEnabled_ && !this.isSpeechActive);
-
-  // clang-format off
-  return html`<!--_html_template_start_-->
-<span id="audio-controls" class="audio-background-${audioState}">
-  <span ?hidden="${this.hideSpinner_}">
-    <picture class="spinner toolbar-button audio-controls">
-      <source media="(prefers-color-scheme: dark)"
-          srcset="//resources/images/throbber_small_dark.svg">
-      <img srcset="//resources/images/throbber_small.svg" alt="">
-    </picture>
-  </span>
-  <cr-icon-button class="toolbar-button audio-controls" id="play-pause"
-      ?disabled="${!this.isReadAloudPlayable}"
-      title="${this.playPauseButtonTitle_()}"
-      aria-label="${this.playPauseButtonAriaLabel_()}"
-      aria-keyshortcuts="k"
-      aria-description="$i18n{playDescription}"
-      iron-icon="${this.playPauseButtonIronIcon_()}"
-      tabindex="0"
-      @click="${this.onPlayPauseClick_}">
-  </cr-icon-button>
-  <span id="granularity-container"
-      class="granularity-container-when-active-${shouldBeActive}">
-    <cr-icon-button id="previousGranularity"
-        class="toolbar-button audio-controls"
-        ?disabled="${prevNextAreDisabled}"
-        aria-label="$i18n{previousSentenceLabel}"
-        title="$i18n{previousSentenceLabel}"
-        iron-icon="cr:chevron-left"
-        tabindex="-1"
-        @click="${this.onPreviousGranularityClick_}">
-    </cr-icon-button>
-    <cr-icon-button id="nextGranularity"
-        class="toolbar-button audio-controls"
-        aria-label="$i18n{nextSentenceLabel}"
-        ?disabled="${prevNextAreDisabled}"
-        title="$i18n{nextSentenceLabel}"
-        iron-icon="cr:chevron-right"
-        tabindex="-1"
-        @click="${this.onNextGranularityClick_}">
-    </cr-icon-button>
-  </span>
-  ${this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
-</span>
-${!this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
-<rate-menu
-    id="rateMenu"
-    .settingsPrefs="${this.settingsPrefs}"
-    @rate-change="${this.onRateChange_}">
-</rate-menu>
-  <!--_html_template_end_-->`;
-  // clang-format on
-}
-
 function renderTextStyleOptions(this: ReadAnythingToolbarElement) {
   return this.textStyleOptions_.map((item, index) => html`
       ${item.announceBlock ?? html``}
@@ -112,140 +34,176 @@ function renderTextStyleOptions(this: ReadAnythingToolbarElement) {
     `);
 }
 
-function getToolbarHtml(this: ReadAnythingToolbarElement) {
-  // clang-format off
-  return html`<!--_html_template_start_-->
-${this.isReadAloudEnabled_ ? html`
-${getToolbarAudioControlsHtml.call(this)}
-<cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
-    aria-label="$i18n{voiceSelectionLabel}"
-    title="$i18n{voiceSelectionLabel}"
-    aria-haspopup="menu"
-    iron-icon="read-anything:voice-selection"
-    @click="${this.onVoiceSelectionMenuClick_}">
-</cr-icon-button>
-
-<cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"
-    iron-icon="read-anything:highlight-on"
-    title="${this.getHighlightButtonLabel_()}"
-    aria-label="${this.getHighlightButtonLabel_()}"
-    @click="${this.onHighlightClick_}">
-</cr-icon-button>
-` : html`
-<font-select id="font-select" tabindex="0"
-  .settingsPrefs="${this.settingsPrefs}"
-  .pageLanguage="${this.pageLanguage}"
-  .areFontsLoaded="${this.areFontsLoaded_}"
-  @font-change="${this.onFontChange_}">
-</font-select>
-<hr class="separator" aria-hidden="true">
-<div id="size-announce" class="announce-block" aria-live="polite"></div>
-<cr-icon-button id="font-size-decrease-old" tabindex="-1"
-    class="toolbar-button"
-    aria-label="$i18n{decreaseFontSizeLabel}"
-    title="$i18n{decreaseFontSizeLabel}"
-    iron-icon="read-anything:font-size-decrease-old"
-    @click="${this.onFontSizeDecreaseClick_}">
-</cr-icon-button>
-<cr-icon-button id="font-size-increase-old" tabindex="-1"
-    class="toolbar-button"
-    aria-label="$i18n{increaseFontSizeLabel}"
-    title="$i18n{increaseFontSizeLabel}"
-    iron-icon="read-anything:font-size-increase-old"
-    @click="${this.onFontSizeIncreaseClick_}">
-</cr-icon-button>
-`}
-
-<hr class="separator" aria-hidden="true">
-
-${this.textStyleToggles_.map((item) => html`
-<cr-icon-button tabindex="-1" class="toolbar-button"
-    ?disabled="${this.isSpeechActive}"
-    id="${item.id}"
-    aria-label="${item.title}"
-    title="${item.title}"
-    iron-icon="${item.icon}"
-    @click="${this.onToggleButtonClick_}">
-</cr-icon-button>
-`)}
-
-${renderTextStyleOptions.call(this)}
-<cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
-    class="hidden"
-    title="$i18n{moreOptionsLabel}"
-    aria-haspopup="menu"
-    iron-icon="cr:more-vert"
-    @click="${this.onMoreOptionsClick_}">
-</cr-icon-button>
-
-<cr-lazy-render-lit id="moreOptionsMenu" .template='${() => html`
-<cr-action-menu id="more-options-menu-dialog"
-    @keydown="${this.onToolbarKeyDown_}"
-    role-description="$i18n{menu}">
-  ${this.moreOptionsButtons_.map((item, index) => html`
-  <cr-icon-button id="${item.id}" class="more-options-icon"
-      aria-label="${item.ariaLabel}"
-      data-index="${index}"
-      title="${item.ariaLabel}"
-      aria-haspopup="menu"
-      iron-icon="${item.icon}"
-      @click="${this.onTextStyleMenuButtonClickFromOverflow_}">
-  </cr-icon-button>
-  `)}
-</cr-action-menu>
-`}'>
-</cr-lazy-render-lit>
-<!--_html_template_end_-->`;
-  // clang-format on
-}
-
-function getImmersiveToolbarHtml(this: ReadAnythingToolbarElement) {
-  // clang-format off
-  return html`<!--_html_template_start_-->
-${getToolbarAudioControlsHtml.call(this)}
-${renderTextStyleOptions.call(this)}
-<cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
-    class="toolbar-button"
-    title="$i18n{moreOptionsLabel}"
-    aria-haspopup="menu"
-    iron-icon="read-anything:settings"
-    @click="${this.onMoreOptionsClick_}">
-</cr-icon-button>
-${getCloseButton.call(this)}
-<settings-menu
-  id="settingsMenu"
-  .settingsPrefs="${this.settingsPrefs}"
-  .isImmersiveMode="${this.isImmersiveMode}"
-  .isReadAnythingPinned="${this.isReadAnythingPinned}"
-  @close-submenu-requested="${this.onCloseSubmenuRequested_}"
-  @close-all-menus="${this.onCloseAllMenus_}"
-  @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
-</settings-menu>
-<presentation-menu id="presentationMenu"
-  class="settings-submenu"
-  .presentationState="${this.presentationState}"
-  @close-all-menus="${this.onCloseAllMenus_}">
-</presentation-menu>
-<!--_html_template_end_-->`;
-  // clang-format on
-}
-
 export function getHtml(this: ReadAnythingToolbarElement) {
-  const toolbarContainerClass = this.isImmersiveEnabled_ ?
-      `immersive-toolbar-container` :
-      'toolbar-container';
-
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="toolbarContainer" class="${toolbarContainerClass}" role="toolbar"
-    aria-label="${this.getToolbarAriaLabel_()}"
+<div id="toolbarContainer" class="${this.getToolbarContainerClass_()}"
+    role="toolbar" aria-label="${this.getToolbarAriaLabel_()}"
     @keydown="${this.onToolbarKeyDown_}"
     @reset-toolbar="${this.onResetToolbar_}"
     @toolbar-overflow="${this.onToolbarOverflow_}">
-  ${this.isImmersiveEnabled_ ?
-    getImmersiveToolbarHtml.call(this) :
-    getToolbarHtml.call(this)
-  }
+  ${this.shouldShowToolbarAudioControls_() ? html`
+    <span id="audio-controls" class="audio-background-${this.getAudioState_()}">
+      <span ?hidden="${this.hideSpinner_}">
+        <picture class="spinner toolbar-button audio-controls">
+          <source media="(prefers-color-scheme: dark)"
+              srcset="//resources/images/throbber_small_dark.svg">
+          <img srcset="//resources/images/throbber_small.svg" alt="">
+        </picture>
+      </span>
+      <cr-icon-button class="toolbar-button audio-controls" id="play-pause"
+          ?disabled="${!this.isReadAloudPlayable}"
+          title="${this.playPauseButtonTitle_()}"
+          aria-label="${this.playPauseButtonAriaLabel_()}"
+          aria-keyshortcuts="k"
+          aria-description="$i18n{playDescription}"
+          iron-icon="${this.playPauseButtonIronIcon_()}"
+          tabindex="0"
+          @click="${this.onPlayPauseClick_}">
+      </cr-icon-button>
+      <span id="granularity-container"
+          class="${this.getGranularityContainerClass_()}">
+        <cr-icon-button id="previousGranularity"
+            class="toolbar-button audio-controls"
+            ?disabled="${this.shouldDisableGranularityNavButtons_()}"
+            aria-label="$i18n{previousSentenceLabel}"
+            title="$i18n{previousSentenceLabel}"
+            iron-icon="cr:chevron-left"
+            tabindex="-1"
+            @click="${this.onPreviousGranularityClick_}">
+        </cr-icon-button>
+        <cr-icon-button id="nextGranularity"
+            class="toolbar-button audio-controls"
+            aria-label="$i18n{nextSentenceLabel}"
+            ?disabled="${this.shouldDisableGranularityNavButtons_()}"
+            title="$i18n{nextSentenceLabel}"
+            iron-icon="cr:chevron-right"
+            tabindex="-1"
+            @click="${this.onNextGranularityClick_}">
+        </cr-icon-button>
+      </span>
+      ${this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
+    </span>
+    ${!this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
+    <rate-menu
+        id="rateMenu"
+        .settingsPrefs="${this.settingsPrefs}"
+        @rate-change="${this.onRateChange_}">
+    </rate-menu>
+  ` : ''}
+  ${this.isImmersiveEnabled_ ? html`
+    ${renderTextStyleOptions.call(this)}
+    <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
+        class="toolbar-button"
+        title="$i18n{moreOptionsLabel}"
+        aria-haspopup="menu"
+        iron-icon="read-anything:settings"
+        @click="${this.onMoreOptionsClick_}">
+    </cr-icon-button>
+    ${this.isImmersiveMode ? html`
+      <cr-icon-button id="close" tabindex="-1"
+          class="toolbar-button"
+          aria-label="$i18n{readingModeLanguageMenuClose}"
+          title="$i18n{readingModeLanguageMenuClose}"
+          iron-icon="cr:close"
+          @click="${this.onCloseClick_}">
+      </cr-icon-button>
+    ` : ''}
+    <settings-menu
+      id="settingsMenu"
+      .settingsPrefs="${this.settingsPrefs}"
+      .isImmersiveMode="${this.isImmersiveMode}"
+      .isReadAnythingPinned="${this.isReadAnythingPinned}"
+      @close-submenu-requested="${this.onCloseSubmenuRequested_}"
+      @close-all-menus="${this.onCloseAllMenus_}"
+      @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
+    </settings-menu>
+    <presentation-menu id="presentationMenu"
+      class="settings-submenu"
+      .presentationState="${this.presentationState}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+    </presentation-menu>
+  ` : html`
+    ${this.isReadAloudEnabled_ ? html`
+      <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
+          aria-label="$i18n{voiceSelectionLabel}"
+          title="$i18n{voiceSelectionLabel}"
+          aria-haspopup="menu"
+          iron-icon="read-anything:voice-selection"
+          @click="${this.onVoiceSelectionMenuClick_}">
+      </cr-icon-button>
+
+      <cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"
+          iron-icon="read-anything:highlight-on"
+          title="${this.getHighlightButtonLabel_()}"
+          aria-label="${this.getHighlightButtonLabel_()}"
+          @click="${this.onHighlightClick_}">
+      </cr-icon-button>
+    ` : html`
+      <font-select id="font-select" tabindex="0"
+        .settingsPrefs="${this.settingsPrefs}"
+        .pageLanguage="${this.pageLanguage}"
+        .areFontsLoaded="${this.areFontsLoaded_}"
+        @font-change="${this.onFontChange_}">
+      </font-select>
+      <hr class="separator" aria-hidden="true">
+      <div id="size-announce" class="announce-block" aria-live="polite"></div>
+      <cr-icon-button id="font-size-decrease-old" tabindex="-1"
+          class="toolbar-button"
+          aria-label="$i18n{decreaseFontSizeLabel}"
+          title="$i18n{decreaseFontSizeLabel}"
+          iron-icon="read-anything:font-size-decrease-old"
+          @click="${this.onFontSizeDecreaseClick_}">
+      </cr-icon-button>
+      <cr-icon-button id="font-size-increase-old" tabindex="-1"
+          class="toolbar-button"
+          aria-label="$i18n{increaseFontSizeLabel}"
+          title="$i18n{increaseFontSizeLabel}"
+          iron-icon="read-anything:font-size-increase-old"
+          @click="${this.onFontSizeIncreaseClick_}">
+      </cr-icon-button>
+    `}
+
+    <hr class="separator" aria-hidden="true">
+
+    ${this.textStyleToggles_.map((item) => html`
+    <cr-icon-button tabindex="-1" class="toolbar-button"
+        ?disabled="${this.isSpeechActive}"
+        id="${item.id}"
+        aria-label="${item.title}"
+        title="${item.title}"
+        iron-icon="${item.icon}"
+        @click="${this.onToggleButtonClick_}">
+    </cr-icon-button>
+    `)}
+
+    ${renderTextStyleOptions.call(this)}
+    <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
+        class="hidden"
+        title="$i18n{moreOptionsLabel}"
+        aria-haspopup="menu"
+        iron-icon="cr:more-vert"
+        @click="${this.onMoreOptionsClick_}">
+    </cr-icon-button>
+
+    <cr-lazy-render-lit id="moreOptionsMenu" .template='${() => html`
+    <cr-action-menu id="more-options-menu-dialog"
+        @keydown="${this.onToolbarKeyDown_}"
+        role-description="$i18n{menu}">
+      ${this.moreOptionsButtons_.map((item, index) => html`
+      <cr-icon-button id="${item.id}" class="more-options-icon"
+          aria-label="${item.ariaLabel}"
+          data-index="${index}"
+          title="${item.ariaLabel}"
+          aria-haspopup="menu"
+          iron-icon="${item.icon}"
+          @click="${this.onTextStyleMenuButtonClickFromOverflow_}">
+      </cr-icon-button>
+      `)}
+    </cr-action-menu>
+    `}'>
+    </cr-lazy-render-lit>
+  `}
   <cr-lazy-render-lit id="fontSizeMenu" .template='${() => html`
   <cr-action-menu @keydown="${this.onFontSizeMenuKeyDown_}"
       accessibility-label="$i18n{fontSizeTitle}"
