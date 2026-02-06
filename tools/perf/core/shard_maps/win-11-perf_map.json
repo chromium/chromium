@@ -28,20 +28,20 @@
             }
         },
         "crossbench": {
-            "jetstream_2": {
-                "display_name": "jetstream2.crossbench",
+            "jetstream2.crossbench": {
+                "crossbench_name": "jetstream_2",
                 "arguments": []
             },
-            "jetstream_3": {
-                "display_name": "jetstream3.crossbench",
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
                 "arguments": []
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -66,20 +66,20 @@
             }
         },
         "crossbench": {
-            "jetstream_2": {
-                "display_name": "jetstream2.crossbench",
+            "jetstream2.crossbench": {
+                "crossbench_name": "jetstream_2",
                 "arguments": []
             },
-            "jetstream_3": {
-                "display_name": "jetstream3.crossbench",
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
                 "arguments": []
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -104,20 +104,20 @@
             }
         },
         "crossbench": {
-            "jetstream_2": {
-                "display_name": "jetstream2.crossbench",
+            "jetstream2.crossbench": {
+                "crossbench_name": "jetstream_2",
                 "arguments": []
             },
-            "jetstream_3": {
-                "display_name": "jetstream3.crossbench",
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
                 "arguments": []
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -148,20 +148,20 @@
             }
         },
         "crossbench": {
-            "jetstream_2": {
-                "display_name": "jetstream2.crossbench",
+            "jetstream2.crossbench": {
+                "crossbench_name": "jetstream_2",
                 "arguments": []
             },
-            "jetstream_3": {
-                "display_name": "jetstream3.crossbench",
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
                 "arguments": []
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -189,20 +189,20 @@
             }
         },
         "crossbench": {
-            "jetstream_2": {
-                "display_name": "jetstream2.crossbench",
+            "jetstream2.crossbench": {
+                "crossbench_name": "jetstream_2",
                 "arguments": []
             },
-            "jetstream_3": {
-                "display_name": "jetstream3.crossbench",
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
                 "arguments": []
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -236,12 +236,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -280,12 +280,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -321,12 +321,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -360,18 +360,18 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
-            "devtools_frontend": {
-                "display_name": "devtools_frontend.crossbench",
+            "devtools_frontend.crossbench": {
+                "crossbench_name": "devtools_frontend",
                 "arguments": []
             }
         }
@@ -393,12 +393,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -422,18 +422,18 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
-            "motionmark_1.3": {
-                "display_name": "motionmark1.3.crossbench",
+            "motionmark1.3.crossbench": {
+                "crossbench_name": "motionmark_1.3",
                 "arguments": []
             }
         }
@@ -471,18 +471,18 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
-            "speedometer_2": {
-                "display_name": "speedometer2.crossbench",
+            "speedometer2.crossbench": {
+                "crossbench_name": "speedometer_2",
                 "arguments": []
             }
         }
@@ -502,12 +502,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -529,12 +529,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -556,12 +556,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -583,12 +583,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -609,12 +609,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -643,12 +643,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -673,12 +673,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
@@ -713,12 +713,12 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]

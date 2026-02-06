@@ -77,8 +77,8 @@
             }
         },
         "crossbench": {
-            "loadline-tablet-fast": {
-                "display_name": "loadline_tablet.crossbench",
+            "loadline_tablet.crossbench": {
+                "crossbench_name": "loadline-tablet-fast",
                 "arguments": [
                     "--cool-down-threshold=moderate"
                 ]

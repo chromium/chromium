@@ -1,8 +1,8 @@
 {
     "0": {
         "crossbench": {
-            "loadline-phone-fast": {
-                "display_name": "loadline_phone.crossbench",
+            "loadline_phone.crossbench": {
+                "crossbench_name": "loadline-phone-fast",
                 "arguments": [
                     "--cool-down-threshold=moderate"
                 ]
@@ -23,8 +23,8 @@
     },
     "1": {
         "crossbench": {
-            "loadline-phone-fast": {
-                "display_name": "loadline_phone.crossbench",
+            "loadline_phone.crossbench": {
+                "crossbench_name": "loadline-phone-fast",
                 "arguments": [
                     "--cool-down-threshold=moderate"
                 ]
@@ -45,8 +45,8 @@
     },
     "2": {
         "crossbench": {
-            "loadline-phone-fast": {
-                "display_name": "loadline_phone.crossbench",
+            "loadline_phone.crossbench": {
+                "crossbench_name": "loadline-phone-fast",
                 "arguments": [
                     "--cool-down-threshold=moderate"
                 ]
@@ -67,8 +67,8 @@
     },
     "3": {
         "crossbench": {
-            "loadline-phone-fast": {
-                "display_name": "loadline_phone.crossbench",
+            "loadline_phone.crossbench": {
+                "crossbench_name": "loadline-phone-fast",
                 "arguments": [
                     "--cool-down-threshold=moderate"
                 ]
@@ -89,8 +89,8 @@
     },
     "4": {
         "crossbench": {
-            "loadline-phone-fast": {
-                "display_name": "loadline_phone.crossbench",
+            "loadline_phone.crossbench": {
+                "crossbench_name": "loadline-phone-fast",
                 "arguments": [
                     "--cool-down-threshold=moderate"
                 ]
@@ -261,8 +261,8 @@
             }
         },
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver"
                 ]

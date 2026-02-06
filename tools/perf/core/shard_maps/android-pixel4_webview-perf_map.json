@@ -150,8 +150,8 @@
             }
         },
         "crossbench": {
-            "embedder": {
-                "display_name": "embedder.crossbench",
+            "embedder.crossbench": {
+                "crossbench_name": "embedder",
                 "arguments": [
                     "--wpr=crossbench_android_embedder_000.wprgo",
                     "--skip-wpr-script-injection",
@@ -193,8 +193,8 @@
             }
         },
         "crossbench": {
-            "loading": {
-                "display_name": "loading.crossbench",
+            "loading.crossbench": {
+                "crossbench_name": "loading",
                 "arguments": [
                     "--wpr=crossbench_android_loading_000.wprgo",
                     "--probe=chrome_histograms:{\"baseline\":false,\"metrics\":{\"Android.WebView.Startup.CreationTime.StartChromiumLocked\":[\"mean\"],\"Android.WebView.Startup.CreationTime.Stage1.FactoryInit\":[\"mean\"],\"PageLoad.PaintTiming.NavigationToFirstContentfulPaint\":[\"mean\"]}}",

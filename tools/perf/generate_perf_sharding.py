@@ -291,7 +291,7 @@ def _ParseBenchmarks(shard_map_path):
     if executables := benchmarks_in_shard.get('executables'):
       all_benchmarks |= set(executables.keys())
     if crossbench := benchmarks_in_shard.get('crossbench'):
-      all_benchmarks |= {b['display_name'] for b in crossbench.values()}
+      all_benchmarks |= set(crossbench.keys())
   return frozenset(all_benchmarks)
 
 

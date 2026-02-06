@@ -14,30 +14,30 @@
             }
         },
         "crossbench": {
-            "motionmark_1.3": {
-                "display_name": "motionmark1.3.crossbench",
+            "motionmark1.3.crossbench": {
+                "crossbench_name": "motionmark_1.3",
                 "arguments": [
                     "--fileserver",
                     "--debug"
                 ]
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
                     "--debug"
                 ]
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
                     "--debug",
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
-            "loadline2-phone": {
-                "display_name": "loadline2_phone.crossbench",
+            "loadline2_phone.crossbench": {
+                "crossbench_name": "loadline2-phone",
                 "arguments": [
                     "--debug"
                 ]
@@ -51,30 +51,30 @@
             }
         },
         "crossbench": {
-            "motionmark_1.3": {
-                "display_name": "motionmark1.3.crossbench",
+            "motionmark1.3.crossbench": {
+                "crossbench_name": "motionmark_1.3",
                 "arguments": [
                     "--fileserver",
                     "--debug"
                 ]
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
                     "--debug"
                 ]
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
                     "--debug",
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
-            "loadline-phone-fast": {
-                "display_name": "loadline_phone.crossbench",
+            "loadline_phone.crossbench": {
+                "crossbench_name": "loadline-phone-fast",
                 "arguments": [
                     "--cool-down-threshold=moderate",
                     "--debug"
@@ -89,22 +89,22 @@
             }
         },
         "crossbench": {
-            "motionmark_1.3": {
-                "display_name": "motionmark1.3.crossbench",
+            "motionmark1.3.crossbench": {
+                "crossbench_name": "motionmark_1.3",
                 "arguments": [
                     "--fileserver",
                     "--debug"
                 ]
             },
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
                     "--debug"
                 ]
             },
-            "sp3": {
-                "display_name": "speedometer3.a11y.crossbench",
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
                     "--debug",

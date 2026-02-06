@@ -1494,8 +1494,8 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
     # Overwriting the "run_benchmark" with the Crossbench tool.
     options.executable = str(CROSSBENCH_TOOL)
     original_passthrough_args = options.passthrough_args.copy()
-    for benchmark, benchmark_config in benchmarks.items():
-      display_name = benchmark_config.get('display_name', benchmark)
+    for display_name, benchmark_config in benchmarks.items():
+      benchmark = benchmark_config.get('crossbench_name', display_name)
       if benchmark_args := benchmark_config.get('arguments', []):
         options.passthrough_args.extend(benchmark_args)
       options.benchmarks = benchmark

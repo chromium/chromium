@@ -15,8 +15,8 @@
     },
     "2": {
         "crossbench": {
-            "speedometer_3": {
-                "display_name": "speedometer3.crossbench",
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
                 "arguments": [
                     "--fileserver",
                     "--debug"

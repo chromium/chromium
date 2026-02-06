@@ -411,13 +411,9 @@ def _speedometer_main_crossbench(estimated_runtime=60, arguments=()):
 
 def _speedometer3_a11y_crossbench(estimated_runtime=60, arguments=()):
   """Latest Speedometer 3 with accessibility flag enabled."""
-  # TODO(crbug.com/444653101): This configuration runs the same speedometer_3
-  # benchmark as _speedometer3_crossbench, but since the benchmark name is used
-  # as the dict key inside the shard maps, we can't pass 'speedometer_3' to
-  # CrossbenchConfig constructor. We work around this by using alias 'sp3'.
   arguments += ('--extra-browser-args=--force-renderer-accessibility', )
   return CrossbenchConfig('speedometer3.a11y.crossbench',
-                          'sp3',
+                          'speedometer_3',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
