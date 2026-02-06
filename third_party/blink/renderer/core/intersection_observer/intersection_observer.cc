@@ -82,7 +82,7 @@ class IntersectionObserverDelegateImpl final
 void ParseMargin(const String& margin_parameter,
                  Vector<Length>& margin,
                  ExceptionState& exception_state,
-                 const String& marginName) {
+                 const char* margin_name) {
   // TODO(szager): Make sure this exact syntax and behavior is spec-ed
   // somewhere.
 
@@ -95,43 +95,28 @@ void ParseMargin(const String& margin_parameter,
 
   CSSParserTokenStream stream(margin_parameter);
   stream.ConsumeWhitespace();
-  while (stream.Peek().GetType() != kEOFToken &&
-         !exception_state.HadException()) {
+  while (!stream.AtEnd()) {
     if (margin.size() == 4) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          StrCat({"Extra text found at the end of ", marginName, "Margin."}));
+          StrCat({"Extra text found at the end of ", margin_name, "Margin."}));
       break;
     }
-    const CSSParserToken token = stream.Peek();
-    switch (token.GetType()) {
-      case kPercentageToken:
-        margin.push_back(Length::Percent(token.NumericValue()));
-        stream.ConsumeIncludingWhitespace();
-        break;
-      case kDimensionToken:
-        switch (token.GetUnitType()) {
-          case CSSPrimitiveValue::UnitType::kPixels:
-            margin.push_back(
-                Length::Fixed(static_cast<int>(floor(token.NumericValue()))));
-            break;
-          case CSSPrimitiveValue::UnitType::kPercentage:
-            margin.push_back(Length::Percent(token.NumericValue()));
-            break;
-          default:
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kSyntaxError,
-                StrCat({marginName,
-                        "Margin must be specified in pixels or percent."}));
-        }
-        stream.ConsumeIncludingWhitespace();
-        break;
-      default:
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kSyntaxError,
-            StrCat({marginName,
-                    "Margin must be specified in pixels or percent."}));
+    const CSSParserToken& token = stream.Peek();
+    if (token.GetType() == kPercentageToken) {
+      margin.push_back(Length::Percent(token.NumericValue()));
+    } else if (token.GetType() == kDimensionToken &&
+               token.GetUnitType() == CSSPrimitiveValue::UnitType::kPixels) {
+      margin.push_back(
+          Length::Fixed(static_cast<int>(floor(token.NumericValue()))));
+    } else {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kSyntaxError,
+          StrCat(
+              {margin_name, "Margin must be specified in pixels or percent."}));
+      break;
     }
+    stream.ConsumeIncludingWhitespace();
   }
 }
 
