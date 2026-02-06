@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/webrtc_video_stream.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -508,9 +509,15 @@ void WebrtcVideoStream::OnEncodedFrameSent(
   stats.capture_delay = current_frame_stats->capture_delay;
 
   // Total overhead time for IPC and threading when capturing frames.
-  stats.capture_overhead_delay = (current_frame_stats->capture_ended_time -
-                                  current_frame_stats->capture_started_time) -
-                                 stats.capture_delay;
+  // For extrapolated frames, both capture_ended_time and capture_started_time
+  // are set to the same number, so the calculated capture overhead will be
+  // negative. In that case, we just set it to 0 so that the stats don't confuse
+  // the user.
+  stats.capture_overhead_delay =
+      std::max((current_frame_stats->capture_ended_time -
+                current_frame_stats->capture_started_time) -
+                   stats.capture_delay,
+               base::TimeDelta());
 
   stats.encode_pending_delay = current_frame_stats->encode_started_time -
                                current_frame_stats->capture_ended_time;
