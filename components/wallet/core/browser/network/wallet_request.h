@@ -29,6 +29,10 @@ class WalletRequest {
 
   // Handles the response from the server.
   virtual void OnResponse(WalletHttpClient::HttpResponse http_response) && = 0;
+
+ protected:
+  // Returns the client information that should be provided in Wallet requests.
+  static base::DictValue BuildClientInfo();
 };
 
 }  // namespace wallet

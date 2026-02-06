@@ -30,6 +30,7 @@ static_library("browser") {
     "network/wallet_http_client.h",
     "network/wallet_http_client_impl.cc",
     "network/wallet_http_client_impl.h",
+    "network/wallet_request.cc",
     "network/wallet_request.h",
     "strike_databases/walletable_pass_consent_strike_database.h",
     "strike_databases/walletable_pass_save_strike_database_by_host.cc",

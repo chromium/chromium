@@ -8,20 +8,11 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace wallet {
 
 namespace {
-
-base::DictValue BuildClientInfo() {
-  base::DictValue chrome_client_info =
-      base::DictValue().Set("version", version_info::GetVersionNumber());
-
-  return base::DictValue().Set("chrome_client_info",
-                               std::move(chrome_client_info));
-}
 
 base::DictValue BuildPassportRequest(const Passport& passport) {
   // TODO(crbug.com/478783796): Implement Passport request building.
