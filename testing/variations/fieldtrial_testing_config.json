@@ -18653,28 +18653,6 @@
             ]
         }
     ],
-    "OnDeviceModelBackgroundDownload": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "allowed_features": "PromptApi,WritingAssistanceApi,Summarize",
-                        "on_device_model_free_space_mb_required_to_background_install": "50000"
-                    },
-                    "enable_features": [
-                        "OnDeviceModelBackgroundDownload",
-                        "ShowOnDeviceAiSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "OnDeviceNotificationContentDetectionModelv2": [
         {
             "platforms": [
