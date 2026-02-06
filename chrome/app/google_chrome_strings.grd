@@ -2264,6 +2264,10 @@ Google Chrome is unable to recover your settings.
           desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text but has opened the overlay to make AIM follow up queries.">
           Search anything on page
         </message>
+        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT_SELECT_PAGE"
+          desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text but has opened the overlay to make AIM follow up queries.">
+          Select anything on page
+        </message>
         <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT_ASK_ANYTHING"
           desc="The hint text of the AI mode searchbox in the Lens tab. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a question.">
           Ask anything
