@@ -7,12 +7,10 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:gravity="center_vertical"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
-    android:paddingBottom="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
-    android:paddingStart="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
-    android:paddingEnd="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+    android:layout_marginVertical="1dp"
+    android:padding="20dp"
     android:orientation="horizontal">
     <TextView
         android:id="@+id/step_number"
@@ -24,7 +22,8 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextAccentMediumThick.ColorOnPrimaryContainer"/>
     <TextView
         android:id="@+id/step_content"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/tips_notifications_bottom_sheet_step_content_margin_start"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"

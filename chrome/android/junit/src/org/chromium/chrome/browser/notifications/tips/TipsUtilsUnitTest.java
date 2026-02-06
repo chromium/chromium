@@ -147,4 +147,36 @@ public class TipsUtilsUnitTest {
                 mActivity.getString(R.string.tips_promo_bottom_sheet_title_bottom_omnibox_short),
                 promoData.detailPageTitle);
     }
+
+    @SmallTest
+    @Test
+    public void testGetDetailStepBackground_SingleStep() {
+        assertEquals(
+                R.drawable.view_list_single_item_background,
+                TipsUtils.getDetailStepBackground(/* stepIndex= */ 0, /* stepCount= */ 1));
+    }
+
+    @SmallTest
+    @Test
+    public void testGetDetailStepBackground_FirstStep() {
+        assertEquals(
+                R.drawable.view_list_top_item_background,
+                TipsUtils.getDetailStepBackground(/* stepIndex= */ 0, /* stepCount= */ 3));
+    }
+
+    @SmallTest
+    @Test
+    public void testGetDetailStepBackground_LastStep() {
+        assertEquals(
+                R.drawable.view_list_bottom_item_background,
+                TipsUtils.getDetailStepBackground(/* stepIndex= */ 2, /* stepCount= */ 3));
+    }
+
+    @SmallTest
+    @Test
+    public void testGetDetailStepBackground_MiddleStep() {
+        assertEquals(
+                R.drawable.view_list_normal_item_background,
+                TipsUtils.getDetailStepBackground(/* stepIndex= */ 1, /* stepCount= */ 3));
+    }
 }

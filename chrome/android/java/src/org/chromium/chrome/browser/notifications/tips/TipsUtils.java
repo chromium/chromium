@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -342,5 +343,26 @@ public class TipsUtils {
                         ? Math.round(screenWidthPixels * LOGO_IMAGE_MAX_WIDTH_RATIO)
                         : ViewGroup.LayoutParams.MATCH_PARENT;
         logoView.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Get the background drawable resource for a step in the detail page based on its position in
+     * the list.
+     *
+     * @param stepIndex The index of the step in the list.
+     * @param stepCount The total number of steps in the list.
+     * @return The background drawable resource id.
+     */
+    public static @DrawableRes int getDetailStepBackground(int stepIndex, int stepCount) {
+        if (stepCount == 1) {
+            return R.drawable.view_list_single_item_background;
+        }
+        if (stepIndex == 0) {
+            return R.drawable.view_list_top_item_background;
+        }
+        if (stepIndex == stepCount - 1) {
+            return R.drawable.view_list_bottom_item_background;
+        }
+        return R.drawable.view_list_normal_item_background;
     }
 }

@@ -59,7 +59,8 @@ found in the LICENSE file.
                 android:id="@+id/steps_container"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_marginBottom="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
+                android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                android:layout_marginBottom="12dp"
                 android:orientation="vertical"
                 android:clickable="true"
                 android:focusable="true"/>

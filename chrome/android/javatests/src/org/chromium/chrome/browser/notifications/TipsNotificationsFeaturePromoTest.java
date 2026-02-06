@@ -70,7 +70,7 @@ public class TipsNotificationsFeaturePromoTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.UI_NOTIFICATIONS)
                     .build();
 
