@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        MAYBE_ToastDoesNotCloseWhileMenuIsOpen) {
 #if BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP() << "Flaky in Wayland due to way events are routed and bounds "
                     "are reported";
   }

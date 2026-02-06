@@ -123,7 +123,7 @@ class MappableBufferTest : public testing::Test {
     // TODO(329211602): Currently only wayland has a valid
     // IsNativePixmapConfigSupported(). We should implement that in X11 and
     // other platforms.
-    if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    if (ui::OzonePlatform::RunningOnWaylandForTest()) {
       run_gpu_test_ = true;
     }
 #endif

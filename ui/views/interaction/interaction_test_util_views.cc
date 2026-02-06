@@ -778,7 +778,7 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::Confirm(
 // static
 bool InteractionTestUtilSimulatorViews::IsWayland() {
 #if BUILDFLAG(IS_OZONE)
-  return ui::OzonePlatform::GetPlatformNameForTest() == "wayland";
+  return ui::OzonePlatform::RunningOnWaylandForTest();
 #else
   return false;
 #endif

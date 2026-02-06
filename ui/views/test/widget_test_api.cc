@@ -30,7 +30,7 @@ void DisableActivationChangeHandlingForTests() {
 AsyncWidgetRequestWaiter::AsyncWidgetRequestWaiter(Widget& widget)
     : widget_(widget) {
 #if BUILDFLAG(IS_LINUX)
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     // Wait for a Wayland roundtrip to ensure all side effects have been
     // processed.
     auto* host = aura::WindowTreeHostPlatform::GetHostForWindow(
@@ -51,7 +51,7 @@ void AsyncWidgetRequestWaiter::Wait() {
 #if BUILDFLAG(IS_LINUX)
   auto* host = aura::WindowTreeHostPlatform::GetHostForWindow(
       widget_->GetNativeWindow());
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     // Wait for a Wayland roundtrip to ensure all side effects have been
     // processed.
     auto* wayland_extension = ui::GetWaylandExtension(*host->platform_window());

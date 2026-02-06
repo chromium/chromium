@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsDockedUpdatesBrowserWindow) {
 #if BUILDFLAG(IS_OZONE)
   // Ozone/wayland doesn't support getting/setting window position in global
   // screen coordinates. So this test is not applicable.
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
 #endif
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsUndockedUpdatesBrowserWindow) {
 #if BUILDFLAG(IS_OZONE)
   // Ozone/wayland doesn't support getting/setting window position in global
   // screen coordinates. So this test is not applicable.
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
 #endif
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowDefaultSize) {
 #if BUILDFLAG(IS_OZONE)
   // Ozone/wayland doesn't support getting/setting window position in global
   // screen coordinates. So this test is not applicable.
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
 #endif
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowKeepsSize) {
 #if BUILDFLAG(IS_OZONE)
   // Ozone/wayland doesn't support getting/setting window position in global
   // screen coordinates. So this test is not applicable.
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
 #endif
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowResetsSize) {
 #if BUILDFLAG(IS_OZONE)
   // Ozone/wayland doesn't support getting/setting window position in global
   // screen coordinates. So this test is not applicable.
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
 #endif

@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectionClipboard) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectAllOnTap) {
 #if BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland" &&
+  if (ui::OzonePlatform::RunningOnWaylandForTest() &&
       base::FeatureList::IsEnabled(features::kOzoneBubblesUsePlatformWidgets)) {
     GTEST_SKIP()
         << "This test expects the window to be focused on sending a tap "

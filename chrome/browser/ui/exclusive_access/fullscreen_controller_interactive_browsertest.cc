@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        TestNewTabExitsFullscreen) {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
   // Flaky in Linux interactive_ui_tests_wayland: crbug.com/1200036
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
 #endif

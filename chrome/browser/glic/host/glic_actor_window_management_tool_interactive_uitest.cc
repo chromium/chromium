@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP() << "Programmatic window activation doesn't work on wayland and"
                  << "this test checks window activation.";
   }

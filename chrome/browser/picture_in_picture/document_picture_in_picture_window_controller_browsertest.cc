@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // Ozone/wayland doesn't support getting/setting window position in global
   // screen coordinates. So this test is not applicable there as it essentially
   // validates that.
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP();
   }
 #endif

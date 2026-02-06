@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, ForegroundActorTaskTab) {
 #if BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/466748978): The test flakily times out when trying to focus
   // the other tab on linux-wayland-mutter.
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     GTEST_SKIP() << "Flaky on wayland crbug.com/466748978";
   }
 #endif

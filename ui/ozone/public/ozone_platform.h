@@ -270,6 +270,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // Returns the current ozone platform name.
   // Some tests may skip based on the platform name.
   static std::string GetPlatformNameForTest();
+  static bool RunningOnWaylandForTest();
 
   // Factory getters to override in subclasses. The returned objects will be
   // injected into the appropriate layer at startup. Subclasses should not
