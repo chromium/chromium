@@ -84,3 +84,7 @@
 #editButton, #saveButton {
   --cr-button-border-color: transparent;
 }
+
+.dropdown-item {
+  justify-content: flex-start;
+}

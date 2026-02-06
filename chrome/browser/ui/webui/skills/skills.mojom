@@ -53,6 +53,9 @@ interface PageHandler {
   // Called whenever the user navigates to chrome://skills/browse-skills.
   // Requests a new download of 1P skills from the skills service.
   Request1PSkills();
+
+  // Called when the user wants to delete a skill.
+  DeleteSkill(string skill_id);
 };
 
 // Called from C++ side of chrome://skills (Browser -> Renderer)

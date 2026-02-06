@@ -38,6 +38,7 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
   void GetInitialUserSkills(GetInitialUserSkillsCallback callback) override;
   void GetInitial1PSkills(GetInitial1PSkillsCallback callback) override;
   void Request1PSkills() override;
+  void DeleteSkill(const std::string& skill_id) override;
 
   // skills::SkillsService::Observer:
   void OnSkillUpdated(std::string_view skill_id,

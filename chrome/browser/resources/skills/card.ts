@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -10,9 +11,12 @@ import './icons.html.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
+import {SkillsDialogType} from './skills.mojom-webui.js';
 import {SkillSource} from './skill.mojom-webui.js';
+import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 import {getCss} from './card.css.js';
 import {getHtml} from './card.html.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 export enum CardType {
   USER_SKILL_CARD = 'user-skill-card',
@@ -24,6 +28,12 @@ export interface SkillCardElement {
     cardBody: HTMLElement,
     name: HTMLElement,
     icon: HTMLElement,
+    menu: CrActionMenuElement,
+    deleteButton: HTMLElement,
+    copyButton: HTMLElement,
+    editButton: HTMLElement,
+    saveButton: HTMLElement,
+    moreButton: HTMLElement,
   };
 }
 
@@ -60,8 +70,35 @@ export class SkillCardElement extends CrLitElement {
   };
   accessor cardType: CardType = CardType.USER_SKILL_CARD;
 
+  private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
+
   protected isDiscoverCard_(): boolean {
     return this.cardType === CardType.DISCOVER_SKILL_CARD;
+  }
+
+  protected onEditButtonClick_() {
+    this.proxy_.handler.openSkillsDialog(
+        SkillsDialogType.kEdit, this.skill);
+  }
+
+  protected onSaveButtonClick_() {
+    // TODO: b/479029101 - Implement save functionality.
+  }
+
+  protected onMoreButtonClick_(event: MouseEvent) {
+    this.$.menu.showAt(event.target as HTMLElement);
+  }
+
+  protected onCopyButtonClick_() {
+    // TODO: b/481441891 - Add toast/snackbar to let user know copy was
+    // successful.
+    navigator.clipboard.writeText(this.skill.prompt);
+    this.$.menu.close();
+  }
+
+  protected onDeleteButtonClick_() {
+    this.proxy_.handler.deleteSkill(this.skill.id);
+    this.$.menu.close();
   }
 }
 

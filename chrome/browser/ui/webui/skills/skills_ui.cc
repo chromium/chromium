@@ -40,7 +40,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"cancel", IDS_CANCEL},
       {"edit", IDS_EDIT2},
       {"save", IDS_SAVE},
-      {"delete", IDS_DELETE},
+      {"delete", IDS_SKILL_PAGE_USER_SKILLS_DELETE},
       {"add", IDS_ADD},
       {"browseSkillsTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TITLE},
       {"topPicksTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TOP_PICKS_TITLE},
@@ -70,6 +70,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"refine", IDS_SKILLS_DIALOG_REFINE_TOOLTIP},
       {"refineError", IDS_SKILLS_DIALOG_REFINE_ERROR},
       {"accountInfo", IDS_SKILLS_DIALOG_ACCOUNT_INFO},
+      {"copyInstructions", IDS_SKILL_PAGE_USER_SKILLS_COPY_INSTRUCTIONS},
   };
 
   source->AddLocalizedStrings(kStrings);

@@ -34,6 +34,11 @@ FirstPartySkillsMap Translate1PSkillsMap(
   return translated_map;
 }
 
+bool isServiceReady(const SkillsService* service) {
+  return service &&
+         service->GetServiceStatus() == SkillsService::ServiceStatus::kReady;
+}
+
 }  // namespace
 
 SkillsPageHandler::SkillsPageHandler(
@@ -72,8 +77,7 @@ void SkillsPageHandler::GetInitialUserSkills(
       std::move(callback), std::vector<skills::Skill>());
   auto* service =
       SkillsServiceFactory::GetForProfile(base::to_address(profile_));
-  if (!service ||
-      service->GetServiceStatus() == SkillsService::ServiceStatus::kReady) {
+  if (!isServiceReady(service)) {
     return;
   }
 
@@ -81,6 +85,16 @@ void SkillsPageHandler::GetInitialUserSkills(
     skills.push_back(*skill);
   }
   std::move(scoped_callback).Run(std::move(skills));
+}
+
+void SkillsPageHandler::DeleteSkill(const std::string& skill_id) {
+  auto* service =
+      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
+  if (!isServiceReady(service)) {
+    return;
+  }
+  service->DeleteSkill(skill_id, SkillsService::UpdateSource::kLocal);
+  // TODO: b/481441891 - Call OnSkillDeleted() to show toast verification.
 }
 
 void SkillsPageHandler::OnSkillUpdated(
@@ -116,8 +130,7 @@ void SkillsPageHandler::GetInitial1PSkills(
       std::move(callback), FirstPartySkillsMap());
   auto* service =
       SkillsServiceFactory::GetForProfile(base::to_address(profile_));
-  if (!service ||
-      service->GetServiceStatus() != SkillsService::ServiceStatus::kReady) {
+  if (!isServiceReady(service)) {
     return;
   }
   std::move(scoped_callback).Run(Translate1PSkillsMap(service->Get1PSkills()));

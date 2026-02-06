@@ -214,4 +214,84 @@ suite('UserSkillsPage', function() {
     await page.updateComplete;
     assertEquals(3, page.shadowRoot.querySelectorAll('skill-card').length);
   });
+
+  test('SkillDeletedFromCardMenu', async function() {
+    const skillA = {
+      id: '1',
+      name: 'Apple',
+      icon: '',
+      prompt: 'A tasty fruit',
+      description: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    const skillB = {
+      id: '2',
+      name: 'Banana',
+      icon: '',
+      prompt: 'Yellow fruit',
+      description: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    const skillC = {
+      id: '3',
+      name: 'Carrot',
+      icon: '',
+      prompt: 'Orange vegetable',
+      description: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    browserProxy.callbackRouterRemote.updateSkill(skillA);
+    browserProxy.callbackRouterRemote.updateSkill(skillB);
+    browserProxy.callbackRouterRemote.updateSkill(skillC);
+    await microtasksFinished();
+
+    let skillItems = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(3, skillItems.length);
+
+    // Delete Skill B
+    browserProxy.callbackRouterRemote.removeSkill(skillB.id);
+    await microtasksFinished();
+    await page.updateComplete;
+
+    skillItems = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(2, skillItems.length);
+    assertEquals('Apple', skillItems[0]!.skill.name);
+    assertEquals('Carrot', skillItems[1]!.skill.name);
+  });
+
+  test('CopySkillInstructionsToClipboard', async function() {
+    const skillA = {
+      id: '1',
+      name: 'Mister Tony Bark',
+      icon: '',
+      prompt: 'Describe a good dog',
+      description: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    browserProxy.callbackRouterRemote.updateSkill(skillA);
+    await microtasksFinished();
+
+    const skillCard = page.shadowRoot.querySelector('skill-card');
+    assertTrue(!!skillCard);
+    const menuButton = skillCard.$.moreButton;
+    assertTrue(!!menuButton);
+    menuButton.click();
+    await page.updateComplete;
+    const copyButton = skillCard.$.copyButton;
+    assertTrue(!!copyButton);
+    copyButton.click();
+    await page.updateComplete;
+
+    const clipboardContent = await navigator.clipboard.readText();
+    assertEquals('Describe a good dog', clipboardContent);
+  });
 });
