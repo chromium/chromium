@@ -46,37 +46,30 @@
     <script>
       // Global state for testing
       window.testState = {
-        eventFired: false,
         eventData: [],
         refillCalled: false,
         refillPromiseResolved: false,
         autofillEventFired: false,
-        addEventListenerFired: false,
         formModified: false,
-        fieldsFilledBeforeEvent: false,
         eventFiredSynchronously: false,
-        eventFireCount: 0,
-        refillIsNullOnSecondEvent: false,
         errors: [],
         pendingRefill: null,
       };
 
       async function handleAutofillEvent(event) {
-        window.testState.eventFired = true;
-        window.testState.eventFireCount++;
-
         // Event fires synchronously before autofill fills fields.
         // The name and address values should only be checked the first time the event fires.
-        if (window.testState.eventFireCount === 1) {
+        let fieldsFilledBeforeEvent = false;
+        if (window.testState.eventData.length === 0) {
           const firstNameField = document.getElementById('NAME_FIRST');
           const emailField = document.getElementById('EMAIL_ADDRESS');
 
           // Fields should not be filled yet, as the event fires before autofill.
           if (!firstNameField.value && !emailField.value) {
-            window.testState.fieldsFilledBeforeEvent = false;
+            fieldsFilledBeforeEvent = false;
             window.testState.eventFiredSynchronously = true;
           } else {
-            window.testState.fieldsFilledBeforeEvent = true;
+            fieldsFilledBeforeEvent = true;
             window.testState.errors.push(
               'Fields were already filled when first event fired (should fire before fill). ' +
               'First name: ' + (firstNameField ? firstNameField.value : 'null') +
@@ -87,17 +80,18 @@
 
         const fieldData = event.autofillValues;
         window.testState.eventData.push({
-          fireCount: window.testState.eventFireCount,
+          fireCount: window.testState.eventData.length + 1,
           fieldData: fieldData.map(f => ({
             field: f.field ? (f.field.name || f.field.id) : null,
             value: f.value
-          }))
+          })),
+          fieldsFilledBeforeEvent: fieldsFilledBeforeEvent,
+          refillIsNull: event.refill === null
         });
 
-        // On the second event (refill), verify that refill is null
+        // On the second event (refill), refill is null
         // (refill() is not yet supported for refill autofills)
-        if (window.testState.eventFireCount > 1) {
-          window.testState.refillIsNullOnSecondEvent = (event.refill === null);
+        if (window.testState.eventData.length > 1) {
           return;
         }
 
@@ -158,8 +152,6 @@
           }
         }, 100);
 
-        // Check if refill is available (null if not supported).
-        window.testState.refillIsNull = (event.refill === null);
         // Store refill function to be called by C++ test after form rescan.
         // This ensures the form has been reparsed before requesting refill.
         window.testState.pendingRefill = event.refill;
@@ -188,7 +180,7 @@
 
       // Also listen via addEventListener to verify both work
       document.addEventListener('autofill', function(e) {
-        window.testState.addEventListenerFired = true;
+        window.testState.eventData[window.testState.eventData.length - 1].addEventListenerFired = true;
       });
     </script>
   </body>
