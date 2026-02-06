@@ -474,9 +474,8 @@ void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
   }
 }
 
-void WebAppInternalsHandler::RotateKey(
-    const std::string& web_bundle_id,
-    const std::optional<std::vector<uint8_t>>& public_key) {
+void WebAppInternalsHandler::RotateKey(const std::string& web_bundle_id,
+                                       const std::vector<uint8_t>& public_key) {
   if (iwa_handler_) {
     iwa_handler_->RotateKey(web_bundle_id, public_key);
   }

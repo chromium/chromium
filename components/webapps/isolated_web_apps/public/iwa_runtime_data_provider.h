@@ -27,13 +27,13 @@ class IwaRuntimeDataProvider {
   struct KeyRotationInfo {
     using PublicKeyData = std::vector<uint8_t>;
 
-    explicit KeyRotationInfo(std::optional<PublicKeyData> public_key);
+    explicit KeyRotationInfo(PublicKeyData public_key);
     ~KeyRotationInfo();
     KeyRotationInfo(const KeyRotationInfo&);
 
     base::Value AsDebugValue() const;
 
-    std::optional<PublicKeyData> public_key;
+    PublicKeyData public_key;
   };
 
   virtual ~IwaRuntimeDataProvider() = default;

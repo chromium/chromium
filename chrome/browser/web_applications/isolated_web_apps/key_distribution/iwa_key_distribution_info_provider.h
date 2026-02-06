@@ -123,10 +123,9 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
   // Sets a custom key rotation outside of the component updater flow and
   // triggers an `OnComponentUpdateSuccess()` event. The usage of this function
   // is intentionally limited to chrome://web-app-internals.
-  void RotateKeyForDevMode(
-      base::PassKey<IwaInternalsHandler>,
-      const std::string& web_bundle_id,
-      const std::optional<std::vector<uint8_t>>& rotated_key);
+  void RotateKeyForDevMode(base::PassKey<IwaInternalsHandler>,
+                           const std::string& web_bundle_id,
+                           const std::vector<uint8_t>& rotated_key);
 
   std::optional<bool> IsPreloadedForTesting() const;
   void SetComponentDataForTesting(base::Version component_version,

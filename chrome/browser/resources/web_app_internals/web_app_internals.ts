@@ -444,27 +444,27 @@ iwaRotateKeyButton.addEventListener('click', () => {
     return;
   }
 
-  let publicKeyBytes: number[]|null = null;
-  if (publicKeyBase64.value.length > 0) {
-    try {
-      const pk = atob(publicKeyBase64.value);
+  if (publicKeyBase64.value.length === 0) {
+    keyRotationMessageDiv.innerText = `rotated-key must not be empty.`;
+    return;
+  }
 
-      publicKeyBytes = [];
-      for (let i = 0; i < pk.length; i++) {
-        publicKeyBytes.push(pk.charCodeAt(i));
-      }
-    } catch (err) {
-      // This block handles `atob()` errors.
-      keyRotationMessageDiv.innerText =
-          `${publicKeyBase64.value} is not a base64 encoded key.`;
-      return;
+  let publicKeyBytes: number[] = [];
+  try {
+    const pk = atob(publicKeyBase64.value);
+
+    publicKeyBytes = [];
+    for (let i = 0; i < pk.length; i++) {
+      publicKeyBytes.push(pk.charCodeAt(i));
     }
+  } catch (err) {
+    // This block handles `atob()` errors.
+    keyRotationMessageDiv.innerText =
+        `${publicKeyBase64.value} is not a base64 encoded key.`;
+    return;
   }
 
   iwaRotateKeyButton.disabled = true;
-
-  // If `publicKeyBytes` are `null`, the app with this `webBundleId` will be
-  // disabled.
   webAppInternalsHandler.rotateKey(webBundleId.value, publicKeyBytes);
 
   // Improve end user experience by providing a delay of 1000 ms to enable the

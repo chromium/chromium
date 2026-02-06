@@ -230,40 +230,16 @@ void UpdateBundlePathAndCreateStorageLocation(
              source.variant());
 }
 
-KeyRotationLookupResult LookupRotatedKey(
-    const SignedWebBundleId& web_bundle_id,
-    base::optional_ref<base::DictValue> debug_log) {
-  auto log_rotated_key = [&](const std::string& value) {
-    if (debug_log) {
-      debug_log->Set("rotated_key", value);
-    }
-  };
-
+std::optional<KeyRotationData> GetKeyRotationData(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const IsolationData& isolation_data) {
   const auto* kr_info =
       ChromeIwaRuntimeDataProvider::GetInstance().GetKeyRotationInfo(
           web_bundle_id.id());
   if (!kr_info) {
-    return KeyRotationLookupResult::kNoKeyRotation;
+    return std::nullopt;
   }
-
-  if (!kr_info->public_key) {
-    log_rotated_key("<disabled>");
-    return KeyRotationLookupResult::kKeyBlocked;
-  }
-  log_rotated_key(base::Base64Encode(*kr_info->public_key));
-  return KeyRotationLookupResult::kKeyFound;
-}
-
-KeyRotationData GetKeyRotationData(const SignedWebBundleId& web_bundle_id,
-                                   const IsolationData& isolation_data) {
-  const auto* kr_info =
-      ChromeIwaRuntimeDataProvider::GetInstance().GetKeyRotationInfo(
-          web_bundle_id.id());
-  CHECK(kr_info && kr_info->public_key)
-      << "`GetKeyRotationData()` must only be called if `LookupRotatedKey()` "
-         "has previously reported `KeyRotationLookupResult::kKeyFound`.";
-
-  const auto& rotated_key = *kr_info->public_key;
+  const auto& rotated_key = kr_info->public_key;
 
   // Checks whether `rotated_key` is contained in
   // `isolation_data.integrity_block_data`.
@@ -277,9 +253,9 @@ KeyRotationData GetKeyRotationData(const SignedWebBundleId& web_bundle_id,
       pending_update && IntegrityBlockDataHasRotatedKey(
                             pending_update->integrity_block_data, rotated_key);
 
-  return {.rotated_key = rotated_key,
-          .current_installation_has_rk = current_installation_has_rk,
-          .pending_update_has_rk = pending_update_has_rk};
+  return {{.rotated_key = rotated_key,
+           .current_installation_has_rk = current_installation_has_rk,
+           .pending_update_has_rk = pending_update_has_rk}};
 }
 
 VersionChangeValidationResult ValidateVersionChangeFeasibility(

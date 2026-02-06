@@ -66,18 +66,6 @@ void CleanupLocationIfOwned(const base::FilePath& profile_dir,
                             const IsolatedWebAppStorageLocation& location,
                             base::OnceClosure closure);
 
-enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
-
-// Queries the `IwaKeyDistributionInfoProvider` whether there's
-// `KeyRotationInfo` associated with the given `web_bundle_id`.
-//   * If there's no key found, returns `kNoKeyRotation`.
-//   * If the rotated key is null, reflects this in `debug_log` and returns
-//     `kKeyBlocked`.
-//   * Otherwise, writes the key data into `debug_log` and returns `kKeyFound.`
-KeyRotationLookupResult LookupRotatedKey(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    base::optional_ref<base::DictValue> debug_log = std::nullopt);
-
 // Provides the key rotation data associated with a particular IWA.
 struct KeyRotationData {
   base::raw_span<const uint8_t> rotated_key;
@@ -91,10 +79,10 @@ struct KeyRotationData {
   bool pending_update_has_rk;
 };
 
-// Computes the key rotation data as outlined above.
-// This function must only be called if the result of invoking
-// `LookupRotatedKey()` has yielded `kKeyFound` (will CHECK otherwise).
-KeyRotationData GetKeyRotationData(
+// Computes the key rotation data for `web_bundle_id` wrt rules above. Will
+// return `std::nullopt` if there's no key rotation entry for this
+// `web_bundle_id`.
+std::optional<KeyRotationData> GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolationData& isolation_data);
 

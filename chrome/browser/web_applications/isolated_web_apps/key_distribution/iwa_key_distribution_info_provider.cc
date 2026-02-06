@@ -298,9 +298,7 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
     for (const auto& [web_bundle_id, kr_info] :
          key_distribution.key_rotation_data().key_rotations()) {
       if (!kr_info.has_expected_key()) {
-        key_rotations.emplace(web_bundle_id,
-                              IwaKeyDistributionInfoProvider::KeyRotationInfo(
-                                  /*public_key=*/std::nullopt));
+        // The null key is skipped for backwards compatibility.
         continue;
       }
       std::optional<std::vector<uint8_t>> decoded_public_key =
@@ -310,7 +308,7 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
       }
       key_rotations.emplace(web_bundle_id,
                             IwaKeyDistributionInfoProvider::KeyRotationInfo(
-                                std::move(decoded_public_key)));
+                                std::move(*decoded_public_key)));
     }
   }
 
@@ -358,7 +356,7 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
 void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
     base::PassKey<IwaInternalsHandler>,
     const std::string& web_bundle_id,
-    const std::optional<std::vector<uint8_t>>& rotated_key) {
+    const std::vector<uint8_t>& rotated_key) {
   GetDevModeKeyRotationData().insert_or_assign(
       web_bundle_id, IwaRuntimeDataProvider::KeyRotationInfo(rotated_key));
   DispatchComponentUpdateSuccess();

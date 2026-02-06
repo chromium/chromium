@@ -12,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -166,11 +167,12 @@ void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationOrDowngradeIfNecessary(
                                               std::move(next_step_callback));
   } else {
     // Handle key rotation for same-version updates.
-    if (LookupRotatedKey(url_info_.web_bundle_id(), GetMutableDebugValue()) ==
-        KeyRotationLookupResult::kKeyFound) {
-      KeyRotationData data =
-          GetKeyRotationData(url_info_.web_bundle_id(), isolation_data());
-      if (!data.current_installation_has_rk && data.pending_update_has_rk) {
+    if (auto kr_data =
+            GetKeyRotationData(url_info_.web_bundle_id(), isolation_data())) {
+      GetMutableDebugValue().Set("rotated_key",
+                                 base::Base64Encode(kr_data->rotated_key));
+      if (!kr_data->current_installation_has_rk &&
+          kr_data->pending_update_has_rk) {
         std::move(next_step_callback).Run();
         return;
       }

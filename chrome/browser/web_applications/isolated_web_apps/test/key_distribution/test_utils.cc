@@ -76,11 +76,9 @@ KeyDistributionComponentBuilder::~KeyDistributionComponentBuilder() = default;
 KeyDistributionComponentBuilder&
 KeyDistributionComponentBuilder::AddToKeyRotations(
     const web_package::SignedWebBundleId& web_bundle_id,
-    std::optional<base::span<const uint8_t>> expected_key) & {
+    base::span<const uint8_t> expected_key) & {
   IwaKeyRotations::KeyRotationInfo kr_info_proto;
-  if (expected_key.has_value()) {
-    kr_info_proto.set_expected_key(base::Base64Encode(*expected_key));
-  }
+  kr_info_proto.set_expected_key(base::Base64Encode(expected_key));
   (*component_.component_data.mutable_key_rotation_data()
         ->mutable_key_rotations())[web_bundle_id.id()] =
       std::move(kr_info_proto);
@@ -90,7 +88,7 @@ KeyDistributionComponentBuilder::AddToKeyRotations(
 KeyDistributionComponentBuilder&&
 KeyDistributionComponentBuilder::AddToKeyRotations(
     const web_package::SignedWebBundleId& web_bundle_id,
-    std::optional<base::span<const uint8_t>> expected_key) && {
+    base::span<const uint8_t> expected_key) && {
   return std::move(AddToKeyRotations(web_bundle_id, std::move(expected_key)));
 }
 

@@ -252,7 +252,7 @@ TEST_P(IwaKeyDistributionInfoProviderDataAccessTest,
         kd_data_provider.GetKeyRotationInfo(kWebBundleId),
         testing::Pointee(
             Field(&IwaKeyDistributionInfoProvider::KeyRotationInfo::public_key,
-                  Optional(ElementsAreArray(kExpectedKey)))));
+                  ElementsAreArray(kExpectedKey))));
   } else {
     EXPECT_THAT(kd_data_provider.GetKeyRotationInfo(kWebBundleId), IsNull());
   }
@@ -442,24 +442,6 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
       base::BucketsAre(
           base::Bucket(KeyDistributionComponentSource::kNone, 1),
           base::Bucket(KeyDistributionComponentSource::kDownloaded, 2)));
-
-  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.2"))
-                .AddToKeyRotations(kSignedWebBundleId, std::nullopt)
-                .Build()
-                .UploadFromComponentFolder());
-
-  EXPECT_THAT(
-      web_package::test::VerifySignatures(signature_verifier, file,
-                                          parsed_integrity_block),
-      ErrorIs(FieldsAre(Error::Type::kWebBundleIdError,
-                        HasSubstr(base::StringPrintf(
-                            "Web Bundle ID <%s> is disabled", kWebBundleId)))));
-
-  EXPECT_THAT(
-      ht.GetAllSamples(kIwaKeyRotationInfoSource),
-      base::BucketsAre(
-          base::Bucket(KeyDistributionComponentSource::kNone, 1),
-          base::Bucket(KeyDistributionComponentSource::kDownloaded, 3)));
 }
 
 namespace {

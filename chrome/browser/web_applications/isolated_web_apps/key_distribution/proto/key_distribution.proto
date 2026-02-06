@@ -22,7 +22,6 @@ message IwaKeyDistribution {
 message IwaKeyRotations {
   message KeyRotationInfo {
     // base64-encoded public key that this IWA’s bundle must be signed with.
-    // Leaving this field empty disables the IWA.
     string expected_key = 1;
   }
 

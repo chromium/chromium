@@ -60,9 +60,8 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void UpdateDevProxyIsolatedWebApp(
       const webapps::AppId& app_id,
       UpdateDevProxyIsolatedWebAppCallback callback) override;
-  void RotateKey(
-      const std::string& web_bundle_id,
-      const std::optional<std::vector<uint8_t>>& public_key) override;
+  void RotateKey(const std::string& web_bundle_id,
+                 const std::vector<uint8_t>& public_key) override;
   void UpdateManifestInstalledIsolatedWebApp(
       const webapps::AppId& app_id,
       UpdateManifestInstalledIsolatedWebAppCallback callback) override;

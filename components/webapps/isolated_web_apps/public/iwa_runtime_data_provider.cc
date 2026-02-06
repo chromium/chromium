@@ -9,7 +9,7 @@
 namespace web_app {
 
 IwaRuntimeDataProvider::KeyRotationInfo::KeyRotationInfo(
-    std::optional<PublicKeyData> public_key)
+    PublicKeyData public_key)
     : public_key(std::move(public_key)) {}
 
 IwaRuntimeDataProvider::KeyRotationInfo::~KeyRotationInfo() = default;
@@ -18,8 +18,8 @@ IwaRuntimeDataProvider::KeyRotationInfo::KeyRotationInfo(
     const KeyRotationInfo&) = default;
 
 base::Value IwaRuntimeDataProvider::KeyRotationInfo::AsDebugValue() const {
-  return base::Value(base::DictValue().Set(
-      "public_key", public_key ? base::Base64Encode(*public_key) : "null"));
+  return base::Value(
+      base::DictValue().Set("public_key", base::Base64Encode(public_key)));
 }
 
 }  // namespace web_app

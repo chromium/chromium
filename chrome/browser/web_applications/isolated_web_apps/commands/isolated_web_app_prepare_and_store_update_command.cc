@@ -13,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -183,21 +184,13 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
   GetMutableDebugValue().Set("installed_version",
                              installed_version_.value().GetString());
 
-  switch (LookupRotatedKey(url_info_.web_bundle_id(), GetMutableDebugValue())) {
-    case KeyRotationLookupResult::kNoKeyRotation:
-      break;
-    case KeyRotationLookupResult::kKeyFound: {
-      KeyRotationData data =
-          GetKeyRotationData(url_info_.web_bundle_id(), isolation_data);
-      if (!data.current_installation_has_rk) {
-        same_version_update_allowed_by_key_rotation_ = true;
-      }
-    } break;
-    case KeyRotationLookupResult::kKeyBlocked:
-      ReportFailure(
-          "The web bundle id for this app's bundle has been blocked by the key "
-          "distribution component.");
-      return;
+  if (auto kr_data =
+          GetKeyRotationData(url_info_.web_bundle_id(), isolation_data)) {
+    GetMutableDebugValue().Set("rotated_key",
+                               base::Base64Encode(kr_data->rotated_key));
+    if (!kr_data->current_installation_has_rk) {
+      same_version_update_allowed_by_key_rotation_ = true;
+    }
   }
 
   if (expected_version_) {

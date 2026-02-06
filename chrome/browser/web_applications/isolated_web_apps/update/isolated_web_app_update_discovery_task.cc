@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
@@ -303,24 +304,15 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   bool same_version_update_allowed_by_key_rotation = false;
   bool pending_info_overwrite_allowed_by_key_rotation = false;
   std::optional<std::vector<uint8_t>> rotated_key;
-  switch (
-      LookupRotatedKey(task_params_.url_info().web_bundle_id(), debug_log_)) {
-    case KeyRotationLookupResult::kNoKeyRotation:
-      break;
-    case KeyRotationLookupResult::kKeyFound: {
-      KeyRotationData data = GetKeyRotationData(
-          task_params_.url_info().web_bundle_id(), isolation_data);
-      rotated_key = base::ToVector(data.rotated_key);
-      if (!data.current_installation_has_rk) {
-        same_version_update_allowed_by_key_rotation = true;
-      }
-      if (!data.pending_update_has_rk) {
-        pending_info_overwrite_allowed_by_key_rotation = true;
-      }
-    } break;
-    case KeyRotationLookupResult::kKeyBlocked: {
-      FailWith(Error::kUpdateManifestNoApplicableVersion);
-      return;
+  if (auto kr_data = GetKeyRotationData(task_params_.url_info().web_bundle_id(),
+                                        isolation_data)) {
+    debug_log_.Set("rotated_key", base::Base64Encode(kr_data->rotated_key));
+    rotated_key = base::ToVector(kr_data->rotated_key);
+    if (!kr_data->current_installation_has_rk) {
+      same_version_update_allowed_by_key_rotation = true;
+    }
+    if (!kr_data->pending_update_has_rk) {
+      pending_info_overwrite_allowed_by_key_rotation = true;
     }
   }
 

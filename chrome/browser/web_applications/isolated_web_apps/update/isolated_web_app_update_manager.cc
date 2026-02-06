@@ -251,18 +251,8 @@ bool ShouldProceedWithAppUpdate(
   }
 
   if (pinned_version == isolation_data.version()) {
-    switch (LookupRotatedKey(web_bundle_id)) {
-      case KeyRotationLookupResult::kNoKeyRotation:
-        return false;
-      case KeyRotationLookupResult::kKeyFound: {
-        KeyRotationData data =
-            GetKeyRotationData(web_bundle_id, isolation_data);
-        if (!data.current_installation_has_rk) {
-          return true;
-        }
-      } break;
-      case KeyRotationLookupResult::kKeyBlocked:
-        return false;
+    if (auto kr_data = GetKeyRotationData(web_bundle_id, isolation_data)) {
+      return !kr_data->current_installation_has_rk;
     }
   }
   return false;
@@ -276,18 +266,12 @@ std::vector<webapps::AppId> GetIwasAffectedByRecentKeyRotation(
   for (const auto& iwa :
        provider.registrar_unsafe().GetApps(WebAppFilter::IsIsolatedApp())) {
     auto web_bundle_id = IwaOrigin::Create(iwa.scope())->web_bundle_id();
-    auto result = LookupRotatedKey(web_bundle_id);
-    // If the rotated key is null, there's no point in updating the
-    // app (as the update won't succeed anyway).
-    if (result != KeyRotationLookupResult::kKeyFound) {
-      continue;
-    }
-
-    KeyRotationData data =
+    std::optional<KeyRotationData> data =
         GetKeyRotationData(web_bundle_id, *iwa.isolation_data());
-    // If either the bundle or the pending update already includes the rotated
-    // key, there's no need to rush with updates.
-    if (data.current_installation_has_rk || data.pending_update_has_rk) {
+    // If there's no KR data or either the bundle or the pending update already
+    // includes the rotated key, there's no need to rush with updates.
+    if (!data ||
+        (data->current_installation_has_rk || data->pending_update_has_rk)) {
       continue;
     }
 

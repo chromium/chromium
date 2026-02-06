@@ -24,17 +24,10 @@ ValidateWebBundleIdentityAgainstKeyRotationInfo(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys,
     const IwaRuntimeDataProvider::KeyRotationInfo& kr_info) {
-  if (!kr_info.public_key) {
-    return base::unexpected(base::StringPrintf(
-        "Web Bundle ID <%s> is disabled via the Key Rotation Component.",
-        web_bundle_id.c_str()));
-  }
-
   if (!std::ranges::any_of(public_keys, [&](const auto& public_key) {
         return std::visit(
             [&](const auto& public_key) {
-              return std::ranges::equal(public_key.bytes(),
-                                        *kr_info.public_key);
+              return std::ranges::equal(public_key.bytes(), kr_info.public_key);
             },
             public_key);
       })) {
