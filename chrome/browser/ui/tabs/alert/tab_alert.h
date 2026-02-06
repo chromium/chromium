@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_ALERT_TAB_ALERT_H_
 #define CHROME_BROWSER_UI_TABS_ALERT_TAB_ALERT_H_
 
+#include "chrome/common/buildflags.h"
+
 namespace tabs {
 // Alert states for a tab. Any number of these (or none) may apply at once.
 // LINT.IfChange(TabAlert)
@@ -23,10 +25,12 @@ enum class TabAlert {
   kVrPresentingInHeadset,  // VR content is being presented in a headset.
   kAudioRecording,         // Audio [only] being recorded, consumed by tab.
   kVideoRecording,         // Video [only] being recorded, consumed by tab.
-  kGlicAccessing,          // Glic is accessing the tab's contents.
-  kGlicSharing,            // The tab's contents are shared with glic.
-  kActorAccessing,         // Actor is accessing the tab's contents.
-  kActorWaitingOnUser,     // Actor is waiting on user to respond.
+#if BUILDFLAG(ENABLE_GLIC)
+  kGlicAccessing,       // Glic is accessing the tab's contents.
+  kGlicSharing,         // The tab's contents are shared with glic.
+#endif                  // BUILDFLAG(ENABLE_GLIC)
+  kActorAccessing,      // Actor is accessing the tab's contents.
+  kActorWaitingOnUser,  // Actor is waiting on user to respond.
 };
 // Any changes to the TabAlert enum needs to be updated in CompareAlerts as
 // well.

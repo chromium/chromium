@@ -32,8 +32,10 @@ ui::ColorId GetAlertIndicatorColor(TabAlert state,
       break;
     case tabs::TabAlert::kTabCapturing:
     case tabs::TabAlert::kPipPlaying:
+#if BUILDFLAG(ENABLE_GLIC)
     case tabs::TabAlert::kGlicAccessing:
     case tabs::TabAlert::kGlicSharing:
+#endif  // BUILDFLAG(ENABLE_GLIC)
     case tabs::TabAlert::kActorWaitingOnUser:
     case tabs::TabAlert::kActorAccessing:
       group = 1;
@@ -97,19 +99,15 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
       return vector_icons::kCardboardIcon;
     case TabAlert::kActorWaitingOnUser:
     case TabAlert::kActorAccessing:
-#if BUILDFLAG(ENABLE_GLIC)
-        return glic::GlicVectorIconManager::GetVectorIcon(
-            IDR_ACTOR_AUTO_BROWSE_ICON);
-#else
+#if !BUILDFLAG(ENABLE_GLIC)
       return kTvIcon;
-#endif
+#else
+      return glic::GlicVectorIconManager::GetVectorIcon(
+          IDR_ACTOR_AUTO_BROWSE_ICON);
     case TabAlert::kGlicAccessing:
     case TabAlert::kGlicSharing:
-#if BUILDFLAG(ENABLE_GLIC)
       return glic::GlicVectorIconManager::GetVectorIcon(
           IDR_GLIC_ACCESSING_ICON);
-#else
-      return kTvIcon;
 #endif
   }
 }

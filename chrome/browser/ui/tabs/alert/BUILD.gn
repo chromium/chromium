@@ -8,6 +8,8 @@ import("//chrome/common/features.gni")
 
 source_set("tab_alert_enum") {
   public = [ "tab_alert.h" ]
+
+  public_deps = [ "//chrome/common:buildflags" ]
 }
 
 source_set("tab_alert") {

@@ -79,10 +79,12 @@ MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
       return MojoTabAlertState::kActorAccessing;
     case mojo::NativeTabAlertState::kActorWaitingOnUser:
       return MojoTabAlertState::kActorWaitingOnUser;
+#if BUILDFLAG(ENABLE_GLIC)
     case NativeTabAlertState::kGlicAccessing:
       return MojoTabAlertState::kGlicAccessing;
     case NativeTabAlertState::kGlicSharing:
       return MojoTabAlertState::kGlicSharing;
+#endif  // BUILDFLAG(ENABLE_GLIC)
   }
   NOTREACHED();
 }
