@@ -1076,10 +1076,10 @@ std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
   return candidate_iban;
 }
 
-FormDataImporter::ExtractCreditCardFromFormResult
+payments::PaymentsFormDataImporter::ExtractCreditCardFromFormResult
 FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   // Populated by the lambdas below.
-  ExtractCreditCardFromFormResult result;
+  payments::PaymentsFormDataImporter::ExtractCreditCardFromFormResult result;
   std::string app_locale = client_->GetAppLocale();
 
   // Populates `result` from `field` if it's a credit card field.

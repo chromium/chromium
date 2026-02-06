@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_PAYMENTS_PAYMENTS_FORM_DATA_IMPORTER_H_
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 namespace autofill {
 
@@ -19,6 +20,16 @@ namespace payments {
 // and autofill table updating.
 class PaymentsFormDataImporter {
  public:
+  struct ExtractCreditCardFromFormResult {
+    // The extracted credit card, which may be a candidate for import.
+    // If there is no credit card field in the form, the value is the default
+    // `CreditCard()`.
+    CreditCard card;
+    // If there are multiple credit card fields of the same type in the form, we
+    // won't know which value to import.
+    bool has_duplicate_credit_card_field_type = false;
+  };
+
   explicit PaymentsFormDataImporter(AutofillClient* client);
   PaymentsFormDataImporter(const PaymentsFormDataImporter&) = delete;
   PaymentsFormDataImporter& operator=(const PaymentsFormDataImporter&) = delete;

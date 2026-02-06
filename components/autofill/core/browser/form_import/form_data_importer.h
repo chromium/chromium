@@ -99,19 +99,9 @@ class FormDataImporter : public AddressDataManager::Observer,
                                 bool payment_methods_autofill_enabled,
                                 ukm::SourceId ukm_source_id);
 
-  struct ExtractCreditCardFromFormResult {
-    // The extracted credit card, which may be a candidate for import.
-    // If there is no credit card field in the form, the value is the default
-    // `CreditCard()`.
-    CreditCard card;
-    // If there are multiple credit card fields of the same type in the form, we
-    // won't know which value to import.
-    bool has_duplicate_credit_card_field_type = false;
-  };
-
   // Extracts credit card from the form structure.
-  ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
-      const FormStructure& form);
+  payments::PaymentsFormDataImporter::ExtractCreditCardFromFormResult
+  ExtractCreditCardFromForm(const FormStructure& form);
 
   // Tries to initiate the saving of `extracted_iban` if applicable.
   bool ProcessIbanImportCandidate(Iban& extracted_iban);
