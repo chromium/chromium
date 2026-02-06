@@ -132,10 +132,6 @@ namespace {
 // between us notifying the WebUI, and the WebUI receiving our event.
 constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
 
-// The amount of time to wait for a reflow after closing the side panel before
-// taking a screenshot.
-constexpr base::TimeDelta kReflowWaitTimeout = base::Milliseconds(200);
-
 // The amount of time to wait after the side panel opens before showing the
 // mobile promo.
 constexpr base::TimeDelta kMobilePromoShowDelay = base::Seconds(4);
@@ -593,11 +589,6 @@ bool LensOverlayController::HasRegionSelection() const {
          !initialization_data_->selected_region_.is_null();
 }
 
-bool LensOverlayController::IsScreenshotPossible(
-    content::RenderWidgetHostView* view) {
-  return view && view->IsSurfaceAvailableForCopy();
-}
-
 void LensOverlayController::IssueLensRegionRequestForTesting(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_click) {
@@ -921,19 +912,7 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPHForTesting(
 
 void LensOverlayController::ShowUI(
     lens::LensOverlayInvocationSource invocation_source) {
-  // If UI is already showing or in the process of showing, do nothing.
-  if (state_ != State::kOff && state_ != State::kHidden) {
-    return;
-  }
-
-  // The UI should only show if the tab is in the foreground or if the tab web
-  // contents is not in a crash state.
-  if (!tab_->IsActivated() || tab_->GetContents()->IsCrashed()) {
-    return;
-  }
-
-  // If a different tab-modal is showing, do nothing.
-  if (!tab_->CanShowModalUI()) {
+  if (!CanShowModalUI()) {
     return;
   }
 
@@ -958,21 +937,9 @@ void LensOverlayController::ShowUI(
 
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  auto* const side_panel_ui =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
-  CHECK(side_panel_ui);
-
   // Create the languages controller.
   languages_controller_ =
       std::make_unique<lens::LensOverlayLanguagesController>(profile);
-
-  // Setup observer to be notified of side panel opens and closes.
-  SidePanelEntry::PanelType panel_type =
-      GetLensOverlaySidePanelCoordinator()->GetPanelType();
-  side_panel_shown_subscription_ = side_panel_ui->RegisterSidePanelShown(
-      panel_type,
-      base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
-                          weak_factory_.GetWeakPtr()));
 
   if (find_in_page::FindTabHelper* const find_tab_helper =
           find_in_page::FindTabHelper::FromWebContents(tab_->GetContents())) {
@@ -984,32 +951,10 @@ void LensOverlayController::ShowUI(
       omnibox_tab_helper_observer_.Observe(helper);
     }
   }
-
-  // This is safe because we checked if another modal was showing above.
-  scoped_tab_modal_ui_ = tab_->ShowModalUI();
+  ShowModalUI();
   fullscreen_observation_.Observe(tab_->GetBrowserWindowInterface()
                                       ->GetExclusiveAccessManager()
                                       ->fullscreen_controller());
-
-  // The preselection widget can cover top Chrome in immersive fullscreen.
-  // Observer the reveal state to hide the widget when top Chrome is shown.
-  immersive_mode_observer_.Observe(
-      ImmersiveModeController::From(tab_->GetBrowserWindowInterface()));
-
-  pref_change_registrar_.Init(pref_service_);
-#if BUILDFLAG(IS_MAC)
-  // Add observer to listen for changes in the always show toolbar state,
-  // since that requires the preselection bubble to rerender to show properly.
-  pref_change_registrar_.Add(
-      prefs::kShowFullscreenToolbar,
-      base::BindRepeating(
-          &LensOverlayController::CloseAndReshowPreselectionBubble,
-          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_MAC)
-  pref_change_registrar_.Add(
-      prefs::kSidePanelHorizontalAlignment,
-      base::BindRepeating(&LensOverlayController::OnSidePanelAlignmentChanged,
-                          base::Unretained(this)));
 
   NotifyUserEducationAboutOverlayUsed();
 
@@ -1017,42 +962,12 @@ void LensOverlayController::ShowUI(
   invocation_time_ = base::TimeTicks::Now();
   invocation_time_since_epoch_ = base::Time::Now();
   ocr_dom_similarity_recorded_in_session_ = false;
+}
 
-  // This should be the last thing called in ShowUI, so if something goes wrong
-  // in capturing the screenshot, the state gets cleaned up correctly.
-  if (side_panel_ui->IsSidePanelShowing(panel_type) &&
-      !IsResultsSidePanelShowing()) {
-    // Close the currently opened side panel synchronously if it's not the Lens
-    // panel. Postpone the screenshot for a fixed time to allow reflow.
-    state_ = State::kClosingOpenedSidePanel;
-    side_panel_ui->Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed,
-                         /*suppress_animations=*/true);
-    base::SingleThreadTaskRunner::GetCurrentDefault()
-        ->PostNonNestableDelayedTask(
-            FROM_HERE,
-            base::BindOnce(
-                &LensOverlayController::FinishedWaitingForReflow,
-                weak_factory_.GetWeakPtr(),
-                std::make_optional<base::TimeTicks>(base::TimeTicks::Now())),
-            kReflowWaitTimeout);
-  } else {
-    state_ = State::kScreenshot;
-    content::RenderWidgetHostView* view = tab_->GetContents()
-                                              ->GetPrimaryMainFrame()
-                                              ->GetRenderViewHost()
-                                              ->GetWidget()
-                                              ->GetView();
-    // During initialization and shutdown a capture may not be possible.
-    if (!IsScreenshotPossible(view)) {
-      lens_search_controller_->CloseLensSync(
-          lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
-      return;
-    }
-
-    GetContextualizationController()->StartScreenshotFlow(base::BindOnce(
-        &LensOverlayController::OnScreenshotTaken, weak_factory_.GetWeakPtr(),
-        std::make_optional<base::TimeTicks>(base::TimeTicks::Now())));
-  }
+void LensOverlayController::StartScreenshotFlow() {
+  GetContextualizationController()->StartScreenshotFlow(
+      base::BindOnce(&LensOverlayController::OnScreenshotTaken,
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void LensOverlayController::IssueTextSearchRequest(
@@ -1675,6 +1590,14 @@ ui::ElementIdentifier LensOverlayController::GetViewContainerId() {
   return kLensOverlayViewElementId;
 }
 
+SidePanelEntry::PanelType LensOverlayController::GetSidePanelType() {
+  return GetLensOverlaySidePanelCoordinator()->GetPanelType();
+}
+
+bool LensOverlayController::ShouldCloseSidePanel() {
+  return true;
+}
+
 bool LensOverlayController::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
@@ -1767,30 +1690,12 @@ float LensOverlayController::GetUiScaleFactor() {
   return device_scale_factor * page_scale_factor;
 }
 
-void LensOverlayController::OnSidePanelDidOpen() {
-  if (IsResultsSidePanelShowing()) {
-    SetOverlayRoundedCorner();
-  } else {
-    // If a side panel opens that is not ours, we must close the overlay.
-    lens_search_controller_->CloseLensSync(
-        lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
-  }
-}
-
 void LensOverlayController::FinishedWaitingForReflow(
-    std::optional<base::TimeTicks> reflow_start_time) {
+    base::TimeTicks reflow_start_time) {
   if (state_ == State::kClosingOpenedSidePanel) {
-    if (reflow_start_time.has_value()) {
-      lens::RecordTimeToCloseOpenedSidePanel(base::TimeTicks::Now() -
-                                             reflow_start_time.value());
-    }
-    // This path is invoked after the user invokes the overlay, but we needed
-    // to close the side panel before taking a screenshot. The Side panel is
-    // now closed so we can now take the screenshot of the page.
-    state_ = State::kScreenshot;
-    GetContextualizationController()->StartScreenshotFlow(base::BindOnce(
-        &LensOverlayController::OnScreenshotTaken, weak_factory_.GetWeakPtr(),
-        std::make_optional(base::TimeTicks::Now())));
+    lens::RecordTimeToCloseOpenedSidePanel(base::TimeTicks::Now() -
+                                           reflow_start_time);
+    OverlayBaseController::FinishedWaitingForReflow(reflow_start_time);
   }
 }
 
@@ -2363,12 +2268,6 @@ void LensOverlayController::HandleRegionBitmapCreated(
   initialization_data_->selected_region_bitmap_ = region_bitmap;
 }
 
-void LensOverlayController::OnSidePanelAlignmentChanged() {
-  if (IsOverlayShowing()) {
-    SetOverlayRoundedCorner();
-  }
-}
-
 bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {
   if (!tutorial_iph_url_matcher_) {
     return false;
@@ -2495,14 +2394,11 @@ void LensOverlayController::OnPageContextUpdatedForSuggestion(
 }
 
 void LensOverlayController::OnScreenshotTaken(
-    std::optional<base::TimeTicks> screenshot_start_time,
+    base::TimeTicks screenshot_start_time,
     const SkBitmap& bitmap,
     const std::vector<gfx::Rect>& all_bounds,
     std::optional<uint32_t> pdf_current_page) {
-  if (screenshot_start_time.has_value()) {
-    lens::RecordTimeToScreenshot(base::TimeTicks::Now() -
-                                 screenshot_start_time.value());
-  }
+  lens::RecordTimeToScreenshot(base::TimeTicks::Now() - screenshot_start_time);
 
   // While capturing a screenshot the overlay was cancelled. Do nothing.
   if (state_ == State::kOff || IsOverlayClosing()) {
@@ -2738,5 +2634,7 @@ lens::LensOverlayDismissalSource LensOverlayController::ConvertDismissalSource(
     case DismissalSource::kOverlayRendererClosedUnexpectedly:
       return lens::LensOverlayDismissalSource::
           kOverlayRendererClosedUnexpectedly;
+    case DismissalSource::kUnexpectedSidePanelOpen:
+      return lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen;
   }
 }

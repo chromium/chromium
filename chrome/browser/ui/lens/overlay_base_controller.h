@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/lens/lens_overlay_blur_layer_delegate.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -141,6 +142,13 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Called when the UI needs to create the view to show in the overlay.
   raw_ptr<views::View> CreateViewForOverlay();
 
+  // Called when the side panel alignment chgces.
+  void OnSidePanelAlignmentChanged();
+
+  // Called anytime the side panel opens. Used to close lens overlay when
+  // another side panel opens.
+  void OnSidePanelDidOpen();
+
  protected:
   // Whether the side panel is showing.
   virtual bool IsResultsSidePanelShowing() = 0;
@@ -153,7 +161,8 @@ class OverlayBaseController : public content::WebContentsDelegate,
     kPreselectionToastEscapeKeyPress,
     kErrorScreenshotCreationFailed,
     kOverlayRendererClosedNormally,
-    kOverlayRendererClosedUnexpectedly
+    kOverlayRendererClosedUnexpectedly,
+    kUnexpectedSidePanelOpen
   };
 
   // Request synchronous close of the overlay.
@@ -167,6 +176,24 @@ class OverlayBaseController : public content::WebContentsDelegate,
 
   // Return the ID of the view we attach this overlay to.
   virtual ui::ElementIdentifier GetViewContainerId() = 0;
+
+  // The side panel type.
+  virtual SidePanelEntry::PanelType GetSidePanelType() = 0;
+
+  // Whether the side panel should be closed if it doesn't match
+  // the desired type.
+  virtual bool ShouldCloseSidePanel() = 0;
+
+  // Start the flow for collecting the screenshot. After the concrete
+  // class has prepared the screenshot `InitializeScreenshot` should be called.
+  virtual void StartScreenshotFlow() = 0;
+
+  // If the side panel was closed, we wait for the reflow before beginning
+  // the screenshot flow.
+  virtual void FinishedWaitingForReflow(base::TimeTicks reflow_start_time);
+
+  // Whether it's possible to capture a screenshot. virtual for testing.
+  virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
   // Process the bitmap and creates all necessary data to initialize the
   // overlay. Happens on a separate thread to prevent main thread from hanging.
@@ -185,6 +212,14 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // TODO(crbug.com/443102583): Remove this block if `overlay_view_` ends up
   // getting reparented into `MultiContentsView`.
   void SetOverlayRoundedCorner();
+
+  // Whether we can show modal UI now.
+  bool CanShowModalUI();
+
+  // Start the showing the modal UI. This requires a number of asynchronous
+  // steps, capturing the screenshot, converting the screenshot and starting the
+  // webUI.
+  void ShowModalUI();
 
   // Called when the UI needs to show the overlay via a view that is a child of
   // the tab contents view.

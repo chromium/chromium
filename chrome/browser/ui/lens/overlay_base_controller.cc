@@ -4,18 +4,22 @@
 
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -24,6 +28,10 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
+// The amount of time to wait for a reflow after closing the side panel before
+// taking a screenshot.
+constexpr base::TimeDelta kReflowWaitTimeout = base::Milliseconds(200);
 
 // Given a BGR bitmap, converts into a RGB bitmap instead. Returns empty bitmap
 // if creation fails.
@@ -260,6 +268,106 @@ void OverlayBaseController::SetLiveBlurImpl(bool enabled) {
   }
 
   lens_overlay_blur_layer_delegate_->StopBackgroundImageCapture();
+}
+
+bool OverlayBaseController::CanShowModalUI() {
+  // If UI is already showing or in the process of showing, do nothing.
+  if (state_ != State::kOff && state_ != State::kHidden) {
+    return false;
+  }
+
+  // The UI should only show if the tab is in the foreground or if the tab web
+  // contents is not in a crash state.
+  if (!tab_->IsActivated() || tab_->GetContents()->IsCrashed()) {
+    return false;
+  }
+
+  // If a different tab-modal is showing, do nothing.
+  if (!tab_->CanShowModalUI()) {
+    return false;
+  }
+  return true;
+}
+
+void OverlayBaseController::ShowModalUI() {
+  if (!CanShowModalUI()) {
+    return;
+  }
+  auto* const side_panel_ui =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+  CHECK(side_panel_ui);
+  auto panel_type = GetSidePanelType();
+
+  // Setup observer to be notified of side panel opens and closes.
+  side_panel_shown_subscription_ = side_panel_ui->RegisterSidePanelShown(
+      panel_type,
+      base::BindRepeating(&OverlayBaseController::OnSidePanelDidOpen,
+                          weak_factory_.GetWeakPtr()));
+
+  // This is safe because we checked if another modal was showing above.
+  scoped_tab_modal_ui_ = tab_->ShowModalUI();
+
+  // The preselection widget can cover top Chrome in immersive fullscreen.
+  // Observer the reveal state to hide the widget when top Chrome is shown.
+  immersive_mode_observer_.Observe(
+      ImmersiveModeController::From(tab_->GetBrowserWindowInterface()));
+
+  pref_change_registrar_.Init(pref_service_);
+#if BUILDFLAG(IS_MAC)
+  // Add observer to listen for changes in the always show toolbar state,
+  // since that requires the preselection bubble to rerender to show properly.
+  pref_change_registrar_.Add(
+      prefs::kShowFullscreenToolbar,
+      base::BindRepeating(
+          &OverlayBaseController::CloseAndReshowPreselectionBubble,
+          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_MAC)
+  pref_change_registrar_.Add(
+      prefs::kSidePanelHorizontalAlignment,
+      base::BindRepeating(&OverlayBaseController::OnSidePanelAlignmentChanged,
+                          base::Unretained(this)));
+
+  // This should be the last thing called in ShowUI, so if something goes wrong
+  // in capturing the screenshot, the state gets cleaned up correctly.
+  if (side_panel_ui->IsSidePanelShowing(panel_type) && ShouldCloseSidePanel() &&
+      !IsResultsSidePanelShowing()) {
+    // Close the currently opened side panel synchronously if it's not the Lens
+    // panel. Postpone the screenshot for a fixed time to allow reflow.
+    state_ = State::kClosingOpenedSidePanel;
+    side_panel_ui->Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed,
+                         /*suppress_animations=*/true);
+    base::SingleThreadTaskRunner::GetCurrentDefault()
+        ->PostNonNestableDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&OverlayBaseController::FinishedWaitingForReflow,
+                           weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+            kReflowWaitTimeout);
+  } else {
+    state_ = State::kScreenshot;
+    content::RenderWidgetHostView* view = tab_->GetContents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetRenderViewHost()
+                                              ->GetWidget()
+                                              ->GetView();
+    // During initialization and shutdown a capture may not be possible.
+    if (!IsScreenshotPossible(view)) {
+      RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
+      return;
+    }
+
+    StartScreenshotFlow();
+  }
+}
+
+void OverlayBaseController::FinishedWaitingForReflow(
+    base::TimeTicks reflow_start_time) {
+  if (state_ == State::kClosingOpenedSidePanel) {
+    // This path is invoked after the user invokes the overlay, but we needed
+    // to close the side panel before taking a screenshot. The Side panel is
+    // now closed so we can now take the screenshot of the page.
+    state_ = State::kScreenshot;
+    StartScreenshotFlow();
+  }
 }
 
 void OverlayBaseController::ShowOverlay() {
@@ -521,4 +629,24 @@ void OverlayBaseController::ClosePreselectionBubbleImpl() {
     preselection_widget_ = nullptr;
     preselection_widget_observer_.Reset();
   }
+}
+
+void OverlayBaseController::OnSidePanelAlignmentChanged() {
+  if (IsOverlayShowing()) {
+    SetOverlayRoundedCorner();
+  }
+}
+
+void OverlayBaseController::OnSidePanelDidOpen() {
+  if (IsResultsSidePanelShowing()) {
+    SetOverlayRoundedCorner();
+  } else {
+    // If a side panel opens that is not ours, we must close the overlay.
+    RequestSyncClose(DismissalSource::kUnexpectedSidePanelOpen);
+  }
+}
+
+bool OverlayBaseController::IsScreenshotPossible(
+    content::RenderWidgetHostView* view) {
+  return view && view->IsSurfaceAvailableForCopy();
 }

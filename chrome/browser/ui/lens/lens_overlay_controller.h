@@ -199,9 +199,6 @@ class LensOverlayController : public OverlayBaseController,
   // Pass a result frame URL to load in the side panel.
   void LoadURLInResultsFrame(const GURL& url);
 
-  // Whether it's possible to capture a screenshot. virtual for testing.
-  virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
-
   // Queues a tutorial IPH to be shown if the given URL is eligible. Cancels any
   // queued IPH.
   void MaybeShowDelayedTutorialIPH(const GURL& url);
@@ -214,9 +211,6 @@ class LensOverlayController : public OverlayBaseController,
 
   // Handles a new region thumbnail being created.
   void HandleRegionBitmapCreated(const SkBitmap& region_bitmap);
-
-  // Called when the side panel alignment chgces.
-  void OnSidePanelAlignmentChanged();
 
   // TODO(crbug.com/404941800): All the Handle*Response methods should not exist
   // in this class. They currently exist to unblock development. They will be
@@ -628,6 +622,10 @@ class LensOverlayController : public OverlayBaseController,
   void NotifyIsOverlayShowing(bool is_showing) override;
   int GetToolResourceId() override;
   ui::ElementIdentifier GetViewContainerId() override;
+  SidePanelEntry::PanelType GetSidePanelType() override;
+  bool ShouldCloseSidePanel() override;
+  void StartScreenshotFlow() override;
+  void FinishedWaitingForReflow(base::TimeTicks reflow_start_time) override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -662,14 +660,6 @@ class LensOverlayController : public OverlayBaseController,
 
   // Gets the ui scale factor of the page.
   float GetUiScaleFactor();
-
-  // Called anytime the side panel opens. Used to close lens overlay when
-  // another side panel opens.
-  void OnSidePanelDidOpen();
-
-  // Called to continue the screenshot process while opening lens overlay.
-  void FinishedWaitingForReflow(
-      std::optional<base::TimeTicks> reflow_start_time);
 
   // Called when the associated tab enters the foreground.
   void TabForegrounded(tabs::TabInterface* tab);
@@ -790,7 +780,7 @@ class LensOverlayController : public OverlayBaseController,
       lens::LensOverlayInvocationSource invocation_source);
 
   // Called by LensSearchContextualizationController after taking a screenshot.
-  void OnScreenshotTaken(std::optional<base::TimeTicks> screenshot_start_time,
+  void OnScreenshotTaken(base::TimeTicks screenshot_start_time,
                          const SkBitmap& bitmap,
                          const std::vector<gfx::Rect>& all_bounds,
                          std::optional<uint32_t> pdf_current_page);
