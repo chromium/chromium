@@ -413,9 +413,13 @@ pub mod remote {
             let message_handler = move |raw_message, _sender| {
                 Self::incoming_message_handler(raw_message, &pending_responses_clone)
             };
-            let endpoint_watcher =
-                MessagePipeWatcher::new_with_runner(endpoint, message_handler, runner.clone())
-                    .expect("FOR_RELEASE: Figure out how to handle errors here");
+            let endpoint_watcher = MessagePipeWatcher::new_with_runner(
+                endpoint,
+                runner.clone(),
+                message_handler,
+                None,
+            )
+            .expect("FOR_RELEASE: Figure out how to handle errors here");
             // FOR_RELEASE: We should clear out any existing messages in the endpoint
             // in case it's being re-used, so the new remote doesn't see responses to
             // the previous remote's messages.
@@ -629,7 +633,7 @@ pub mod receiver {
             };
 
             let endpoint_watcher =
-                MessagePipeWatcher::new_with_runner(endpoint, handler, runner.clone())
+                MessagePipeWatcher::new_with_runner(endpoint, runner.clone(), handler, None)
                     .expect("FOR_RELEASE: Figure out how to handle errors here");
 
             Self { endpoint_watcher, runner, state }

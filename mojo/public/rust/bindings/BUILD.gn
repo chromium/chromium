@@ -42,3 +42,19 @@ rust_static_library("helper_functions_cxx") {
   allow_unsafe = true
   visibility = [ ":*" ]
 }
+
+rust_static_library("bindings_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "test/lib.rs"
+  sources = [ "test/lib.rs" ]
+
+  deps = [
+    ":bindings",
+    "../sequences",
+    "../sequences:test_cxx",
+    "../system",
+    "../system/test_util",
+    "//testing/rust_gtest_interop",
+  ]
+}

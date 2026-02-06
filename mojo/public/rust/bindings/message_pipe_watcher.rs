@@ -22,7 +22,6 @@ use system::trap::{InitialArmingPolicy, RearmingPolicy, Trap, TrapError, TrapEve
 // any non-sequenced versions remaining.
 use std::sync::{Arc, Mutex, Weak};
 
-// FOR_RELEASE: Add tests once this is finished and trap is functional.
 // FOR_RELEASE: Replace some/all of the std::sync imports with chromium
 // sequenced equivalents once those are implemented (figure out which, if any,
 // need to be replaced).
@@ -109,14 +108,16 @@ impl MessagePipeWatcher {
     pub fn new(
         endpoint: MessageEndpoint,
         message_handler: impl MessagePipeWatcherHandler,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
     ) -> Option<Self> {
         Self::new_with_runner(
             endpoint,
-            message_handler,
             SequencedTaskRunnerHandle::get_current_default().expect(concat!(
                 "Must be called in a context with a default SequencedTaskRunner.\n",
                 "Use MessagePipeWatcher::new_with_runner instead to provide one explicitly."
             )),
+            message_handler,
+            disconnect_handler,
         )
     }
 
@@ -132,15 +133,21 @@ impl MessagePipeWatcher {
     /// handles.
     pub fn new_with_runner(
         endpoint: MessageEndpoint,
-        message_handler: impl MessagePipeWatcherHandler,
         runner: SequencedTaskRunnerHandle,
+        message_handler: impl MessagePipeWatcherHandler,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
     ) -> Option<Self> {
         // The main goal of this function is to construct a closure which reads
         // from the `endpoint` and schedules `message_handler` on `runner`.
 
+        let disconnect_info = match disconnect_handler {
+            None => DisconnectInfo::ConnectedNoHandler,
+            Some(f) => DisconnectInfo::ConnectedWithHandler(f),
+        };
+
         let watcher_state = Arc::new(MessagePipeWatcherState {
             endpoint,
-            disconnect_info: Mutex::new(DisconnectInfo::ConnectedNoHandler),
+            disconnect_info: Mutex::new(disconnect_info),
         });
 
         // Lifetime considerations:
@@ -164,7 +171,7 @@ impl MessagePipeWatcher {
         };
 
         // Define when we trigger the trap (whenever we get a new message)
-        let trigger_signals: HandleSignals = HandleSignals::NEW_DATA_READABLE;
+        let trigger_signals: HandleSignals = HandleSignals::READABLE;
         let trigger_condition: TriggerCondition = TriggerCondition::TriggerWhenSatisfied;
 
         let trap = Trap::new(RearmingPolicy::Automatic).ok()?;
@@ -204,26 +211,6 @@ impl MessagePipeWatcher {
     /// MessageEndpoint::write from the underlying endpoint.
     pub fn send_message(&self, msg: RawMojoMessage) -> MojoResult<()> {
         self.shared_state.endpoint.write(msg)
-    }
-
-    /// Designate a function to run if the underlying pipe becomes disconnected.
-    /// This can happen either because it sent a bad mojo message, or because it
-    /// was closed.
-    ///
-    /// When disconnection is detected, the disconnect handler will be scheduled
-    /// on the same sequence as incoming message notifications.
-    ///
-    /// Panics if the watcher is already disconnected.
-    pub fn set_disconnect_handler(&mut self, handler: impl FnOnce() + Send + 'static) {
-        let mut lock_contents = self
-            .shared_state
-            .disconnect_info
-            .lock()
-            .expect("disconnect_info should never be poisoned");
-        if matches!(*lock_contents, DisconnectInfo::Disconnected) {
-            panic!("Cannot set disconnect handler: Watcher is already disconnected")
-        }
-        *lock_contents = DisconnectInfo::ConnectedWithHandler(Box::new(handler));
     }
 
     /// Check if the watcher is currently connected
@@ -305,8 +292,5 @@ impl MessagePipeWatcher {
                 .expect("Sequence-bound mutex was locked or poisoned");
             message_handler(msg, response_sender)
         });
-
-        // FOR_RELEASE: Make sure we set the trap to automatically re-arm itself
-        // once that's implemented.
     }
 }

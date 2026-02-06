@@ -14,7 +14,7 @@ rust_static_library("test_util") {
 
   allow_circular_includes_from = [ ":cxx_shim" ]
 
-  visibility = [ "../*" ]
+  visibility = [ "../../*" ]
 }
 
 source_set("cxx_shim") {

@@ -8,7 +8,7 @@ group("all") {
   # Meta target, don't depend on it from production code
   testonly = true
   deps = [
-    ":rust_mojo_tests",
+    ":tests",
     "bindings",
     "mojom_value_parser",
     "sequences",
@@ -16,23 +16,20 @@ group("all") {
   ]
 }
 
-# FOR_RELEASE: This should be run by the //mojo:mojo_unittests target
+# Run by the //mojo:mojo_unittests target
 group("tests") {
   testonly = true
-  deps = [
-    "mojom_value_parser:mojom_value_parser_unittests",
-    "sequences:rust_sequences_unittests",
-    "system:ffi_unittests",
-    "system:system_bindings_unittests",
-  ]
-}
 
-# Standalone testing binary with just rustmojo tests.
-# Convenient for development so we only have to build/run our own code.
-test("rust_mojo_tests") {
-  testonly = true
-  deps = [
-    ":tests",
-    "//base/test:run_all_unittests",
-  ]
+  # These tests don't work on all configurations yet, but we need to
+  # run them as part of this target so we can share its gtest setup. So
+  # enable them for at least one known-good configuration.
+  if (is_linux && !is_asan && !is_cfi) {
+    deps = [
+      "bindings:bindings_unittests",
+      "mojom_value_parser:mojom_value_parser_unittests",
+      "sequences:rust_sequences_unittests",
+      "system:ffi_unittests",
+      "system:system_bindings_unittests",
+    ]
+  }
 }

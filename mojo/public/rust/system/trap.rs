@@ -261,6 +261,13 @@ impl Trap {
             Self::remove_cancelled_trigger(&mut owner.lock().unwrap(), trigger_id);
         }
 
+        // If the precondition is failed, we can't ever make progress again, so
+        // remove the trigger. This will trigger an immediate handler with
+        // `Cancelled` that will actually do the cleanup.
+        if raw_event.result() == Err(MojoError::FailedPrecondition) {
+            shared_data.raw_trap.remove_trigger(raw_event.trigger_context()).unwrap();
+        }
+
         // Re-arm the trap if the rearming policy is set to automatic
         if matches!(shared_data.rearming_policy, RearmingPolicy::Automatic) {
             // The only way this can fail is if the trap has no triggers. This
@@ -389,10 +396,16 @@ impl Trap {
                 // `Cancelled` event while we're doing this. It won't fire any other event
                 // because it's disarmed.
                 // FOR_RELEASE: Verify that if a trigger gets cancelled, any blocking events for
-                // it get removed from the queue.
+                // it get removed from the queue. And ideally that happens immediately so
+                // there's no risk of the cancelled handler running while we're looking at
+                // these events.
                 let trigger_data = unsafe { Self::get_trigger_data_from_event(blocking_event) };
                 // The unwraps should succeed because the trap is still alive
-                (trigger_data.unwrap().callback.lock().unwrap())(&blocking_event.into())
+                (trigger_data.unwrap().callback.lock().unwrap())(&blocking_event.into());
+                if blocking_event.result() == Err(MojoError::FailedPrecondition) {
+                    // We know the trigger hasn't been removed yet because it's blocking!
+                    raw_trap.remove_trigger(blocking_event.trigger_context()).unwrap();
+                }
             }
         }
     }
