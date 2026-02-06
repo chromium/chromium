@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -109,9 +110,10 @@ void TabCaptureContentsBorderHelper::Update() {
     return;
   }
 
-  const bool tab_visible =
-      (web_contents == browser->tab_strip_model()->GetActiveWebContents());
-  const bool contents_border_needed = tab_visible && IsTabCapturing();
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  const bool contents_border_needed =
+      tab_interface->IsVisible() && IsTabCapturing();
 
   if (contents_border_needed) {
     capture_location_change_callbacks_.Notify(GetBlueBorderLocation());

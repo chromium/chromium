@@ -102,6 +102,27 @@ IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
+                       ContentsSharingBorderShowsOnVisibleInactiveTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  RunTestSequence(
+      InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
+      AddInstrumentedTab(kThirdTab, GetTestUrl()),
+      AddInstrumentedTab(kFourthTab, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      SelectTab(kTabStripElementId, 2), EnterSplitView(2, 3),
+      SelectTab(kTabStripElementId, 0), ShareTab(0),
+      WaitForShow(kContentsCaptureBorder),
+      CheckIsCaptureContentsBorderShowing(0, true),
+      CheckIsCaptureContentsBorderShowing(1, false),
+      // Focusing on the inactive tab should still show the contents capture
+      // border
+      FocusInactiveTabInSplit(), EnsurePresent(kContentsCaptureBorder),
+      // Switching to a split that isn't screen sharing should hide the border
+      SelectTab(kTabStripElementId, 2), WaitForHide(kContentsCaptureBorder));
+}
+
+IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
                        ReverseSplitWhileContentsSharing) {
   RunTestSequence(
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
