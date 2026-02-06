@@ -1673,12 +1673,13 @@ void VerifyTriggerRangeBoundary(
 
 class CSSAnimationsTriggerTest : public CSSAnimationsTest {
  public:
-  void TestTimelineTrigger(TimelineTrigger* trigger,
-                           std::optional<bool> expect_view_timeline,
-                           TimelineTrigger::RangeBoundary* expected_start,
-                           TimelineTrigger::RangeBoundary* expected_end,
-                           TimelineTrigger::RangeBoundary* expected_exit_start,
-                           TimelineTrigger::RangeBoundary* expected_exit_end);
+  void TestTimelineTrigger(
+      TimelineTrigger* trigger,
+      std::optional<bool> expect_view_timeline,
+      TimelineTrigger::RangeBoundary* expected_activation_start,
+      TimelineTrigger::RangeBoundary* expected_activation_end,
+      TimelineTrigger::RangeBoundary* expected_exit_start,
+      TimelineTrigger::RangeBoundary* expected_exit_end);
 
   void TestRangeStartChange(
       Element* target,
@@ -1771,8 +1772,8 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsTriggerTest);
 void CSSAnimationsTriggerTest::TestTimelineTrigger(
     TimelineTrigger* trigger,
     std::optional<bool> expect_view_timeline,
-    TimelineTrigger::RangeBoundary* expected_start,
-    TimelineTrigger::RangeBoundary* expected_end,
+    TimelineTrigger::RangeBoundary* expected_activation_start,
+    TimelineTrigger::RangeBoundary* expected_activation_end,
     TimelineTrigger::RangeBoundary* expected_exit_start,
     TimelineTrigger::RangeBoundary* expected_exit_end) {
   EXPECT_NE(trigger, nullptr);
@@ -1786,20 +1787,21 @@ void CSSAnimationsTriggerTest::TestTimelineTrigger(
     EXPECT_TRUE(timeline->IsViewTimeline());
   }
 
-  const TimelineTrigger::RangeBoundary* range_start =
-      trigger->EntryRangeStart();
-  VerifyTriggerRangeBoundary(range_start, expected_start);
+  const TimelineTrigger::RangeBoundary* activation_range_start =
+      trigger->ActivationRangeStart();
+  VerifyTriggerRangeBoundary(activation_range_start, expected_activation_start);
 
-  const TimelineTrigger::RangeBoundary* range_end = trigger->EntryRangeEnd();
-  VerifyTriggerRangeBoundary(range_end, expected_end);
+  const TimelineTrigger::RangeBoundary* activation_range_end =
+      trigger->ActivationRangeEnd();
+  VerifyTriggerRangeBoundary(activation_range_end, expected_activation_end);
 
-  const TimelineTrigger::RangeBoundary* exit_range_start =
+  const TimelineTrigger::RangeBoundary* exit_activation_range_start =
       trigger->ActiveRangeStart();
-  VerifyTriggerRangeBoundary(exit_range_start, expected_exit_start);
+  VerifyTriggerRangeBoundary(exit_activation_range_start, expected_exit_start);
 
-  const TimelineTrigger::RangeBoundary* exit_range_end =
+  const TimelineTrigger::RangeBoundary* exit_activation_range_end =
       trigger->ActiveRangeEnd();
-  VerifyTriggerRangeBoundary(exit_range_end, expected_exit_end);
+  VerifyTriggerRangeBoundary(exit_activation_range_end, expected_exit_end);
 }
 
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerOnceOnly) {
@@ -2187,7 +2189,8 @@ void CSSAnimationsTriggerTest::TestRangeStartChange(
   } else {
     EXPECT_NE(old_trigger, new_trigger);
   }
-  VerifyTriggerRangeBoundary(new_trigger->EntryRangeStart(), expected_boundary);
+  VerifyTriggerRangeBoundary(new_trigger->ActivationRangeStart(),
+                             expected_boundary);
 }
 
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeRangeStart) {
@@ -2395,14 +2398,16 @@ TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
-  const RangeBoundary* range_start = trigger->EntryRangeStart();
-  const RangeBoundary* range_end = trigger->EntryRangeEnd();
+  const RangeBoundary* activation_range_start = trigger->ActivationRangeStart();
+  const RangeBoundary* activation_range_end = trigger->ActivationRangeEnd();
 
-  EXPECT_TRUE(range_start->IsTimelineRangeOffset());
-  EXPECT_TRUE(range_end->IsTimelineRangeOffset());
+  EXPECT_TRUE(activation_range_start->IsTimelineRangeOffset());
+  EXPECT_TRUE(activation_range_end->IsTimelineRangeOffset());
 
-  TimelineRangeOffset* start_offset = range_start->GetAsTimelineRangeOffset();
-  TimelineRangeOffset* end_offset = range_end->GetAsTimelineRangeOffset();
+  TimelineRangeOffset* start_offset =
+      activation_range_start->GetAsTimelineRangeOffset();
+  TimelineRangeOffset* end_offset =
+      activation_range_end->GetAsTimelineRangeOffset();
 
   CSSPrimitiveValue* value_100px =
       CSSNumericLiteralValue::Create(100, CSSPrimitiveValue::UnitType::kPixels);

@@ -6,8 +6,8 @@
 
 dictionary TimelineTriggerOptions {
   AnimationTimeline? timeline;
-  (DOMString or TimelineRangeOffset or undefined) entryRangeStart;
-  (DOMString or TimelineRangeOffset or undefined) entryRangeEnd;
+  (DOMString or TimelineRangeOffset or undefined) activationRangeStart;
+  (DOMString or TimelineRangeOffset or undefined) activationRangeEnd;
   (DOMString or TimelineRangeOffset or undefined) activeRangeStart;
   (DOMString or TimelineRangeOffset or undefined) activeRangeEnd;
 };

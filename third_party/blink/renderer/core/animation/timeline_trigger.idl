@@ -9,8 +9,8 @@
     RuntimeEnabled=TimelineTrigger
 ] interface TimelineTriggerRange {
   readonly attribute AnimationTimeline? timeline;
-  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) entryRangeStart;
-  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) entryRangeEnd;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) activationRangeStart;
+  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) activationRangeEnd;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) activeRangeStart;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) activeRangeEnd;
 };

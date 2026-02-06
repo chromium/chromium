@@ -1569,9 +1569,9 @@ bool TimelineTriggerRangeBoundariesUnchanged(
     const TimelineTrigger::RangeBoundary* new_active_range_start,
     const TimelineTrigger::RangeBoundary* new_active_range_end) {
   DCHECK(trigger);
-  return TimelineTriggerBoundariesMatch(trigger->EntryRangeStart(),
+  return TimelineTriggerBoundariesMatch(trigger->ActivationRangeStart(),
                                         new_activation_range_start) &&
-         TimelineTriggerBoundariesMatch(trigger->EntryRangeEnd(),
+         TimelineTriggerBoundariesMatch(trigger->ActivationRangeEnd(),
                                         new_activation_range_end) &&
          TimelineTriggerBoundariesMatch(trigger->ActiveRangeStart(),
                                         new_active_range_start) &&

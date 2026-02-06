@@ -48,11 +48,11 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   const AnimationTimeline* Timeline() const {
     return GetRange() ? GetRange()->timeline() : nullptr;
   }
-  const RangeBoundary* EntryRangeStart() {
-    return GetRange() ? GetRange()->entryRangeStart(nullptr) : nullptr;
+  const RangeBoundary* ActivationRangeStart() {
+    return GetRange() ? GetRange()->activationRangeStart(nullptr) : nullptr;
   }
-  const RangeBoundary* EntryRangeEnd() {
-    return GetRange() ? GetRange()->entryRangeEnd(nullptr) : nullptr;
+  const RangeBoundary* ActivationRangeEnd() {
+    return GetRange() ? GetRange()->activationRangeEnd(nullptr) : nullptr;
   }
   const RangeBoundary* ActiveRangeStart() {
     return GetRange() ? GetRange()->activeRangeStart(nullptr) : nullptr;
@@ -63,14 +63,14 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   AnimationTimeline* GetTimelineInternal() {
     return GetRange() ? GetRange()->GetTimelineInternal() : nullptr;
   }
-  void SetRangeBoundariesForTest(RangeBoundary* entry_start,
-                                 RangeBoundary* entry_end,
+  void SetRangeBoundariesForTest(RangeBoundary* activation_start,
+                                 RangeBoundary* activation_end,
                                  RangeBoundary* active_start,
                                  RangeBoundary* active_end) {
     // TODO(crbug.com/473568234): Support multiple timelines.
     if (TimelineTriggerRange* range = GetRange()) {
-      range->SetRangeBoundariesForTest(entry_start, entry_end, active_start,
-                                       active_end);
+      range->SetRangeBoundariesForTest(activation_start, activation_end,
+                                       active_start, active_end);
     }
   }
   TriggerBoundaries ComputeTriggerBoundariesForTest(

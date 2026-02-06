@@ -2803,8 +2803,8 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
           timeline: new ViewTimeline({
             subject: document.getElementById('subject'), axis: "y"
           }),
-          entryRangeStart: "contain 0%",
-          entryRangeEnd: "contain 100%"}]);
+          activationRangeStart: "contain 0%",
+          activationRangeEnd: "contain 100%"}]);
 
         trigger.addAnimation(animation, "play-forwards", "play-backwards");
       }
