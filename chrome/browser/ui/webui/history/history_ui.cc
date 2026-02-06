@@ -160,21 +160,21 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   source->AddString(
       "historySyncPromoBodySignedIn",
       l10n_util::GetStringFUTF16(IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_IN,
-                                 base::UTF8ToUTF16(account_info.email)));
+                                 base::UTF8ToUTF16(account_info.GetEmail())));
   source->AddString(
       "turnOnSignedInSyncHistoryPromoBodySignInSyncOff",
       l10n_util::GetStringFUTF16(
           IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_IN_SYNC_OFF,
-          base::UTF8ToUTF16(account_info.email)));
-  source->AddString("accountName", account_info.full_name);
-  source->AddString("accountEmail", account_info.email);
+          base::UTF8ToUTF16(account_info.GetEmail())));
+  source->AddString("accountName", account_info.GetFullName().value_or(""));
+  source->AddString("accountEmail", account_info.GetEmail());
   if (!has_primary_account && !account_info.IsEmpty()) {
-    source->AddString("turnOnSyncButton",
-                      l10n_util::GetStringFUTF16(
-                          IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
-                          base::UTF8ToUTF16(!account_info.given_name.empty()
-                                                ? account_info.given_name
-                                                : account_info.email)));
+    source->AddString(
+        "turnOnSyncButton",
+        l10n_util::GetStringFUTF16(
+            IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
+            base::UTF8ToUTF16(account_info.GetGivenName().value_or(
+                account_info.GetEmail()))));
   } else {
     source->AddLocalizedString("turnOnSyncButton",
                                IDS_HISTORY_TURN_ON_SYNC_BUTTON);

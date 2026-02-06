@@ -46,8 +46,8 @@ gfx::Rect ComputePopupWindowBounds(content::WebContents* source_window) {
 
 // Returns true if the account has full name, email, and account image.
 bool HasCriticalAccountInfo(const AccountInfo& account) {
-  return !account.full_name.empty() && !account.email.empty() &&
-         !account.account_image.IsEmpty();
+  return account.GetFullName().has_value() && !account.GetEmail().empty() &&
+         account.GetAvatarImage().has_value();
 }
 }  // namespace
 
@@ -250,7 +250,7 @@ AccountChooserController::GetProfileInfo() {
     // The primary account does not have a valid refresh token.  Remove primary
     // account id from list of accounts with valid refresh tokens, if it exists.
     std::erase_if(accounts, [&primary_account_id](const AccountInfo& account) {
-      return account.account_id == *primary_account_id;
+      return account.GetAccountId() == *primary_account_id;
     });
   }
 

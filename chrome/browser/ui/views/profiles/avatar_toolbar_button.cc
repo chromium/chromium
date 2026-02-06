@@ -514,7 +514,7 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
 
   auto account_info = identity_manager->FindExtendedAccountInfoByAccountId(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-  if (account_info.capabilities.is_subject_to_parental_controls() !=
+  if (account_info.GetAccountCapabilities().is_subject_to_parental_controls() !=
       signin::Tribool::kTrue) {
     return;
   }
@@ -539,7 +539,8 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
 
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHSupervisedUserProfileSigninFeature);
-  params.title_params = base::UTF8ToUTF16(account_info.given_name);
+  params.title_params =
+      base::UTF8ToUTF16(account_info.GetGivenName().value_or(""));
   BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
       std::move(params));
 }
@@ -595,8 +596,9 @@ void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
     const AccountInfo& account_info) {
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
-      account_info.gaia.ToString());
-  params.title_params = base::UTF8ToUTF16(account_info.given_name);
+      account_info.GetGaiaId().ToString());
+  params.title_params =
+      base::UTF8ToUTF16(account_info.GetGivenName().value_or(""));
   BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
       std::move(params));
 }
@@ -706,17 +708,17 @@ void AvatarToolbarButton::OnPrimaryAccountChanged(
 
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
       event_details.GetCurrentState().primary_account);
-  if (!account_info.given_name.empty()) {
+  if (account_info.GetGivenName().has_value()) {
     MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(account_info);
   } else {
-    gaia_id_for_signin_choice_remembered_ = account_info.gaia;
+    gaia_id_for_signin_choice_remembered_ = account_info.GetGaiaId();
   }
 }
 
 void AvatarToolbarButton::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.gaia == gaia_id_for_signin_choice_remembered_ &&
-      !info.given_name.empty()) {
+  if (info.GetGaiaId() == gaia_id_for_signin_choice_remembered_ &&
+      info.GetGivenName().has_value()) {
     gaia_id_for_signin_choice_remembered_ = GaiaId();
     MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(info);
   }

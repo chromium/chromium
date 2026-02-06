@@ -470,11 +470,13 @@ base::DictValue ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
           IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
               ->FindExtendedAccountInfoByAccountId(account_id_);
       CHECK(!account_info.IsEmpty());
-      dict.Set("continueAs", l10n_util::GetStringFUTF8(
-                                 IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
-                                 base::UTF8ToUTF16(account_info.given_name)));
+      dict.Set(
+          "continueAs",
+          l10n_util::GetStringFUTF8(
+              IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
+              base::UTF8ToUTF16(account_info.GetGivenName().value_or(""))));
       dict.Set("email", base::UTF16ToUTF8(email_));
-      dict.Set("accountName", account_info.full_name);
+      dict.Set("accountName", account_info.GetFullName().value_or(""));
 
 #if !BUILDFLAG(IS_CHROMEOS)
       // We apply the checkLinkDataCheckboxByDefault to true value only if the
@@ -520,10 +522,9 @@ std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
         IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
             ->FindExtendedAccountInfoByAccountId(account_id_);
     DCHECK(!account_info.IsEmpty());
-    icon = account_info.account_image.IsEmpty()
-               ? ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-                     profiles::GetPlaceholderAvatarIconResourceID())
-               : account_info.account_image;
+    icon = account_info.GetAvatarImage().value_or(
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+            profiles::GetPlaceholderAvatarIconResourceID()));
   } else if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
     icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
         profiles::GetPlaceholderAvatarIconResourceID());

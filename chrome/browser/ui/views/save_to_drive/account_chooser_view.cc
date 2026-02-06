@@ -93,7 +93,8 @@ std::unique_ptr<views::View> AccountChooserView::CreateBodySingleAccount(
           .Build();
   single_account_row->GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
   single_account_row->GetViewAccessibility().SetName(
-      base::StrCat({account.full_name, " ", account.email}));
+      base::UTF8ToUTF16(base::StrCat(
+          {account.GetFullName().value_or(""), " ", account.GetEmail()})));
   return single_account_row;
 }
 

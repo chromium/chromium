@@ -328,18 +328,18 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     account.SetId(account_key.id())
         .SetAccountType(static_cast<int>(account_key.account_type()))
         .SetIsDeviceAccount(false)
-        .SetFullName(maybe_account_info.full_name)
+        .SetFullName(std::string(maybe_account_info.GetFullName().value_or("")))
         .SetEmail(stored_account.raw_email)
         .SetUnmigrated(!is_child_user && account_token_pair.second)
         .SetIsManaged(maybe_account_info.IsManaged() == signin::Tribool::kTrue)
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
-                                maybe_account_info.account_id));
+                                maybe_account_info.GetAccountId()));
     account.SetIsAvailableInArc(arc_accounts.contains(stored_account));
 
-    if (!maybe_account_info.account_image.IsEmpty()) {
-      account.SetPic(
-          webui::GetBitmapDataUrl(maybe_account_info.account_image.AsBitmap()));
+    if (maybe_account_info.GetAvatarImage().has_value()) {
+      account.SetPic(webui::GetBitmapDataUrl(
+          maybe_account_info.GetAvatarImage()->AsBitmap()));
     } else {
       gfx::ImageSkia default_icon =
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(

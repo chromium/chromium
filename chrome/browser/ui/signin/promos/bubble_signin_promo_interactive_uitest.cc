@@ -274,8 +274,10 @@ bool BubbleSignInPromoInteractiveUITest::IsSignedIn() {
 }
 
 void BubbleSignInPromoInteractiveUITest::ExtendAccountInfo(AccountInfo& info) {
-  info.given_name = "FirstName";
-  info.full_name = "FirstName LastName";
+  info = AccountInfo::Builder(info)
+             .SetGivenName("FirstName")
+             .SetFullName("FirstName LastName")
+             .Build();
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
 }
 

@@ -236,8 +236,8 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     cardholder_name_label_row->AddChildView(std::move(cardholder_name_label));
 
     // Prepare the prefilled cardholder name.
-    std::u16string prefilled_name =
-        base::UTF8ToUTF16(controller()->GetAccountInfo().full_name);
+    std::u16string prefilled_name = base::UTF8ToUTF16(
+        controller()->GetAccountInfo().GetFullName().value_or(""));
 
     // Set up cardholder name label tooltip ONLY if the cardholder name
     // textfield will be prefilled and sync transport for Wallet data is not
@@ -390,7 +390,8 @@ SaveCardOfferBubbleViews::CreateLegalMessageView() {
   }
 
   return ::autofill::CreateLegalMessageView(
-      message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
+      message_lines,
+      base::UTF8ToUTF16(controller()->GetAccountInfo().GetEmail()),
       GetProfileAvatar(controller()->GetAccountInfo()),
       base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
                           base::Unretained(this)));

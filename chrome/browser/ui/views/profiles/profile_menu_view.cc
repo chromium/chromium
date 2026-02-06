@@ -609,14 +609,14 @@ void ProfileMenuView::SetMenuTitleForAccessibility() {
     } break;
     case signin_util::SignedInState::kSyncPaused:
     case signin_util::SignedInState::kSignInPending:
-      menu_title_ = base::UTF8ToUTF16(account_info.full_name);
+      menu_title_ = base::UTF8ToUTF16(account_info.GetFullName().value_or(""));
       menu_subtitle_ =
           l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
       break;
     case signin_util::SignedInState::kSyncing:
     case signin_util::SignedInState::kSignedIn:
-      menu_title_ = base::UTF8ToUTF16(account_info.full_name);
-      menu_subtitle_ = base::UTF8ToUTF16(account_info.email);
+      menu_title_ = base::UTF8ToUTF16(account_info.GetFullName().value_or(""));
+      menu_subtitle_ = base::UTF8ToUTF16(account_info.GetEmail());
       break;
   }
 
@@ -657,10 +657,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
                                                        .has_background = false};
   params.profile_image = ui::ImageModel::FromImage(
-      primary_extended_account_info.account_image.IsEmpty()
-          ? entry.GetAvatarIcon(kIdentityInfoImageSize,
-                                /*use_high_res_file=*/true, icon_params)
-          : primary_extended_account_info.account_image);
+      primary_extended_account_info.GetAvatarImage().value_or(
+          entry.GetAvatarIcon(kIdentityInfoImageSize,
+                              /*use_high_res_file=*/true, icon_params)));
 
   ui::ImageModel* custom_management_image = nullptr;
   if (enterprise_util::CanShowEnterpriseBadgingForMenu(&profile())) {
@@ -788,11 +787,10 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
           base::UTF8ToUTF16(account_info_for_promos.email));
       params.button_text = l10n_util::GetStringFUTF16(
           IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
-          base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()
-                                ? account_info_for_promos.given_name
-                                : account_info_for_promos.email));
+          base::UTF8ToUTF16(account_info_for_promos.GetGivenName().value_or(
+              account_info_for_promos.GetEmail())));
       gfx::Image account_image;
-      if (account_info_for_promos.account_image.IsEmpty()) {
+      if (!account_info_for_promos.GetAvatarImage().has_value()) {
         // No account image, use a placeholder.
         ProfileAttributesEntry* profile_attributes =
             g_browser_process->profile_manager()

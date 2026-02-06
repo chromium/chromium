@@ -474,13 +474,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
             ->payments_data_manager()
             .GetAccountInfoForPaymentsServer();
 
-    AccountInfo account_info;
-    account_info.account_id = core_info.account_id;
-    account_info.gaia = core_info.gaia;
-    account_info.email = core_info.email;
-    account_info.is_under_advanced_protection =
-        core_info.is_under_advanced_protection;
-    account_info.full_name = full_name;
+    AccountInfo account_info =
+        AccountInfo::Builder(core_info).SetFullName(full_name).Build();
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 

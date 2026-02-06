@@ -318,7 +318,8 @@ TEST_F(BrowsingHistoryHandlerTest, RequestAccountInfo) {
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
-  account_info.full_name = "Test User";
+  account_info =
+      AccountInfo::Builder(account_info).SetFullName("Test User").Build();
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   base::MockCallback<BrowsingHistoryHandler::RequestAccountInfoCallback>

@@ -456,7 +456,7 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
         // without edits.
         autofill_metrics::LogSaveCardCardholderNameWasEdited(
             user_provided_card_details.cardholder_name !=
-            base::UTF8ToUTF16(GetAccountInfo().full_name));
+            base::UTF8ToUTF16(GetAccountInfo().GetFullName().value_or("")));
         // Trim the cardholder name provided by the user and send it in the
         // callback so it can be included in the final request.
         CHECK(ShouldRequestNameFromUser());

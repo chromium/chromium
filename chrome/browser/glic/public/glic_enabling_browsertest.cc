@@ -204,8 +204,10 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
   auto account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, "glic-test-2@example.com",
       signin::ConsentLevel::kSignin);
-  account_info.full_name = "Glic 2 Testing";
-  account_info.given_name = "Glic 2";
+  account_info = AccountInfo::Builder(account_info)
+                     .SetFullName("Glic 2 Testing")
+                     .SetGivenName("Glic 2")
+                     .Build();
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 

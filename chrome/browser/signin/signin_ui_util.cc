@@ -546,11 +546,12 @@ std::u16string GetShortProfileIdentityToDisplay(
       identity_manager->FindExtendedAccountInfoByAccountId(
           core_info.account_id);
   // If there's no given name available, return the user email.
-  if (extended_info.given_name.empty()) {
+  std::optional<std::string_view> given_name = extended_info.GetGivenName();
+  if (!given_name.has_value()) {
     return base::UTF8ToUTF16(core_info.email);
   }
 
-  return base::UTF8ToUTF16(extended_info.given_name);
+  return base::UTF8ToUTF16(*given_name);
 }
 
 std::string GetAllowedDomain(std::string signin_pattern) {

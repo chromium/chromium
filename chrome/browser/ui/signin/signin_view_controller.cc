@@ -883,12 +883,11 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
                 extension_name_for_display);
 
   std::u16string continue_as_text =
-      base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()
-                            ? account_info_for_promos.given_name
-                            : account_info_for_promos.email);
+      base::UTF8ToUTF16(account_info_for_promos.GetGivenName().value_or(
+          account_info_for_promos.GetEmail()));
   std::u16string body = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY_PART_1,
-      base::UTF8ToUTF16(account_info_for_promos.email));
+      base::UTF8ToUTF16(account_info_for_promos.GetEmail()));
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetInternalName("ChromeSigninChoiceForExtensionsPrompt")

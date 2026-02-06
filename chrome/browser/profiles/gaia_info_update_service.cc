@@ -123,17 +123,18 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount() {
 }
 
 void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
-  if (!info.IsValid())
+  if (!info.IsValid()) {
     return;
+  }
 
   ProfileAttributesEntry* entry =
       profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
   if (!entry) {
     return;
   }
-  gaia_id_of_profile_attribute_entry_ = info.gaia;
-  entry->SetGAIAGivenName(base::UTF8ToUTF16(info.given_name));
-  entry->SetGAIAName(base::UTF8ToUTF16(info.full_name));
+  gaia_id_of_profile_attribute_entry_ = info.GetGaiaId();
+  entry->SetGAIAGivenName(base::UTF8ToUTF16(info.GetGivenName().value_or("")));
+  entry->SetGAIAName(base::UTF8ToUTF16(info.GetFullName().value_or("")));
   std::string hosted_domain_to_set;
   if (std::optional<std::string_view> hosted_domain = info.GetHostedDomain()) {
     hosted_domain_to_set = hosted_domain->empty()
@@ -167,7 +168,7 @@ void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
 
   // This is idempotent, i.e. the second and any further call for the same
   // account info has no further impact.
-  entry->AddAccountName(info.full_name);
+  entry->AddAccountName(std::string(info.GetFullName().value_or("")));
 }
 
 void GAIAInfoUpdateService::ClearProfileEntry() {

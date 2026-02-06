@@ -41,8 +41,8 @@ AccountCardView::AccountCardView(AccountInfo account_info) {
   SetVisible(!account_info.IsEmpty());
 
   if (!account_info.IsEmpty()) {
-    AddChildView(std::make_unique<views::ImageView>(
-                     GetResizedImage(account_info.account_image)))
+    AddChildView(std::make_unique<views::ImageView>(GetResizedImage(
+                     account_info.GetAvatarImage().value_or(gfx::Image()))))
         ->SetProperty(views::kMarginsKey,
                       gfx::Insets::TLBR(0, 0, 0, kAccountImageMargin));
 
@@ -52,13 +52,13 @@ AccountCardView::AccountCardView(AccountInfo account_info) {
 
     auto* name =
         label_container->AddChildView(std::make_unique<views::Label>());
-    name->SetText(base::UTF8ToUTF16(account_info.full_name));
+    name->SetText(base::UTF8ToUTF16(account_info.GetFullName().value_or("")));
     name->SetTextStyle(views::style::TextStyle::STYLE_BODY_3);
     name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
     auto* email =
         label_container->AddChildView(std::make_unique<views::Label>());
-    email->SetText(base::UTF8ToUTF16(account_info.email));
+    email->SetText(base::UTF8ToUTF16(account_info.GetEmail()));
     email->SetTextStyle(views::style::TextStyle::STYLE_BODY_4);
     email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     email->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);

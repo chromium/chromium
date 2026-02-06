@@ -193,8 +193,8 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
     if (!primary_account().GetHostedDomain().has_value()) {
       builder.SetHostedDomain(std::string());
     }
-    if (primary_account().given_name.empty()) {
-      builder.SetGivenName(primary_account().email);
+    if (!primary_account().GetGivenName().has_value()) {
+      builder.SetGivenName(primary_account().GetEmail());
     }
     bubble_parameters_.primary_account = builder.Build();
   }
@@ -252,15 +252,16 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   base::DictValue parameters;
   parameters.Set("title", GetChromeSigninTitle());
   parameters.Set("subtitle", GetChromeSigninSubtitle());
-  parameters.Set("email", intercepted_account().email);
-  parameters.Set("fullName", intercepted_account().full_name);
-  parameters.Set("givenName", intercepted_account().given_name);
+  parameters.Set("email", intercepted_account().GetEmail());
+  parameters.Set("fullName", intercepted_account().GetFullName().value_or(""));
+  parameters.Set("givenName",
+                 intercepted_account().GetGivenName().value_or(""));
   parameters.Set("pictureUrl",
                  signin::GetAccountPictureUrl(intercepted_account()));
 
   std::string managed_user_badge;
   std::string managed_user_badge_alt_text;
-  if (IsSupervisedUser(intercepted_account().capabilities)) {
+  if (IsSupervisedUser(intercepted_account().GetAccountCapabilities())) {
     managed_user_badge = kSupervisedBadgeSource;
     managed_user_badge_alt_text =
         l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
@@ -324,7 +325,7 @@ bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() {
 std::string DiceWebSigninInterceptHandler::GetHeaderText() {
   return (bubble_parameters_.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::kProfileSwitch)
-             ? intercepted_account().given_name
+             ? std::string(intercepted_account().GetGivenName().value_or(""))
              : std::string();
 }
 
@@ -332,7 +333,7 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninTitle() {
   // Set the title depending on whether the user is supervised. Note that
   // calling code waits for Account Capabilities to be fetched (with a timeout),
   // so Account Capabilities will be available for the vast majority of users.
-  if (bubble_parameters_.intercepted_account.capabilities
+  if (bubble_parameters_.intercepted_account.GetAccountCapabilities()
           .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
     return l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED);
@@ -345,8 +346,9 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
   // Set the subtitle depending on whether the user is supervised. Note that
   // calling code waits for Account Capabilities to be fetched (with a timeout),
   // so Account Capabilities will be available for the vast majority of users.
-  if (intercepted_account().capabilities.is_subject_to_parental_controls() ==
-      signin::Tribool::kTrue) {
+  if (intercepted_account()
+          .GetAccountCapabilities()
+          .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
     return l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
   }
@@ -370,15 +372,16 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
 std::string DiceWebSigninInterceptHandler::GetBodyText() {
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
-    if (intercepted_account().capabilities.is_subject_to_parental_controls() ==
-        signin::Tribool::kTrue) {
+    if (intercepted_account()
+            .GetAccountCapabilities()
+            .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
       return l10n_util::GetStringFUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2_SUPERVISED,
-          base::UTF8ToUTF16(intercepted_account().email));
+          base::UTF8ToUTF16(intercepted_account().GetEmail()));
     }
     return l10n_util::GetStringFUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2,
-        base::UTF8ToUTF16(intercepted_account().email));
+        base::UTF8ToUTF16(intercepted_account().GetEmail()));
   }
 
   CHECK(bubble_parameters_.interception_type ==
@@ -399,16 +402,17 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
         IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN);
   }
 
-  if (intercepted_account().capabilities.is_subject_to_parental_controls() ==
-      signin::Tribool::kTrue) {
+  if (intercepted_account()
+          .GetAccountCapabilities()
+          .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
     return l10n_util::GetStringFUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC_SUPERVISED,
-        base::UTF8ToUTF16(intercepted_account().email));
+        base::UTF8ToUTF16(intercepted_account().GetEmail()));
   }
   return l10n_util::GetStringFUTF8(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
-      base::UTF8ToUTF16(primary_account().given_name),
-      base::UTF8ToUTF16(intercepted_account().email));
+      base::UTF8ToUTF16(primary_account().GetGivenName().value_or("")),
+      base::UTF8ToUTF16(intercepted_account().GetEmail()));
 }
 
 std::string DiceWebSigninInterceptHandler::GetConfirmButtonLabel() {

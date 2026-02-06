@@ -1870,7 +1870,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithChromeSigninIPH,
       GetIdentityManager()->FindExtendedAccountInfo(core_account_info);
 
   // IPH not showing yet, waiting for the name.
-  ASSERT_TRUE(account_info.given_name.empty());
+  ASSERT_FALSE(account_info.GetGivenName().has_value());
   EXPECT_FALSE(
       BrowserUserEducationInterface::From(browser())->IsFeaturePromoActive(
           feature_engagement::

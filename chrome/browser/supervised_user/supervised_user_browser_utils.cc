@@ -137,11 +137,11 @@ std::string GetAccountGivenName(Profile& profile) {
       IdentityManagerFactory::GetForProfile(profile.GetOriginalProfile());
   CHECK(identity_manager);
 
-  const CoreAccountInfo core_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfo(core_info);
-  return account_info.given_name;
+      identity_manager->FindExtendedAccountInfoByAccountId(primary_account_id);
+  return std::string(account_info.GetGivenName().value_or(""));
 }
 
 void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {

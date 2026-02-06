@@ -136,7 +136,8 @@ TEST_P(HistorySyncOptinHandlerTest,
   handler_->RequestAccountInfo();
 
   // Simulate an AccountInfo update.
-  account_info.full_name = "new_fullname";
+  account_info =
+      AccountInfo::Builder(account_info).SetFullName("new_fullname").Build();
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   // Attempt to request the AccountInfo, which the handler will ignore.
@@ -172,7 +173,8 @@ TEST_P(HistorySyncOptinHandlerTest, RequestAccountInfoWithCapabilitiesUpdate) {
   EXPECT_CALL(page_, SendScreenMode(ExpectedScreenMode())).Times(1);
 
   // Simulate an AccountInfo update without ScreenMode information.
-  account_info.full_name = "new_fullname";
+  account_info =
+      AccountInfo::Builder(account_info).SetFullName("new_fullname").Build();
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   // Simulate an AccountInfo update with capabilities. The handler will send
@@ -183,7 +185,8 @@ TEST_P(HistorySyncOptinHandlerTest, RequestAccountInfoWithCapabilitiesUpdate) {
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   // Simulate another AccountInfo update, which the handler will not receive.
-  account_info.given_name = "new_givenname";
+  account_info =
+      AccountInfo::Builder(account_info).SetGivenName("new_givenname").Build();
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   task_environment_.RunUntilIdle();

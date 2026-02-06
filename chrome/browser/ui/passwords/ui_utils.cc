@@ -297,6 +297,6 @@ std::string GetDisplayableAccountName(
     return "";
   }
   return account_info->CanHaveEmailAddressDisplayed()
-             ? account_info.value().email
-             : account_info.value().full_name;
+             ? std::string(account_info->GetEmail())
+             : std::string(account_info->GetFullName().value_or(""));
 }

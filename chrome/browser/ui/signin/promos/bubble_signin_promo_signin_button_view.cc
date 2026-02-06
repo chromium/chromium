@@ -75,7 +75,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     std::u16string button_accessibility_text)
     : account_(account) {
   DCHECK(!account_icon.IsEmpty());
-  auto card_title = base::UTF8ToUTF16(account.full_name);
+  auto card_title = base::UTF8ToUTF16(account.GetFullName().value_or(""));
 
   bool is_signin_promo = signin::IsSignInPromo(access_point);
   bool is_bubble_promo = signin::IsBubbleSigninPromo(access_point);
@@ -97,7 +97,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
           is_signin_promo ? BadgedProfilePhoto::BadgeType::kNone
                           : BadgedProfilePhoto::BadgeType::kSyncOff,
           account_icon),
-      card_title, base::ASCIIToUTF16(account_->email));
+      card_title, base::ASCIIToUTF16(account_->GetEmail()));
 
   hover_button->SetProperty(views::kBoxLayoutFlexKey,
                             views::BoxLayoutFlexSpecification());

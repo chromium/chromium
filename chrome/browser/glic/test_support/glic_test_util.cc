@@ -301,8 +301,10 @@ void SigninWithPrimaryAccount(Profile* profile) {
       identity_manager, "glic-test@example.com", signin::ConsentLevel::kSignin);
   ASSERT_FALSE(account_info.IsEmpty());
 
-  account_info.full_name = "Glic Testing";
-  account_info.given_name = "Glic";
+  account_info = AccountInfo::Builder(account_info)
+                     .SetFullName("Glic Testing")
+                     .SetGivenName("Glic")
+                     .Build();
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
 

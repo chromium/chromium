@@ -339,7 +339,7 @@ std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
   DCHECK(account_info.IsValid());
   if (account_info.IsManaged() != signin::Tribool::kTrue) {
-    std::u16string given_name = base::UTF8ToUTF16(account_info.given_name);
+    std::u16string given_name = base::UTF8ToUTF16(*account_info.GetGivenName());
     CHECK(!given_name.empty());
     return given_name;
   }

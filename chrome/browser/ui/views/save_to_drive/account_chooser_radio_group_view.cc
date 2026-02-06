@@ -37,8 +37,8 @@ AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
       /*horizontal=*/0));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemRadio);
-  GetViewAccessibility().SetName(
-      base::StrCat({account.full_name, " ", account.email}));
+  GetViewAccessibility().SetName(base::UTF8ToUTF16(base::StrCat(
+      {account.GetFullName().value_or(""), " ", account.GetEmail()})));
 
   auto account_row_container = std::make_unique<views::FlexLayoutView>();
   auto account_row = CreateAccountRow(account);
@@ -55,7 +55,7 @@ AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
 
   auto radio_button = std::make_unique<views::RadioButton>();
   radio_button->GetViewAccessibility().SetName(
-      base::UTF8ToUTF16(account.email));
+      base::UTF8ToUTF16(account.GetEmail()));
   account_selected_subscription_ = radio_button->AddCheckedChangedCallback(
       base::BindRepeating(&AccountChooserRadioButtonRow::OnAccountSelected,
                           base::Unretained(this)));
@@ -114,7 +114,7 @@ AccountChooserRadioGroupView::AccountChooserRadioGroupView(
   AddChildView(std::make_unique<views::Separator>());
   for (auto& account : accounts_) {
     // Keep track of the account to radio button mapping.
-    if (account.first.account_id == primary_account_id) {
+    if (account.first.GetAccountId() == primary_account_id) {
       // Ensures the primary account is the first account in the list.
       account.second = AddChildViewAt(
           std::make_unique<AccountChooserRadioButtonRow>(this, account.first),

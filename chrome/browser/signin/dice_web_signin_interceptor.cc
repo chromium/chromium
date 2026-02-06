@@ -131,11 +131,7 @@ AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
   }
 
   // Return an AccountInfo without extended fields, based on the core info.
-  AccountInfo account_info;
-  account_info.gaia = primary_core_account_info.gaia;
-  account_info.email = primary_core_account_info.email;
-  account_info.account_id = primary_core_account_info.account_id;
-  return account_info;
+  return AccountInfo::Builder(primary_core_account_info).Build();
 }
 
 // This function is based on the email rather than the GaiaID, because the Gaia
@@ -798,7 +794,7 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
   DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
 
   if (!IsUsernameAllowedForInterceptionByPattern(
-          intercepted_account_info.email)) {
+          std::string(intercepted_account_info.GetEmail()))) {
     return false;
   }
 
@@ -809,13 +805,15 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
   // Check if the account has the same name as another account in the profile.
   for (const auto& account_info :
        identity_manager_->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
-    if (account_info.account_id == intercepted_account_info.account_id) {
+    if (account_info.GetAccountId() ==
+        intercepted_account_info.GetAccountId()) {
       continue;
     }
     // Case-insensitve comparison supporting non-ASCII characters.
-    if (base::i18n::FoldCase(base::UTF8ToUTF16(account_info.given_name)) ==
-        base::i18n::FoldCase(
-            base::UTF8ToUTF16(intercepted_account_info.given_name))) {
+    if (base::i18n::FoldCase(
+            base::UTF8ToUTF16(account_info.GetGivenName().value_or(""))) ==
+        base::i18n::FoldCase(base::UTF8ToUTF16(
+            intercepted_account_info.GetGivenName().value_or("")))) {
       return false;
     }
   }

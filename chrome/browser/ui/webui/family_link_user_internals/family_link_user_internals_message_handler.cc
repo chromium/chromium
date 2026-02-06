@@ -312,24 +312,25 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
          identity_manager
              ->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
       base::ListValue* section_user = AddSection(
-          &section_list, "User Information for " + account.full_name);
+          &section_list, "User Information for " +
+                             std::string(account.GetFullName().value_or("")));
       AddSectionEntry(section_user, "Account id",
-                      account.account_id.ToString());
-      AddSectionEntry(section_user, "Gaia", account.gaia.ToString());
-      AddSectionEntry(section_user, "Email", account.email);
-      AddSectionEntry(section_user, "Given name", account.given_name);
+                      account.GetAccountId().ToString());
+      AddSectionEntry(section_user, "Gaia", account.GetGaiaId().ToString());
+      AddSectionEntry(section_user, "Email", account.GetEmail());
+      AddSectionEntry(section_user, "Given name",
+                      account.GetGivenName().value_or(""));
       AddSectionEntry(section_user, "Hosted domain",
                       GetHostedDomainString(account.GetHostedDomain()));
-      AddSectionEntry(section_user, "Locale", account.locale);
-      AddSectionEntry(
-          section_user, "Is subject to parental controls",
-          TriboolToString(
-              account.capabilities.is_subject_to_parental_controls()));
+      AddSectionEntry(section_user, "Locale", account.GetLocale().value_or(""));
+      AddSectionEntry(section_user, "Is subject to parental controls",
+                      TriboolToString(account.GetAccountCapabilities()
+                                          .is_subject_to_parental_controls()));
       AddSectionEntry(section_user, "Is valid", account.IsValid());
-      AddSectionEntry(
-          section_user, "Is subject to family link parental controls",
-          TriboolToString(
-              account.capabilities.is_subject_to_parental_controls()));
+      AddSectionEntry(section_user,
+                      "Is subject to family link parental controls",
+                      TriboolToString(account.GetAccountCapabilities()
+                                          .is_subject_to_parental_controls()));
     }
   }
 

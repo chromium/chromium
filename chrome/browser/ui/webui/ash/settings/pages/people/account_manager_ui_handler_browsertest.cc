@@ -383,11 +383,11 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
         identity_manager()->FindExtendedAccountInfoByGaiaId(
             GaiaId(expected_account.key.id()));
     EXPECT_FALSE(expected_account_info.IsEmpty());
-    EXPECT_EQ(expected_account_info.full_name,
+    EXPECT_EQ(expected_account_info.GetFullName().value_or(""),
               ValueOrEmpty(account.FindString("fullName")));
     EXPECT_EQ(
         !identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-            expected_account_info.account_id),
+            expected_account_info.GetAccountId()),
         account.FindBool("isSignedIn").value());
   }
 }

@@ -125,11 +125,11 @@ base::DictValue GaiaAccountToValue(const ::account_manager::Account& account,
   base::DictValue dict;
   dict.Set(kAccountKeyId, account.key.id());
   dict.Set(kAccountKeyEmail, account.raw_email);
-  dict.Set(kAccountKeyFullName, account_info.full_name);
+  dict.Set(kAccountKeyFullName, account_info.GetFullName().value_or(""));
   dict.Set(kAccountKeyImage, webui::GetBitmapDataUrl(
-                                 account_info.account_image.IsEmpty()
-                                     ? GetDefaultAccountIcon()
-                                     : account_info.account_image.AsBitmap()));
+                                 account_info.GetAvatarImage().has_value()
+                                     ? account_info.GetAvatarImage()->AsBitmap()
+                                     : GetDefaultAccountIcon()));
 
   return dict;
 }

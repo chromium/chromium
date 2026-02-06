@@ -40,8 +40,8 @@ AccountChosenCallback GetOnAccountChosenCallback(
       [&expected_account, &waiter](std::optional<AccountInfo> account) {
         // Cannot match by id because IdentityTestEnvironment generates an
         // id on your behalf.
-        EXPECT_EQ(account->full_name, expected_account.full_name);
-        EXPECT_EQ(account->email, expected_account.email);
+        EXPECT_EQ(account->GetFullName(), expected_account.GetFullName());
+        EXPECT_EQ(account->GetEmail(), expected_account.GetEmail());
         waiter.OnEvent();
       });
 }
@@ -127,13 +127,16 @@ class AccountChooserControllerInteractiveUiTest
     signin::IdentityTestEnvironment* identity_test_env =
         identity_test_environment_adaptor_->identity_test_env();
     AccountInfo persisted_account =
-        identity_test_env->MakeAccountAvailable(account.email);
-    persisted_account.full_name = account.full_name;
-    persisted_account.account_image = account.account_image;
+        identity_test_env->MakeAccountAvailable(account.GetEmail());
+    persisted_account =
+        AccountInfo::Builder(persisted_account)
+            .SetFullName(std::string(account.GetFullName().value_or("")))
+            .SetAvatarImage(account.GetAvatarImage().value_or(gfx::Image()))
+            .Build();
     identity_test_env->UpdateAccountInfoForAccount(persisted_account);
-    signin::SimulateAccountImageFetch(identity_test_env->identity_manager(),
-                                      persisted_account.account_id, kAvatarUrl,
-                                      persisted_account.account_image);
+    signin::SimulateAccountImageFetch(
+        identity_test_env->identity_manager(), persisted_account.GetAccountId(),
+        kAvatarUrl, persisted_account.GetAvatarImage().value_or(gfx::Image()));
     return persisted_account;
   }
 
@@ -196,7 +199,7 @@ class AccountChooserControllerInteractiveUiTest
     return Do([this, account]() {
       signin::IdentityTestEnvironment* identity_test_env =
           identity_test_environment_adaptor_->identity_test_env();
-      identity_test_env->RemoveRefreshTokenForAccount(account->account_id);
+      identity_test_env->RemoveRefreshTokenForAccount(account->GetAccountId());
     });
   }
 
@@ -206,13 +209,17 @@ class AccountChooserControllerInteractiveUiTest
       signin::IdentityTestEnvironment* identity_test_env =
           identity_test_environment_adaptor_->identity_test_env();
       *persisted_account = identity_test_env->MakePrimaryAccountAvailable(
-          account.email, signin::ConsentLevel::kSignin);
-      persisted_account->full_name = account.full_name;
-      persisted_account->account_image = account.account_image;
+          std::string(account.GetEmail()), signin::ConsentLevel::kSignin);
+      *persisted_account =
+          AccountInfo::Builder(*persisted_account)
+              .SetFullName(std::string(account.GetFullName().value_or("")))
+              .SetAvatarImage(account.GetAvatarImage().value_or(gfx::Image()))
+              .Build();
       identity_test_env->UpdateAccountInfoForAccount(*persisted_account);
       signin::SimulateAccountImageFetch(
-          identity_test_env->identity_manager(), persisted_account->account_id,
-          kAvatarUrl, persisted_account->account_image);
+          identity_test_env->identity_manager(),
+          persisted_account->GetAccountId(), kAvatarUrl,
+          persisted_account->GetAvatarImage().value_or(gfx::Image()));
     });
   }
 
@@ -384,8 +391,8 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
         // The first account should be selected because we removed the
         // second account.
         const AccountInfo& expected_account = persisted_accounts_ptr->at(0);
-        EXPECT_EQ(account->full_name, expected_account.full_name);
-        EXPECT_EQ(account->email, expected_account.email);
+        EXPECT_EQ(account->GetFullName(), expected_account.GetFullName());
+        EXPECT_EQ(account->GetEmail(), expected_account.GetEmail());
         waiter.OnEvent();
       });
   RunTestSequence(

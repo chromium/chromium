@@ -19,14 +19,13 @@ namespace save_to_drive::testing {
 AccountInfo GetTestAccount(const std::string& name,
                            const std::string& domain,
                            int32_t gaia_id) {
-  AccountInfo account_info;
-  account_info.full_name = name;
-  account_info.email = base::StrCat({name, "@", domain});
-  account_info.account_id =
-      CoreAccountId::FromGaiaId(GaiaId(base::NumberToString(gaia_id)));
-  account_info.account_image =
-      gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
-  return account_info;
+  GaiaId gaia(base::NumberToString(gaia_id));
+  return AccountInfo::Builder(gaia, base::StrCat({name, "@", domain}))
+      .SetFullName(name)
+      .SetAccountId(CoreAccountId::FromGaiaId(gaia))
+      .SetAvatarImage(
+          gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1)))
+      .Build();
 }
 
 std::vector<AccountInfo> GetTestAccounts(const std::vector<std::string>& names,
@@ -34,14 +33,7 @@ std::vector<AccountInfo> GetTestAccounts(const std::vector<std::string>& names,
   std::vector<AccountInfo> accounts;
   int32_t id = 0;
   for (const auto& name : names) {
-    AccountInfo account_info;
-    account_info.full_name = name;
-    account_info.email = base::StrCat({name, "@", domain});
-    account_info.account_id =
-        CoreAccountId::FromGaiaId(GaiaId(base::NumberToString(id)));
-    account_info.account_image =
-        gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
-    accounts.push_back(account_info);
+    accounts.push_back(GetTestAccount(name, domain, id));
     ++id;
   }
   return accounts;
@@ -70,7 +62,8 @@ bool VerifyAccountChooserRow(views::View* row_view,
   if (!name_view) {
     return false;
   }
-  if (name_view->GetText() != base::UTF8ToUTF16(account.full_name)) {
+  if (name_view->GetText() !=
+      base::UTF8ToUTF16(account.GetFullName().value_or(""))) {
     return false;
   }
   views::Label* email_view =
@@ -78,7 +71,7 @@ bool VerifyAccountChooserRow(views::View* row_view,
   if (!email_view) {
     return false;
   }
-  return email_view->GetText() == base::UTF8ToUTF16(account.email);
+  return email_view->GetText() == base::UTF8ToUTF16(account.GetEmail());
 }
 
 }  // namespace save_to_drive::testing

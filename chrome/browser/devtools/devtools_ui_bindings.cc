@@ -1715,22 +1715,20 @@ base::DictValue DevToolsUIBindings::GetSyncInformationForProfile(
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo extended_info =
       identity_manager->FindExtendedAccountInfo(account_info);
-  gfx::Image account_image;
-  if (extended_info.IsEmpty() || extended_info.account_image.IsEmpty()) {
-    account_image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  } else {
-    account_image = extended_info.account_image;
-  }
+  gfx::Image account_image = extended_info.GetAvatarImage().value_or(
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+          profiles::GetPlaceholderAvatarIconResourceID()));
   scoped_refptr<base::RefCountedMemory> png_bytes =
       account_image.As1xPNGBytes();
   if (png_bytes->size() > 0) {
     result.Set("accountImage", base::Base64Encode(*png_bytes));
   }
 
-  if (!extended_info.IsEmpty()) {
-    result.Set("accountFullName", extended_info.full_name);
-    result.Set("accountGivenName", extended_info.given_name);
+  if (extended_info.GetFullName().has_value()) {
+    result.Set("accountFullName", *extended_info.GetFullName());
+  }
+  if (extended_info.GetGivenName().has_value()) {
+    result.Set("accountGivenName", *extended_info.GetGivenName());
   }
 
   return result;
