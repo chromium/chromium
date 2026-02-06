@@ -3,11 +3,28 @@
     display: block;
   }
 
+  cr-expand-button {
+    --cr-section-vertical-padding: 0px;
+  }
+
+  cr-expand-button::part(icon) {
+    margin-block: 0;
+    /* This decreases the amount of space the expand icon takes up
+       in the row's grid without changing its visual size or the
+       aspect ratio of its tab focus ring. */
+    margin-inline: -3px -8px;
+    padding: 0;
+  }
+
   #content-wrapper {
     display: flex;
     flex-direction: row;
     align-items: center;
     width: 100%;
+  }
+
+  #labelWrapper {
+    padding: 12px 0;
   }
 
   #icon cr-icon {
@@ -36,8 +53,15 @@
     width: var(--cr-icon-size, 20px);
   }
 
+  #stateLabel {
+    margin-inline-end: 11px;
+  }
+
   #toggleButton {
     --cr-section-min-height: 16px;
+    align-self: stretch;
+    padding: 0 11px;
+    width: auto;
   }
 </style>
 <cr-expand-button class="cr-row" id="expandButton" expanded="{{expanded}}">
@@ -45,7 +69,7 @@
     <span id="icon" aria-hidden="true">
       <cr-icon slot="icon" icon="[[icon]]"></cr-icon>
     </span>
-    <div class="flex">
+    <div class="flex" id="labelWrapper">
       [[label]]
       <div class="cr-secondary-text">[[subLabel]]</div>
     </div>
@@ -58,7 +82,7 @@
       <settings-toggle-button id="toggleButton" pref="{{pref}}"
           numeric-unchecked-values="[[numericUncheckedValues]]"
           numeric-checked-value="[[numericCheckedValue]]"
-          on-change="onToggleButtonChange_">
+          on-change="onToggleButtonChange_" no-hover>
       </settings-toggle-button>
     </template>
   </div>

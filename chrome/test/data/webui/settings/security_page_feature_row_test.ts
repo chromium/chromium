@@ -77,15 +77,19 @@ suite('securityPageFeatureRow', function() {
     await microtasksFinished();
     assertTrue(securityPageFeatureRow.expanded);
 
-    // Enable the feature.
+    // Click the toggle to enable the feature.
     getToggleButton()!.click();
     await microtasksFinished();
     assertTrue(securityPageFeatureRow.pref.value);
+
+    // Verify clicking the toggle did NOT collapsed the row.
+    assertTrue(securityPageFeatureRow.expanded);
 
     // Disable the feature again.
     getToggleButton()!.click();
     await microtasksFinished();
     assertFalse(securityPageFeatureRow.pref.value);
+    assertTrue(securityPageFeatureRow.expanded);
   });
 
   test('RowClickShowsAndHidesToggle', async function() {
