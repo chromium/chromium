@@ -62,8 +62,8 @@ GapData<int> InterpolableGapLengthAutoRepeater::CreateGapData(
   repeated_values.ReserveInitialCapacity(values_->length());
   for (wtf_size_t i = 0; i < values_->length(); ++i) {
     const InterpolableLength& length = To<InterpolableLength>(*values_->Get(i));
-    repeated_values.push_back(
-        length.CreateLength(conversion_data, value_range).IntValue());
+    repeated_values.push_back(static_cast<int>(
+        length.CreateLength(conversion_data, value_range).Pixels()));
   }
 
   CHECK(repeater_->IsAutoRepeater());

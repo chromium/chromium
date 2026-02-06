@@ -215,7 +215,7 @@ String StringifyMargin(const Vector<Length>& margin) {
       string_builder.AppendNumber(length.Percent());
       string_builder.Append('%');
     } else {
-      string_builder.AppendNumber(length.IntValue());
+      string_builder.AppendNumber(static_cast<int>(length.Pixels()));
       string_builder.Append(base::byte_span_from_cstring("px"));
     }
   };

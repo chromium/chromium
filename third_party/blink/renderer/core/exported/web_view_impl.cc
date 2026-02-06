@@ -3038,7 +3038,9 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
 
   Settings& page_settings = GetPage()->GetSettings();
   GetPageScaleConstraintsSet().AdjustForAndroidWebViewQuirks(
-      description, default_min_width.IntValue(),
+      description,
+      default_min_width.IsFixed() ? static_cast<int>(default_min_width.Pixels())
+                                  : 0,
       SettingsImpl()->SupportDeprecatedTargetDensityDPI(),
       page_settings.GetWideViewportQuirkEnabled(),
       page_settings.GetUseWideViewport(),

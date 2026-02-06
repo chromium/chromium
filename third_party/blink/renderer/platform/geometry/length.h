@@ -216,14 +216,6 @@ class PLATFORM_EXPORT Length {
   }
   static Length Flex(float value) { return Length(value, kFlex); }
 
-  int IntValue() const {
-    if (IsCalculated()) {
-      NOTREACHED();
-    }
-    DCHECK(!IsNone());
-    return static_cast<int>(value_);
-  }
-
   float Pixels() const {
     DCHECK_EQ(GetType(), kFixed);
     return GetFloatValue();
