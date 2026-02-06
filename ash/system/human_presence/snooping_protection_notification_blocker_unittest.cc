@@ -233,6 +233,12 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
     message_center_ = message_center::MessageCenter::Get();
   }
 
+  void TearDown() override {
+    message_center_ = nullptr;
+    controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   bool HasInfoNotification() {
     message_center::Notification* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(
@@ -252,10 +258,8 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SnoopingProtectionController, DanglingUntriaged> controller_ =
-      nullptr;
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_ =
-      nullptr;
+  raw_ptr<SnoopingProtectionController> controller_ = nullptr;
+  raw_ptr<message_center::MessageCenter> message_center_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
