@@ -6,7 +6,6 @@ shouldThrow("document.createEvent('CompositionEvent').initCompositionEvent('', f
 shouldThrow("document.createEvent('KeyboardEvent').initKeyboardEvent('', false, false, {}, '', 0, false, false, false, false)");
 shouldThrow("document.createEvent('MouseEvent').initMouseEvent('', false, false, null, 0, 0, 0, 0, 0, false, false, false, false, 0, {})");
 shouldThrow("document.createEvent('MouseEvent').initMouseEvent('', false, false, {}, 0, 0, 0, 0, 0, false, false, false, false, 0, null)");
-shouldThrow("document.createEvent('MutationEvent').initMutationEvent('', false, false, {}, '', '', '', 0)");
 shouldThrow("document.createEvent('TextEvent').initTextEvent('', false, false, {}, '')");
 shouldThrow("document.createEvent('UIEvent').initUIEvent('', false, false, {}, 0)");
 </script>

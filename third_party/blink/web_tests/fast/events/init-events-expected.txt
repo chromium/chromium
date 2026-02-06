@@ -81,21 +81,6 @@ PASS testInitEvent('Mouse', '"a", false, false, window, 1001, 1002, 1003, 1004, 
 PASS testInitEvent('Mouse', '"a", false, false, window, 1001, 1002, 1003, 1004, 1005, false, false, false, false, 1006, null').pageX is 1004
 PASS testInitEvent('Mouse', '"a", false, false, window, 1001, 1002, 1003, 1004, 1005, false, false, false, false, 1006, null').pageY is 1005
 PASS testInitEvent('Mouse', '"a", false, false, window, 1001, 1002, 1003, 1004, 1005, false, false, false, false, 1006, null').which is 1007
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').type is 'a'
-PASS testInitEvent('Mutation', 'null, false, false, null, "b", "c", "d", 1001').type is 'null'
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').bubbles is false
-PASS testInitEvent('Mutation', '"a", true, false, null, "b", "c", "d", 1001').bubbles is true
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').cancelable is false
-PASS testInitEvent('Mutation', '"a", false, true, null, "b", "c", "d", 1001').cancelable is true
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').relatedNode is null
-PASS testInitEvent('Mutation', '"a", false, false, document, "b", "c", "d", 1001').relatedNode is document
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').prevValue is 'b'
-PASS testInitEvent('Mutation', '"a", false, false, null, null, "c", "d", 1001').prevValue is 'null'
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').newValue is 'c'
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", null, "d", 1001').newValue is 'null'
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').attrName is 'd'
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", null, 1001').attrName is 'null'
-PASS testInitEvent('Mutation', '"a", false, false, null, "b", "c", "d", 1001').attrChange is 1001
 PASS testInitEvent('Storage', '"a", false, false, "b", "c", "d", "e"').type is 'a'
 PASS testInitEvent('Storage', 'null, false, false, "b", "c", "d", "e"').type is 'null'
 PASS testInitEvent('Storage', '"a", false, false, "b", "c", "d", "e"').bubbles is false

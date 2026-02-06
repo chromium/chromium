@@ -59,12 +59,6 @@ PASS document.createEvent('MouseEvENts') instanceof window.MouseEvent is true
 PASS document.createEvent('MouseEvENts') instanceof window.UIEvent is true
 PASS document.createEvent('MouseEvENts') instanceof window.Event is true
 PASS document.createEvent('MouseEvENts').constructor === window.MouseEvent is true
-PASS document.createEvent('MutationEvent') instanceof window.MutationEvent is true
-PASS document.createEvent('MutationEvent') instanceof window.Event is true
-PASS document.createEvent('MutationEvent').constructor === window.MutationEvent is true
-PASS document.createEvent('MutationEvents') instanceof window.MutationEvent is true
-PASS document.createEvent('MutationEvents') instanceof window.Event is true
-PASS document.createEvent('MutationEvents').constructor === window.MutationEvent is true
 PASS document.createEvent('PageTransitionEvent') instanceof window.PageTransitionEvent is true
 PASS document.createEvent('PageTransitionEvent') instanceof window.Event is true
 PASS document.createEvent('PageTransitionEvent').constructor === window.PageTransitionEvent is true

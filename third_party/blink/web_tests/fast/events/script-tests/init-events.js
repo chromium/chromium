@@ -103,22 +103,6 @@ shouldBe("testInitEvent('Mouse', '\"a\", false, false, window, 1001, 1002, 1003,
 shouldBe("testInitEvent('Mouse', '\"a\", false, false, window, 1001, 1002, 1003, 1004, 1005, false, false, false, false, 1006, null').pageY", "1005");
 shouldBe("testInitEvent('Mouse', '\"a\", false, false, window, 1001, 1002, 1003, 1004, 1005, false, false, false, false, 1006, null').which", "1007");
 
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').type", "'a'");
-shouldBe("testInitEvent('Mutation', 'null, false, false, null, \"b\", \"c\", \"d\", 1001').type", "'null'");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').bubbles", "false");
-shouldBe("testInitEvent('Mutation', '\"a\", true, false, null, \"b\", \"c\", \"d\", 1001').bubbles", "true");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').cancelable", "false");
-shouldBe("testInitEvent('Mutation', '\"a\", false, true, null, \"b\", \"c\", \"d\", 1001').cancelable", "true");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').relatedNode", "null");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, document, \"b\", \"c\", \"d\", 1001').relatedNode", "document");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').prevValue", "'b'");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, null, \"c\", \"d\", 1001').prevValue", "'null'");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').newValue", "'c'");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", null, \"d\", 1001').newValue", "'null'");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').attrName", "'d'");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", null, 1001').attrName", "'null'");
-shouldBe("testInitEvent('Mutation', '\"a\", false, false, null, \"b\", \"c\", \"d\", 1001').attrChange", "1001");
-
 shouldBe("testInitEvent('Storage', '\"a\", false, false, \"b\", \"c\", \"d\", \"e\"').type", "'a'");
 shouldBe("testInitEvent('Storage', 'null, false, false, \"b\", \"c\", \"d\", \"e\"').type", "'null'");
 shouldBe("testInitEvent('Storage', '\"a\", false, false, \"b\", \"c\", \"d\", \"e\"').bubbles", "false");
