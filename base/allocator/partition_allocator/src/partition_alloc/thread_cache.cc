@@ -831,8 +831,7 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   for (size_t i = 0; i < BucketIndexLookup::kNumBuckets + 1; i++) {
-    PA_UNSAFE_TODO(stats->allocs_per_bucket_[i] +=
-                   stats_.allocs_per_bucket_[i]);
+    stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
   }
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 

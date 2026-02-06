@@ -257,7 +257,7 @@ void ReportPartitionAllocThreadCacheStats(
           "%s/buckets_alloc/%07d", name.c_str(), static_cast<int>(bucket_size));
       auto* buckets_alloc_dump = pmd->CreateAllocatorDump(dump_name);
       buckets_alloc_dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects,
-                                    UNSAFE_TODO(stats.allocs_per_bucket_[i]));
+                                    stats.allocs_per_bucket_[i]);
     }
   }
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
