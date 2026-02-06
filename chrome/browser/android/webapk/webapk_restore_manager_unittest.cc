@@ -28,8 +28,9 @@ std::vector<WebApkRestoreData> CreateRestoreAppsList(
   std::vector<WebApkRestoreData> apps;
   for (const auto& manifest_id : manifest_ids) {
     auto shortcut_info = std::make_unique<webapps::ShortcutInfo>(manifest_id);
-    apps.emplace_back(GenerateAppIdFromManifestId(manifest_id),
-                      std::move(shortcut_info));
+    apps.emplace_back(
+        GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id)),
+        std::move(shortcut_info));
   }
   return apps;
 }
@@ -137,9 +138,12 @@ class WebApkRestoreManagerTest : public ::testing::Test {
   const GURL kManifestId1 = GURL("https://example.com/app1");
   const GURL kManifestId2 = GURL("https://example.com/app2");
   const GURL kManifestId3 = GURL("https://example.com/app3");
-  const webapps::AppId kAppId1 = GenerateAppIdFromManifestId(kManifestId1);
-  const webapps::AppId kAppId2 = GenerateAppIdFromManifestId(kManifestId2);
-  const webapps::AppId kAppId3 = GenerateAppIdFromManifestId(kManifestId3);
+  const webapps::AppId kAppId1 =
+      GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId1));
+  const webapps::AppId kAppId2 =
+      GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId2));
+  const webapps::AppId kAppId3 =
+      GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId3));
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -166,14 +170,15 @@ TEST_F(WebApkRestoreManagerTest, GetAppResults) {
       base::BindLambdaForTesting([&](const std::vector<std::string>& ids,
                                      const std::vector<std::u16string>& names,
                                      const std::vector<SkBitmap>& icons) {
-        EXPECT_THAT(ids, testing::ElementsAre(
-                             GenerateAppIdFromManifestId(kManifestId1),
-                             GenerateAppIdFromManifestId(kManifestId2)));
+        EXPECT_THAT(
+            ids, testing::ElementsAre(GenerateAppIdFromManifestId(
+                                          webapps::ManifestId(kManifestId1)),
+                                      GenerateAppIdFromManifestId(
+                                          webapps::ManifestId(kManifestId2))));
         EXPECT_THAT(names, testing::ElementsAre(u"app1", u"app2"));
         run_loop.Quit();
       }));
   run_loop.Run();
-
 }
 
 TEST_F(WebApkRestoreManagerTest, RunOneTasks) {

@@ -85,8 +85,8 @@ std::unique_ptr<WebApkProto> CreateWebApkProto(const std::string& url,
 
 void InsertAppIntoRegistry(Registry* registry,
                            std::unique_ptr<WebApkProto> app) {
-  webapps::AppId app_id =
-      GenerateAppIdFromManifestId(GURL(app->sync_data().manifest_id()));
+  webapps::AppId app_id = GenerateAppIdFromManifestId(
+      webapps::ManifestId(GURL(app->sync_data().manifest_id())));
   ASSERT_FALSE(registry->contains(app_id));
   registry->emplace(std::move(app_id), std::move(app));
 }
