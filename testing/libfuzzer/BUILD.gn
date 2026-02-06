@@ -76,7 +76,7 @@ if (fuzzing_engine_supports_custom_main) {
         # Centipede based fuzzers require the centipede runner in order to fuzz.
         "//third_party/fuzztest:centipede",
       ]
-    } else if (use_fuzzilli) {
+    } else if (use_chromium_fuzzilli) {
       deps = [ "//testing/libfuzzer/fuzzilli:fuzzilli_driver" ]
     }
   }

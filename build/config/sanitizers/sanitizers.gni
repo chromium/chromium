@@ -85,7 +85,7 @@ declare_args() {
   use_afl = false
 
   # Compile for fuzzing with Fuzzilli.
-  use_fuzzilli = false
+  use_chromium_fuzzilli = false
 
   # Compile for fuzzing with an external engine (e.g., Grammarinator).
   use_external_fuzzing_engine = false
@@ -153,7 +153,7 @@ declare_args() {
 # of checking "use_libfuzzer || use_afl" because often developers forget to
 # check for "use_afl", and "use_centipede" is new.
 use_fuzzing_engine = use_libfuzzer || use_afl || use_centipede ||
-                     use_external_fuzzing_engine || use_fuzzilli
+                     use_external_fuzzing_engine || use_chromium_fuzzilli
 
 # Whether any UBSan subset is enabled.
 # TODO(crbug.com/40248746): Unify these under a single UBSan option.
@@ -172,7 +172,7 @@ declare_args() {
   # TODO(crbug.com/40286621): enable on component builds
   enable_fuzztest_fuzz =
       !(use_libfuzzer || use_afl || use_centipede ||
-        use_external_fuzzing_engine || use_fuzzilli) &&
+        use_external_fuzzing_engine || use_chromium_fuzzilli) &&
       (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan_any) &&
       !is_component_build && is_linux && build_with_chromium
 
@@ -261,7 +261,7 @@ use_fuzzing_engine_with_lpm = use_libfuzzer || use_centipede
 # Whether the fuzzing engine supports fuzzers which supply their own
 # "main" function.
 fuzzing_engine_supports_custom_main =
-    use_libfuzzer || use_centipede || use_fuzzilli
+    use_libfuzzer || use_centipede || use_chromium_fuzzilli
 
 # Args that are in turn dependent on other args must be in a separate
 # declare_args block. User overrides are only applied at the end of a

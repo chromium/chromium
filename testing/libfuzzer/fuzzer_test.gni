@@ -87,7 +87,7 @@ template("fuzzer_test") {
   _should_build = (_high_end_job_required || !high_end_fuzzer_targets) &&
                   !disable_libfuzzer && use_fuzzing_engine &&
                   ((defined(invoker.is_fuzzilli_compatible) &&
-                    invoker.is_fuzzilli_compatible) || !use_fuzzilli)
+                    invoker.is_fuzzilli_compatible) || !use_chromium_fuzzilli)
   if (_should_build) {
     assert(defined(invoker.sources), "Need sources in $target_name.")
 

@@ -49,7 +49,7 @@ if (fuzzing_engine_supports_custom_main && !is_android) {
     flags = [
       "IS_CENTIPEDE=$use_centipede",
       "IS_LIBFUZZER=$use_libfuzzer",
-      "IS_FUZZILLI=$use_fuzzilli",
+      "IS_FUZZILLI=$use_chromium_fuzzilli",
 
       # crbug.com/1474421: remove these lines once the bug is fixed.
       "DEBUG_CLUSTERFUZZ_FAILURE=$use_libfuzzer",

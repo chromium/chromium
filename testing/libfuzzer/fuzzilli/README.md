@@ -23,7 +23,7 @@ Ensure the following build flags are enabled when compiling Chrome:
 ```
 dcheck_always_on = false
 is_asan = true
-use_fuzzilli = true
+use_chromium_fuzzilli = true
 use_remoteexec=true
 symbol_level=2
 v8_fuzzilli = true
