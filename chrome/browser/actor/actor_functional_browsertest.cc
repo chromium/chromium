@@ -31,6 +31,7 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -221,40 +222,6 @@ class AsyncActionWaiter {
  private:
   content::DOMMessageQueue queue_;
   std::string request_id_;
-};
-
-// Helper class to wait for a specific ActorTask to reach a certain state.
-// It subscribes to task state changes and quits a run loop when the
-// target task transitions to the `expected_state`.
-class ActorTaskStateWaiter {
- public:
-  ActorTaskStateWaiter(ActorKeyedService* service,
-                       TaskId task_id,
-                       ActorTask::State expected_state)
-      : task_id_(task_id), expected_state_(expected_state) {
-    if (service->GetTask(task_id_)->GetState() == expected_state_) {
-      run_loop_.Quit();
-      return;
-    }
-    subscription_ =
-        service->AddTaskStateChangedCallback(base::BindLambdaForTesting(
-            [this](TaskId task_id, ActorTask::State state) {
-              if (task_id == task_id_ && state == expected_state_) {
-                run_loop_.Quit();
-              }
-            }));
-  }
-
-  // If the ActorTask has already reached the `expected_state` since this waiter
-  // was created, this returns immediately. Otherwise, it waits until the task
-  // reaches the `expected_state`.
-  void Wait() { run_loop_.Run(); }
-
- private:
-  const TaskId task_id_;
-  const ActorTask::State expected_state_;
-  base::RunLoop run_loop_;
-  base::CallbackListSubscription subscription_;
 };
 
 class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
@@ -495,6 +462,23 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     EXPECT_OK(EvalJsInGlic(content::JsReplace(script, task_id.value())));
   }
 
+  // Waits until the task reaches the `expected_state`.
+  void WaitForTaskState(TaskId task_id, ActorTask::State expected_state) {
+    if (actor_keyed_service()->GetTask(task_id)->GetState() == expected_state) {
+      return;
+    }
+    base::RunLoop run_loop;
+    base::CallbackListSubscription subscription =
+        actor_keyed_service()->AddTaskStateChangedCallback(
+            base::BindLambdaForTesting(
+                [&](TaskId task_id_param, ActorTask::State state) {
+                  if (task_id_param == task_id && state == expected_state) {
+                    run_loop.Quit();
+                  }
+                }));
+    run_loop.Run();
+  }
+
   // Helper to call the CreateActorTab TS API.
   // Returns the TabId of the newly created tab, or base::unexpected on failure.
   base::expected<tabs::TabHandle, std::string> CreateActorTab(
@@ -613,9 +597,7 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeCreatedTask) {
   PauseActorTask(task_id, glic::mojom::ActorTaskPauseReason::kPausedByUser,
                  active_tab()->GetHandle());
   // Wait for the task to pause.
-  ActorTaskStateWaiter waiter(actor_keyed_service(), task_id,
-                              ActorTask::State::kPausedByUser);
-  waiter.Wait();
+  WaitForTaskState(task_id, ActorTask::State::kPausedByUser);
 
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
@@ -758,9 +740,7 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseActiveTask) {
   // Verify the WaitAction was ended and the task was paused.
   EXPECT_THAT(action_waiter->Wait(),
               ValueIs(HasResultCode(mojom::ActionResultCode::kTaskPaused)));
-  ActorTaskStateWaiter state_waiter(actor_keyed_service(), task_id,
-                                    ActorTask::State::kPausedByUser);
-  state_waiter.Wait();
+  WaitForTaskState(task_id, ActorTask::State::kPausedByUser);
 
   EXPECT_THAT(
       ResumeActorTask(task_id,
@@ -780,6 +760,71 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseActiveTask) {
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
   EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       StopActiveTaskWithModelError) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  optimization_guide::proto::Actions wait_action =
+      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+  std::unique_ptr<AsyncActionWaiter> action_waiter =
+      PerformActionsAsync(wait_action);
+
+  // Wait for the task to start acting before stopping.
+  WaitForTaskState(task_id, ActorTask::State::kActing);
+
+  // Verify the action is ended with the appropriate code after task is stopped.
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kModelError);
+  EXPECT_THAT(action_waiter->Wait(),
+              ValueIs(HasResultCode(mojom::ActionResultCode::kTaskWentAway)));
+
+  EXPECT_EQ(ActorTask::State::kFailed, task_completion_state.Get())
+      << "Task " << task_id << " did not reach kFailed state.";
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, CloseTabWhileActing) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  optimization_guide::proto::Actions wait_action =
+      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+  std::unique_ptr<AsyncActionWaiter> action_waiter =
+      PerformActionsAsync(wait_action);
+
+  // Wait for the task to start acting before closing the tab.
+  WaitForTaskState(task_id, ActorTask::State::kActing);
+
+  // Add a new background tab to prevent the browser from closing.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Close the active web contents.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(web_contents()),
+      TabCloseTypes::CLOSE_NONE);
+
+  // After an acting tab is closed, the task should be cancelled and the
+  // corresponding action have a result code of kTaskWentAway.
+  // NOTE: We cannot use `action_waiter->Wait()` to check the result code
+  // because the test client is destroyed when all task tabs are closed.
+  EXPECT_EQ(ActorTask::State::kCancelled, task_completion_state.Get());
+  histogram_tester.ExpectUniqueSample("Actor.ExecutionEngine.Action.ResultCode",
+                                      mojom::ActionResultCode::kTaskWentAway,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
@@ -824,16 +869,12 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   EXPECT_EQ(target_url, web_contents()->GetURL());
 
   InterruptActorTask(task_id);
-  ActorTaskStateWaiter waiting_waiter(actor_keyed_service(), task_id,
-                                      ActorTask::State::kWaitingOnUser);
-  waiting_waiter.Wait();
+  WaitForTaskState(task_id, ActorTask::State::kWaitingOnUser);
 
   // Ensure uninterrupting a task with no pending actions sets the state
   // to kReflecting
   UninterruptActorTask(task_id);
-  ActorTaskStateWaiter reflecting_waiter(actor_keyed_service(), task_id,
-                                         ActorTask::State::kReflecting);
-  reflecting_waiter.Wait();
+  WaitForTaskState(task_id, ActorTask::State::kReflecting);
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
   EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get());
@@ -855,21 +896,15 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
       PerformActionsAsync(wait_action);
 
   // Wait for the task to start acting before interrupting.
-  ActorTaskStateWaiter initial_acting_waiter(actor_keyed_service(), task_id,
-                                             ActorTask::State::kActing);
-  initial_acting_waiter.Wait();
+  WaitForTaskState(task_id, ActorTask::State::kActing);
 
   InterruptActorTask(task_id);
-  ActorTaskStateWaiter waiting_on_user_waiter(actor_keyed_service(), task_id,
-                                              ActorTask::State::kWaitingOnUser);
-  waiting_on_user_waiter.Wait();
+  WaitForTaskState(task_id, ActorTask::State::kWaitingOnUser);
 
   // Ensure uninterrupting a task with previously pending actions sets the state
   // to kActing
   UninterruptActorTask(task_id);
-  ActorTaskStateWaiter post_interrupt_acting_waiter(
-      actor_keyed_service(), task_id, ActorTask::State::kActing);
-  post_interrupt_acting_waiter.Wait();
+  WaitForTaskState(task_id, ActorTask::State::kActing);
 
   // Since the ongoing long wait action must be completed before sending another
   // async action, we need to use the CancelActions API to cancel all the
