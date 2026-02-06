@@ -96,6 +96,7 @@ copy("copies") {
     "//chrome/app/helper-renderer-entitlements.plist",
     "pkg-dmg",
     "pkg_postinstall.in",
+    "pkg_preinstall.in",
     "sign_chrome.py",
     "universalizer.py",
   ]

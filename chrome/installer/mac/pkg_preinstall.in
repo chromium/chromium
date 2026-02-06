@@ -1,0 +1,98 @@
+@SHEBANG_GUARD@#!/bin/bash -p
+
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -eu
+
+# Exit codes:
+#  0  Happiness
+#  1  There exists an existing app in the target location that cannot be
+#     installed over
+
+# The parameters to a pkg preinstall script are not well documented, so for the
+# reader's clarification:
+#
+# $1 is the top-level package path
+# $2 is the target (installation) location
+# $3 is the target (installation) volume
+# $4 is the startup disk root
+
+readonly INSTALLATION_PATH=${2}
+
+readonly APP_DIR="@APP_DIR@"
+readonly BUNDLE_ID="@BUNDLE_ID@"
+readonly APP_BUNDLEID_KEY="CFBundleIdentifier"
+readonly CHROME_APP_LOCATION="${INSTALLATION_PATH}/${APP_DIR}"
+readonly CHROME_APP_INFO_PLIST="${CHROME_APP_LOCATION}/Contents/Info.plist"
+
+# Uses "defaults read" to obtain the value of a key in a property list.
+#
+# See chrome/installer/mac/keystone_install.sh for more details.
+infoplist_read() {
+  __CFPREFERENCES_AVOID_DAEMON=1 defaults read "${@}"
+}
+
+err() {
+  # Unfortunately, the os_log(3) API to log into Apple's Unified Log isn't
+  # accessible from the command-line, so logger(1) will have to do. Because the
+  # value provided to the -t option doesn't pipe into unified logging, tag the
+  # message itself with an identifiable id.
+  #
+  # Errors logged by this function can be found in:
+  # - The Installer.app log (Window > Installer Log) at the "Show All Logs"
+  #   detail level, logged probably by the package_script_service (as of macOS
+  #   13) and prepended with "./preinstall:".
+  # - The Console.app log, logged by the "logger" process.
+  #
+  # Both locations have the ability to filter/search, so it's probably easiest
+  # to just search for the bundle ID.
+
+  logger -s -p "local0.${1}" "${BUNDLE_ID}.pkg.preinstall: ${2}"
+}
+
+# 1. Verify that there is no existing app in the target location that has the
+#    expected name but the wrong bundle ID (https://crbug.com/481590122).
+#
+# (If there is no existing app in the location, or there is an app but it has
+# the expected bundle ID, then Installer.app will proceed to do the installation
+# as expected.)
+
+err_target_location_hint() {
+  err "notice" "hint: target location is ${CHROME_APP_LOCATION}"
+  err "notice" "hint: investigate what is at that path and move/delete it"
+}
+
+# Existence checks (-e) automatically follow links, so check for a link first.
+if [[ -L "${CHROME_APP_LOCATION}" ]]; then
+  err "error" "Symbolic link in target location"
+  err_target_location_hint
+  exit 1
+fi
+
+if [[ -e "${CHROME_APP_LOCATION}" ]]; then
+  if [[ -d "${CHROME_APP_LOCATION}" ]]; then
+    if ! existing_bundle_id="$(infoplist_read "${CHROME_APP_INFO_PLIST}" \
+                                              "${APP_BUNDLEID_KEY}")" ||
+       [[ -z "${existing_bundle_id}" ]]; then
+      err "error" "Couldn't get bundle id of existing app in target location"
+      err_target_location_hint
+      exit 1
+    fi
+
+    if [[ "${BUNDLE_ID}" != "${existing_bundle_id}" ]]; then
+      err "error" "Bundle id of existing app in target location incorrect"
+      err "notice" \
+          "hint: expected \"${BUNDLE_ID}\", found \"${existing_bundle_id}\""
+      err_target_location_hint
+      exit 1
+    fi
+  else
+    err "error" "Non-directory in target location"
+    err_target_location_hint
+    exit 1
+  fi
+fi
+
+exit 0

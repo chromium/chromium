@@ -160,12 +160,21 @@ def _create_pkgbuild_scripts(paths, dist_config):
             '@APP_DIR@': dist_config.app_dir,
             '@APP_PRODUCT@': dist_config.app_product,
             '@BRAND_CODE@': dist_config.distribution.branding_code or '',
+            '@BUNDLE_ID@': dist_config.base_bundle_id,
             '@FRAMEWORK_DIR@': dist_config.framework_dir
         }
         for key, value in substitutions.items():
             script = script.replace(key, value)
 
         return script
+
+    preinstall_src_path = os.path.join(packaging_dir, 'pkg_preinstall.in')
+    preinstall_dest_path = os.path.join(scripts_path, 'preinstall')
+
+    preinstall = commands.read_file(preinstall_src_path)
+    preinstall = do_substitutions(preinstall)
+    commands.write_file(preinstall_dest_path, preinstall)
+    commands.set_executable(preinstall_dest_path)
 
     postinstall_src_path = os.path.join(packaging_dir, 'pkg_postinstall.in')
     postinstall_dest_path = os.path.join(scripts_path, 'postinstall')

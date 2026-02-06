@@ -63,6 +63,10 @@ def _run_command_output_lipo(b):
 
 
 def _read_file(p):
+    if p == '/$I/Product Packaging/pkg_preinstall.in':
+        return """app dir is '@APP_DIR@'
+bundle_id is '@BUNDLE_ID@'"""
+
     if p == '/$I/Product Packaging/pkg_postinstall.in':
         return """app dir is '@APP_DIR@'
 app product is '@APP_PRODUCT@'
@@ -353,11 +357,18 @@ class TestPipelineHelpers(unittest.TestCase):
 
         manager.assert_has_calls([
             mock.call.make_dir('/$W/scripts'),
+            mock.call.write_file('/$W/scripts/preinstall', mock.ANY),
+            mock.call.set_executable('/$W/scripts/preinstall'),
             mock.call.write_file('/$W/scripts/postinstall', mock.ANY),
             mock.call.set_executable('/$W/scripts/postinstall')
         ])
 
-        postinstall_string = manager.mock_calls[1][1][1]
+        preinstall_string = manager.mock_calls[1][1][1]
+        self.assertEqual(
+            preinstall_string, """app dir is 'App Product.app'
+bundle_id is 'test.signing.bundle_id'""")
+
+        postinstall_string = manager.mock_calls[3][1][1]
         self.assertEqual(
             postinstall_string, """app dir is 'App Product.app'
 app product is 'App Product'
