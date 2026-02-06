@@ -116,6 +116,11 @@ class AttributeType final {
   friend constexpr auto operator<=>(const AttributeType& lhs,
                                     const AttributeType& rhs) = default;
 
+  template <typename H>
+  friend H AbslHashValue(H h, AttributeType attribute_type) {
+    return H::combine(std::move(h), attribute_type.name_);
+  }
+
  private:
   AttributeTypeName name_{};
 };
@@ -416,6 +421,11 @@ class EntityType final {
 
   friend constexpr auto operator<=>(const EntityType& lhs,
                                     const EntityType& rhs) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, EntityType entity_type) {
+    return H::combine(std::move(h), entity_type.name_);
+  }
 
  private:
   EntityTypeName name_{};

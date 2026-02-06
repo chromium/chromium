@@ -10,6 +10,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 namespace {
@@ -165,6 +166,20 @@ TEST(AutofillEntityTypeTest, SupportsMaskedStorageSelectTypes) {
   EXPECT_TRUE(EntityType(kNationalIdCard).SupportsMaskedStorage());
   EXPECT_TRUE(EntityType(kPassport).SupportsMaskedStorage());
   EXPECT_TRUE(EntityType(kRedressNumber).SupportsMaskedStorage());
+}
+
+// Tests that `EntityType` and `AttributeType` can be used in
+// `absl::flat_hash_map`.
+TEST(AutofillEntityTypeTest, CanBeUsedInAbslFlatHashMap) {
+  absl::flat_hash_map<EntityType, int> entity_type_map;
+  auto passport = EntityType(EntityTypeName::kPassport);
+  entity_type_map[passport] = 1;
+  EXPECT_EQ(entity_type_map[passport], 1);
+
+  absl::flat_hash_map<AttributeType, int> attribute_type_map;
+  auto passport_name = AttributeType(AttributeTypeName::kPassportName);
+  attribute_type_map[passport_name] = 2;
+  EXPECT_EQ(attribute_type_map[passport_name], 2);
 }
 
 }  // namespace
