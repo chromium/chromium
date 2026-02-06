@@ -261,30 +261,6 @@ TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnEveryInvoke) {
   PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
 }
 
-TEST_F(ScopedThreadPriorityTest, TaskMonitoringBoost) {
-  ASSERT_EQ(ThreadType::kDefault,
-            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
-
-  {
-    // A `TaskMonitoringScopedBoostPriority` object with a callback that always
-    // returns true.
-    TaskMonitoringScopedBoostPriority scoped_boost_priority(
-        ThreadType::kAudioProcessing, BindRepeating([]() { return true; }));
-    // Not boosted before `WillProcessTask` is called.
-    ASSERT_EQ(ThreadType::kDefault,
-              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
-
-    // After `WillProcessTask` is called, the thread priority should be boosted.
-    scoped_boost_priority.WillProcessTask(PendingTask(), false);
-    ASSERT_EQ(ThreadType::kAudioProcessing,
-              PlatformThread::GetCurrentEffectiveThreadTypeForTest());
-  }
-
-  // Back to normal outside the scope.
-  ASSERT_EQ(ThreadType::kDefault,
-            PlatformThread::GetCurrentEffectiveThreadTypeForTest());
-}
-
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base
