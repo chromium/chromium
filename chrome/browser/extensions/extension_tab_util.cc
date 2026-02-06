@@ -12,6 +12,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
@@ -94,6 +95,9 @@ using extensions::mojom::APIPermissionID;
 namespace extensions {
 
 namespace {
+
+// Whether to disable tab list editing for testing purposes.
+bool g_disable_tab_list_editing_for_testing = false;
 
 constexpr char kGroupNotFoundError[] = "No group with id: *.";
 constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
@@ -1360,6 +1364,10 @@ void ExtensionTabUtil::ClearBackForwardCache() {
 
 // static
 bool ExtensionTabUtil::IsTabStripEditable() {
+  if (g_disable_tab_list_editing_for_testing) {
+    return false;
+  }
+
   // See comments in the header for why we need to check all of them.
   for (WindowController* window : *WindowControllerList::GetInstance()) {
     if (!window->HasEditableTabStrip()) {
@@ -1369,12 +1377,18 @@ bool ExtensionTabUtil::IsTabStripEditable() {
   return true;
 }
 
+// static
 TabListInterface* ExtensionTabUtil::GetEditableTabList(
     BrowserWindowInterface& browser) {
   if (!IsTabStripEditable()) {
     return nullptr;
   }
   return TabListInterface::From(&browser);
+}
+
+// static
+base::AutoReset<bool> ExtensionTabUtil::DisableTabListEditingForTesting() {
+  return base::AutoReset<bool>(&g_disable_tab_list_editing_for_testing, true);
 }
 
 }  // namespace extensions

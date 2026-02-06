@@ -396,11 +396,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreInIncognito) {
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
   CreateSessionModels();
 
-  // Set up the browser with a non-editable tabstrip, simulating one in the
-  // midst of a tab dragging session.
-  auto* window_controller =
-      BrowserExtensionWindowController::From(browser_window_interface());
-  window_controller->disable_tab_strip_editing_for_test();
+  // Disable tab strip editing, simulating a browser window in the midst of a
+  // tab dragging session.
+  base::AutoReset<bool> disable_tab_list_editing =
+      ExtensionTabUtil::DisableTabListEditingForTesting();
 
   std::string error = utils::RunFunctionAndReturnError(
       CreateFunction<SessionsRestoreFunction>(true).get(), "[\"1\"]",

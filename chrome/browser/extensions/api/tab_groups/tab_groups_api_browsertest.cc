@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -789,9 +788,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
   const std::string args =
       base::StringPrintf(R"([%d, {"index": %d}])", group_id, 1);
 
-  auto* window_controller =
-      BrowserExtensionWindowController::From(browser_window_interface());
-  EXPECT_TRUE(window_controller->HasEditableTabStrip());
+  EXPECT_TRUE(ExtensionTabUtil::IsTabStripEditable());
 
   // Succeed moving group when tab strip is editable.
   {
@@ -802,8 +799,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
   }
 
   // Make tab strip uneditable.
-  window_controller->disable_tab_strip_editing_for_test();
-  EXPECT_FALSE(window_controller->HasEditableTabStrip());
+  base::AutoReset<bool> disable_tab_list_editing =
+      ExtensionTabUtil::DisableTabListEditingForTesting();
 
   // Succeed querying group when tab strip is not editable.
   {

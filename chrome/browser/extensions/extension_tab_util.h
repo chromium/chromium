@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -340,6 +341,10 @@ class ExtensionTabUtil {
   // and only if every browser's tab list is editable. See comments above
   // IsTabStripEditable() for details.
   static TabListInterface* GetEditableTabList(BrowserWindowInterface& browser);
+
+  // Disables editing of the tab list for testing purposes. This will be reset
+  // when the returned AutoReset<> goes out of scope.
+  static base::AutoReset<bool> DisableTabListEditingForTesting();
 };
 
 }  // namespace extensions
