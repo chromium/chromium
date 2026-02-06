@@ -219,15 +219,15 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
   // Account for border, scrollbar, and padding in the intrinsic block size.
   intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
-  const auto block_size = ComputeBlockSizeForFragment(
+  intrinsic_block_size_ =
+      ClampIntrinsicBlockSize(GetConstraintSpace(), node, GetBreakToken(),
+                              BorderScrollbarPadding(), intrinsic_block_size_);
+  auto block_size = ComputeBlockSizeForFragment(
       GetConstraintSpace(), Node(), BorderPadding(),
       contain_intrinsic_block_size_.value_or(intrinsic_block_size_),
       container_builder_.InlineSize());
-  // TODO(celestepan): Possibly call `ClampIntinsicBlockSize`.
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
-
-  // TODO(celestepan): Possibly call `ClampIntrinsicBlockSize` here.
 
   // Place out-of-flow items after setting the intrinsic block size, since
   // out-of-flow items don't contribute to the intrinsic size of the container.
