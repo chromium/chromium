@@ -5,16 +5,20 @@
 package org.jni_zero;
 
 // To regenerate .class file:
-//   javac java/src/org/jni_zero/JavapClass.java
+//   ../../third_party/jdk/current/bin/javac test/java/src/org/jni_zero/JavapClass.java
 public class JavapClass<T> {
     public static final int CONST_INT = 3;
-    public static boolean sBoolValue = true;
     public static final String CONST_STR = "VaLuE";
+    public static final boolean sBoolValue = true;
+    public static boolean sMutableInt = true;
 
-    public final int ignoredField = 7;
+    public final int mFinalInt = 7;
+    public String mMutableString = "mut";
 
     public JavapClass() {}
+
     public JavapClass(int a) {}
+
     public JavapClass(boolean b) {}
 
     private void ignore(int thing) {}

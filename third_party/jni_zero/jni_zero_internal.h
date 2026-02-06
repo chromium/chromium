@@ -51,6 +51,43 @@ LazyGetClass(JNIEnv* env,
              const char* class_name,
              std::atomic<jclass>* atomic_class_id);
 
+// This class is a wrapper for JNIEnv Get(Static)FieldID.
+class JNI_ZERO_COMPONENT_BUILD_EXPORT FieldID {
+ public:
+  enum Type {
+    TYPE_STATIC,
+    TYPE_INSTANCE,
+  };
+
+  // Returns the field ID for the field with the specified name and signature.
+  // This method triggers a fatal assertion if the field could not be found.
+  template <Type type>
+  static jfieldID Get(JNIEnv* env,
+                      jclass clazz,
+                      const char* field_name,
+                      const char* jni_signature);
+
+  // The caller is responsible to zero-initialize |atomic_field_id|.
+  // It's fine to simultaneously call this on multiple threads referencing the
+  // same |atomic_field_id|.
+  template <Type type>
+  static jfieldID LazyGet(JNIEnv* env,
+                          jclass clazz,
+                          const char* field_name,
+                          const char* jni_signature,
+                          std::atomic<jfieldID>* atomic_field_id);
+};
+
+template <FieldID::Type type>
+inline void InitializeFieldID(JNIEnv* env,
+                              jclass clazz,
+                              const char* field_name,
+                              const char* jni_signature,
+                              std::atomic<jfieldID>* atomic_field_id) {
+  FieldID::LazyGet<type>(env, clazz, field_name, jni_signature,
+                         atomic_field_id);
+}
+
 // Context about the JNI call with exception checked to be stored in stack.
 template <bool checked>
 class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {

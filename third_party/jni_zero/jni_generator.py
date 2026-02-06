@@ -4,12 +4,14 @@
 """Entry point for "from-source" and "from-jar" commands."""
 
 import collections
+import dataclasses
 import os
 import pickle
 import shutil
 import subprocess
 import sys
 import tempfile
+from typing import Optional
 import zipfile
 
 from codegen import called_by_native_header
@@ -174,6 +176,16 @@ class CalledByNative:
     return self.signature.param_list
 
 
+@dataclasses.dataclass
+class Field:
+  name: str
+  java_type: java_types.JavaType
+  static: bool
+  final: bool
+  is_system_class: bool
+  const_value: Optional[str] = None
+
+
 def NameIsTestOnly(name):
   return name.endswith(('ForTest', 'ForTests', 'ForTesting'))
 
@@ -236,7 +248,15 @@ class JniObject:
     self.module_name = parsed_file.module_name
     self.proxy_interface = parsed_file.proxy_interface
     self.proxy_visibility = parsed_file.proxy_visibility
-    self.constant_fields = parsed_file.constant_fields
+    self.fields = [
+        Field(name=f.name,
+              java_type=f.java_type,
+              static=f.static,
+              final=f.final,
+              is_system_class=from_javap,
+              const_value=f.const_value if f.java_type.is_primitive() else None)
+        for f in parsed_file.fields
+    ]
 
     # These are different only for legacy reasons.
     if from_javap:
@@ -355,11 +375,25 @@ def _generate_header(jni_mode,
     with sb.section('Class Accessors'):
       header_common.class_accessors(sb, java_classes, jni_obj.module_name)
 
+  if jni_obj.fields:
+    non_const_fields = [f for f in jni_obj.fields if f.const_value is None]
+    if non_const_fields:
+      with sb.section('FieldId Accessors'):
+        sb('#pragma clang diagnostic push\n')
+        sb('#pragma clang diagnostic ignored "-Wunique-object-duplication"\n')
+        called_by_native_header.field_accessors(sb, jni_obj.java_class,
+                                                non_const_fields)
+        sb('#pragma clang diagnostic pop\n')
+
   with sb.namespace(jni_obj.jni_namespace):
-    if jni_obj.constant_fields:
+    constant_fields = [
+        f for f in jni_obj.fields
+        if f.const_value and f.java_type == java_types.INT
+    ]
+    if constant_fields:
       with sb.section('Constants'):
         called_by_native_header.constants_enums(sb, jni_obj.java_class,
-                                                jni_obj.constant_fields)
+                                                constant_fields)
 
     if jni_obj.natives and not enable_definition_macros:
       with sb.section('Java to native functions'):
@@ -372,10 +406,15 @@ def _generate_header(jni_mode,
                                             output_file,
                                             include_forward_declaration=True)
 
-    if jni_obj.called_by_natives:
+    if jni_obj.called_by_natives or jni_obj.fields:
       with sb.section('Native to Java functions'):
         for called_by_native in jni_obj.called_by_natives:
           called_by_native_header.method_definition(sb, called_by_native)
+      if jni_obj.fields:
+        with sb.section('Field Accessors'):
+          for field in jni_obj.fields:
+            called_by_native_header.field_definition(sb, jni_obj.java_class,
+                                                     field)
 
   sb(epilogue)
   return sb.to_string()

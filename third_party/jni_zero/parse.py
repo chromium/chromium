@@ -48,9 +48,12 @@ class ParsedCalledByNative:
 
 
 @dataclasses.dataclass(order=True)
-class ParsedConstantField(object):
+class ParsedField:
   name: str
-  value: str
+  java_type: java_types.JavaType
+  static: bool
+  final: bool
+  const_value: Optional[str] = None
 
 
 @dataclasses.dataclass
@@ -60,7 +63,7 @@ class ParsedFile:
   proxy_methods: List[ParsedNative]
   non_proxy_methods: List[ParsedNative]
   called_by_natives: List[ParsedCalledByNative]
-  constant_fields: List[ParsedConstantField]
+  fields: List[ParsedField]
   proxy_interface: Optional[java_types.JavaClass] = None
   proxy_visibility: Optional[str] = None
   module_name: Optional[str] = None  # E.g. @NativeMethods("module_name")
@@ -459,7 +462,7 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter,
                    proxy_methods=[],
                    non_proxy_methods=non_proxy_methods,
                    called_by_natives=called_by_natives,
-                   constant_fields=[])
+                   fields=[])
 
   if parsed_proxy_natives:
     ret.module_name = parsed_proxy_natives.module_name
@@ -494,8 +497,9 @@ def parse_java_file(filename,
 
 
 _JAVAP_CLASS_REGEX = re.compile(r'\b(?:class|interface) (\S+)')
-_JAVAP_FINAL_FIELD_REGEX = re.compile(
-    r'^\s+public static final \S+ (.*?) = (\d+);', flags=re.MULTILINE)
+_JAVAP_FIELD_REGEX = re.compile(
+    rf'^\s*({_MODIFIER_KEYWORDS}).*? (\S+?)(?: = (.*?))?;\n\s+descriptor: ([^(\s]+)',
+    flags=re.MULTILINE)
 _JAVAP_METHOD_REGEX = re.compile(
     rf'^\s*({_MODIFIER_KEYWORDS}).*?(\S+?)\(.*\n\s+descriptor: (.*)',
     flags=re.MULTILINE)
@@ -509,11 +513,18 @@ def parse_javap(filename, contents):
   java_class = java_types.JavaClass(match.group(1).replace('.', '/'))
   type_resolver = java_types.TypeResolver(java_class)
 
-  constant_fields = []
-  for match in _JAVAP_FINAL_FIELD_REGEX.finditer(contents):
-    name, value = match.groups()
-    constant_fields.append(ParsedConstantField(name=name, value=value))
-  constant_fields.sort()
+  fields = []
+  for match in _JAVAP_FIELD_REGEX.finditer(contents):
+    modifiers, name, value, descriptor = match.groups()
+    if descriptor[0] == 'J' and value:
+      value = value.rstrip('lL')
+    fields.append(
+        ParsedField(name=name,
+                    java_type=java_types.JavaType.from_descriptor(descriptor),
+                    static='static' in modifiers,
+                    final='final' in modifiers,
+                    const_value=value))
+  fields.sort()
 
   called_by_natives = []
   for match in _JAVAP_METHOD_REGEX.finditer(contents):
@@ -533,4 +544,4 @@ def parse_javap(filename, contents):
                     proxy_methods=[],
                     non_proxy_methods=[],
                     called_by_natives=called_by_natives,
-                    constant_fields=constant_fields)
+                    fields=fields)

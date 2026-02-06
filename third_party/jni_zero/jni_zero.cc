@@ -292,6 +292,62 @@ template jmethodID MethodID::LazyGet<MethodID::TYPE_INSTANCE>(
     std::atomic<jmethodID>* atomic_method_id);
 
 namespace internal {
+template <FieldID::Type type>
+jfieldID FieldID::Get(JNIEnv* env,
+                      jclass clazz,
+                      const char* field_name,
+                      const char* jni_signature) {
+  auto get_field_ptr = type == FieldID::TYPE_STATIC ? &JNIEnv::GetStaticFieldID
+                                                    : &JNIEnv::GetFieldID;
+  jfieldID id = (env->*get_field_ptr)(clazz, field_name, jni_signature);
+  if (ClearException(env) || !id) {
+    JNI_ZERO_FLOG("Failed to find class %sfield %s %s",
+                  (type == TYPE_STATIC ? "static " : ""), field_name,
+                  jni_signature);
+  }
+  return id;
+}
+
+template <FieldID::Type type>
+jfieldID FieldID::LazyGet(JNIEnv* env,
+                          jclass clazz,
+                          const char* field_name,
+                          const char* jni_signature,
+                          std::atomic<jfieldID>* atomic_field_id) {
+  const jfieldID value = atomic_field_id->load(std::memory_order_acquire);
+  if (value) {
+    return value;
+  }
+  jfieldID id = FieldID::Get<type>(env, clazz, field_name, jni_signature);
+  atomic_field_id->store(id, std::memory_order_release);
+  return id;
+}
+
+template jfieldID FieldID::Get<FieldID::TYPE_STATIC>(JNIEnv* env,
+                                                     jclass clazz,
+                                                     const char* field_name,
+                                                     const char* jni_signature);
+
+template jfieldID FieldID::Get<FieldID::TYPE_INSTANCE>(
+    JNIEnv* env,
+    jclass clazz,
+    const char* field_name,
+    const char* jni_signature);
+
+template jfieldID FieldID::LazyGet<FieldID::TYPE_STATIC>(
+    JNIEnv* env,
+    jclass clazz,
+    const char* field_name,
+    const char* jni_signature,
+    std::atomic<jfieldID>* atomic_field_id);
+
+template jfieldID FieldID::LazyGet<FieldID::TYPE_INSTANCE>(
+    JNIEnv* env,
+    jclass clazz,
+    const char* field_name,
+    const char* jni_signature,
+    std::atomic<jfieldID>* atomic_field_id);
+
 jclass LazyGetClass(JNIEnv* env,
                     const char* class_name,
                     const char* split_name,

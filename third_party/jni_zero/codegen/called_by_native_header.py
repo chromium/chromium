@@ -6,13 +6,144 @@
 from codegen import convert_type
 from codegen import header_common
 import common
+import java_types
+
+
+def _jni_field_function_name(field, is_setter):
+  if field.java_type.is_primitive():
+    call = common.capitalize(field.java_type.primitive_name)
+  else:
+    call = 'Object'
+  if field.static:
+    call = 'Static' + call
+  return f'{"Set" if is_setter else "Get"}{call}Field'
+
+
+def _field_id_accessor_name(java_class, field):
+  return f'{java_class.to_cpp()}_fieldId_{common.jni_mangle(field.name)}'
+
+
+def field_accessors(sb, java_class, fields):
+  for field in fields:
+    static_str = 'Static' if field.static else 'Instance'
+    field_id_type = f'jni_zero::internal::FieldID::TYPE_{static_str.upper()}'
+    accessor_name = _field_id_accessor_name(java_class, field)
+
+    sb(f'inline jfieldID {accessor_name}(JNIEnv* env) {{\n')
+    with sb.indent(2):
+      sb('static std::atomic<jfieldID> cached_field_id(nullptr);\n')
+      class_accessor = header_common.class_accessor_expression(java_class)
+      sb(f'jclass clazz = {class_accessor};\n')
+      sb('JNI_ZERO_DCHECK(clazz);\n')
+      with sb.statement():
+        sb(f'jni_zero::internal::InitializeFieldID<{field_id_type}>(env, clazz, '
+           f'"{field.name}", "{field.java_type.to_descriptor()}", '
+           f'&cached_field_id)')
+      sb('return cached_field_id.load(std::memory_order_relaxed);\n')
+    sb('}\n\n')
+
+
+def field_definition(sb, java_class, field):
+  static_str = 'Static' if field.static else 'Instance'
+  field_id_type = f'jni_zero::internal::FieldID::TYPE_{static_str.upper()}'
+  accessor_name = f'Java_{java_class.nested_name}_GetField_{field.name}'
+
+  # Getter
+  if field.is_system_class:
+    sb('[[maybe_unused]] ')
+  sb(f'static {_return_type_cpp(field.java_type)} {accessor_name}')
+  with sb.param_list() as plist:
+    plist.append('JNIEnv* env')
+    if not field.static:
+      plist.append('const jni_zero::JavaRef<jobject>& obj')
+
+  with sb.block(after='\n'):
+    if field.const_value is not None:
+      value = field.const_value
+      if field.java_type == java_types.LONG:
+        # C++ parser can't parse MIN_VALUE :P.
+        if value.upper() == '-9223372036854775808':
+          value = '-9223372036854775807LL - 1LL'
+        else:
+          value = value + 'LL'
+      sb(f'return {value};\n')
+      return
+
+    if field.static:
+      class_accessor = header_common.class_accessor_expression(java_class)
+      sb(f'jclass clazz = {class_accessor};\n')
+      sb('JNI_ZERO_DCHECK(clazz);\n')
+      receiver = 'clazz'
+    else:
+      receiver = 'obj.obj()'
+
+    field_id_accessor = _field_id_accessor_name(java_class, field)
+    sb(f'jfieldID field_id = {field_id_accessor}(env);\n')
+    jni_func_name = _jni_field_function_name(field, False)
+    getter_part = f'env->{jni_func_name}({receiver}, field_id)'
+    if not (field.java_type.is_primitive() or field.java_type.converted_type):
+      jobject_type = field.java_type.to_cpp()
+      with sb.statement():
+        sb(f'return jni_zero::ScopedJavaLocalRef<{jobject_type}>::Adopt(env, '
+           f'static_cast<{jobject_type}>({getter_part}))')
+    else:
+      with sb.statement():
+        if field.java_type.converted_type:
+          sb('auto _ret = ')
+        else:
+          sb('return ')
+        sb(getter_part)
+      if field.java_type.converted_type:
+        with sb.statement():
+          sb('return ')
+          convert_type.from_jni_expression(sb,
+                                           '_ret',
+                                           field.java_type,
+                                           release_ref=True)
+
+  if not field.final:
+    accessor_name = f'Java_{java_class.nested_name}_SetField_{field.name}'
+    if field.is_system_class:
+      sb('[[maybe_unused]] ')
+    sb(f'static void {accessor_name}')
+    with sb.param_list() as plist:
+      plist.append('JNIEnv* env')
+      if not field.static:
+        plist.append('const jni_zero::JavaRef<jobject>& obj')
+      plist.append(f'{_param_type_cpp(field.java_type)} value')
+
+    with sb.block(after='\n'):
+      if field.static:
+        class_accessor = header_common.class_accessor_expression(java_class)
+        sb(f'jclass clazz = {class_accessor};\n')
+        sb('JNI_ZERO_DCHECK(clazz);\n')
+        receiver_arg = 'clazz'
+      else:
+        receiver_arg = 'obj.obj()'
+
+      param_rvalue = 'value'
+      if field.java_type.converted_type:
+        convert_type.to_jni_assignment(sb, 'converted_value', 'value',
+                                       field.java_type)
+        param_rvalue = 'converted_value'
+
+      if not field.java_type.is_primitive():
+        param_rvalue = f'{param_rvalue}.obj()'
+      elif field.java_type.primitive_name == 'int' and not field.java_type.converted_type:
+        param_rvalue = f'as_jint({param_rvalue})'
+
+      field_id_accessor = _field_id_accessor_name(java_class, field)
+      sb(f'jfieldID field_id = {field_id_accessor}(env);\n')
+      with sb.statement():
+        sb(f'env->{_jni_field_function_name(field, True)}({receiver_arg}, '
+           f'field_id, {param_rvalue})')
 
 
 def constants_enums(sb, java_class, constant_fields):
   sb(f'enum Java_{java_class.name}_constant_fields {{\n')
   with sb.indent(2):
-    for c in constant_fields:
-      sb(f'{c.name} = {c.value},\n')
+    for f in constant_fields:
+      sb(f'{f.name} = {f.const_value},\n')
   sb('};\n\n')
 
 
