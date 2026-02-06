@@ -558,6 +558,10 @@ BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
 BASE_FEATURE(kAutofillEnableNonAffiliatedLoyaltyCardsFilling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for saving entities to wallet from settings.
+BASE_FEATURE(kAutofillEnableSaveToWalletFromSettings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
