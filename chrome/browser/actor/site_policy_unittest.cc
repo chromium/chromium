@@ -97,7 +97,7 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
 
   void CheckUrl(const GURL& url,
                 bool expected_allowed,
-                const EnterprisePolicyChecker& policy_checker) {
+                const EnterprisePolicyUrlChecker& policy_checker) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
 

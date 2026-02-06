@@ -15,7 +15,7 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -552,32 +552,29 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
                        UrlListUpdates) {
-  TestPolicyCombination(
-      glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
-      /*url_allowlist=*/{},
-      /*url_blocklist=*/{}, GURL("https://example.com"),
-      {
-          .may_act_on_url_block_reason =
-              actor::MayActOnUrlBlockReason::kActuactionDisabled,
-          .can_act_on_web = false,
-      });
-  TestPolicyCombination(
-      glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
-      /*url_allowlist=*/{"a.com"},
-      /*url_blocklist=*/{}, GURL("https://example.com"),
-      {
-          .may_act_on_url_block_reason =
-              actor::MayActOnUrlBlockReason::kEnterprisePolicy,
-          .can_act_on_web = true,
-      });
-  TestPolicyCombination(glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
-                        /*url_allowlist=*/{"example.com"},
-                        /*url_blocklist=*/{}, GURL("https://example.com"),
-                        {
-                            .may_act_on_url_block_reason =
-                                actor::MayActOnUrlBlockReason::kAllowed,
-                            .can_act_on_web = true,
-                        });
+  {
+    SCOPED_TRACE("Not in allowlist");
+    TestPolicyCombination(
+        glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
+        /*url_allowlist=*/{"a.com"},
+        /*url_blocklist=*/{}, GURL("https://example.com"),
+        {
+            .may_act_on_url_block_reason =
+                actor::MayActOnUrlBlockReason::kEnterprisePolicy,
+            .can_act_on_web = true,
+        });
+  }
+  {
+    SCOPED_TRACE("In allowlist");
+    TestPolicyCombination(glic::prefs::GlicActuationOnWebPolicyState::kDisabled,
+                            /*url_allowlist=*/{"example.com"},
+                            /*url_blocklist=*/{}, GURL("https://example.com"),
+                            {
+                                .may_act_on_url_block_reason =
+                                    actor::MayActOnUrlBlockReason::kAllowed,
+                                .can_act_on_web = true,
+                            });
+    }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,

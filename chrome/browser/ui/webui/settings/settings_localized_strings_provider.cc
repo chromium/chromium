@@ -757,7 +757,7 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
     return false;
   }
   if (glic_service->actor_policy_checker().CannotActOnWebReason() ==
-      actor::EnterprisePolicyChecker::CannotActReason::
+      glic::GlicActorPolicyChecker::CannotActReason::
           kAccountCapabilityIneligible) {
     return false;
   }

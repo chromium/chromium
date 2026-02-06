@@ -16,7 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -281,24 +281,21 @@ class ScopedExecutionEngineFactory {
   ~ScopedExecutionEngineFactory();
 };
 
-class MockPolicyChecker : public EnterprisePolicyChecker {
+class MockPolicyChecker : public EnterprisePolicyUrlChecker {
  public:
   static const MockPolicyChecker* NoEnterprisePolicyChecker();
 
   explicit MockPolicyChecker(EnterprisePolicyBlockReason reason);
   ~MockPolicyChecker();
 
-  bool CanActOnWeb() const override;
   EnterprisePolicyBlockReason Evaluate(const GURL& url) const override;
-  CannotActReason CannotActOnWebReason() const override;
-
  private:
   EnterprisePolicyBlockReason reason_;
 };
 
-// Returns a passthrough EnterprisePolicyChecker tests can use to avoid policy
-// checks.
-const EnterprisePolicyChecker* NoEnterprisePolicyChecker();
+// Returns a passthrough EnterprisePolicyUrlChecker tests can use to avoid
+// policy checks.
+const EnterprisePolicyUrlChecker* NoEnterprisePolicyChecker();
 
 }  // namespace actor
 

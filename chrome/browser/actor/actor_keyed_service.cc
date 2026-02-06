@@ -22,7 +22,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
@@ -303,12 +303,12 @@ void ActorKeyedService::ResetForTesting() {
 }
 
 TaskId ActorKeyedService::CreateTask(
-    const EnterprisePolicyChecker* policy_checker) {
+    const EnterprisePolicyUrlChecker* policy_checker) {
   return CreateTaskWithOptions(policy_checker, nullptr, nullptr);
 }
 
 TaskId ActorKeyedService::CreateTaskWithOptions(
-    const EnterprisePolicyChecker* policy_checker,
+    const EnterprisePolicyUrlChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   return CreateTaskImpl(ui::NewUiEventDispatcher(GetActorUiStateManager()),
@@ -318,7 +318,7 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
 
 TaskId ActorKeyedService::CreateTaskForTesting(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
-    const EnterprisePolicyChecker* policy_checker,
+    const EnterprisePolicyUrlChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   return CreateTaskImpl(std::move(ui_event_dispatcher), policy_checker,
@@ -327,7 +327,7 @@ TaskId ActorKeyedService::CreateTaskForTesting(
 
 TaskId ActorKeyedService::CreateTaskImpl(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
-    const EnterprisePolicyChecker* policy_checker,
+    const EnterprisePolicyUrlChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");

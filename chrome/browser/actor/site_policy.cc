@@ -18,7 +18,7 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
@@ -137,14 +137,8 @@ void MayActOnUrlInternal(const GURL& url,
                          bool allow_insecure_http,
                          Profile* profile,
                          base::optional_ref<const OriginChecker> origin_checker,
-                         const EnterprisePolicyChecker& policy_checker,
+                         const EnterprisePolicyUrlChecker& policy_checker,
                          std::unique_ptr<DecisionWrapper> decision_wrapper) {
-  if (!policy_checker.CanActOnWeb()) {
-    decision_wrapper->Reject("No ActOnWeb Capability",
-                             MayActOnUrlBlockReason::kActuactionDisabled);
-    return;
-  }
-
   if ((net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
       url.IsAboutBlank()) {
     decision_wrapper->Accept();
@@ -313,7 +307,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  const OriginChecker& origin_checker,
-                 const EnterprisePolicyChecker& policy_checker,
+                 const EnterprisePolicyUrlChecker& policy_checker,
                  DecisionCallbackWithReason callback) {
   content::WebContents& web_contents = *tab.GetContents();
 
@@ -353,7 +347,7 @@ void MayActOnUrl(const GURL& url,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 const EnterprisePolicyChecker& policy_checker,
+                 const EnterprisePolicyUrlChecker& policy_checker,
                  DecisionCallbackWithReason callback) {
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",

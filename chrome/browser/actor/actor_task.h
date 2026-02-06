@@ -36,7 +36,7 @@ namespace actor {
 
 class ActionTrackerForMetrics;
 class ActorKeyedService;
-class EnterprisePolicyChecker;
+class EnterprisePolicyUrlChecker;
 class ExecutionEngine;
 
 namespace ui {
@@ -71,7 +71,7 @@ class ActorTask {
             TaskId id,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
             webui::mojom::TaskOptionsPtr options,
-            const EnterprisePolicyChecker* policy_checker,
+            const EnterprisePolicyUrlChecker* policy_checker,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
   ~ActorTask();
 
@@ -84,7 +84,7 @@ class ActorTask {
       TaskId id,
       std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
       webui::mojom::TaskOptionsPtr options,
-      const EnterprisePolicyChecker* policy_checker,
+      const EnterprisePolicyUrlChecker* policy_checker,
       base::WeakPtr<ActorTaskDelegate> delegate);
 
   TaskId id() const { return id_; }
@@ -92,7 +92,7 @@ class ActorTask {
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
 
-  const EnterprisePolicyChecker& policy_checker() const {
+  const EnterprisePolicyUrlChecker& policy_checker() const {
     return policy_checker_.get();
   }
 
@@ -349,7 +349,7 @@ class ActorTask {
   std::optional<StoppedReason> stopped_reason_;
 
   // This is owned by actor keyed service which owns this class.
-  const raw_ref<const EnterprisePolicyChecker> policy_checker_;
+  const raw_ref<const EnterprisePolicyUrlChecker> policy_checker_;
 
   // Delegate for task-related events.
   base::WeakPtr<ActorTaskDelegate> delegate_;

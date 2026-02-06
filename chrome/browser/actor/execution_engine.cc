@@ -33,7 +33,7 @@
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_util.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -740,7 +740,6 @@ void ExecutionEngine::OnMayActOnTabDecision(
         return;
       }
       [[fallthrough]];
-    case MayActOnUrlBlockReason::kActuactionDisabled:
     case MayActOnUrlBlockReason::kExternalProtocol:
     case MayActOnUrlBlockReason::kIpAddress:
     case MayActOnUrlBlockReason::kLookalikeDomain:

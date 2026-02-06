@@ -263,7 +263,6 @@ void ActorNavigationThrottle::OnMayActOnUrlResult(
           break;
         }
         [[fallthrough]];
-      case MayActOnUrlBlockReason::kActuactionDisabled:
       case MayActOnUrlBlockReason::kIpAddress:
       case MayActOnUrlBlockReason::kLookalikeDomain:
       case MayActOnUrlBlockReason::kOptimizationGuideBlock:

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
@@ -35,11 +35,11 @@ class AggregatedJournal;
 
 namespace glic {
 
-// The Glic implementation of an Actor EnterprisePolicyChecker, used to
+// The Glic implementation of an Actor EnterprisePolicyUrlChecker, used to
 // determine the act on web capability enabling state. This class blends various
 // signals from account, preferences, managed policies, etc. to make a
 // determination.
-class GlicActorPolicyChecker : public actor::EnterprisePolicyChecker,
+class GlicActorPolicyChecker : public actor::EnterprisePolicyUrlChecker,
                                public signin::IdentityManager::Observer,
                                public subscription_eligibility::
                                    SubscriptionEligibilityService::Observer {
@@ -70,9 +70,27 @@ class GlicActorPolicyChecker : public actor::EnterprisePolicyChecker,
   base::CallbackListSubscription AddUrlListsUpdateObserverForTesting(
       base::RepeatingClosure callback);
 
-  // EnterprisePolicyChecker interface
-  bool CanActOnWeb() const override;
-  CannotActReason CannotActOnWebReason() const override;
+  enum class CannotActReason {
+    // Browser can actuate.
+    kNone,
+    // The enterprise policy disables the actuation feature. Only applicable to
+    // managed clients (Profile level, browser level or machine level).
+    kDisabledByPolicy,
+    // The account is not eligible for the actuation.
+    kAccountCapabilityIneligible,
+    // The account is not subscribed to one of the required AI subscription
+    // tiers.
+    kAccountMissingChromeBenefits,
+    // An enterprise account is logged in but there is no management to deliver
+    // the policy. Actuation is disabled because the policy pref default value
+    // is disabled.
+    kEnterpriseWithoutManagement,
+  };
+
+  bool CanActOnWeb() const;
+  CannotActReason CannotActOnWebReason() const;
+
+  // EnterprisePolicyUrlChecker interface
   actor::EnterprisePolicyBlockReason Evaluate(const GURL& url) const override;
 
  private:
