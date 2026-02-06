@@ -598,8 +598,7 @@ struct NetworkContextParams {
   // gets applied while constructing NetworkContext by updating the quic_params.
   int64? quic_idle_connection_timeout_seconds;
 
-  // If true, the HTTP cache will be encrypted on disk. For now, this only
-  // switches the backend on Windows.
+  // If true, the HTTP cache will be encrypted on disk.
   bool enable_encrypted_http_cache = false;
 
   // If set, the network process will use the remote to reach the unexportable

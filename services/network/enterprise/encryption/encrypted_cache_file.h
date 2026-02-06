@@ -17,8 +17,6 @@ namespace network::enterprise_encryption {
 
 // A decorator implementation of `CacheFile` that adds an encryption layer on
 // top of another `CacheFile` instance.
-// TODO(crbug.com/460509865): Currently a pass-through. Implement actual
-// encryption/decryption logic.
 class COMPONENT_EXPORT(NETWORK_SERVICE) EncryptedCacheFile
     : public disk_cache::CacheFile {
  public:

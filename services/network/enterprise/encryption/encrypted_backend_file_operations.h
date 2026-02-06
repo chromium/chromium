@@ -33,9 +33,6 @@ class UnboundEncryptedBackendFileOperations final
 };
 
 // Decorator to add encryption layer to file operations.
-// TODO(crbug.com/460509865): Currently, this decorator only signals encryption
-// status for cache management (invalidation on config change). It does not yet
-// implement actual encryption/decryption logic for file I/O.
 class EncryptedBackendFileOperations final
     : public disk_cache::BackendFileOperations {
  public:
