@@ -577,6 +577,8 @@ public class SettingsSearchCoordinator
         } else {
             updateSingleColumnSearchUiWidth();
         }
+
+        updateHelpMenuVisibility(false);
     }
 
     private void showBackArrowInSingleColumnMode(boolean show) {
@@ -613,6 +615,15 @@ public class SettingsSearchCoordinator
         mBackActionCallback.setEnabled(false);
         if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
         mShowingEmptyFragment = false;
+
+        updateHelpMenuVisibility(true);
+    }
+
+    private void updateHelpMenuVisibility(boolean visible) {
+        View menuView = getHelpMenuView();
+        if (menuView != null) {
+            menuView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
     }
 
     private void stepBackInResultState() {
