@@ -23,6 +23,13 @@ class SupervisedUserService;
 class UrlFilteringDelegate;
 class SupervisedUserUrlFilteringService;
 
+enum class InterstitialMode {
+  // Simple interstitial, which only shows a learn more page.
+  kLearnMoreInterstitial,
+  // Interstitial that allows the user to request parental review.
+  kParentalReviewInterstitial,
+};
+
 // Represents the result of url filtering request.
 struct WebFilteringResult {
   using Callback = base::OnceCallback<void(WebFilteringResult result)>;
@@ -35,6 +42,9 @@ struct WebFilteringResult {
   FilteringBehaviorReason reason;
   // Details of asynchronous check if it was performed, otherwise empty.
   std::optional<safe_search_api::ClassificationDetails> async_check_details;
+  // The interstitial mode to use for the URL filtering result (with a default).
+  InterstitialMode interstitial_mode =
+      InterstitialMode::kParentalReviewInterstitial;
 
   bool IsFromManualList() const {
     return reason == FilteringBehaviorReason::MANUAL;
@@ -68,7 +78,8 @@ struct WebFilteringResult {
   // with check result.
   static safe_search_api::URLChecker::CheckCallback BindUrlCheckerCallback(
       Callback callback,
-      const GURL& requested_url);
+      const GURL& requested_url,
+      InterstitialMode interstitial_mode);
 };
 
 // Internal observer interface for communication between delegates and the
@@ -117,6 +128,8 @@ class UrlFilteringDelegate {
       WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options) = 0;
 
+  base::WeakPtr<UrlFilteringDelegate> GetWeakPtr();
+
   void AddObserver(UrlFilteringDelegateObserver* observer);
   void RemoveObserver(UrlFilteringDelegateObserver* observer);
 
@@ -127,6 +140,8 @@ class UrlFilteringDelegate {
 
  private:
   base::ObserverList<UrlFilteringDelegateObserver> observers_;
+
+  base::WeakPtrFactory<UrlFilteringDelegate> weak_ptr_factory_{this};
 };
 
 // Performs URL filtering workflows for supervised users, aggregating results

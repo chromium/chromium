@@ -341,6 +341,10 @@ MockUrlCheckerClient&
 SupervisedUserTestEnvironment::family_link_url_checker_client() {
   return family_link_url_checker_client_;
 }
+MockUrlCheckerClient&
+SupervisedUserTestEnvironment::device_parental_controls_url_checker_client() {
+  return device_parental_controls_url_checker_client_;
+}
 
 DeviceParentalControlsTestImpl&
 SupervisedUserTestEnvironment::device_parental_controls() {

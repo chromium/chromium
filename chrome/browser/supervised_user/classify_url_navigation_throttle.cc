@@ -10,8 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -241,20 +244,41 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
     bool already_sent_request,
     bool is_main_frame) const {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/471985868): consider making decision on what kind of
-  // interstitial to show when this throttle is created, not in its runtime.
-  Profile* profile = Profile::FromBrowserContext(
-      navigation_handle()->GetWebContents()->GetBrowserContext());
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    switch (result.interstitial_mode) {
+      case InterstitialMode::kLearnMoreInterstitial:
+        return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
+            result.url, g_browser_process->GetApplicationLocale());
+      case InterstitialMode::kParentalReviewInterstitial:
+        return SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
+            supervised_user_service(), result.reason, already_sent_request,
+            is_main_frame, g_browser_process->GetApplicationLocale());
+      default:
+        NOTREACHED();
+    }
+  } else {
+    Profile* profile = Profile::FromBrowserContext(
+        navigation_handle()->GetWebContents()->GetBrowserContext());
 
-  // Family link supervised users should not see local supervision
-  // interstitials. Other users can see these interstitials if they have local
-  // supervision enabled.
-  if (!IsSubjectToParentalControls(*profile->GetPrefs()) &&
-      g_browser_process->device_parental_controls().IsWebFilteringEnabled()) {
-    return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
-        result.url, g_browser_process->GetApplicationLocale());
+    // Family link supervised users should not see local supervision
+    // interstitials. Other users can see these interstitials if they have local
+    // supervision enabled.
+    if (!IsSubjectToParentalControls(*profile->GetPrefs()) &&
+        g_browser_process->device_parental_controls().IsWebFilteringEnabled()) {
+      return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
+          result.url, g_browser_process->GetApplicationLocale());
+    }
   }
+
 #endif
+  SCOPED_CRASH_KEY_BOOL(
+      "SupervisedUser", "dpc_web_filter_enabled",
+      g_browser_process->device_parental_controls().IsWebFilteringEnabled());
+  CHECK(
+      result.interstitial_mode == InterstitialMode::kParentalReviewInterstitial,
+      base::NotFatalUntil::M155)
+      << "Non-android platforms should not produce other interstitials than "
+         "parental review.";
   return SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
       supervised_user_service(), result.reason, already_sent_request,
       is_main_frame, g_browser_process->GetApplicationLocale());

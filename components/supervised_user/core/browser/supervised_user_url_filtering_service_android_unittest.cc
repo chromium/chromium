@@ -9,7 +9,9 @@
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/features.h"
@@ -19,6 +21,8 @@
 
 namespace supervised_user {
 namespace {
+
+using ::testing::_;
 
 class SupervisedUserUrlFilteringServiceTestBase : public testing::Test {
  protected:
@@ -209,6 +213,205 @@ TEST_P(SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest,
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest);
+
+class SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest
+    : public ::base::test::WithFeatureOverride,
+      public SupervisedUserUrlFilteringServiceTestBase {
+ protected:
+  SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest()
+      : ::base::test::WithFeatureOverride(
+            kSupervisedUserUseUrlFilteringService) {}
+  void GetAsyncFilteringBehavior(const GURL& url,
+                                 WebFilteringResult::Callback callback) {
+    test_environment().url_filtering_service()->GetFilteringBehavior(
+        url, /*skip_manual_parent_filter=*/false, std::move(callback),
+        WebFilterMetricsOptions());
+  }
+
+  void GetAsyncFilteringBehaviorForSubFrame(
+      const GURL& url,
+      WebFilteringResult::Callback callback) {
+    test_environment().url_filtering_service()->GetFilteringBehaviorForSubFrame(
+        url, GURL("http://main.example.com"), std::move(callback),
+        WebFilterMetricsOptions());
+  }
+};
+
+TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       OnlyFamilyLinkFilterIsUsed) {
+  EnableParentalControls(*test_environment().pref_service());
+  ASSERT_FALSE(
+      test_environment().device_parental_controls().IsWebFilteringEnabled());
+
+  GURL url = GURL("http://example.com");
+  EXPECT_CALL(test_environment().device_parental_controls_url_checker_client(),
+              CheckURL(url, _))
+      .Times(0);
+
+  // Family link client will be called once (for main frame and subframe
+  // checks; second check is returned from url checker client's cache).
+  EXPECT_CALL(test_environment().family_link_url_checker_client(),
+              CheckURL(url, _))
+      .Times(1);
+  test_environment().family_link_url_checker_client().ScheduleResolution(
+      safe_search_api::ClientClassification::kAllowed);
+
+  GetAsyncFilteringBehavior(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsAllowed());
+      }));
+  GetAsyncFilteringBehaviorForSubFrame(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsAllowed());
+      }));
+}
+
+TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       OnlyDeviceParentalControlsFilterIsUsed_ExperimentalOnly) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "Legacy behavior uses family link kids api client.";
+  }
+
+  test_environment()
+      .device_parental_controls()
+      .SetBrowserContentFiltersEnabledForTesting(true);
+
+  GURL url = GURL("http://example.com");
+  EXPECT_CALL(test_environment().device_parental_controls_url_checker_client(),
+              CheckURL(url, _))
+      .Times(1);
+  test_environment()
+      .device_parental_controls_url_checker_client()
+      .ScheduleResolution(safe_search_api::ClientClassification::kAllowed);
+
+  // Family link client will be called once (for main frame and subframe
+  // checks; second check is returned from url checker client's cache).
+  EXPECT_CALL(test_environment().family_link_url_checker_client(),
+              CheckURL(url, _))
+      .Times(0);
+  GetAsyncFilteringBehavior(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsAllowed());
+      }));
+  GetAsyncFilteringBehaviorForSubFrame(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsAllowed());
+      }));
+}
+
+TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       OnlyDeviceParentalControlsFilterIsUsed_LegacyOnly) {
+  if (GetParam()) {
+    GTEST_SKIP() << "Experimental behavior uses device parental controls kids "
+                    "api client.";
+  }
+
+  test_environment()
+      .device_parental_controls()
+      .SetBrowserContentFiltersEnabledForTesting(true);
+
+  GURL url = GURL("http://example.com");
+  EXPECT_CALL(test_environment().family_link_url_checker_client(),
+              CheckURL(url, _))
+      .Times(1);
+  test_environment().family_link_url_checker_client().ScheduleResolution(
+      safe_search_api::ClientClassification::kAllowed);
+
+  // Device-specific client is not used (instead, family link client is used in
+  // non-euc mode).
+  EXPECT_CALL(test_environment().device_parental_controls_url_checker_client(),
+              CheckURL(url, _))
+      .Times(0);
+  GetAsyncFilteringBehavior(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsAllowed());
+      }));
+  GetAsyncFilteringBehaviorForSubFrame(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsAllowed());
+      }));
+}
+
+TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       DeviceParenalControlsHavePriorityOverFamilyLink_ExperimentalOnly) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "Legacy behavior doesn't allow for two systems to be "
+                    "enabled at the same time.";
+  }
+
+  // Both systems are enabled.
+  EnableParentalControls(*test_environment().pref_service());
+  test_environment()
+      .device_parental_controls()
+      .SetBrowserContentFiltersEnabledForTesting(true);
+
+  GURL url = GURL("http://example.com");
+
+  // Since preferred device-specific client will yield blocked result, family
+  // link client is not called at all.
+  EXPECT_CALL(test_environment().family_link_url_checker_client(),
+              CheckURL(url, _))
+      .Times(0);
+  EXPECT_CALL(test_environment().device_parental_controls_url_checker_client(),
+              CheckURL(url, _))
+      .Times(1);
+  test_environment()
+      .device_parental_controls_url_checker_client()
+      .ScheduleResolution(safe_search_api::ClientClassification::kRestricted);
+
+  GetAsyncFilteringBehavior(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsBlocked());
+      }));
+  GetAsyncFilteringBehaviorForSubFrame(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsBlocked());
+      }));
+}
+
+TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
+       FamilyLinkIsFallbackToDeviceParentalControls_ExperimentalOnly) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "Legacy behavior doesn't allow for two systems to be "
+                    "enabled at the same time.";
+  }
+
+  // Both systems are enabled.
+  EnableParentalControls(*test_environment().pref_service());
+  test_environment()
+      .device_parental_controls()
+      .SetBrowserContentFiltersEnabledForTesting(true);
+
+  GURL url = GURL("http://example.com");
+
+  // Preferred device-specific client allows the url, but then the family link
+  // client blocks it. Family link client is called second and its result
+  // is used.
+  EXPECT_CALL(test_environment().device_parental_controls_url_checker_client(),
+              CheckURL(url, _))
+      .Times(1);
+  test_environment()
+      .device_parental_controls_url_checker_client()
+      .ScheduleResolution(safe_search_api::ClientClassification::kAllowed);
+
+  EXPECT_CALL(test_environment().family_link_url_checker_client(),
+              CheckURL(url, _))
+      .Times(1);
+  test_environment().family_link_url_checker_client().ScheduleResolution(
+      safe_search_api::ClientClassification::kRestricted);
+
+  GetAsyncFilteringBehavior(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsBlocked());
+      }));
+  GetAsyncFilteringBehaviorForSubFrame(
+      url, base::BindLambdaForTesting([](WebFilteringResult result) {
+        EXPECT_TRUE(result.IsBlocked());
+      }));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest);
 
 }  // namespace
 }  // namespace supervised_user

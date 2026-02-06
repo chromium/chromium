@@ -765,7 +765,9 @@ void FamilyLinkUrlFilter::RunAsyncChecker(
   CHECK(async_url_checker_) << "Filter must always have a checker.";
   async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
-      WebFilteringResult::BindUrlCheckerCallback(std::move(callback), url));
+      WebFilteringResult::BindUrlCheckerCallback(
+          std::move(callback), url,
+          InterstitialMode::kParentalReviewInterstitial));
 }
 
 void FamilyLinkUrlFilter::SetURLCheckerClientForTesting(

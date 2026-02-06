@@ -74,12 +74,12 @@ void DeviceParentalControlsUrlFilter::GetFilteringBehavior(
 
   async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
-      WebFilteringResult::BindUrlCheckerCallback(std::move(callback), url));
+      WebFilteringResult::BindUrlCheckerCallback(
+          std::move(callback), url, InterstitialMode::kLearnMoreInterstitial));
 }
 
 void DeviceParentalControlsUrlFilter::OnDeviceParentalControlsChanged(
     const DeviceParentalControls& controls) const {
   NotifyUrlFilteringDelegateChanged();
 }
-
 }  // namespace supervised_user
