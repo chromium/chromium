@@ -20,6 +20,7 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
   MOCK_METHOD(void,
               StartFileContextUploadFlow,
               (const base::UnguessableToken& file_token,
+               std::string file_name,
                std::string file_mime_type,
                mojo_base::BigBuffer file_bytes,
                std::optional<lens::ImageEncodingOptions> image_options),

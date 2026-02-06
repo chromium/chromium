@@ -379,9 +379,9 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
 
   UploadTabContextWithData(
       tab_id, maybe_context_id, std::move(page_content_data),
-      base::BindOnce(&ContextualTasksComposeboxHandler::OnTabContextReuploadStarted,
-                     weak_factory_.GetWeakPtr(), barrier_closure,
-                     original_task_id));
+      base::BindOnce(
+          &ContextualTasksComposeboxHandler::OnTabContextReuploadStarted,
+          weak_factory_.GetWeakPtr(), barrier_closure, original_task_id));
 }
 
 void ContextualTasksComposeboxHandler::OnTabContextReuploadStarted(
@@ -780,11 +780,13 @@ void ContextualTasksComposeboxHandler::AddFileContext(
   if (auto* session_handle = GetContextualSessionHandle()) {
     auto token = session_handle->CreateContextToken();
     std::string mime_type = file_info->mime_type;
-  ContextualSearchboxHandler::page_->AddFileContext(token,
-                                                    std::move(file_info));
-  std::move(callback).Run(token);
-    session_handle->StartFileContextUploadFlow(
-        token, mime_type, std::move(file_bytes), CreateImageEncodingOptions());
+    std::string file_name = file_info->file_name;
+    ContextualSearchboxHandler::page_->AddFileContext(token,
+                                                      std::move(file_info));
+    std::move(callback).Run(token);
+    session_handle->StartFileContextUploadFlow(token, file_name, mime_type,
+                                               std::move(file_bytes),
+                                               CreateImageEncodingOptions());
   }
 }
 

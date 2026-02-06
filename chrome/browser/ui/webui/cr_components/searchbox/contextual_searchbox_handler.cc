@@ -406,12 +406,13 @@ void ContextualSearchboxHandler::AddFileContext(
     // the flow.
     std::move(callback).Run(context_token);
     contextual_session_handle->StartFileContextUploadFlow(
-        context_token, file_info_mojom->mime_type, std::move(file_bytes),
-        CreateImageEncodingOptions());
+        context_token, file_info_mojom->file_name, file_info_mojom->mime_type,
+        std::move(file_bytes), CreateImageEncodingOptions());
   }
 }
 
 void ContextualSearchboxHandler::AddFileContextFromBrowser(
+    std::string file_name,
     std::string mime_type,
     mojo_base::BigBuffer file_bytes,
     std::optional<lens::ImageEncodingOptions> image_encoding_options,
@@ -425,7 +426,7 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
     // the flow.
     std::move(callback).Run(context_token);
     contextual_session_handle->StartFileContextUploadFlow(
-        context_token, mime_type, std::move(file_bytes),
+        context_token, file_name, mime_type, std::move(file_bytes),
         std::move(image_encoding_options));
   }
 }

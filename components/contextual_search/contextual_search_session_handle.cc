@@ -119,6 +119,7 @@ base::UnguessableToken ContextualSearchSessionHandle::CreateContextToken() {
 
 void ContextualSearchSessionHandle::StartFileContextUploadFlow(
     const base::UnguessableToken& file_token,
+    std::string file_name,
     std::string file_mime_type,
     mojo_base::BigBuffer file_bytes,
     std::optional<lens::ImageEncodingOptions> image_options) {
@@ -153,6 +154,7 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
       std::make_unique<lens::ContextualInputData>();
   input_data->context_input = std::vector<lens::ContextualInput>();
   input_data->primary_content_type = mime_type;
+  input_data->file_name = file_name;
 
   base::span<const uint8_t> file_data_span = base::span(file_bytes);
   std::vector<uint8_t> file_data_vector(file_data_span.begin(),

@@ -114,7 +114,6 @@ void OmniboxPopupFileSelector::OnFileDataReady(
     NOTREACHED();
   }
 
-
   base::span<const uint8_t> file_data_span =
       base::as_bytes(base::span(file_data->bytes));
   std::vector<uint8_t> file_data_vector(file_data_span.begin(),
@@ -138,9 +137,10 @@ void OmniboxPopupFileSelector::OnFileDataReady(
       // See: https://en.cppreference.com/w/cpp/language/eval_order and
       // http://crbug.com/472510275.
       std::string mime_type_copy = file_data->mime_type;
+      std::string file_name_copy = file_data->name;
       omnibox_popup_ui->composebox_handler()->AddFileContextFromBrowser(
-          std::move(mime_type_copy), std::move(file_data_buffer),
-          std::move(image_encoding_options_),
+          std::move(file_name_copy), std::move(mime_type_copy),
+          std::move(file_data_buffer), std::move(image_encoding_options_),
           base::BindOnce(&OmniboxPopupFileSelector::UpdateSearchboxContextData,
                          weak_factory_.GetWeakPtr(), mime_type,
                          std::move(image_data_url), std::move(file_data->name),

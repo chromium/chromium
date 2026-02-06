@@ -179,7 +179,7 @@ ComposeboxQueryControllerBridge::AddFile(
   base::span<const uint8_t> file_bytes_span =
       base::android::JavaByteBufferToSpan(env, file_data);
   session_handle_->StartFileContextUploadFlow(
-      file_token, file_type, mojo_base::BigBuffer(file_bytes_span),
+      file_token, file_name, file_type, mojo_base::BigBuffer(file_bytes_span),
       std::move(image_options));
 
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
