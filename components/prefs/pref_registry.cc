@@ -64,17 +64,17 @@ void PrefRegistry::RegisterPreference(std::string_view path,
       << "invalid preference type: " << orig_type;
   DCHECK(!defaults_->GetValue(path, nullptr))
       << "Trying to register a previously registered pref: " << path;
-  DCHECK(!registration_flags_.contains(std::string(path)))
+  DCHECK(!registration_flags_.contains(path))
       << "Trying to register a previously registered pref: " << path;
-  DCHECK(!registration_types_.contains(std::string(path)))
+  DCHECK(!registration_types_.contains(path))
       << "Trying to register a previously registered pref: " << path;
 
   defaults_->SetDefaultValue(path, std::move(default_value));
   if (flags != NO_REGISTRATION_FLAGS) {
-    registration_flags_.insert_or_assign(std::string(path), flags);
+    registration_flags_.insert_or_assign(path, flags);
   }
 
-  registration_types_.insert_or_assign(std::string(path), type);
+  registration_types_.insert_or_assign(path, type);
 
   OnPrefRegistered(path, flags);
 }

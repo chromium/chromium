@@ -9,12 +9,11 @@
 
 #include <string>
 #include <string_view>
-#include <unordered_map>
 
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"
-#include "components/prefs/transparent_unordered_string_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class Value;
@@ -65,7 +64,7 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   };
 
   using const_iterator = PrefValueMap::const_iterator;
-  using PrefRegistrationFlagsMap = TransparentUnorderedStringMap<uint32_t>;
+  using PrefRegistrationFlagsMap = absl::flat_hash_map<std::string, uint32_t>;
 
   PrefRegistry();
 
@@ -121,7 +120,7 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
 
   // A map of pref name to its registered type.
   using PrefRegistrationTypeMap =
-      TransparentUnorderedStringMap<RegisteredPrefType>;
+      absl::flat_hash_map<std::string, RegisteredPrefType>;
   PrefRegistrationTypeMap registration_types_;
 };
 
