@@ -13,9 +13,19 @@ consistency, and performance across the codebase. They supplement the
 
 ### Logic-free Templates
 
-Templates should remain declarative and logic-free. Avoid `let`, `const`, or
-define complex logic directly within the `.html.ts` file. Instead, delegate
-complex logic to helper methods defined in the component's logic file (`.ts`).
+Templates should remain declarative and logic-free. Avoid all of the following
+in the `.html.ts` file:
+
+* Local variable declarations like `let` or `const`.
+* Function definitions, other than a single `getHtml()` function.
+* if/for statements and other complex logic.
+
+Instead:
+
+* Delegate complex logic to helper methods defined in the component's logic file
+  (`.ts`).
+* If the same chunk of HTML template is needed in many places or is logically
+  a mostly self-contained "module", make it a separate custom element.
 
 The overall goal is to separate the HTML template from the element's business
 logic as much as possible, and draw a clear boundary between the
