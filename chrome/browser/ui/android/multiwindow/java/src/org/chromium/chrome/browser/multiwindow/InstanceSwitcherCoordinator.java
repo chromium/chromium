@@ -207,10 +207,16 @@ public class InstanceSwitcherCoordinator {
                     @Override
                     public void onTabSelected(Tab tab) {
                         boolean isActiveTab = tab.getPosition() == 0;
+                        mIsInactiveListShowing = !isActiveTab;
+                        // Set params early using heuristic to prevent jank when switching tabs
+                        preemptInstanceListContainerParamsUpdate(
+                                mInstanceListContainer,
+                                mInactiveInstancesList,
+                                mIsInactiveListShowing,
+                                getTotalInstanceCount() < mMaxInstanceCount);
                         mActiveInstancesList.setVisibility(isActiveTab ? View.VISIBLE : View.GONE);
                         mInactiveInstancesList.setVisibility(
                                 isActiveTab ? View.GONE : View.VISIBLE);
-                        mIsInactiveListShowing = !isActiveTab;
                         addLayoutListeners(
                                 mDialogView,
                                 mTabHeaderRow,
@@ -314,8 +320,6 @@ public class InstanceSwitcherCoordinator {
             View newWindowLayout,
             int minCommandItemHeightPx,
             int itemPaddingHeightPx) {
-        LayoutParams params = (LayoutParams) instanceListContainer.getLayoutParams();
-
         int nonLastItemHeightPx = minCommandItemHeightPx + itemPaddingHeightPx;
         int activeListItemCount = assumeNonNull(activeInstancesList.getAdapter()).getItemCount();
         int inactiveListItemCount =
@@ -351,6 +355,31 @@ public class InstanceSwitcherCoordinator {
             boolean isCommandLayoutCompressed = newWindowLayoutHeight < minCommandItemHeightPx;
             shouldFillVerticalSpace = isActiveListScrollable || isCommandLayoutCompressed;
         }
+
+        applyVerticalSpaceParams(instanceListContainer, shouldFillVerticalSpace);
+    }
+
+    private static void preemptInstanceListContainerParamsUpdate(
+            View instanceListContainer,
+            RecyclerView inactiveInstancesList,
+            boolean isInactiveListShowing,
+            boolean newWindowEnabled) {
+        boolean shouldFillVerticalSpace;
+
+        if (isInactiveListShowing) {
+            int inactiveListItemCount =
+                    assumeNonNull(inactiveInstancesList.getAdapter()).getItemCount();
+            shouldFillVerticalSpace = inactiveListItemCount != 0;
+        } else {
+            shouldFillVerticalSpace = !newWindowEnabled;
+        }
+
+        applyVerticalSpaceParams(instanceListContainer, shouldFillVerticalSpace);
+    }
+
+    private static void applyVerticalSpaceParams(
+            View instanceListContainer, boolean shouldFillVerticalSpace) {
+        LayoutParams params = (LayoutParams) instanceListContainer.getLayoutParams();
 
         // Optimization: Do nothing if the parameters are already in the correct state.
         if ((shouldFillVerticalSpace && params.weight == 1f)
