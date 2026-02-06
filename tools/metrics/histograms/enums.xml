@@ -141,6 +141,7 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="Launched from ChromeOS Projector App for re-authentication"/>
   <int value="18" label="Turn on sync menu item in Chrome app menu"/>
   <int value="19" label="Account addition flow triggered from a Sign-in promo"/>
+  <int value="20" label="Gemini in Chrome asked to reauthenticate"/>
 </enum>
 
 <enum name="AccountManagerAccountUpsertionResultStatus">
