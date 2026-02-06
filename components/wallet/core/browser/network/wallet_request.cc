@@ -9,12 +9,11 @@
 
 namespace wallet {
 
-base::DictValue WalletRequest::BuildClientInfo() {
-  base::DictValue chrome_client_info =
-      base::DictValue().Set("version", version_info::GetVersionNumber());
-
-  return base::DictValue().Set("chrome_client_info",
-                               std::move(chrome_client_info));
+ClientInfo WalletRequest::BuildClientInfo() {
+  ClientInfo client_info;
+  client_info.mutable_chrome_client_info()->set_version(
+      version_info::GetVersionNumber());
+  return client_info;
 }
 
 }  // namespace wallet

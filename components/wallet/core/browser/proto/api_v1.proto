@@ -23,6 +23,14 @@ message UpsertPrivatePassRequest {
   optional ClientInfo client_info = 2;
 }
 
+// Response for the UpsertPrivatePass RPC.
+message UpsertPrivatePassResponse {
+  // The created or updated pass.
+  optional PrivatePass private_pass = 3;
+
+  reserved 1, 2;
+}
+
 // Request for the UpsertPass RPC.
 message UpsertPassRequest {
   // Pass to upsert.

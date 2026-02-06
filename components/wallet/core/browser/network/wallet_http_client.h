@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
+#include "components/wallet/core/browser/proto/private_pass.pb.h"
 
 namespace wallet {
 
@@ -19,16 +20,22 @@ class WalletHttpClient {
   enum class WalletRequestError {
     kGenericError = 1,
     kAccessTokenFetchFailed = 2,
+    kParseResponseFailed = 2,
     // TODO(crbug.com/468915960): Add more error codes.
   };
 
   // Callback for UpsertPass requests. On success, it returns the `WalletPass`
   // as it is stored in the Wallet backend (including its `id`).
+  // TODO(crbug.com/478783796): Update to use protos.
   using UpsertPassCallback = base::OnceCallback<void(
       const base::expected<WalletPass, WalletRequestError>&)>;
 
+  using UpsertPrivatePassCallback = base::OnceCallback<void(
+      const base::expected<PrivatePass, WalletRequestError>&)>;
+
   // Callback for GetUnmaskedPass requests. On success, it returns the
   // `WalletPass` corresponding to the requested `pass_id`.
+  // TODO(crbug.com/478783796): Update to use protos.
   using GetUnmaskedPassCallback = base::OnceCallback<void(
       const base::expected<WalletPass, WalletRequestError>&)>;
 
@@ -39,9 +46,17 @@ class WalletHttpClient {
   // Upserts a pass to the Wallet backend. If the `pass.id` is missing, it
   // will save a new pass. If the `pass.id` is present, it will attempt to
   // update the existing pass.
+  // TODO(crbug.com/478783796): Update to use protos.
   virtual void UpsertPass(WalletPass pass, UpsertPassCallback callback) = 0;
 
+  // Upserts a pass to the Wallet backend. If the `pass.id` is missing, it
+  // will save a new pass. If the `pass.id` is present, it will attempt to
+  // update the existing pass.
+  virtual void UpsertPrivatePass(PrivatePass pass,
+                                 UpsertPrivatePassCallback callback) = 0;
+
   // Retrieves the unmasked version of the pass for the given `pass_id`.
+  // TODO(crbug.com/478783796): Update to use protos.
   virtual void GetUnmaskedPass(std::string_view pass_id,
                                GetUnmaskedPassCallback callback) = 0;
 };

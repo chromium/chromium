@@ -235,14 +235,7 @@ TEST_F(WalletHttpClientImplTest, UpsertPass_LoyaltyCard_RequestStructure) {
   EXPECT_EQ(*loyalty_card_dict->FindString("loyalty_number"), "m1");
   EXPECT_EQ(*loyalty_card_dict->FindString("program_name"), "p1");
 
-  // Verify client_info
-  const base::DictValue* client_info = dict.FindDict("client_info");
-  ASSERT_TRUE(client_info);
-  const base::DictValue* chrome_client_info =
-      client_info->FindDict("chrome_client_info");
-  ASSERT_TRUE(chrome_client_info);
-  EXPECT_EQ(*chrome_client_info->FindString("version"),
-            version_info::GetVersionNumber());
+  // TODO(crbug.com/468915960): Verify client_info
 }
 
 }  // namespace

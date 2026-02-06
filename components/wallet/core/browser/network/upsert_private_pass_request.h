@@ -10,13 +10,15 @@
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/network/wallet_request.h"
+#include "components/wallet/core/browser/proto/private_pass.pb.h"
 
 namespace wallet {
 
 class UpsertPrivatePassRequest : public WalletRequest {
  public:
-  UpsertPrivatePassRequest(WalletPass pass,
-                           WalletHttpClient::UpsertPassCallback callback);
+  UpsertPrivatePassRequest(
+      PrivatePass pass,
+      WalletHttpClient::UpsertPrivatePassCallback callback);
   ~UpsertPrivatePassRequest() override;
 
   // WalletRequest:
@@ -25,8 +27,8 @@ class UpsertPrivatePassRequest : public WalletRequest {
   void OnResponse(WalletHttpClient::HttpResponse http_response) && override;
 
  private:
-  const WalletPass pass_;
-  WalletHttpClient::UpsertPassCallback callback_;
+  const PrivatePass pass_;
+  WalletHttpClient::UpsertPrivatePassCallback callback_;
 };
 
 }  // namespace wallet

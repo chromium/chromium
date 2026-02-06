@@ -4,13 +4,12 @@
 
 #include "components/wallet/core/browser/network/upsert_private_pass_request.h"
 
-#include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/values.h"
 #include "components/version_info/version_info.h"
-#include "components/wallet/core/browser/data_models/wallet_pass.h"
+#include "components/wallet/core/browser/proto/api_v1.pb.h"
+#include "components/wallet/core/browser/proto/private_pass.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace wallet {
@@ -22,15 +21,91 @@ class UpsertPrivatePassRequestTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-using UpsertPassCallback = base::test::TestFuture<
-    const base::expected<WalletPass, WalletHttpClient::WalletRequestError>&>;
+using UpsertPrivatePassCallback = base::test::TestFuture<
+    const base::expected<PrivatePass, WalletHttpClient::WalletRequestError>&>;
 
 // Tests that GetRequestUrlPath returns the correct URL path.
 TEST_F(UpsertPrivatePassRequestTest, GetRequestUrlPath) {
-  UpsertPassCallback callback;
-  UpsertPrivatePassRequest request(WalletPass(), callback.GetCallback());
+  UpsertPrivatePassCallback callback;
+  UpsertPrivatePassRequest request(PrivatePass(), callback.GetCallback());
 
   EXPECT_EQ(request.GetRequestUrlPath(), "v1/e/privatePasses:upsert");
+}
+
+// Tests that GetRequestContent generates the correct proto request body.
+TEST_F(UpsertPrivatePassRequestTest, GetRequestContent) {
+  PrivatePass pass;
+  pass.set_pass_id("pass-id");
+  auto* passport = pass.mutable_passport();
+  passport->set_owner_name("owner");
+  passport->set_passport_number("number");
+  passport->set_country_code("US");
+  passport->set_issue_date_unix_epoch_micros(123456789);
+  passport->set_expiration_date_unix_epoch_micros(987654321);
+
+  UpsertPrivatePassCallback callback;
+  UpsertPrivatePassRequest request(pass, callback.GetCallback());
+
+  std::string request_body = request.GetRequestContent();
+  api::UpsertPrivatePassRequest request_proto;
+  ASSERT_TRUE(request_proto.ParseFromString(request_body));
+
+  EXPECT_EQ(request_proto.private_pass().pass_id(), "pass-id");
+  EXPECT_EQ(request_proto.private_pass().passport().owner_name(), "owner");
+  EXPECT_EQ(request_proto.private_pass().passport().passport_number(),
+            "number");
+  EXPECT_EQ(request_proto.private_pass().passport().country_code(), "US");
+  EXPECT_EQ(
+      request_proto.private_pass().passport().issue_date_unix_epoch_micros(),
+      123456789);
+  EXPECT_EQ(request_proto.private_pass()
+                .passport()
+                .expiration_date_unix_epoch_micros(),
+            987654321);
+  EXPECT_EQ(request_proto.client_info().chrome_client_info().version(),
+            version_info::GetVersionNumber());
+}
+
+// Tests that OnResponse handles a successful HTTP response.
+TEST_F(UpsertPrivatePassRequestTest, OnResponse_Success) {
+  UpsertPrivatePassCallback callback;
+  UpsertPrivatePassRequest request(PrivatePass(), callback.GetCallback());
+
+  api::UpsertPrivatePassResponse response_proto;
+  response_proto.mutable_private_pass()->set_pass_id("returned-id");
+
+  std::move(request).OnResponse(response_proto.SerializeAsString());
+
+  ASSERT_TRUE(callback.Wait());
+  EXPECT_TRUE(callback.Get().has_value());
+  EXPECT_EQ(callback.Get()->pass_id(), "returned-id");
+}
+
+// Tests that OnResponse handles an error HTTP response.
+TEST_F(UpsertPrivatePassRequestTest, OnResponse_Error) {
+  UpsertPrivatePassCallback callback;
+  UpsertPrivatePassRequest request(PrivatePass(), callback.GetCallback());
+
+  std::move(request).OnResponse(base::unexpected(
+      WalletHttpClient::WalletRequestError::kAccessTokenFetchFailed));
+
+  ASSERT_TRUE(callback.Wait());
+  ASSERT_FALSE(callback.Get().has_value());
+  EXPECT_EQ(callback.Get().error(),
+            WalletHttpClient::WalletRequestError::kAccessTokenFetchFailed);
+}
+
+// Tests that OnResponse handles a parse error.
+TEST_F(UpsertPrivatePassRequestTest, OnResponse_ParseError) {
+  UpsertPrivatePassCallback callback;
+  UpsertPrivatePassRequest request(PrivatePass(), callback.GetCallback());
+
+  std::move(request).OnResponse("invalid-proto");
+
+  ASSERT_TRUE(callback.Wait());
+  ASSERT_FALSE(callback.Get().has_value());
+  EXPECT_EQ(callback.Get().error(),
+            WalletHttpClient::WalletRequestError::kParseResponseFailed);
 }
 
 }  // namespace

@@ -77,12 +77,17 @@ void WalletHttpClientImpl::UpsertPass(WalletPass pass,
     case PassCategory::kNationalIdentityCard:
     case PassCategory::kKTN:
     case PassCategory::kRedressNumber:
-      SendRequest(std::make_unique<UpsertPrivatePassRequest>(
-          std::move(pass), std::move(callback)));
-      break;
     case PassCategory::kUnspecified:
       NOTREACHED();
   }
+}
+
+void WalletHttpClientImpl::UpsertPrivatePass(
+    PrivatePass pass,
+    UpsertPrivatePassCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(kWalletApiPrivatePassesEnabled));
+  SendRequest(std::make_unique<UpsertPrivatePassRequest>(std::move(pass),
+                                                         std::move(callback)));
 }
 
 void WalletHttpClientImpl::GetUnmaskedPass(std::string_view pass_id,

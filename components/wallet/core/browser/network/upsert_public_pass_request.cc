@@ -77,9 +77,8 @@ std::string UpsertPublicPassRequest::GetRequestUrlPath() const {
 
 std::string UpsertPublicPassRequest::GetRequestContent() const {
   const base::DictValue request_dict =
-      base::DictValue()
-          .Set("pass", BuildPassDict(pass_))
-          .Set("client_info", BuildClientInfo());
+      base::DictValue().Set("pass", BuildPassDict(pass_));
+  // TODO(crbug.com/468916773): Include the client_info.
   return base::WriteJson(request_dict).value_or("");
 }
 

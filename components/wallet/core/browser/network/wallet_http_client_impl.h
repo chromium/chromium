@@ -42,6 +42,8 @@ class WalletHttpClientImpl : public WalletHttpClient {
 
   // WalletHttpClient:
   void UpsertPass(WalletPass pass, UpsertPassCallback callback) override;
+  void UpsertPrivatePass(PrivatePass pass,
+                         UpsertPrivatePassCallback callback) override;
   void GetUnmaskedPass(std::string_view pass_id,
                        GetUnmaskedPassCallback callback) override;
 
