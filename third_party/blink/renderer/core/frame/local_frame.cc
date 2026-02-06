@@ -2067,7 +2067,8 @@ LocalFrame::LocalFrame(
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(
           AdTracker::StackType::kTopOnly,
-          /*ignore_monkey_patch=*/AdTracker::MonkeyPatchableApi::kNone,
+          /*ignore_monkey_patch=*/
+          AdTracker::MonkeyPatchableApi::kNodeAppendChild,
           &ad_script_ancestry_);
 
   Initialize();

@@ -3170,6 +3170,43 @@ TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_FirstProxiedCall_IsNotAd) {
   EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 
+// Test that an iframe is not tagged as an ad if non-ads script created it via
+// appendChild but ad script monkeypatched it.
+TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_AppendChild_Iframe) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches appendChild.
+  ad_script.Complete(R"SCRIPT(
+    const originalAppendChild = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(child) {
+      return originalAppendChild.call(this, child);
+    };
+  )SCRIPT");
+
+  // The vanilla script creates an iframe and appends it, so that the ad
+  // script's appendChild is at the top of the stack.
+  vanilla_script.Complete(R"SCRIPT(
+    let iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+
+  // The monkeypatch exception should allow this iframe to be created without
+  // being tagged as an ad frame.
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
+}
+
 // Tests that the heuristic correctly ignores the first call to a monkeypatched
 // API from a non-ad script. This prevents misattributing the call to the ad
 // script, which is likely acting only as a proxy. The only difference from
