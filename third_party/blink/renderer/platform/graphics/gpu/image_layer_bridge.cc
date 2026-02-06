@@ -70,10 +70,13 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
-  cc::PaintFlags paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  provider->Canvas().drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);
-  return provider->Snapshot();
+  return provider->DoExternalDrawAndSnapshot(
+      [paint_image](MemoryManagedPaintCanvas& canvas) {
+        cc::PaintFlags paint;
+        paint.setBlendMode(SkBlendMode::kSrc);
+        canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);
+      },
+      ImageOrientationEnum::kDefault);
 }
 
 }  // namespace
