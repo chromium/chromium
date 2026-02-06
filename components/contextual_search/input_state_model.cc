@@ -323,7 +323,6 @@ void InputStateModel::UpdateDisabledTools() {
 
 void InputStateModel::UpdateDisabledModels() {
   // Disable a model if:
-  // - Another model is active.
   // - Incompatible with the active tool.
   // - Incompatible with the current inputs.
   state_.disabled_models.clear();
@@ -341,17 +340,12 @@ void InputStateModel::UpdateDisabledModels() {
         (!model_rule ||
          !IsItemAllowed(state_.active_tool, model_rule->allowed_tools()));
 
-    // If a model is already active, all other models are disabled.
-    bool another_model_active =
-        state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
-
     bool incompatible_with_inputs =
         (!model_rule ||
          !AreItemsAllowed(GetCurrentInputTypes(session_handle_.get()),
                           model_rule->allowed_input_types()));
 
-    if (another_model_active || incompatible_with_tool ||
-        incompatible_with_inputs) {
+    if (incompatible_with_tool || incompatible_with_inputs) {
       state_.disabled_models.push_back(model);
     }
   }

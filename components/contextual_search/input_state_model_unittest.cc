@@ -164,9 +164,8 @@ TEST_F(InputStateModelCompatibilityTest, SelectModel) {
       omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   const auto& new_state = input_state_model_->get_state_for_testing();
 
-  // All other models disabled when a model is selected.
-  EXPECT_THAT(new_state.disabled_models,
-              UnorderedElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO));
+  // No models should be disabled.
+  EXPECT_TRUE(new_state.disabled_models.empty());
 
   // All tools disabled when a model is selected.
   EXPECT_THAT(new_state.disabled_tools,
