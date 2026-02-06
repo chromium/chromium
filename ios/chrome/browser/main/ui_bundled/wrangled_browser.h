@@ -43,12 +43,6 @@ class ProfileIOS;
 // YES if TTS audio is playing.
 @property(nonatomic, readonly) BOOL playingTTS;
 
-// Asks the implementor to clear any presented state, dismissing the omnibox if
-// `dismissOmnibox` is YES, and calling `completion` once any animations are
-// complete.
-- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_WRANGLED_BROWSER_H_

@@ -961,132 +961,6 @@ const char kChromeAppStoreUrl[] =
   self.viewController.active = active;
 }
 
-- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox {
-  [self stopSaveToPhotos];
-  [self hideSaveToDrive];
-  [self hideDriveFilePicker];
-  if (@available(iOS 18.4, *)) {
-    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
-      [self hideFileUploadPanel];
-    }
-  }
-  if (IsDownloadListEnabled()) {
-    [self hideDownloadList];
-  }
-
-  [self.passKitCoordinator stop];
-  self.passKitCoordinator = nil;
-
-  [self.printCoordinator dismissAnimated:YES];
-
-  [self.readingListCoordinator stop];
-  self.readingListCoordinator.delegate = nil;
-  self.readingListCoordinator = nil;
-
-  [self hideReaderModeBlurOverlay];
-
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = nil;
-
-  [self.passwordBreachCoordinator stop];
-  self.passwordBreachCoordinator = nil;
-
-  [self stopPasswordProtectionCoordinator];
-
-  [self.credentialSuggestionBottomSheetCoordinator stop];
-  self.credentialSuggestionBottomSheetCoordinator = nil;
-
-  [self.passwordSuggestionCoordinator stop];
-  self.passwordSuggestionCoordinator = nil;
-
-  [self hidePageInfo];
-
-  [self.paymentsSuggestionBottomSheetCoordinator stop];
-  self.paymentsSuggestionBottomSheetCoordinator = nil;
-
-  [self.plusAddressBottomSheetCoordinator stop];
-  self.plusAddressBottomSheetCoordinator = nil;
-
-  [self dismissSaveCardBottomSheet];
-
-  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
-  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
-
-  [self dismissAutofillErrorDialog];
-
-  [self dismissAutofillProgressDialog];
-
-  [self stopSendTabToSelf];
-
-  [self.passwordSettingsCoordinator stop];
-  self.passwordSettingsCoordinator.delegate = nil;
-  self.passwordSettingsCoordinator = nil;
-
-  [self hidePriceTrackedItems];
-
-  [self.unitConversionCoordinator stop];
-  self.unitConversionCoordinator = nil;
-
-  [self stopRepostFormCoordinator];
-
-  [_formInputAccessoryCoordinator clearPresentedState];
-
-  [_quickDeleteCoordinator stop];
-  _quickDeleteCoordinator = nil;
-
-  [_addContactsCoordinator stop];
-  _addContactsCoordinator = nil;
-
-  [_countryCodePickerCoordinator stop];
-  _countryCodePickerCoordinator = nil;
-
-  [_lastTabClosingAlert stop];
-  _lastTabClosingAlert = nil;
-
-  [_dataControlsDialogCoordinator stop];
-  _dataControlsDialogCoordinator = nil;
-
-  [_passkeyCreationBottomSheetCoordinator stop];
-  _passkeyCreationBottomSheetCoordinator = nil;
-
-  [_passkeyWelcomeScreenCoordinator stop];
-  _passkeyWelcomeScreenCoordinator = nil;
-
-  if (IsSyncedSetUpEnabled()) {
-    [self stopSyncedSetUpCoordinator];
-  }
-
-  [self hideGoogleOne];
-  [self updateLensUIForBackground];
-
-  [self dismissLensPromo];
-  [self dismissEnhancedSafeBrowsingPromo];
-  [self dismissAutoDeletionActionSheet];
-  [self dismissSearchWhatYouSeePromo];
-  [self dismissNotificationsOptIn];
-  [self hideWelcomeBackPromo];
-
-  [self cancelCollaborationFlows];
-  [self.NTPCoordinator clearPresentedState];
-
-  // The composebox replaces the omnibox.
-  if (dismissOmnibox) {
-    [self hideComposebox];
-  }
-
-  BOOL dismissPresentedViewController = YES;
-  if (IsComposeboxIOSEnabled()) {
-    dismissPresentedViewController =
-        dismissOmnibox || !_composeboxCoordinator.presented;
-  }
-
-  [self.viewController
-      clearPresentedStateWithCompletion:completion
-                         dismissOmnibox:dismissOmnibox
-         dismissPresentedViewController:dismissPresentedViewController];
-}
-
 #pragma mark - Private
 
 - (void)stopSendTabToSelf {
@@ -2885,6 +2759,132 @@ const char kChromeAppStoreUrl[] =
   } else {
     [_omniboxCommandsHandler cancelOmniboxEditWithCompletion:completion];
   }
+}
+
+- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox {
+  [self stopSaveToPhotos];
+  [self hideSaveToDrive];
+  [self hideDriveFilePicker];
+  if (@available(iOS 18.4, *)) {
+    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
+      [self hideFileUploadPanel];
+    }
+  }
+  if (IsDownloadListEnabled()) {
+    [self hideDownloadList];
+  }
+
+  [self.passKitCoordinator stop];
+  self.passKitCoordinator = nil;
+
+  [self.printCoordinator dismissAnimated:YES];
+
+  [self.readingListCoordinator stop];
+  self.readingListCoordinator.delegate = nil;
+  self.readingListCoordinator = nil;
+
+  [self hideReaderModeBlurOverlay];
+
+  [self.sharingCoordinator stop];
+  self.sharingCoordinator = nil;
+
+  [self.passwordBreachCoordinator stop];
+  self.passwordBreachCoordinator = nil;
+
+  [self stopPasswordProtectionCoordinator];
+
+  [self.credentialSuggestionBottomSheetCoordinator stop];
+  self.credentialSuggestionBottomSheetCoordinator = nil;
+
+  [self.passwordSuggestionCoordinator stop];
+  self.passwordSuggestionCoordinator = nil;
+
+  [self hidePageInfo];
+
+  [self.paymentsSuggestionBottomSheetCoordinator stop];
+  self.paymentsSuggestionBottomSheetCoordinator = nil;
+
+  [self.plusAddressBottomSheetCoordinator stop];
+  self.plusAddressBottomSheetCoordinator = nil;
+
+  [self dismissSaveCardBottomSheet];
+
+  [self.virtualCardEnrollmentBottomSheetCoordinator stop];
+  self.virtualCardEnrollmentBottomSheetCoordinator = nil;
+
+  [self dismissAutofillErrorDialog];
+
+  [self dismissAutofillProgressDialog];
+
+  [self stopSendTabToSelf];
+
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
+
+  [self hidePriceTrackedItems];
+
+  [self.unitConversionCoordinator stop];
+  self.unitConversionCoordinator = nil;
+
+  [self stopRepostFormCoordinator];
+
+  [_formInputAccessoryCoordinator clearPresentedState];
+
+  [_quickDeleteCoordinator stop];
+  _quickDeleteCoordinator = nil;
+
+  [_addContactsCoordinator stop];
+  _addContactsCoordinator = nil;
+
+  [_countryCodePickerCoordinator stop];
+  _countryCodePickerCoordinator = nil;
+
+  [_lastTabClosingAlert stop];
+  _lastTabClosingAlert = nil;
+
+  [_dataControlsDialogCoordinator stop];
+  _dataControlsDialogCoordinator = nil;
+
+  [_passkeyCreationBottomSheetCoordinator stop];
+  _passkeyCreationBottomSheetCoordinator = nil;
+
+  [_passkeyWelcomeScreenCoordinator stop];
+  _passkeyWelcomeScreenCoordinator = nil;
+
+  if (IsSyncedSetUpEnabled()) {
+    [self stopSyncedSetUpCoordinator];
+  }
+
+  [self hideGoogleOne];
+  [self updateLensUIForBackground];
+
+  [self dismissLensPromo];
+  [self dismissEnhancedSafeBrowsingPromo];
+  [self dismissAutoDeletionActionSheet];
+  [self dismissSearchWhatYouSeePromo];
+  [self dismissNotificationsOptIn];
+  [self hideWelcomeBackPromo];
+
+  [self cancelCollaborationFlows];
+  [self.NTPCoordinator clearPresentedState];
+
+  // The composebox replaces the omnibox.
+  if (dismissOmnibox) {
+    [self hideComposebox];
+  }
+
+  BOOL dismissPresentedViewController = YES;
+  if (IsComposeboxIOSEnabled()) {
+    dismissPresentedViewController =
+        dismissOmnibox || !_composeboxCoordinator.presented;
+  }
+
+  [self.viewController
+      clearPresentedStateWithCompletion:completion
+                         dismissOmnibox:dismissOmnibox
+         dismissPresentedViewController:dismissPresentedViewController];
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands

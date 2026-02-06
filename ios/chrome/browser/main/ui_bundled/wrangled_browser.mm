@@ -56,10 +56,4 @@
   return self.coordinator.playingTTS;
 }
 
-- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox {
-  [self.coordinator clearPresentedStateWithCompletion:completion
-                                       dismissOmnibox:dismissOmnibox];
-}
-
 @end

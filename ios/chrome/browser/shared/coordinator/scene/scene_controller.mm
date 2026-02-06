@@ -2828,8 +2828,13 @@ using UserFeedbackDataCallback =
     DCHECK(self.currentInterface.viewController);
     DCHECK(!self.mainCoordinator.isTabGridActive);
     DCHECK(!self.mainCoordinator.isSigninInProgress);
-    [self.currentInterface clearPresentedStateWithCompletion:completion
-                                              dismissOmnibox:dismissOmnibox];
+    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+        HandlerForProtocol(
+            self.currentInterface.browser->GetCommandDispatcher(),
+            BrowserCoordinatorCommands);
+    [browserCoordinatorHandler
+        clearPresentedStateWithCompletion:completion
+                           dismissOmnibox:dismissOmnibox];
   };
   ProceduralBlock completionWithoutBVC = ^{
     // `self.currentInterface.bvc` may exist but tab switcher should be

@@ -159,6 +159,10 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Forces fullscreen mode which means that toolbars are collapsed.
 - (void)forceFullscreenMode;
 
+// Clears any presented state on BVC.
+- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_
