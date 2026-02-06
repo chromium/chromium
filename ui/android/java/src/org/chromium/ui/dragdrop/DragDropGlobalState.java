@@ -104,6 +104,22 @@ public class DragDropGlobalState {
         return sGlobalStateHolder.mDragShadowBuilder;
     }
 
+    /** Marks that Chrome handled the drop. */
+    public static void notifyChromeHandledDrop(DragEvent dropEvent) {
+        assert dropEvent.getAction() == DragEvent.ACTION_DROP
+                : "Notifying that Chrome handled a drop, without access to a drop event.";
+        assert sGlobalStateHolder != null
+                : "Notifying that Chrome handled a drop, without global state set.";
+        sGlobalStateHolder.mChromeHandledDrop = true;
+    }
+
+    /** Returns whether or not Chrome handled the drop. */
+    public static boolean didChromeHandleDrop() {
+        assert sGlobalStateHolder != null
+                : "Querying if Chrome handled a drop, without global state set.";
+        return sGlobalStateHolder.mChromeHandledDrop;
+    }
+
     /**
      * Tokens are released when startDragAndDrop fails or by listeners on drag end event. If a
      * caller fails to release token, sHolder is not cleared and the next build call will fail.
@@ -147,6 +163,7 @@ public class DragDropGlobalState {
         final DragDropGlobalState mInstance;
         final TrackerToken mToken;
         final @Nullable DragShadowBuilder mDragShadowBuilder;
+        boolean mChromeHandledDrop;
 
         private GlobalStateHolder(
                 DragDropGlobalState instance, @Nullable DragShadowBuilder dragShadowBuilder) {

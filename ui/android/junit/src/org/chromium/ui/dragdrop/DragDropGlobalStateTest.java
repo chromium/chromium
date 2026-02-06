@@ -121,4 +121,40 @@ public final class DragDropGlobalStateTest {
                 "Drag shadow builder is removed after clear.",
                 DragDropGlobalState.getDragShadowBuilder());
     }
+
+    @Test
+    public void testDidChromeHandleDrop() {
+        DragShadowBuilder builder = mock(DragShadowBuilder.class);
+        mToken = DragDropGlobalState.store(INSTANCE_ID, mDropData, builder);
+
+        // Verify false by default.
+        assertFalse(
+                "Expected that Chrome is not marked as having handled the drop event.",
+                DragDropGlobalState.didChromeHandleDrop());
+
+        // Attempt to notify with incorrect DragEvent type and expect AssertionError
+        try {
+            DragEvent dropEvent = Mockito.mock(DragEvent.class);
+            when(dropEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+            DragDropGlobalState.notifyChromeHandledDrop(dropEvent);
+            throw new Error("Expected AssertionError, since the wrong DragEvent action passed.");
+        } catch (AssertionError ignored) {
+        }
+
+        // Notify that Chrome handled the drop event and verify true.
+        DragEvent dropEvent = Mockito.mock(DragEvent.class);
+        when(dropEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        DragDropGlobalState.notifyChromeHandledDrop(dropEvent);
+        assertTrue(
+                "Expected that Chrome is marked as having handled the drop event.",
+                DragDropGlobalState.didChromeHandleDrop());
+
+        // Clear state and expect AssertionError.
+        DragDropGlobalState.clear(mToken);
+        try {
+            DragDropGlobalState.didChromeHandleDrop();
+            throw new Error("Expected AssertionError, since the global state is not set.");
+        } catch (AssertionError ignored) {
+        }
+    }
 }

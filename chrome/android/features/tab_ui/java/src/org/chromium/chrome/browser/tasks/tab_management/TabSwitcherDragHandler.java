@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.function.Supplier;
@@ -274,6 +275,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 break;
             case DragEvent.ACTION_DROP:
                 res = mDragHandlerDelegate.handleDrop(dragEvent.getX(), dragEvent.getY());
+                if (res) DragDropGlobalState.notifyChromeHandledDrop(dragEvent);
                 break;
         }
         return res;

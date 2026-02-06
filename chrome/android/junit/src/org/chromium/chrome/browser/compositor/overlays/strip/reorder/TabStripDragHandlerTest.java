@@ -1134,6 +1134,49 @@ public class TabStripDragHandlerTest {
                                 DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, DragType.SINGLE_TAB)));
     }
 
+    @Test
+    public void test_onDrop_ChromeHandledDrop() {
+        // Drop in destination strip.
+        new DragEventInvoker(DragType.SINGLE_TAB, /* isGroupShared= */ false)
+                .dragExit(mSourceInstance)
+                .dragEnter(mDestInstance)
+                .drop(mDestInstance)
+                .verifyNotifyChromeHandledDrop(/* didChromeHandleDrop= */ true)
+                .end(/* res= */ true);
+
+        // Verify the #onDragEnd runnable is not posted.
+        assertFalse(
+                "#onDragEnd runnable should not be posted.",
+                mSourceInstance
+                        .getHandlerForTesting()
+                        .hasCallbacks(mSourceInstance.getOnDragEndRunnableForTesting()));
+    }
+
+    @Test
+    public void test_onDrop_ChromeDidNotHandleDrop() {
+        // End without dropping on either strip.
+        new DragEventInvoker(DragType.SINGLE_TAB, /* isGroupShared= */ false)
+                .dragExit(mSourceInstance)
+                .dragEnter(mDestInstance)
+                .verifyNotifyChromeHandledDrop(/* didChromeHandleDrop= */ false)
+                .end(/* res= */ true);
+
+        // Verify that the #onDragEnd runnable is posted.
+        assertTrue(
+                "#onDragEnd runnable should not be posted.",
+                mSourceInstance
+                        .getHandlerForTesting()
+                        .hasCallbacks(mSourceInstance.getOnDragEndRunnableForTesting()));
+
+        // Start a new drag and verify that the #onDragEnd runnable was removed.
+        new DragEventInvoker(DragType.SINGLE_TAB, /* isGroupShared= */ false);
+        assertFalse(
+                "#onDragEnd runnable should not be posted.",
+                mSourceInstance
+                        .getHandlerForTesting()
+                        .hasCallbacks(mSourceInstance.getOnDragEndRunnableForTesting()));
+    }
+
     private void doTestOnDragDropInStripSource(boolean isGroupDrag) {
         String resultHistogram =
                 String.format(
@@ -2018,6 +2061,14 @@ public class TabStripDragHandlerTest {
                     visible,
                     ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
                             .getShadowShownForTesting());
+            return this;
+        }
+
+        public DragEventInvoker verifyNotifyChromeHandledDrop(boolean didChromeHandleDrop) {
+            assertEquals(
+                    "Unexpected value for #didChromeHandleDrop.",
+                    didChromeHandleDrop,
+                    DragDropGlobalState.didChromeHandleDrop());
             return this;
         }
     }

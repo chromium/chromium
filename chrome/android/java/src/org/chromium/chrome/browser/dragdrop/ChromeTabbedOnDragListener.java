@@ -112,14 +112,17 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                     return false;
                 }
                 if (clipDescription == null) return false;
+                boolean res = false;
                 if (isTabGroupDrop) {
-                    return handleGroupDrop(dragEvent, isInDesktopWindow);
+                    res = handleGroupDrop(dragEvent, isInDesktopWindow);
                 } else if (isMultiTabDrop) {
-                    return handleMultiTabDrop(dragEvent, isInDesktopWindow);
+                    res = handleMultiTabDrop(dragEvent, isInDesktopWindow);
                 } else {
                     assert clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB);
-                    return handleTabDrop(dragEvent, isInDesktopWindow);
+                    res = handleTabDrop(dragEvent, isInDesktopWindow);
                 }
+                if (res) DragDropGlobalState.notifyChromeHandledDrop(dragEvent);
+                return res;
             case DragEvent.ACTION_DRAG_ENDED:
                 // Re-enable the NTP we disabled at DRAG_STARTED if any.
                 if (mTabToEnableFakeBox != null) {

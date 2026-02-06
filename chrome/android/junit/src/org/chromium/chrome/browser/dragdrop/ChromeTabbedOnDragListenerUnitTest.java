@@ -234,6 +234,12 @@ public class ChromeTabbedOnDragListenerUnitTest {
                                 /* result= */ false,
                                 isGroupDrag,
                                 isMultiTabDrag)));
+
+        // Assert we do not notify that Chrome has handled the drop.
+        assertFalse(
+                "Should not notify that Chrome handled drop when false returned.",
+                DragDropGlobalState.didChromeHandleDrop());
+
         // Verify histograms.
         histogramExpectation.assertExpected();
     }
@@ -271,6 +277,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
                         .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
                         .build();
         setGlobalStateData(isGroupDrag, isMultiTabDrag);
+
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
@@ -281,6 +288,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
                                 /* result= */ false,
                                 isGroupDrag,
                                 isMultiTabDrag)));
+
         // Drop should return false, since the destination instance is the same as the source
         // instance.
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
@@ -293,6 +301,12 @@ public class ChromeTabbedOnDragListenerUnitTest {
                                 /* result= */ false,
                                 isGroupDrag,
                                 isMultiTabDrag)));
+
+        // Assert we do notify that Chrome has handled the drop.
+        assertFalse(
+                "Should not notify that Chrome handled drop when false returned.",
+                DragDropGlobalState.didChromeHandleDrop());
+
         // Verify histograms.
         histogramExpectation.assertExpected();
     }
@@ -454,6 +468,12 @@ public class ChromeTabbedOnDragListenerUnitTest {
                                 /* result= */ false,
                                 isGroupDrag,
                                 isMultiTabDrag)));
+
+        // Assert we do notify that Chrome has handled the drop.
+        assertTrue(
+                "Should notify that Chrome handled drop when true returned.",
+                DragDropGlobalState.didChromeHandleDrop());
+
         histogramWatcher.assertExpected();
     }
 
@@ -583,6 +603,11 @@ public class ChromeTabbedOnDragListenerUnitTest {
                                 /* result= */ false,
                                 isGroupDrag,
                                 isMultiTabDrag)));
+
+        // Assert we do not notify that Chrome has handled the drop.
+        assertFalse(
+                "Should not notify that Chrome handled drop when false returned.",
+                DragDropGlobalState.didChromeHandleDrop());
     }
 
     private DragEvent mockDragEvent(
