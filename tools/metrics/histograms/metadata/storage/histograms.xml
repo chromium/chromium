@@ -813,6 +813,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IndexedDB.SqliteMigration.RenameBlobResult"
+    enum="PlatformFileError" expires_after="2027-02-04">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the result of renaming a blob file during IndexedDB backing store
+    migration from LevelDB to SQLite.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}CommitPending"
     enum="Boolean" expires_after="2026-08-02">
   <owner>fdoray@chromium.org</owner>

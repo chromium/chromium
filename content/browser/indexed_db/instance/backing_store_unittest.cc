@@ -7,10 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/backing_store_util.h"
@@ -839,6 +842,7 @@ class BackingStoreMigrationTest
 };
 
 TEST_F(BackingStoreMigrationTest, Migrate) {
+  base::HistogramTester histogram_tester;
   blob_context_->SetWriteFilesToDisk(true);
   ASSERT_OK_AND_ASSIGN(auto db,
                        backing_store()->CreateOrOpenDatabase(u"test_db"));
@@ -859,7 +863,22 @@ TEST_F(BackingStoreMigrationTest, Migrate) {
   }
   db.reset();
 
+  // Delete one of the blob files before migration.
+  ASSERT_GE(blob_context_->writes().size(), 1u);
+  ASSERT_TRUE(base::DeleteFile(blob_context_->writes()[0].path));
+
+  // Migration should still succeed despite the missing file.
   MigrateAndVerifyBackingStore();
+
+  // Verify the histogram records both success and failure.
+  EXPECT_EQ(
+      histogram_tester.GetBucketCount(
+          "IndexedDB.SqliteMigration.RenameBlobResult", -base::File::FILE_OK),
+      2);
+  EXPECT_EQ(histogram_tester.GetBucketCount(
+                "IndexedDB.SqliteMigration.RenameBlobResult",
+                -base::File::FILE_ERROR_NOT_FOUND),
+            1);
 }
 
 }  // namespace content::indexed_db

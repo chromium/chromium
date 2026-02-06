@@ -6,9 +6,11 @@
 
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/file_path_util.h"
@@ -217,9 +219,10 @@ Status BackingStoreImpl::MigrateFrom(BackingStore& source) {
     //    Traditionally this has been handled by throwing errors when the blob
     //    is actually read and letting the page delete or overwrite the
     //    record, so we maintain that behavior.
-    base::File::Error error;
+    base::File::Error error = base::File::FILE_OK;
     base::ReplaceFile(source_file_path, target_file_path, &error);
-    // TODO(crbug.com/419264073): log `error` to histogram.
+    base::UmaHistogramExactLinear("IndexedDB.SqliteMigration.RenameBlobResult",
+                                  -error, -base::File::FILE_ERROR_MAX);
   }
 
   return Status::OK();
