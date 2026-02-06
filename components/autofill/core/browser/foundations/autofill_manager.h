@@ -195,7 +195,8 @@ class AutofillManager
     };
     virtual void OnFieldTypesDetermined(AutofillManager& manager,
                                         FormGlobalId form,
-                                        FieldTypeSource source) {}
+                                        FieldTypeSource source,
+                                        bool small_forms_were_parsed) {}
 
     // Fired when the suggestions are *actually* shown or hidden.
     virtual void OnSuggestionsShown(AutofillManager& manager,

@@ -158,7 +158,8 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
 
   void SimulatePropagateAutofillPredictions(FormGlobalId form_id) {
     NotifyObservers(&Observer::OnFieldTypesDetermined, form_id,
-                    Observer::FieldTypeSource::kAutofillServer);
+                    Observer::FieldTypeSource::kAutofillServer,
+                    /*small_forms_were_parsed=*/false);
   }
 
   void SimulateOnAskForValuesToFill(const FormData& form,

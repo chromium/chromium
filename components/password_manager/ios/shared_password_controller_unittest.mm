@@ -415,7 +415,8 @@ TEST_F(SharedPasswordControllerTest,
   using Observer = autofill::AutofillManager::Observer;
   manager->NotifyObservers(&Observer::OnFieldTypesDetermined,
                            main_form.global_id(),
-                           Observer::FieldTypeSource::kAutofillServer);
+                           Observer::FieldTypeSource::kAutofillServer,
+                           /*small_forms_were_parsed=*/false);
 }
 
 // Tests that the password manager is notified about model predictions for a

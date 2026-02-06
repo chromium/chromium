@@ -2643,7 +2643,8 @@ void BrowserAutofillManager::AddCachedAutofillAiPredictions(
                                     GetCurrentPageLanguage(), log_manager());
   LogCurrentFieldTypes(&form);
   NotifyObservers(&Observer::OnFieldTypesDetermined, form.global_id(),
-                  Observer::FieldTypeSource::kAutofillAiModel);
+                  Observer::FieldTypeSource::kAutofillAiModel,
+                  /*small_forms_were_parsed=*/client().IsTabInActorMode());
 }
 
 void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(

@@ -323,6 +323,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   auto g = Eq(other_form.global_id());
   auto ff = Eq(field.global_id());
   auto heuristics = Eq(FieldTypeSource::kHeuristicsOrAutocomplete);
+  auto small_forms_parsing = Eq(autofill_client().IsTabInActorMode());
 
   MockAutofillManagerObserver observer;
   base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
@@ -419,8 +420,10 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
                                            ElementsAre(id_to_remove)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
-    EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
+    EXPECT_CALL(observer,
+                OnFieldTypesDetermined(m, f, heuristics, small_forms_parsing));
+    EXPECT_CALL(observer,
+                OnFieldTypesDetermined(m, g, heuristics, small_forms_parsing));
     std::move(run_loop).Run();
   }
 
@@ -434,8 +437,10 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     }());
     EXPECT_CALL(observer, OnAfterLanguageDetermined(m))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
-    EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
+    EXPECT_CALL(observer,
+                OnFieldTypesDetermined(m, f, heuristics, small_forms_parsing));
+    EXPECT_CALL(observer,
+                OnFieldTypesDetermined(m, g, heuristics, small_forms_parsing));
     std::move(run_loop).Run();
   }
 
@@ -451,7 +456,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer,
                 OnAfterTextFieldValueChanged(m, f, ff, std::u16string()))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
+    EXPECT_CALL(observer,
+                OnFieldTypesDetermined(m, f, heuristics, small_forms_parsing));
     std::move(run_loop).Run();
   }
 
@@ -676,7 +682,9 @@ TEST_F(
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(autofill_manager()), forms[0].global_id(),
-                             FieldTypeSource::kHeuristicsOrAutocomplete));
+                             FieldTypeSource::kHeuristicsOrAutocomplete,
+                             /*small_forms_were_parsed=*/
+                             Eq(autofill_client().IsTabInActorMode())));
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
       .WillOnce(
           [](const auto&, const auto&,
@@ -684,6 +692,22 @@ TEST_F(
             std::move(callback).Run(std::nullopt);
             return true;
           });
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
+  std::move(run_loop).Run();
+}
+
+TEST_F(AutofillManagerTest_OnLoadedServerPredictionsObserver, TabInActorMode) {
+  std::vector<FormData> forms = CreateTestForms(1);
+  autofill_client().set_is_tab_in_actor_mode(true);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnFieldTypesDetermined(
+                             Ref(autofill_manager()), forms[0].global_id(),
+                             FieldTypeSource::kHeuristicsOrAutocomplete,
+                             /*small_forms_were_parsed=*/true));
   EXPECT_CALL(observer_,
               OnAfterLoadedServerPredictions(Ref(autofill_manager())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -701,10 +725,14 @@ TEST_F(
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
                              Ref(autofill_manager()), forms[0].global_id(),
-                             FieldTypeSource::kHeuristicsOrAutocomplete));
-  EXPECT_CALL(observer_, OnFieldTypesDetermined(
-                             Ref(autofill_manager()), forms[0].global_id(),
-                             FieldTypeSource::kAutofillServer));
+                             FieldTypeSource::kHeuristicsOrAutocomplete,
+                             /*small_forms_were_parsed=*/
+                             Eq(autofill_client().IsTabInActorMode())));
+  EXPECT_CALL(observer_,
+              OnFieldTypesDetermined(
+                  Ref(autofill_manager()), forms[0].global_id(),
+                  FieldTypeSource::kAutofillServer, /*small_forms_were_parsed=*/
+                  Eq(autofill_client().IsTabInActorMode())));
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
       .WillOnce(
           [&](const auto&, const auto&,

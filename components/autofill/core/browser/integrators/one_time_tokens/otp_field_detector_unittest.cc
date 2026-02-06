@@ -184,7 +184,8 @@ class OtpFieldDetectorAutofillManagerObserverTest
         &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined,
         form.global_id(),
         TestBrowserAutofillManager::Observer::FieldTypeSource::
-            kHeuristicsOrAutocomplete);
+            kHeuristicsOrAutocomplete,
+        /*small_forms_were_parsed=*/false);
   }
 
   void RemoveOtpFromThePage(FormData form) {

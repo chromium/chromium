@@ -557,8 +557,10 @@ class TestAutofillManagerSingleEventWaiter::Impl
   }
   void OnFieldTypesDetermined(AutofillManager& manager,
                               FormGlobalId form,
-                              FieldTypeSource source) override {
-    MaybeQuit(&Observer::OnFieldTypesDetermined, manager, form, source);
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override {
+    MaybeQuit(&Observer::OnFieldTypesDetermined, manager, form, source,
+              small_forms_were_parsed);
   }
   void OnSuggestionsShown(AutofillManager& manager,
                           base::span<const Suggestion> suggestions) override {

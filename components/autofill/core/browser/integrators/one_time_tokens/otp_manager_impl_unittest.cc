@@ -93,8 +93,8 @@ class OtpManagerImplTest : public testing::Test,
     autofill_manager().NotifyObservers(
         &TestBrowserAutofillManager::Observer::OnFieldTypesDetermined,
         form.global_id(),
-        TestBrowserAutofillManager::Observer::FieldTypeSource::
-            kAutofillAiModel);
+        TestBrowserAutofillManager::Observer::FieldTypeSource::kAutofillAiModel,
+        /*small_forms_were_parsed=*/false);
   }
 
   void AddFormWithOtpField() {

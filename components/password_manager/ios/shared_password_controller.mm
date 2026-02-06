@@ -490,7 +490,8 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 - (void)onFieldTypesDetermined:(AutofillManager&)manager
                        forForm:(FormGlobalId)formId
                     fromSource:
-                        (AutofillManager::Observer::FieldTypeSource)source {
+                        (AutofillManager::Observer::FieldTypeSource)source
+          smallFormsWereParsed:(bool)small_forms_were_parsed {
   const autofill::FormStructure* form_structure =
       manager.FindCachedFormById(formId);
   if (!form_structure) {

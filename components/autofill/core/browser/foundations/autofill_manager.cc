@@ -712,7 +712,7 @@ void AutofillManager::ParseFormsAsyncCommon(
       [](base::WeakPtr<AutofillManager> self, bool preserve_signatures,
          base::OnceCallback<void(AutofillManager&,
                                  const std::vector<FormData>&)> callback,
-         AsyncContext context) {
+         bool small_forms_were_parsed, AsyncContext context) {
         if (!self) {
           return;
         }
@@ -727,7 +727,8 @@ void AutofillManager::ParseFormsAsyncCommon(
             self->LogCurrentFieldTypes(form_structure);
             self->NotifyObservers(
                 &Observer::OnFieldTypesDetermined, form_structure->global_id(),
-                Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+                Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+                small_forms_were_parsed);
           }
         }
         if (context.log_manager && self->log_manager()) {
@@ -736,7 +737,8 @@ void AutofillManager::ParseFormsAsyncCommon(
         std::move(callback).Run(*self, context.forms);
       },
       parsing_weak_ptr_factory_.GetWeakPtr(), preserve_signatures,
-      std::move(callback));
+      std::move(callback),
+      /*small_forms_were_parsed=*/client().IsTabInActorMode());
 
   // To be run on the main thread (accesses member variables).
   auto run_heuristics_and_update_cache = base::BindOnce(
@@ -958,7 +960,8 @@ void AutofillManager::OnLoadedServerPredictions(
           log_manager());
       LogCurrentFieldTypes(form_structure);
       NotifyObservers(&Observer::OnFieldTypesDetermined, form.global_id(),
-                      Observer::FieldTypeSource::kAutofillServer);
+                      Observer::FieldTypeSource::kAutofillServer,
+                      /*small_forms_were_parsed=*/client().IsTabInActorMode());
       if (base::FeatureList::IsEnabled(
               features::kAutofillServerQueryPredictionsEarly)) {
         OnFormProcessed(form, *form_structure);

@@ -26,7 +26,8 @@
                        forForm:(autofill::FormGlobalId)form
                     fromSource:
                         (autofill::AutofillManager::Observer::FieldTypeSource)
-                            source;
+                            source
+          smallFormsWereParsed:(bool)smallFormsWereParsed;
 
 - (void)onAfterFormSubmitted:(autofill::AutofillManager&)manager
                     formData:(const autofill::FormData&)form;
@@ -51,7 +52,8 @@ class AutofillManagerObserverBridge final : public AutofillManager::Observer {
       autofill::AutofillManager::LifecycleState new_state) override;
   void OnFieldTypesDetermined(AutofillManager& manager,
                               FormGlobalId form,
-                              FieldTypeSource source) override;
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
   void OnAfterFormSubmitted(AutofillManager& manager,
                             const FormData& form) override;
 

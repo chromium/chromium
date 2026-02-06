@@ -182,9 +182,11 @@ void AndroidAutofillManager::Reset() {
   StartNewLoggingSession();
 }
 
-void AndroidAutofillManager::OnFieldTypesDetermined(AutofillManager& manager,
-                                                    FormGlobalId form,
-                                                    FieldTypeSource source) {
+void AndroidAutofillManager::OnFieldTypesDetermined(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldTypeSource source,
+    bool small_forms_were_parsed) {
   CHECK_EQ(&manager, this);
   switch (source) {
     case FieldTypeSource::kAutofillAiModel:

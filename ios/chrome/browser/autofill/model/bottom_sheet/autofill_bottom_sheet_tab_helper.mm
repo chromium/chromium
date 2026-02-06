@@ -618,7 +618,8 @@ void AutofillBottomSheetTabHelper::AttachListenersForPaymentsForm(
 void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
-    FieldTypeSource source) {
+    FieldTypeSource source,
+    bool small_forms_were_parsed) {
   AttachListenersForPaymentsForm(manager, form_id, /*only_new=*/true);
 }
 

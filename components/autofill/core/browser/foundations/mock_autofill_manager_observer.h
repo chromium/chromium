@@ -133,7 +133,7 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
 
   MOCK_METHOD(void,
               OnFieldTypesDetermined,
-              (AutofillManager&, FormGlobalId, FieldTypeSource),
+              (AutofillManager&, FormGlobalId, FieldTypeSource, bool),
               (override));
 
   MOCK_METHOD(void,

@@ -64,7 +64,8 @@ bool OtpFieldDetector::IsOtpFieldPresent() const {
 
 void OtpFieldDetector::OnFieldTypesDetermined(AutofillManager& manager,
                                               FormGlobalId form,
-                                              FieldTypeSource source) {
+                                              FieldTypeSource source,
+                                              bool small_forms_were_parsed) {
   if (IsOtpForm(manager, form)) {
     AddFormAndNotifyIfNecessary(form);
   } else {

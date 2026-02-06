@@ -53,10 +53,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   void GetOtpSuggestions(GetOtpSuggestionsCallback callback) override;
 
   // AutofillManager::Observer:
-  void OnFieldTypesDetermined(
-      AutofillManager& manager,
-      FormGlobalId form,
-      AutofillManager::Observer::FieldTypeSource source) override;
+  void OnFieldTypesDetermined(AutofillManager& manager,
+                              FormGlobalId form,
+                              AutofillManager::Observer::FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
   void OnBeforeFocusOnFormField(AutofillManager& manager,
                                 FormGlobalId form,
                                 FieldGlobalId field) override;

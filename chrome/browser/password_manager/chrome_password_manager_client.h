@@ -446,7 +446,8 @@ class ChromePasswordManagerClient
   // autofill::AutofillManager::Observer:
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
                               autofill::FormGlobalId form_id,
-                              FieldTypeSource source) override;
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
 
   password_manager::ContentPasswordManagerDriverFactory* GetDriverFactory()
       const;

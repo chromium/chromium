@@ -80,9 +80,11 @@ bool SensitiveContentManager::UpdateContentSensitivity() {
   return false;
 }
 
-void SensitiveContentManager::OnFieldTypesDetermined(AutofillManager& manager,
-                                                     FormGlobalId form_id,
-                                                     FieldTypeSource) {
+void SensitiveContentManager::OnFieldTypesDetermined(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldTypeSource source,
+    bool small_forms_were_parsed) {
   if (const autofill::FormStructure* form =
           manager.FindCachedFormById(form_id)) {
     for (const std::unique_ptr<AutofillField>& field : form->fields()) {

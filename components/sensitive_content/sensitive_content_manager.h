@@ -46,7 +46,8 @@ class SensitiveContentManager final
   // heuristics predictions, and later called with server predictions.
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
                               autofill::FormGlobalId form_id,
-                              FieldTypeSource) override;
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
   // Removes the fields of `removed_forms` from `sensitive_fields_`.
   // `removed_forms` are forms which have just been from the DOM.
   void OnBeforeFormsSeen(

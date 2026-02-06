@@ -127,7 +127,8 @@ class AndroidAutofillManager : public AutofillManager,
   // AutofillManager::Observer:
   void OnFieldTypesDetermined(AutofillManager& manager,
                               FormGlobalId form,
-                              FieldTypeSource source) override;
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
 
   AutofillProvider* GetAutofillProvider();
 

@@ -759,7 +759,8 @@ TEST_F(ChromePasswordManagerClientTest,
   using Observer = autofill::AutofillManager::Observer;
   autofill_driver->GetAutofillManager().NotifyObservers(
       &Observer::OnFieldTypesDetermined, form.global_id(),
-      Observer::FieldTypeSource::kAutofillServer);
+      Observer::FieldTypeSource::kAutofillServer,
+      /*small_forms_were_parsed=*/false);
 
   EXPECT_THAT(static_cast<const password_manager::PasswordManager*>(
                   GetClient()->GetPasswordManager())
@@ -800,7 +801,8 @@ TEST_F(ChromePasswordManagerClientTest,
   using Observer = autofill::AutofillManager::Observer;
   autofill_driver->GetAutofillManager().NotifyObservers(
       &Observer::OnFieldTypesDetermined, form.global_id(),
-      Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+      Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      /*small_forms_were_parsed=*/false);
 
   auto received_predictions =
       static_cast<const password_manager::PasswordManager*>(
@@ -868,7 +870,8 @@ TEST_F(ChromePasswordManagerClientTest,
   using Observer = autofill::AutofillManager::Observer;
   main_driver->GetAutofillManager().NotifyObservers(
       &Observer::OnFieldTypesDetermined, main_form.global_id(),
-      Observer::FieldTypeSource::kAutofillServer);
+      Observer::FieldTypeSource::kAutofillServer,
+      /*small_forms_were_parsed=*/false);
 
   // Even though `OnFieldTypesDetermined` was only called for a single form (the
   // browser form that is the result of merging both forms), password manager

@@ -165,7 +165,8 @@ class AutofillBottomSheetTabHelper
       autofill::AutofillManager::LifecycleState new_state) override;
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
                               autofill::FormGlobalId form_id,
-                              FieldTypeSource source) override;
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
 
   // Returns the controller for authentication selection.
   // The caller takes ownership and subsequent calls will return nullptr until

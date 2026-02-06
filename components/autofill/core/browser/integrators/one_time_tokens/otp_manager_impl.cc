@@ -76,7 +76,8 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
 void OtpManagerImpl::OnFieldTypesDetermined(
     AutofillManager& manager,
     FormGlobalId form_id,
-    AutofillManager::Observer::FieldTypeSource source) {
+    AutofillManager::Observer::FieldTypeSource source,
+    bool small_forms_were_parsed) {
   // On non-android platforms and in tests the backend may be not initialized.
   if (!one_time_token_services_) {
     return;

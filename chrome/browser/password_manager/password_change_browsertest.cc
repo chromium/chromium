@@ -400,7 +400,8 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
         &TestAutofillManager::Observer::OnFieldTypesDetermined,
         form.global_id(),
         TestAutofillManager::Observer::FieldTypeSource::
-            kHeuristicsOrAutocomplete);
+            kHeuristicsOrAutocomplete,
+        /*small_forms_were_parsed=*/false);
   }
 
  private:
