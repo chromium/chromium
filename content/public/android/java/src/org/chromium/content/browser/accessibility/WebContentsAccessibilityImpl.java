@@ -1704,6 +1704,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         WebContentsAccessibilityImplJni.get()
                                 .getEditableTextSelectionEnd(mNativeObj, mAccessibilityFocusId);
             }
+        } else {
+            // `mSelectionStart gets "unassigned" when focus changes and should be initialized for
+            // the first user swipe. For a non-editable node, put selection start on the beginning
+            // of the node. Note that `mCursorIndex` is already set to the end of the node text
+            // when accessibility focus is updated.
+            if (mSelectionStart == -1) {
+                mSelectionStart = 0;
+            }
         }
     }
 

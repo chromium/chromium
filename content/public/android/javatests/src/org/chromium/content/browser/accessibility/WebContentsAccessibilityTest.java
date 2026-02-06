@@ -184,6 +184,7 @@ public class WebContentsAccessibilityTest {
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
     private static final String NODE_EXTRAS_UNCLIPPED_ERROR =
             "AccessibilityNodeInfo object should have unclipped bounds in extras bundle";
+    private static final String TEXT_TRAVERSAL_ERROR = "Expected to receive a traversal event";
     private static final String TEXT_SELECTION_AND_TRAVERSAL_ERROR =
             "Expected to receive both a traversal and selection text event";
     private static final String BOUNDING_BOX_ERROR =
@@ -356,6 +357,32 @@ public class WebContentsAccessibilityTest {
                             && mTestData.hasReceivedSelectionEvent();
                 },
                 TEXT_SELECTION_AND_TRAVERSAL_ERROR);
+    }
+
+    /**
+     * Helper method for sending text related events and confirming that the associated traversal
+     * event have been dispatched before continuing with test.
+     *
+     * @param viewId int virtualViewId of the text field
+     * @param action AccessibilityActionCompat action to perform
+     * @param args Bundle optional arguments
+     * @throws ExecutionException Error
+     */
+    private void performTextActionOnUiThreadAndWaitForTraversalEvent(
+            int viewId, AccessibilityNodeInfoCompat.AccessibilityActionCompat action, Bundle args)
+            throws ExecutionException {
+        // Reset values for traversal event.
+        mTestData.setReceivedTraversalEvent(false);
+
+        // Perform our text action.
+        mActivityTestRule.performActionOnUiThread(viewId, action.getId(), args);
+
+        // Poll until the event has been confirmed as received.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mTestData.hasReceivedTraversalEvent();
+                },
+                TEXT_TRAVERSAL_ERROR);
     }
 
     private void printAccessibilityNodeInfoTree() {
@@ -1296,6 +1323,75 @@ public class WebContentsAccessibilityTest {
             Assert.assertEquals(0, mTestData.getSelectionFromIndex());
             Assert.assertEquals(i - 1, mTestData.getSelectionToIndex());
         }
+    }
+
+    /**
+     * Ensure traverse events are properly indexed when navigating a non-editable node by character.
+     */
+    @Test
+    @LargeTest
+    public void testEvent_NonEditableNode_CharacterGranularity() throws Throwable {
+        setupTestWithHTML("<p id='id1'>Text1</p>");
+
+        // Find the text node.
+        int nodeVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(nodeVirtualViewId);
+        Assert.assertNotEquals(mNodeInfo, null);
+
+        focusNode(nodeVirtualViewId);
+
+        // Set granularity to CHARACTER.
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+
+        for (int selection = 0; selection < 2; selection++) {
+            // Movement with granularity on non-editable nodes does not update selection, hene
+            // the argument should have no effect on the result.
+            args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, selection != 0);
+            for (int i = 0; i < 5; i++) {
+                performTextActionOnUiThreadAndWaitForTraversalEvent(
+                        nodeVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+
+                Assert.assertEquals(i, mTestData.getTraverseFromIndex());
+                Assert.assertEquals(i + 1, mTestData.getTraverseToIndex());
+            }
+
+            for (int i = 5; i > 0; i--) {
+                performTextActionOnUiThreadAndWaitForTraversalEvent(
+                        nodeVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
+
+                Assert.assertEquals(i - 1, mTestData.getTraverseFromIndex());
+                Assert.assertEquals(i, mTestData.getTraverseToIndex());
+            }
+        }
+    }
+
+    /**
+     * Ensure traverse events are properly indexed when navigating backward on a non-editable node
+     * by character.
+     */
+    @Test
+    @LargeTest
+    public void testEvent_SelectionOFF_NonEditableNode_CharacterGranularity_BackwardInitilization()
+            throws Throwable {
+        setupTestWithHTML("<p id='id1'>Text1</p>");
+
+        // Find the text node.
+        int nodeVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(nodeVirtualViewId);
+        Assert.assertNotEquals(mNodeInfo, null);
+
+        focusNode(nodeVirtualViewId);
+
+        // Set granularity to CHARACTER.
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
+
+        performTextActionOnUiThreadAndWaitForTraversalEvent(
+                nodeVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(4, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(5, mTestData.getTraverseToIndex());
     }
 
     /**
