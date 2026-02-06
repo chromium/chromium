@@ -35,7 +35,6 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/test/begin_main_frame_waiter.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -193,11 +192,6 @@ class ZAuraSurfaceTest : public test::ExoTestBase,
     surface_->window()->SetBounds(gfx::Rect(5, 5, 10, 10));
     surface_->window()->Show();
 
-    // Ideally the parent widget should be a ShellSurface. For historical
-    // reasons, it uses plain widget instead, so explicitly notififes the window
-    // creation.
-    WMHelper::GetInstance()->NotifyExoWindowCreated(
-        parent_widget_->GetNativeWindow());
     ash::Shell::Get()->activation_client()->AddObserver(this);
     aura_surface_->SetOcclusionTracking(true);
   }
@@ -363,19 +357,13 @@ TEST_F(ZAuraSurfaceTest,
                            ash::kShellWindowId_LockScreenContainer)
       ->AddChild(lock_widget->GetNativeView());
 
-  auto* compositor =
-      ash::Shell::GetPrimaryRootWindow()->GetHost()->compositor();
   // Simulate real screen locker to change session state to LOCKED
   // when it is shown.
   auto* controller = ash::Shell::Get()->session_controller();
   GetSessionControllerClient()->LockScreen();
   lock_widget->Show();
-  ui::BeginMainFrameWaiter(compositor).Wait();
-
   EXPECT_TRUE(controller->IsScreenLocked());
   EXPECT_TRUE(lock_widget->GetNativeView()->HasFocus());
-  EXPECT_FALSE(
-      aura::Env::GetInstance()->GetWindowOcclusionTracker()->IsPaused());
 
   // We should have lost focus, but not reported that the window has been
   // fully occluded.
@@ -384,24 +372,6 @@ TEST_F(ZAuraSurfaceTest,
   EXPECT_EQ(0.0f, occlusion_fraction_on_activation_loss());
   EXPECT_EQ(0.0f, aura_surface().last_sent_occlusion_fraction());
   EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
-            aura_surface().last_sent_occlusion_state());
-
-  // Make sure occlusion tracking is unlocked when screen is unlocked.
-  GetSessionControllerClient()->UnlockScreen();
-  lock_widget.reset();
-  ui::BeginMainFrameWaiter(compositor).Wait();
-  EXPECT_FALSE(
-      aura::Env::GetInstance()->GetWindowOcclusionTracker()->IsPaused());
-  EXPECT_EQ(0.0f, occlusion_fraction_on_activation_loss());
-  EXPECT_EQ(0.0f, aura_surface().last_sent_occlusion_fraction());
-  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
-            aura_surface().last_sent_occlusion_state());
-
-  // Create a window that occludes the surface.
-  CreateTestWindowInShell({.bounds = {0, 0, 100, 100}});
-  EXPECT_EQ(0.0f, occlusion_fraction_on_activation_loss());
-  EXPECT_EQ(1.0f, aura_surface().last_sent_occlusion_fraction());
-  EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,
             aura_surface().last_sent_occlusion_state());
 }
 

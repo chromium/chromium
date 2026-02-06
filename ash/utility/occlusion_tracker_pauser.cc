@@ -49,13 +49,6 @@ void OcclusionTrackerPauser::OnFirstNonAnimatedFrameStarted(
   OnFinish(compositor);
 }
 
-void OcclusionTrackerPauser::OnDidBeginMainFrame(ui::Compositor* compositor) {
-  if (animating_compositors_.size() == 0 && timer_.IsRunning()) {
-    // If no animation was added by the next begin frame, just end pausing.
-    OnFinish(compositor);
-  }
-}
-
 void OcclusionTrackerPauser::OnCompositingShuttingDown(
     ui::Compositor* compositor) {
   OnFinish(compositor);

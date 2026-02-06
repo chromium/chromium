@@ -38,7 +38,6 @@ class ASH_EXPORT OcclusionTrackerPauser : public ui::CompositorObserver {
   void OnFirstAnimationStarted(ui::Compositor* compositor) override;
   void OnFirstNonAnimatedFrameStarted(ui::Compositor* compositor) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
-  void OnDidBeginMainFrame(ui::Compositor* compositor) override;
 
  private:
   void Pause(ui::Compositor* compositor);

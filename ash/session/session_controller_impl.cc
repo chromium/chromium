@@ -34,7 +34,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
-#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/message_center/message_center.h"
 
 using session_manager::SessionState;
@@ -612,16 +611,8 @@ void SessionControllerImpl::SetSessionState(SessionState state) {
   }
 
   state_ = state;
-  // Keep the occlusion state while switching the session state. This reduces
-  // recomputing occlusion state while updating UI for the states. This is also
-  // necessary for exo windows to lock the window's occlusion state to the state
-  // before the screen is locked.
-  {
-    aura::WindowOcclusionTracker::ScopedPause pause;
-    for (auto& observer : observers_) {
-      observer.OnSessionStateChanged(state_);
-    }
-  }
+  for (auto& observer : observers_)
+    observer.OnSessionStateChanged(state_);
 
   // NOTE: This pref is intentionally set *after* notifying observers of state
   // changes so observers can use time of last activation during event handling.

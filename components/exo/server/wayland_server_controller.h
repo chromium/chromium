@@ -28,7 +28,6 @@ class NotificationSurfaceManager;
 class ToastSurfaceManager;
 class WMHelper;
 class WaylandServerHandle;
-class WindowOcclusionManager;
 
 class WaylandServerController {
  public:
@@ -89,7 +88,6 @@ class WaylandServerController {
 
   std::unique_ptr<WMHelper> wm_helper_;
   std::unique_ptr<Display> display_;
-  std::unique_ptr<WindowOcclusionManager> window_occlusion_manager_;
   std::unique_ptr<wayland::Server> default_server_;
   base::flat_map<WaylandServerHandle*, std::unique_ptr<wayland::Server>>
       on_demand_servers_;

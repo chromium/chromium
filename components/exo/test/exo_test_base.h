@@ -9,15 +9,14 @@
 
 #include "ash/test/ash_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
-#include "components/exo/window_occlusion_manager.h"
 
 namespace viz {
 class SurfaceManager;
 }
 
 namespace exo {
-class ShellSurfaceBase;
 class WMHelper;
+class ShellSurfaceBase;
 
 namespace test {
 class ExoTestHelper;
@@ -51,7 +50,6 @@ class ExoTestBase : public ash::AshTestBase {
  private:
   ExoTestHelper exo_test_helper_;
   std::unique_ptr<WMHelper> wm_helper_;
-  std::unique_ptr<WindowOcclusionManager> window_occlusion_manager_;
 };
 
 }  // namespace test
