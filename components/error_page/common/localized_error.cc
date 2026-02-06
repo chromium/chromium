@@ -522,8 +522,6 @@ std::u16string GetStringWithPlaceholder(int resource_id,
     case IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME:
     case IDS_ERRORPAGES_HEADING_NOT_FOUND:
     case IDS_ERRORPAGES_SUMMARY_BAD_SSL_CLIENT_AUTH_CERT:
-    case IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR:
-    case IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR_SCHEME:
     case IDS_ERRORPAGES_SUMMARY_CONNECTION_CLOSED:
     case IDS_ERRORPAGES_SUMMARY_CONNECTION_FAILED:
     case IDS_ERRORPAGES_SUMMARY_CONNECTION_REFUSED:
@@ -1082,12 +1080,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
     // instead show the scheme.
     if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR && host_name.empty()) {
       options.heading_resource_id = IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME;
-      host_name = base::UTF8ToUTF16(failed_url.GetScheme());
-    }
-    if (error_code == net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR &&
-        host_name.empty()) {
-      options.summary_resource_id =
-          IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR_SCHEME;
       host_name = base::UTF8ToUTF16(failed_url.GetScheme());
     }
   }
