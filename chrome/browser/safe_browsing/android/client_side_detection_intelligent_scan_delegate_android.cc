@@ -398,6 +398,10 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::OnScamWarningShown() {
     return;
   }
 
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.ServerSideModelQuotaCountOnScamWarningShown",
+      pref_->GetList(prefs::kSafeBrowsingCsdIntelligentScanTimestamps).size());
+
   // The scan shows a warning and is effective, so we refund the quota.
   RemoveLastIntelligentScanQuota();
 }

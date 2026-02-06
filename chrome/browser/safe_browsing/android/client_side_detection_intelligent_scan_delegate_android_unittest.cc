@@ -501,6 +501,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 
   // A scam warning should refund one quota.
   delegate_->OnScamWarningShown();
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelQuotaCountOnScamWarningShown",
+      kMaxScansPerDay, 1);
 
   // Now a scan should succeed.
   std::optional<base::UnguessableToken> token =

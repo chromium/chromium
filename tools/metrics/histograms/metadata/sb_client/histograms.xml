@@ -1463,6 +1463,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ServerSideModelQuotaCountOnScamWarningShown"
+    units="queries" expires_after="2026-08-06">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of server-side model queries made before a scam warning
+    is shown to the user. This is logged when a scam warning is shown to the
+    user, before the quota is refunded. This number can help inform how
+    adjusting the quota size affects protection (i.e. how many warning we will
+    lose if we reduce the quota).
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"
     expires_after="2027-02-22">
   <owner>andysjlim@chromium.org</owner>
