@@ -64,6 +64,13 @@ base::TimeDelta GetPreconnectBackoffBaseTime() {
   return features::kPreconnectBackoffBaseTime.Get();
 }
 
+base::TimeDelta GetPreconnectInitialRetryInterval() {
+  if (!base::FeatureList::IsEnabled(features::kAdjustPreconnectRetryInterval)) {
+    return base::TimeDelta();
+  }
+  return features::kPreconnectInitialRetryInterval.Get();
+}
+
 }  // namespace
 
 namespace features {
@@ -100,6 +107,21 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kPreconnectBackoffBaseTime,
                    &kAdjustPreconnectRetryInterval,
                    "kPreconnectBackoffBaseTime",
+                   base::Milliseconds(kPreconnectRetryDelayMs));
+BASE_FEATURE_PARAM(double,
+                   kPreconnectBackoffMultiplier,
+                   &kAdjustPreconnectRetryInterval,
+                   "kPreconnectBackoffMultiplier",
+                   2.0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPreconnectNetworkChangeInterval,
+                   &kAdjustPreconnectRetryInterval,
+                   "kPreconnectNetworkChangeInterval",
+                   base::Milliseconds(kPreconnectRetryDelayMs));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPreconnectInitialRetryInterval,
+                   &kAdjustPreconnectRetryInterval,
+                   "kPreconnectInitialRetryInterval",
                    base::Milliseconds(kPreconnectRetryDelayMs));
 }  // namespace features
 
@@ -305,13 +327,24 @@ base::TimeDelta SearchEnginePreconnector::GetPreconnectInterval() const {
   // Otherwise, we backoff `GetPreconnectRetryInterval()` (default 50 ms for
   // normal mode) * 2^n for the next preconnect attempt.
   return std::min(
-      GetPreconnectBackoffBaseTime() * CalculateBackoffMultiplier(),
+      GetPreconnectBackoffBaseTime() * CalculateBackoffMultiplier() +
+          GetPreconnectInitialRetryInterval(),
       base::Seconds(net::features::kMaxPreconnectRetryInterval.Get()));
 }
 
 int32_t SearchEnginePreconnector::CalculateBackoffMultiplier() const {
-  return 1 << std::min(static_cast<int>(consecutive_connection_failure_),
-                       std::numeric_limits<int32_t>::digits - 1);
+  if (!base::FeatureList::IsEnabled(features::kAdjustPreconnectRetryInterval)) {
+    return 1 << std::min(static_cast<int>(consecutive_connection_failure_),
+                         std::numeric_limits<int32_t>::digits - 1);
+  }
+
+  // The multiplier must be greater than 1.0, otherwise the back off will not
+  // work (will keep on decreasing).
+  CHECK_GT(features::kPreconnectBackoffMultiplier.Get(), 1.0);
+  double multiplier = std::pow(features::kPreconnectBackoffMultiplier.Get(),
+                               consecutive_connection_failure_ - 1);
+
+  return base::ClampedNumeric<int32_t>(multiplier);
 }
 
 bool SearchEnginePreconnector::IsShortSession() const {
@@ -411,8 +444,11 @@ void SearchEnginePreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {
     // not actually close a connection. It is OK to not reset the receiver here
     // since network event will be followed by `OnSessionClosed` or
     // `OnConnectionFailed` anyway when the connection is actually closed.
-    StartPreconnectWithDelay(GetPreconnectInterval(),
-                             PreconnectTriggerEvent::kNetworkEvent);
+    base::TimeDelta delay =
+        base::FeatureList::IsEnabled(features::kAdjustPreconnectRetryInterval)
+            ? features::kPreconnectNetworkChangeInterval.Get()
+            : GetPreconnectInterval();
+    StartPreconnectWithDelay(delay, PreconnectTriggerEvent::kNetworkEvent);
   }
 }
 
