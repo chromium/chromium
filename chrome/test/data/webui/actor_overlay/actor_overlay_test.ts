@@ -200,6 +200,10 @@ suite('BorderGlow', function() {
   });
 });
 
+function wait(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 suite('MagicCursor', function() {
   let page: ActorOverlayAppElement;
   let testRemote: ActorOverlayPageRemote;
@@ -531,5 +535,102 @@ suite('MagicCursor', function() {
     assertEquals('0.4s', style.animationDuration);
     assertEquals('ease-out', style.animationTimingFunction);
     assertTrue(style.animationName.includes('cursor-click'));
+  });
+
+  test('CursorImageStructure', function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    const cursorImage = magicCursor.querySelector<HTMLElement>('#cursorImage');
+    assertTrue(!!cursorImage);
+
+    const style = window.getComputedStyle(cursorImage);
+    assertEquals('transform', style.willChange);
+    assertTrue(style.backgroundImage.includes('magic_cursor.svg'));
+  });
+
+  test('LoadingState_TriggersAfterMoveAndDelay', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    // Initialize the cursor with the first movement.
+    const point = {x: 100, y: 100};
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+
+    // Verify that we aren't in the loading state yet.
+    assertFalse(magicCursor.classList.contains('loading'));
+
+    // Verify that we still aren't in the loading state yet after 100ms.
+    await wait(100);
+    assertFalse(magicCursor.classList.contains('loading'));
+
+    // Wait another 150ms, total time is 250ms, which is greater than the 200ms
+    // delay. Verify that we are now in the loading state.
+    await wait(150);
+    assertTrue(magicCursor.classList.contains('loading'));
+  });
+
+  test('LoadingState_RemovedImmediatelyOnNewMove', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    // Initialize the cursor with the first movement.
+    const point1 = {x: 100, y: 100};
+    const movePromise1 = testRemote.moveCursorTo(point1);
+    await microtasksFinished();
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise1;
+    await wait(250);  // Wait for delay
+    assertTrue(magicCursor.classList.contains('loading'));
+
+    // Move the cursor again.
+    const point2 = {x: 200, y: 200};
+    testRemote.moveCursorTo(point2);
+    await microtasksFinished();
+
+    // Verify the loading class is removed immediately.
+    assertFalse(magicCursor.classList.contains('loading'));
+  });
+
+  test('LoadingState_DelayCancelledByInterruption', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    // Initialize the cursor with the first movement.
+    const point = {x: 100, y: 100};
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+
+    // Verify that we aren't in the loading state yet.
+    await wait(50);
+    assertFalse(magicCursor.classList.contains('loading'));
+
+    // Trigger a click animation, which should kill the first loading timer.
+    const clickPromise = testRemote.triggerClickAnimation();
+    await microtasksFinished();
+
+    // Wait another 200ms, total time would be 250ms. Verify that we are still
+    // not in the loading state yet. This verifies that the first timer was
+    // killed once the click animation was triggered.
+    await wait(200);
+    assertFalse(magicCursor.classList.contains('loading'));
+
+    // Finish click animation
+    magicCursor.dispatchEvent(new Event('animationend'));
+    await clickPromise;
+
+    // Wait 250ms, which should complete the new timer, verifying that we are in
+    // the loading state.
+    await wait(250);
+    assertTrue(magicCursor.classList.contains('loading'));
   });
 });

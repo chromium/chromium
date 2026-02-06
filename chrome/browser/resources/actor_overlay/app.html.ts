@@ -13,7 +13,9 @@ export function getHtml(this: ActorOverlayAppElement) {
   <div id="border-stroke"></div>
   <div id="border-glow"></div>
 </div>
-<div id="magicCursor"></div>
+<div id="magicCursor">
+  <div id="cursorImage"></div>
+</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }
