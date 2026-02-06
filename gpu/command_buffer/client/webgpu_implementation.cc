@@ -90,7 +90,6 @@ void DawnWireServices::HandleCommands(const cmds::DawnReturnCommandsInfo& info,
 }
 
 void DawnWireServices::ProcessEvents() {
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
   wgpuDawnWireClientInstanceProcessEvents(wgpu_instance_);
 }
 
