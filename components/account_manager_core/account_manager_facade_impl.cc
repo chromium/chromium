@@ -119,6 +119,7 @@ bool GetIsAvailableInArcBySource(
         kChromeOSProjectorAppReauth:
     case AccountManagerFacade::AccountAdditionSource::
         kChromeSettingsReauthAccountButton:
+    case AccountManagerFacade::AccountAdditionSource::kGeminiInChromeReauth:
       NOTREACHED();
     // Unused enums that cannot be deleted.
     case AccountManagerFacade::AccountAdditionSource::kPrintPreviewDialogUnused:
