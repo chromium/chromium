@@ -10,14 +10,17 @@
 #include "components/sync/protocol/entity_data.h"
 
 namespace autofill {
-// For a given `LoyaltyCard`, returns the corresponding
-// `sync_pb::AutofillValuableSpecifics`.
-sync_pb::AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
-    const LoyaltyCard& card);
 
 // Converts the given `loyalty_card` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
-    const LoyaltyCard& loyalty_card);
+    const LoyaltyCard& loyalty_card,
+    const sync_pb::AutofillValuableSpecifics& base_specifics);
+
+// For a given `LoyaltyCard`, returns the corresponding
+// `sync_pb::AutofillValuableSpecifics`.
+sync_pb::AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
+    const LoyaltyCard& card,
+    const sync_pb::AutofillValuableSpecifics& base_specifics);
 
 // Converts the given valuable `specifics` into an equivalent LoyaltyCard
 // instance.
@@ -27,13 +30,15 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
 // Converts the given `ValuableMetadata` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
     const ValuableMetadata& metadata,
-    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type);
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type,
+    const sync_pb::AutofillValuableMetadataSpecifics& base_specifics);
 
 // For a given `ValuableMetadata`, returns the corresponding
 // `sync_pb::AutofillValuableMetadataSpecifics`.
 sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromValuableMetadata(
     const ValuableMetadata& metadata,
-    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type);
+    const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type,
+    const sync_pb::AutofillValuableMetadataSpecifics& base_specifics);
 
 // Clears all supported fields from `specifics`. Supported
 // fields are all fields in the protobuf definition that have already been

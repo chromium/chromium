@@ -12,9 +12,24 @@ namespace autofill {
 using sync_pb::AutofillValuableMetadataSpecifics;
 using sync_pb::AutofillValuableSpecifics;
 
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
+    const LoyaltyCard& loyalty_card,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  AutofillValuableSpecifics card_specifics =
+      CreateSpecificsFromLoyaltyCard(loyalty_card, base_specifics);
+  std::unique_ptr<syncer::EntityData> entity_data =
+      std::make_unique<syncer::EntityData>();
+  entity_data->name = card_specifics.id();
+  *entity_data->specifics.mutable_autofill_valuable() =
+      std::move(card_specifics);
+
+  return entity_data;
+}
+
 AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
-    const LoyaltyCard& card) {
-  AutofillValuableSpecifics specifics = sync_pb::AutofillValuableSpecifics();
+    const LoyaltyCard& card,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  AutofillValuableSpecifics specifics = base_specifics;
   specifics.set_id(card.id().value());
   sync_pb::LoyaltyCard* loyalty_card = specifics.mutable_loyalty_card();
   loyalty_card->set_merchant_name(card.merchant_name());
@@ -42,27 +57,15 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
       /*use_date=*/{}, /*use_count=*/0);
 }
 
-std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
-    const LoyaltyCard& loyalty_card) {
-  AutofillValuableSpecifics card_specifics =
-      CreateSpecificsFromLoyaltyCard(loyalty_card);
-  std::unique_ptr<syncer::EntityData> entity_data =
-      std::make_unique<syncer::EntityData>();
-  entity_data->name = card_specifics.id();
-  AutofillValuableSpecifics* specifics =
-      entity_data->specifics.mutable_autofill_valuable();
-  specifics->CopyFrom(card_specifics);
-
-  return entity_data;
-}
-
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
     const ValuableMetadata& metadata,
-    const AutofillValuableMetadataSpecifics::PassType pass_type) {
+    const AutofillValuableMetadataSpecifics::PassType pass_type,
+    const sync_pb::AutofillValuableMetadataSpecifics& base_specifics) {
   sync_pb::AutofillValuableMetadataSpecifics metadata_specifics =
-      CreateSpecificsFromValuableMetadata(metadata, pass_type);
+      CreateSpecificsFromValuableMetadata(metadata, pass_type, base_specifics);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
+  entity_data->name = metadata_specifics.valuable_id();
   *entity_data->specifics.mutable_autofill_valuable_metadata() =
       std::move(metadata_specifics);
   return entity_data;
@@ -70,8 +73,9 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
 
 sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromValuableMetadata(
     const ValuableMetadata& metadata,
-    const AutofillValuableMetadataSpecifics::PassType pass_type) {
-  sync_pb::AutofillValuableMetadataSpecifics specifics;
+    const AutofillValuableMetadataSpecifics::PassType pass_type,
+    const sync_pb::AutofillValuableMetadataSpecifics& base_specifics) {
+  sync_pb::AutofillValuableMetadataSpecifics specifics = base_specifics;
   specifics.set_valuable_id(*metadata.valuable_id);
   specifics.set_use_count(metadata.use_count);
   specifics.set_last_used_date_unix_epoch_micros(

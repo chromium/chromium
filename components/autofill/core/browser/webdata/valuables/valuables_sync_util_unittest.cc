@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/test/unknown_field_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,29 +19,10 @@ namespace {
 constexpr char kId1[] = "1";
 }  // namespace
 
-TEST(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
-  LoyaltyCard card = TestLoyaltyCard();
-  sync_pb::AutofillValuableSpecifics specifics =
-      CreateSpecificsFromLoyaltyCard(card);
-
-  EXPECT_EQ(card.id().value(), specifics.id());
-  EXPECT_EQ(card.merchant_name(), specifics.loyalty_card().merchant_name());
-  EXPECT_EQ(card.program_name(), specifics.loyalty_card().program_name());
-  EXPECT_EQ(card.program_logo(), specifics.loyalty_card().program_logo());
-  EXPECT_EQ(card.loyalty_card_number(),
-            specifics.loyalty_card().loyalty_card_number());
-  ASSERT_EQ(card.merchant_domains().size(),
-            (size_t)specifics.loyalty_card().merchant_domains().size());
-  for (size_t i = 0; i < card.merchant_domains().size(); ++i) {
-    EXPECT_EQ(card.merchant_domains()[i],
-              specifics.loyalty_card().merchant_domains(i));
-  }
-}
-
 TEST(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
   LoyaltyCard card = TestLoyaltyCard();
   std::unique_ptr<syncer::EntityData> entity_data =
-      CreateEntityDataFromLoyaltyCard(card);
+      CreateEntityDataFromLoyaltyCard(card, /*base_specifics=*/{});
 
   sync_pb::AutofillValuableSpecifics specifics =
       entity_data->specifics.autofill_valuable();
@@ -59,6 +41,39 @@ TEST(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
                  specifics.loyalty_card().merchant_domains())) {
     EXPECT_EQ(merchant_domain, loyalty_card_domain);
   }
+}
+
+TEST(LoyaltyCardSyncUtilTest, CreateSpecificsFromLoyaltyCard) {
+  LoyaltyCard card = TestLoyaltyCard();
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromLoyaltyCard(card, /*base_specifics=*/{});
+
+  EXPECT_EQ(card.id().value(), specifics.id());
+  EXPECT_EQ(card.merchant_name(), specifics.loyalty_card().merchant_name());
+  EXPECT_EQ(card.program_name(), specifics.loyalty_card().program_name());
+  EXPECT_EQ(card.program_logo(), specifics.loyalty_card().program_logo());
+  EXPECT_EQ(card.loyalty_card_number(),
+            specifics.loyalty_card().loyalty_card_number());
+  ASSERT_EQ(card.merchant_domains().size(),
+            (size_t)specifics.loyalty_card().merchant_domains().size());
+  for (size_t i = 0; i < card.merchant_domains().size(); ++i) {
+    EXPECT_EQ(card.merchant_domains()[i],
+              specifics.loyalty_card().merchant_domains(i));
+  }
+}
+
+TEST(LoyaltyCardSyncUtilTest,
+     CreateSpecificsFromLoyaltyCard_MergesBaseSpecifics) {
+  sync_pb::AutofillValuableSpecifics base_specifics;
+  syncer::test::AddUnknownFieldToProto(base_specifics, "unknown_field");
+
+  LoyaltyCard card = TestLoyaltyCard();
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromLoyaltyCard(card, base_specifics);
+
+  EXPECT_EQ(card.merchant_name(), specifics.loyalty_card().merchant_name());
+  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(specifics),
+            syncer::test::GetUnknownFieldValueFromProto(base_specifics));
 }
 
 TEST(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
@@ -125,7 +140,8 @@ TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
   ValuableMetadata metadata = TestValuableMetadata();
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityDataFromValuableMetadata(
-          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{});
 
   sync_pb::AutofillValuableMetadataSpecifics specifics =
       entity_data->specifics.autofill_valuable_metadata();
@@ -143,7 +159,8 @@ TEST(ValuableMetadataSyncUtilTest, CreateSpecificsFromValuableMetadata) {
   ValuableMetadata metadata = TestValuableMetadata();
   sync_pb::AutofillValuableMetadataSpecifics specifics =
       CreateSpecificsFromValuableMetadata(
-          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{});
 
   EXPECT_EQ(metadata.valuable_id.value(), specifics.valuable_id());
   EXPECT_EQ(metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds(),
@@ -151,6 +168,22 @@ TEST(ValuableMetadataSyncUtilTest, CreateSpecificsFromValuableMetadata) {
   EXPECT_EQ(metadata.use_count, specifics.use_count());
   EXPECT_EQ(specifics.pass_type(),
             sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD);
+}
+
+TEST(ValuableMetadataSyncUtilTest,
+     CreateSpecificsFromValuableMetadata_MergesBaseSpecifics) {
+  sync_pb::AutofillValuableMetadataSpecifics base_specifics;
+  syncer::test::AddUnknownFieldToProto(base_specifics, "unknown_field");
+
+  ValuableMetadata metadata = TestValuableMetadata();
+  sync_pb::AutofillValuableMetadataSpecifics specifics =
+      CreateSpecificsFromValuableMetadata(
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          base_specifics);
+
+  EXPECT_EQ(metadata.valuable_id.value(), specifics.valuable_id());
+  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(specifics),
+            syncer::test::GetUnknownFieldValueFromProto(base_specifics));
 }
 
 TEST(ValuableMetadataSyncUtilTest,

@@ -312,7 +312,8 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const LoyaltyCard& card : GetValuablesTable()->GetLoyaltyCards()) {
     const std::string& id = card.id().value();
-    batch->Put(id, CreateEntityDataFromLoyaltyCard(card));
+    batch->Put(id, CreateEntityDataFromLoyaltyCard(
+                       card, GetPossiblyTrimmedValuableSpecifics(id)));
   }
 
   const bool is_sync_flight_reservations_enabled =

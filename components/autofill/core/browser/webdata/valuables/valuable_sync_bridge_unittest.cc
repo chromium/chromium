@@ -181,7 +181,8 @@ class ValuableSyncBridgeTest : public testing::Test {
   }
 
   syncer::EntityData CardToEntityData(const LoyaltyCard& card) {
-    return std::move(*CreateEntityDataFromLoyaltyCard(card));
+    return std::move(*CreateEntityDataFromLoyaltyCard(card,
+                                                      /*base_specifics=*/{}));
   }
 
   syncer::EntityData EntityInstanceToEntityData(const EntityInstance& entity) {
@@ -227,7 +228,8 @@ TEST_F(ValuableSyncBridgeTest, InitializationFailure) {
 TEST_F(ValuableSyncBridgeTest, IsEntityDataValid) {
   // Valid case.
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
+      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1),
+                                      /*base_specifics=*/{});
   EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
   // Invalid case.
   entity->specifics.mutable_autofill_valuable()->set_id(kInvalidId);
@@ -275,14 +277,16 @@ TEST_F(ValuableSyncBridgeTest, IsLoyaltyCardEntityDataInvalid) {
 
 TEST_F(ValuableSyncBridgeTest, GetStorageKey) {
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
+      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1),
+                                      /*base_specifics=*/{});
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
   EXPECT_EQ(kId1, bridge().GetStorageKey(*entity));
 }
 
 TEST_F(ValuableSyncBridgeTest, GetClientTag) {
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
+      CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1),
+                                      /*base_specifics=*/{});
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
   EXPECT_EQ(kId1, bridge().GetClientTag(*entity));
 }
@@ -353,6 +357,29 @@ TEST_F(ValuableSyncBridgeTest, GetDataForCommit_LoyaltyCards) {
   std::unique_ptr<syncer::DataBatch> batch = bridge().GetDataForCommit({kId1});
   EXPECT_THAT(ExtractLoyaltyCardsFromDataBatch(std::move(batch)),
               ElementsAre(card1));
+}
+
+// Tests that `GetDataForCommit()` includes unknown fields from the server for
+// loyalty cards.
+TEST_F(ValuableSyncBridgeTest,
+       GetDataForCommit_LoyaltyCards_PreservesUnknownFields) {
+  const LoyaltyCard card = TestLoyaltyCard(kId1);
+  AddLoyaltyCards({card});
+
+  sync_pb::EntitySpecifics base_specifics;
+  syncer::test::AddUnknownFieldToProto(
+      *base_specifics.mutable_autofill_valuable(), "unknown_field");
+
+  ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+      .WillByDefault(ReturnRef(base_specifics));
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetDataForCommit({kId1});
+  ASSERT_TRUE(batch->HasNext());
+  const syncer::KeyAndData& data_pair = batch->Next();
+  ASSERT_EQ(data_pair.first, kId1);
+  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
+                data_pair.second->specifics.autofill_valuable()),
+            "unknown_field");
 }
 
 // Tests that `GetDataForCommit()` returns only the requested entities.
@@ -767,7 +794,8 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
   // Add a new loyalty card.
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
-      kId2, std::move(*CreateEntityDataFromLoyaltyCard(remote2))));
+      kId2, std::move(*CreateEntityDataFromLoyaltyCard(
+                remote2, /*base_specifics=*/{}))));
   entity_change_list.push_back(
       syncer::EntityChange::CreateDelete(kId1, syncer::EntityData()));
 
