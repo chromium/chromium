@@ -119,8 +119,8 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
       }
     }
 
-    cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(), this);
-    skia_canvas.drawPicture(recorder_->ReleaseMainRecording());
+    cc::PlaybackParams params(this, surface_->getCanvas()->getLocalToDevice());
+    recorder_->ReleaseMainRecording().Playback(surface_->getCanvas(), params);
   }
 
   cc::PaintImage paint_image;
