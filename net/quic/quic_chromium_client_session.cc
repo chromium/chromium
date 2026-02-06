@@ -3119,8 +3119,7 @@ static void LogMTCCertVerifyMetrics(
   if (is_resumption) {
     result = MTCResult::kResumption;
   } else if (cert_is_mtc) {
-    if (MapCertStatusToNetError(
-            verify_details->cert_verify_result.cert_status) == OK) {
+    if (!IsCertStatusError(verify_details->cert_verify_result.cert_status)) {
       result = MTCResult::kValidMTC;
     } else {
       result = MTCResult::kInvalidMTC;
