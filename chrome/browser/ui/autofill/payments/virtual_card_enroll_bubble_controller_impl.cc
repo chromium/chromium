@@ -424,7 +424,8 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 
 bool VirtualCardEnrollBubbleControllerImpl::CanBeReshown() const {
 #if !BUILDFLAG(IS_ANDROID)
-  return enrollment_status_ != EnrollmentStatus::kCompleted;
+  return enrollment_status_ != EnrollmentStatus::kCompleted &&
+         enrollment_status_ != EnrollmentStatus::kNone;
 #else
   NOTREACHED();
 #endif

@@ -288,9 +288,14 @@ void BubbleManagerImpl::ProcessPendingBubbles(bool tab_entered_foreground) {
   // Clean up any stale pointers and timed out bubbles.
   const base::TimeTicks now = base::TimeTicks::Now();
   std::ranges::for_each(pending_bubbles_queue_, [&now](const auto& request) {
-    if (request.controller &&
-        (now - request.time_added) > kPendingRequestTimeout) {
+    if (!request.controller) {
+      return;
+    }
+    const bool timed_out = (now - request.time_added) > kPendingRequestTimeout;
+    if (timed_out || !request.controller->CanBeReshown()) {
       request.controller->OnBubbleDiscarded();
+    }
+    if (timed_out) {
       // Log timed-out bubbles.
       base::UmaHistogramEnumeration("Autofill.Bubble.Queue.TimedOut",
                                     request.controller->GetBubbleType());
@@ -298,7 +303,8 @@ void BubbleManagerImpl::ProcessPendingBubbles(bool tab_entered_foreground) {
   });
   std::erase_if(pending_bubbles_queue_, [&now](const auto& request) {
     return !request.controller ||
-           (now - request.time_added) > kPendingRequestTimeout;
+           (now - request.time_added) > kPendingRequestTimeout ||
+           !request.controller->CanBeReshown();
   });
 
   if (pending_bubbles_queue_.empty()) {
