@@ -21,9 +21,9 @@ bool FirstPartySetsCacheFilter::MatchInfo::operator==(
 FirstPartySetsCacheFilter::FirstPartySetsCacheFilter() = default;
 FirstPartySetsCacheFilter::FirstPartySetsCacheFilter(
     base::flat_map<net::SchemefulSite, int64_t> filter,
-    int64_t browser_run_id)
+    std::optional<int64_t> browser_run_id)
     : filter_(std::move(filter)), browser_run_id_(std::move(browser_run_id)) {
-  CHECK(browser_run_id != 0 || filter_.empty());
+  CHECK(browser_run_id_.has_value() || filter_.empty());
 }
 
 FirstPartySetsCacheFilter::FirstPartySetsCacheFilter(
@@ -43,7 +43,7 @@ FirstPartySetsCacheFilter FirstPartySetsCacheFilter::Clone() const {
 FirstPartySetsCacheFilter::MatchInfo FirstPartySetsCacheFilter::GetMatchInfo(
     const net::SchemefulSite& site) const {
   FirstPartySetsCacheFilter::MatchInfo res;
-  if (browser_run_id_ > 0) {
+  if (browser_run_id_.has_value()) {
     res.browser_run_id = browser_run_id_;
     if (const int64_t* run_id = base::FindOrNull(filter_, site); run_id) {
       res.clear_at_run_id = *run_id;

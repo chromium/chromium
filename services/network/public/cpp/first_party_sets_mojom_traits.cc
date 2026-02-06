@@ -171,7 +171,7 @@ bool StructTraits<network::mojom::FirstPartySetsCacheFilterDataView,
     return false;
 
   *out_cache_filter = net::FirstPartySetsCacheFilter(
-      std::move(filter), std::move(cache_filter.browser_run_id()));
+      std::move(filter), cache_filter.browser_run_id());
 
   return true;
 }

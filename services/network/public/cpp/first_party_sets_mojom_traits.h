@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_FIRST_PARTY_SETS_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_FIRST_PARTY_SETS_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/version.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -130,7 +132,7 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return cache_filter.filter_;
   }
 
-  static int64_t browser_run_id(
+  static std::optional<int64_t> browser_run_id(
       const net::FirstPartySetsCacheFilter& cache_filter) {
     return cache_filter.browser_run_id_;
   }

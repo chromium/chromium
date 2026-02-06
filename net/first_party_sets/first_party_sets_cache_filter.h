@@ -44,7 +44,7 @@ class NET_EXPORT FirstPartySetsCacheFilter {
   FirstPartySetsCacheFilter();
   explicit FirstPartySetsCacheFilter(
       base::flat_map<net::SchemefulSite, int64_t> filter,
-      int64_t browser_run_id);
+      std::optional<int64_t> browser_run_id);
 
   FirstPartySetsCacheFilter(FirstPartySetsCacheFilter&& other);
   FirstPartySetsCacheFilter& operator=(FirstPartySetsCacheFilter&& other);
@@ -69,9 +69,8 @@ class NET_EXPORT FirstPartySetsCacheFilter {
   base::flat_map<net::SchemefulSite, int64_t> filter_;
 
   // The id of the current browser run, to mark the cache entry when persisting.
-  // The cache filter should be no-op if this is 0.
-  // TODO(crbug.com/40489779): Make this optional.
-  int64_t browser_run_id_ = 0;
+  // The cache filter should be no-op if this is unset.
+  std::optional<int64_t> browser_run_id_;
 };
 
 }  // namespace net
