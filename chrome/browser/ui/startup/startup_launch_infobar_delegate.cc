@@ -22,12 +22,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
+
+using InfoBarType = StartupLaunchInfoBarManager::InfoBarType;
 
 // static
 std::unique_ptr<StartupLaunchInfoBarDelegate>
-StartupLaunchInfoBarDelegate::Create(
-    Profile* profile,
-    StartupLaunchInfoBarManager::InfoBarType infobar_type) {
+StartupLaunchInfoBarDelegate::Create(Profile* profile,
+                                     InfoBarType infobar_type) {
   return std::make_unique<StartupLaunchInfoBarDelegate>(
       base::PassKey<StartupLaunchInfoBarDelegate>(), profile, infobar_type);
 }
@@ -35,7 +37,7 @@ StartupLaunchInfoBarDelegate::Create(
 StartupLaunchInfoBarDelegate::StartupLaunchInfoBarDelegate(
     base::PassKey<StartupLaunchInfoBarDelegate>,
     Profile* profile,
-    StartupLaunchInfoBarManager::InfoBarType infobar_type)
+    InfoBarType infobar_type)
     : profile_(profile), infobar_type_(infobar_type) {}
 
 StartupLaunchInfoBarDelegate::~StartupLaunchInfoBarDelegate() = default;
@@ -57,9 +59,9 @@ bool StartupLaunchInfoBarDelegate::ShouldExpire(
 
 std::u16string StartupLaunchInfoBarDelegate::GetMessageText() const {
   switch (infobar_type_) {
-    case StartupLaunchInfoBarManager::InfoBarType::kForegroundOptIn:
+    case InfoBarType::kForegroundOptIn:
       return l10n_util::GetStringUTF16(IDS_STARTUP_LAUNCH_INFOBAR_OPT_IN_TITLE);
-    case StartupLaunchInfoBarManager::InfoBarType::kForegroundOptOut:
+    case InfoBarType::kForegroundOptOut:
       return l10n_util::GetStringUTF16(
           IDS_STARTUP_LAUNCH_INFOBAR_OPT_OUT_TITLE);
   }
@@ -67,6 +69,16 @@ std::u16string StartupLaunchInfoBarDelegate::GetMessageText() const {
 
 int StartupLaunchInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
+}
+
+std::optional<ui::ButtonStyle> StartupLaunchInfoBarDelegate::GetButtonStyle(
+    ConfirmInfoBarDelegate::InfoBarButton /*button*/) const {
+  switch (infobar_type_) {
+    case InfoBarType::kForegroundOptIn:
+      return ui::ButtonStyle::kProminent;
+    case InfoBarType::kForegroundOptOut:
+      return ui::ButtonStyle::kTonal;
+  }
 }
 
 bool StartupLaunchInfoBarDelegate::Accept() {
@@ -79,9 +91,9 @@ bool StartupLaunchInfoBarDelegate::Accept() {
 std::u16string StartupLaunchInfoBarDelegate::GetButtonLabel(
     InfoBarButton /*button*/) const {
   switch (infobar_type_) {
-    case StartupLaunchInfoBarManager::InfoBarType::kForegroundOptIn:
+    case InfoBarType::kForegroundOptIn:
       return l10n_util::GetStringUTF16(IDS_STARTUP_LAUNCH_INFOBAR_ALLOW_BUTTON);
-    case StartupLaunchInfoBarManager::InfoBarType::kForegroundOptOut:
+    case InfoBarType::kForegroundOptOut:
       return l10n_util::GetStringUTF16(
           IDS_STARTUP_LAUNCH_INFOBAR_SETTINGS_BUTTON);
   }

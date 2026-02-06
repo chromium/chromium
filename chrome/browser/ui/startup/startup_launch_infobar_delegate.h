@@ -11,6 +11,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/startup/startup_launch_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "ui/base/ui_base_types.h"
 
 class Profile;
 
@@ -43,6 +44,8 @@ class StartupLaunchInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool ShouldHideInFullscreen() const override;
   bool Accept() override;
+  std::optional<ui::ButtonStyle> GetButtonStyle(
+      ConfirmInfoBarDelegate::InfoBarButton button) const override;
 
   // The WebContents's corresponding profile.
   raw_ptr<Profile> profile_;
