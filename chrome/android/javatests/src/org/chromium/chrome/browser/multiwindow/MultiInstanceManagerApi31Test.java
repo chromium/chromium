@@ -370,7 +370,8 @@ public class MultiInstanceManagerApi31Test {
                         firstActivity,
                         /* instanceId= */ 1,
                         /* addIncognitoExtras= */ false,
-                        /* loadCustomUrl= */ false);
+                        /* loadCustomUrl= */ false,
+                        /* createMultipleTabs= */ false);
 
         // Check initial state of instances.
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 2);
@@ -859,7 +860,11 @@ public class MultiInstanceManagerApi31Test {
     }
 
     private ChromeTabbedActivity createNewWindow(
-            Context context, int instanceId, boolean addIncognitoExtras, boolean loadCustomUrl) {
+            Context context,
+            int instanceId,
+            boolean addIncognitoExtras,
+            boolean loadCustomUrl,
+            boolean createMultipleTabs) {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context,
@@ -885,12 +890,10 @@ public class MultiInstanceManagerApi31Test {
                                 notNullValue()));
         Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         if (loadCustomUrl) {
-            ChromeTabUtils.waitForTabPageLoaded(
-                    tab,
-                    UrlConstants.GOOGLE_URL,
-                    () -> {
-                        ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
-                    });
+            ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
+        }
+        if (createMultipleTabs && !addIncognitoExtras) {
+            ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
         }
         mExtraActivities.add(activity);
         return activity;
@@ -898,7 +901,12 @@ public class MultiInstanceManagerApi31Test {
 
     private ChromeTabbedActivity createNewWindow(
             Context context, int instanceId, boolean addIncognitoExtras) {
-        return createNewWindow(context, instanceId, addIncognitoExtras, /* loadCustomUrl= */ true);
+        return createNewWindow(
+                context,
+                instanceId,
+                addIncognitoExtras,
+                /* loadCustomUrl= */ true,
+                /* createMultipleTabs= */ true);
     }
 
     private void verifyInstanceState(int expectedActiveInstances, int expectedTotalInstances) {
