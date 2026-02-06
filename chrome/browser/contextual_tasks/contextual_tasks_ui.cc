@@ -891,7 +891,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   const bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
 
   if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kEnableNotifyZeroStateRenderedCapability)) {
+          contextual_tasks::kEnableNotifyZeroStateRenderedCapability) ||
+      !navigation_handle->IsSameDocument()) {
     task_info_delegate_->OnZeroStateChange(is_zero_state);
   }
 
