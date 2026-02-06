@@ -196,8 +196,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
         return false;
       }
     }
-    if (!task_tracker_->WillPostTaskNow(task,
-                                        transaction.traits().priority())) {
+    if (!task_tracker_->WillPostTaskNow(task, transaction.thread_type())) {
       return false;
     }
     transaction.PushImmediateTask(std::move(task));
@@ -284,8 +283,8 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
 
   bool CanRunNextTaskSource() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     return !priority_queue_.IsEmpty() &&
-           task_tracker_->CanRunPriority(
-               priority_queue_.PeekSortKey().priority());
+           task_tracker_->CanRunThreadType(
+               priority_queue_.PeekSortKey().thread_type());
   }
 
   const std::string thread_name_;

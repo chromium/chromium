@@ -120,11 +120,8 @@ void JobHandle::NotifyConcurrencyIncrease() {
 void JobHandle::Join() {
   DCHECK(internal::PooledTaskRunnerDelegate::MatchesCurrentDelegate(
       task_source_->delegate()));
-  DCHECK_GE(internal::GetTaskPriorityForCurrentThread(),
-            task_source_->priority_racy())
-      << "Join may not be called on Job with higher priority than the current "
-         "thread.";
-  UpdatePriority(internal::GetTaskPriorityForCurrentThread());
+  // TODO(crbug.com/470337728): Use thread type once implemented.
+  UpdatePriority(TaskPriority::USER_BLOCKING);
   if (task_source_->GetRemainingConcurrency() != 0) {
     // Make sure the task source is in the queue if not enough workers are
     // contributing. This is necessary for CreateJob(...).Join(). This is a

@@ -12,13 +12,13 @@ static_assert(sizeof(TaskSourceSortKey) <= 2 * sizeof(uint64_t),
 
 bool TaskSourceSortKey::operator<(const TaskSourceSortKey& other) const {
   // This TaskSourceSortKey is considered more important than |other| if it has
-  // a higher priority or if it has the same priority but fewer workers, or if
-  // it has the same priority and same worker count but its next task was
-  // posted sooner than |other|'s.
+  // a higher thread_type or if it has the same thread_type but fewer workers,
+  // or if it has the same thread_type and same worker count but its next task
+  // was posted sooner than |other|'s.
 
-  // A lower priority is considered less important.
-  if (priority_ != other.priority_) {
-    return priority_ < other.priority_;
+  // A lower thread_type is considered less important.
+  if (thread_type_ != other.thread_type_) {
+    return thread_type_ < other.thread_type_;
   }
 
   // A greater worker count is considered less important.

@@ -17,14 +17,14 @@ namespace {
 
 // Keys are manually ordered from the least important to the most important.
 constexpr auto kTestKeys = std::to_array<TaskSourceSortKey>({
-    {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(2000)},
-    {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(1000)},
-    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(2000), 1},
-    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(1000), 1},
-    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(2000)},
-    {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(1000)},
-    {TaskPriority::USER_BLOCKING, TimeTicks() + Seconds(2000)},
-    {TaskPriority::USER_BLOCKING, TimeTicks() + Seconds(1000)},
+    {ThreadType::kBackground, TimeTicks() + Seconds(2000)},
+    {ThreadType::kBackground, TimeTicks() + Seconds(1000)},
+    {ThreadType::kUtility, TimeTicks() + Seconds(2000), 1},
+    {ThreadType::kUtility, TimeTicks() + Seconds(1000), 1},
+    {ThreadType::kUtility, TimeTicks() + Seconds(2000)},
+    {ThreadType::kUtility, TimeTicks() + Seconds(1000)},
+    {ThreadType::kDefault, TimeTicks() + Seconds(2000)},
+    {ThreadType::kDefault, TimeTicks() + Seconds(1000)},
 });
 
 }  // namespace

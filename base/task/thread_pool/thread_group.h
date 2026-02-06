@@ -52,10 +52,11 @@ class BASE_EXPORT ThreadGroup {
    public:
     virtual ~Delegate() = default;
 
-    // Invoked when a TaskSource with |traits| is non-empty after the
-    // ThreadGroup has run a task from it. The implementation must return the
-    // thread group in which the TaskSource should be reenqueued.
-    virtual ThreadGroup* GetThreadGroupForTraits(const TaskTraits& traits) = 0;
+    // Invoked when a TaskSource with `thread_type` and `policy` is non-empty
+    // after the ThreadGroup has run a task from it. The implementation must
+    // return the thread group in which the TaskSource should be reenqueued.
+    virtual ThreadGroup* GetThreadGroup(ThreadType thread_type,
+                                        ThreadPolicy policy) = 0;
   };
 
   enum class WorkerEnvironment {
@@ -141,7 +142,7 @@ class BASE_EXPORT ThreadGroup {
       ThreadGroup* destination_thread_group);
   // Move all task sources except the ones with TaskPriority::USER_BLOCKING,
   // from this ThreadGroup's PriorityQueue to the |destination_thread_group|'s.
-  void HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+  void HandoffNonDefaultTaskSourcesToOtherThreadGroup(
       ThreadGroup* destination_thread_group);
 
   // Returns true if a task with |sort_key| running in this thread group should
@@ -380,11 +381,12 @@ class BASE_EXPORT ThreadGroup {
   // or when a new task is added to |priority_queue_|.
   void UpdateMinAllowedPriorityLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Increments/decrements the number of tasks of |priority| that are currently
-  // running in this thread group. Must be invoked before/after running a task.
-  void DecrementTasksRunningLockRequired(TaskPriority priority)
+  // Increments/decrements the number of tasks of |thread_type| that are
+  // currently running in this thread group. Must be invoked before/after
+  // running a task.
+  void DecrementTasksRunningLockRequired(ThreadType thread_type)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void IncrementTasksRunningLockRequired(TaskPriority priority)
+  void IncrementTasksRunningLockRequired(ThreadType thread_type)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Increments/decrements the number of [best effort] tasks that can run in
@@ -458,11 +460,11 @@ class BASE_EXPORT ThreadGroup {
   PriorityQueue priority_queue_ GUARDED_BY(lock_);
 
   struct YieldSortKey {
-    TaskPriority priority;
+    ThreadType thread_type;
     uint8_t worker_count;
   };
   // Sort key which compares greater than or equal to any other sort key.
-  static constexpr YieldSortKey kMaxYieldSortKey = {TaskPriority::BEST_EFFORT,
+  static constexpr YieldSortKey kMaxYieldSortKey = {ThreadType::kBackground,
                                                     0U};
 
   // When the thread group is at or above capacity and has pending work, this is

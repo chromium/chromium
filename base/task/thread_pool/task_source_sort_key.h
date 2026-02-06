@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_type.h"
 #include "base/time/time.h"
 
 namespace base::internal {
@@ -15,14 +16,14 @@ namespace base::internal {
 class BASE_EXPORT TaskSourceSortKey final {
  public:
   constexpr TaskSourceSortKey() = default;
-  constexpr TaskSourceSortKey(TaskPriority priority,
+  constexpr TaskSourceSortKey(ThreadType thread_type,
                               TimeTicks ready_time,
                               uint8_t worker_count = 0)
-      : priority_(priority),
+      : thread_type_(thread_type),
         worker_count_(worker_count),
         ready_time_(ready_time) {}
 
-  TaskPriority priority() const { return priority_; }
+  ThreadType thread_type() const { return thread_type_; }
   uint8_t worker_count() const { return worker_count_; }
   TimeTicks ready_time() const { return ready_time_; }
 
@@ -36,9 +37,9 @@ class BASE_EXPORT TaskSourceSortKey final {
   // The private section allows this class to keep its immutable property while
   // being copy-assignable (i.e. instead of making its members const).
 
-  // Highest task priority in the sequence at the time this sort key was
+  // Highest task thread_type in the sequence at the time this sort key was
   // created.
-  TaskPriority priority_;
+  ThreadType thread_type_;
 
   // Number of workers running the task source, used as secondary sort key
   // prioritizing task sources with fewer workers.

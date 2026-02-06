@@ -321,7 +321,7 @@ bool TaskTracker::WillPostTask(Task* task,
 }
 
 bool TaskTracker::WillPostTaskNow(const Task& task,
-                                  TaskPriority priority) const {
+                                  ThreadType thread_type) const {
   // Delayed tasks's TaskShutdownBehavior is implicitly capped at
   // SKIP_ON_SHUTDOWN. i.e. it cannot BLOCK_SHUTDOWN, TaskTracker will not wait
   // for a delayed task in a BLOCK_SHUTDOWN TaskSource and will also skip
@@ -331,8 +331,8 @@ bool TaskTracker::WillPostTaskNow(const Task& task,
   }
 
   if (has_log_best_effort_tasks_switch_ &&
-      priority == TaskPriority::BEST_EFFORT) {
-    // A TaskPriority::BEST_EFFORT task is being posted.
+      thread_type == ThreadType::kBackground) {
+    // A ThreadType::kBackground task is being posted.
     LOG(INFO) << task.posted_from.ToString();
   }
   return true;
@@ -351,7 +351,7 @@ RegisteredTaskSource TaskTracker::RegisterTaskSource(
   return RegisteredTaskSource(std::move(task_source), this);
 }
 
-bool TaskTracker::CanRunPriority(TaskPriority priority) const {
+bool TaskTracker::CanRunThreadType(ThreadType thread_type) const {
   auto can_run_policy = can_run_policy_.load();
 
   if (can_run_policy == CanRunPolicy::kAll) {
@@ -359,7 +359,7 @@ bool TaskTracker::CanRunPriority(TaskPriority priority) const {
   }
 
   if (can_run_policy == CanRunPolicy::kForegroundOnly &&
-      priority >= TaskPriority::USER_VISIBLE) {
+      thread_type > ThreadType::kBackground) {
     return true;
   }
 

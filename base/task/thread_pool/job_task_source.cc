@@ -426,7 +426,7 @@ bool JobTaskSource::OnBecomeReady() {
 }
 
 TaskSourceSortKey JobTaskSource::GetSortKey() const {
-  return TaskSourceSortKey(priority_racy(), ready_time_,
+  return TaskSourceSortKey(thread_type_racy(), ready_time_,
                            TS_UNCHECKED_READ(state_).Load().worker_count());
 }
 

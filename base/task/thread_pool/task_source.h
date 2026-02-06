@@ -18,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
+#include "base/task/thread_type.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "base/time/time.h"
 
@@ -144,6 +145,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
     // Returns the traits of all Tasks in the TaskSource.
     TaskTraits traits() const { return task_source_->traits_; }
+    ThreadType thread_type() const;
 
     TaskSource* task_source() const { return task_source_; }
 
@@ -208,10 +210,10 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   TaskShutdownBehavior shutdown_behavior() const {
     return traits_.shutdown_behavior();
   }
-  // Returns a racy priority of the TaskSource. Can be accessed without a
+  // Returns a racy thread_type of the TaskSource. Can be accessed without a
   // Transaction but may return an outdated result.
-  TaskPriority priority_racy() const {
-    return priority_racy_.load(std::memory_order_relaxed);
+  ThreadType thread_type_racy() const {
+    return thread_type_racy_.load(std::memory_order_relaxed);
   }
   // Returns the thread policy of the TaskSource. Can be accessed without a
   // Transaction because it is never mutated.
@@ -241,14 +243,11 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // are concurrently ready.
   virtual std::optional<Task> Clear(TaskSource::Transaction* transaction) = 0;
 
-  // Sets TaskSource priority to |priority|.
-  void UpdatePriority(TaskPriority priority);
-
   // The TaskTraits of all Tasks in the TaskSource.
   TaskTraits traits_;
 
-  // The cached priority for atomic access.
-  std::atomic<TaskPriority> priority_racy_;
+  // The cached thread_type for atomic access.
+  std::atomic<ThreadType> thread_type_racy_;
 
   // Synchronizes access to all members.
   mutable CheckedLock lock_{UniversalPredecessor()};

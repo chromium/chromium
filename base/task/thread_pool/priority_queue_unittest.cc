@@ -27,12 +27,9 @@ class PriorityQueueWithSequencesTest : public testing::Test {
   void ExpectNumSequences(size_t num_best_effort,
                           size_t num_user_visible,
                           size_t num_user_blocking) {
-    EXPECT_EQ(pq.GetNumTaskSourcesWithPriority(TaskPriority::BEST_EFFORT),
-              num_best_effort);
-    EXPECT_EQ(pq.GetNumTaskSourcesWithPriority(TaskPriority::USER_VISIBLE),
-              num_user_visible);
-    EXPECT_EQ(pq.GetNumTaskSourcesWithPriority(TaskPriority::USER_BLOCKING),
-              num_user_blocking);
+    EXPECT_EQ(pq.GetNumBackgroundTaskSources(), num_best_effort);
+    EXPECT_EQ(pq.GetNumForegroundTaskSources(),
+              num_user_visible + num_user_blocking);
   }
 
   scoped_refptr<TaskSource> MakeSequenceWithTraitsAndTask(

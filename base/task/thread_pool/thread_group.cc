@@ -179,13 +179,12 @@ ThreadGroup::GetNumAdditionalWorkersForBestEffortTaskSourcesLockRequired()
     const {
   // For simplicity, only 1 worker is assigned to each task source regardless of
   // its max concurrency, with the exception of the top task source.
-  const size_t num_queued =
-      priority_queue_.GetNumTaskSourcesWithPriority(TaskPriority::BEST_EFFORT);
+  const size_t num_queued = priority_queue_.GetNumBackgroundTaskSources();
   if (num_queued == 0 ||
-      !task_tracker_->CanRunPriority(TaskPriority::BEST_EFFORT)) {
+      !task_tracker_->CanRunThreadType(ThreadType::kBackground)) {
     return 0U;
   }
-  if (priority_queue_.PeekSortKey().priority() == TaskPriority::BEST_EFFORT) {
+  if (priority_queue_.PeekSortKey().thread_type() == ThreadType::kBackground) {
     // Assign the correct number of workers for the top TaskSource (-1 for the
     // worker that is already accounted for in |num_queued|).
     return std::max<size_t>(
@@ -200,17 +199,13 @@ ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired()
     const {
   // For simplicity, only 1 worker is assigned to each task source regardless of
   // its max concurrency, with the exception of the top task source.
-  const size_t num_queued = priority_queue_.GetNumTaskSourcesWithPriority(
-                                TaskPriority::USER_VISIBLE) +
-                            priority_queue_.GetNumTaskSourcesWithPriority(
-                                TaskPriority::USER_BLOCKING);
+  const size_t num_queued = priority_queue_.GetNumForegroundTaskSources();
   if (num_queued == 0 ||
-      !task_tracker_->CanRunPriority(TaskPriority::HIGHEST)) {
+      !task_tracker_->CanRunThreadType(ThreadType::kDefault)) {
     return 0U;
   }
-  auto priority = priority_queue_.PeekSortKey().priority();
-  if (priority == TaskPriority::USER_VISIBLE ||
-      priority == TaskPriority::USER_BLOCKING) {
+  auto thread_type = priority_queue_.PeekSortKey().thread_type();
+  if (thread_type != ThreadType::kBackground) {
     // Assign the correct number of workers for the top TaskSource (-1 for the
     // worker that is already accounted for in |num_queued|).
     return std::max<size_t>(
@@ -231,33 +226,30 @@ void ThreadGroup::ReEnqueueTaskSourceLockRequired(
     ScopedReenqueueExecutor* reenqueue_executor,
     RegisteredTaskSourceAndTransaction transaction_with_task_source) {
   // Decide in which thread group the TaskSource should be reenqueued.
-  ThreadGroup* destination_thread_group = delegate_->GetThreadGroupForTraits(
-      transaction_with_task_source.transaction.traits());
+  auto& [task_source, transaction] = transaction_with_task_source;
+  ThreadGroup* destination_thread_group = delegate_->GetThreadGroup(
+      transaction.thread_type(), task_source->thread_policy());
 
   bool push_to_immediate_queue =
-      transaction_with_task_source.task_source.WillReEnqueue(
-          TimeTicks::Now(), &transaction_with_task_source.transaction);
+      task_source.WillReEnqueue(TimeTicks::Now(), &transaction);
 
   if (destination_thread_group == this) {
     // Another worker that was running a task from this task source may have
     // reenqueued it already, in which case its heap_handle will be valid. It
     // shouldn't be queued twice so the task source registration is released.
-    if (transaction_with_task_source.task_source->immediate_heap_handle()
-            .IsValid()) {
-      workers_executor->ScheduleReleaseTaskSource(
-          std::move(transaction_with_task_source.task_source));
+    if (task_source->immediate_heap_handle().IsValid()) {
+      workers_executor->ScheduleReleaseTaskSource(std::move(task_source));
     } else {
       // If the TaskSource should be reenqueued in the current thread group,
       // reenqueue it inside the scope of the lock.
       if (push_to_immediate_queue) {
-        auto sort_key = transaction_with_task_source.task_source->GetSortKey();
+        auto sort_key = task_source->GetSortKey();
         // When moving |task_source| into |priority_queue_|, it may be destroyed
         // on another thread as soon as |lock_| is released, since we're no
         // longer holding a reference to it. To prevent UAF, release
         // |transaction| before moving |task_source|. Ref. crbug.com/1412008
-        transaction_with_task_source.transaction.Release();
-        priority_queue_.Push(
-            std::move(transaction_with_task_source.task_source), sort_key);
+        transaction.Release();
+        priority_queue_.Push(std::move(task_source), sort_key);
       }
     }
     // This is called unconditionally to ensure there are always workers to run
@@ -318,26 +310,24 @@ void ThreadGroup::UpdateSortKeyImpl(BaseScopedCommandsExecutor* executor,
 void ThreadGroup::PushTaskSourceAndWakeUpWorkersImpl(
     BaseScopedCommandsExecutor* executor,
     RegisteredTaskSourceAndTransaction transaction_with_task_source) {
-  DCHECK_EQ(delegate_->GetThreadGroupForTraits(
-                transaction_with_task_source.transaction.traits()),
+  auto& [task_source, transaction] = transaction_with_task_source;
+  DCHECK_EQ(delegate_->GetThreadGroup(transaction.thread_type(),
+                                      task_source->thread_policy()),
             this);
   CheckedAutoLock lock(lock_);
-  if (transaction_with_task_source.task_source->immediate_heap_handle()
-          .IsValid()) {
+  if (task_source->immediate_heap_handle().IsValid()) {
     // If the task source changed group, it is possible that multiple concurrent
     // workers try to enqueue it. Only the first enqueue should succeed.
-    executor->ScheduleReleaseTaskSource(
-        std::move(transaction_with_task_source.task_source));
+    executor->ScheduleReleaseTaskSource(std::move(task_source));
     return;
   }
-  auto sort_key = transaction_with_task_source.task_source->GetSortKey();
+  auto sort_key = task_source->GetSortKey();
   // When moving |task_source| into |priority_queue_|, it may be destroyed
   // on another thread as soon as |lock_| is released, since we're no longer
   // holding a reference to it. To prevent UAF, release |transaction| before
   // moving |task_source|. Ref. crbug.com/1412008
-  transaction_with_task_source.transaction.Release();
-  priority_queue_.Push(std::move(transaction_with_task_source.task_source),
-                       sort_key);
+  transaction.Release();
+  priority_queue_.Push(std::move(task_source), sort_key);
   EnsureEnoughWorkersLockRequired(executor);
 }
 
@@ -361,16 +351,16 @@ void ThreadGroup::HandoffAllTaskSourcesToOtherThreadGroup(
   destination_thread_group->EnqueueAllTaskSources(&new_priority_queue);
 }
 
-void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+void ThreadGroup::HandoffNonDefaultTaskSourcesToOtherThreadGroup(
     ThreadGroup* destination_thread_group) {
   PriorityQueue new_priority_queue;
   TaskSourceSortKey top_sort_key;
   {
-    // This works because all USER_BLOCKING tasks are at the front of the queue.
+    // This works because all kDefault tasks are at the front of the queue.
     CheckedAutoLock current_thread_group_lock(lock_);
     while (!priority_queue_.IsEmpty() &&
-           (top_sort_key = priority_queue_.PeekSortKey()).priority() ==
-               TaskPriority::USER_BLOCKING) {
+           (top_sort_key = priority_queue_.PeekSortKey()).thread_type() ==
+               ThreadType::kDefault) {
       new_priority_queue.Push(priority_queue_.PopTaskSource(), top_sort_key);
     }
     new_priority_queue.swap(priority_queue_);
@@ -381,7 +371,7 @@ void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
 bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   DCHECK(TS_UNCHECKED_READ(max_allowed_sort_key_).is_lock_free());
 
-  if (!task_tracker_->CanRunPriority(sort_key.priority())) {
+  if (!task_tracker_->CanRunThreadType(sort_key.thread_type())) {
     return true;
   }
   // It is safe to read |max_allowed_sort_key_| without a lock since this
@@ -392,14 +382,14 @@ bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
 
   // To reduce unnecessary yielding, a task will never yield to a BEST_EFFORT
   // task regardless of its worker_count.
-  if (sort_key.priority() > max_allowed_sort_key.priority ||
-      max_allowed_sort_key.priority == TaskPriority::BEST_EFFORT) {
+  if (sort_key.thread_type() > max_allowed_sort_key.thread_type ||
+      max_allowed_sort_key.thread_type == ThreadType::kBackground) {
     return false;
   }
   // Otherwise, a task only yields to a task of equal priority if its
   // worker_count would be greater still after yielding, e.g. a job with 1
   // worker doesn't yield to a job with 0 workers.
-  if (sort_key.priority() == max_allowed_sort_key.priority &&
+  if (sort_key.thread_type() == max_allowed_sort_key.thread_type &&
       sort_key.worker_count() <= max_allowed_sort_key.worker_count + 1) {
     return false;
   }
@@ -411,7 +401,7 @@ bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
           .exchange(kMaxYieldSortKey, std::memory_order_relaxed);
   // Another thread might have decided to yield and racily reset
   // |max_allowed_sort_key_|, in which case this thread doesn't yield.
-  return max_allowed_sort_key.priority != TaskPriority::BEST_EFFORT;
+  return max_allowed_sort_key.thread_type != ThreadType::kBackground;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -571,27 +561,27 @@ void ThreadGroup::UpdateMinAllowedPriorityLockRequired() {
   if (priority_queue_.IsEmpty() || num_running_tasks_ < max_tasks_) {
     max_allowed_sort_key_.store(kMaxYieldSortKey, std::memory_order_relaxed);
   } else {
-    max_allowed_sort_key_.store({priority_queue_.PeekSortKey().priority(),
+    max_allowed_sort_key_.store({priority_queue_.PeekSortKey().thread_type(),
                                  priority_queue_.PeekSortKey().worker_count()},
                                 std::memory_order_relaxed);
   }
 }
 
-void ThreadGroup::DecrementTasksRunningLockRequired(TaskPriority priority) {
+void ThreadGroup::DecrementTasksRunningLockRequired(ThreadType thread_type) {
   DCHECK_GT(num_running_tasks_, 0U);
   --num_running_tasks_;
-  if (priority == TaskPriority::BEST_EFFORT) {
+  if (thread_type == ThreadType::kBackground) {
     DCHECK_GT(num_running_best_effort_tasks_, 0U);
     --num_running_best_effort_tasks_;
   }
   UpdateMinAllowedPriorityLockRequired();
 }
 
-void ThreadGroup::IncrementTasksRunningLockRequired(TaskPriority priority) {
+void ThreadGroup::IncrementTasksRunningLockRequired(ThreadType thread_type) {
   ++num_running_tasks_;
   DCHECK_LE(num_running_tasks_, max_tasks_);
   DCHECK_LE(num_running_tasks_, kMaxNumberOfWorkers);
-  if (priority == TaskPriority::BEST_EFFORT) {
+  if (thread_type == ThreadType::kBackground) {
     ++num_running_best_effort_tasks_;
     DCHECK_LE(num_running_best_effort_tasks_, num_running_tasks_);
     DCHECK_LE(num_running_best_effort_tasks_, max_best_effort_tasks_);

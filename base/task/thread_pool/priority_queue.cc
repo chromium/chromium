@@ -107,7 +107,7 @@ void PriorityQueue::Push(RegisteredTaskSource task_source,
                          TaskSourceSortKey task_source_sort_key) {
   container_.insert(
       TaskSourceAndSortKey(std::move(task_source), task_source_sort_key));
-  IncrementNumTaskSourcesForPriority(task_source_sort_key.priority());
+  IncrementNumTaskSourcesForThreadType(task_source_sort_key.thread_type());
 }
 
 const TaskSourceSortKey& PriorityQueue::PeekSortKey() const {
@@ -133,8 +133,8 @@ RegisteredTaskSource PriorityQueue::PopTaskSource() {
   // TaskSource does not alter its sort order.
   auto& task_source_and_sort_key =
       const_cast<TaskSourceAndSortKey&>(container_.top());
-  DecrementNumTaskSourcesForPriority(
-      task_source_and_sort_key.sort_key().priority());
+  DecrementNumTaskSourcesForThreadType(
+      task_source_and_sort_key.sort_key().thread_type());
   RegisteredTaskSource task_source =
       task_source_and_sort_key.take_task_source();
   container_.pop();
@@ -159,8 +159,8 @@ RegisteredTaskSource PriorityQueue::RemoveTaskSource(
   RegisteredTaskSource registered_task_source =
       task_source_and_sort_key.take_task_source();
 
-  DecrementNumTaskSourcesForPriority(
-      task_source_and_sort_key.sort_key().priority());
+  DecrementNumTaskSourcesForThreadType(
+      task_source_and_sort_key.sort_key().thread_type());
   container_.erase(heap_handle);
   return registered_task_source;
 }
@@ -182,8 +182,8 @@ void PriorityQueue::UpdateSortKey(const TaskSource& task_source,
           container_.at(heap_handle))
           .take_task_source();
 
-  DecrementNumTaskSourcesForPriority(old_sort_key.priority());
-  IncrementNumTaskSourcesForPriority(sort_key.priority());
+  DecrementNumTaskSourcesForThreadType(old_sort_key.thread_type());
+  IncrementNumTaskSourcesForThreadType(sort_key.thread_type());
 
   container_.Replace(
       heap_handle,
@@ -205,18 +205,30 @@ void PriorityQueue::EnableFlushTaskSourcesOnDestroyForTesting() {
 
 void PriorityQueue::swap(PriorityQueue& other) {
   container_.swap(other.container_);
-  num_task_sources_per_priority_.swap(other.num_task_sources_per_priority_);
+  std::swap(num_foreground_task_sources_, other.num_foreground_task_sources_);
+  std::swap(num_background_task_sources_, other.num_background_task_sources_);
   std::swap(is_flush_task_sources_on_destroy_enabled_,
             other.is_flush_task_sources_on_destroy_enabled_);
 }
 
-void PriorityQueue::DecrementNumTaskSourcesForPriority(TaskPriority priority) {
-  DCHECK_GT(num_task_sources_per_priority_[std::to_underlying(priority)], 0U);
-  --num_task_sources_per_priority_[std::to_underlying(priority)];
+void PriorityQueue::DecrementNumTaskSourcesForThreadType(
+    ThreadType thread_type) {
+  if (thread_type != ThreadType::kBackground) {
+    DCHECK_GT(num_foreground_task_sources_, 0U);
+    --num_foreground_task_sources_;
+  } else {
+    DCHECK_GT(num_background_task_sources_, 0U);
+    --num_background_task_sources_;
+  }
 }
 
-void PriorityQueue::IncrementNumTaskSourcesForPriority(TaskPriority priority) {
-  ++num_task_sources_per_priority_[std::to_underlying(priority)];
+void PriorityQueue::IncrementNumTaskSourcesForThreadType(
+    ThreadType thread_type) {
+  if (thread_type != ThreadType::kBackground) {
+    ++num_foreground_task_sources_;
+  } else {
+    ++num_background_task_sources_;
+  }
 }
 
 }  // namespace base::internal

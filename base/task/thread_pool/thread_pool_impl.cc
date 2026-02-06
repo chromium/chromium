@@ -160,9 +160,8 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
         kUtilityPoolEnvironmentParams.thread_type_hint,
         ThreadGroupType::UTILITY, task_tracker_->GetTrackedRef(),
         tracked_ref_factory_.GetTrackedRef());
-    foreground_thread_group_
-        ->HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
-            utility_thread_group_.get());
+    foreground_thread_group_->HandoffNonDefaultTaskSourcesToOtherThreadGroup(
+        utility_thread_group_.get());
   }
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
@@ -376,7 +375,7 @@ void ThreadPoolImpl::Shutdown() {
 void ThreadPoolImpl::FlushForTesting() {
   // If BEST_EFFORT tasks can run it means all tasks can run.
   const bool can_run_all =
-      task_tracker_->CanRunPriority(TaskPriority::BEST_EFFORT);
+      task_tracker_->CanRunThreadType(ThreadType::kBackground);
 
   if (!can_run_all) {
     // Calling `FlushForTesting` when not all tasks are allowed to run can only
@@ -476,14 +475,14 @@ bool ThreadPoolImpl::PostTaskWithSequenceNow(Task task,
       return false;
     }
   }
-  if (!task_tracker_->WillPostTaskNow(task, transaction.traits().priority())) {
+  if (!task_tracker_->WillPostTaskNow(task, sequence->thread_type_racy())) {
     return false;
   }
   transaction.PushImmediateTask(std::move(task));
   if (task_source) {
-    const TaskTraits traits = transaction.traits();
-    GetThreadGroupForTraits(traits)->PushTaskSourceAndWakeUpWorkers(
-        {std::move(task_source), std::move(transaction)});
+    GetThreadGroup(transaction.thread_type(), task_source->thread_policy())
+        ->PushTaskSourceAndWakeUpWorkers(
+            {std::move(task_source), std::move(transaction)});
   }
   return true;
 }
@@ -526,15 +525,15 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
 }
 
 bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) {
-  const TaskPriority priority = task_source->priority_racy();
+  const ThreadType thread_type = task_source->thread_type_racy();
   auto* const thread_group =
-      GetThreadGroupForTraits({priority, task_source->thread_policy()});
+      GetThreadGroup(thread_type, task_source->thread_policy());
   // A task whose priority changed and is now running in the wrong thread group
   // should yield so it's rescheduled in the right one.
   if (!thread_group->IsBoundToCurrentThread()) {
     return true;
   }
-  return GetThreadGroupForTraits({priority, task_source->thread_policy()})
+  return GetThreadGroup(thread_type, task_source->thread_policy())
       ->ShouldYield(task_source->GetSortKey());
 }
 
@@ -548,16 +547,18 @@ bool ThreadPoolImpl::EnqueueJobTaskSource(
   task_tracker_->WillEnqueueJob(
       static_cast<JobTaskSource*>(registered_task_source.get()));
   auto transaction = registered_task_source->BeginTransaction();
-  const TaskTraits traits = transaction.traits();
-  GetThreadGroupForTraits(traits)->PushTaskSourceAndWakeUpWorkers(
-      {std::move(registered_task_source), std::move(transaction)});
+  GetThreadGroup(transaction.thread_type(),
+                 registered_task_source->thread_policy())
+      ->PushTaskSourceAndWakeUpWorkers(
+          {std::move(registered_task_source), std::move(transaction)});
   return true;
 }
 
 void ThreadPoolImpl::RemoveJobTaskSource(
     scoped_refptr<JobTaskSource> task_source) {
   auto transaction = task_source->BeginTransaction();
-  GetThreadGroupForTraits(transaction.traits())->RemoveTaskSource(*task_source);
+  GetThreadGroup(transaction.thread_type(), task_source->thread_policy())
+      ->RemoveTaskSource(*task_source);
 }
 
 void ThreadPoolImpl::UpdatePriority(scoped_refptr<TaskSource> task_source,
@@ -576,10 +577,10 @@ void ThreadPoolImpl::UpdatePriority(scoped_refptr<TaskSource> task_source,
   }
 
   ThreadGroup* const old_thread_group =
-      GetThreadGroupForTraits(transaction.traits());
+      GetThreadGroup(transaction.thread_type(), task_source->thread_policy());
   transaction.UpdatePriority(priority);
   ThreadGroup* const new_thread_group =
-      GetThreadGroupForTraits(transaction.traits());
+      GetThreadGroup(transaction.thread_type(), task_source->thread_policy());
 
   if (new_thread_group == old_thread_group) {
     // |task_source|'s position needs to be updated within its current thread
@@ -603,21 +604,20 @@ void ThreadPoolImpl::UpdateJobPriority(scoped_refptr<TaskSource> task_source,
   UpdatePriority(std::move(task_source), priority);
 }
 
-const ThreadGroup* ThreadPoolImpl::GetThreadGroupForTraits(
-    const TaskTraits& traits) const {
-  return const_cast<ThreadPoolImpl*>(this)->GetThreadGroupForTraits(traits);
+const ThreadGroup* ThreadPoolImpl::GetThreadGroup(ThreadType thread_type,
+                                                  ThreadPolicy policy) const {
+  return const_cast<ThreadPoolImpl*>(this)->GetThreadGroup(thread_type, policy);
 }
 
-ThreadGroup* ThreadPoolImpl::GetThreadGroupForTraits(const TaskTraits& traits) {
-  if (traits.priority() == TaskPriority::BEST_EFFORT &&
-      traits.thread_policy() == ThreadPolicy::PREFER_BACKGROUND &&
-      background_thread_group_) {
+ThreadGroup* ThreadPoolImpl::GetThreadGroup(ThreadType thread_type,
+                                            ThreadPolicy policy) {
+  if (thread_type == ThreadType::kBackground &&
+      policy == ThreadPolicy::PREFER_BACKGROUND && background_thread_group_) {
     return background_thread_group_.get();
   }
 
-  if (traits.priority() <= TaskPriority::USER_VISIBLE &&
-      traits.thread_policy() == ThreadPolicy::PREFER_BACKGROUND &&
-      utility_thread_group_) {
+  if (thread_type <= ThreadType::kUtility &&
+      policy == ThreadPolicy::PREFER_BACKGROUND && utility_thread_group_) {
     return utility_thread_group_.get();
   }
 

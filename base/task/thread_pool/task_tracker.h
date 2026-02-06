@@ -39,7 +39,7 @@ class JobTaskSource;
 enum class CanRunPolicy {
   // All tasks are allowed to run.
   kAll,
-  // Only USER_VISIBLE and USER_BLOCKING tasks are allowed to run.
+  // Only tasks above kBackground are allowed to run.
   kForegroundOnly,
   // No tasks can run.
   kNone,
@@ -103,10 +103,10 @@ class BASE_EXPORT TaskTracker {
   bool WillPostTask(Task* task, TaskShutdownBehavior shutdown_behavior);
 
   // Informs this TaskTracker that |task| that is about to be pushed to a task
-  // source with |priority|. Returns true if this operation is allowed (the
+  // source with |thread_type|. Returns true if this operation is allowed (the
   // operation should be performed if-and-only-if it is).
   [[nodiscard]] bool WillPostTaskNow(const Task& task,
-                                     TaskPriority priority) const;
+                                     ThreadType thread_type) const;
 
   // Informs this TaskTracker that |task_source| is about to be queued. Returns
   // a RegisteredTaskSource that should be queued if-and-only-if it evaluates to
@@ -117,8 +117,9 @@ class BASE_EXPORT TaskTracker {
   // Informs this TaskTracker that |task_source| is about to be queued.
   void WillEnqueueJob(JobTaskSource* task_source);
 
-  // Returns true if a task with |priority| can run under to the current policy.
-  bool CanRunPriority(TaskPriority priority) const;
+  // Returns true if a task with |thread_type| can run under to the current
+  // policy.
+  bool CanRunThreadType(ThreadType thread_type) const;
 
   // Runs the next task in |task_source| unless the current shutdown state
   // prevents that. Then, pops the task from |task_source| (even if it didn't
@@ -235,7 +236,7 @@ class BASE_EXPORT TaskTracker {
 
   TaskAnnotator task_annotator_;
 
-  // Indicates whether logging information about TaskPriority::BEST_EFFORT tasks
+  // Indicates whether logging information about ThreadType::kBackground tasks
   // was enabled with a command line switch.
   const bool has_log_best_effort_tasks_switch_;
 
@@ -253,7 +254,7 @@ class BASE_EXPORT TaskTracker {
   // visible when FlushForTesting() returns.
   std::atomic_int num_incomplete_task_sources_{0};
 
-  // Global policy the determines result of CanRunPriority().
+  // Global policy the determines result of CanRunThreadType().
   std::atomic<CanRunPolicy> can_run_policy_;
 
   // Lock associated with |flush_cv_|. Partially synchronizes access to

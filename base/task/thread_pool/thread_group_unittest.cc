@@ -147,7 +147,8 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
 
  private:
   // ThreadGroup::Delegate:
-  ThreadGroup* GetThreadGroupForTraits(const TaskTraits& traits) override {
+  ThreadGroup* GetThreadGroup(ThreadType thread_type,
+                              ThreadPolicy policy) override {
     return thread_group_.get();
   }
 
@@ -364,23 +365,20 @@ TEST_F(ThreadGroupTest, CanRunPolicyShouldYield) {
   task_tracker_.SetCanRunPolicy(CanRunPolicy::kNone);
   thread_group_->DidUpdateCanRunPolicy();
   EXPECT_TRUE(
-      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
-  EXPECT_TRUE(
-      thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
+      thread_group_->ShouldYield({ThreadType::kBackground, TimeTicks()}));
+  EXPECT_TRUE(thread_group_->ShouldYield({ThreadType::kUtility, TimeTicks()}));
 
   task_tracker_.SetCanRunPolicy(CanRunPolicy::kForegroundOnly);
   thread_group_->DidUpdateCanRunPolicy();
   EXPECT_TRUE(
-      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
-  EXPECT_FALSE(
-      thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
+      thread_group_->ShouldYield({ThreadType::kBackground, TimeTicks()}));
+  EXPECT_FALSE(thread_group_->ShouldYield({ThreadType::kUtility, TimeTicks()}));
 
   task_tracker_.SetCanRunPolicy(CanRunPolicy::kAll);
   thread_group_->DidUpdateCanRunPolicy();
   EXPECT_FALSE(
-      thread_group_->ShouldYield({TaskPriority::BEST_EFFORT, TimeTicks()}));
-  EXPECT_FALSE(
-      thread_group_->ShouldYield({TaskPriority::USER_VISIBLE, TimeTicks()}));
+      thread_group_->ShouldYield({ThreadType::kBackground, TimeTicks()}));
+  EXPECT_FALSE(thread_group_->ShouldYield({ThreadType::kUtility, TimeTicks()}));
 }
 
 TEST_F(ThreadGroupTest, SetMaxTasks) {
@@ -564,11 +562,11 @@ TEST_F(ThreadGroupTest, ShouldYieldSingleTask) {
                                &mock_pooled_task_runner_delegate_)
       ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                    EXPECT_FALSE(thread_group_->ShouldYield(
-                       {TaskPriority::BEST_EFFORT, TimeTicks::Now()}));
+                       {ThreadType::kBackground, TimeTicks::Now()}));
                    EXPECT_FALSE(thread_group_->ShouldYield(
-                       {TaskPriority::USER_VISIBLE, TimeTicks::Now()}));
+                       {ThreadType::kUtility, TimeTicks::Now()}));
                    EXPECT_FALSE(thread_group_->ShouldYield(
-                       {TaskPriority::USER_VISIBLE, TimeTicks::Now()}));
+                       {ThreadType::kUtility, TimeTicks::Now()}));
                  }));
 
   task_tracker_.FlushForTesting();

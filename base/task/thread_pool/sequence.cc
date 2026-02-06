@@ -297,7 +297,7 @@ bool Sequence::HasImmediateTasks() const {
 
 TaskSourceSortKey Sequence::GetSortKey() const {
   return TaskSourceSortKey(
-      priority_racy(),
+      thread_type_racy(),
       TS_UNCHECKED_READ(latest_ready_time_).load(std::memory_order_relaxed));
 }
 
