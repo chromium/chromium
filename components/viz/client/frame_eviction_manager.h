@@ -28,6 +28,10 @@
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #endif
 
+namespace ash {
+FORWARD_DECLARE_TEST(LockStateControllerTest, PauseFrameEvictionWhileLocked);
+}  // namespace ash
+
 namespace viz {
 
 class FrameEvictionManagerClient {
@@ -85,6 +89,8 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
  private:
   friend struct base::DefaultSingletonTraits<FrameEvictionManager>;
   FRIEND_TEST_ALL_PREFIXES(FrameEvictionManagerTest, PeriodicCulling);
+  FRIEND_TEST_ALL_PREFIXES(ash::LockStateControllerTest,
+                           PauseFrameEvictionWhileLocked);
 
   FrameEvictionManager();
   ~FrameEvictionManager() override;
@@ -110,6 +116,8 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  bool is_paused_for_testing() const { return pause_count_ != 0; }
 
   std::map<FrameEvictionManagerClient*, size_t> locked_frames_;
   // {FrameEvictionManagerClient, Last Unlock() time}, ordered with the most

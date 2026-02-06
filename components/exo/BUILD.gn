@@ -118,6 +118,8 @@ static_library("exo") {
     "ui_lock_controller.h",
     "vsync_timing_manager.cc",
     "vsync_timing_manager.h",
+    "window_occlusion_manager.cc",
+    "window_occlusion_manager.h",
     "window_properties.cc",
     "window_properties.h",
     "wm_helper.cc",
