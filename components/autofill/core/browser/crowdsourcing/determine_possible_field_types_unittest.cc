@@ -229,8 +229,7 @@ class ProfileMatchingTypesTest
   ProfileMatchingTypesTest() {
     features_.InitWithFeatures(
         {features::kAutofillUseNegativePatternForAllAttributes,
-         features::kAutofillSupportLastNamePrefix,
-         features::kAutofillSupportSplitZipCode},
+         features::kAutofillSupportLastNamePrefix},
         {});
   }
 
@@ -342,11 +341,6 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"van Gogh", {NAME_LAST}},
     {"van", {NAME_LAST_PREFIX}},
     {"Gogh", {NAME_LAST_CORE, NAME_LAST_SECOND}},
-
-    // Make sure that zip prefix and suffix are handled correctly.
-    {"79401-4321", {ADDRESS_HOME_ZIP}},
-    {"79401", {ADDRESS_HOME_ZIP}},
-    {"4321", {ADDRESS_HOME_ZIP_SUFFIX}},
 };
 
 // Tests that DeterminePossibleFieldTypesForUpload finds accurate possible
@@ -1377,6 +1371,86 @@ TEST_F(DetermineAvailableFieldTypesTest, LoyaltyCards) {
       /*app_locale=*/"");
   EXPECT_TRUE(available_types.contains(LOYALTY_MEMBERSHIP_ID));
 }
+
+struct ZipTypesMatchingTestCase {
+  struct Field {
+    std::string name;
+    std::string value;
+    FieldTypeSet expected_types;
+  };
+  std::string description;
+  std::vector<Field> fields;
+};
+
+class ZipTypesMatchingTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<ZipTypesMatchingTestCase> {
+ private:
+  base::test::ScopedFeatureList features_{
+      features::kAutofillSupportSplitZipCode};
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+};
+
+// Tests that DeterminePossibleFieldTypesForUpload finds accurate possible
+// zip code types for various forms.
+TEST_P(ZipTypesMatchingTest, DeterminePossibleFieldTypesForUpload) {
+  const auto& test_case = GetParam();
+  SCOPED_TRACE(test_case.description);
+
+  // Set up the test profiles.
+  TestAddressFillData profile_info_data = GetElvisAddressFillData();
+  profile_info_data.postal_code = "79401-4321";
+  AutofillProfile profile = FillDataToAutofillProfile(profile_info_data);
+  std::vector<AutofillProfile> profiles = {profile};
+
+  // Create custom form.
+  FormData form;
+
+  for (const auto& f : test_case.fields) {
+    test_api(form).Append(test::CreateTestFormField(
+        f.name, f.name, f.value, FormControlType::kInputText));
+  }
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  std::vector<PossibleTypes> possible_types =
+      DeterminePossibleFieldTypesForUpload(
+          profiles, /*credit_cards=*/{}, /*entities=*/{},
+          /*loyalty_cards=*/{}, /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-us",
+          form_structure->fields());
+
+  ASSERT_EQ(form_structure->field_count(), possible_types.size());
+  for (size_t i = 0; i < test_case.fields.size(); ++i) {
+    EXPECT_THAT(possible_types[i].types,
+                UnorderedElementsAreArray(test_case.fields[i].expected_types))
+        << "Field: " << test_case.fields[i].name
+        << " in test case: " << test_case.description;
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    DeterminePossibleFieldTypesForUploadTest,
+    ZipTypesMatchingTest,
+    testing::ValuesIn(std::vector<ZipTypesMatchingTestCase>{
+        {
+            .description = "Single full zip field",
+            .fields = {{"zip", "79401-4321", {ADDRESS_HOME_ZIP}}},
+        },
+        {
+            .description = "Single zip prefix field",
+            .fields = {{"zip", "79401", {ADDRESS_HOME_ZIP}}},
+        },
+        {
+            .description = "Single zip suffix field",
+            .fields = {{"zip2", "4321", {UNKNOWN_TYPE}}},
+        },
+        {
+            .description = "Two zip fields (prefix and suffix)",
+            .fields = {{"zip1", "79401", {ADDRESS_HOME_ZIP}},
+                       {"zip2", "4321", {ADDRESS_HOME_ZIP_SUFFIX}}},
+        }}));
 
 }  // namespace
 }  // namespace autofill
