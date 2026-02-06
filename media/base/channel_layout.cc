@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 
 #include "base/check_op.h"
@@ -14,6 +15,8 @@
 #include "media/base/limits.h"
 
 namespace media {
+
+namespace {
 
 constexpr auto kLayoutToChannels = std::to_array<int>({
     0,  // CHANNEL_LAYOUT_NONE
@@ -60,8 +63,7 @@ constexpr auto kLayoutToChannels = std::to_array<int>({
 // surround sound channel in FFmpeg's 5.1 layout is in the 5th position (because
 // the order is L, R, C, LFE, LS, RS), so
 // kChannelOrderings[CHANNEL_LAYOUT_5_1][SIDE_LEFT] = 4;
-const std::array<std::array<const int, CHANNELS_MAX + 1>,
-                 CHANNEL_LAYOUT_MAX + 1>
+constexpr std::array<std::array<int, CHANNELS_MAX + 1>, CHANNEL_LAYOUT_MAX + 1>
     kChannelOrderings = {{
         // FL | FR | FC | LFE | BL | BR | FLofC | FRofC | BC | SL | SR
 
@@ -180,6 +182,30 @@ const std::array<std::array<const int, CHANNELS_MAX + 1>,
         {0, 1, -1, 2, -1, -1, -1, -1, 3, -1, -1},
     }};
 
+// Helper to compute bitmask for a layout at compile-time.
+constexpr ChannelMask ComputeChannelMask(ChannelLayout layout) {
+  ChannelMask mask = 0;
+  for (int c = 0; c <= Channels::CHANNELS_MAX; ++c) {
+    if (kChannelOrderings[layout][c] != -1) {
+      mask |= 1ULL << c;
+    }
+  }
+  return mask;
+}
+
+// Map of all channel layouts to their respective masks.
+constexpr auto kChannelMaskToLayoutMap = []() {
+  std::array<std::pair<ChannelMask, ChannelLayout>, CHANNEL_LAYOUT_MAX + 1>
+      entries;
+  for (int i = 0; i <= CHANNEL_LAYOUT_MAX; ++i) {
+    ChannelLayout layout = static_cast<ChannelLayout>(i);
+    entries[i] = {ComputeChannelMask(layout), layout};
+  }
+  return entries;
+}();
+
+}  // namespace
+
 int ChannelLayoutToChannelCount(ChannelLayout layout) {
   DCHECK_LT(static_cast<size_t>(layout), std::size(kLayoutToChannels));
   DCHECK_LE(kLayoutToChannels[layout], kMaxConcurrentChannels);
@@ -214,6 +240,17 @@ ChannelLayout GuessChannelLayout(int channels) {
       DVLOG(1) << "Unsupported channel count: " << channels;
   }
   return CHANNEL_LAYOUT_UNSUPPORTED;
+}
+
+ChannelLayout ChannelMaskToLayout(ChannelMask channel_mask) {
+  for (const auto& entry : kChannelMaskToLayoutMap) {
+    if (entry.first == channel_mask) {
+      return entry.second;
+    }
+  }
+  // If we don't find a standard ChannelLayout associated with the mask, return
+  // a DISCRETE layout so that we can still handle the raw channel data.
+  return CHANNEL_LAYOUT_DISCRETE;
 }
 
 int ChannelOrder(ChannelLayout layout, Channels channel) {

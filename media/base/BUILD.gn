@@ -630,6 +630,7 @@ source_set("unit_tests") {
     "callback_registry_unittest.cc",
     "callback_timeout_helpers_unittest.cc",
     "capture_version_unittest.cc",
+    "channel_layout_unittest.cc",
     "channel_mixer_unittest.cc",
     "channel_mixing_matrix_unittest.cc",
     "container_names_unittest.cc",
