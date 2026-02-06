@@ -110,4 +110,20 @@ bool LocalNetworkAccessCompatPermissionContext::
              network::mojom::PermissionsPolicyFeature::kLoopbackNetwork);
 }
 
+// Split permissions mode never has ContentSettingsType::LOCAL_NETWORK_ACCESS
+// change, but instead has ContentSettingsType::LOCAL_NETWORK and
+// ContentSettingsType::LOOPBACK_NETWORK change; trigger obsevers when those
+// change instead.
+void LocalNetworkAccessCompatPermissionContext::NotifyObservers(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsTypeSet content_type_set) const {
+  if (content_type_set.Contains(ContentSettingsType::LOCAL_NETWORK) ||
+      content_type_set.Contains(ContentSettingsType::LOOPBACK_NETWORK)) {
+    PermissionContextBase::NotifyObservers(
+        primary_pattern, secondary_pattern,
+        ContentSettingsTypeSet(ContentSettingsType::LOCAL_NETWORK_ACCESS));
+  }
+}
+
 }  // namespace permissions

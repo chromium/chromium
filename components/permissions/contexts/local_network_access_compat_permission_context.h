@@ -48,6 +48,10 @@ class LocalNetworkAccessCompatPermissionContext
 
   bool PermissionAllowedByPermissionsPolicy(
       content::RenderFrameHost* rfh) const override;
+
+  void NotifyObservers(const ContentSettingsPattern& primary_pattern,
+                       const ContentSettingsPattern& secondary_pattern,
+                       ContentSettingsTypeSet content_type_set) const override;
 };
 
 }  // namespace permissions

@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <link rel="icon" href="data:,">
+  </head>
+  <body>
+    <script>
+      function permission_onstatus(url, permission_name) {
+        return new Promise(async resolve => {
+          navigator.permissions
+            .query({ name: `${permission_name}` })
+            .then((permissionStatus) => {
+              permissionStatus.onchange = () => {
+                resolve(`${permissionStatus.state}`);
+              };
+            });
+
+          fetch(url).then(response => console.log(`fetch response ${response.ok}`));
+        });
+      };
+    </script>
+  </body>
+</html>
