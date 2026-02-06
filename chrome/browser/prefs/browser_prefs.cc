@@ -1599,6 +1599,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(registry);
   webnn::RegisterLocalPrefs(registry);
   registry->RegisterBooleanPref(prefs::kForegroundLaunchOnLogin, false);
+  registry->RegisterBooleanPref(prefs::kStartupLaunchInfobarAccepted, false);
   registry->RegisterTimePref(prefs::kStartupLaunchInfobarLastDeclinedTime,
                              base::Time());
   registry->RegisterIntegerPref(prefs::kStartupLaunchInfobarDeclinedCount, 0);

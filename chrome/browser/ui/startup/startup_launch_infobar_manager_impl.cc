@@ -197,6 +197,8 @@ void StartupLaunchInfoBarManagerImpl::OnAccept() {
   did_user_interact_ = true;
   base::UmaHistogramEnumeration(GetInteractionHistogramName(infobar_type_),
                                 StartupLaunchInfoBarInteraction::kAccept);
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kStartupLaunchInfobarAccepted, true);
 
   switch (infobar_type_) {
     case InfoBarType::kForegroundOptOut:

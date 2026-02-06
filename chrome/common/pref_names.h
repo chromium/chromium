@@ -3350,6 +3350,10 @@ inline constexpr char kUiAutomationProviderEnabled[] =
 inline constexpr char kForegroundLaunchOnLogin[] =
     "launch_on_login.foreground.enabled";
 
+// Boolean representing whether the infobar has been accepted by the user.
+inline constexpr char kStartupLaunchInfobarAccepted[] =
+    "launch_on_login.infobar_accepted";
+
 // base::Time containing time at which the startup launch infobar was last
 // dismissed by the user.
 inline constexpr char kStartupLaunchInfobarLastDeclinedTime[] =

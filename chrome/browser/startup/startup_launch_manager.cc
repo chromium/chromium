@@ -56,12 +56,16 @@ bool ShouldShowInfoBars() {
 
   PrefService* local_state = g_browser_process->local_state();
 
+  const bool is_accepted =
+      local_state->GetBoolean(prefs::kStartupLaunchInfobarAccepted);
   const int declined_count =
       local_state->GetInteger(prefs::kStartupLaunchInfobarDeclinedCount);
   const base::Time last_declined_time =
       local_state->GetTime(prefs::kStartupLaunchInfobarLastDeclinedTime);
 
-  if (declined_count >= kMaxPromptCount) {
+  // If infobar is already accepted once, or declined more than maximum allowed
+  // declines, we don't show the infobar.
+  if (is_accepted || declined_count >= kMaxPromptCount) {
     return false;
   }
 
