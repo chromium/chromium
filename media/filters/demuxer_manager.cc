@@ -377,7 +377,11 @@ bool DemuxerManager::IsLiveContent() const {
 }
 
 bool DemuxerManager::IsManifestDemuxerURL() const {
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
   return loaded_url_.path().ends_with(".m3u8");
+#else
+  return false;
+#endif
 }
 
 std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {
