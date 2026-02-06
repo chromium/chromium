@@ -132,7 +132,8 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
 
 std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     const autofill_private::EntityInstance& private_api_entity_instance,
-    std::string_view app_locale) {
+    std::string_view app_locale,
+    bool entity_supports_wallet_storage) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attribute_instances;
   for (const autofill_private::AttributeInstance&
@@ -200,17 +201,25 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
       private_api_entity_instance.guid.empty()
           ? base::Uuid::GenerateRandomV4().AsLowercaseString()
           : private_api_entity_instance.guid);
+
+  const bool save_entity_to_wallet =
+      private_api_entity_instance.stored_in_wallet.value_or(false) &&
+      entity_supports_wallet_storage;
+
   return EntityInstance(
       std::move(entity_type), attribute_instances, std::move(guid),
       private_api_entity_instance.nickname, base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time::Now(), EntityInstance::RecordType::kLocal,
+      /*use_date=*/base::Time::Now(),
+      save_entity_to_wallet ? EntityInstance::RecordType::kServerWallet
+                            : EntityInstance::RecordType::kLocal,
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 }
 
 autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const EntityInstance& entity_instance,
-    std::string_view app_locale) {
+    std::string_view app_locale,
+    bool entity_supports_wallet_storage) {
   std::vector<autofill_private::AttributeInstance>
       private_api_attribute_instances;
   bool should_authenticate_to_view = false;
@@ -277,6 +286,11 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
   private_api_entity_instance.nickname = entity_instance.nickname();
   private_api_entity_instance.should_authenticate_to_view =
       should_authenticate_to_view;
+  private_api_entity_instance.type.supports_wallet_storage =
+      entity_supports_wallet_storage;
+  private_api_entity_instance.stored_in_wallet =
+      (entity_instance.record_type() ==
+       EntityInstance::RecordType::kServerWallet);
   return private_api_entity_instance;
 }
 

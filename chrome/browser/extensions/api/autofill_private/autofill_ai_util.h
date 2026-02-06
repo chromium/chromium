@@ -27,17 +27,21 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
 // `autofill::EntityInstance` object, according to a given `app_locale`. Returns
 // `std::nullopt` if one of the attribute types or entity types are out of
 // bounds of the enum, or if the date value is used incorrectly.
+// The `entity_supports_wallet_storage` is used to validate if the entity is
+// allowed to be stored in the Google wallet.
 std::optional<autofill::EntityInstance>
 PrivateApiEntityInstanceToEntityInstance(
     const api::autofill_private::EntityInstance& private_api_entity_instance,
-    std::string_view app_locale);
+    std::string_view app_locale,
+    bool entity_supports_wallet_storage);
 
 // Converts an `autofill::EntityInstance` object to an
 // `api::autofill_private::EntityInstance` object, according to a given
 // `app_locale`.
 api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const autofill::EntityInstance& entity_instance,
-    std::string_view app_locale);
+    std::string_view app_locale,
+    bool entity_supports_wallet_storage);
 
 // Converts `autofill::EntityInstance`s to
 // `api::autofill_private::EntityInstanceWithLabels`s according to a given

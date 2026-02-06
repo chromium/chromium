@@ -275,6 +275,7 @@ declare global {
         guid: string;
         nickname: string;
         shouldAuthenticateToView?: boolean;
+        storedInWallet?: boolean;
       }
 
       export interface EntityInstanceWithLabels {

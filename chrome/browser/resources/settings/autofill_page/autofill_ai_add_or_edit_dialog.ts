@@ -105,6 +105,22 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       },
 
       /**
+       *  User email associated with the account.
+       */
+      userEmail_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Footer text shown in the view. If empty, no footer text is shown.
+       */
+      footerText_: {
+        type: String,
+        computed: 'computeFooterText_(entityInstance.*, userEmail_)',
+      },
+
+      /**
          True if all fields are empty. The first validation occurs when the user
          clicks the "Save" button for the first time. Subsequent validations
          occur any time an input field is changed. If true, the "Save" button
@@ -182,6 +198,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   declare private months_: string[];
   declare private days_: string[];
   declare private years_: string[];
+  declare private userEmail_: string;
+  declare private footerText_: string;
 
   private requiredAttributeTypes_: AttributeType[] = [];
   private entityDataManager_: EntityDataManagerProxy =
@@ -205,6 +223,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
     this.completeAttributeTypesList_ = attributeTypes;
     this.requiredAttributeTypes_ = requiredAttributes;
+
+    const accountInfo = await chrome.autofillPrivate.getAccountInfo();
+    if (accountInfo && accountInfo.email) {
+      this.userEmail_ = accountInfo.email;
+    }
 
     // TODO(crbug.com/407794687): Decide whether the code should show a spinner
     // instead of delaying the display of the dialog. Keep this decision
@@ -376,6 +399,20 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.onAttributeInstanceFieldInput_(e);
   }
 
+  private computeFooterText_(): string {
+    if (!this.entityInstance || this.entityInstance.guid || !this.userEmail_ ||
+        !this.entityInstance?.type.supportsWalletStorage) {
+      return '';
+    }
+
+    // Show footer only when it is a new entity and type supports Wallet
+    // storage. This is sufficient because the entities stored in Wallet are not
+    // editable from the settings.
+    return this.i18n(
+        'saveInfoToWalletAccountNotice', this.i18n('googleWalletTitle'),
+        this.userEmail_);
+  }
+
   private isExistingYearOutOfBounds_(
       attributeInstance: AttributeInstance, years: string[]): boolean {
     const year = this.getExistingYear_(attributeInstance);
@@ -517,11 +554,18 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.userClickedSaveButton_ = true;
     this.validateForm_();
     if (this.canSave_) {
+      const entityToSave = {...this.entityInstance!};
+
+      // If the type supports Wallet storage, we default to saving to Wallet but
+      // only for new entities.
+      if (!entityToSave.guid && entityToSave.type.supportsWalletStorage) {
+        entityToSave.storedInWallet = true;
+      }
       this.dispatchEvent(new CustomEvent('autofill-ai-add-or-edit-done', {
         bubbles: true,
         composed: true,
         detail: {
-          ...this.entityInstance,
+          ...entityToSave,
           attributeInstances: this.completeAttributeInstanceList_.filter(
               attributeInstance =>
                   this.isAttributeInstanceNotEmpty(attributeInstance)),

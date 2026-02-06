@@ -69,6 +69,7 @@ var ENTITY_INSTANCE = {
   guid: GUID,
   nickname: 'Personal car',
   shouldAuthenticateToView: false,
+  storedInWallet: false,
 };
 
 var UPDATED_ENTITY_INSTANCE = structuredClone(ENTITY_INSTANCE);

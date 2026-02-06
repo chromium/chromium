@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -209,6 +211,11 @@ INSTANTIATE_TEST_SUITE_P(,
                          Combine(Bool(), Bool()));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+class MockSyncService : public syncer::TestSyncService {
+ public:
+  MOCK_METHOD(syncer::DataTypeSet, GetActiveDataTypes, (), (const override));
+};
+
 class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
  public:
   AutofillPrivateApiBrowserTest() {
@@ -216,8 +223,10 @@ class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
         /*enabled_features=*/
         {
             {autofill::features::kAutofillAiWithDataSchema, {}},
+            {autofill::features::kAutofillAiAvailableByDefault, {}},
             {autofill::features::kAutofillAiWalletFlightReservation, {}},
             {autofill::features::kAutofillAiWalletVehicleRegistration, {}},
+            {autofill::features::kAutofillEnableSaveToWalletFromSettings, {}},
             {wallet::kWalletablePassDetection,
              {{wallet::kWalletablePassDetectionCountryAllowlist.name, "US"}}},
         },
@@ -475,6 +484,106 @@ IN_PROC_BROWSER_TEST_F(
       RunAutofillSubtest("optIntoWalletablePassDetectionExpectingFailure"));
   EXPECT_TRUE(
       RunAutofillSubtest("verifyUserOptedOutOfWalletablePassDetection"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
+                       AddEntityInstance_SavesToWalletIfEligible) {
+  autofill_client()->set_entity_data_manager(
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
+  autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
+  autofill_client()->SetVariationConfigCountryCode(
+      autofill::GeoIpCountryCode("US"));
+
+  testing::NiceMock<MockSyncService> mock_sync_service;
+  address_data_manager().SetSyncServiceForTest(&mock_sync_service);
+  autofill_client()->set_sync_service(&mock_sync_service);
+
+  autofill_client()->GetSyncService()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, true);
+  ON_CALL(mock_sync_service, GetActiveDataTypes())
+      .WillByDefault(Return(syncer::DataTypeSet{syncer::AUTOFILL_VALUABLE}));
+
+  autofill::EntityInstance entity_instance =
+      autofill::test::GetVehicleEntityInstanceWithRandomGuid();
+
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+
+  // Explicitly request storage in Wallet.
+  api_entity.stored_in_wallet = true;
+
+  base::ListValue args;
+  args.Append(api_entity.ToValue());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  auto* entity_data_manager =
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+  ASSERT_TRUE(entity_data_manager);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(function.get(), json_args,
+                                                      profile()));
+
+  autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
+  base::optional_ref<const autofill::EntityInstance> saved_entity =
+      entity_data_manager->GetEntityInstance(entity_instance.guid());
+  ASSERT_TRUE(saved_entity.has_value()) << "Entity should exist after save";
+
+  EXPECT_EQ(saved_entity->record_type(),
+            autofill::EntityInstance::RecordType::kServerWallet);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiBrowserTest,
+    AddEntityInstance_FallsBackToLocalIfSaveToWalletOnPaymentsOffToggle) {
+  autofill_client()->set_entity_data_manager(
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
+  autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
+  autofill_client()->SetVariationConfigCountryCode(
+      autofill::GeoIpCountryCode("US"));
+
+  syncer::TestSyncService test_sync_service;
+  address_data_manager().SetSyncServiceForTest(&test_sync_service);
+  test_sync_service.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
+
+  autofill::EntityInstance entity_instance =
+      autofill::test::GetVehicleEntityInstanceWithRandomGuid();
+
+  extensions::api::autofill_private::EntityInstance api_entity =
+      extensions::autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+          entity_instance, "en-US", /*entity_supports_wallet_storage=*/true);
+
+  // Explicitly request storage in Wallet.
+  api_entity.stored_in_wallet = true;
+
+  base::ListValue args;
+  args.Append(api_entity.ToValue());
+  std::string json_args;
+  base::JSONWriter::Write(args, &json_args);
+
+  auto* entity_data_manager =
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+  ASSERT_TRUE(entity_data_manager);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(function.get(), json_args,
+                                                      profile()));
+  autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
+  base::optional_ref<const autofill::EntityInstance> saved_entity =
+      entity_data_manager->GetEntityInstance(entity_instance.guid());
+  ASSERT_TRUE(saved_entity.has_value()) << "Entity should exist after save";
+
+  EXPECT_EQ(saved_entity->record_type(),
+            autofill::EntityInstance::RecordType::kLocal);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \

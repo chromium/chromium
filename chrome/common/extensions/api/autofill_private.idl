@@ -419,6 +419,8 @@ namespace autofillPrivate {
     DOMString nickname;
     // Whether the user should be authenticated to view the entity instance.
     boolean? shouldAuthenticateToView;
+    // Whether the entity is (or should be) stored in Google Wallet servers.
+    boolean? storedInWallet;
   };
 
   // Contains the minimum amount of information needed to display an entity

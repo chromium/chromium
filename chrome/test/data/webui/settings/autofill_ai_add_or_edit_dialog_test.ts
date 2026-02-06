@@ -7,6 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import type {CrButtonElement, CrInputElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -36,7 +37,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         addEntityTypeString: 'Add vehicle',
         editEntityTypeString: 'Edit vehicle',
         deleteEntityTypeString: 'Delete vehicle',
-        supportsWalletStorage: false,
+        supportsWalletStorage: true,
       },
       attributeInstances: [
         {
@@ -193,6 +194,12 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           const saveButton =
               dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
           assertTrue(!!saveButton);
+
+          // Expect storedInWallet to be set if supportsWalletStorage is true
+          // and only when new entities.
+          if (params.add && testEntityInstance.type.supportsWalletStorage) {
+            expectedEntityInstance.storedInWallet = true;
+          }
 
           const dialogConfirmedPromise =
               eventToPromise('autofill-ai-add-or-edit-done', dialog);
@@ -354,6 +361,57 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     assertFalse(isVisible(validationError));
     assertFalse(
         inputs[0]!.invalid, 'Required field should be valid after input');
+  });
+
+  test('FooterVisibleForEligibleEntityWithEmail', async function() {
+    const userEmail = 'test@example.com';
+    const originalGetAccountInfo = chrome.autofillPrivate.getAccountInfo;
+    chrome.autofillPrivate.getAccountInfo = () => Promise.resolve({
+      email: userEmail,
+      isSyncEnabledForAutofillProfiles: true,
+      isEligibleForAddressAccountStorage: true,
+      isAutofillSyncToggleEnabled: true,
+      isAutofillSyncToggleAvailable: true,
+    });
+
+    try {
+      // Use the test entity which has supportsWalletStorage set to true.
+      const newEntity = structuredClone(testEntityInstance);
+      newEntity.guid = '';
+      dialog.entityInstance = newEntity;
+      loadTimeData.overrideValues({
+        saveInfoToWalletAccountNotice: 'Save to $1 using $2',
+        googleWalletTitle: 'Google Wallet',
+      });
+
+      document.body.appendChild(dialog);
+      await entityDataManager.whenCalled(
+          'getAllAttributeTypesForEntityTypeName');
+      await flushTasks();
+
+      const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+      assertTrue(!!footer);
+      assertFalse(
+          footer.hidden, 'Footer should be visible for eligible entity');
+    } finally {
+      // Restore to its original state so that it doesn't affect other tests.
+      chrome.autofillPrivate.getAccountInfo = originalGetAccountInfo;
+    }
+  });
+
+  test('FooterHiddenForIneligibleEntity', async function() {
+    // Create ineligible entity
+    const ineligibleEntity = structuredClone(testEntityInstance);
+    ineligibleEntity.type.supportsWalletStorage = false;
+
+    dialog.entityInstance = ineligibleEntity;
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await flushTasks();
+
+    const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+    assertTrue(!!footer);
+    assertTrue(footer.hidden, 'Footer should be hidden for ineligible entity');
   });
 });
 

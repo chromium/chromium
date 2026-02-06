@@ -50,6 +50,11 @@
   #invalid-date-select-label {
     color: var(--cr-fallback-color-error);
   }
+
+  #footer {
+    margin-top: 8px;
+    white-space: initial;
+  }
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">[[dialogTitle]]</div>
@@ -183,6 +188,11 @@
     <div id="validation-error" class="cr-form-field-label"
      hidden="[[!validationError_]]">
       [[validationError_]]
+    </div>
+
+    <div id="footer"
+         hidden="[[!footerText_]]">
+      [[footerText_]]
     </div>
   </div>
   <div slot="button-container">

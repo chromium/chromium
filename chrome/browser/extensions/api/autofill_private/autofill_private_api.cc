@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -190,6 +191,17 @@ autofill::AutofillProfile CreateNewAutofillProfile(
           ? autofill::AddressCountryCode(std::string(*country_code))
           : autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
   return autofill::AutofillProfile(record_type, address_country_code);
+}
+
+// Returns true if the `entity_type` supports wallet storage.
+bool IsEligibleForWalletStorage(autofill::AutofillClient* client,
+                                autofill::EntityType entity_type) {
+  return client &&
+         autofill::MayPerformAutofillAiAction(
+             *client, autofill::AutofillAiAction::kImportToWallet,
+             entity_type) &&
+         base::FeatureList::IsEnabled(
+             autofill::features::kAutofillEnableSaveToWalletFromSettings);
 }
 
 }  // namespace
@@ -990,10 +1002,22 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
 
   const autofill_private::EntityInstance& private_api_entity_instance =
       parameters->entity_instance;
+  std::optional<autofill::EntityTypeName> entity_type_name =
+      autofill::ToSafeEntityTypeName(
+          private_api_entity_instance.type.type_name);
+
+  if (!entity_type_name.has_value()) {
+    return RespondNow(Error(kErrorAutofillAiTypeNameOutOfBounds));
+  }
+
+  const bool is_eligible_for_wallet_storage = IsEligibleForWalletStorage(
+      autofill_client(), autofill::EntityType(*entity_type_name));
+
   std::optional<EntityInstance> entity_instance =
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
           private_api_entity_instance,
-          g_browser_process->GetApplicationLocale());
+          g_browser_process->GetApplicationLocale(),
+          is_eligible_for_wallet_storage);
   if (!entity_instance.has_value()) {
     return RespondNow(Error(kErrorAutofillAiInvalidData));
   }
@@ -1007,6 +1031,12 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
     return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
   entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
+
+  if (is_eligible_for_wallet_storage &&
+      entity_instance->record_type() == EntityInstance::RecordType::kLocal) {
+    // TODO(crbug.com/454892936): Show bubble to inform the user that the entity
+    // is saved locally.
+  }
   return RespondNow(NoArguments());
 }
 
@@ -1109,7 +1139,9 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
     return RespondNow(ArgumentList(
         api::autofill_private::GetEntityInstanceByGuid::Results::Create(
             autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-                entity_instance.value(), autofill_client()->GetAppLocale()))));
+                entity_instance.value(), autofill_client()->GetAppLocale(),
+                IsEligibleForWalletStorage(autofill_client(),
+                                           entity_instance.value().type())))));
   }
 
   std::u16string message;
@@ -1131,7 +1163,9 @@ void AutofillPrivateGetEntityInstanceByGuidFunction::OnReauthCompleted(
     Respond(ArgumentList(
         api::autofill_private::GetEntityInstanceByGuid::Results::Create(
             autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-                entity_instance, autofill_client()->GetAppLocale()))));
+                entity_instance, autofill_client()->GetAppLocale(),
+                IsEligibleForWalletStorage(autofill_client(),
+                                           entity_instance.type())))));
     return;
   }
   Respond(NoArguments());
@@ -1148,10 +1182,9 @@ AutofillPrivateGetWritableEntityTypesFunction::Run() {
   result.reserve(all_types.size());
   for (EntityType entity_type : autofill::GetWritableEntityTypes(
            autofill_client()->GetVariationConfigCountryCode())) {
-    // TODO(crbug.com/454892936): Provide the correct value for
-    // `supports_wallet_storage`.
     result.push_back(autofill_ai_util::EntityTypeToPrivateApiEntityType(
-        entity_type, /*supports_wallet_storage=*/false));
+        entity_type,
+        IsEligibleForWalletStorage(autofill_client(), entity_type)));
   }
 
   return RespondNow(ArgumentList(
