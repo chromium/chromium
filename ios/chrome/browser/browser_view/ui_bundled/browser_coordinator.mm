@@ -746,6 +746,8 @@ const char kChromeAppStoreUrl[] =
   AutoDeletionCoordinator* _autoDeletionCoordinator;
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
+  SyncPresenterCompletionCallback
+      _trustedVaultReauthenticationCoordinatorCompletion;
 
   // The coordinator for the Enhanced Calendar feature UI (bottom sheet).
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
@@ -1122,6 +1124,11 @@ const char kChromeAppStoreUrl[] =
   [_trustedVaultReauthenticationCoordinator stop];
   _trustedVaultReauthenticationCoordinator.delegate = nil;
   _trustedVaultReauthenticationCoordinator = nil;
+
+  if (_trustedVaultReauthenticationCoordinatorCompletion) {
+    _trustedVaultReauthenticationCoordinatorCompletion();
+    _trustedVaultReauthenticationCoordinatorCompletion = nil;
+  }
 }
 
 - (void)stopPasskeyWelcomeScreenCoordinator {
@@ -4313,11 +4320,10 @@ const char kChromeAppStoreUrl[] =
                                            completion:
                                                (SyncPresenterCompletionCallback)
                                                    completion {
-  // TODO(crbug.com/464228247): Implement calling `completion` once the UI is
-  // dismissed.
-  [self showTrustedVaultReauthWithTrigger:trigger
-                                   intent:
-                                       SigninTrustedVaultDialogIntentFetchKeys];
+  [self
+      showTrustedVaultReauthWithTrigger:trigger
+                                 intent:SigninTrustedVaultDialogIntentFetchKeys
+                             completion:completion];
 }
 
 - (void)
@@ -4326,11 +4332,11 @@ const char kChromeAppStoreUrl[] =
                                                     completion:
                                                         (SyncPresenterCompletionCallback)
                                                             completion {
-  // TODO(crbug.com/464228247): Implement calling `completion` once the UI is
-  // dismissed.
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentDegradedRecoverability;
-  [self showTrustedVaultReauthWithTrigger:trigger intent:intent];
+  [self showTrustedVaultReauthWithTrigger:trigger
+                                   intent:intent
+                               completion:completion];
 }
 
 - (void)showBookmarksLimitExceededHelp {
@@ -4355,8 +4361,9 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showTrustedVaultReauthWithTrigger:
             (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
-                                   intent:
-                                       (SigninTrustedVaultDialogIntent)intent {
+                                   intent:(SigninTrustedVaultDialogIntent)intent
+                               completion:
+                                   (SyncPresenterCompletionCallback)completion {
   if (_trustedVaultReauthenticationCoordinator) {
     // This can occur in case of double-tap.
     return;
@@ -4370,6 +4377,7 @@ const char kChromeAppStoreUrl[] =
                                          kChromeSync
                              trigger:trigger];
   _trustedVaultReauthenticationCoordinator.delegate = self;
+  _trustedVaultReauthenticationCoordinatorCompletion = completion;
   [_trustedVaultReauthenticationCoordinator start];
 }
 
