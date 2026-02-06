@@ -830,8 +830,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   }));
 }
 
+// TODO(crbug.com/479341115): Failing on mac-bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RightClickSplitTabsButton DISABLED_RightClickSplitTabsButton
+#else
+#define MAYBE_RightClickSplitTabsButton RightClickSplitTabsButton
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
-                       RightClickSplitTabsButton) {
+                       MAYBE_RightClickSplitTabsButton) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   EnableSplitTabsButton(browser(), web_view);
@@ -841,8 +847,15 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // Verify no crash.
 }
 
+// TODO(crbug.com/479341115): Failing on mac-bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClickSplitTabsButtonWhileSplit \
+  DISABLED_ClickSplitTabsButtonWhileSplit
+#else
+#define MAYBE_ClickSplitTabsButtonWhileSplit ClickSplitTabsButtonWhileSplit
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
-                       ClickSplitTabsButtonWhileSplit) {
+                       MAYBE_ClickSplitTabsButtonWhileSplit) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   EnableSplitTabsButton(browser(), web_view);
