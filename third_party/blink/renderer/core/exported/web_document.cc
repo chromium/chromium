@@ -413,7 +413,9 @@ std::optional<uint32_t> WebDocument::ExecuteScriptTool(
     ScriptToolExecutedCallback tool_executed_cb) {
   if (auto* model_context = ModelContextSupplement::modelContext(
           *Unwrap<Document>()->domWindow()->navigator())) {
+    // TODO(481899636): PLUMB SIGNAL TO THE BROWSER SIDE!
     return model_context->ExecuteTool(name, input_arguments,
+                                      /* signal= */ nullptr,
                                       std::move(tool_executed_cb));
   }
   return std::nullopt;

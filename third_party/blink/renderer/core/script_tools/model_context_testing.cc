@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
 
 namespace blink {
@@ -50,7 +51,8 @@ HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools() {
 ScriptPromise<IDLNullable<IDLString>> ModelContextTesting::executeTool(
     ScriptState* script_state,
     String tool_name,
-    String input_arguments) {
+    String input_arguments,
+    const ExecuteToolOptions* options) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
@@ -75,7 +77,7 @@ ScriptPromise<IDLNullable<IDLString>> ModelContextTesting::executeTool(
       };
 
   model_context_->ExecuteTool(
-      tool_name, input_arguments,
+      tool_name, input_arguments, options->getSignalOr(nullptr),
       blink::BindOnce(callback, WrapPersistent(resolver)));
 
   return promise;

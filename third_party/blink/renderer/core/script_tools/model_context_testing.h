@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_TESTING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_TESTING_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_execute_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_registered_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tools_changed_callback.h"
@@ -23,7 +24,8 @@ class CORE_EXPORT ModelContextTesting : public ScriptWrappable {
   HeapVector<Member<RegisteredTool>> listTools();
   ScriptPromise<IDLNullable<IDLString>> executeTool(ScriptState* state,
                                                     String tool_name,
-                                                    String input_arguments);
+                                                    String input_arguments,
+                                                    const ExecuteToolOptions*);
   void registerToolsChangedCallback(V8ToolsChangedCallback* callback);
   ScriptPromise<IDLString> getCrossDocumentScriptToolResult(ScriptState* state);
 

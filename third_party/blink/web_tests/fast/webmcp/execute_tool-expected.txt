@@ -1,7 +1,10 @@
+CONSOLE ERROR: Uncaught aborted after 500ms (this is expected)
 This tests that document.navigator.modelContextTesting works correctly.
 PASS
 PASS
 INFO: Received expected error for non-existent tool: UnknownError
-INFO: Received expected error for invalid JSON: SyntaxError
+INFO: Received expected error for invalid JSON: UnknownError
 FAIL: executeTool should have thrown an error for input mismatching schema but got 'undefined'
+INFO: Received expected error for aborting after 500ms: UnknownError
+INFO: Received expected error for aborted signal: UnknownError
 

@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/web_mcp_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -210,6 +212,7 @@ void ModelContext::clearContext() {
 std::optional<uint32_t> ModelContext::ExecuteTool(
     const String& name,
     const String& input_arguments,
+    AbortSignal* signal,
     WebDocument::ScriptToolExecutedCallback tool_executed_cb) {
   auto it = tool_map_.find(name);
 
@@ -224,11 +227,13 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
 
   std::optional<uint32_t> execution_id;
   if (it->value->v8_tool_function) {
-    execution_id = ExecuteV8Tool(it->value->v8_tool_function, name,
-                                 input_arguments, std::move(tool_executed_cb));
+    execution_id =
+        ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
+                      signal, std::move(tool_executed_cb));
   } else {
-    // TODO: crbug.com/479598776 - Add support for tracking execution of
+    // TODO(479598776): Add support for tracking execution of
     // declarative tools, so that they can be cancelled.
+    // TODO(481899636): Add signal support for declarative tools.
     ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
                            std::move(tool_executed_cb));
   }
@@ -322,14 +327,16 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
     V8ToolFunction* tool_function,
     const String& name,
     const String& input_arguments,
+    AbortSignal* signal,
     WebDocument::ScriptToolExecutedCallback tool_executed_cb) {
   ScriptState* script_state = tool_function->CallbackRelevantScriptState();
   ScriptState::Scope scope(script_state);
+  v8::TryCatch try_catch(script_state->GetIsolate());
 
   auto script_object = JSONStringToScriptObject(script_state, input_arguments);
   ScriptValue script_value = script_object;
 
-  if (script_value.IsEmpty()) {
+  if (try_catch.HasCaught() || script_value.IsEmpty()) {
     task_runner_->PostTask(
         FROM_HERE,
         blink::BindOnce(
@@ -339,24 +346,49 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
     return std::nullopt;
   }
 
-  v8::Maybe<ScriptPromise<IDLAny>> maybe_result =
-      tool_function->Invoke(nullptr, {std::move(script_object)});
-
-  // If the callback couldn't be run for some reason, treat it as an empty
-  // promise rejected with an abort exception.
   ScriptPromise<IDLAny> result;
-  if (maybe_result.IsNothing()) {
-    result = ScriptPromise<IDLAny>::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kAbortError, "Failure"));
+  if (signal && signal->aborted()) {
+    result = ScriptPromise<IDLAny>::Reject(script_state,
+                                           signal->reason(script_state));
   } else {
-    result = maybe_result.FromJust();
+    v8::Maybe<ScriptPromise<IDLAny>> maybe_result =
+        tool_function->Invoke(nullptr, {std::move(script_object)});
+
+    // If the callback couldn't be run for some reason, treat it as an empty
+    // promise rejected with an abort exception.
+    if (maybe_result.IsNothing()) {
+      result = ScriptPromise<IDLAny>::RejectWithDOMException(
+          script_state, MakeGarbageCollected<DOMException>(
+                            DOMExceptionCode::kAbortError, "Failure"));
+    } else {
+      result = maybe_result.FromJust();
+    }
   }
 
   uint32_t execution_id = ++next_execution_id_;
+
+  // Use blink::ScopedAbortState to manage the abort algorithm lifecycle.
+  // The state is wrapped in a unique_ptr and passed to the cleanup callback
+  // to ensure the abort algorithm is unregistered when the tool finishes.
+  std::unique_ptr<ScopedAbortState> scoped_abort_state;
+  if (signal && !signal->aborted()) {
+    auto callback = blink::BindOnce(&ModelContext::CancelTool,
+                                    WrapWeakPersistent(this), execution_id);
+    auto* handle = signal->AddAlgorithm(std::move(callback));
+    scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
+  }
+
+  auto callback_wrapper = blink::BindOnce(
+      [](WebDocument::ScriptToolExecutedCallback inner_cb,
+         std::unique_ptr<ScopedAbortState> scoped_abort_state,
+         base::expected<WebString, WebDocument::ScriptToolError> result) {
+        // ScopedAbortState is destroyed here, unregistering the algorithm.
+        std::move(inner_cb).Run(result);
+      },
+      std::move(tool_executed_cb), std::move(scoped_abort_state));
   pending_executions_.insert(
       execution_id, PendingExecution{.tool_name = name,
-                                     .callback = std::move(tool_executed_cb)});
+                                     .callback = std::move(callback_wrapper)});
 
   result.Then(script_state,
               MakeGarbageCollected<ToolFunctionFinishedCallback>(

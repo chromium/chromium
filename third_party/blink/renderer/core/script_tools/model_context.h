@@ -23,6 +23,8 @@
 
 namespace blink {
 
+class AbortSignal;
+
 class DeclarativeWebMCPTool {
  public:
   // Executes the associated tool and invokes `done_callback` with the result
@@ -62,6 +64,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   std::optional<uint32_t> ExecuteTool(
       const String& name,
       const String& input_arguments,
+      AbortSignal* signal,
       WebDocument::ScriptToolExecutedCallback tool_executed_cb);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
@@ -89,6 +92,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
       V8ToolFunction* tool_function,
       const String& name,
       const String& input_arguments,
+      AbortSignal* signal,
       WebDocument::ScriptToolExecutedCallback tool_executed_cb);
   void ExecuteDeclarativeTool(
       DeclarativeWebMCPTool* tool,

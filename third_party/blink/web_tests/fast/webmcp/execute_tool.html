@@ -25,6 +25,20 @@ navigator.modelContext.registerTool({
   },
 });
 
+async function longRunning() {
+  await new Promise(r => { setTimeout(r, 5000); });
+}
+
+navigator.modelContext.registerTool({
+  execute: longRunning,
+  name: "longRunning",
+  description: "show tool",
+  inputSchema: {
+      type: "object",
+      properties: {}
+  },
+});
+
 function print(message) {
     document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
 }
@@ -96,6 +110,23 @@ async function runTests() {
         print(`FAIL: executeTool should have thrown an error for input mismatching schema but got '${result}'`);
     } catch (error) {
         print(`INFO: Received expected error for schema mismatch: ${error.name}`);
+    }
+
+    // Test cases for cancelling tools.
+    const controller = new AbortController();
+    const signal = controller.signal;
+    try {
+        setTimeout(() => { controller.abort('aborted after 500ms (this is expected)'); }, 500);
+        const result = await navigator.modelContextTesting.executeTool("longRunning", "{}", { signal });
+        print(`FAIL: executeTool should have thrown an error after 500ms but got '${result}'`);
+    } catch (error) {
+        print(`INFO: Received expected error for aborting after 500ms: ${error.name}`);
+    }
+    try {
+        const result = await navigator.modelContextTesting.executeTool('longRunning', '{}', { signal });
+        print(`FAIL: executeTool should have thrown an error right away but got '${result}'`);
+    } catch (error) {
+        print(`INFO: Received expected error for aborted signal: ${error.name}`);
     }
 
     if (window.testRunner) {
