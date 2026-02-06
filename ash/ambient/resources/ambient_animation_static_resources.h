@@ -40,9 +40,9 @@ class ASH_EXPORT AmbientAnimationStaticResources {
   // supported.
   //
   // If |serializable| is true, GetSkottieWrapper() will return an animation
-  // that can be used for out-of-process rasterization in the graphics pipeline.
+  // that can be used for GPU rasterization in the graphics pipeline.
   // If false, resource creation is cheaper and uses less memory but cannot be
-  // used for OOP rasterization.
+  // used for GPU rasterization.
   static std::unique_ptr<AmbientAnimationStaticResources> Create(
       AmbientUiSettings ui_settings,
       bool serializable);
