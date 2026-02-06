@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -22,6 +23,9 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::auth {
@@ -129,6 +133,58 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
   // check that the bad password really hasn't been set:
   auth_token = MakeAuthToken(kBadPassword);
   ASSERT_TRUE(!auth_token.has_value());
+}
+
+class AuthFactorConfigTestWithLocalPasswordWithManagedLocalPinAndPasswordEnabled
+    : public AuthFactorConfigTestWithLocalPassword {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    AuthFactorConfigTestWithLocalPassword::SetUpInProcessBrowserTestFixture();
+    // Initialize user policy.
+    provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                                /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+  void DisableAllAllowedAuthFactorsPolicy() {
+    policy::PolicyMap user_policy;
+    base::Value allowed_auth_factors(base::Value::Type::LIST);
+
+    user_policy.Set(policy::key::kAllowedLocalAuthFactors,
+                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                    policy::POLICY_SOURCE_CLOUD,
+                    std::move(allowed_auth_factors), nullptr);
+    provider_.UpdateChromePolicy(user_policy);
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  base::test::ScopedFeatureList feature_list_{
+      ash::features::kManagedLocalPinAndPassword};
+};
+
+// Checks that PasswordFactorEditor::UpdateOrSetPassword can be used to set
+// an online password for a user having a local password, as that should be
+// valid when the policy is disabled.
+IN_PROC_BROWSER_TEST_F(
+    AuthFactorConfigTestWithLocalPasswordWithManagedLocalPinAndPasswordEnabled,
+    UpdateLocalPasswordToGaiaPassword) {
+  DisableAllAllowedAuthFactorsPolicy();
+  std::optional<std::string> auth_token = MakeAuthToken(test::kLocalPassword);
+  ASSERT_TRUE(auth_token.has_value());
+  mojom::PasswordFactorEditor& password_editor =
+      GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
+                              g_browser_process->local_state());
+
+  base::test::TestFuture<mojom::ConfigureResult> result;
+  password_editor.UpdateOrSetOnlinePassword(*auth_token, test::kGaiaPassword,
+                                            result.GetCallback());
+
+  ASSERT_EQ(result.Get(), mojom::ConfigureResult::kSuccess);
+  // Since MakeAuthToken authenticates using the provided password, this will
+  // check that the new password works:
+  auth_token = MakeAuthToken(test::kGaiaPassword);
+  ASSERT_TRUE(auth_token.has_value());
 }
 
 class AuthFactorConfigTestWithGaiaPassword : public AuthFactorConfigTestBase {
