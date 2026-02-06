@@ -174,7 +174,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          WebUIURLLoaderFactoryTest,
                          testing::ValuesIn(kRangeRequestTestData));
 
-TEST_P(WebUIURLLoaderFactoryTest, RangeRequest) {
+// TODO(crbug.com/482413371): Disabled on linux for being flaky.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RangeRequest DISABLED_RangeRequest
+#else
+#define MAYBE_RangeRequest RangeRequest
+#endif
+TEST_P(WebUIURLLoaderFactoryTest, MAYBE_RangeRequest) {
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
       CreateWebUIURLLoaderFactory(main_rfh(), kTestWebUIScheme,
                                   /*allowed_hosts=*/{}));
