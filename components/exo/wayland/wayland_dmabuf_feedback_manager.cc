@@ -340,14 +340,6 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
 
   size_t format_table_index = 0;
   for (const auto& [drm_format, modifiers] : caps.drm_formats_and_modifiers) {
-    if (!ui::IsValidBufferFormat(drm_format))
-      continue;
-
-    if (!caps.mappable_formats.contains(
-            ui::GetSharedImageFormatFromFourCCFormat(drm_format))) {
-      continue;
-    }
-
     base::flat_map<size_t, uint64_t> modifier_entries;
     modifier_entries.emplace(format_table_index++, DRM_FORMAT_MOD_INVALID);
 
@@ -360,21 +352,6 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     }
 
     drm_formats_and_modifiers_.emplace(drm_format, modifier_entries);
-  }
-  if (drm_formats_and_modifiers_.empty()) {
-    // Fallback path, to be removed ASAP. We should not advertise the protocol
-    // at all.
-    for (auto format : ui::kDrmSharedImageFormats) {
-      int drm_format = ui::GetFourCCFormatFromSharedImageFormat(format);
-      if (caps.mappable_formats.contains(format) &&
-          ui::IsValidBufferFormat(drm_format)) {
-        base::flat_map<size_t, uint64_t> modifier_entries;
-        modifier_entries.emplace(format_table_index++, DRM_FORMAT_MOD_INVALID);
-        drm_formats_and_modifiers_.emplace(drm_format, modifier_entries);
-      }
-    }
-    version_ = ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION;
-    return;
   }
 
   if (!caps.drm_device_id) {

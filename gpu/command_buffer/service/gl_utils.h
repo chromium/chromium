@@ -10,8 +10,11 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/buffer_types.h"
@@ -83,6 +86,9 @@ void PopulateGLCapabilities(GLCapabilities* caps,
                             const FeatureInfo* feature_info);
 
 #if BUILDFLAG(IS_CHROMEOS)
+void PopulateEmptyDRMCaps(
+    base::flat_set<viz::SharedImageFormat> mappable_formats,
+    base::flat_map<uint32_t, std::vector<uint64_t>>& drm_formats_and_modifiers);
 void PopulateDRMCapabilities(Capabilities* caps,
                              const FeatureInfo* feature_info);
 #endif

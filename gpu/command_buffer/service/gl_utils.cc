@@ -22,6 +22,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <sys/stat.h>
+
+#include "ui/gfx/linux/drm_util_linux.h"  // nogncheck
+#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -235,6 +238,18 @@ void PopulateGLCapabilities(GLCapabilities* caps,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+void PopulateEmptyDRMCaps(
+    base::flat_set<viz::SharedImageFormat> mappable_formats,
+    base::flat_map<uint32_t, std::vector<uint64_t>>&
+        drm_formats_and_modifiers) {
+  for (auto format : mappable_formats) {
+    int drm_format = ui::GetFourCCFormatFromSharedImageFormat(format);
+    // NativePixmapHandle::kNoModifier is equivalent to DRM_FORMAT_MOD_INVALID.
+    std::vector<uint64_t> modifiers = {gfx::NativePixmapHandle::kNoModifier};
+    drm_formats_and_modifiers.emplace(drm_format, modifiers);
+  }
+}
+
 void PopulateDRMCapabilities(Capabilities* caps,
                              const FeatureInfo* feature_info) {
   DCHECK(caps != nullptr);
