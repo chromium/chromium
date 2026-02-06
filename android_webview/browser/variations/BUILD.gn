@@ -4,6 +4,8 @@
 
 source_set("variations") {
   sources = [
+    "aw_entropy_providers.cc",
+    "aw_entropy_providers.h",
     "aw_variations_service_client.cc",
     "aw_variations_service_client.h",
     "variations_seed_loader.cc",
@@ -12,6 +14,7 @@ source_set("variations") {
   deps = [
     "//android_webview:browser_jni_headers",
     "//android_webview/proto:aw_variations_seed_proto",
+    "//components/metrics",
     "//components/variations",
     "//components/variations/net",
     "//components/variations/service",

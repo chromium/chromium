@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_field_trials.h"
 
+#include "android_webview/browser/variations/aw_entropy_providers.h"
 #include "components/variations/feature_overrides.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -14,12 +15,16 @@ namespace {
 
 const char kTestEnabledFeatureName[] = "AwFieldTrialTestEnabledFeature";
 const char kTestDisabledFeatureName[] = "AwFieldTrialTestDisabledFeature";
+const char kAllowlistedFeatureName[] = "MyTestStudy";
 
 BASE_FEATURE(kTestEnabledFeature,
              kTestEnabledFeatureName,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTestDisabledFeature,
              kTestDisabledFeatureName,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowlistedFeature,
+             kAllowlistedFeatureName,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
@@ -51,9 +56,14 @@ class AwFieldTrialsTest : public testing::Test {
     // Set-up a trial enable/disable test feature. An empty limited entropy
     // randomization is used since only default_entropy() will used on the
     // constructed `entropy_providers` instance.
-    variations::EntropyProviders entropy_providers(
-        "client_id", {0, 8000},
+    auto standard_providers = std::make_unique<variations::EntropyProviders>(
+        "client_id", variations::ValueInRange{0, 8000},
         /*limited_entropy_randomization_source=*/std::string_view());
+    const std::set<std::string_view> kAllowlist{};
+    // Note: 0 is a valid nonembedded low entropy source.
+    AwEntropyProviders entropy_providers(
+        std::move(standard_providers), /*nonembedded_low_entropy_source=*/0,
+        std::make_unique<const std::set<std::string_view>>(kAllowlist));
     scoped_refptr<base::FieldTrial> trial(
         base::FieldTrialList::FactoryGetFieldTrial(
             feature_name, /*total_probability=*/1000, "Default",
@@ -169,6 +179,24 @@ TEST_F(AwFieldTrialsTest, AwFeatureOverrides_WithPreviousUseDefaultOverride) {
   EXPECT_FALSE(base::FeatureList::IsEnabled(kTestEnabledFeature));
   // The associated trial should have been activated.
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kTestEnabledFeatureName));
+}
+
+TEST_F(AwFieldTrialsTest, AllowlistedFeature) {
+  // Verify that an allowlisted feature can be created with AwEntropyProviders.
+
+  AwFieldTrials aw_field_trials;
+  auto feature_list = std::make_unique<base::FeatureList>();
+
+  // Use a mock entropy source (0) that is different from the default if
+  // possible, but here we just ensure it runs without crashing and registers
+  // the override.
+  SetUpFeatureTrial(feature_list.get(), kAllowlistedFeatureName,
+                    base::FeatureList::OVERRIDE_ENABLE_FEATURE);
+
+  aw_field_trials.RegisterFeatureOverrides(feature_list.get());
+  base::FeatureList::SetInstance(std::move(feature_list));
+
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kAllowlistedFeature));
 }
 
 }  // namespace android_webview

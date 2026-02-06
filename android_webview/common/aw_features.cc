@@ -281,4 +281,11 @@ BASE_FEATURE(kWebViewEnableApiCallUserActions,
 // Kill switch for reporting web performance metrics.
 BASE_FEATURE(kWebViewWebPerformanceMetricsReporting,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// A no-op feature flag used to verify that the nonembedded low entropy source
+// pipeline for Finch experiments is working correctly. This feature is not
+// intended to be used to gate any production code.
+BASE_FEATURE(kWebViewTestNonembeddedLowEntropySource,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

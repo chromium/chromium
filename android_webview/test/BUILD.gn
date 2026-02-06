@@ -869,6 +869,7 @@ test("android_webview_unittests") {
     "../browser/state_serializer_unittest.cc",
     "../browser/tracing/aw_background_tracing_metrics_provider_unittest.cc",
     "../browser/tracing/aw_tracing_delegate_unittest.cc",
+    "../browser/variations/aw_entropy_providers_unittest.cc",
     "../lib/webview_tests.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_shim_unittest.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_unittest.cc",
