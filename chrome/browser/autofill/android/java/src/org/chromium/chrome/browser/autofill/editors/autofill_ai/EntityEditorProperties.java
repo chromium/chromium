@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
@@ -23,8 +25,27 @@ public class EntityEditorProperties {
     public static final ReadableObjectPropertyKey<Runnable> CANCEL_RUNNABLE =
             new ReadableObjectPropertyKey<>("cancel_callback");
 
+    public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TITLE =
+            new ReadableObjectPropertyKey<>("delete_confirmation_title");
+    public static final ReadableObjectPropertyKey<CharSequence> DELETE_CONFIRMATION_TEXT =
+            new ReadableObjectPropertyKey<>("delete_confirmation_text");
+    public static final ReadableIntPropertyKey DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID =
+            new ReadableIntPropertyKey("delete_confirmation_primary_button_text");
+    public static final ReadableBooleanPropertyKey ALLOW_DELETE =
+            new ReadableBooleanPropertyKey("allow_delete");
+    public static final ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
+            new ReadableObjectPropertyKey<>("delete_callback");
+
     public static final PropertyKey[] ALL_KEYS = {
-        EDITOR_TITLE, VISIBLE, DONE_RUNNABLE, CANCEL_RUNNABLE,
+        EDITOR_TITLE,
+        VISIBLE,
+        DONE_RUNNABLE,
+        CANCEL_RUNNABLE,
+        DELETE_CONFIRMATION_TITLE,
+        DELETE_CONFIRMATION_TEXT,
+        DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
+        ALLOW_DELETE,
+        DELETE_RUNNABLE,
     };
 
     private EntityEditorProperties() {}

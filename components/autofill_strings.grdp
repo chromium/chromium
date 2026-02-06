@@ -1176,6 +1176,14 @@
     </message>
   </if>
 
+  <!-- Entity editor strings used on Android -->
+  <!-- TODO: crbug.com/460410690 - Make strings translateable. -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DELETE_LOCAL_ENTITY_DIALOG_TEXT" desc="The text that appears beneath a 'Delete object' title. We want the 'Autofill' keyword to be as prominent as possible because that word captures the value of saved information. 'On this device': helps the user understand that information is saved locally, not in the Cloud." translateable="false" formatter_data="android_java">
+      Autofill won't have this info on this device to help fill out forms
+    </message>
+  </if>
+
   <!-- FFR Dialog -->
   <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_TITLE" desc="A sub title that highlights the benefits of using ‘enhanced autofill’. ‘More fields’ is referring to values in online forms. The user can fill more fields faster because ‘enhanced autofill’ supports more data types than standard autofill, including passports, driver’s licenses, and vehicles.">
     Fill more fields faster

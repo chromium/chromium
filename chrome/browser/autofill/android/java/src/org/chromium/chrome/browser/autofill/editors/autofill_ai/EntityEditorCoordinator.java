@@ -21,8 +21,18 @@ public class EntityEditorCoordinator {
     private final EntityEditorView mEditorView;
     private @Nullable PropertyModel mEditorModel;
 
-    public EntityEditorCoordinator(Activity activity) {
-        mMediator = new EntityEditorMediator();
+    /** Delegate used to subscribe to AddressEditor user interactions. */
+    public interface Delegate {
+        /**
+         * The user has confirmed deletion of this entity instance.
+         *
+         * @param entityInstance the initial entity instance with no user changes.
+         */
+        default void onDelete(EntityInstance entityInstance) {}
+    }
+
+    public EntityEditorCoordinator(Activity activity, Delegate delegate) {
+        mMediator = new EntityEditorMediator(activity, delegate);
         mEditorView = new EntityEditorView(activity);
     }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.View;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -27,12 +29,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -41,51 +45,59 @@ import java.time.ZoneId;
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
 public class EntityEditorModuleTest {
+    private static final EntityType PASSPORT_TYPE =
+            new EntityType(
+                    /* typeName= */ EntityTypeName.PASSPORT,
+                    /* isReadOnly= */ false,
+                    /* typeNameAsString= */ "Passport",
+                    /* addEntityTypeString= */ "Add passport",
+                    /* editEntityTypeString= */ "Edit passport",
+                    /* deleteEntityTypeString= */ "Delete passport");
+
+    private static final EntityInstance LOCAL_PASSPORT =
+            new EntityInstance.Builder(PASSPORT_TYPE)
+                    .setGUID("guid")
+                    .setRecordType(RecordType.LOCAL)
+                    .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                    .setUseCount(0)
+                    .build();
+
+    private static final EntityInstance WALLET_PASSPORT =
+            new EntityInstance.Builder(PASSPORT_TYPE)
+                    .setGUID("guid")
+                    .setRecordType(RecordType.SERVER_WALLET)
+                    .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                    .setUseCount(0)
+                    .build();
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Mock private Delegate mDelegate;
 
     private Activity mActivity;
     private EntityEditorCoordinator mCoordinator;
     private View mContainerView;
 
-    private EntityInstance mEntityInstance;
-
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.setupActivity(TestActivity.class);
-        mCoordinator = new EntityEditorCoordinator(mActivity);
+        mCoordinator = new EntityEditorCoordinator(mActivity, mDelegate);
         mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();
-
-        EntityType entityType =
-                new EntityType(
-                        /* typeName= */ EntityTypeName.PASSPORT,
-                        /* isReadOnly= */ false,
-                        /* typeNameAsString= */ "Passport",
-                        /* addEntityTypeString= */ "Add passport",
-                        /* editEntityTypeString= */ "Edit passport",
-                        /* deleteEntityTypeString= */ "Delete passport");
-        mEntityInstance =
-                new EntityInstance.Builder(entityType)
-                        .setGUID("guid")
-                        .setRecordType(RecordType.LOCAL)
-                        .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
-                        .setUseCount(0)
-                        .build();
     }
 
     @Test
     @SmallTest
     public void testShowEditorDialog() {
-        mCoordinator.showEditorDialog(mEntityInstance);
+        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
-        assertEquals(mEntityInstance.getEntityType().getAddEntityTypeString(), toolbar.getTitle());
+        assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 
     @Test
     @SmallTest
     public void testClickDoneButton() {
-        mCoordinator.showEditorDialog(mEntityInstance);
+        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
@@ -93,8 +105,38 @@ public class EntityEditorModuleTest {
     @Test
     @SmallTest
     public void testClickCancelButton() {
-        mCoordinator.showEditorDialog(mEntityInstance);
+        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
         mContainerView.findViewById(R.id.payments_edit_cancel_button).performClick();
         assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testDeleteLocalEntity() {
+        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        assertTrue(model.get(EntityEditorProperties.ALLOW_DELETE));
+        assertEquals(
+                model.get(EntityEditorProperties.DELETE_CONFIRMATION_TITLE),
+                PASSPORT_TYPE.getDeleteEntityTypeString());
+        assertEquals(
+                model.get(EntityEditorProperties.DELETE_CONFIRMATION_TEXT),
+                mActivity.getString(
+                        R.string.autofill_ai_entity_editor_delete_local_entity_dialog_text));
+        assertEquals(
+                model.get(EntityEditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID),
+                R.string.autofill_delete_suggestion_button);
+
+        model.get(EntityEditorProperties.DELETE_RUNNABLE).run();
+        verify(mDelegate).onDelete(LOCAL_PASSPORT);
+    }
+
+    @Test
+    @SmallTest
+    public void testDeleteWalletEntity() {
+        mCoordinator.showEditorDialog(WALLET_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        assertFalse(model.get(EntityEditorProperties.ALLOW_DELETE));
     }
 }
