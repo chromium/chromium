@@ -59,6 +59,10 @@ BASE_FEATURE(kAndroidDesktopWebPrefsLargeDisplays,
 
 BASE_FEATURE(kAndroidSpellcheckNativeUi, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSpellcheckFullApiBlink, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the platform in the User-Agent metadata for Android desktop will
+// be "Android" instead of "Linux".
+BASE_FEATURE(kAndroidDesktopUAPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Avoids copying ResourceRequest::TrustedParams when possible.

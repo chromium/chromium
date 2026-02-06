@@ -610,7 +610,10 @@ std::string GetPlatformForUAMetadata() {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::device_info::is_desktop() ||
       base::android::device_info::is_xr()) {
-    return "Linux";
+    return base::FeatureList::IsEnabled(
+               blink::features::kAndroidDesktopUAPlatform)
+               ? "Android"
+               : "Linux";
   }
 #endif
 

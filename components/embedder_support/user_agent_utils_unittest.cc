@@ -738,6 +738,16 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadataForXrDevice) {
   std::vector<std::string> expected_form_factors = {"Desktop", "XR"};
   EXPECT_EQ(metadata.form_factors, expected_form_factors);
 
+  // The kAndroidDesktopUAPlatform changes XR devices platform client hint to
+  // Android.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        blink::features::kAndroidDesktopUAPlatform);
+    auto metadata_with_feature = GetUserAgentMetadata();
+    EXPECT_EQ(metadata_with_feature.platform, "Android");
+  }
+
   // Restore the device info.
   base::android::device_info::reset_is_xr_for_testing();
 }

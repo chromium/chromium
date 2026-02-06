@@ -6,6 +6,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -31,7 +32,10 @@ static void JNI_ContentUtils_SetUserAgentOverride(
       embedder_support::BuildUserAgentFromOSAndProduct(
           kLinuxInfoStr, embedder_support::GetProductAndVersion());
   spoofed_ua.ua_metadata_override = metadata;
-  spoofed_ua.ua_metadata_override->platform = "Linux";
+  spoofed_ua.ua_metadata_override->platform =
+      base::FeatureList::IsEnabled(blink::features::kAndroidDesktopUAPlatform)
+          ? "Android"
+          : "Linux";
   spoofed_ua.ua_metadata_override->platform_version =
       std::string();  // match content::GetOSVersion(false) on Linux
   spoofed_ua.ua_metadata_override->model = std::string();

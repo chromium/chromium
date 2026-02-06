@@ -314,6 +314,24 @@ public class NavigateTest {
                 userAgentString);
     }
 
+    /** Test 'AndroidDesktopUAPlatform' feature properly affects UA client hints */
+    @Test
+    @MediumTest
+    @Feature({"Navigation"})
+    @CommandLineFlags.Add({"enable-features=AndroidDesktopUAPlatform"})
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testAndroidDesktopUAPlatformClientHint() throws Exception {
+        final Tab tab =
+                navigateUrlToEchoClientHintHeaders(
+                        "/set-header?Accept-CH: sec-ch-ua-platform",
+                        "/echoheader?sec-ch-ua-platform",
+                        /* overrideUserAgent= */ false);
+        String content =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(), "document.body.textContent");
+        Assert.assertEquals("Proper headers", "\"\\\"Android\\\"\"", content);
+    }
+
     private Tab navigateUrlToEchoClientHintHeaders(
             String setHeaderString, String echoHeaderString, boolean overrideUserAgent)
             throws Exception {
