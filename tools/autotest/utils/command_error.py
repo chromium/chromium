@@ -20,3 +20,7 @@ class CommandError(Exception):
       message += f'Output:\n{self.output}\n'
     message += '***'
     return message
+
+
+class AutotestError(Exception):
+  pass

@@ -53,12 +53,9 @@ class FindMatchingTestFilesTest(TestCase):
 
   def test_cc_no_test(self):
     self.fs.create_file('foo.cc')
-    stderr_buf = io.StringIO()
-    with contextlib.redirect_stderr(stderr_buf):
-      with self.assertRaises(SystemExit):
-        autotest.FindMatchingTestFiles('foo.cc')
-    self.assertRegex(stderr_buf.getvalue(),
-                     "foo.cc doesn't look like a test file")
+    with self.assertRaises(autotest.AutotestError) as cm:
+      autotest.FindMatchingTestFiles('foo.cc')
+    self.assertEqual(str(cm.exception), "foo.cc doesn't look like a test file")
 
   def test_h_for_cc_test(self):
     self.fs.create_file('foo.h')
