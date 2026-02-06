@@ -43,7 +43,8 @@ WindowController* ChromeExtensionFunctionDetails::GetCurrentWindowController()
             function_->dispatcher()->GetExtensionWindowController()) {
       // Only return the found controller if it's not about to be deleted,
       // otherwise fall through to finding another one.
-      if (!window_controller->IsDeleteScheduled()) {
+      if (!window_controller->GetBrowserWindowInterface()
+               ->IsDeleteScheduled()) {
         return window_controller;
       }
     }

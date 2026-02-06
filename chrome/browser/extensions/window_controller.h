@@ -110,10 +110,6 @@ class WindowController {
   virtual Browser* GetBrowser() const;
 #endif
 
-  // Returns true if the window is in the process of being torn down. See
-  // Browser::is_delete_scheduled().
-  virtual bool IsDeleteScheduled() const = 0;
-
   // Returns the WebContents associated with the active tab, if any. Returns
   // null if there is no active tab.
   virtual content::WebContents* GetActiveTab() const = 0;

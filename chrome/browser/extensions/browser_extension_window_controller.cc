@@ -167,15 +167,6 @@ Browser* BrowserExtensionWindowController::GetBrowser() const {
 }
 #endif
 
-bool BrowserExtensionWindowController::IsDeleteScheduled() const {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return false;
-#else
-  return GetBrowser()->is_delete_scheduled();
-#endif
-}
-
 content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
   // In some situations, especially tests, there may not be an active tab.
   tabs::TabInterface* active_tab = tab_list_->GetActiveTab();

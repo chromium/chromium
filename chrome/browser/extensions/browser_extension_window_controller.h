@@ -56,7 +56,6 @@ class BrowserExtensionWindowController : public WindowController {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* GetBrowser() const override;
 #endif
-  bool IsDeleteScheduled() const override;
   content::WebContents* GetActiveTab() const override;
   bool HasEditableTabStrip() const override;
   int GetTabCount() const override;

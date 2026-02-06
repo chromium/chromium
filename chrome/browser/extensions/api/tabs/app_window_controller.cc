@@ -54,11 +54,6 @@ Browser* AppWindowController::GetBrowser() const {
   return nullptr;
 }
 
-bool AppWindowController::IsDeleteScheduled() const {
-  // App windows don't have the complicated multiphase tear-down.
-  return false;
-}
-
 content::WebContents* AppWindowController::GetActiveTab() const {
   return app_window_->web_contents();
 }
