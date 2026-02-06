@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/glic_tab_observer.h"
+#include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -182,8 +184,10 @@ class GlicInstanceCoordinatorImpl
   void OnTabEvent(const GlicTabEvent& event);
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* GetOrCreateInstanceImplForFloaty();
-  GlicInstanceImpl* CreateGlicInstance();
-  std::unique_ptr<GlicInstanceImpl> CreateInstanceImpl();
+  GlicInstanceImpl* CreateGlicInstance(
+      std::optional<InstanceId> instance_id = std::nullopt);
+  std::unique_ptr<GlicInstanceImpl> CreateInstanceImpl(
+      std::optional<InstanceId> instance_id = std::nullopt);
   void CreateWarmedInstance();
 
   // Helper method to get a list of recently active instances sorted by time.
@@ -210,6 +214,13 @@ class GlicInstanceCoordinatorImpl
 
   void NotifyActiveInstanceChanged();
   void ComputeContentAccessIndicator();
+
+  void OnTabsInserted(const TabStripModelChange::Insert* insert);
+  void MaybeDaisyChainSidePanel(const TabCreationEvent& event);
+  GlicInstanceImpl* GetOrRestoreInstanceImpl(
+      const GlicRestoredState::InstanceInfo& instance_info);
+  void RestoreTab(content::WebContents* web_contents,
+                  const GlicRestoredState& state);
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;

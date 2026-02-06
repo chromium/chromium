@@ -208,6 +208,20 @@ class GlicBrowserTestMixin : public T {
         "Failed to close Glic UI");
   }
 
+  [[nodiscard]] GlicInstanceImpl* WaitForGlicInstanceBoundToTab(
+      tabs::TabInterface* tab) {
+    bool success = RunUntil(
+        [this, tab]() {
+          GlicInstanceImpl* instance = GetInstanceForTab(tab);
+          return instance;
+        },
+        "Failed to wait for Glic to be bound to tab");
+    if (!success) {
+      return nullptr;
+    }
+    return GetInstanceForTab(tab);
+  }
+
   // Returns the only glic instance. CHECK fails if there is ever more than one.
   GlicInstanceImpl* GetOnlyGlicInstance() {
     CHECK(GlicEnabling::IsMultiInstanceEnabled());

@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_close_options.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -35,6 +36,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "content/public/browser/web_contents.h"
+#else
+#include "chrome/browser/ui/browser_commands.h"
 #endif
 
 namespace glic {
@@ -143,7 +146,8 @@ class GlicInstanceCoordinatorBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicMultiInstance,
                               features::kGlicDaisyChainNewTabs,
-                              features::kGlicWebContentsWarming},
+                              features::kGlicWebContentsWarming,
+                              features::kGlicTabRestoration},
         /*disabled_features=*/{});
   }
   ~GlicInstanceCoordinatorBrowserTest() override = default;
@@ -509,6 +513,187 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Verify kContextMenu trigger explicitly pins the tab.
   coordinator().ShowInstanceForTabs({tab}, instance->id());
   EXPECT_TRUE(instance->sharing_manager().IsTabPinned(tab->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, TabRestoration) {
+  SKIP_NEEDS_ANDROID_IMPL("Tab restore isn't supported on Android yet");
+#if !BUILDFLAG(IS_ANDROID)
+  // Add a new tab so we don't close the browser when we close the tab.
+  auto* tab = CreateAndActivateTab(GURL("about:blank"));
+  // Wait for contents to load to ensure that the tab will be eligible for
+  // restoration.
+  EXPECT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+
+  GlicInstanceImpl* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+  auto instance_id = instance->id();
+
+  // Simulates a user closing the active tab (Ctrl+W).
+  // This ensures the generic "create historical tab" flag is set, which is
+  // required for LiveTabContext to pick it up for session restore.
+  chrome::CloseTab(browser());
+
+  // Restore the tab.
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  chrome::RestoreTab(browser());
+  // Verify the restored tab is bound to the instance and the side panel is
+  // open.
+  tabs::TabInterface* restored_tab = waiter.Wait();
+  ASSERT_TRUE(restored_tab);
+
+  GlicInstance* restored_instance = nullptr;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    restored_instance = coordinator().GetInstanceForTab(restored_tab);
+    return restored_instance != nullptr;
+  }));
+
+  EXPECT_TRUE(restored_instance->IsShowing());
+  EXPECT_EQ(restored_instance->id(), instance_id);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       TabRestoration_PinnedButNotBound) {
+  SKIP_NEEDS_ANDROID_IMPL("Tab restore isn't supported on Android yet");
+#if !BUILDFLAG(IS_ANDROID)
+  // Tab 1: Keep Instance 1 alive.
+  CreateAndActivateTab(GURL("about:blank"));
+  GlicInstanceImpl* instance1 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance1);
+  auto instance1_id = instance1->id();
+
+  // Tab 2: The test tab.
+  auto* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  // Wait for contents to load to ensure that the tab will be eligible for
+  // restoration.
+  EXPECT_TRUE(content::WaitForLoadStop(tab2->GetContents()));
+
+  // Bind Tab 2 to Instance 1.
+  coordinator().ShowInstanceForTabs({tab2}, instance1_id);
+
+  // Create Instance 2 and bind Tab 2 to it.
+  // This should unbind Tab 2 from Instance 1, but keep it pinned to Instance 1.
+  ASSERT_TRUE(instance1->sharing_manager().IsTabPinned(tab2->GetHandle()));
+  coordinator().CreateNewConversationForTabs({tab2});
+  GlicInstanceImpl* instance2 = GetInstanceForTab(tab2);
+  ASSERT_TRUE(instance2);
+  ASSERT_NE(instance2, instance1);
+  // Set a conversation ID so we can verify restoration of conversation id.
+  const std::string kConvId = "test_conversation_id";
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = kConvId;
+  instance2->RegisterConversation(std::move(info), base::DoNothing());
+  auto instance2_id = instance2->id();
+
+  // Verify Tab 2 state before close.
+  // Bound to Instance 2.
+  ASSERT_EQ(GetInstanceForTab(tab2), instance2);
+  // Pinned to Instance 2 (auto-pinned).
+  ASSERT_TRUE(instance2->sharing_manager().IsTabPinned(tab2->GetHandle()));
+  // Pinned to Instance 1.
+  ASSERT_TRUE(instance1->sharing_manager().IsTabPinned(tab2->GetHandle()));
+  GetTabListInterface()->ActivateTab(tab2->GetHandle());
+
+  // Close Tab 2.
+  chrome::CloseTab(browser());
+
+  // Restore Tab 2.
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  chrome::RestoreTab(browser());
+  tabs::TabInterface* restored_tab = waiter.Wait();
+  ASSERT_TRUE(restored_tab);
+
+  auto* restored_instance2 = WaitForGlicInstanceBoundToTab(restored_tab);
+  // The newly created instance should have the same instance id and
+  // conversation id as the original instance.
+  ASSERT_EQ(instance2_id, restored_instance2->id());
+  ASSERT_EQ(restored_instance2->conversation_id(), kConvId);
+  // Should be pinned to Instance 2.
+  ASSERT_TRUE(restored_instance2->sharing_manager().IsTabPinned(
+      restored_tab->GetHandle()));
+  // Should be pinned to Instance 1.
+  ASSERT_TRUE(
+      instance1->sharing_manager().IsTabPinned(restored_tab->GetHandle()));
+  EXPECT_TRUE(WaitForSidePanelState(restored_tab,
+                                    GlicSidePanelCoordinator::State::kShown));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       TabRestoration_RestoreToExistingInstance) {
+  SKIP_NEEDS_ANDROID_IMPL("Tab restore isn't supported on Android yet");
+#if !BUILDFLAG(IS_ANDROID)
+  // Tab 1: Keep the instance alive.
+  CreateAndActivateTab(GURL("about:blank"));
+  GlicInstanceImpl* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+  auto instance_id = instance->id();
+
+  // Tab 2: The one we will close and restore.
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  // Wait for contents to load to ensure that the tab will be eligible for
+  // restoration.
+  EXPECT_TRUE(content::WaitForLoadStop(tab2->GetContents()));
+  coordinator().ShowInstanceForTabs({tab2}, instance_id);
+  ASSERT_EQ(coordinator().GetInstanceForTab(tab2), instance);
+
+  // Close Tab 2.
+  chrome::CloseTab(browser());
+
+  // The instance should still exist because Tab 1 keeps it alive.
+  ASSERT_EQ(coordinator().GetInstanceImplFor(instance_id), instance);
+
+  // Restore Tab 2.
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  chrome::RestoreTab(browser());
+  tabs::TabInterface* restored_tab = waiter.Wait();
+  ASSERT_TRUE(restored_tab);
+
+  auto* bound_instance = WaitForGlicInstanceBoundToTab(restored_tab);
+
+  // Should have reused the existing instance.
+  EXPECT_EQ(bound_instance, instance);
+  EXPECT_TRUE(WaitForSidePanelState(restored_tab,
+                                    GlicSidePanelCoordinator::State::kShown));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       TabRestoration_SidePanelClosed) {
+  SKIP_NEEDS_ANDROID_IMPL("Tab restore isn't supported on Android yet");
+#if !BUILDFLAG(IS_ANDROID)
+  // Add a new tab so we don't close the browser when we close the tab.
+  auto* tab = CreateAndActivateTab(GURL("about:blank"));
+  // Wait for contents to load to ensure that the tab will be eligible for
+  // restoration.
+  EXPECT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+
+  GlicInstanceImpl* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+
+  // Close the side panel for this tab.
+  auto original_instance_id = instance->id();
+  instance->Close(EmbedderKey(tab), CloseOptions());
+  ASSERT_TRUE(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
+
+  // Close the tab.
+  chrome::CloseTab(browser());
+
+  // Restore the tab.
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  chrome::RestoreTab(browser());
+  tabs::TabInterface* restored_tab = waiter.Wait();
+  ASSERT_TRUE(restored_tab);
+
+  auto* bound_instance = WaitForGlicInstanceBoundToTab(restored_tab);
+
+  // Since it was closed (unbound) when we closed the tab, it should be restored
+  // as unbound.
+  EXPECT_EQ(original_instance_id, bound_instance->id());
+  EXPECT_TRUE(WaitForSidePanelState(restored_tab,
+                                    GlicSidePanelCoordinator::State::kClosed));
+#endif
 }
 
 }  // namespace glic

@@ -35,6 +35,7 @@ struct SidePanelShowOptions {
       : tab(bound_tab) {}
   base::raw_ref<tabs::TabInterface> tab;
   bool suppress_opening_animation = false;
+  bool pin_on_bind = true;
   GlicPinTrigger pin_trigger = GlicPinTrigger::kUnknown;
 };
 
