@@ -23,6 +23,7 @@ config("warnings_config") {
     "-Wno-extra-semi",
     "-Wno-thread-safety-analysis",
     "-Wno-loop-analysis",
+    "-Wno-exit-time-destructors",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
@@ -89,6 +90,7 @@ source_set("litert_headers") {
     "src/litert/c/litert_compiled_model.h",
     "src/litert/c/litert_custom_tensor_buffer.h",
     "src/litert/c/litert_environment.h",
+    "src/litert/c/litert_environment_options.h",
     "src/litert/c/litert_event.h",
     "src/litert/c/litert_event_type.h",
     "src/litert/c/litert_gl_types.h",
@@ -110,6 +112,7 @@ source_set("litert_headers") {
     "src/litert/cc/internal/litert_detail.h",
     "src/litert/cc/internal/litert_handle.h",
     "src/litert/cc/internal/litert_op_options.h",
+    "src/litert/cc/internal/litert_runtime_builtin.h",
     "src/litert/cc/internal/litert_shared_library.h",
     "src/litert/cc/internal/litert_tensor_buffer_utils.h",
     "src/litert/cc/internal/scoped_file.h",
@@ -209,6 +212,8 @@ source_set("litert_c") {
     "src/litert/c/litert_common.cc",
     "src/litert/c/litert_compiled_model.cc",
     "src/litert/c/litert_environment.cc",
+    "src/litert/c/litert_environment_options.cc",
+    "src/litert/c/litert_event.cc",
     "src/litert/c/litert_layout.cc",
     "src/litert/c/litert_metrics.cc",
     "src/litert/c/litert_model.cc",
@@ -236,6 +241,7 @@ source_set("litert_c") {
 source_set("litert_cc") {
   sources = [
     "src/litert/cc/internal/litert_op_options.cc",
+    "src/litert/cc/internal/litert_runtime_builtin.cc",
     "src/litert/cc/internal/litert_shared_library.cc",
     "src/litert/cc/internal/litert_tensor_buffer_utils.cc",
     "src/litert/cc/internal/scoped_file.cc",
