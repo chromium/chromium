@@ -97,6 +97,10 @@ static crash_reporter::CrashKeyString<32> crash_key_stream_count(
 static crash_reporter::CrashKeyString<32> crash_key_ongoing_content_navigations(
     "pdf-ongoing-content-navigations");
 
+// PDF extension navigation-specific crash key.
+static crash_reporter::CrashKeyString<256> crash_key_did_finish_navigation_url(
+    "pdf-did-finish-navigation-url");
+
 // PDF content navigation-specific crash keys.
 static crash_reporter::CrashKeyString<6> crash_key_did_start_navigation(
     "pdf-did-start-navigation");
@@ -521,6 +525,12 @@ void PdfViewerStreamManager::DidFinishNavigation(
   if (stream_info->DidPdfExtensionStartNavigation()) {
     if (stream_info->extension_host_frame_tree_node_id() ==
         navigation_handle->GetFrameTreeNodeId()) {
+      const GURL& url = navigation_handle->GetURL();
+
+      // TODO(crbug.com/432497344, crbug.com/479589477): Remove debugging data.
+      crash_reporter::ScopedCrashKeyString
+          scoped_crash_key_did_finish_navigation_url(
+              &crash_key_did_finish_navigation_url, url.spec());
       stream_info->SetDidExtensionFinishNavigation();
       if (navigation_handle->HasCommitted() &&
           !navigation_handle->IsErrorPage()) {
@@ -529,8 +539,8 @@ void PdfViewerStreamManager::DidFinishNavigation(
         // does not change if the page zoom does. This is analogous to page
         // zoom not affecting the browser UI.
         const GURL pdf_extension_url = stream_info->stream()->handler_url();
-        CHECK_EQ(pdf_extension_url, navigation_handle->GetURL());
-        CHECK_EQ(extensions::kExtensionScheme, pdf_extension_url.GetScheme());
+        CHECK_EQ(extensions::kExtensionScheme, url.GetScheme());
+        CHECK_EQ(pdf_extension_url, url);
         content::HostZoomMap::Get(
             navigation_handle->GetRenderFrameHost()->GetSiteInstance())
             ->SetZoomLevelForHostAndScheme(pdf_extension_url.GetScheme(),
