@@ -131,6 +131,14 @@ BASE_DECLARE_FEATURE(kMultilineEditField);
 
 // Whether the composebox should use the new `chrome-compose` client.
 BASE_DECLARE_FEATURE(kComposeboxUsesChromeComposeClient);
+inline constexpr base::FeatureParam<std::string> kComposeboxClientOverride{
+    &kComposeboxUsesChromeComposeClient, "composebox_client_name_override",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    "chrome-mobile-aim"
+#else
+    "chrome-compose"
+#endif
+};
 
 // Controls whether or not contextual composebox should display suggestions.
 BASE_DECLARE_FEATURE(kComposeboxAttachmentsTypedState);

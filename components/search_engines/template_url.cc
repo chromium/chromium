@@ -1475,7 +1475,7 @@ std::string TemplateURLRef::HandleReplacements(
                                    metrics::OmniboxEventProto::NTP_COMPOSEBOX &&
                                !search_terms_args.current_page_url.empty()
                            ? "chrome-omni"
-                           : "chrome-compose")
+                           : omnibox::kComposeboxClientOverride.Get())
                     : "chrome-omni";
             HandleReplacement(std::string(), client_replacement, replacement,
                               &url);

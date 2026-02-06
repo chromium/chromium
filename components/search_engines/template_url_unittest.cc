@@ -1542,7 +1542,11 @@ TEST_F(TemplateURLTest, ComposeboxSuggestClient) {
   features.InitAndEnableFeature(omnibox::kComposeboxUsesChromeComposeClient);
   GURL result(
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_EQ("http://google.com/?client=chrome-mobile-aim", result.spec());
+#else
   EXPECT_EQ("http://google.com/?client=chrome-compose", result.spec());
+#endif
 }
 
 TEST_F(TemplateURLTest, CoBrowseComposeboxSuggestClient) {
