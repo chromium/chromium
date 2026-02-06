@@ -68,7 +68,7 @@ IsolatedWebAppInstallerCoordinator::IsolatedWebAppInstallerCoordinator(
     : profile_(profile),
       on_closed_callback_(std::move(on_closed_callback)),
       model_(std::make_unique<IsolatedWebAppInstallerModel>(
-          IwaSourceBundleDevMode(bundle_path))),
+          IwaSourceBundleProdMode(bundle_path))),
       controller_(std::make_unique<IsolatedWebAppInstallerViewController>(
           profile,
           WebAppProvider::GetForWebApps(profile),
