@@ -944,8 +944,14 @@ bool ui::IsNSRange(id value) {
     return unignored_parent;
   }
 
-  // A nil parent means we're the root.
-  // Hook back up to RenderWidgetHostViewCocoa.
+  if (!_owner->IsWebContent()) {
+    // PlatformGetParent crosses the tree boundary; for views, when we reach the
+    // root of the view tree, there's really no other ancestor to hook up to.
+    return nil;
+  }
+
+  // A nil parent on web content means we're the root.
+  // Hook back up to RenderWidgetHostViewCocoa to get the parent Chromium view.
   BrowserAccessibilityManagerMac* manager =
       _owner->manager()
           ->GetManagerForRootFrame()
