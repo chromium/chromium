@@ -8,7 +8,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "chrome/grit/browser_resources.h"

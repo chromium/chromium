@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 
-#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/common/url_constants.h"
