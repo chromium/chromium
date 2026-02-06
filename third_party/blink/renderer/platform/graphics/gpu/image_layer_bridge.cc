@@ -60,7 +60,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #endif  // BUILDFLAG(IS_LINUX)
-  auto provider = CanvasResourceProvider::CreateSharedImageProvider(
+  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
       source->Size(),
       viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType()),
       image_info.alphaType(),
