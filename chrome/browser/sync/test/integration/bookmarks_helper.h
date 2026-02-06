@@ -468,12 +468,10 @@ class BookmarksUuidChecker : public SingleBookmarksModelMatcherChecker {
 class BookmarkModelMatchesFakeServerChecker
     : public SingleClientStatusChangeChecker {
  public:
-  // TODO(crbug.com/353425612): Remove the default value for `store`.
-  BookmarkModelMatchesFakeServerChecker(
-      bookmarks::BookmarkModel* model,
-      syncer::SyncServiceImpl* service,
-      fake_server::FakeServer* fake_server,
-      StoreType store_type = StoreType::kLocalOrSyncableStore);
+  BookmarkModelMatchesFakeServerChecker(bookmarks::BookmarkModel* model,
+                                        syncer::SyncServiceImpl* service,
+                                        fake_server::FakeServer* fake_server,
+                                        StoreType store_type);
   ~BookmarkModelMatchesFakeServerChecker() override;
 
   bool IsExitConditionSatisfied(std::ostream* os) override;

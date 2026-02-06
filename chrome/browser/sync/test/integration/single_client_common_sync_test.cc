@@ -337,7 +337,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
                    .contains(syncer::BOOKMARKS));
 
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
-                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),
+                  bookmarks_helper::StoreType::kAccountStore)
                   .Wait());
 
   // Force bookmark saved to the account to be unsynced.

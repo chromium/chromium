@@ -3665,7 +3665,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  StoreType::kLocalOrSyncableStore)
                   .Wait());
 
   // Enable account storage for bookmarks.
