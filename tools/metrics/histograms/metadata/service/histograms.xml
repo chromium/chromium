@@ -1334,6 +1334,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.PaymentHandler.DisconnectTimeout"
+    enum="BooleanTimedOut" expires_after="2026-08-05">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>perryuwang@gmail.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether a payment handler connection was disconnected due to a
+    timeout. True indicates the disconnect was due to the 20-minute timeout
+    firing, false indicates an external disconnect (e.g., the payment handler
+    window was closed by the user or the payment was completed). This is
+    recorded each time the payment_handler_connected_ flag is set to false.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
     expires_after="2026-08-25">
   <owner>rouslan@chromium.org</owner>

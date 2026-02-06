@@ -72,6 +72,9 @@
 namespace content {
 namespace {
 
+// Timeout for the payment handler connection.
+constexpr base::TimeDelta kPaymentHandlerTimeout = base::Minutes(20);
+
 // Timeout for an installed worker to start.
 constexpr base::TimeDelta kStartInstalledWorkerTimeout = base::Seconds(60);
 
@@ -1765,6 +1768,11 @@ void ServiceWorkerVersion::DidShowPaymentHandlerWindow(
     int render_frame_id) {
   if (success) {
     payment_handler_connected_ = true;
+    // Start the timeout timer for the payment handler connection.
+    payment_handler_timeout_timer_.Start(
+        FROM_HERE, kPaymentHandlerTimeout,
+        base::BindOnce(&ServiceWorkerVersion::OnPaymentHandlerTimeout,
+                       weak_factory_.GetWeakPtr()));
     service_worker_client_utils::DidNavigate(
         context, url, key,
         base::BindOnce(&OnOpenWindowFinished, std::move(callback)),
@@ -1777,7 +1785,29 @@ void ServiceWorkerVersion::DidShowPaymentHandlerWindow(
 }
 
 void ServiceWorkerVersion::OnPaymentHandlerDisconnect() {
+  if (!payment_handler_connected_) {
+    return;
+  }
+  DisconnectPaymentHandler(/*is_timeout=*/false);
+}
+
+void ServiceWorkerVersion::OnPaymentHandlerTimeout() {
+  if (!payment_handler_connected_) {
+    return;
+  }
+  DisconnectPaymentHandler(/*is_timeout=*/true);
+}
+
+void ServiceWorkerVersion::DisconnectPaymentHandler(bool is_timeout) {
+  // Stop the timeout timer if it's running.
+  if (payment_handler_timeout_timer_.IsRunning()) {
+    payment_handler_timeout_timer_.Stop();
+  }
+
   payment_handler_connected_ = false;
+  // Record UMA indicating whether the disconnect was due to a timeout.
+  base::UmaHistogramBoolean("ServiceWorker.PaymentHandler.DisconnectTimeout",
+                            is_timeout);
 }
 
 void ServiceWorkerVersion::PostMessageToClient(

@@ -1079,6 +1079,13 @@ class CONTENT_EXPORT ServiceWorkerVersion
       int render_process_id,
       int render_frame_id);
 
+  // Called when the payment handler timeout timer fires.
+  void OnPaymentHandlerTimeout();
+
+  // Disconnects the payment handler and records UMA.
+  // |is_timeout| indicates whether the disconnect was due to a timeout.
+  void DisconnectPaymentHandler(bool is_timeout);
+
   const int64_t version_id_;
   const int64_t registration_id_;
   const GURL script_url_;
@@ -1287,6 +1294,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
   bool is_stopping_warmed_up_worker_ = false;
 
   bool payment_handler_connected_ = false;
+
+  // Timer for payment handler timeout. When payment_handler_connected_ is set
+  // to true, this timer starts. If it fires before OnPaymentHandlerDisconnect()
+  // is called, the payment handler connection is considered timed out.
+  base::OneShotTimer payment_handler_timeout_timer_;
 
   // This is the set of features that were used up until installation of this
   // version completed, or used during the lifetime of |this|.
