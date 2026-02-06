@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/feature_engagement/test/mock_tracker.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -29,7 +30,9 @@ class TestPageContentExtractionService : public PageContentExtractionService {
   explicit TestPageContentExtractionService(
       os_crypt_async::OSCryptAsync* os_crypt_async,
       const base::FilePath& profile_path)
-      : PageContentExtractionService(os_crypt_async, profile_path) {}
+      : PageContentExtractionService(os_crypt_async,
+                                     profile_path,
+                                     &mock_tracker_) {}
   ~TestPageContentExtractionService() override = default;
 
   void OnPageContentExtracted(
@@ -59,7 +62,7 @@ class TestPageContentExtractionService : public PageContentExtractionService {
  private:
   int extraction_count_ = 0;
   std::optional<ExtractedPageContentResult> last_extracted_content_;
-
+  feature_engagement::test::MockTracker mock_tracker_;
   base::OnceClosure quit_closure_;
 };
 

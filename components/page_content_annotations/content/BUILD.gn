@@ -21,6 +21,8 @@ source_set("content") {
   public_deps = [
     "//base",
     "//components/content_extraction/content/browser",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
     "//components/optimization_guide/content/browser",
     "//components/paint_preview/browser",
     "//components/paint_preview/common",
@@ -52,10 +54,15 @@ source_set("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "annotate_page_content_request_unittest.cc" ]
+  sources = [
+    "annotate_page_content_request_unittest.cc",
+    "page_content_extraction_service_unittest.cc",
+  ]
   deps = [
     ":content",
     "//chrome/test:test_support",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/feature_engagement/test:test_support",
     "//components/os_crypt/async/browser:test_support",
     "//components/page_content_annotations/core:features",
     "//content/test:test_support",

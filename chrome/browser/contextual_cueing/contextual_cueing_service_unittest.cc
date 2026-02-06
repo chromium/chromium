@@ -45,7 +45,9 @@ constexpr char kQuxURL[] = "https://qux.com";
 class ContextualCueingServiceTest : public testing::Test {
  public:
   ContextualCueingServiceTest()
-      : page_content_extraction_service_(nullptr, base::FilePath()) {}
+      : page_content_extraction_service_(nullptr,
+                                         base::FilePath(),
+                                         /*tracker=*/nullptr) {}
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_cueing::kContextualCueing,

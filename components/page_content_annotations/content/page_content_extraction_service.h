@@ -29,6 +29,10 @@ class WebContents;
 enum class Visibility;
 }  // namespace content
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
 }  // namespace optimization_guide::proto
@@ -63,7 +67,8 @@ class PageContentExtractionService : public KeyedService,
 #endif  // BUILDFLAG(IS_ANDROID)
 
   PageContentExtractionService(os_crypt_async::OSCryptAsync* os_crypt_async,
-                               const base::FilePath& profile_path);
+                               const base::FilePath& profile_path,
+                               feature_engagement::Tracker* tracker);
   ~PageContentExtractionService() override;
 
   void AddObserver(Observer* observer);

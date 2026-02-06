@@ -43,6 +43,10 @@ extern const base::FeatureParam<int> kPageContentCacheMaxTabs;
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<bool> kPageContentCacheEnableScreenshot;
 
+// Whether to consider user engagement when enabling page content cache.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<bool> kPageContentCacheUseUserEngagement;
+
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
 // prefetch logic.

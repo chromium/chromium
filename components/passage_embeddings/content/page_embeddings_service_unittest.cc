@@ -71,7 +71,8 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
 
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
     page_content_extraction_service_.emplace(os_crypt_async_.get(),
-                                             GetBrowserContext()->GetPath());
+                                             GetBrowserContext()->GetPath(),
+                                             /*tracker=*/nullptr);
 
     page_embeddings_service_.emplace(base::BindRepeating(&GenerateCandidates),
                                      &page_content_extraction_service_.value(),

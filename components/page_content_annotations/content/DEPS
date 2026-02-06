@@ -7,6 +7,8 @@ include_rules = [
     "+components/content_extraction/content/browser",
     "+components/continuous_search/browser",
     "+components/continuous_search/common",
+    "+components/feature_engagement/public",
+    "+components/feature_engagement/test",
     "+components/google/core/common",
     "+components/history/core/browser",
     "+components/keyed_service/core",
