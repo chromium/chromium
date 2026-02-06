@@ -19,34 +19,24 @@ ${(this.tabOrganizationEnabled_ || this.declutterEnabled_) ? html`
       .selected="${this.sectionToIndex_(this.selectedTabSection_)}">
     <tab-search-page available-height="${this.availableHeight_}">
     </tab-search-page>
-    ${getOrganizationPage(
-        this.tabOrganizationEnabled_,
-        this.declutterEnabled_,
-        this.availableHeight_)}
+    ${this.tabOrganizationEnabled_ ? html`
+      ${this.declutterEnabled_ ? html`
+        <tab-organization-selector available-height="${this.availableHeight_}">
+        </tab-organization-selector>
+      ` : html`
+        <auto-tab-groups-page available-height="${this.availableHeight_}">
+        </auto-tab-groups-page>
+      `}
+    ` : html`
+      ${this.declutterEnabled_ ? html`
+        <declutter-page available-height="${this.availableHeight_}">
+        </declutter-page>` : ''
+      }
+    `}
   </cr-page-selector>
 ` : html`
   <tab-search-page available-height="${this.availableHeight_}">
   </tab-search-page>
 `}`;
   // clang-format on
-}
-
-function getOrganizationPage(
-    organizationEnabled: boolean, declutterEnabled: boolean,
-    availableHeight: number) {
-  if (organizationEnabled && declutterEnabled) {
-    return html`
-        <tab-organization-selector available-height="${availableHeight}">
-        </tab-organization-selector>`;
-  } else if (organizationEnabled) {
-    return html`
-        <auto-tab-groups-page available-height="${availableHeight}">
-        </auto-tab-groups-page>`;
-  } else if (declutterEnabled) {
-    return html`
-        <declutter-page available-height="${availableHeight}">
-        </declutter-page>`;
-  } else {
-    return '';
-  }
 }
