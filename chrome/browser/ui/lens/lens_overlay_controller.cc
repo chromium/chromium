@@ -1509,20 +1509,6 @@ void LensOverlayController::SuppressGhostLoader() {
   GetLensOverlaySidePanelCoordinator()->SuppressGhostLoader();
 }
 
-void LensOverlayController::MaybeHideSharedOverlayView() {
-  if (!overlay_view_) {
-    return;
-  }
-  for (views::View* child : overlay_view_->children()) {
-    if (child->GetVisible()) {
-      // If any child is visible, it is being used by another tab so do not hide
-      // the overlay view.
-      return;
-    }
-  }
-  overlay_view_->SetVisible(false);
-}
-
 void LensOverlayController::MaybeOpenSidePanel() {
   // If Lens in contextual tasks is enabled, the side panel is opened by the
   // contextual tasks side panel UI service rather than the overlay controller.
@@ -2243,48 +2229,6 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 
   GetLensOverlaySidePanelCoordinator()->SetPageContentUploadProgress(
       total > 0 ? static_cast<float>(position) / total : 1.0f);
-}
-
-void LensOverlayController::HideOverlay() {
-  // Re-enable mouse and keyboard events to the tab contents web view, and take
-  // focus before the overlay view is hidden. If it is done after, focus will
-  // move from the overlay view to another Chrome UI element before the contents
-  // web view can take focus.
-  auto* contents_web_view =
-      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
-          ->RetrieveView(kActiveContentsWebViewRetrievalId);
-  CHECK(contents_web_view);
-  contents_web_view->SetEnabled(true);
-  contents_web_view->RequestFocus();
-
-  // Hide the overlay view, but keep the web view attached to the overlay view
-  // so that the overlay can be re-shown without creating a new web view.
-  if (preselection_widget_anchor_) {
-    preselection_widget_anchor_->SetVisible(false);
-  }
-  if (overlay_web_view_) {
-    overlay_web_view_->SetVisible(false);
-  }
-  MaybeHideSharedOverlayView();
-
-  // Save the current value of whether live blur is enabled so that it can be
-  // restored when the overlay is shown again.
-  if (lens_overlay_blur_layer_delegate_) {
-    should_enable_live_blur_on_show_ =
-        lens_overlay_blur_layer_delegate_->IsLiveBlurActive();
-  }
-  SetLiveBlur(false);
-  HidePreselectionBubble();
-
-  NotifyIsOverlayShowing(false);
-}
-
-void LensOverlayController::HideOverlayAndSetHiddenState() {
-  if (state_ != State::kHiding) {
-    return;
-  }
-  HideOverlay();
-  state_ = State::kHidden;
 }
 
 void LensOverlayController::ReshowOverlay() {

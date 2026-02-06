@@ -454,13 +454,6 @@ class LensOverlayController : public OverlayBaseController,
   // to update the progress bar.
   void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
 
-  // Hides the overlay view and restores input to the tab contents web view.
-  // This does not change any overlay state.
-  void HideOverlay();
-
-  // Hides the overlay, but also sets the state to kHidden.
-  void HideOverlayAndSetHiddenState();
-
   // Should only be called when the overlay is in kHidden state. This will
   // reshow the overlay using the current viewport screenshot and page context
   // on the live page.
@@ -607,11 +600,6 @@ class LensOverlayController : public OverlayBaseController,
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when
   // the page bytes can't be uploaded.
   void SuppressGhostLoader();
-
-  // Hide the shared overlay view if it is not being used by another tab. This
-  // is determined by checking if any of the children of the overlay view are
-  // visible.
-  void MaybeHideSharedOverlayView();
 
   // Requests to open the side panel if this class has not already done so.
   // Must be called before issuing results to the side panel.

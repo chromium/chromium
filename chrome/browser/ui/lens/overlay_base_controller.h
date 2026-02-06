@@ -190,6 +190,18 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // the tab contents view.
   void ShowOverlay();
 
+  // Hides the overlay view and restores input to the tab contents web view.
+  // This does not change any overlay state.
+  void HideOverlay();
+
+  // Hides the overlay, but also sets the state to kHidden.
+  void HideOverlayAndSetHiddenState();
+
+  // Hide the shared overlay view if it is not being used by another tab. This
+  // is determined by checking if any of the children of the overlay view are
+  // visible.
+  void MaybeHideSharedOverlayView();
+
   // Show preselection toast bubble. Creates a preselection bubble if it does
   // not exist.
   void ShowPreselectionBubble();
