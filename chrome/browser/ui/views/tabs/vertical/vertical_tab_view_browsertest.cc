@@ -540,3 +540,24 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics_SplitView) {
   EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_NoAlertIndicator"), 1);
   EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_EndTabInSplit"), 1);
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabSwitchMetrics) {
+  base::UserActionTester user_action_tester;
+
+  TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
+  VerticalTabView* tab_view =
+      views::AsViewClass<VerticalTabView>(tab_node->view());
+
+  AppendTab();
+  ASSERT_EQ(1, tab_strip_model()->active_index());
+  ASSERT_EQ(0, user_action_tester.GetActionCount("SwitchTab_Click"));
+
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
+      browser()->GetBrowserView().GetNativeWindow());
+  event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+
+  EXPECT_EQ(0, tab_strip_model()->active_index());
+  EXPECT_EQ(1, user_action_tester.GetActionCount("SwitchTab_Click"));
+}

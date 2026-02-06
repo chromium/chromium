@@ -299,6 +299,7 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
       }
     } else if (!selected_) {
       controller->SelectTab(GetTabInterface(), GetGestureDetail(event));
+      base::RecordAction(base::UserMetricsAction("SwitchTab_Click"));
     }
     // Potentially start the drag for the mouse press.
     // Follow-up mouse-movement events will update the drag controller and
