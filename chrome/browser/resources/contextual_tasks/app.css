@@ -51,7 +51,7 @@
   --error-bottom-line-color: #70757A;
   --error-top-line-color: #202124;
   --gradient-protection-width: 100%;
-  --max-composebox-width: 692px;
+  --composebox-max-width: 692px;
   --min-composebox-width: 150px;
   --paper-tooltip-background:rgba(255, 255, 255, 1);
   --paper-tooltip-text-color: rgba(0, 0, 0, 1);
@@ -228,17 +228,15 @@ error-page {
   visibility: hidden;
 }
 
-:host([is-zero-state_]:not([is-shown-in-tab_])) #composebox {
-  /* Left/right flexbox padding implicitly added via centering is 20px. */
-  width: calc(100% - 40px);
+#composebox {
+  max-width: var(--composebox-max-width);
 }
 
-#composebox {
-  max-width: var(--max-composebox-width);
+:host([is-zero-state_][is-shown-in-tab_]) #composebox {
+  --composebox-max-width: 750px;
 }
 
 :host([is-zero-state_]) #composebox {
-  --max-composebox-width: 750px;
   bottom: 0;
   height: auto;
   min-width: var(--min-composebox-width);
@@ -288,6 +286,7 @@ error-page {
 }
 
 :host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+  align-items: flex-start;
   gap: 24px;
   top: 0;
 }
@@ -306,6 +305,29 @@ error-page {
 :host([is-zero-state_][enable-native-zero-state-suggestions]:not([is-shown-in-tab_]))
     #composebox {
   bottom: 30px;
+}
+
+
+@media (min-width: 789px) {
+  :host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+    /* 96px gutter + 5px for text indentation in thread. */
+    --wrapper-indent_: 101px;
+    inset-inline-start: var(--wrapper-indent_);
+    width: calc(100% - var(--wrapper-indent_));
+  }
+}
+
+/* Imitate column grid: indent further to match AIM for both side
+ * panel/full tab. Center it after a certain breakpoint,
+ * utilizing 1140px of fixed space. See contextual tasks
+ * composebox.css min-width: 1420px for full explanation.
+ */
+@media (min-width: 1420px) {
+  :host(:not([is-shown-in-tab_])[is-zero-state_]) .flex-center {
+    --wrapper-indent_: max(285px, calc(50% - 570px));
+    inset-inline-start: var(--wrapper-indent_);
+    width: calc(100% - var(--wrapper-indent_));
+  }
 }
 
 #toolbarOverlay {
@@ -350,13 +372,13 @@ error-page {
 }
 
 #composeboxHeaderWrapper {
-  background-color: var(--search-background-color);
+  background-color: transparent;
   display: none;
   justify-content: center;
   /* Same width so stays at same centering as composebox with flexbox. */
-  max-width: var(--max-composebox-width);
+  max-width: var(--composebox-max-width);
   position: relative;
-  width: calc(100% - 40px);
+  width: 100%;
 }
 
 :host([is-zero-state_]) #composeboxHeaderWrapper {
