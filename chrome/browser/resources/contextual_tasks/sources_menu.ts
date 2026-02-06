@@ -58,25 +58,34 @@ export class SourcesMenuElement extends CrLitElement {
     this.$.menu.close();
   }
 
-  protected onTabClick_(contextInfo: ContextInfo) {
+  private getContextInfoFromEvent_(e: Event): ContextInfo {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    return this.contextInfos[index]!;
+  }
+
+  protected onTabClick_(e: Event) {
     this.close();
 
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
     chrome.metricsPrivate.recordBoolean(
         'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked', true);
+    const contextInfo = this.getContextInfoFromEvent_(e);
     this.browserProxy_.handler.onTabClickedFromSourcesMenu(
         contextInfo.tab!.tabId, contextInfo.tab!.url);
   }
 
-  protected onFileClick_(contextInfo: ContextInfo) {
+  protected onFileClick_(e: Event) {
     this.close();
+
+    const contextInfo = this.getContextInfoFromEvent_(e);
     this.browserProxy_.handler.onFileClickedFromSourcesMenu(
         contextInfo.file!.url);
   }
 
-  protected onImageClick_(contextInfo: ContextInfo) {
+  protected onImageClick_(e: Event) {
     this.close();
+    const contextInfo = this.getContextInfoFromEvent_(e);
     this.browserProxy_.handler.onImageClickedFromSourcesMenu(
         contextInfo.image!.url);
   }

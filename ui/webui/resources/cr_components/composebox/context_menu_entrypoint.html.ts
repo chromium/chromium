@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
 
@@ -17,11 +17,8 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         title="${this.i18n('addContextTitle')}"
         noink>
       <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-      <span id="description"
-        @animationend="${(e: AnimationEvent) => {
-          this.onAnimationEnd_(e, 'slide-in');
-        }}">
-          ${this.i18n('addContext')}
+      <span id="description" @animationend="${this.onDescriptionAnimationEnd_}">
+        ${this.i18n('addContext')}
       </span>
     </cr-button>` : html`
     <cr-icon-button id="entrypoint"
@@ -40,12 +37,8 @@ export function getHtml(this: ContextMenuEntrypointElement) {
       <div class="aim-gradient-outer-blur aim-c"></div>
       <div class="aim-gradient-solid aim-c"></div>
       <div class="aim-background aim-c"
-        @animationend="${this.showContextMenuDescription
-          ? nothing
-          : (e: AnimationEvent) => {
-              this.onAnimationEnd_(e, 'background-fade');
-            }
-        }"></div>
+          @animationend="${this.onAimBackgroundAnimationEnd_}">
+      </div>
     </div>
     ` : entrypointButton}
 

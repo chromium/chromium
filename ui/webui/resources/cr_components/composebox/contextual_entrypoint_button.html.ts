@@ -17,10 +17,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         title="${this.i18n('addContextTitle')}"
         noink>
       <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-      <span id="description"
-        @animationend="${(e: AnimationEvent) => {
-          this.onAnimationEnd_(e, 'slide-in');
-        }}">
+      <span id="description" @animationend="${this.onDescriptionAnimationEnd_}">
           ${this.i18n('addContext')}
       </span>
     </cr-button>` : html`
@@ -40,12 +37,8 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         <div class="aim-gradient-outer-blur aim-c"></div>
         <div class="aim-gradient-solid aim-c"></div>
         <div class="aim-background aim-c"
-          @animationend="${this.showContextMenuDescription
-            ? nothing
-            : (e: AnimationEvent) => {
-                this.onAnimationEnd_(e, 'background-fade');
-              }
-          }"></div>
+            @animationend="${this.onAimBackgroundAnimationEnd_}">
+        </div>
       </div>
       ` : entrypointButton}
     <cr-composebox-contextual-action-menu id="menu"

@@ -100,8 +100,17 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     this.mayRestartBrowser_ = true;
   }
 
-  protected async onFeatureUsageSetterClick_(
-      feature: number, isRecentlyUsed: boolean) {
+  protected onSetFeatureUsageTrueClick_(e: Event) {
+    const feature = Number((e.currentTarget as HTMLElement).dataset['feature']);
+    this.setFeatureUsage_(feature, true);
+  }
+
+  protected onSetFeatureUsageFalseClick_(e: Event) {
+    const feature = Number((e.currentTarget as HTMLElement).dataset['feature']);
+    this.setFeatureUsage_(feature, false);
+  }
+
+  protected async setFeatureUsage_(feature: number, isRecentlyUsed: boolean) {
     await this.proxy_.handler.setFeatureRecentlyUsedState(
         feature, isRecentlyUsed);
     this.getPageData_();

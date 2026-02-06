@@ -123,7 +123,19 @@ export class ContextualEntrypointButtonElement extends
     }
   }
 
-  protected onAnimationEnd_(e: AnimationEvent, animationName: string) {
+  protected onDescriptionAnimationEnd_(e: AnimationEvent) {
+    this.onAnimationEnd_(e, 'slide-in');
+  }
+
+  protected onAimBackgroundAnimationEnd_(e: AnimationEvent) {
+    if (this.showContextMenuDescription) {
+      return;
+    }
+
+    this.onAnimationEnd_(e, 'background-fade');
+  }
+
+  private onAnimationEnd_(e: AnimationEvent, animationName: string) {
     if (e.animationName === animationName) {
       this.glifAnimationState = GlifAnimationState.FINISHED;
     }
