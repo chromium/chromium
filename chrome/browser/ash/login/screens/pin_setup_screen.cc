@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
@@ -29,7 +30,9 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/display/screen.h"
@@ -85,6 +88,11 @@ bool IsUserEnterpriseManaged() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   return profile->GetProfilePolicyConnector()->IsManaged() &&
          !profile->IsChild();
+}
+
+bool IsPinProhibitedAsMainFactorByPolicy(AccountId account) {
+  return !AuthPolicyConnector::Get()->AllowedLocalAuthFactors(account)->Has(
+      ash::AshAuthFactor::kCryptohomePin);
 }
 
 }  // namespace
@@ -154,8 +162,31 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
   AccountId account_id = ash::AuthSessionStorage::Get()
                              ->Peek(context.extra_factors_token.value())
                              ->GetAccountId();
-  if (cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(account_id)) {
-    return SkipReason::kNotAllowedByPolicy;
+  bool should_skip_setup_because_of_quick_unlock_policy =
+      cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(account_id);
+
+  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+    const bool is_secondary_setup_mode =
+        IsInSetupMode(PinSetupMode::kSetupAsSecondaryFactor, context);
+    const bool is_primary_or_recovery_setup_mode =
+        IsInSetupMode(PinSetupMode::kRecovery, context) ||
+        IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, context);
+
+    // Only skip due to quick unlock policy in secondary setup mode.
+    if (should_skip_setup_because_of_quick_unlock_policy &&
+        is_secondary_setup_mode) {
+      return SkipReason::kNotAllowedByPolicy;
+    }
+    // In case of recovery or primary mode, always use the
+    // AllowedLocalAuthFactors policy value.
+    if (is_primary_or_recovery_setup_mode &&
+        IsPinProhibitedAsMainFactorByPolicy(account_id)) {
+      return SkipReason::kNotAllowedByPolicyAsPrimaryFactor;
+    }
+  } else {
+    if (should_skip_setup_because_of_quick_unlock_policy) {
+      return SkipReason::kNotAllowedByPolicy;
+    }
   }
 
   // Hardware capability check. In order for the screen to be shown, the device
@@ -175,7 +206,8 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
       return SkipReason::kNotSupportedAsPrimaryFactor;
     }
 
-    if (IsUserEnterpriseManaged()) {
+    if (IsUserEnterpriseManaged() &&
+        !features::IsManagedLocalPinAndPasswordEnabled()) {
       return SkipReason::kNotSupportedAsPrimaryFactorForManagedUsers;
     }
   }

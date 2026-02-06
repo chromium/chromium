@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -191,6 +192,36 @@ class PinSetupScreenTest : public OobeBaseTest {
         user_policy_mixin_.RequestPolicyUpdate()->policy_payload();
     policy->mutable_quickunlockmodeallowlist()->mutable_value()->add_entries(
         "PIN");
+    policy_server_.UpdateUserPolicy(*policy, FakeGaiaMixin::kEnterpriseUser1);
+  }
+
+  void SetPinAsAllowedLocalAuthFactorForEnterpriseUsers() {
+    enterprise_management::CloudPolicySettings* policy =
+        user_policy_mixin_.RequestPolicyUpdate()->policy_payload();
+    policy->mutable_subproto1()
+        ->mutable_allowedlocalauthfactors()
+        ->mutable_value()
+        ->add_entries("PIN");
+    policy_server_.UpdateUserPolicy(*policy, FakeGaiaMixin::kEnterpriseUser1);
+  }
+
+  void SetPinAndLocalPasswordAsAllowedAuthFactorsForEnterpriseUsers() {
+    enterprise_management::CloudPolicySettings* policy =
+        user_policy_mixin_.RequestPolicyUpdate()->policy_payload();
+    auto* allowed_local_auth_factors = policy->mutable_subproto1()
+                                           ->mutable_allowedlocalauthfactors()
+                                           ->mutable_value();
+    allowed_local_auth_factors->add_entries("PIN");
+    allowed_local_auth_factors->add_entries("LOCAL_PASSWORD");
+    policy_server_.UpdateUserPolicy(*policy, FakeGaiaMixin::kEnterpriseUser1);
+  }
+
+  void ClearQuickUnlockModeAllowListForEnterpriseUsers() {
+    enterprise_management::CloudPolicySettings* policy =
+        user_policy_mixin_.RequestPolicyUpdate()->policy_payload();
+    policy->mutable_quickunlockmodeallowlist()
+        ->mutable_value()
+        ->clear_entries();
     policy_server_.UpdateUserPolicy(*policy, FakeGaiaMixin::kEnterpriseUser1);
   }
 
@@ -620,6 +651,112 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupportPasswordlessSignin,
 
   // Expect the back button to be hidden.
   test::OobeJS().ExpectHiddenPath(test::LocalPasswordSetupBackActionPath());
+}
+
+class PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled
+    : public PinSetupScreenTestEnterprise {
+ public:
+  PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled() = default;
+
+  ~PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kManagedLocalPinAndPassword};
+};
+
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,
+                       AllowedForEnterpriseUsersAsMainFactor) {
+  SetPinAsAllowedLocalAuthFactorForEnterpriseUsers();
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  InsertAndConfirmPin();
+  WaitForScreenExit();
+
+  CheckCredentialsArePresent();
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kDoneAsMainFactor);
+  ExpectFingerprintScreenExitedAndContinue();
+
+  CheckCredentialsWereCleared();
+}
+
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,
+                       NotAllowedForEnterpriseUsersAsMainFactor) {
+  LoginAndWaitForCryptohomeSetupScreenExit();
+  CryptohomeRecoverySetupContinue();
+
+  // PIN will not be offered as a main factor when not allowed by local auth
+  // factors policy.
+  WaitForScreenExit();
+  ExpectSkipReason(
+      PinSetupScreen::SkipReason::kNotAllowedByPolicyAsPrimaryFactor);
+  ExpectExitResultAndMetric(
+      PinSetupScreen::Result::kNotApplicableAsPrimaryFactor);
+
+  WaitForFingerprintScreenExit();
+  ExpectFingerprintScreenExitedAndContinue();
+
+  // PIN should be offered as a secondary factor instead.
+  WaitForScreenShown();
+  TapSkipButton();
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
+  CheckCredentialsWereCleared();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,
+    NotAllowedForEnterpriseUsersAsMainFactorOrSecondaryFactor) {
+  ClearQuickUnlockModeAllowListForEnterpriseUsers();
+  LoginAndWaitForCryptohomeSetupScreenExit();
+  CryptohomeRecoverySetupContinue();
+
+  // PIN will not be offered as a main factor when not allowed by local auth
+  // factors policy.
+  WaitForScreenExit();
+  ExpectSkipReason(
+      PinSetupScreen::SkipReason::kNotAllowedByPolicyAsPrimaryFactor);
+  ExpectExitResultAndMetric(
+      PinSetupScreen::Result::kNotApplicableAsPrimaryFactor);
+
+  WaitForFingerprintScreenExit();
+  ExpectFingerprintScreenExitedAndContinue();
+
+  // PIN will also not be offered a secondary factory.
+  WaitForScreenExit();
+  ExpectSkipReason(PinSetupScreen::SkipReason::kNotAllowedByPolicy);
+  CheckCredentialsWereCleared();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,
+    ShowsPasswordSelectionOnEnterpriseUserSkipWithLocalPasswordAndPinFactorsSet) {
+  SetPinAndLocalPasswordAsAllowedAuthFactorsForEnterpriseUsers();
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  TapSkipButton();
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserChosePassword);
+
+  OobeScreenWaiter(PasswordSelectionScreenHandler::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,
+    AppliesOnlinePasswordOnEnterpriseUserSkipWithPinFactorsSet) {
+  SetPinAsAllowedLocalAuthFactorForEnterpriseUsers();
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  TapSkipButton();
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserChosePassword);
+
+  // Password Selection screen is not shown when only PIN is allowed, rather
+  // `apply-online-password` screen is shown after which the `fingerprint-setup`
+  // screen is shown and the credentials are cleared.
+  WaitForFingerprintScreenExit();
+  ExpectFingerprintScreenExitedAndContinue();
+  CheckCredentialsWereCleared();
 }
 
 }  // namespace ash

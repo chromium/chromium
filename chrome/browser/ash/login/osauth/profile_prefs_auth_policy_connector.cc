@@ -96,7 +96,7 @@ std::optional<AuthFactorsSet>
 ProfilePrefsAuthPolicyConnector::AllowedLocalAuthFactors(
     const AccountId& account) {
   const PrefService* pref_service = GetPrefsForUser(account);
-  if (!pref_service->HasPrefPath(prefs::kAllowedLocalAuthFactors)) {
+  if (!pref_service->FindPreference(prefs::kAllowedLocalAuthFactors)) {
     return std::nullopt;
   }
   const base::ListValue* allowed_auth_factors =
