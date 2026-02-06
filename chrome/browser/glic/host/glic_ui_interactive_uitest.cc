@@ -157,7 +157,7 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
     if (params.loading_delay) {
       std::ostringstream oss;
       oss << params.loading_delay->InMilliseconds();
-      add_mock_glic_query_param("delay_ms", oss.str());
+      AddMockGlicQueryParam("delay_ms", oss.str());
     }
   }
   ~GlicUiInteractiveUiTestBase() override = default;
@@ -726,7 +726,7 @@ class GlicApiUiRedirectTest : public test::InteractiveGlicTest,
     GURL admin_url = admin_url_base.ReplaceComponents(replacements);
 
     SetGlicPagePath("/server-redirect-302");
-    add_mock_glic_query_param(admin_url.spec());
+    AddMockGlicQueryParam(admin_url.spec());
 
     replacements.SetHostStr("gemini.google.com");
     destination_url_ =

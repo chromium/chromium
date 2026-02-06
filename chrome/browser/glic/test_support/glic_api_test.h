@@ -148,7 +148,7 @@ class GlicApiTestBase : public T {
         base::BindRepeating(&GlicApiTestBase::OnEmbeddedTestServerHttpRequest,
                             base::Unretained(this)));
 
-    T::add_mock_glic_query_param(
+    T::AddMockGlicQueryParam(
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
 
@@ -171,7 +171,7 @@ class GlicApiTestBase : public T {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
     T::SetGlicPagePath("/glic/browser_tests/test.html");
-    T::add_mock_glic_query_param("testsrc", js_source_path);
+    T::AddMockGlicQueryParam("testsrc", js_source_path);
   }
 
   ~GlicApiTestBase() override = default;

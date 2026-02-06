@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_ENVIRONMENT_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_ENVIRONMENT_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -19,6 +20,8 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
 
 class Profile;
 class IdentityTestEnvironmentProfileAdaptor;
@@ -30,6 +33,10 @@ class TestCookieSynchronizer;
 namespace prefs {
 enum class FreStatus;
 }  // namespace prefs
+
+}  // namespace glic
+
+namespace glic {
 
 class GlicTestEnvironmentService;
 
@@ -95,6 +102,21 @@ class GlicTestEnvironment : public ProfileObserver {
   static GlicTestEnvironmentService* GetService(Profile* profile,
                                                 bool create = true);
 
+  // Sets up the embedded test servers for Glic testing.
+  // This serves files from the correct directories and configures the
+  // command line switches for the guest URL and FRE URL.
+  // This must be called in SetUpOnMainThread().
+  [[nodiscard]] bool SetupEmbeddedTestServers(
+      net::test_server::EmbeddedTestServer* http_server,
+      net::test_server::EmbeddedTestServer* https_server = nullptr);
+
+  void SetGlicPagePath(const std::string& path);
+  void AddMockGlicQueryParam(const std::string_view& key,
+                             const std::string_view& value);
+  void SetGlicFreUrlOverride(const GURL& url);
+  GURL GetGuestURL() const;
+  const std::optional<GURL>& GetGlicFreUrl() const;
+
  private:
   void OnWillCreateBrowserContextKeyedServices(
       content::BrowserContext* context);
@@ -106,6 +128,14 @@ class GlicTestEnvironment : public ProfileObserver {
       profile_observations_;
   internal::GlicTestEnvironmentShared shared_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
+
+  // URL configuration state.
+  std::string glic_page_path_ = "/glic/test_client/index.html";
+  std::map<std::string, std::string> mock_glic_query_params_;
+  std::optional<GURL> glic_fre_url_;
+  std::optional<GURL> glic_fre_url_override_;
+  GURL guest_url_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 
 // Note: This constructs the GlicKeyedService, if it's not already created,

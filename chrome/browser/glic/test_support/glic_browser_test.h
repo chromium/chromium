@@ -31,7 +31,6 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
-#include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -91,50 +90,8 @@ class GlicBrowserTestMixin : public T {
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
 
-    T::embedded_test_server()->ServeFilesFromDirectory(
-        base::PathService::CheckedGet(base::DIR_ASSETS)
-            .AppendASCII("gen/chrome/test/data/webui/glic/"));
-    T::embedded_https_test_server().ServeFilesFromDirectory(
-        base::PathService::CheckedGet(base::DIR_ASSETS)
-            .AppendASCII("gen/chrome/test/data/webui/glic/"));
-
-    T::embedded_test_server()->ServeFilesFromSourceDirectory(
-        "chrome/test/data/webui/glic/");
-    T::embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "chrome/test/data/webui/glic/");
-
-    ASSERT_TRUE(test_server_handle_ =
-                    T::embedded_test_server()->StartAndReturnHandle());
-
-    // Need to set this here rather than in SetUpCommandLine because we need to
-    // use the embedded test server to get the right URL and it's not started
-    // at that time.
-    std::ostringstream path;
-    path << glic_page_path_;
-
-    // Append the query parameters to the URL.
-    bool first_param = true;
-    auto encode = [](const std::string_view& value) {
-      url::RawCanonOutputT<char> encoded;
-      url::EncodeURIComponent(value, &encoded);
-      return std::string(encoded.view());
-    };
-    for (const auto& [key, value] : mock_glic_query_params_) {
-      path << (first_param ? "?" : "&");
-      first_param = false;
-      path << encode(key);
-      if (!value.empty()) {
-        path << "=" << encode(value);
-      }
-    }
-
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    guest_url_ = T::embedded_test_server()->GetURL(path.str());
-    command_line->AppendSwitchASCII(::switches::kGlicGuestURL,
-                                    guest_url_.spec());
-    GURL fre_url = glic_fre_url_.value_or(
-        T::embedded_test_server()->GetURL("/glic/test_client/fre.html"));
-    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url.spec());
+    CHECK(glic_test_environment_.SetupEmbeddedTestServers(
+        T::embedded_test_server(), &T::embedded_https_test_server()));
     LOG(INFO) << "GlicBrowserTest: done setting up";
   }
 
@@ -258,23 +215,22 @@ class GlicBrowserTestMixin : public T {
   }
 
   void SetGlicPagePath(const std::string& glic_page_path) {
-    glic_page_path_ = glic_page_path;
+    glic_test_environment_.SetGlicPagePath(glic_page_path);
   }
 
   // Adds a query param to the URL that will be used to load the mock glic.
   // Must be called before `SetUpOnMainThread()`. Both `key` and `value` (if
   // specified) will be URL-encoded for safety.
-  void add_mock_glic_query_param(const std::string_view& key,
-                                 const std::string_view& value = "") {
-    mock_glic_query_params_.emplace(key, value);
+  void AddMockGlicQueryParam(const std::string_view& key,
+                             const std::string_view& value = "") {
+    glic_test_environment_.AddMockGlicQueryParam(key, value);
   }
 
-  GURL GetGuestURL() {
-    CHECK(guest_url_.is_valid()) << "Guest URL not yet configured.";
-    return guest_url_;
-  }
+  GURL GetGuestURL() { return glic_test_environment_.GetGuestURL(); }
 
-  void SetGlicFreUrlOverride(const GURL& url) { glic_fre_url_ = url; }
+  void SetGlicFreUrlOverride(const GURL& url) {
+    glic_test_environment_.SetGlicFreUrlOverride(url);
+  }
 
  protected:
   GlicTestEnvironment& glic_test_environment() {
@@ -283,13 +239,7 @@ class GlicBrowserTestMixin : public T {
 
  private:
   GlicTestEnvironment glic_test_environment_;
-  net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  // This is the default test file. Tests can override with a different path.
-  std::string glic_page_path_ = "/glic/test_client/index.html";
-  GURL guest_url_;
-  std::optional<GURL> glic_fre_url_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::map<std::string, std::string> mock_glic_query_params_;
 };
 
 using GlicBrowserTest = GlicBrowserTestMixin<PlatformBrowserTest>;

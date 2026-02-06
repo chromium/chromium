@@ -4,7 +4,9 @@
 
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 
+#include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
@@ -15,8 +17,11 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -276,6 +281,92 @@ void GlicTestEnvironment::OnProfileWillBeDestroyed(Profile* profile) {
 
 void GlicTestEnvironment::OnProfileInitializationComplete(Profile* profile) {
   GetService(profile, true);
+}
+
+bool GlicTestEnvironment::SetupEmbeddedTestServers(
+    net::test_server::EmbeddedTestServer* http_server,
+    net::test_server::EmbeddedTestServer* https_server) {
+  CHECK(guest_url_.is_empty()) << "SetupEmbeddedTestServers called twice";
+
+  http_server->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .AppendASCII("gen/chrome/test/data/webui/glic/"));
+  http_server->ServeFilesFromSourceDirectory("chrome/test/data/webui/glic/");
+  if (https_server) {
+    https_server->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"));
+    https_server->ServeFilesFromSourceDirectory("chrome/test/data/webui/glic/");
+  }
+
+  test_server_handle_ = http_server->StartAndReturnHandle();
+  if (!test_server_handle_) {
+    return false;
+  }
+
+  // Need to set this here rather than in SetUpCommandLine because we need to
+  // use the embedded test server to get the right URL and it's not started
+  // at that time.
+  std::ostringstream path;
+  path << glic_page_path_;
+
+  // Append the query parameters to the URL.
+  bool first_param = true;
+  auto encode = [](const std::string_view& value) {
+    url::RawCanonOutputT<char> encoded;
+    url::EncodeURIComponent(value, &encoded);
+    return std::string(encoded.view());
+  };
+  for (const auto& [key, value] : mock_glic_query_params_) {
+    path << (first_param ? "?" : "&");
+    first_param = false;
+    path << encode(key);
+    if (!value.empty()) {
+      path << "=" << encode(value);
+    }
+  }
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  guest_url_ = http_server->GetURL(path.str());
+  command_line->AppendSwitchASCII(::switches::kGlicGuestURL, guest_url_.spec());
+
+  if (glic_fre_url_override_) {
+    glic_fre_url_ = *glic_fre_url_override_;
+  } else {
+    glic_fre_url_ = http_server->GetURL("/glic/test_client/fre.html");
+  }
+  command_line->AppendSwitchASCII(switches::kGlicFreURL, glic_fre_url_->spec());
+
+  return true;
+}
+
+void GlicTestEnvironment::SetGlicPagePath(const std::string& path) {
+  CHECK(guest_url_.is_empty())
+      << "SetGlicPagePath must be called before SetupEmbeddedTestServers";
+  glic_page_path_ = path;
+}
+
+void GlicTestEnvironment::AddMockGlicQueryParam(const std::string_view& key,
+                                                const std::string_view& value) {
+  CHECK(guest_url_.is_empty())
+      << "AddMockGlicQueryParam must be called before SetupEmbeddedTestServers";
+  mock_glic_query_params_.emplace(key, value);
+}
+
+void GlicTestEnvironment::SetGlicFreUrlOverride(const GURL& url) {
+  CHECK(guest_url_.is_empty())
+      << "SetGlicFreUrlOverride must be called before SetupEmbeddedTestServers";
+  glic_fre_url_override_ = url;
+}
+
+GURL GlicTestEnvironment::GetGuestURL() const {
+  CHECK(guest_url_.is_valid()) << "Guest URL not yet configured.";
+  return guest_url_;
+}
+
+const std::optional<GURL>& GlicTestEnvironment::GetGlicFreUrl() const {
+  CHECK(glic_fre_url_.has_value()) << "GLIC FRE URL not yet configured.";
+  return glic_fre_url_;
 }
 
 GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
