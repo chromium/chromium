@@ -183,8 +183,8 @@ public class UrlBarCoordinator
     /**
      * @see UrlBarMediator#setBrandedColorScheme(int)
      */
-    public void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
-        mMediator.setBrandedColorScheme(brandedColorScheme);
+    public boolean setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
+        return mMediator.setBrandedColorScheme(brandedColorScheme);
     }
 
     /**

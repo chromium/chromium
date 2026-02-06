@@ -1450,7 +1450,11 @@ class LocationBarMediator
         // and need not be assigned in updateButtonTints().
         mLocationBarLayout.setDeleteButtonTint(
                 ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme));
-        mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme);
+        // If the URL changed colors and is not focused, update the URL to account for the new
+        // color scheme.
+        if (mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme) && !isUrlBarFocused()) {
+            updateUrl();
+        }
         mStatusCoordinator.setBrandedColorScheme(mBrandedColorScheme);
         if (mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.updateVisualsForState(mBrandedColorScheme);
