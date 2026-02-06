@@ -67,28 +67,6 @@ public class TestWebMessageListener implements WebMessageListener {
         ThreadUtils.runOnUiThreadBlocking(() -> awContents.removeWebMessageListener(jsObjectName));
     }
 
-    public static void addWebMessageListenerOnUiThreadInIsolatedWorld(
-            final AwContents awContents,
-            final String jsObjectName,
-            final String[] allowedOriginRules,
-            final WebMessageListener listener,
-            final String worldName)
-            throws Exception {
-        AwActivityTestRule.checkJavaScriptEnabled(awContents);
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        awContents.addWebMessageListener(
-                                jsObjectName, allowedOriginRules, listener, worldName));
-    }
-
-    public static void removeWebMessageListenerOnUiThreadInIsolatedWorld(
-            final AwContents awContents, final String jsObjectName, String worldName)
-            throws Exception {
-        AwActivityTestRule.checkJavaScriptEnabled(awContents);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> awContents.removeWebMessageListener(jsObjectName, worldName));
-    }
-
     @Override
     public void onPostMessage(
             MessagePayload payload,

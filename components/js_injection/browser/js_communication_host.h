@@ -100,7 +100,6 @@ class JsCommunicationHost : public content::WebContentsObserver {
   struct RegisteredFactory {
     std::u16string js_name;
     origin_matcher::OriginMatcher allowed_origin_rules;
-    int32_t world_id;
     raw_ptr<WebMessageHostFactory> factory = nullptr;
   };
 
