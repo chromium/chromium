@@ -55,11 +55,6 @@
 #include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/startup/startup_launch_manager.h"  // nogncheck
-#include "chrome/browser/ui/startup/startup_launch_infobar_manager_impl.h"  // nogncheck
-#endif
-
 namespace {
 bool ShouldShowBadFlagsSecurityWarnings() {
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -196,15 +191,6 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
       ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
     }
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (auto* startup_launch_manager =
-          StartupLaunchManager::From(g_browser_process)) {
-    startup_launch_manager->SetInfoBarManager(
-        std::make_unique<StartupLaunchInfoBarManagerImpl>());
-    startup_launch_manager->MaybeShowInfoBars();
-  }
-#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (auto* controller =
