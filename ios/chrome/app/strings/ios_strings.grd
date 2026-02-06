@@ -2051,6 +2051,9 @@
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD" desc="The action button to use the selected credentials to fill the username and password fields on the webpage.">
         Use password
       </message>
+      <message name="IDS_IOS_CREDENTIAL_EXCHANGE_EXPORT_GENERIC_ERROR_TITLE" desc="Title of the alert shown during credential export flow when any generic error happened preventing the flow from finishing. [iOS only]">
+        Trouble exporting your data
+      </message>
       <message name="IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE" desc="Title of the alert shown during credential import flow when any generic error happened preventing the flow from finishing. [iOS only]">
         Trouble importing your data
       </message>

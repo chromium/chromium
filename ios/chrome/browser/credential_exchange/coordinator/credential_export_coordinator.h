@@ -13,9 +13,23 @@ namespace password_manager {
 class AffiliatedGroup;
 }  // namespace password_manager
 
+@class CredentialExportCoordinator;
+
+// Delegate for CredentialExportCoordinator.
+@protocol CredentialExportCoordinatorDelegate
+
+// Called when the export coordinator should be stopped.
+- (void)credentialExportCoordinatorDidFinish:
+    (CredentialExportCoordinator*)coordinator;
+
+@end
+
 API_AVAILABLE(ios(26.0))
 // Coordinator for the credential exchange export flow.
 @interface CredentialExportCoordinator : ChromeCoordinator
+
+// Delegate for this coordinator.
+@property(nonatomic, weak) id<CredentialExportCoordinatorDelegate> delegate;
 
 // Passing `affiliatedGroups` in the constructor instead of accessing it from
 // the `browser` is not the best practice, but it can only be accessed from

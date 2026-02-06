@@ -125,14 +125,14 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
 @end
 
 @interface PasswordSettingsCoordinator () <
-    ExportActivityViewControllerDelegate,
     BulkMoveLocalPasswordsToAccountHandler,
+    CredentialExportCoordinatorDelegate,
+    ExportActivityViewControllerDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     PasswordExportHandler,
     PasswordsInOtherAppsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
-    LocalReauthenticationCoordinatorDelegate,
     SettingsNavigationControllerDelegate>
-
 @end
 
 @implementation PasswordSettingsCoordinator {
@@ -271,8 +271,7 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
   _passwordsInOtherAppsCoordinator = nil;
 
   if (@available(iOS 26, *)) {
-    [_credentialExportCoordinator stop];
-    _credentialExportCoordinator = nil;
+    [self stopCredentialExportCoordinator];
   }
 
   _passwordSettingsViewController.presentationDelegate = nil;
@@ -376,6 +375,7 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
                                    browser:self.browser
                           affiliatedGroups:_savedPasswordsPresenter
                                                ->GetAffiliatedGroups()];
+      _credentialExportCoordinator.delegate = self;
       [_credentialExportCoordinator start];
       return;
     }
@@ -646,6 +646,14 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
   [self showSetPasscodeDialogWithContent:
             l10n_util::GetNSString(
                 IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)];
+}
+
+#pragma mark - CredentialExportCoordinatorDelegate
+
+- (void)credentialExportCoordinatorDidFinish:
+    (CredentialExportCoordinator*)coordinator API_AVAILABLE(ios(26.0)) {
+  CHECK_EQ(coordinator, _credentialExportCoordinator);
+  [self stopCredentialExportCoordinator];
 }
 
 #pragma mark - ExportActivityViewControllerDelegate
@@ -933,6 +941,12 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_DELETE_ALL_CREDENTIALS)
                   canReusePreviousAuth:NO
                                handler:onReauthFinished];
+}
+
+- (void)stopCredentialExportCoordinator {
+  [_credentialExportCoordinator stop];
+  _credentialExportCoordinator.delegate = nil;
+  _credentialExportCoordinator = nil;
 }
 
 @end
