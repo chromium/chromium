@@ -46,13 +46,6 @@ constexpr uint8_t zigzag_8x8[] = {
     35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
     58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
 
-struct RefPicListModification {
-  uint8_t modification_of_pic_nums_idc;
-  uint32_t abs_diff_pic_num_minus1;
-  uint32_t long_term_pic_num;
-  uint32_t abs_diff_view_idx_minus1;
-};
-
 struct DecRefPicMarking {
   uint8_t memory_management_control_operation;
   uint32_t difference_of_pic_nums_minus1;
@@ -60,31 +53,6 @@ struct DecRefPicMarking {
   uint32_t long_term_frame_idx;
   uint32_t max_long_term_frame_idx_plus1;
 };
-
-#if BUILDFLAG(IS_CHROMEOS)
-void fillRefPicListModification(
-    bool& modification_flag,
-    std::array<H264ModificationOfPicNum, H264SliceHeader::kRefListModSize>& dst,
-    size_t src_size,
-    const RefPicListModification src[32]) {
-  modification_flag = src_size > 0;
-  for (size_t i = 0; i < src_size; i++) {
-    dst[i].modification_of_pic_nums_idc = src[i].modification_of_pic_nums_idc;
-    switch (src[i].modification_of_pic_nums_idc) {
-      case 0:
-      case 1:
-        dst[i].abs_diff_pic_num_minus1 = src[i].abs_diff_pic_num_minus1;
-        break;
-      case 2:
-        dst[i].long_term_pic_num = src[i].long_term_pic_num;
-        break;
-      case 3:
-        return;
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace
 
 // This struct contains the kernel-specific parts of the H264 acceleration,
@@ -133,11 +101,6 @@ struct CencV1SliceParameterBufferH264 {
   int32_t delta_pic_order_cnt1;
   uint8_t num_ref_idx_l0_active_minus1;
   uint8_t num_ref_idx_l1_active_minus1;
-  // Ref pic list modifications.
-  uint8_t ref_pic_list_modification_l0_size;
-  struct RefPicListModification ref_pic_list_modification_l0[32];
-  uint8_t ref_pic_list_modification_l1_size;
-  struct RefPicListModification ref_pic_list_modification_l1[32];
   // Dec Ref Pic Marking.
   uint8_t no_output_of_prior_pics_flag;
   uint8_t long_term_reference_flag;
@@ -148,7 +111,7 @@ struct CencV1SliceParameterBufferH264 {
   uint32_t pic_order_cnt_bit_size;
 };
 
-static_assert(sizeof(CencV1SliceParameterBufferH264) == 1720);
+static_assert(sizeof(CencV1SliceParameterBufferH264) == 692);
 
 V4L2VideoDecoderDelegateH264::V4L2VideoDecoderDelegateH264(
     V4L2DecodeSurfaceHandler* surface_handler,
@@ -530,18 +493,6 @@ V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
       slice_param_buf.num_ref_idx_l0_active_minus1;
   slice_header_out->num_ref_idx_l1_active_minus1 =
       slice_param_buf.num_ref_idx_l1_active_minus1;
-
-  // Ref pic list modifications.
-  fillRefPicListModification(
-      slice_header_out->ref_pic_list_modification_flag_l0,
-      slice_header_out->ref_list_l0_modifications,
-      slice_param_buf.ref_pic_list_modification_l0_size,
-      slice_param_buf.ref_pic_list_modification_l0);
-  fillRefPicListModification(
-      slice_header_out->ref_pic_list_modification_flag_l1,
-      slice_header_out->ref_list_l1_modifications,
-      slice_param_buf.ref_pic_list_modification_l1_size,
-      slice_param_buf.ref_pic_list_modification_l1);
 
   // Dec Ref Pic Marking.
   slice_header_out->no_output_of_prior_pics_flag =
