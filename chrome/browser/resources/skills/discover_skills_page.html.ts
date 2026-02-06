@@ -28,7 +28,8 @@ ${this.topSkills_().map(skill => html`<li>${skill.name}</li>`)}` : ''}
 </div>
 <div class="skill-cards-container">
   ${this.getSelectedSkills_().map(skill => html`
-    <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}">
+    <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
+        .saveDisabled="${this.is1PSkillSaving_}">
     </skill-card>`)}
 </div>
 <!--_html_template_end_-->`;

@@ -121,8 +121,10 @@ export class UserSkillsPageElement extends CrLitElement {
     // Disable the button temporarily to prevent double-clicking.
     // The button will open a dialog to block the page, so we can
     // safely re-enable it after a short period of time.
-    this.addSkillButtonDisabledTimer_ =
-        setTimeout(() => this.addSkillButtonDisabled_ = false, 1000);
+    this.addSkillButtonDisabledTimer_ = setTimeout(() => {
+      this.addSkillButtonDisabled_ = false;
+      this.addSkillButtonDisabledTimer_ = undefined;
+    }, 1000);
   }
 }
 

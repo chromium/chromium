@@ -40,7 +40,8 @@ export function getHtml(this: SkillCardElement) {
   <div id="cardFooter">
     <!-- Show save button for discover cards and edit button for user-created skills. -->
     ${this.isDiscoverCard_() ? html`
-      <cr-button id="saveButton" @click="${this.onSaveButtonClick_}">
+      <cr-button id="saveButton" ?disabled="${this.saveDisabled}"
+          @click="${this.onSaveButtonClick_}">
         <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
         $i18n{save}
       </cr-button>

@@ -11,6 +11,7 @@ import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSkillsBrowserProxy} from './test_skills_browser_proxy.js';
@@ -139,5 +140,76 @@ suite('DiscoverSkillsPage', function() {
     assertEquals('cr:add', firstIcon.icon);
     assertTrue(chips[1].selected);
     assertEquals('cr:check', secondIcon.icon);
+  });
+
+  test('SaveButtonClickDisablesCardsSaveFunctionality', async function() {
+    const firstPartySkills = new Map<string, Skill[]>([
+      [
+        'Shopping',
+        [
+          {
+            id: '1',
+            name: 'Shopping',
+            icon: '',
+            prompt: '',
+            description: '',
+            source: SkillSource.kFirstParty,
+            creationTime: {internalValue: 0n},
+            lastUpdateTime: {internalValue: 0n},
+          },
+          {
+            id: '2',
+            name: 'Shopping2',
+            icon: '',
+            prompt: '',
+            description: '',
+            source: SkillSource.kFirstParty,
+            creationTime: {internalValue: 0n},
+            lastUpdateTime: {internalValue: 0n},
+          },
+        ],
+      ],
+    ]);
+    browserProxy.callbackRouterRemote.update1PMap(
+        Object.fromEntries(firstPartySkills));
+    await microtasksFinished();
+
+    const cards = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(2, cards.length);
+    assertTrue(!!cards[0]);
+    const card = cards[0];
+    await card.updateComplete;
+
+    const saveButton = card.$.saveButton;
+    assertFalse(saveButton.disabled);
+
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    // After clicking, all save buttons should be disabled.
+    saveButton.click();
+    // Since MockTimer is installed, we can't use microtasksFinished()
+    // as it relies on setTimeout.
+    await page.updateComplete;
+    await card.updateComplete;
+
+    assertTrue(saveButton.disabled);
+    assertTrue(!!cards[1]);
+    const card1 = cards[1];
+    await card1.updateComplete;
+
+    const saveButton2 = card1.$.saveButton;
+    assertTrue(!!saveButton2);
+    assertTrue(saveButton2.disabled);
+
+    // After timeout, all save buttons should be re-enabled.
+    mockTimer.tick(1000);
+    await page.updateComplete;
+    await card.updateComplete;
+    await card1.updateComplete;
+
+    assertFalse(saveButton.disabled);
+    assertFalse(saveButton2.disabled);
+    mockTimer.uninstall();
   });
 });
