@@ -271,7 +271,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // accelerated SharedImage provider.
   if (source_paint_image.IsTextureBacked() &&
       source->ContextProviderWrapper()) {
-    auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+    auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         gfx::Size(dest_size.width(), dest_size.height()),
         viz::SkColorTypeToSinglePlaneSharedImageFormat(dest_color_type),
         dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
