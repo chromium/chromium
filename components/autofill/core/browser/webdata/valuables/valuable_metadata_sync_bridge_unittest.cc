@@ -37,6 +37,8 @@ namespace autofill {
 namespace {
 
 using base::test::EqualsProto;
+using syncer::test::AddUnknownFieldToProto;
+using syncer::test::HasUnknownField;
 using testing::_;
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -490,8 +492,8 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_UnknownFields) {
   entity_table().AddOrUpdateEntityInstance(vehicle);
 
   sync_pb::EntitySpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(
-      *base_specifics.mutable_autofill_valuable_metadata(), "unknown_field");
+  AddUnknownFieldToProto(*base_specifics.mutable_autofill_valuable_metadata(),
+                         "unknown_field");
 
   ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
       .WillByDefault(ReturnRef(base_specifics));
@@ -503,9 +505,8 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_UnknownFields) {
   ASSERT_TRUE(batch->HasNext());
   const syncer::KeyAndData& data_pair = batch->Next();
   ASSERT_EQ(data_pair.first, vehicle.guid().value());
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
-                data_pair.second->specifics.autofill_valuable_metadata()),
-            "unknown_field");
+  EXPECT_THAT(data_pair.second->specifics.autofill_valuable_metadata(),
+              HasUnknownField("unknown_field"));
 }
 
 // Tests that ApplyDisableSyncChanges() clears all the metadata.
@@ -585,8 +586,8 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   entity_table().AddOrUpdateEntityInstance(vehicle);
 
   sync_pb::EntitySpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(
-      *base_specifics.mutable_autofill_valuable_metadata(), "unknown_field");
+  AddUnknownFieldToProto(*base_specifics.mutable_autofill_valuable_metadata(),
+                         "unknown_field");
   EXPECT_CALL(mock_processor(),
               GetPossiblyTrimmedRemoteSpecifics(vehicle.guid().value()))
       .WillOnce(ReturnRef(base_specifics));
@@ -596,9 +597,8 @@ TEST_F(ValuableMetadataSyncBridgeTest,
                            std::unique_ptr<syncer::EntityData> entity_data,
                            syncer::MetadataChangeList* metadata) {
         ASSERT_EQ(storage_key, vehicle.guid().value());
-        EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
-                      entity_data->specifics.autofill_valuable_metadata()),
-                  "unknown_field");
+        EXPECT_THAT(entity_data->specifics.autofill_valuable_metadata(),
+                    HasUnknownField("unknown_field"));
       });
 
   bridge().ServerEntityInstanceMetadataChanged(EntityInstanceMetadataChange(

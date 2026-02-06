@@ -40,6 +40,8 @@ namespace autofill {
 namespace {
 
 using base::test::EqualsProto;
+using syncer::test::AddUnknownFieldToProto;
+using syncer::test::HasUnknownField;
 using testing::_;
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -367,8 +369,8 @@ TEST_F(ValuableSyncBridgeTest,
   AddLoyaltyCards({card});
 
   sync_pb::EntitySpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(
-      *base_specifics.mutable_autofill_valuable(), "unknown_field");
+  AddUnknownFieldToProto(*base_specifics.mutable_autofill_valuable(),
+                         "unknown_field");
 
   ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
       .WillByDefault(ReturnRef(base_specifics));
@@ -377,9 +379,8 @@ TEST_F(ValuableSyncBridgeTest,
   ASSERT_TRUE(batch->HasNext());
   const syncer::KeyAndData& data_pair = batch->Next();
   ASSERT_EQ(data_pair.first, kId1);
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
-                data_pair.second->specifics.autofill_valuable()),
-            "unknown_field");
+  EXPECT_THAT(data_pair.second->specifics.autofill_valuable(),
+              HasUnknownField("unknown_field"));
 }
 
 // Tests that `GetDataForCommit()` returns only the requested entities.
@@ -404,8 +405,8 @@ TEST_F(ValuableSyncBridgeTest,
   AddEntities({vehicle});
 
   sync_pb::EntitySpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(
-      *base_specifics.mutable_autofill_valuable(), "unknown_field");
+  AddUnknownFieldToProto(*base_specifics.mutable_autofill_valuable(),
+                         "unknown_field");
 
   ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
       .WillByDefault(ReturnRef(base_specifics));
@@ -415,9 +416,8 @@ TEST_F(ValuableSyncBridgeTest,
   ASSERT_TRUE(batch->HasNext());
   const syncer::KeyAndData& data_pair = batch->Next();
   ASSERT_EQ(data_pair.first, vehicle.guid().value());
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
-                data_pair.second->specifics.autofill_valuable()),
-            "unknown_field");
+  EXPECT_THAT(data_pair.second->specifics.autofill_valuable(),
+              HasUnknownField("unknown_field"));
 }
 
 // Tests that `GetDataForCommit()` returns an empty batch for no keys.
@@ -735,8 +735,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PreservesUnknownFields) {
       {.guid = "00000000-0000-2000-8000-300000000000"});
 
   sync_pb::EntitySpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(
-      *base_specifics.mutable_autofill_valuable(), "unknown_field");
+  AddUnknownFieldToProto(*base_specifics.mutable_autofill_valuable(),
+                         "unknown_field");
   EXPECT_CALL(mock_processor(),
               GetPossiblyTrimmedRemoteSpecifics(vehicle.guid().value()))
       .WillOnce(ReturnRef(base_specifics));
@@ -746,9 +746,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PreservesUnknownFields) {
                            std::unique_ptr<syncer::EntityData> entity_data,
                            syncer::MetadataChangeList* metadata) {
         ASSERT_EQ(storage_key, vehicle.guid().value());
-        EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
-                      entity_data->specifics.autofill_valuable()),
-                  "unknown_field");
+        EXPECT_THAT(entity_data->specifics.autofill_valuable(),
+                    HasUnknownField("unknown_field"));
       });
 
   bridge().EntityInstanceChanged(

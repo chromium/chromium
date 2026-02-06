@@ -16,6 +16,10 @@
 
 namespace autofill {
 namespace {
+
+using syncer::test::AddUnknownFieldToProto;
+using syncer::test::HasUnknownField;
+
 constexpr char kId1[] = "1";
 }  // namespace
 
@@ -65,15 +69,14 @@ TEST(LoyaltyCardSyncUtilTest, CreateSpecificsFromLoyaltyCard) {
 TEST(LoyaltyCardSyncUtilTest,
      CreateSpecificsFromLoyaltyCard_MergesBaseSpecifics) {
   sync_pb::AutofillValuableSpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(base_specifics, "unknown_field");
+  AddUnknownFieldToProto(base_specifics, "unknown_field");
 
   LoyaltyCard card = TestLoyaltyCard();
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromLoyaltyCard(card, base_specifics);
 
   EXPECT_EQ(card.merchant_name(), specifics.loyalty_card().merchant_name());
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(specifics),
-            syncer::test::GetUnknownFieldValueFromProto(base_specifics));
+  EXPECT_THAT(specifics, HasUnknownField("unknown_field"));
 }
 
 TEST(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
@@ -173,7 +176,7 @@ TEST(ValuableMetadataSyncUtilTest, CreateSpecificsFromValuableMetadata) {
 TEST(ValuableMetadataSyncUtilTest,
      CreateSpecificsFromValuableMetadata_MergesBaseSpecifics) {
   sync_pb::AutofillValuableMetadataSpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(base_specifics, "unknown_field");
+  AddUnknownFieldToProto(base_specifics, "unknown_field");
 
   ValuableMetadata metadata = TestValuableMetadata();
   sync_pb::AutofillValuableMetadataSpecifics specifics =
@@ -182,8 +185,7 @@ TEST(ValuableMetadataSyncUtilTest,
           base_specifics);
 
   EXPECT_EQ(metadata.valuable_id.value(), specifics.valuable_id());
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(specifics),
-            syncer::test::GetUnknownFieldValueFromProto(base_specifics));
+  EXPECT_THAT(specifics, HasUnknownField("unknown_field"));
 }
 
 TEST(ValuableMetadataSyncUtilTest,

@@ -20,6 +20,9 @@ namespace autofill {
 
 namespace {
 
+using syncer::test::AddUnknownFieldToProto;
+using syncer::test::HasUnknownField;
+
 // Returns the string value of the attribute with the given type in `entity`.
 std::string GetStringValue(const EntityInstance& entity,
                            AttributeTypeName attribute_type_name) {
@@ -237,7 +240,7 @@ TEST(EntitySyncUtilTest,
 TEST(EntitySyncUtilTest,
      CreateSpecificsFromEntityInstance_Vehicle_MergesBaseSpecifics) {
   sync_pb::AutofillValuableSpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(base_specifics, "unknown_field");
+  AddUnknownFieldToProto(base_specifics, "unknown_field");
 
   EntityInstance vehicle = test::GetVehicleEntityInstance();
   sync_pb::AutofillValuableSpecifics specifics =
@@ -245,8 +248,7 @@ TEST(EntitySyncUtilTest,
 
   EXPECT_EQ(specifics.vehicle_registration().vehicle_make(),
             GetStringValue(vehicle, AttributeTypeName::kVehicleMake));
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(specifics),
-            syncer::test::GetUnknownFieldValueFromProto(base_specifics));
+  EXPECT_THAT(specifics, HasUnknownField("unknown_field"));
 }
 
 // Tests that `CreateSpecificsFromEntityInstance` clears fields in
@@ -469,7 +471,7 @@ TEST(
 TEST(EntitySyncUtilTest,
      CreateSpecificsFromEntityInstance_FlightReservation_MergesBaseSpecifics) {
   sync_pb::AutofillValuableSpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(base_specifics, "unknown_field");
+  AddUnknownFieldToProto(base_specifics, "unknown_field");
 
   EntityInstance flight_reservation =
       test::GetFlightReservationEntityInstance();
@@ -479,8 +481,7 @@ TEST(EntitySyncUtilTest,
   EXPECT_EQ(specifics.flight_reservation().passenger_name(),
             GetStringValue(flight_reservation,
                            AttributeTypeName::kFlightReservationPassengerName));
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(specifics),
-            syncer::test::GetUnknownFieldValueFromProto(base_specifics));
+  EXPECT_THAT(specifics, HasUnknownField("unknown_field"));
 }
 
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly sets
@@ -599,7 +600,7 @@ TEST(EntitySyncUtilTest,
       base::Microseconds(13347400000000000u));
 
   sync_pb::AutofillValuableMetadataSpecifics base_specifics;
-  syncer::test::AddUnknownFieldToProto(base_specifics, "unknown_field");
+  AddUnknownFieldToProto(base_specifics, "unknown_field");
 
   sync_pb::AutofillValuableMetadataSpecifics specifics =
       CreateSpecificsFromEntityMetadata(
@@ -608,8 +609,7 @@ TEST(EntitySyncUtilTest,
           base_specifics);
 
   EXPECT_EQ(specifics.valuable_id(), "test-valuable-id");
-  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(specifics),
-            syncer::test::GetUnknownFieldValueFromProto(base_specifics));
+  EXPECT_THAT(specifics, HasUnknownField("unknown_field"));
 }
 
 // Tests that the `CreateEntityMetadataFromSpecifics` function correctly
