@@ -26,6 +26,8 @@ static_library("service") {
     "device_statistics_request.h",
     "device_statistics_request_impl.cc",
     "device_statistics_request_impl.h",
+    "device_statistics_scheduler.cc",
+    "device_statistics_scheduler.h",
     "device_statistics_tracker.cc",
     "device_statistics_tracker.h",
     "get_all_nodes_request_barrier.cc",

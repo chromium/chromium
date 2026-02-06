@@ -27,25 +27,19 @@ namespace sync_pb {
 class SyncEntity;
 }  // namespace sync_pb
 
-class PrefRegistrySimple;
-class PrefService;
-
 namespace syncer {
 
 class DeviceStatisticsRequest;
 
 // This class sends a DeviceStatisticsRequest for every account on the device,
 // and once they all complete, records metrics about this.
-// DeviceStatisticsRequests are sent, and metrics are recorded, at most once per
-// day (achieved via timestamp persisted in a pref).
 class DeviceStatisticsTracker {
  public:
   using RequestFactory = base::RepeatingCallback<std::unique_ptr<
       DeviceStatisticsRequest>(const CoreAccountInfo&, const GURL&)>;
 
-  // `pref_service` and `identity_manager` must not be null.
-  DeviceStatisticsTracker(PrefService* pref_service,
-                          signin::IdentityManager* identity_manager,
+  // `identity_manager` must not be null.
+  DeviceStatisticsTracker(signin::IdentityManager* identity_manager,
                           const GURL& sync_server_url,
                           RequestFactory request_factory,
                           std::vector<std::string> current_device_cache_guids);
@@ -57,8 +51,6 @@ class DeviceStatisticsTracker {
   // Must only be called after refresh tokens have been loaded (so that the list
   // of accounts can actually be queried).
   void Start(base::OnceClosure callback);
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Metrics enums are public for testing.
 
@@ -175,7 +167,6 @@ class DeviceStatisticsTracker {
       const std::vector<sync_pb::SyncEntity>& entities,
       const base::flat_set<std::string>& current_device_cache_guids);
 
-  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const GURL sync_server_url_;

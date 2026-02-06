@@ -36,7 +36,7 @@
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
-#include "components/sync/service/device_statistics_tracker.h"
+#include "components/sync/service/device_statistics_scheduler.h"
 #include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_client.h"
@@ -410,8 +410,7 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback);
 
-  void MaybeStartDeviceStatisticsTracker();
-  void DeviceStatisticsTrackerDone();
+  void MaybeStartDeviceStatisticsScheduler();
 
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
@@ -543,7 +542,7 @@ class SyncServiceImpl : public SyncService,
   // Tasks that should run after the engine is initialized.
   std::vector<base::OnceClosure> tasks_waiting_for_engine_initialization_;
 
-  std::unique_ptr<DeviceStatisticsTracker> device_statistics_tracker_;
+  std::unique_ptr<DeviceStatisticsScheduler> device_statistics_scheduler_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this SyncService on

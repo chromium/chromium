@@ -253,6 +253,7 @@ source_set("unit_tests") {
     "service/data_type_controller_unittest.cc",
     "service/data_type_manager_impl_unittest.cc",
     "service/device_statistics_request_impl_unittest.cc",
+    "service/device_statistics_scheduler_unittest.cc",
     "service/device_statistics_tracker_unittest.cc",
     "service/glue/sync_engine_impl_unittest.cc",
     "service/glue/sync_transport_data_prefs_unittest.cc",

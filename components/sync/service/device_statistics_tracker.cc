@@ -11,8 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
@@ -28,9 +26,6 @@
 namespace syncer {
 
 namespace {
-
-constexpr char kLastAttemptedToRecordPref[] =
-    "sync.device_statistics_timestamp";
 
 // A device is considered active if it has been used within this amount of time.
 constexpr base::TimeDelta kDeviceActivityTimeRange = base::Days(28);
@@ -100,19 +95,16 @@ bool IsOptedInToHistory(const sync_pb::DeviceInfoSpecifics device_info) {
 }  // namespace
 
 DeviceStatisticsTracker::DeviceStatisticsTracker(
-    PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     const GURL& sync_server_url,
     RequestFactory request_factory,
     std::vector<std::string> current_device_cache_guids)
-    : pref_service_(pref_service),
-      identity_manager_(identity_manager),
+    : identity_manager_(identity_manager),
       sync_server_url_(sync_server_url),
       request_factory_(std::move(request_factory)),
       current_device_cache_guids_(std::move(current_device_cache_guids)),
       primary_account_(identity_manager_->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin)) {
-  CHECK(pref_service_);
   CHECK(identity_manager_);
   CHECK(request_factory_);
 }
@@ -135,21 +127,6 @@ void DeviceStatisticsTracker::Start(base::OnceClosure callback) {
         FROM_HERE, std::move(callback_));
     return;
   }
-
-  // Only send requests / record metrics once per day.
-  const base::Time last_recorded_at =
-      pref_service_->GetTime(kLastAttemptedToRecordPref);
-  const base::Time now = base::Time::Now();
-  const bool can_issue_requests =
-      last_recorded_at.is_null() ||
-      last_recorded_at.LocalMidnight() < now.LocalMidnight();
-  if (!can_issue_requests) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback_));
-    return;
-  }
-
-  pref_service_->SetTime(kLastAttemptedToRecordPref, now);
 
   // If there are no accounts, there's not much to do.
   if (accounts.empty()) {
@@ -186,12 +163,6 @@ void DeviceStatisticsTracker::Start(base::OnceClosure callback) {
 }
 
 DeviceStatisticsTracker::~DeviceStatisticsTracker() = default;
-
-// static
-void DeviceStatisticsTracker::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(kLastAttemptedToRecordPref, base::Time());
-}
 
 void DeviceStatisticsTracker::RequestDoneForGaiaId(const GaiaId& gaia) {
   CHECK(requests_.contains(gaia));

@@ -10,7 +10,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/time.h"
@@ -30,9 +29,7 @@ constexpr char kThisDeviceCacheGuid[] = "this_device_guid";
 
 class DeviceStatisticsTrackerTest : public testing::Test {
  public:
-  DeviceStatisticsTrackerTest() {
-    DeviceStatisticsTracker::RegisterProfilePrefs(pref_service_.registry());
-  }
+  DeviceStatisticsTrackerTest() = default;
 
   std::unique_ptr<DeviceStatisticsRequest> CreateRequest(
       const CoreAccountInfo& account,
@@ -100,91 +97,20 @@ class DeviceStatisticsTrackerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
 
   base::flat_map<GaiaId, base::WeakPtr<FakeDeviceStatisticsRequest>>
       fake_requests_;
 };
 
-TEST_F(DeviceStatisticsTrackerTest, DoesNotStartRequestIfPrefIsRecent) {
-  identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
-                                                 signin::ConsentLevel::kSignin);
-  identity_test_env_.MakeAccountAvailable("secondary@example.com");
-
-  pref_service_.SetTime("sync.device_statistics_timestamp", base::Time::Now());
-
-  base::HistogramTester histogram_tester;
-
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
-
-  base::test::TestFuture<void> future;
-  tracker.Start(future.GetCallback());
-
-  // Since no requests are sent, the tracker should complete without any further
-  // interaction.
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(fake_requests_.empty());
-
-  histogram_tester.ExpectTotalCount(
-      "Sync.DeviceStatistics.RequestsStartedCount", 0);
-  histogram_tester.ExpectTotalCount(
-      "Sync.DeviceStatistics.RequestsCompletedSuccess", 0);
-  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall", 0);
-}
-
-TEST_F(DeviceStatisticsTrackerTest, StartsRequestIfPrefIsOld) {
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
-  AccountInfo secondary =
-      identity_test_env_.MakeAccountAvailable("secondary@example.com");
-
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
-  base::HistogramTester histogram_tester;
-
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
-
-  base::test::TestFuture<void> future;
-  tracker.Start(future.GetCallback());
-
-  ASSERT_EQ(fake_requests_.size(), 2u);
-  fake_requests_[primary.gaia]->SimulateSuccess({});
-  fake_requests_[secondary.gaia]->SimulateSuccess({});
-  EXPECT_TRUE(future.Wait());
-
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DeviceStatistics.RequestsCompletedSuccess",
-      /*sample=*/
-      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DeviceStatistics.Outcome.Overall",
-      /*sample=*/
-      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
-          kPrimaryNoNonPrimaryNo,
-      /*expected_bucket_count=*/1);
-}
-
 TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenNoAccounts) {
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   identity_test_env_.WaitForRefreshTokensLoaded();
 
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -210,14 +136,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -251,14 +174,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -286,14 +206,11 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsNoOutcomeWhenAllRequestsFail) {
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -321,14 +238,11 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsNoOutcomeWhenPrimaryAccountChanges) {
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -360,14 +274,11 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenPrimaryHasOtherDevices) {
   AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -398,14 +309,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -437,14 +345,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -479,14 +384,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -520,14 +422,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -560,14 +459,11 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenNobodyHasOtherDevices) {
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -598,14 +494,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -637,14 +530,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo secondary2 =
       identity_test_env_.MakeAccountAvailable("secondary2@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -677,16 +567,13 @@ TEST_F(DeviceStatisticsTrackerTest, ExcludesCurrentDevice) {
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
   constexpr char kThisDeviceSecondaryCacheGuid[] = "this_device_guid2";
 
   DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(),
+      identity_test_env_.identity_manager(), GURL("https://example.com/"),
+      CreateRequestFactory(),
       {kThisDeviceCacheGuid, kThisDeviceSecondaryCacheGuid});
 
   base::test::TestFuture<void> future;
@@ -734,14 +621,11 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOtherPlatformsMetrics) {
   AccountInfo secondary =
       identity_test_env_.MakeAccountAvailable("secondary@example.com");
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -792,15 +676,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
   DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(),
-      {kThisDeviceCacheGuid});
+      identity_test_env_.identity_manager(), GURL("https://example.com/"),
+      CreateRequestFactory(), {kThisDeviceCacheGuid});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -836,15 +716,11 @@ TEST_F(DeviceStatisticsTrackerTest,
   AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
   DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(),
-      {kThisDeviceCacheGuid});
+      identity_test_env_.identity_manager(), GURL("https://example.com/"),
+      CreateRequestFactory(), {kThisDeviceCacheGuid});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -879,15 +755,11 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsHistoryMetricsWhenNoDevicesOptedIn) {
   AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
   DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(),
-      {kThisDeviceCacheGuid});
+      identity_test_env_.identity_manager(), GURL("https://example.com/"),
+      CreateRequestFactory(), {kThisDeviceCacheGuid});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());
@@ -921,14 +793,11 @@ TEST_F(DeviceStatisticsTrackerTest, DedupesByActivityTimeRange) {
   AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
 
-  pref_service_.SetTime("sync.device_statistics_timestamp",
-                        base::Time::Now() - base::Hours(25));
-
   base::HistogramTester histogram_tester;
 
-  DeviceStatisticsTracker tracker(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
 
   base::test::TestFuture<void> future;
   tracker.Start(future.GetCallback());

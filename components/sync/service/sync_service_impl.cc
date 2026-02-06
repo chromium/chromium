@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -432,7 +433,7 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsTracker,
+        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsScheduler,
                        weak_factory_.GetWeakPtr()),
         kSyncRecordDeviceStatisticsMetricsDelay.Get());
   }
@@ -673,7 +674,7 @@ void SyncServiceImpl::Shutdown() {
 
   NotifyShutdown();
 
-  device_statistics_tracker_.reset();
+  device_statistics_scheduler_.reset();
 
   // Ensure the LocalDataMigrationItemQueue, the DataTypeManager and the
   // engine are destroyed in order since they hold consecutive pointers to each
@@ -2491,41 +2492,37 @@ void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError(
   bookmark_sync_error_state_.AcknowledgeError();
 }
 
-void SyncServiceImpl::MaybeStartDeviceStatisticsTracker() {
+void SyncServiceImpl::MaybeStartDeviceStatisticsScheduler() {
   CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
 
+  // TODO(crbug.com/465716865): Move the metrics check into
+  // DeviceStatisticsScheduler.
   if (!sync_client_->IsMetricsAndCrashReportingEnabled()) {
     return;
   }
 
+  // TODO(crbug.com/465716865): Move this logic into
+  // DeviceStatisticsScheduler.
   if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
     // It shouldn't happen in practice that the account info (refresh tokens)
     // still aren't fully loaded at this point. But if it does, attempt starting
     // the tracker again in a little while.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsTracker,
+        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsScheduler,
                        weak_factory_.GetWeakPtr()),
         base::Seconds(1));
     return;
   }
 
-  device_statistics_tracker_ = std::make_unique<DeviceStatisticsTracker>(
+  device_statistics_scheduler_ = std::make_unique<DeviceStatisticsScheduler>(
       sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
       sync_service_url_,
       base::BindRepeating(&CreateDeviceStatisticsRequest,
                           sync_client_->GetIdentityManager(),
                           url_loader_factory_, MakeUserAgentForSync(channel_)),
-      SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
-          sync_client_->GetPrefService()));
-  device_statistics_tracker_->Start(base::BindOnce(
-      &SyncServiceImpl::DeviceStatisticsTrackerDone, base::Unretained(this)));
-}
-
-void SyncServiceImpl::DeviceStatisticsTrackerDone() {
-  CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
-
-  device_statistics_tracker_.reset();
+      base::BindRepeating(&SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds,
+                          sync_client_->GetPrefService()));
 }
 
 }  // namespace syncer
