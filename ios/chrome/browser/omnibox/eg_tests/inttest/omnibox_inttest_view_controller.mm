@@ -104,9 +104,6 @@ const CGFloat kOmniboxContainerHeight = 50;
 
 #pragma mark - OmniboxPopupPresenterDelegate
 
-- (void)popupDidInitializePresenter:(OmniboxPopupPresenter*)presenter {
-}
-
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
   return _omniboxPopupContainer;
 }

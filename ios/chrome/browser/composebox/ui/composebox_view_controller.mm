@@ -641,10 +641,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
 #pragma mark - OmniboxPopupPresenterDelegate
 
-- (void)popupDidInitializePresenter:(OmniboxPopupPresenter*)presenter {
-  _presenter = presenter;
-}
-
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
   return _omniboxPopupContainer;
 }
@@ -655,6 +651,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 }
 
 - (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
+  _presenter = presenter;
   return self.view.backgroundColor;
 }
 

@@ -101,12 +101,16 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
     viewController.overrideUserInterfaceStyle = userInterfaceStyle;
 
-    if (IsComposeboxIOSEnabled()) {
-      [self.delegate popupDidInitializePresenter:self];
-    }
+    // TODO(crbug.com/469986429): The final state of this should be us exposing
+    // the presenter property OmniboxPopupPresenterDelegate and set it there.
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      if (IsComposeboxIpadEnabled()) {
+        _popupContainerView.backgroundColor =
+            [self.delegate popupBackgroundColorForPresenter:self];
+      } else {
         _popupContainerView.backgroundColor =
             [UIColor colorNamed:kPrimaryBackgroundColor];
+      }
     } else {
       _popupContainerView.backgroundColor =
           [self.delegate popupBackgroundColorForPresenter:self];
