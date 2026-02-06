@@ -363,7 +363,7 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
 }
 
 void CWSInfoService::ScheduleCheck(int seconds) {
-  if (base::features::IsReducePPMsEnabled()) {
+  if (base::features::IsReducePPMsEnabled() && !info_check_timer_.IsRunning()) {
     info_check_timer_.SetTaskRunner(
         content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
   }

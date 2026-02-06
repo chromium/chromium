@@ -5,7 +5,7 @@
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "power.adaptive_charging_enabled",
-      "default_for_enterprise_users": false,
+      "default_value": true,
       "values_to_test": [
         true,
         false

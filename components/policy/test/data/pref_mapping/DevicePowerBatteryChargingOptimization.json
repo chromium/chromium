@@ -7,12 +7,12 @@
     "note": "Test for DevicePowerBatteryChargingOptimization and DevicePowerAdaptiveChargingEnabled policy.",
     "policy_pref_mapping_tests": [
       {
-        "note": "Check default value when no policies are set. DevicePowerAdaptiveChargingEnabled has a default_for_enterprise_users, so when DevicePowerAdaptiveChargingEnabled unset, the pref will be overriden by default_for_enterprise_users",
+        "note": "Check default value when no policies are set",
         "policies": {},
         "prefs": {
           "power.adaptive_charging_enabled": {
             "location": "user_profile",
-            "value": false
+            "default_value": true
           },
           "power.charge_limit_enabled": {
             "location": "user_profile",
