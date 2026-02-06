@@ -136,10 +136,7 @@ PolicyGlobal* GenerateBlankPolicy() {
   LowLevelPolicy policy_maker(policy);
 
   for (size_t i = 0; i < kSandboxIpcCount; i++) {
-    IpcTag service = static_cast<IpcTag>(i);
-    PolicyRule ask_broker(ASK_BROKER);
-    ask_broker.Done();
-    policy_maker.AddRule(service, &ask_broker);
+    policy_maker.AddRule(static_cast<IpcTag>(i), PolicyRule{ASK_BROKER});
   }
 
   policy_maker.Done();

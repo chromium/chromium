@@ -7,30 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
-#include <string>
+#include <algorithm>
 
 #include "base/compiler_specific.h"
-
-namespace {
-
-// A single rule can use at most this amount of memory.
-const size_t kRuleBufferSize = 1024 * 4;
-
-// The possible states of the string matching opcode generator.
-enum {
-  PENDING_NONE,
-  PENDING_ASTERISK,  // Have seen an '*' but have not generated an opcode.
-};
-
-// The category of the last character seen by the string matching opcode
-// generator.
-const uint32_t kLastCharIsNone = 0;
-const uint32_t kLastCharIsAlpha = 1;
-const uint32_t kLastCharIsWild = 2;
-const uint32_t kLastCharIsAsterisk = kLastCharIsWild + 4;
-
-}  // namespace
+#include "base/strings/string_split_win.h"
 
 namespace sandbox {
 
@@ -40,63 +20,39 @@ LowLevelPolicy::LowLevelPolicy(PolicyGlobal* policy_store)
 // Adding a rule is nothing more than pushing it into an stl container. Done()
 // is called for the rule in case the code that made the rule in the first
 // place has not done it.
-bool LowLevelPolicy::AddRule(IpcTag service, PolicyRule* rule) {
-  if (!rule->Done()) {
+bool LowLevelPolicy::AddRule(IpcTag service, PolicyRule rule) {
+  if (!rule.Done()) {
     return false;
   }
 
-  PolicyRule* local_rule = new PolicyRule(*rule);
-  RuleNode node = {local_rule, service};
-  rules_.push_back(node);
+  rules_[service].emplace_back(std::move(rule));
   return true;
 }
 
-LowLevelPolicy::~LowLevelPolicy() {
-  // Delete all the rules.
-  typedef std::list<RuleNode> RuleNodes;
-  for (RuleNodes::iterator it = rules_.begin(); it != rules_.end(); ++it) {
-    delete it->rule;
-  }
-}
+LowLevelPolicy::~LowLevelPolicy() = default;
 
 // Here is where the heavy byte shuffling is done. We take all the rules and
-// 'compile' them into a single memory region. Now, the rules are in random
-// order so the first step is to reorganize them into a stl map that is keyed
-// by the service id and as a value contains a list with all the rules that
-// belong to that service. Then we enter the big for-loop where we carve a
-// memory zone for the opcodes and the data and call RebindCopy on each rule
-// so they all end up nicely packed in the policy_store_.
+// 'compile' them into a single memory region. We enter the big for-loop where
+// we carve a memory zone for the opcodes and the data and call RebindCopy on
+// each rule so they all end up nicely packed in the policy_store_.
 bool LowLevelPolicy::Done() {
-  typedef std::list<RuleNode> RuleNodes;
-  typedef std::list<const PolicyRule*> RuleList;
-  typedef std::map<IpcTag, RuleList> Mmap;
-  Mmap mmap;
-
-  for (RuleNodes::iterator it = rules_.begin(); it != rules_.end(); ++it) {
-    mmap[it->service].push_back(it->rule);
-  }
-
   PolicyBuffer* current_buffer = &policy_store_->data[0];
   char* buffer_end = UNSAFE_TODO(reinterpret_cast<char*>(current_buffer) +
                                  policy_store_->data_size);
   size_t avail_size = policy_store_->data_size;
 
-  for (Mmap::iterator it = mmap.begin(); it != mmap.end(); ++it) {
-    IpcTag service = (*it).first;
+  for (const auto& rule_entry : rules_) {
+    IpcTag service = rule_entry.first;
     if (service > IpcTag::kMaxValue) {
       return false;
     }
     UNSAFE_TODO(policy_store_->entry[static_cast<size_t>(service)]) =
         current_buffer;
 
-    RuleList::iterator rules_it = (*it).second.begin();
-    RuleList::iterator rules_it_end = (*it).second.end();
-
     size_t svc_opcode_count = 0;
 
-    for (; rules_it != rules_it_end; ++rules_it) {
-      const PolicyRule* rule = (*rules_it);
-      size_t op_count = rule->GetOpcodeCount();
+    for (const auto& rule : rule_entry.second) {
+      size_t op_count = rule.GetOpcodeCount();
 
       size_t opcodes_size = op_count * sizeof(PolicyOpcode);
       if (avail_size < opcodes_size) {
@@ -105,8 +61,8 @@ bool LowLevelPolicy::Done() {
       size_t data_size = avail_size - opcodes_size;
       PolicyOpcode* opcodes_start =
           &UNSAFE_TODO(current_buffer->opcodes[svc_opcode_count]);
-      if (!rule->RebindCopy(opcodes_start, opcodes_size, buffer_end,
-                            &data_size)) {
+      if (!rule.RebindCopy(opcodes_start, opcodes_size, buffer_end,
+                           &data_size)) {
         return false;
       }
       size_t used = avail_size - data_size;
@@ -126,43 +82,28 @@ bool LowLevelPolicy::Done() {
 
 PolicyRule::PolicyRule(EvalResult action, uintptr_t constant)
     : action_(action), constant_(constant), done_(false) {
-  char* memory = new char[sizeof(PolicyBuffer) + kRuleBufferSize];
-  buffer_ = reinterpret_cast<PolicyBuffer*>(memory);
-  buffer_->opcode_count = 0;
+  const size_t kRuleBufferSize = 1024 * 4;
+  opcode_buffer_ = base::HeapArray<uint8_t>::WithSize(sizeof(PolicyBuffer) +
+                                                      kRuleBufferSize);
+  std::ranges::fill(opcode_buffer_, 0);
   opcode_factory_ =
-      new OpcodeFactory(buffer_, kRuleBufferSize + sizeof(PolicyOpcode));
+      std::make_unique<OpcodeFactory>(get_buffer(), kRuleBufferSize);
 }
 
-PolicyRule::PolicyRule(const PolicyRule& other) {
-  if (this == &other)
-    return;
-  action_ = other.action_;
-  done_ = other.done_;
-  size_t buffer_size = sizeof(PolicyBuffer) + kRuleBufferSize;
-  char* memory = new char[buffer_size];
-  buffer_ = reinterpret_cast<PolicyBuffer*>(memory);
-  UNSAFE_TODO(memcpy(buffer_, other.buffer_, buffer_size));
-
-  char* opcode_buffer = reinterpret_cast<char*>(&buffer_->opcodes[0]);
-  char* next_opcode =
-      &UNSAFE_TODO(opcode_buffer[GetOpcodeCount() * sizeof(PolicyOpcode)]);
-  opcode_factory_ =
-      new OpcodeFactory(next_opcode, other.opcode_factory_->memory_size());
-}
+PolicyRule::PolicyRule(PolicyRule&& other) noexcept = default;
+PolicyRule& PolicyRule::operator=(PolicyRule&& other) noexcept = default;
 
 // This function get called from a simple state machine implemented in
-// AddStringMatch() which passes the current state (in state) and it passes
+// AddStringMatch() which passes the pending asterisk state and it passes
 // true in last_call if AddStringMatch() has finished processing the input
 // pattern string and this would be the last call to generate any pending
-// opcode. The skip_count is the currently accumulated number of '?' seen so
-// far and once the associated opcode is generated this function sets it back
-// to zero.
+// opcode.
 bool PolicyRule::GenStringOpcode(RuleType rule_type,
                                  uint8_t parameter,
-                                 int state,
+                                 bool pending_asterisk,
                                  bool last_call,
-                                 int* skip_count,
-                                 std::wstring* fragment) {
+                                 std::wstring_view fragment,
+                                 PolicyOpcode** last_op) {
   // The last opcode must:
   //   1) Always clear the context.
   //   2) Preserve the negation.
@@ -178,82 +119,62 @@ bool PolicyRule::GenStringOpcode(RuleType rule_type,
     options = kPolUseOREval | kPolNegateEval;
   }
 
-  PolicyOpcode* op = nullptr;
-
   // The fragment string contains the accumulated characters to match with, it
   // never contains wildcards (unless they have been escaped) and while there
   // is no fragment there is no new string match opcode to generate.
-  if (fragment->empty()) {
+  if (fragment.empty()) {
     // There is no new opcode to generate but in the last call we have to fix
     // the previous opcode because it was really the last but we did not know
     // it at that time.
-    if (last_call && (buffer_->opcode_count > 0)) {
-      op = &UNSAFE_TODO(buffer_->opcodes[buffer_->opcode_count - 1]);
-      op->SetOptions(options);
+    if (last_call && *last_op) {
+      (*last_op)->SetOptions(options);
     }
     return true;
   }
 
-  if (PENDING_ASTERISK == state) {
-    if (last_call) {
-      op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(),
-                                               kSeekToEnd, options, false);
-    } else {
-      op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(),
-                                               kSeekForward, options, false);
-    }
+  if (pending_asterisk) {
+    *last_op = opcode_factory_->MakeOpWStringMatch(
+        parameter, fragment, last_call ? kSeekToEnd : kSeekForward, options,
+        false);
+
   } else {
-    op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(), 0,
-                                             options, last_call);
+    *last_op = opcode_factory_->MakeOpWStringMatch(parameter, fragment, 0,
+                                                   options, last_call);
   }
-  if (!op)
+
+  if (!*last_op) {
     return false;
-  ++buffer_->opcode_count;
-  fragment->clear();
+  }
+  ++get_buffer()->opcode_count;
   return true;
 }
 
 bool PolicyRule::AddStringMatch(RuleType rule_type,
                                 uint8_t parameter,
-                                const wchar_t* string) {
+                                std::wstring_view string) {
   if (done_) {
     // Do not allow to add more rules after generating the action opcode.
     return false;
   }
 
-  const wchar_t* current_char = string;
-  uint32_t last_char = kLastCharIsNone;
-  int state = PENDING_NONE;
-  int skip_count = 0;       // counts how many '?' we have seen in a row.
-  std::wstring fragment;    // accumulates the non-wildcard part.
-
-  while (L'\0' != *current_char) {
-    switch (*current_char) {
-      case L'*':
-        if (kLastCharIsWild & last_char) {
-          // '**' and '&*' is an error.
-          return false;
-        }
-        if (!GenStringOpcode(rule_type, parameter, state, false, &skip_count,
-                             &fragment)) {
-          return false;
-        }
-        last_char = kLastCharIsAsterisk;
-        state = PENDING_ASTERISK;
-        break;
-      case L'/':
-        // Check that someone isn't using the old syntax.
-        CHECK(L'?' != UNSAFE_TODO(current_char[1]));
-        [[fallthrough]];
-      default:
-        fragment += *current_char;
-        last_char = kLastCharIsAlpha;
-    }
-    UNSAFE_TODO(++current_char);
+  // An empty string or an instance of '**' is an error.
+  if (string.empty() || string.contains(L"**")) {
+    return false;
   }
 
-  return GenStringOpcode(rule_type, parameter, state, true, &skip_count,
-                         &fragment);
+  auto fragments = base::SplitStringPiece(string, L"*", base::KEEP_WHITESPACE,
+                                          base::SPLIT_WANT_ALL);
+  bool pending_asterisk = false;
+  PolicyOpcode* last_op = nullptr;
+  for (size_t index = 0; index < fragments.size() - 1; index++) {
+    if (!GenStringOpcode(rule_type, parameter, pending_asterisk, false,
+                         fragments[index], &last_op)) {
+      return false;
+    }
+    pending_asterisk = true;
+  }
+  return GenStringOpcode(rule_type, parameter, pending_asterisk, true,
+                         fragments.back(), &last_op);
 }
 
 bool PolicyRule::AddNumberMatch(RuleType rule_type,
@@ -273,7 +194,7 @@ bool PolicyRule::AddNumberMatch(RuleType rule_type,
     if (!opcode_factory_->MakeOpNumberAndMatch(parameter, number, opts))
       return false;
   }
-  ++buffer_->opcode_count;
+  ++get_buffer()->opcode_count;
   return true;
 }
 
@@ -284,7 +205,7 @@ bool PolicyRule::Done() {
   if (!opcode_factory_->MakeOpAction(action_, constant_)) {
     return false;
   }
-  ++buffer_->opcode_count;
+  ++get_buffer()->opcode_count;
   done_ = true;
   return true;
 }
@@ -293,12 +214,13 @@ bool PolicyRule::RebindCopy(PolicyOpcode* opcode_start,
                             size_t opcode_size,
                             char* data_start,
                             size_t* data_size) const {
-  size_t count = buffer_->opcode_count;
+  const PolicyBuffer* buffer = get_buffer();
+  size_t count = buffer->opcode_count;
   for (size_t ix = 0; ix != count; ++ix) {
     if (opcode_size < sizeof(PolicyOpcode)) {
       return false;
     }
-    PolicyOpcode& opcode = UNSAFE_TODO(buffer_->opcodes[ix]);
+    const PolicyOpcode& opcode = UNSAFE_TODO(buffer->opcodes[ix]);
     *opcode_start = opcode;
     if (OP_WSTRING_MATCH == opcode.GetID()) {
       // For this opcode argument 0 is a delta to the string and argument 1
@@ -324,9 +246,6 @@ bool PolicyRule::RebindCopy(PolicyOpcode* opcode_start,
   return true;
 }
 
-PolicyRule::~PolicyRule() {
-  opcode_factory_.ClearAndDelete();
-  delete[] reinterpret_cast<char*>(buffer_.ExtractAsDangling().get());
-}
+PolicyRule::~PolicyRule() = default;
 
 }  // namespace sandbox

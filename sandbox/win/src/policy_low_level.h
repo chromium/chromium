@@ -9,9 +9,12 @@
 #include <stdint.h>
 
 #include <list>
-#include <string>
+#include <map>
+#include <memory>
+#include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
@@ -25,12 +28,12 @@
 // LowLevelPolicy object like this:
 //
 //   PolicyRule rule1(ASK_BROKER);
-//   rule1.AddStringMatch(IF, 0, L"\\\\/?/?\\c:\\*Microsoft*\\*.exe", true);
+//   rule1.AddStringMatch(IF, 0, L"\\??\\c:\\*Microsoft*\\*.exe", true);
 //   rule1.AddNumberMatch(IF_NOT, 1, CREATE_ALWAYS, EQUAL);
 //   rule1.AddNumberMatch(IF, 2, FILE_ATTRIBUTE_NORMAL, EQUAL);
 //
 //   PolicyRule rule2(FAKE_SUCCESS);
-//   rule2.AddStringMatch(IF, 0, L"\\\\/?/?\\Pipe\\Chrome.*", false));
+//   rule2.AddStringMatch(IF, 0, L"\\??\\Pipe\\Chrome.*", false));
 //   rule2.AddNumberMatch(IF, 1, OPEN_EXISTING, EQUAL));
 //
 //   LowLevelPolicy policyGen(*policy_memory);
@@ -80,7 +83,85 @@ struct PolicyGlobal {
   PolicyBuffer data[1];
 };
 
-class PolicyRule;
+// There are 'if' rules and 'if not' comparisons
+enum RuleType {
+  IF = 0,
+  IF_NOT = 1,
+};
+
+// Possible comparisons for numbers
+enum RuleOp { EQUAL, AND };
+
+// Provides the means to collect a set of comparisons into a single
+// rule and its associated action.
+class PolicyRule {
+  friend class LowLevelPolicy;
+
+ public:
+  explicit PolicyRule(EvalResult action, uintptr_t constant = 0);
+  PolicyRule(const PolicyRule& other) = delete;
+  const PolicyRule& operator=(const PolicyRule&) = delete;
+  PolicyRule(PolicyRule&& other) noexcept;
+  PolicyRule& operator=(PolicyRule&& other) noexcept;
+  ~PolicyRule();
+
+  // Adds a string comparison to the rule.
+  // rule_type: possible values are IF and IF_NOT.
+  // parameter: the expected index of the argument for this rule. For example
+  // in a 'create file' service the file name argument can be at index 0.
+  // string: is the desired matching pattern.
+  bool AddStringMatch(RuleType rule_type,
+                      uint8_t parameter,
+                      std::wstring_view string);
+
+  // Adds a number match comparison to the rule.
+  // rule_type: possible values are IF and IF_NOT.
+  // parameter: the expected index of the argument for this rule.
+  // number: the value to compare the input to.
+  // comparison_op: the comparison kind (equal, logical and, etc).
+  bool AddNumberMatch(RuleType rule_type,
+                      uint8_t parameter,
+                      uint32_t number,
+                      RuleOp comparison_op);
+
+  // Returns the number of opcodes generated so far.
+  size_t GetOpcodeCount() const { return get_buffer()->opcode_count; }
+
+  // Called when there is no more comparisons to add. Internally it generates
+  // the last opcode (the action opcode). Returns false if this operation fails.
+  bool Done();
+
+ private:
+  // Called in a loop from AddStringMatch to generate the required string
+  // match opcodes. rule_type and parameter are the same as in AddStringMatch.
+  bool GenStringOpcode(RuleType rule_type,
+                       uint8_t parameter,
+                       bool pending_asterisk,
+                       bool last_call,
+                       std::wstring_view fragment,
+                       PolicyOpcode** last_op);
+
+  // Loop over all generated opcodes and copy them to increasing memory
+  // addresses from opcode_start and copy the extra data (strings usually) into
+  // decreasing addresses from data_start. Extra data is only present in the
+  // string evaluation opcodes.
+  bool RebindCopy(PolicyOpcode* opcode_start,
+                  size_t opcode_size,
+                  char* data_start,
+                  size_t* data_size) const;
+
+  PolicyBuffer* get_buffer() {
+    return reinterpret_cast<PolicyBuffer*>(opcode_buffer_.data());
+  }
+  const PolicyBuffer* get_buffer() const {
+    return reinterpret_cast<const PolicyBuffer*>(opcode_buffer_.data());
+  }
+  base::HeapArray<uint8_t> opcode_buffer_;
+  std::unique_ptr<OpcodeFactory> opcode_factory_;
+  EvalResult action_;
+  uintptr_t constant_;
+  bool done_;
+};
 
 // Provides the means to collect rules into a policy store (memory)
 class LowLevelPolicy {
@@ -101,90 +182,15 @@ class LowLevelPolicy {
   // service: The id of the service that this rule is associated with,
   // for example the 'Open Thread' service or the "Create File" service.
   // returns false on error.
-  bool AddRule(IpcTag service, PolicyRule* rule);
+  bool AddRule(IpcTag service, PolicyRule rule);
 
   // Generates all the rules added with AddRule() into the memory area
   // passed on the constructor. Returns false on error.
   bool Done();
 
  private:
-  struct RuleNode {
-    raw_ptr<const PolicyRule, DanglingUntriaged> rule;
-    IpcTag service;
-  };
-  std::list<RuleNode> rules_;
+  std::map<IpcTag, std::list<PolicyRule>> rules_;
   raw_ptr<PolicyGlobal, DanglingUntriaged> policy_store_;
-};
-
-// There are 'if' rules and 'if not' comparisons
-enum RuleType {
-  IF = 0,
-  IF_NOT = 1,
-};
-
-// Possible comparisons for numbers
-enum RuleOp { EQUAL, AND };
-
-// Provides the means to collect a set of comparisons into a single
-// rule and its associated action.
-class PolicyRule {
-  friend class LowLevelPolicy;
-
- public:
-  explicit PolicyRule(EvalResult action, uintptr_t constant = 0);
-  PolicyRule(const PolicyRule& other);
-  ~PolicyRule();
-
-  // Adds a string comparison to the rule.
-  // rule_type: possible values are IF and IF_NOT.
-  // parameter: the expected index of the argument for this rule. For example
-  // in a 'create file' service the file name argument can be at index 0.
-  // string: is the desired matching pattern.
-  bool AddStringMatch(RuleType rule_type,
-                      uint8_t parameter,
-                      const wchar_t* string);
-
-  // Adds a number match comparison to the rule.
-  // rule_type: possible values are IF and IF_NOT.
-  // parameter: the expected index of the argument for this rule.
-  // number: the value to compare the input to.
-  // comparison_op: the comparison kind (equal, logical and, etc).
-  bool AddNumberMatch(RuleType rule_type,
-                      uint8_t parameter,
-                      uint32_t number,
-                      RuleOp comparison_op);
-
-  // Returns the number of opcodes generated so far.
-  size_t GetOpcodeCount() const { return buffer_->opcode_count; }
-
-  // Called when there is no more comparisons to add. Internally it generates
-  // the last opcode (the action opcode). Returns false if this operation fails.
-  bool Done();
-
- private:
-  void operator=(const PolicyRule&);
-  // Called in a loop from AddStringMatch to generate the required string
-  // match opcodes. rule_type and parameter are the same as in AddStringMatch.
-  bool GenStringOpcode(RuleType rule_type,
-                       uint8_t parameter,
-                       int state,
-                       bool last_call,
-                       int* skip_count,
-                       std::wstring* fragment);
-
-  // Loop over all generated opcodes and copy them to increasing memory
-  // addresses from opcode_start and copy the extra data (strings usually) into
-  // decreasing addresses from data_start. Extra data is only present in the
-  // string evaluation opcodes.
-  bool RebindCopy(PolicyOpcode* opcode_start,
-                  size_t opcode_size,
-                  char* data_start,
-                  size_t* data_size) const;
-  raw_ptr<PolicyBuffer> buffer_;
-  raw_ptr<OpcodeFactory> opcode_factory_;
-  EvalResult action_;
-  uintptr_t constant_;
-  bool done_;
 };
 
 }  // namespace sandbox

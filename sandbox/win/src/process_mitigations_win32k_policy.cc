@@ -12,14 +12,11 @@ namespace sandbox {
 
 bool ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
     LowLevelPolicy* policy) {
-  PolicyRule rule(FAKE_SUCCESS);
-  if (!policy->AddRule(IpcTag::GDI_GDIDLLINITIALIZE, &rule))
-    return false;
-  if (!policy->AddRule(IpcTag::GDI_GETSTOCKOBJECT, &rule))
-    return false;
-  if (!policy->AddRule(IpcTag::USER_REGISTERCLASSW, &rule))
-    return false;
-  return true;
+  return policy->AddRule(IpcTag::GDI_GDIDLLINITIALIZE,
+                         PolicyRule{FAKE_SUCCESS}) &&
+         policy->AddRule(IpcTag::GDI_GETSTOCKOBJECT,
+                         PolicyRule{FAKE_SUCCESS}) &&
+         policy->AddRule(IpcTag::USER_REGISTERCLASSW, PolicyRule{FAKE_SUCCESS});
 }
 
 }  // namespace sandbox

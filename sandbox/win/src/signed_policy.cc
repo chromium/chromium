@@ -57,7 +57,7 @@ base::win::ScopedHandle SignedPolicy::GenerateRules(base::FilePath dll_path,
                                     nt_filename->c_str())) {
     return {};
   }
-  if (!policy->AddRule(IpcTag::NTCREATESECTION, &signed_policy)) {
+  if (!policy->AddRule(IpcTag::NTCREATESECTION, std::move(signed_policy))) {
     return {};
   }
 

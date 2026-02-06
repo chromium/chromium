@@ -77,7 +77,7 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
 
 }  // namespace.
 
-bool FileSystemPolicy::GenerateRules(const wchar_t* name,
+bool FileSystemPolicy::GenerateRules(std::wstring_view name,
                                      FileSemantics semantics,
                                      LowLevelPolicy* policy) {
   std::wstring mod_name(name);
@@ -116,22 +116,23 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   }
 
   if (!create.AddStringMatch(IF, OpenFile::NAME, name) ||
-      !policy->AddRule(IpcTag::NTCREATEFILE, &create)) {
+      !policy->AddRule(IpcTag::NTCREATEFILE, std::move(create))) {
     return false;
   }
 
   if (!open.AddStringMatch(IF, OpenFile::NAME, name) ||
-      !policy->AddRule(IpcTag::NTOPENFILE, &open)) {
+      !policy->AddRule(IpcTag::NTOPENFILE, std::move(open))) {
     return false;
   }
 
   if (!query.AddStringMatch(IF, OpenFile::NAME, name) ||
-      !policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, &query)) {
+      !policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, std::move(query))) {
     return false;
   }
 
   if (!query_full.AddStringMatch(IF, OpenFile::NAME, name) ||
-      !policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE, &query_full)) {
+      !policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE,
+                       std::move(query_full))) {
     return false;
   }
 
@@ -139,7 +140,7 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   if (semantics == FileSemantics::kAllowAny && !is_pipe) {
     PolicyRule rename(result);
     if (!rename.AddStringMatch(IF, OpenFile::NAME, name) ||
-        !policy->AddRule(IpcTag::NTSETINFO_RENAME, &rename)) {
+        !policy->AddRule(IpcTag::NTSETINFO_RENAME, std::move(rename))) {
       return false;
     }
   }
