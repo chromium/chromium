@@ -41,7 +41,7 @@ GCC_VERSIONS = {
 # This number is appended to the sysroot key to cause full rebuilds.  It
 # should be incremented when removing packages or patching existing packages.
 # It should not be incremented when adding packages.
-SYSROOT_RELEASE = 1
+SYSROOT_RELEASE = 2
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
