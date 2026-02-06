@@ -309,14 +309,15 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
     /** Returns an array of the native {@code BrowserWindowInterface} addresses. */
     private long[] getNativeBrowserWindowPtrs(Collection<ChromeAndroidTask> chromeAndroidTasks) {
-        long[] nativeBrowserWindowPtrs = new long[chromeAndroidTasks.size()];
-
-        int index = 0;
+        List<Long> ptrs = new ArrayList<>();
         for (var task : chromeAndroidTasks) {
-            nativeBrowserWindowPtrs[index] = task.getOrCreateNativeBrowserWindowPtr();
-            index++;
+            ptrs.addAll(task.getAllNativeBrowserWindowPtrs());
         }
 
+        long[] nativeBrowserWindowPtrs = new long[ptrs.size()];
+        for (int i = 0; i < ptrs.size(); i++) {
+            nativeBrowserWindowPtrs[i] = ptrs.get(i);
+        }
         return nativeBrowserWindowPtrs;
     }
 

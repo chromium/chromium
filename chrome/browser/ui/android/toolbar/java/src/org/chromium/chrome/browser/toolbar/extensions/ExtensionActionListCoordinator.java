@@ -16,6 +16,7 @@ import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
@@ -47,6 +48,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ExtensionActionListRecyclerView container,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionsToolbarBridge extensionsToolbarBridge) {
         mContext = context;
@@ -59,6 +61,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         windowAndroid,
                         mModels,
                         task,
+                        profile,
                         currentTabSupplier,
                         container,
                         extensionsToolbarBridge);

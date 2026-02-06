@@ -108,10 +108,10 @@ public class ExtensionsMenuMediatorTest {
     @Before
     public void setUp() {
         // Mock AndroidChromeTask.
-        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
 
         // Set up the fake ExtensionActionsBridge.
-        mTaskModel = mActionsBridge.getOrCreateTaskModel(mTask);
+        mTaskModel = mActionsBridge.getOrCreateTaskModel(mTask, mProfile);
         mTaskModel.setInitialized(true);
         mTaskModel.putAction(
                 "a", new ActionData.Builder().setTitle("title of a").setIcon(ICON_RED).build());
@@ -137,6 +137,7 @@ public class ExtensionsMenuMediatorTest {
                 new ExtensionsMenuMediator(
                         ApplicationProvider.getApplicationContext(),
                         mTask,
+                        mProfile,
                         mCurrentTabSupplier,
                         mModels,
                         mDataReadyCallback,

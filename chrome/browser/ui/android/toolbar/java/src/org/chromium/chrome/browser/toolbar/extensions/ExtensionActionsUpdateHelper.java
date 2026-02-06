@@ -9,6 +9,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
@@ -59,12 +60,13 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
     public ExtensionActionsUpdateHelper(
             ModelList models,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ActionsUpdateDelegate delegate) {
         mModels = models;
         mCurrentTabSupplier = currentTabSupplier;
         mActionsUpdateDelegate = delegate;
-        mExtensionActionsBridge = new ExtensionActionsBridge(task);
+        mExtensionActionsBridge = new ExtensionActionsBridge(task, profile);
 
         mCurrentTabSupplier.addObserver(mTabChangedCallback);
         mExtensionActionsBridge.addObserver(mActionsObserver);

@@ -157,7 +157,8 @@ public class TabModelMultiWindowTest {
                 () -> {
                     var taskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
                     var chromeTask = taskTracker.get(activity.getTaskId());
-                    return chromeTask.getOrCreateNativeBrowserWindowPtr();
+                    var profile = activity.getTabModelSelector().getCurrentModel().getProfile();
+                    return chromeTask.getOrCreateNativeBrowserWindowPtr(profile);
                 });
     }
 

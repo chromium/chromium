@@ -81,10 +81,10 @@ public class ExtensionsMenuCoordinatorTest {
         mExtensionsMenuButton = new ListMenuButton(activity, null);
         activity.setContentView(mExtensionsMenuButton);
 
-        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
         when(mTab.getProfile()).thenReturn(mProfile);
 
-        mTaskModel = mBridge.getOrCreateTaskModel(mTask);
+        mTaskModel = mBridge.getOrCreateTaskModel(mTask, mProfile);
         mTaskModel.setInitialized(true);
 
         mExtensionsMenuCoordinator =
@@ -93,6 +93,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsMenuButton,
                         mThemeColorProvider,
                         mTask,
+                        mProfile,
                         mCurrentTabSupplier,
                         mTabCreator);
 

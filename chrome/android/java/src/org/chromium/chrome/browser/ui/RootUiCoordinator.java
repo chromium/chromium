@@ -1615,9 +1615,11 @@ public class RootUiCoordinator
                 }
             }
         } else if (id == R.id.glic_menu_id) {
+            Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
+            assumeNonNull(profile);
             long browserWindowPtr =
                     assumeNonNull(mChromeAndroidTaskSupplier.get())
-                            .getOrCreateNativeBrowserWindowPtr();
+                            .getOrCreateNativeBrowserWindowPtr(profile);
             GlicKeyedService service = new GlicKeyedService();
             if (service == null) {
                 return false;

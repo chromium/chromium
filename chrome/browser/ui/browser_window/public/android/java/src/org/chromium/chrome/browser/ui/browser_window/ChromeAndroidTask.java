@@ -242,11 +242,6 @@ public interface ChromeAndroidTask {
      */
     long getOrCreateNativeBrowserWindowPtr(Profile profile);
 
-    // TODO(crbug.com/475200706): Remove once all callers are migrated to the profile-specific
-    // method.
-    @Deprecated
-    long getOrCreateNativeBrowserWindowPtr();
-
     /**
      * Returns an array of the all native {@code BrowserWindowInterface} addresses.
      *
@@ -365,9 +360,4 @@ public interface ChromeAndroidTask {
      * Returns the {@code SessionID} as returned by {@code BrowserWindowInterface::GetSessionID()}.
      */
     @Nullable Integer getSessionIdForTesting(Profile profile);
-
-    // TODO(crbug.com/475200706): Remove once all callers are migrated to the profile-specific
-    // method.
-    @Deprecated
-    @Nullable Integer getSessionIdForTesting();
 }

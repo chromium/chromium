@@ -726,9 +726,10 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
 
         // Act.
-        long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
+        long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
 
         // Assert.
         assertEquals(
@@ -741,10 +742,11 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange.
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
         var pendingTaskInfo = ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo();
+        var profile = pendingTaskInfo.mCreateParams.getProfile();
         var chromeAndroidTask = new ChromeAndroidTaskImpl(pendingTaskInfo);
 
         // Act.
-        long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
+        long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
 
         // Assert.
         assertEquals(
@@ -755,12 +757,15 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void getOrCreateNativeBrowserWindowPtr_calledAfterTaskDestroyed_throwsException() {
         // Arrange.
-        var chromeAndroidTask =
-                createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
         chromeAndroidTask.destroy();
 
         // Act & Assert.
-        assertThrows(AssertionError.class, chromeAndroidTask::getOrCreateNativeBrowserWindowPtr);
+        assertThrows(
+                AssertionError.class,
+                () -> chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile));
     }
 
     @Test
@@ -837,9 +842,11 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
         var mockAndroidBrowserWindowNatives =
                 assertNonNull(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives);
-        long nativeAndroidBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
+        long nativeAndroidBrowserWindowPtr =
+                chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
 
         // Act.
         chromeAndroidTask.destroy();

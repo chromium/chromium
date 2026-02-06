@@ -13,6 +13,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
@@ -34,6 +35,7 @@ class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
     private final Context mContext;
     private final ChromeAndroidTask mTask;
+    private final Profile mProfile;
     private final Runnable mOnUpdateFinishedRunnable;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
     private final View mRootView;
@@ -41,11 +43,13 @@ class ExtensionsMenuMediator implements Destroyable {
     public ExtensionsMenuMediator(
             Context context,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
             Runnable onUpdateFinishedRunnable,
             View rootView) {
         mTask = task;
+        mProfile = profile;
 
         mOnUpdateFinishedRunnable = onUpdateFinishedRunnable;
         mContext = context;
@@ -53,7 +57,7 @@ class ExtensionsMenuMediator implements Destroyable {
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
-                        extensionModels, task, currentTabSupplier, mActionsUpdateDelegate);
+                        extensionModels, task, profile, currentTabSupplier, mActionsUpdateDelegate);
     }
 
     private static class RelativeViewRectProvider extends RectProvider {
@@ -98,7 +102,7 @@ class ExtensionsMenuMediator implements Destroyable {
 
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
-                        mTask, actionId, webContents, ContextMenuSource.MENU_ITEM);
+                        mTask, mProfile, actionId, webContents, ContextMenuSource.MENU_ITEM);
 
         ExtensionActionContextMenuUtils.showContextMenu(
                 mContext,

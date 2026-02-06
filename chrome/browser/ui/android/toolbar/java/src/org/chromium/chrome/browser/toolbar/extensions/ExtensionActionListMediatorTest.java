@@ -128,7 +128,7 @@ public class ExtensionActionListMediatorTest {
         Context context = ApplicationProvider.getApplicationContext();
 
         // Mock AndroidChromeTask.
-        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
 
         // Mock JNI for Context Menu Bridge.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
@@ -174,6 +174,7 @@ public class ExtensionActionListMediatorTest {
                         mWindowAndroid,
                         mModels,
                         mTask,
+                        mProfile,
                         mCurrentTabSupplier,
                         mContainer,
                         mExtensionsToolbarBridge) {

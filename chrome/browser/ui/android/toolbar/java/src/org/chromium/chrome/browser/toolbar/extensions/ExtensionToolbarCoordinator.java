@@ -62,6 +62,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
                 extensionToolbarStub,
                 windowAndroid,
                 task,
+                profile,
                 currentTabSupplier,
                 tabCreator,
                 themeColorProvider);
@@ -80,6 +81,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider);

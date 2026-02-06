@@ -182,12 +182,13 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         var tabModel = mFreshCtaTransitTestRule.getActivity().getCurrentTabModel();
+        var profile = assumeNonNull(tabModel.getProfile());
 
         // Assert.
-        assertNotNull(chromeAndroidTask.getSessionIdForTesting());
+        assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
         assertNotNull(tabModel.getNativeSessionIdForTesting());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(),
+                chromeAndroidTask.getSessionIdForTesting(profile),
                 tabModel.getNativeSessionIdForTesting());
     }
 
@@ -206,11 +207,12 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         var tabModel = mCustomTabActivityTestRule.getActivity().getCurrentTabModel();
+        var profile = assumeNonNull(tabModel.getProfile());
 
-        assertNotNull(chromeAndroidTask.getSessionIdForTesting());
+        assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
         assertNotNull(tabModel.getNativeSessionIdForTesting());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(),
+                chromeAndroidTask.getSessionIdForTesting(profile),
                 tabModel.getNativeSessionIdForTesting());
     }
 
@@ -225,12 +227,13 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         var tabModel = mWebappActivityTestRule.getActivity().getCurrentTabModel();
+        var profile = assumeNonNull(tabModel.getProfile());
 
         // Assert.
-        assertNotNull(chromeAndroidTask.getSessionIdForTesting());
+        assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
         assertNotNull(tabModel.getNativeSessionIdForTesting());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(),
+                chromeAndroidTask.getSessionIdForTesting(profile),
                 tabModel.getNativeSessionIdForTesting());
     }
 
@@ -246,12 +249,13 @@ public class ChromeAndroidTaskIntegrationTest {
         assertNotNull(chromeAndroidTask);
 
         var tabModel = mCustomTabActivityTestRule.getActivity().getCurrentTabModel();
+        var profile = assumeNonNull(tabModel.getProfile());
 
         // Assert.
-        assertNotNull(chromeAndroidTask.getSessionIdForTesting());
+        assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
         assertNotNull(tabModel.getNativeSessionIdForTesting());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(),
+                chromeAndroidTask.getSessionIdForTesting(profile),
                 tabModel.getNativeSessionIdForTesting());
     }
 

@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport;
 
@@ -29,6 +30,7 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
 
     private final ChromeAndroidTask mChromeAndroidTask;
     private final ExtensionWindowControllerBridgeImpl mExtensionWindowControllerBridge;
+    private final Profile mMockProfile;
 
     @CalledByNative
     private ExtensionWindowControllerBridgeNativeUnitTestSupport() {
@@ -42,10 +44,10 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true);
         mChromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        mMockProfile = chromeAndroidTaskWithMockDeps.mMockProfile;
 
         mExtensionWindowControllerBridge =
-                new ExtensionWindowControllerBridgeImpl(
-                        mChromeAndroidTask, chromeAndroidTaskWithMockDeps.mMockProfile);
+                new ExtensionWindowControllerBridgeImpl(mChromeAndroidTask, mMockProfile);
     }
 
     @CalledByNative
@@ -83,6 +85,6 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
 
     @CalledByNative
     private long getNativeBrowserWindowPtr() {
-        return mChromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
+        return mChromeAndroidTask.getOrCreateNativeBrowserWindowPtr(mMockProfile);
     }
 }

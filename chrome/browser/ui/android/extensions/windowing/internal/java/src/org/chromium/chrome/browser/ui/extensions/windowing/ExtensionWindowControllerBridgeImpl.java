@@ -74,9 +74,6 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
     private final ChromeAndroidTask mChromeAndroidTask;
 
-    // TODO(crbug.com/475200706): This is currently unused, but will be required once
-    // `getOrCreateNativeBrowserWindowPtr()` is updated to require a profile so keep it for now.
-    @SuppressWarnings("unused")
     private final Profile mProfile;
 
     private long mNativeExtensionWindowControllerBridge;
@@ -95,7 +92,7 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
                 ExtensionWindowControllerBridgeImplJni.get()
                         .create(
                                 /* caller= */ this,
-                                mChromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
+                                mChromeAndroidTask.getOrCreateNativeBrowserWindowPtr(mProfile));
     }
 
     @Override

@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge.HandleKeyEventResult;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
@@ -44,6 +45,7 @@ public class FakeExtensionActionsBridgeTest {
     @Mock private ChromeAndroidTask mTask;
     @Mock private WebContents mWebContents;
     @Mock private ExtensionActionsBridge.Observer mObserver;
+    @Mock private Profile mProfile;
 
     @Rule
     public final FakeExtensionActionsBridgeRule mFakeBridgeRule =
@@ -56,9 +58,9 @@ public class FakeExtensionActionsBridgeTest {
 
     @Before
     public void setUp() {
-        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
-        mTaskModel = mFakeBridge.getOrCreateTaskModel(mTask);
-        mBridge = new ExtensionActionsBridge(mTask);
+        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
+        mTaskModel = mFakeBridge.getOrCreateTaskModel(mTask, mProfile);
+        mBridge = new ExtensionActionsBridge(mTask, mProfile);
         mBridge.addObserver(mObserver);
     }
 

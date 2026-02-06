@@ -25,6 +25,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
@@ -47,6 +48,7 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
     @Mock private ListMenuButton mExtensionsMenuButton;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ChromeAndroidTask mTask;
+    @Mock private Profile mProfile;
     @Mock private TabCreator mTabCreator;
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private View mRequestAccessButton;
@@ -66,8 +68,8 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
         View mockRootView = mock(View.class);
         when(mExtensionsMenuButton.getRootView()).thenReturn(mockRootView);
 
-        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
-        mBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask).setInitialized(true);
+        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
+        mBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask, mProfile).setInitialized(true);
 
         mCoordinator =
                 new ExtensionsMenuAndAccessControlButtonCoordinator(
@@ -75,6 +77,7 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
                         mExtensionsMenuButton,
                         mThemeColorProvider,
                         mTask,
+                        mProfile,
                         ObservableSuppliers.createNullable(),
                         mTabCreator,
                         mExtensionsToolbarBridge,

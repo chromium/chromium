@@ -10,6 +10,7 @@ import android.view.View;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -43,6 +44,7 @@ public class ExtensionsMenuAndAccessControlButtonCoordinator implements Destroya
             ListMenuButton extensionsMenuButton,
             ThemeColorProvider themeColorProvider,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ExtensionsToolbarBridge extensionsToolbarBridge,
@@ -53,6 +55,7 @@ public class ExtensionsMenuAndAccessControlButtonCoordinator implements Destroya
                         extensionsMenuButton,
                         themeColorProvider,
                         task,
+                        profile,
                         currentTabSupplier,
                         tabCreator);
 

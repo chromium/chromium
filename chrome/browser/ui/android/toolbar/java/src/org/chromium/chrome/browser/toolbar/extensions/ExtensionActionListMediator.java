@@ -17,6 +17,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
@@ -43,6 +44,7 @@ class ExtensionActionListMediator implements Destroyable {
     private final WindowAndroid mWindowAndroid;
     private final ModelList mModels;
     private final ChromeAndroidTask mTask;
+    private final Profile mProfile;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final ExtensionActionListRecyclerView mContainer;
 
@@ -60,6 +62,7 @@ class ExtensionActionListMediator implements Destroyable {
             WindowAndroid windowAndroid,
             ModelList models,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionActionListRecyclerView container,
             ExtensionsToolbarBridge extensionsToolbarBridge) {
@@ -67,6 +70,7 @@ class ExtensionActionListMediator implements Destroyable {
         mWindowAndroid = windowAndroid;
         mModels = models;
         mTask = task;
+        mProfile = profile;
         mCurrentTabSupplier = currentTabSupplier;
         mContainer = container;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
@@ -286,7 +290,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
-                        mTask, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
+                        mTask, mProfile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
 
         ListMenuButton buttonView = (ListMenuButton) getButtonViewForId(actionId);
         if (buttonView == null) {

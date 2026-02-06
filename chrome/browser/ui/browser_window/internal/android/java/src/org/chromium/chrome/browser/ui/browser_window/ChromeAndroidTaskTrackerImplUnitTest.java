@@ -251,16 +251,25 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
     @Test
     public void obtainTask_withPendingId_adoptsPendingTask() {
+        // No tasks yet.
+        assertEquals(0, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
+
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.NORMAL);
         var pendingTask = assertNonNull(createPendingTaskWithExistingTask(mockParams));
         int pendingId = assertNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId;
+        assertEquals(
+                // Creating a pending Task of "NORMAL" type requires an existing ChromeAndroidTask.
+                // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
+                // one pointer is the existing Task and the other is the pending Task.
+                2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
 
         int taskId = IdSequencer.next();
         var newActivityScopedObjects =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(taskId);
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        taskId, mockParams.getProfile());
 
         // Act.
         var task =
@@ -271,9 +280,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNull(mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingId));
         assertEquals(
-                // Creating a pending Task of "NORMAL" type requires an existing ChromeAndroidTask.
-                // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
-                // one pointer is the existing Task and the other is the pending Task.
+                // As above, only two native browser window pointers are expected despite the new
+                // ActivityScopedObjects.
                 2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertEquals(
                 newActivityScopedObjects.mActivityWindowAndroid,

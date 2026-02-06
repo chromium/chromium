@@ -34,10 +34,10 @@ public class ExtensionActionsBridge implements Destroyable {
     private long mNativeExtensionActionsBridge;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    public ExtensionActionsBridge(ChromeAndroidTask task) {
+    public ExtensionActionsBridge(ChromeAndroidTask task, Profile profile) {
         mNativeExtensionActionsBridge =
                 ExtensionActionsBridgeJni.get()
-                        .init(this, task.getOrCreateNativeBrowserWindowPtr());
+                        .init(this, task.getOrCreateNativeBrowserWindowPtr(profile));
     }
 
     /** Represents the result of handling a key event. */

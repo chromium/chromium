@@ -71,16 +71,16 @@ public class FakeExtensionActionsBridge {
      * Returns the {@link TaskModel} for the given {@link ChromeAndroidTask}, or null if it doesn't
      * exist.
      */
-    public @Nullable TaskModel getTaskModel(ChromeAndroidTask task) {
-        return mTaskModels.get(computeTaskId(task));
+    public @Nullable TaskModel getTaskModel(ChromeAndroidTask task, Profile profile) {
+        return mTaskModels.get(computeTaskId(task, profile));
     }
 
     /**
      * Returns the {@link TaskModel} for the given {@link ChromeAndroidTask}, creating it if it
      * doesn't exist.
      */
-    public TaskModel getOrCreateTaskModel(ChromeAndroidTask task) {
-        long browserId = computeTaskId(task);
+    public TaskModel getOrCreateTaskModel(ChromeAndroidTask task, Profile profile) {
+        long browserId = computeTaskId(task, profile);
         TaskModel model = mTaskModels.get(browserId);
         if (model == null) {
             model = new TaskModel(task);
@@ -95,8 +95,8 @@ public class FakeExtensionActionsBridge {
     }
 
     /** Computes the task ID for the given {@link ChromeAndroidTask}. */
-    private static long computeTaskId(ChromeAndroidTask task) {
-        long taskId = task.getOrCreateNativeBrowserWindowPtr();
+    private static long computeTaskId(ChromeAndroidTask task, Profile profile) {
+        long taskId = task.getOrCreateNativeBrowserWindowPtr(profile);
         assert taskId != 0 : "ChromeAndroidTask#getOrCreateNativeBrowserWindowPtr() returned 0";
         return taskId;
     }

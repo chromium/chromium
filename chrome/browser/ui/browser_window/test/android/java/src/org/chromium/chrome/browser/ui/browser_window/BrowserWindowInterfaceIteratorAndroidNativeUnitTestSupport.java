@@ -25,7 +25,7 @@ final class BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport {
                                 BrowserWindowType.NORMAL,
                                 activityScopedObjects,
                                 /* pendingId= */ null);
-        return chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
+        return chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
     }
 
     /**

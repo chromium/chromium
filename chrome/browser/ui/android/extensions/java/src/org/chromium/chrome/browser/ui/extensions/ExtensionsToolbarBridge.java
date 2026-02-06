@@ -16,6 +16,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.content_public.browser.WebContents;
@@ -32,10 +33,10 @@ public class ExtensionsToolbarBridge implements Destroyable {
     // with {@code ExtensionActionListMediator}.
     private @Nullable Delegate mDelegate;
 
-    public ExtensionsToolbarBridge(ChromeAndroidTask task) {
+    public ExtensionsToolbarBridge(ChromeAndroidTask task, Profile profile) {
         mNativeExtensionsToolbarAndroid =
                 ExtensionsToolbarBridgeJni.get()
-                        .init(this, task.getOrCreateNativeBrowserWindowPtr());
+                        .init(this, task.getOrCreateNativeBrowserWindowPtr(profile));
     }
 
     @Override

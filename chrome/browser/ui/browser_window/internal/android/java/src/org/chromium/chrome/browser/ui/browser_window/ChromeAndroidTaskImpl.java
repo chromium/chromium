@@ -582,11 +582,6 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public long getOrCreateNativeBrowserWindowPtr() {
-        return getOrCreateNativeBrowserWindowPtr(mInitialProfile);
-    }
-
-    @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
         if (mState != State.IDLE) {
@@ -1008,11 +1003,6 @@ final class ChromeAndroidTaskImpl
     public @Nullable Integer getSessionIdForTesting(Profile profile) {
         var browserWindow = mAndroidBrowserWindows.get(profile);
         return browserWindow == null ? null : browserWindow.getNativeSessionIdForTesting();
-    }
-
-    @Override
-    public @Nullable Integer getSessionIdForTesting() {
-        return getSessionIdForTesting(mInitialProfile);
     }
 
     @Override

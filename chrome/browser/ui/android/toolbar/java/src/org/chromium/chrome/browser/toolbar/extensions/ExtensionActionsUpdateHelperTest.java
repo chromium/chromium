@@ -81,9 +81,9 @@ public class ExtensionActionsUpdateHelperTest {
 
     @Before
     public void setUp() {
-        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
 
-        mTaskModel = mFakeBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask);
+        mTaskModel = mFakeBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask, mProfile);
 
         mTab1 = new MockTab(TAB1_ID, mProfile);
         mTab2 = new MockTab(TAB2_ID, mProfile);
@@ -126,7 +126,9 @@ public class ExtensionActionsUpdateHelperTest {
                             return new ListItem(ListItemType.EXTENSION_ACTION, model);
                         });
 
-        mHelper = new ExtensionActionsUpdateHelper(mModels, mTask, mCurrentTabSupplier, mDelegate);
+        mHelper =
+                new ExtensionActionsUpdateHelper(
+                        mModels, mTask, mProfile, mCurrentTabSupplier, mDelegate);
     }
 
     @After

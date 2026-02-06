@@ -18,6 +18,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -75,6 +76,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
             ListMenuButton extensionsMenuButton,
             ThemeColorProvider themeColorProvider,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator) {
         mContext = context;
@@ -121,6 +123,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                 new ExtensionsMenuMediator(
                         mContext,
                         task,
+                        profile,
                         mCurrentTabSupplier,
                         mExtensionModels,
                         () -> {

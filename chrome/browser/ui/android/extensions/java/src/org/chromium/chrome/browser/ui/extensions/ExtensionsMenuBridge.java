@@ -11,6 +11,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 
 /** A JNI bridge that provides native extensions menu data to the Java UI. */
@@ -20,9 +21,10 @@ public class ExtensionsMenuBridge implements Destroyable {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private long mNativeExtensionsMenuDelegateAndroid;
 
-    public ExtensionsMenuBridge(ChromeAndroidTask task) {
+    public ExtensionsMenuBridge(ChromeAndroidTask task, Profile profile) {
         mNativeExtensionsMenuDelegateAndroid =
-                ExtensionsMenuBridgeJni.get().init(this, task.getOrCreateNativeBrowserWindowPtr());
+                ExtensionsMenuBridgeJni.get()
+                        .init(this, task.getOrCreateNativeBrowserWindowPtr(profile));
     }
 
     @Override

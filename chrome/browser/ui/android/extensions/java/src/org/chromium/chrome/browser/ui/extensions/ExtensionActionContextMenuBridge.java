@@ -13,6 +13,7 @@ import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.listmenu.MenuModelBridge;
@@ -35,13 +36,14 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
 
     public ExtensionActionContextMenuBridge(
             ChromeAndroidTask task,
+            Profile profile,
             String actionId,
             WebContents webContents,
             @ContextMenuSource int contextMenuSource) {
         mNativeExtensionActionContextMenuBridge =
                 ExtensionActionContextMenuBridgeJni.get()
                         .init(
-                                task.getOrCreateNativeBrowserWindowPtr(),
+                                task.getOrCreateNativeBrowserWindowPtr(profile),
                                 actionId,
                                 webContents,
                                 contextMenuSource);
