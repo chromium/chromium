@@ -216,7 +216,7 @@ void SecurityPolicy::ClearOriginAccessList() {
 }
 
 bool SecurityPolicy::ReferrerPolicyFromString(
-    const String& policy,
+    const StringView& policy,
     ReferrerPolicyLegacyKeywordsSupport legacy_keywords_support,
     network::mojom::ReferrerPolicy* result) {
   DCHECK(!policy.IsNull());
@@ -296,7 +296,7 @@ String SecurityPolicy::ReferrerPolicyAsString(
 namespace {
 
 template <typename CharType>
-inline bool IsASCIIAlphaOrHyphen(CharType c) {
+inline bool IsAsciiAlphaOrHyphen(CharType c) {
   return IsASCIIAlpha(c) || c == '-';
 }
 
@@ -309,21 +309,18 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
   network::mojom::ReferrerPolicy referrer_policy =
       network::mojom::ReferrerPolicy::kDefault;
 
-  Vector<String> tokens;
-  header_value.Split(',', true, tokens);
+  Vector<StringView> tokens = StringView(header_value).Split(',');
   for (const auto& token : tokens) {
     network::mojom::ReferrerPolicy current_result;
     auto stripped_token = token.StripWhiteSpace();
-    if (SecurityPolicy::ReferrerPolicyFromString(token.StripWhiteSpace(),
-                                                 legacy_keywords_support,
-                                                 &current_result)) {
+    if (SecurityPolicy::ReferrerPolicyFromString(
+            stripped_token, legacy_keywords_support, &current_result)) {
       referrer_policy = current_result;
     } else {
-      Vector<UChar> characters;
-      stripped_token.AppendTo(characters);
-      if (SkipWhile<UChar, IsASCIIAlphaOrHyphen>(characters, 0) !=
-          characters.size()) {
-        return false;
+      for (StringView::size_type i = 0; i < stripped_token.length(); ++i) {
+        if (!IsAsciiAlphaOrHyphen(stripped_token[i])) {
+          return false;
+        }
       }
     }
   }

@@ -126,8 +126,7 @@ Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> ConvertAccepts(
         exception_state.ThrowTypeError(StrCat({"Invalid type: ", a.first}));
         return {};
       }
-      Vector<String> parsed_type;
-      type.Split('/', true, parsed_type);
+      Vector<StringView> parsed_type = StringView(type).Split('/');
       if (parsed_type.size() != 2) {
         exception_state.ThrowTypeError(StrCat({"Invalid type: ", a.first}));
         return {};

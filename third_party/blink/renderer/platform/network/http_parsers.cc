@@ -481,7 +481,7 @@ bool IsValidHTTPHeaderValue(const String& name) {
 }
 
 // See RFC 7230, Section 3.2.6.
-bool IsValidHTTPToken(const String& characters) {
+bool IsValidHTTPToken(const StringView& characters) {
   if (characters.empty())
     return false;
   for (unsigned i = 0; i < characters.length(); ++i) {

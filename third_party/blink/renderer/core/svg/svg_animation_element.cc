@@ -60,8 +60,7 @@ bool SVGAnimationElement::ParseValues(const String& value,
   // ignored.
   // http://www.w3.org/TR/SVG11/animate.html#ValuesAttribute
   result.clear();
-  Vector<String> parse_list;
-  value.Split(';', true, parse_list);
+  Vector<StringView> parse_list = StringView(value).Split(';');
   unsigned last = parse_list.size() - 1;
   for (unsigned i = 0; i <= last; ++i) {
     parse_list[i] = parse_list[i].StripWhiteSpace(IsHTMLSpace<UChar>);
@@ -70,7 +69,7 @@ bool SVGAnimationElement::ParseValues(const String& value,
       if (i < last)
         goto fail;
     } else {
-      result.push_back(parse_list[i]);
+      result.push_back(parse_list[i].ToString());
     }
   }
 
@@ -88,10 +87,9 @@ static bool ParseKeyTimes(const String& string,
                           HeapVector<float>& result,
                           bool verify_order) {
   result.clear();
-  Vector<String> parse_list;
-  string.Split(';', true, parse_list);
+  Vector<StringView> parse_list = StringView(string).Split(';');
   for (unsigned n = 0; n < parse_list.size(); ++n) {
-    String time_string = parse_list[n].StripWhiteSpace();
+    StringView time_string = parse_list[n].StripWhiteSpace();
     if (time_string.empty()) {
       // Tolerate trailing ';'
       if (n == parse_list.size() - 1) {
