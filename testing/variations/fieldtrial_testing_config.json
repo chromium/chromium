@@ -15828,7 +15828,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "IsolatesPriorityUseProcessPriority"
+                        "IsolatesPriorityUseProcessPriority",
+                        "UnimportantFramesPriority"
                     ]
                 }
             ]
