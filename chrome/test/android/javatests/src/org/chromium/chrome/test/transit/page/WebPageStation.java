@@ -11,6 +11,7 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
@@ -97,6 +98,17 @@ public class WebPageStation extends CtaPageStation {
 
     /** Scrolls down the page using a drag gesture to dismiss browser controls. */
     public TripBuilder scrollPageDownWithGestureTo() {
+        return scrollPageDownWithGestureTo(100000f);
+    }
+
+    /**
+     * Scrolls down the page using a drag gesture to dismiss browser controls, with customized
+     * stride.
+     *
+     * @param stride The distance of the drag. Expecting a positive value.
+     */
+    public TripBuilder scrollPageDownWithGestureTo(float stride) {
+        assert stride > 0;
         return runTo(
                 () -> {
                     assertInPhase(Phase.ACTIVE);
@@ -105,7 +117,7 @@ public class WebPageStation extends CtaPageStation {
                     float height = contentView.getHeight();
                     // Start the scroll with some height to avoid touching the nav bar region.
                     float fromY = height - height / 10;
-                    float toY = 0;
+                    float toY = Math.max(0, fromY - stride);
                     TouchCommon.performDragNoFling(
                             mActivityElement.value(),
                             width / 2,
@@ -119,6 +131,15 @@ public class WebPageStation extends CtaPageStation {
 
     /** Scrolls up the page using a drag gesture to show browser controls. */
     public TripBuilder scrollPageUpWithGestureTo() {
+        return scrollPageUpWithGestureTo(10000f);
+    }
+
+    /**
+     * Scrolls up the page using a drag gesture to show browser controls. with customized stride.
+     *
+     * @param stride The distance of the drag. Expecting a positive value.
+     */
+    public TripBuilder scrollPageUpWithGestureTo(float stride) {
         return runTo(
                 () -> {
                     assertInPhase(Phase.ACTIVE);
@@ -126,11 +147,11 @@ public class WebPageStation extends CtaPageStation {
                     float width = contentView.getWidth();
                     float height = contentView.getHeight();
 
-                    int[] location = new int[2];
-                    toolbarElement.value().getLocationOnScreen(location);
-                    // Start the scroll with 5 additional height to avoid touching the toolbar.
-                    float fromY = location[1] + toolbarElement.value().getBottom() + 5;
-                    float toY = height;
+                    BrowserControlsStateProvider browserControls =
+                            getActivity().getBrowserControlsManager();
+                    // Start the scroll with 100f additional height to avoid touching the toolbar.
+                    float fromY = browserControls.getTopControlsHeight() + 100f;
+                    float toY = Math.min(fromY + stride, height);
                     TouchCommon.performDragNoFling(
                             mActivityElement.value(),
                             width / 2,
@@ -194,6 +215,41 @@ public class WebPageStation extends CtaPageStation {
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    // Condition checks whether web page reaches the top.
+    protected static class ScrollToTopCondition extends Condition {
+        Supplier<WebContents> mWebContentsSupplier;
+
+        public ScrollToTopCondition(Supplier<WebContents> webContentsSupplier) {
+            super(/* isRunOnUiThread= */ false);
+            mWebContentsSupplier = webContentsSupplier;
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() throws Exception {
+            String code = "window.visualViewport.pageTop";
+            int currentPageTop;
+            try {
+                currentPageTop =
+                        Integer.parseInt(
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        mWebContentsSupplier.get(), code));
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (currentPageTop < 1) {
+                return fulfilled();
+            }
+            return notFulfilled(
+                    "Not scrolled to the top yet. Current page top: %d", currentPageTop);
+        }
+
+        @Override
+        public String buildDescription() {
+            return "Page scrolled to the top.";
         }
     }
 }

@@ -7,7 +7,11 @@ package org.chromium.chrome.test.transit.testhtmls;
 import android.util.Pair;
 
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.browser_controls.BrowserControlsFacility;
 import org.chromium.chrome.test.transit.context_menu.LinkContextMenuFacility;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -32,15 +36,59 @@ public class TopBottomLinksPageStation extends WebPageStation {
     /** Load the page, land at the {@link TopFacility} of a {@link TopBottomLinksPageStation}. */
     public static Pair<TopBottomLinksPageStation, TopFacility> loadPage(
             ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
+        Trip trip =
+                loadPageNoFacilityAnd(activityTestRule, currentPageStation)
+                        .enterFacilityAnd(new TopFacility())
+                        .complete();
+
+        return Pair.create(trip.get(TopBottomLinksPageStation.class), trip.get(TopFacility.class));
+    }
+
+    /** Load the page, land at the {@link TopBottomLinksPageStation}. */
+    public static TopBottomLinksPageStation loadPageNoFacility(
+            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
+        return loadPageNoFacilityAnd(activityTestRule, currentPageStation)
+                .completeAndGet(TopBottomLinksPageStation.class);
+    }
+
+    private static TripBuilder loadPageNoFacilityAnd(
+            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
         String url = activityTestRule.getTestServer().getURL(PATH);
-        TopFacility topFacility = new TopFacility();
         TopBottomLinksPageStation station =
                 new Builder<>(TopBottomLinksPageStation::new)
                         .initForLoadingUrlOnSameTab(url, currentPageStation)
                         .build();
+        return currentPageStation.loadUrlTo(url).arriveAtAnd(station);
+    }
 
-        currentPageStation.loadUrlTo(url).arriveAt(station, topFacility);
-        return Pair.create(station, topFacility);
+    /** Scroll to the bottom of the page. */
+    public void scrollToBottom(
+            @Nullable BrowserControlsFacility<TopBottomLinksPageStation> browserControlsState) {
+        TripBuilder builder =
+                scrollPageDownWithGestureTo()
+                        .withRetry()
+                        .waitForAnd(new ScrollToBottomCondition(webContentsElement));
+
+        if (browserControlsState != null) {
+            builder.enterFacilities(browserControlsState, new BottomFacility());
+        } else {
+            builder.enterFacility(new BottomFacility());
+        }
+    }
+
+    /** Scroll to the top of the page. */
+    public void scrollToTop(
+            @Nullable BrowserControlsFacility<TopBottomLinksPageStation> browserControlsState) {
+        TripBuilder builder =
+                scrollPageUpWithGestureTo()
+                        .withRetry()
+                        .waitForAnd(new ScrollToTopCondition(webContentsElement));
+
+        if (browserControlsState != null) {
+            builder.enterFacilities(browserControlsState, new TopFacility());
+        } else {
+            builder.enterFacility(new TopFacility());
+        }
     }
 
     /** The page is scrolled to the top, and the top link is displayed. */

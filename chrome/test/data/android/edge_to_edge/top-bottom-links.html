@@ -2,11 +2,27 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
   <style>
+    body {
+      height: 150vh;
+      margin: 0;
+      background: linear-gradient(to bottom, green, blue);
+    }
+    #info {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 1em;
+      border-radius: 8px;
+      text-align: center;
+      font-family: sans-serif;
+    }
     #top_link {
       position: absolute;
       top: 0;
       width: 100%;
-      background-color: lightgreen;
+      background-color: green;
       text-align: center;
     }
 
@@ -14,13 +30,54 @@
       position: absolute;
       top: 150vh;
       width: 100%;
-      background-color: lightblue;
+      background-color: blue;
       text-align: center;
+      transform: translateY(-100%);
     }
+
+    .measurer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    #measure-vh { height: 100vh; }
+    #measure-svh { height: 100svh; }
+    #measure-dvh { height: 100dvh; }
   </style>
 </head>
 <body>
+  <div id="measure-vh" class="measurer"></div>
+  <div id="measure-svh" class="measurer"></div>
+  <div id="measure-dvh" class="measurer"></div>
+
   <a id="top_link" href="../test.html">Top Link</a>
   <a id="bottom_link" href="../test.html">Bottom Link</a>
+
+  <div id="info">
+    <div id="vh-row">vh: <span id="vh-val"></span></div>
+    <div id="svh-row">svh: <span id="svh-val"></span></div>
+    <div id="dvh-row">dvh: <span id="dvh-val"></span></div>
+  </div>
+  <script>
+    const vhVal = document.getElementById('vh-val');
+    const svhVal = document.getElementById('svh-val');
+    const dvhVal = document.getElementById('dvh-val');
+
+    const vhMeasure = document.getElementById('measure-vh');
+    const svhMeasure = document.getElementById('measure-svh');
+    const dvhMeasure = document.getElementById('measure-dvh');
+
+    function updateHeights() {
+      vhVal.textContent = vhMeasure.getBoundingClientRect().height + 'px';
+      svhVal.textContent = svhMeasure.getBoundingClientRect().height + 'px';
+      dvhVal.textContent = dvhMeasure.getBoundingClientRect().height + 'px';
+    }
+
+    window.addEventListener('resize', updateHeights);
+    updateHeights();
+  </script>
 </body>
 </html>
