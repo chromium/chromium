@@ -33,6 +33,7 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -91,6 +92,8 @@ scoped_refptr<gl::GLSurface> InitializeGLSurface(gl::GLDisplay* display) {
 scoped_refptr<gl::GLContext> InitializeGLContext(gl::GLSurface* surface) {
   TRACE_EVENT("gpu,startup", "gpu_info_collector::InitializeGLContext");
   gl::GLContextAttribs attribs;
+  attribs.allow_es_version_fallback =
+      !base::FeatureList::IsEnabled(features::kFallbackToSWIfGLES3NotSupported);
   scoped_refptr<gl::GLContext> context(
       gl::init::CreateGLContext(nullptr, surface, attribs));
   if (!context.get()) {

@@ -28,6 +28,8 @@ GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
 GL_EXPORT BASE_DECLARE_FEATURE(kAddDelayToGLCompileShader);
 #endif
 
+GL_EXPORT BASE_DECLARE_FEATURE(kFallbackToSWIfGLES3NotSupported);
+
 #if BUILDFLAG(IS_WIN)
 GL_EXPORT BASE_DECLARE_FEATURE(kUseCompositorClockVSyncInterval);
 #endif  // BUILDFLAG(IS_WIN)

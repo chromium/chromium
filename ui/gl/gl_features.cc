@@ -114,6 +114,11 @@ constexpr base::FeatureParam<base::TimeDelta> kGLCompileShaderDelay = {
     /*default_value=*/base::Microseconds(1300)};
 #endif  // !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 
+// Controls whether the GPU process falls back to software if GLES3 is not
+// supported.
+BASE_FEATURE(kFallbackToSWIfGLES3NotSupported,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // If true, VsyncThreadWin will use the compositor clock
 // to determine the vsync interval.
