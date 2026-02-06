@@ -10,6 +10,7 @@
 #import "base/test/scoped_mock_clock_override.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -38,6 +39,19 @@ using ::testing::Return;
 
 constexpr SyncErrorInfoBarTrigger kSyncErrorInfoBarTrigger =
     SyncErrorInfoBarTrigger::kNewTabOpened;
+
+class MockInfoBarManager : public infobars::InfoBarManager {
+ public:
+  MockInfoBarManager() = default;
+  ~MockInfoBarManager() override = default;
+
+  MOCK_METHOD(void, RemoveInfoBar, (infobars::InfoBar * infobar), (override));
+  MOCK_METHOD(int, GetActiveEntryID, (), (override));
+  MOCK_METHOD(void,
+              OpenURL,
+              (const GURL& url, WindowOpenDisposition disposition),
+              (override));
+};
 
 class SyncErrorInfobarDelegateTest : public PlatformTest {
  protected:
@@ -253,6 +267,39 @@ TEST_F(SyncErrorInfobarDelegateTest, InfobarTimeoutActiveAfterIgnoredByUser) {
   scoped_clock_.Advance(base::Minutes(2));
   EXPECT_TRUE(SyncErrorInfoBarDelegate::Create(
       infobar_manager(), profile_.get(), presenter_, kSyncErrorInfoBarTrigger));
+}
+
+// Tests that the infobar is automatically dismissed if the primary identity is
+// removed.
+TEST_F(SyncErrorInfobarDelegateTest, InfobarAutoDismissAfterSignOut) {
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kSignInNeedsUpdate));
+
+  OCMExpect([presenter_ showPrimaryAccountReauth]);
+  auto delegate_unique_ptr = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
+  SyncErrorInfoBarDelegate* delegate = delegate_unique_ptr.get();
+  // The infobar must be set, otherwise the delegate believes the infobar is
+  // being stopped.
+  infobars::InfoBar* info_bar =
+      new infobars::InfoBar(std::move(delegate_unique_ptr));
+  testing::NiceMock<MockInfoBarManager> mock_infobar_manager;
+  info_bar->SetOwner(&mock_infobar_manager);
+
+  EXPECT_TRUE(delegate->Accept());
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia"), "person@example.org").Build();
+  signin::PrimaryAccountChangeEvent::State previous_state(
+      account_info, signin::ConsentLevel::kSignin);
+  signin::PrimaryAccountChangeEvent::State current_state;
+  signin::PrimaryAccountChangeEvent event_details(
+      previous_state, current_state, signin_metrics::ProfileSignout::kTest);
+  EXPECT_CALL(mock_infobar_manager, RemoveInfoBar(info_bar)).Times(1);
+  delegate->OnPrimaryAccountChanged(event_details);
+  // This destroyes `info_bar`.
+  info_bar->CloseSoon();
+  info_bar = nullptr;
 }
 
 }  // namespace
