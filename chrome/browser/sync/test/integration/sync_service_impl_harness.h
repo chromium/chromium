@@ -187,12 +187,6 @@ class SyncServiceImplHarness {
   // already be signed in, or this will have no effect. Returns true on success.
   [[nodiscard]] bool EnableHistorySyncNoWaitForCompletion();
 
-  // Enables Sync-the-feature for all registered sync datatypes. Returns true on
-  // success.
-  // TODO(crbug.com/353425612): Replace all calls to this with either
-  // SetupSync() or EnableAllSelectableTypes().
-  [[nodiscard]] bool EnableSyncForRegisteredDatatypes();
-
   // Disables sync for all sync datatypes. Returns true on success.
   // TODO(crbug.com/353425612): Replace all calls to this with
   // DisableAllSelectableTypes() which is identical.
