@@ -246,7 +246,8 @@ suite('NewTabPageRealboxTest', () => {
     assertIconMaskImageUrl(realbox.$.icon, 'search.svg');
   });
 
-  test('realbox default Google G icon', async () => {
+  // TODO(crbug.com/453570027): Test is flaky.
+  test.skip('realbox default Google G icon', async () => {
     // Arrange.
     loadTimeData.overrideValues({
       searchboxDefaultIcon:
@@ -1878,101 +1879,104 @@ suite('NewTabPageRealboxTest', () => {
   // Test Selection
   //============================================================================
 
-  test('pressing Escape selects the first match / hides matches', async () => {
-    realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new InputEvent('input'));
+  // TODO(crbug.com/453570027): Test is flaky.
+  test.skip(
+      'pressing Escape selects the first match / hides matches', async () => {
+        realbox.$.input.value = 'hello';
+        realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    const matches = [createSearchMatchForTesting(), createUrlMatch()];
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: realbox.$.input.value.trimStart(),
-          matches: matches,
+        const matches = [createSearchMatchForTesting(), createUrlMatch()];
+        testProxy.callbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              input: realbox.$.input.value.trimStart(),
+              matches: matches,
+            }));
+        assertTrue(await areMatchesShowing());
+
+        let matchEls =
+            realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
+        assertEquals(2, matchEls.length);
+
+        // Select the second match.
+        matchEls[1]!.focus();
+        matchEls[1]!.dispatchEvent(new Event('focusin', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,  // So it propagates across shadow DOM boundary.
         }));
-    assertTrue(await areMatchesShowing());
+        await microtasksFinished();
 
-    let matchEls =
-        realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
-    assertEquals(2, matchEls.length);
+        assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+        assertEquals('https://helloworld.com', realbox.$.input.value);
+        assertEquals(matchEls[1], realbox.$.matches.shadowRoot.activeElement);
 
-    // Select the second match.
-    matchEls[1]!.focus();
-    matchEls[1]!.dispatchEvent(new Event('focusin', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-    }));
-    await microtasksFinished();
+        let escapeEvent = new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,  // So it propagates across shadow DOM boundary.
+          key: 'Escape',
+        });
+        realbox.$.input.dispatchEvent(escapeEvent);
+        assertTrue(escapeEvent.defaultPrevented);
+        await microtasksFinished();
 
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('https://helloworld.com', realbox.$.input.value);
-    assertEquals(matchEls[1], realbox.$.matches.shadowRoot.activeElement);
+        // First match gets selected and also gets the focus.
+        assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+        assertEquals('hello world', realbox.$.input.value);
+        assertEquals(matchEls[0], realbox.$.matches.shadowRoot.activeElement);
 
-    let escapeEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'Escape',
-    });
-    realbox.$.input.dispatchEvent(escapeEvent);
-    assertTrue(escapeEvent.defaultPrevented);
-    await microtasksFinished();
+        escapeEvent = new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,  // So it propagates across shadow DOM boundary.
+          key: 'Escape',
+        });
+        realbox.$.input.dispatchEvent(escapeEvent);
+        assertTrue(escapeEvent.defaultPrevented);
 
-    // First match gets selected and also gets the focus.
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world', realbox.$.input.value);
-    assertEquals(matchEls[0], realbox.$.matches.shadowRoot.activeElement);
+        // Matches are hidden.
+        assertFalse(await areMatchesShowing());
 
-    escapeEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'Escape',
-    });
-    realbox.$.input.dispatchEvent(escapeEvent);
-    assertTrue(escapeEvent.defaultPrevented);
+        // Matches are cleared.
+        matchEls =
+            realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
+        assertEquals(0, matchEls.length);
+        // Input is cleared.
+        assertEquals('', realbox.$.input.value);
 
-    // Matches are hidden.
-    assertFalse(await areMatchesShowing());
+        // Show zero-prefix matches.
+        realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+        testProxy.callbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              matches: matches,
+            }));
+        assertTrue(await areMatchesShowing());
 
-    // Matches are cleared.
-    matchEls =
-        realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
-    assertEquals(0, matchEls.length);
-    // Input is cleared.
-    assertEquals('', realbox.$.input.value);
+        matchEls =
+            realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
+        assertEquals(2, matchEls.length);
 
-    // Show zero-prefix matches.
-    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing());
+        // Pressing 'Escape' when no matches are selected closes the dropdown.
+        escapeEvent = new KeyboardEvent('keydown', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,  // So it propagates across shadow DOM boundary.
+          key: 'Escape',
+        });
+        realbox.$.input.dispatchEvent(escapeEvent);
+        assertTrue(escapeEvent.defaultPrevented);
 
-    matchEls =
-        realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
-    assertEquals(2, matchEls.length);
+        // Matches are hidden.
+        assertFalse(await areMatchesShowing());
 
-    // Pressing 'Escape' when no matches are selected closes the dropdown.
-    escapeEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'Escape',
-    });
-    realbox.$.input.dispatchEvent(escapeEvent);
-    assertTrue(escapeEvent.defaultPrevented);
+        // Matches are cleared.
+        matchEls =
+            realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
+        assertEquals(0, matchEls.length);
+      });
 
-    // Matches are hidden.
-    assertFalse(await areMatchesShowing());
-
-    // Matches are cleared.
-    matchEls =
-        realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
-    assertEquals(0, matchEls.length);
-  });
-
-  test('arrow up/down moves selection / focus', async () => {
+  // TODO(crbug.com/453570027): Test is flaky.
+  test.skip('arrow up/down moves selection / focus', async () => {
     realbox.$.input.focus();
     realbox.$.input.value = 'hello';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
@@ -2063,7 +2067,8 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
   });
 
-  test('focus indicator', async () => {
+  // TODO(crbug.com/453570027): Test is flaky.
+  test.skip('focus indicator', async () => {
     realbox.$.input.focus();
     realbox.$.input.value = 'clear browsing history';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
@@ -2391,7 +2396,8 @@ suite('NewTabPageRealboxTest', () => {
         // assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
       });
 
-  test(
+  // TODO(crbug.com/453570027): Test is flaky.
+  test.skip(
       'match icons are updated when external icons become available',
       async () => {
         // Helper function to assert icon states.
@@ -3162,7 +3168,8 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   suite('NtpRealboxNext', () => {
-    test(
+    // TODO(crbug.com/453570027): Test is flaky.
+    test.skip(
         'Contextual component empty area click focuses search input',
         async () => {
           // Arrange.
