@@ -64,7 +64,7 @@ luci.bucket(
     bindings = [
         luci.binding(
             roles = "role/buildbucket.creator",
-            groups = "mdb/chrome-troopers",
+            groups = ["mdb/chrome-troopers", "mdb/pdeio-ds-team"],
         ),
     ],
     dynamic = True,
