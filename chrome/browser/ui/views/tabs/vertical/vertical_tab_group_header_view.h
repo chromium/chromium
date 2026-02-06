@@ -88,7 +88,9 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   void UpdateEditorBubbleButtonVisibility();
   void ShowEditorBubble();
   void UpdateAccessibleName(
-      const tab_groups::TabGroupVisualData* tab_group_visual_data);
+      const tab_groups::TabGroupVisualData* tab_group_visual_data,
+      bool needs_attention,
+      bool is_shared);
   void UpdateTooltipText();
   void UpdateIsCollapsed(
       const tab_groups::TabGroupVisualData* tab_group_visual_data);

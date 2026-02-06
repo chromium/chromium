@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -331,7 +332,7 @@ void VerticalTabGroupHeaderView::OnDataChanged(
   }
 
   UpdateIsCollapsed(tab_group_visual_data);
-  UpdateAccessibleName(tab_group_visual_data);
+  UpdateAccessibleName(tab_group_visual_data, needs_attention, is_shared);
   UpdateTooltipText();
 }
 
@@ -359,7 +360,9 @@ void VerticalTabGroupHeaderView::UpdateIsCollapsed(
 }
 
 void VerticalTabGroupHeaderView::UpdateAccessibleName(
-    const tab_groups::TabGroupVisualData* tab_group_visual_data) {
+    const tab_groups::TabGroupVisualData* tab_group_visual_data,
+    bool needs_attention,
+    bool is_shared) {
   const std::u16string title = tab_group_visual_data->title();
 
   const std::u16string contents = delegate_->GetGroupContentString();
@@ -374,8 +377,14 @@ void VerticalTabGroupHeaderView::UpdateAccessibleName(
                      : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 #endif
 
-  // TODO(crbug.com/439955962): Incorporate shared group state.
   std::u16string shared_state = u"";
+  if (is_shared) {
+    shared_state = l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED);
+    if (tab_group_visual_data->is_collapsed() && needs_attention) {
+      shared_state += u", " + l10n_util::GetStringUTF16(
+                                  DATA_SHARING_GROUP_LABEL_NEW_ACTIVITY);
+    }
+  }
 
   std::u16string final_name;
   if (title.empty()) {
