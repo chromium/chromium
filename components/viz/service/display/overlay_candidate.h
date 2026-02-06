@@ -58,7 +58,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
     kFailBlending,
     kFailQuadNotSupported,
     kFailVisible,
-    kFailBufferFormat,
+    kFailFormat,
     kFailNearFilter,
     kFailPriority,
     kFailRoundedDisplayMasksNotSupported,

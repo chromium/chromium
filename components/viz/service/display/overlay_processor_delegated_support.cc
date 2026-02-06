@@ -92,9 +92,8 @@ TryPromoteDrawQuadForDelegation(
       case OverlayCandidate::CandidateStatus::kFailQuadNotSupported:
         return base::unexpected(
             DelegationStatus::kCompositedCandidateQuadMaterial);
-      case OverlayCandidate::CandidateStatus::kFailBufferFormat:
-        return base::unexpected(
-            DelegationStatus::kCompositedCandidateBufferFormat);
+      case OverlayCandidate::CandidateStatus::kFailFormat:
+        return base::unexpected(DelegationStatus::kCompositedCandidateFormat);
       case OverlayCandidate::CandidateStatus::kFailNearFilter:
         return base::unexpected(
             DelegationStatus::kCompositedCandidateNearFilter);

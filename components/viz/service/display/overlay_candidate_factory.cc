@@ -357,7 +357,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
 
     if (!context_.is_delegated_context &&
         !std::ranges::contains(kOverlayFormats, candidate.format)) {
-      return CandidateStatus::kFailBufferFormat;
+      return CandidateStatus::kFailFormat;
     }
   }
 
