@@ -31,6 +31,20 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
 
+namespace {
+
+size_t GetVisibleItemCount(const ui::SimpleMenuModel* menu_model) {
+  size_t visible_count = 0;
+  for (size_t i = 0; i < menu_model->GetItemCount(); i++) {
+    if (menu_model->IsVisibleAt(i)) {
+      visible_count++;
+    }
+  }
+  return visible_count;
+}
+
+}  // namespace
+
 // Override `OpenFileUploadDialog` to track calls.
 class TestOmniboxPopupFileSelector : public OmniboxPopupFileSelector {
  public:
@@ -119,8 +133,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
       omnibox_popup_file_selector.get(), web_contents);
   ui::SimpleMenuModel* model = base_controller.menu_model();
 
-  // The 1 separator and 4 static items.
-  EXPECT_EQ(5u, model->GetItemCount());
+  // The model should have the following visible items:
+  //   - 2 contextual input items
+  //   - 1 separator
+  //   - 2 tool input items
+  EXPECT_EQ(5u, GetVisibleItemCount(model));
 
   // Add exactly two additional tabs to the tab strip model.
   GURL url1(embedded_test_server()->GetURL("/title1.html"));
@@ -133,9 +150,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                                           web_contents);
   model = controller.menu_model();
 
-  // The model should have 9 items, one for each tab,
-  // and 1 header, 2 separators and 4 static items.
-  EXPECT_EQ(9u, model->GetItemCount());
+  // The model should have the following visible items:
+  //   - 1 header ("Most recent tabs")
+  //   - 2 recent tab items
+  //   - 1 separator
+  //   - 2 contextual input items
+  //   - 1 separator
+  //   - 2 tool input items
+  EXPECT_EQ(9u, GetVisibleItemCount(model));
 }
 
 // TODO(crbug.com/460910010): Flaky, especially on ASAN/LSAN bots and certain

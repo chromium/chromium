@@ -773,7 +773,9 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   // Command ID corresponds to "Most recent tabs" menu item.
   if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
       command_id < next_command_id_) {
-    return IsInputTypeAllowed(GetInputTypeForCommandId(command_id));
+    return ntp_composebox::kShowModelPicker.Get()
+               ? IsInputTypeAllowed(GetInputTypeForCommandId(command_id))
+               : true;
   }
 
   if (command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
@@ -807,9 +809,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
                  ? IsToolAllowed(GetToolModeForCommandId(command_id))
                  : omnibox::IsCreateImagesEnabled(profile);
     } else if (command_id == IDC_OMNIBOX_CONTEXT_CANVAS) {
-      return ntp_composebox::kShowModelPicker.Get()
-                 ? IsToolAllowed(GetToolModeForCommandId(command_id))
-                 : false;
+      return IsToolAllowed(GetToolModeForCommandId(command_id));
     } else if (command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO ||
                command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING) {
       return IsModelAllowed(GetModelModeForCommandId(command_id));
