@@ -145,6 +145,8 @@ PhoneFieldParser::GetPhoneGrammars() {
                     {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
                     {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 4}},
                    /*id=*/2),
+      // Note that the grammar below is optimized for US phone numbers, which is
+      // why the chosen limit of 3 for FIELD_COUNTRY_CODE makes sense.
       // Phone: <cc>:3 <ac>:3 <phone>:3 <suffix>:4
       PhoneGrammar({{REGEX_PHONE, FIELD_COUNTRY_CODE, 3},
                     {REGEX_PHONE, FIELD_AREA_CODE, 3},
@@ -206,9 +208,11 @@ PhoneFieldParser::GetPhoneGrammars() {
                     {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
                     {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE}},
                    /*id=*/11),
-      // Phone: <cc>:3 <phone>
+      // The limit for the FIELD_COUNTRY_CODE field comes from country codes
+      // having three digits that can appear with a 00 prefix (E.g., 00961).
+      // Phone: <cc>:5 <phone>
       PhoneGrammar(
-          {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
+          {{REGEX_PHONE, FIELD_COUNTRY_CODE, 5}, {REGEX_PHONE, FIELD_PHONE}},
           /*id=*/12),
       // Country Code: <cc> Phone: <phone>
       PhoneGrammar(
