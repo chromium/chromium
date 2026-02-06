@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
@@ -147,23 +148,22 @@ std::unique_ptr<GlicSharingManager> CreateSharingManager(
       static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
 }
 
-void WriteGuestUrlPresetToPrefs(Profile* profile,
-                                const char* switch_name,
+void WriteGuestUrlPresetToPrefs(const char* switch_name,
                                 const char* pref_name) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switch_name)) {
     std::string preset_url =
         GURL(command_line->GetSwitchValueASCII(switch_name)).spec();
-    profile->GetPrefs()->SetString(pref_name, preset_url);
+    g_browser_process->local_state()->SetString(pref_name, preset_url);
   }
 }
 
-void SetupGuestUrlPresetPrefs(Profile* profile) {
-  WriteGuestUrlPresetToPrefs(profile, ::switches::kGlicGuestUrlPresetAutopush,
+void SetupGuestUrlPresetPrefs() {
+  WriteGuestUrlPresetToPrefs(::switches::kGlicGuestUrlPresetAutopush,
                              prefs::kGlicGuestUrlPresetAutopush);
-  WriteGuestUrlPresetToPrefs(profile, ::switches::kGlicGuestUrlPresetPreprod,
+  WriteGuestUrlPresetToPrefs(::switches::kGlicGuestUrlPresetPreprod,
                              prefs::kGlicGuestUrlPresetPreprod);
-  WriteGuestUrlPresetToPrefs(profile, ::switches::kGlicGuestUrlPresetProd,
+  WriteGuestUrlPresetToPrefs(::switches::kGlicGuestUrlPresetProd,
                              prefs::kGlicGuestUrlPresetProd);
 }
 
@@ -261,7 +261,7 @@ GlicKeyedService::GlicKeyedService(
 
   // Sets up prefs storing manually configured glic guest URLs. Intended for
   // manual testing only.
-  SetupGuestUrlPresetPrefs(profile_);
+  SetupGuestUrlPresetPrefs();
 
   // This is only used by automation for tests.
   glic_profile_manager->MaybeAutoOpenGlicPanel();

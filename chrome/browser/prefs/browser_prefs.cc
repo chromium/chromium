@@ -969,6 +969,14 @@ constexpr char kDSEWasDisabledByPolicy[] = "dse_was_disabled_by_policy";
 constexpr char kCookieClearOnExitMigrationNoticeComplete[] =
     "signin.cookie_clear_on_exit_migration_notice_complete";
 
+// Deprecated 02/2026.
+// Note that these were replaced by local state prefs of the same names and
+// functions: those should not be removed. Only the profile prefs registered
+// here are deprecated.
+constexpr char kGlicGuestUrlPresetAutopush[] = "glic.guest_url_preset_autopush";
+constexpr char kGlicGuestUrlPresetPreprod[] = "glic.guest_url_preset_preprod";
+constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1342,6 +1350,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 01/2026.
   registry->RegisterBooleanPref(kCookieClearOnExitMigrationNoticeComplete,
                                 false);
+
+  // Deprecated 02/2026.
+  registry->RegisterStringPref(kGlicGuestUrlPresetAutopush, std::string());
+  registry->RegisterStringPref(kGlicGuestUrlPresetPreprod, std::string());
+  registry->RegisterStringPref(kGlicGuestUrlPresetProd, std::string());
 }
 
 }  // namespace
@@ -2604,6 +2617,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 01/2026.
   profile_prefs->ClearPref(kCookieClearOnExitMigrationNoticeComplete);
+
+  // Added 02/2026.
+  profile_prefs->ClearPref(kGlicGuestUrlPresetAutopush);
+  profile_prefs->ClearPref(kGlicGuestUrlPresetPreprod);
+  profile_prefs->ClearPref(kGlicGuestUrlPresetProd);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

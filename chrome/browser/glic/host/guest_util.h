@@ -13,18 +13,16 @@ namespace content {
 class WebContents;
 }
 
-class Profile;
-
 namespace glic {
 
 BASE_DECLARE_FEATURE(kGlicGuestUrlMultiInstanceParam);
 
 // Returns the URL/origin from where the guest web client will be loaded from.
-GURL GetGuestURL(Profile* profile);
-url::Origin GetGuestOrigin(Profile* profile);
+GURL GetGuestURL();
+url::Origin GetGuestOrigin();
 
 // Checks if a preset url is enabled and updates guest_url if so.
-void MaybeApplyPresetGuestUrl(GURL* guest_url, Profile* profile);
+void MaybeApplyPresetGuestUrl(GURL* guest_url);
 
 // Returns an updated guest URL that includes a language parameter, set to the
 // browser's UI language. If the parameter is already present, its current value

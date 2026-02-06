@@ -163,7 +163,7 @@ void GlicE2ETest::PreRunTestOnMainThread() {
   LiveTest::PreRunTestOnMainThread();
 
   GURL glic_fre_url = glic::GetFreURL(browser()->profile());
-  GURL glic_guest_url = glic::GetGuestURL(browser()->profile());
+  GURL glic_guest_url = glic::GetGuestURL();
   CHECK(glic_fre_url.is_valid() && glic_guest_url.is_valid())
       << "Incorrect GLiC guest or FRE URL in cmd line arguments.";
 

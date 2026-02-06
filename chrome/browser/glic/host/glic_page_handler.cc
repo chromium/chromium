@@ -2531,17 +2531,16 @@ void GlicPageHandler::GetInternalsDataPayload(
       browser_context_, GetGlicService()->actor_policy_checker());
 
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
-  config->guest_url = GetGuestURL(profile);
-  config->fre_guest_url = GetFreURL(profile);
+  config->guest_url = GetGuestURL();
+  config->fre_guest_url =
+      GetFreURL(Profile::FromBrowserContext(browser_context_));
 
-  PrefService* prefs = profile->GetPrefs();
-  config->autopush_guest_url =
-      GURL(prefs->GetString(prefs::kGlicGuestUrlPresetAutopush));
-  config->preprod_guest_url =
-      GURL(prefs->GetString(prefs::kGlicGuestUrlPresetPreprod));
-  config->prod_guest_url =
-      GURL(prefs->GetString(prefs::kGlicGuestUrlPresetProd));
+  config->autopush_guest_url = GURL(g_browser_process->local_state()->GetString(
+      prefs::kGlicGuestUrlPresetAutopush));
+  config->preprod_guest_url = GURL(g_browser_process->local_state()->GetString(
+      prefs::kGlicGuestUrlPresetPreprod));
+  config->prod_guest_url = GURL(g_browser_process->local_state()->GetString(
+      prefs::kGlicGuestUrlPresetProd));
 
   payload->config = std::move(config);
 
@@ -2551,11 +2550,12 @@ void GlicPageHandler::GetInternalsDataPayload(
 void GlicPageHandler::SetGuestUrlPresets(const GURL& autopush_url,
                                          const GURL& preprod_url,
                                          const GURL& prod_url) {
-  PrefService* prefs =
-      Profile::FromBrowserContext(browser_context_)->GetPrefs();
-  prefs->SetString(prefs::kGlicGuestUrlPresetAutopush, autopush_url.spec());
-  prefs->SetString(prefs::kGlicGuestUrlPresetPreprod, preprod_url.spec());
-  prefs->SetString(prefs::kGlicGuestUrlPresetProd, prod_url.spec());
+  g_browser_process->local_state()->SetString(
+      prefs::kGlicGuestUrlPresetAutopush, autopush_url.spec());
+  g_browser_process->local_state()->SetString(prefs::kGlicGuestUrlPresetPreprod,
+                                              preprod_url.spec());
+  g_browser_process->local_state()->SetString(prefs::kGlicGuestUrlPresetProd,
+                                              prod_url.spec());
 }
 
 void GlicPageHandler::PanelStateChanged(

@@ -66,11 +66,9 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
     content::RenderFrameHost* frame = handle->GetRenderFrameHost();
     mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    client->AddAutoplayFlags(GetGuestOrigin(profile),
+    client->AddAutoplayFlags(GetGuestOrigin(),
                              blink::mojom::kAutoplayFlagForceAllow);
-    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin(profile)
+    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin()
             << "\" at " << (handle->IsInPrimaryMainFrame() ? "main " : "")
             << "RFH with url=\"" << handle->GetURL() << "\"";
     base::UmaHistogramEnumeration(
@@ -83,7 +81,7 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
 
 }  // namespace
 
-GURL GetGuestURL(Profile* profile) {
+GURL GetGuestURL() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_glic_guest_url = command_line->HasSwitch(::switches::kGlicGuestURL);
   GURL url =
@@ -92,7 +90,7 @@ GURL GetGuestURL(Profile* profile) {
                : features::kGlicGuestURL.Get());
 
   // If a preset url is enabled, use it instead.
-  MaybeApplyPresetGuestUrl(&url, profile);
+  MaybeApplyPresetGuestUrl(&url);
 
   if (url.is_empty()) {
     LOG(ERROR) << "No glic guest url";
@@ -104,28 +102,34 @@ GURL GetGuestURL(Profile* profile) {
   return GetLocalizedGuestURL(url);
 }
 
-url::Origin GetGuestOrigin(Profile* profile) {
-  return url::Origin::Create(GetGuestURL(profile));
+url::Origin GetGuestOrigin() {
+  return url::Origin::Create(GetGuestURL());
 }
 
-void MaybeApplyPresetGuestUrl(GURL* guest_url, Profile* profile) {
+void MaybeApplyPresetGuestUrl(GURL* guest_url) {
   if (base::FeatureList::IsEnabled(features::kGlicGuestUrlPresets)) {
     GURL preset_url;
     switch (features::kGlicGuestUrlPresetType.Get()) {
       case 0:
-        preset_url = GURL(
-            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetAutopush));
+        preset_url = GURL(g_browser_process->local_state()->GetString(
+            prefs::kGlicGuestUrlPresetAutopush));
         break;
       case 1:
-        preset_url = GURL(
-            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetPreprod));
+        preset_url = GURL(g_browser_process->local_state()->GetString(
+            prefs::kGlicGuestUrlPresetPreprod));
         break;
       case 2:
-        preset_url = GURL(
-            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetProd));
+        preset_url = GURL(g_browser_process->local_state()->GetString(
+            prefs::kGlicGuestUrlPresetProd));
         break;
       default:
         return;
+    }
+
+    if (preset_url.is_valid()) {
+      *guest_url = preset_url;
+    } else {
+      LOG(ERROR) << "Invalid preset glic guest url, ignoring.";
     }
 
     if (preset_url.is_valid()) {
