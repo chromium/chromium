@@ -66,26 +66,6 @@ namespace content {
 
 namespace {
 
-std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
-                           std::unique_ptr<ui::DataTransferEndpoint> data_dst) {
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  std::u16string result;
-  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
-                                   clipboard_buffer, data_dst.get())) {
-    clipboard->ReadText(clipboard_buffer, data_dst.get(), &result);
-  } else {
-#if BUILDFLAG(IS_WIN)
-    if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextAType(),
-                                     clipboard_buffer, data_dst.get())) {
-      std::string ascii;
-      clipboard->ReadAsciiText(clipboard_buffer, data_dst.get(), &ascii);
-      result = base::ASCIIToUTF16(ascii);
-    }
-#endif
-  }
-  return result;
-}
-
 }  // namespace
 
 ClipboardHostImpl::ClipboardHostImpl(
@@ -140,9 +120,9 @@ void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(GetSequenceNumberImpl(clipboard_buffer));
 }
 
-std::vector<std::u16string> ClipboardHostImpl::ReadAvailableTypesImpl(
-    ui::ClipboardBuffer clipboard_buffer) {
-  std::vector<std::u16string> types;
+void ClipboardHostImpl::ReadAvailableTypes(
+    ui::ClipboardBuffer clipboard_buffer,
+    ReadAvailableTypesCallback callback) {
   auto* clipboard = ui::Clipboard::GetForCurrentThread();
   auto data_endpoint = CreateDataEndpoint();
 
@@ -152,41 +132,41 @@ std::vector<std::u16string> ClipboardHostImpl::ReadAvailableTypesImpl(
           static_cast<RenderFrameHostImpl&>(render_frame_host())
               .GetClipboardTypesIfPolicyApplied(
                   clipboard->GetSequenceNumber(clipboard_buffer))) {
-    types = std::move(*policy_types);
-  } else {
-    // ReadAvailableTypes() returns 'text/uri-list' if either files are
-    // provided, or if it was set as a custom web type. If it is set because
-    // files are available, do not include other types such as text/plain which
-    // contain the full path on some platforms (http://crbug.com/1214108). But
-    // do not exclude other types when it is set as a custom web type
-    // (http://crbug.com/1241671).
-    bool file_type_only =
-        clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
-                                     clipboard_buffer, data_endpoint.get());
+    std::move(callback).Run(std::move(*policy_types));
+    return;
+  }
+
+  // ReadAvailableTypes() returns 'text/uri-list' if either files are
+  // provided, or if it was set as a custom web type. If it is set because
+  // files are available, do not include other types such as text/plain which
+  // contain the full path on some platforms (http://crbug.com/1214108). But
+  // do not exclude other types when it is set as a custom web type
+  // (http://crbug.com/1241671).
+  bool file_type_only =
+      clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
+                                   clipboard_buffer, data_endpoint.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
-    // paste that it put on the clipboard during copy (crbug.com/271078230).
-    if (render_frame_host().GetMainFrame()->GetLastCommittedURL().SchemeIs(
-            kChromeUIScheme)) {
-      file_type_only = false;
-    }
+  // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
+  // paste that it put on the clipboard during copy (crbug.com/271078230).
+  if (render_frame_host().GetMainFrame()->GetLastCommittedURL().SchemeIs(
+          kChromeUIScheme)) {
+    file_type_only = false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    if (file_type_only) {
-      types = {ui::kMimeTypeUriList16};
-    } else {
-      clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),
-                                    &types);
-    }
+  if (file_type_only) {
+    std::move(callback).Run({ui::kMimeTypeUriList16});
+    return;
   }
-  return types;
-}
 
-void ClipboardHostImpl::ReadAvailableTypes(
-    ui::ClipboardBuffer clipboard_buffer,
-    ReadAvailableTypesCallback callback) {
-  std::move(callback).Run(ReadAvailableTypesImpl(clipboard_buffer));
+  clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),
+                                base::BindOnce(
+                                    [](ReadAvailableTypesCallback callback,
+                                       std::vector<std::u16string> types) {
+                                      std::move(callback).Run(std::move(types));
+                                    },
+                                    std::move(callback)));
 }
 
 void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
@@ -236,9 +216,17 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
     return;
   }
 
+  ExtractText(clipboard_buffer, CreateDataEndpoint(),
+              base::BindOnce(&ClipboardHostImpl::OnReadText,
+                             weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
+                             std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadText(ui::ClipboardBuffer clipboard_buffer,
+                                   ReadTextCallback callback,
+                                   std::u16string text) {
   ClipboardPasteData clipboard_paste_data;
-  clipboard_paste_data.text =
-      ExtractText(clipboard_buffer, CreateDataEndpoint());
+  clipboard_paste_data.text = std::move(text);
 
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::PlainTextType(),
@@ -262,30 +250,37 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
     return;
   }
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  ClipboardPasteData clipboard_paste_data;
-  std::string src_url_str;
-  uint32_t fragment_start = 0;
-  uint32_t fragment_end = 0;
   auto data_dst = CreateDataEndpoint();
   clipboard->ReadHTML(clipboard_buffer, data_dst.get(),
-                      &clipboard_paste_data.html, &src_url_str, &fragment_start,
-                      &fragment_end);
+                      base::BindOnce(&ClipboardHostImpl::OnReadHtml,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     clipboard_buffer, std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadHtml(ui::ClipboardBuffer clipboard_buffer,
+                                   ReadHtmlCallback callback,
+                                   std::u16string markup,
+                                   GURL src_url,
+                                   uint32_t fragment_start,
+                                   uint32_t fragment_end) {
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.html = std::move(markup);
 
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::HtmlType(),
       std::move(clipboard_paste_data),
       base::BindOnce(
-          [](std::string src_url_str, uint32_t fragment_start,
-             uint32_t fragment_end, ReadHtmlCallback callback,
+          [](GURL src_url, uint32_t fragment_start, uint32_t fragment_end,
+             ReadHtmlCallback callback,
              std::optional<ClipboardPasteData> clipboard_paste_data) {
             std::u16string markup;
             if (clipboard_paste_data) {
               markup = std::move(clipboard_paste_data->html);
             }
-            std::move(callback).Run(std::move(markup), GURL(src_url_str),
-                                    fragment_start, fragment_end);
+            std::move(callback).Run(std::move(markup), src_url, fragment_start,
+                                    fragment_end);
           },
-          std::move(src_url_str), fragment_start, fragment_end,
+          std::move(src_url), fragment_start, fragment_end,
           std::move(callback)));
 }
 
@@ -295,10 +290,19 @@ void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
     std::move(callback).Run(std::u16string());
     return;
   }
+  ui::Clipboard::GetForCurrentThread()->ReadSvg(
+      clipboard_buffer,
+      /*data_dst=*/nullptr,
+      base::BindOnce(&ClipboardHostImpl::OnReadSvg,
+                     weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
+                     std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadSvg(ui::ClipboardBuffer clipboard_buffer,
+                                  ReadSvgCallback callback,
+                                  std::u16string svg) {
   ClipboardPasteData clipboard_paste_data;
-  ui::Clipboard::GetForCurrentThread()->ReadSvg(clipboard_buffer,
-                                                /*data_dst=*/nullptr,
-                                                &clipboard_paste_data.svg);
+  clipboard_paste_data.svg = std::move(svg);
 
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::SvgType(),
@@ -322,10 +326,19 @@ void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
     return;
   }
 
-  ClipboardPasteData clipboard_paste_data;
   auto data_dst = CreateDataEndpoint();
   ui::Clipboard::GetForCurrentThread()->ReadRTF(
-      clipboard_buffer, data_dst.get(), &clipboard_paste_data.rtf);
+      clipboard_buffer, data_dst.get(),
+      base::BindOnce(&ClipboardHostImpl::OnReadRtf,
+                     weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
+                     std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadRtf(ui::ClipboardBuffer clipboard_buffer,
+                                  ReadRtfCallback callback,
+                                  std::string rtf) {
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.rtf = std::move(rtf);
 
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::RtfType(),
@@ -351,19 +364,36 @@ void ClipboardHostImpl::ReadPng(ui::ClipboardBuffer clipboard_buffer,
   auto data_dst = CreateDataEndpoint();
   ui::Clipboard::GetForCurrentThread()->ReadPng(
       clipboard_buffer, data_dst.get(),
-      base::BindOnce(&ClipboardHostImpl::OnReadPng,
-                     weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
-                     std::move(callback)));
+      base::BindOnce(
+          [](base::WeakPtr<ClipboardHostImpl> host,
+             ui::ClipboardBuffer clipboard_buffer, ReadPngCallback callback,
+             const std::vector<uint8_t>& data) {
+            if (host) {
+              host->OnReadPng(clipboard_buffer, std::move(callback), data);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
+          std::move(callback)));
 }
 
 void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                                   ReadPngCallback callback,
-                                  const std::vector<uint8_t>& data) {
+                                  std::vector<uint8_t> data) {
+  // Pass both image and associated text for content analysis.
+  ExtractText(clipboard_buffer, CreateDataEndpoint(),
+              base::BindOnce(&ClipboardHostImpl::OnReadPngWithText,
+                             weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
+                             std::move(callback), std::move(data)));
+}
+
+void ClipboardHostImpl::OnReadPngWithText(ui::ClipboardBuffer clipboard_buffer,
+                                          ReadPngCallback callback,
+                                          std::vector<uint8_t> data,
+                                          std::u16string text) {
   // Pass both image and associated text for content analysis.
   ClipboardPasteData clipboard_paste_data;
-  clipboard_paste_data.text =
-      ExtractText(clipboard_buffer, CreateDataEndpoint());
-  clipboard_paste_data.png = data;
+  clipboard_paste_data.text = std::move(text);
+  clipboard_paste_data.png = std::move(data);
 
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::PngType(),
@@ -383,16 +413,24 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
-  blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
   if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
-    std::move(callback).Run(std::move(result));
+    std::move(callback).Run(blink::mojom::ClipboardFiles::New());
     return;
   }
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  std::vector<ui::FileInfo> filenames;
   auto data_dst = CreateDataEndpoint();
-  clipboard->ReadFilenames(clipboard_buffer, data_dst.get(), &filenames);
+  clipboard->ReadFilenames(
+      clipboard_buffer, data_dst.get(),
+      base::BindOnce(&ClipboardHostImpl::OnReadFiles,
+                     weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
+                     std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                                    ReadFilesCallback callback,
+                                    std::vector<ui::FileInfo> filenames) {
+  blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
 
   // Convert the vector of ui::FileInfo into a vector of base::FilePath so that
   // it can be passed to PerformPasteIfContentAllowed() for analysis.  When
@@ -466,11 +504,21 @@ void ClipboardHostImpl::ReadDataTransferCustomData(
     return;
   }
 
-  ClipboardPasteData clipboard_paste_data;
   auto data_dst = CreateDataEndpoint();
   ui::Clipboard::GetForCurrentThread()->ReadDataTransferCustomData(
       clipboard_buffer, type, data_dst.get(),
-      &clipboard_paste_data.custom_data[type]);
+      base::BindOnce(&ClipboardHostImpl::OnReadDataTransferCustomData,
+                     weak_ptr_factory_.GetWeakPtr(), clipboard_buffer, type,
+                     std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadDataTransferCustomData(
+    ui::ClipboardBuffer clipboard_buffer,
+    const std::u16string& type,
+    ReadDataTransferCustomDataCallback callback,
+    std::u16string data) {
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.custom_data[type] = std::move(data);
 
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::DataTransferCustomType(),
@@ -642,17 +690,24 @@ void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
       ui::Clipboard::GetForCurrentThread()->ExtractCustomPlatformNames(
           ui::ClipboardBuffer::kCopyPaste, data_endpoint.get());
   std::string web_custom_format_string;
-  if (custom_format_names.find(format_name) != custom_format_names.end())
+  if (custom_format_names.find(format_name) != custom_format_names.end()) {
     web_custom_format_string = custom_format_names[format_name];
+  }
   if (web_custom_format_string.empty()) {
     std::move(callback).Run(mojo_base::BigBuffer());
     return;
   }
 
-  std::string result;
   ui::Clipboard::GetForCurrentThread()->ReadData(
       ui::ClipboardFormatType::CustomPlatformType(web_custom_format_string),
-      data_endpoint.get(), &result);
+      data_endpoint.get(),
+      base::BindOnce(&ClipboardHostImpl::OnReadUnsanitizedCustomFormat,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadUnsanitizedCustomFormat(
+    ReadUnsanitizedCustomFormatCallback callback,
+    std::string result) {
   if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize) {
     std::move(callback).Run(mojo_base::BigBuffer());
     return;
@@ -828,25 +883,61 @@ void ClipboardHostImpl::OnClipboardDataChanged() {
     return;
   }
 
-  // Static list of allowed standard MIME types
-  // https://w3c.github.io/clipboard-apis/#mandatory-data-types-x
-  auto types = base::STLSetIntersection<std::vector<std::u16string>>(
-      base::flat_set<std::u16string>{
-          ui::kMimeTypePng16,
-          ui::kMimeTypeHtml16,
-          ui::kMimeTypePlainText16,
-      },
-      base::MakeFlatSet<std::u16string>(
-          ReadAvailableTypesImpl(ui::ClipboardBuffer::kCopyPaste)));
+  auto data_endpoint = CreateDataEndpoint();
+  ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
+      ui::ClipboardBuffer::kCopyPaste, data_endpoint.get(),
+      base::BindOnce(&ClipboardHostImpl::OnReadAvailableTypesForUpdate,
+                     weak_ptr_factory_.GetWeakPtr(), change_id));
+}
 
+void ClipboardHostImpl::OnReadAvailableTypesForUpdate(
+    absl::uint128 change_id,
+    std::vector<std::u16string> types) {
   if (change_id != GetSequenceNumberImpl(ui::ClipboardBuffer::kCopyPaste)) {
     // Clipboard changed meanwhile. There will be another notification anyway,
     // no need to retry here.
     return;
   }
 
+  // Static list of allowed standard MIME types
+  // https://w3c.github.io/clipboard-apis/#mandatory-data-types-x
+  auto filtered_types = base::STLSetIntersection<std::vector<std::u16string>>(
+      base::flat_set<std::u16string>{
+          ui::kMimeTypePng16,
+          ui::kMimeTypeHtml16,
+          ui::kMimeTypePlainText16,
+      },
+      base::MakeFlatSet<std::u16string>(std::move(types)));
+
   clipboard_listener_->OnClipboardDataChanged(
-      types, last_change_id_.emplace(change_id));
+      filtered_types, last_change_id_.emplace(change_id));
+}
+
+void ClipboardHostImpl::ExtractText(
+    ui::ClipboardBuffer clipboard_buffer,
+    std::unique_ptr<ui::DataTransferEndpoint> data_dst,
+    base::OnceCallback<void(std::u16string)> callback) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
+                                   clipboard_buffer, data_dst.get())) {
+    clipboard->ReadText(clipboard_buffer, data_dst.get(), std::move(callback));
+    return;
+  }
+#if BUILDFLAG(IS_WIN)
+  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextAType(),
+                                   clipboard_buffer, data_dst.get())) {
+    clipboard->ReadAsciiText(
+        clipboard_buffer, data_dst.get(),
+        base::BindOnce(
+            [](base::OnceCallback<void(std::u16string)> callback,
+               std::string ascii) {
+              std::move(callback).Run(base::ASCIIToUTF16(ascii));
+            },
+            std::move(callback)));
+    return;
+  }
+#endif
+  std::move(callback).Run(std::u16string());
 }
 
 void ClipboardHostImpl::RegisterClipboardListener(

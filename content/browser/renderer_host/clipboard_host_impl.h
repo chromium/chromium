@@ -148,9 +148,6 @@ class CONTENT_EXPORT ClipboardHostImpl
       GetPlatformPermissionStateCallback callback) override;
 #endif
 
-  std::vector<std::u16string> ReadAvailableTypesImpl(
-      ui::ClipboardBuffer clipboard_buffer);
-
   absl::uint128 GetSequenceNumberImpl(ui::ClipboardBuffer clipboard_buffer);
 
   // Checks if the renderer allows pasting.  This check is skipped if called
@@ -188,7 +185,51 @@ class CONTENT_EXPORT ClipboardHostImpl
 
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
-                 const std::vector<uint8_t>& data);
+                 std::vector<uint8_t> data);
+
+  void OnReadPngWithText(ui::ClipboardBuffer clipboard_buffer,
+                         ReadPngCallback callback,
+                         std::vector<uint8_t> data,
+                         std::u16string text);
+
+  void OnReadText(ui::ClipboardBuffer clipboard_buffer,
+                  ReadTextCallback callback,
+                  std::u16string text);
+
+  void OnReadHtml(ui::ClipboardBuffer clipboard_buffer,
+                  ReadHtmlCallback callback,
+                  std::u16string markup,
+                  GURL src_url,
+                  uint32_t fragment_start,
+                  uint32_t fragment_end);
+
+  void OnReadSvg(ui::ClipboardBuffer clipboard_buffer,
+                 ReadSvgCallback callback,
+                 std::u16string svg);
+
+  void OnReadRtf(ui::ClipboardBuffer clipboard_buffer,
+                 ReadRtfCallback callback,
+                 std::string rtf);
+
+  void OnReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                   ReadFilesCallback callback,
+                   std::vector<ui::FileInfo> filenames);
+
+  void OnReadDataTransferCustomData(ui::ClipboardBuffer clipboard_buffer,
+                                    const std::u16string& type,
+                                    ReadDataTransferCustomDataCallback callback,
+                                    std::u16string data);
+
+  void OnReadUnsanitizedCustomFormat(
+      ReadUnsanitizedCustomFormatCallback callback,
+      std::string data);
+
+  void OnReadAvailableTypesForUpdate(absl::uint128 change_id,
+                                     std::vector<std::u16string> types);
+
+  void ExtractText(ui::ClipboardBuffer clipboard_buffer,
+                   std::unique_ptr<ui::DataTransferEndpoint> data_dst,
+                   base::OnceCallback<void(std::u16string)> callback);
 
   // Resets `clipboard_writer_` to write its data to the clipboard, and
   // reinitialize it in preparation for the next write.
