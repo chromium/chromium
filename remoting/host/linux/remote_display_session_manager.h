@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -31,6 +32,13 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
  public:
   using Callback = base::OnceCallback<void(base::expected<void, Loggable>)>;
 
+  struct UserInfo {
+    std::string username;
+    int uid;
+    int gid;
+    base::FilePath home_dir;
+  };
+
   struct RemoteDisplayInfo {
     RemoteDisplayInfo();
     RemoteDisplayInfo(RemoteDisplayInfo&&);
@@ -43,6 +51,10 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
     // Information about the remote display's current systemd login session.
     // This is null if no session has been created for the remote display yet.
     std::optional<LoginSessionManager::SessionInfo> session_info;
+
+    // Information about the remote display's user. This is null if no session
+    // has been created for the remote display yet.
+    std::optional<UserInfo> user_info;
 
     // Environment variables for launching processes under the remote display's
     // current systemd login session. Empty if the session is not ready yet.

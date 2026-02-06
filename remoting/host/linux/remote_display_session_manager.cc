@@ -11,12 +11,15 @@
 #include <string_view>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/base/loggable.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/login_session_manager.h"
 
@@ -34,7 +37,8 @@ std::string GetRemoteDisplayName(const gvariant::ObjectPath& remote_id) {
   return remote_id.value().substr(kRemoteDisplayIdPrefix.size());
 }
 
-std::string GetHomeDirPathForUsername(const std::string& username) {
+RemoteDisplaySessionManager::UserInfo GetUserInfoForUsername(
+    const std::string& username) {
   struct passwd pw;
   struct passwd* result;
   constexpr int kDefaultPwnameLength = 1024;
@@ -53,7 +57,12 @@ std::string GetHomeDirPathForUsername(const std::string& username) {
     LOG(ERROR) << "User not found: " << username;
     return {};
   }
-  return std::string(pw.pw_dir);
+  RemoteDisplaySessionManager::UserInfo user_info;
+  user_info.username = result->pw_name;
+  user_info.uid = result->pw_uid;
+  user_info.gid = result->pw_gid;
+  user_info.home_dir = base::FilePath(result->pw_dir);
+  return user_info;
 }
 
 }  // namespace
@@ -111,12 +120,16 @@ void RemoteDisplaySessionManager::TerminateRemoteDisplay(
 
   const auto it = remote_displays_.find(display_name);
   if (it == remote_displays_.end()) {
-    LOG(ERROR) << "Remote display " << display_name << " not found.";
+    std::move(callback).Run(base::unexpected(Loggable(
+        FROM_HERE,
+        "Remote display " + std::string(display_name) + " not found.")));
     return;
   }
 
   if (!it->second.session_info.has_value()) {
-    LOG(ERROR) << "Remote display " << display_name << " has no session.";
+    std::move(callback).Run(base::unexpected(Loggable(
+        FROM_HERE,
+        "Remote display " + std::string(display_name) + " has no session.")));
     return;
   }
 
@@ -155,6 +168,7 @@ void RemoteDisplaySessionManager::PopulateSessionEnvironment(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(display_info.session_info.has_value());
+  DCHECK(display_info.user_info.has_value());
   const LoginSessionManager::SessionInfo& session_info =
       *display_info.session_info;
   base::EnvironmentMap& env_vars = display_info.environment_variables;
@@ -173,7 +187,7 @@ void RemoteDisplaySessionManager::PopulateSessionEnvironment(
   // systemd.
   env_vars["XDG_RUNTIME_DIR"] =
       base::StringPrintf("/run/user/%d", session_info.uid);
-  env_vars["HOME"] = GetHomeDirPathForUsername(session_info.username);
+  env_vars["HOME"] = display_info.user_info->home_dir.value();
   delegate_->OnRemoteDisplaySessionChanged(display_name, display_info);
 }
 
@@ -273,6 +287,7 @@ void RemoteDisplaySessionManager::OnRemoteDisplaySessionChanged(
   }
   RemoteDisplayInfo& display_info = it->second;
   display_info.session_info = std::nullopt;
+  display_info.user_info = std::nullopt;
   display_info.environment_variables.clear();
   if (display.session_id.empty()) {
     delegate_->OnRemoteDisplaySessionChanged(display_name, display_info);
@@ -317,15 +332,18 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
 
   auto remote_display_it = remote_displays_.find(display_name);
   DCHECK(remote_display_it != remote_displays_.end());
-  remote_display_it->second.session_info = std::move(*result);
+  auto& remote_display_info = remote_display_it->second;
+  remote_display_info.session_info = std::move(*result);
+  remote_display_info.user_info =
+      GetUserInfoForUsername(remote_display_info.session_info->username);
   auto pending_session_reporter_info_it = pending_session_reporter_info_.find(
-      remote_display_it->second.session_info->session_id);
+      remote_display_info.session_info->session_id);
   if (pending_session_reporter_info_it !=
       pending_session_reporter_info_.end()) {
     mojom::LoginSessionInfoPtr session_reporter_info =
         std::move(pending_session_reporter_info_it->second);
     pending_session_reporter_info_.erase(pending_session_reporter_info_it);
-    PopulateSessionEnvironment(display_name, remote_display_it->second,
+    PopulateSessionEnvironment(display_name, remote_display_info,
                                std::move(session_reporter_info));
   }
 }

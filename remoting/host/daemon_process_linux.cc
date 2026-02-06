@@ -42,15 +42,14 @@
 #include "remoting/host/chromoting_host_services_server.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/host_main.h"
-#include "remoting/host/linux/remote_display_session_manager.h"
+#include "remoting/host/linux/desktop_session_factory_linux.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/usage_stats_consent.h"
 
 namespace remoting {
 
-class DaemonProcessLinux : public DaemonProcess,
-                           public RemoteDisplaySessionManager::Delegate {
+class DaemonProcessLinux : public DaemonProcess {
  public:
   DaemonProcessLinux(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                      scoped_refptr<AutoThreadTaskRunner> io_task_runner,
@@ -71,7 +70,7 @@ class DaemonProcessLinux : public DaemonProcess,
       int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) override;
 
-  void StartRemoteDisplaySessionManager();
+  void StartDesktopSessionFactory();
 
  private:
   // DaemonProcess implementation.
@@ -86,14 +85,8 @@ class DaemonProcessLinux : public DaemonProcess,
   void SendTerminalDisconnected(int terminal_id) override;
   void StartChromotingHostServices() override;
 
-  void OnStartRemoteDisplaySessionManagerResult(
+  void OnStartDesktopSessionFactoryResult(
       base::expected<void, Loggable> result);
-
-  // RemoteDisplaySessionManager::Delegate:
-  void OnRemoteDisplaySessionChanged(
-      std::string_view display_name,
-      const RemoteDisplaySessionManager::RemoteDisplayInfo& info) override;
-  void OnRemoteDisplayTerminated(std::string_view display_name) override;
 
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
@@ -105,7 +98,13 @@ class DaemonProcessLinux : public DaemonProcess,
   mojo::core::ScopedIPCSupport ipc_support_;
 
   std::unique_ptr<ChromotingHostServicesServer> ipc_server_;
-  RemoteDisplaySessionManager remote_display_session_manager_;
+
+  DesktopSessionFactoryLinux desktop_session_factory_;
+
+  // This is just to hold the message pipe so that the desktop process doesn't
+  // terminate itself during development.
+  // TODO: crbug.com/475611769 - Remove this.
+  mojo::ScopedMessagePipeHandle desktop_pipe_;
 
   mojo::AssociatedRemote<mojom::DesktopSessionConnectionEvents>
       desktop_session_connection_events_;
@@ -120,7 +119,8 @@ DaemonProcessLinux::DaemonProcessLinux(
                     io_task_runner,
                     std::move(stopped_callback)),
       ipc_support_(io_task_runner->task_runner(),
-                   mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST) {}
+                   mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST),
+      desktop_session_factory_(io_task_runner) {}
 
 DaemonProcessLinux::~DaemonProcessLinux() = default;
 
@@ -146,18 +146,20 @@ bool DaemonProcessLinux::OnDesktopSessionAgentAttached(
   if (desktop_session_connection_events_) {
     desktop_session_connection_events_->OnDesktopSessionAgentAttached(
         terminal_id, session_id, std::move(desktop_pipe));
+  } else {
+    // TODO: crbug.com/475611769 - Remove this.
+    desktop_pipe_ = std::move(desktop_pipe);
   }
 
   return true;
 }
 
-void DaemonProcessLinux::StartRemoteDisplaySessionManager() {
+void DaemonProcessLinux::StartDesktopSessionFactory() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  remote_display_session_manager_.Start(
-      this, base::BindOnce(
-                &DaemonProcessLinux::OnStartRemoteDisplaySessionManagerResult,
-                base::Unretained(this)));
+  desktop_session_factory_.Start(
+      base::BindOnce(&DaemonProcessLinux::OnStartDesktopSessionFactoryResult,
+                     base::Unretained(this)));
 }
 
 std::unique_ptr<DesktopSession> DaemonProcessLinux::DoCreateDesktopSession(
@@ -166,8 +168,7 @@ std::unique_ptr<DesktopSession> DaemonProcessLinux::DoCreateDesktopSession(
     bool is_curtained) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  NOTIMPLEMENTED();
-  return nullptr;
+  return desktop_session_factory_.CreateDesktopSession(terminal_id, this);
 }
 
 void DaemonProcessLinux::DoCrashNetworkProcess(const base::Location& location) {
@@ -218,7 +219,7 @@ void DaemonProcessLinux::StartChromotingHostServices() {
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
 }
 
-void DaemonProcessLinux::OnStartRemoteDisplaySessionManagerResult(
+void DaemonProcessLinux::OnStartDesktopSessionFactoryResult(
     base::expected<void, Loggable> result) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
@@ -226,31 +227,8 @@ void DaemonProcessLinux::OnStartRemoteDisplaySessionManagerResult(
     LOG(ERROR) << result.error();
     return;
   }
-  remote_display_session_manager_.CreateRemoteDisplay(
-      "test", base::BindOnce([](base::expected<void, Loggable> result) {
-        if (!result.has_value()) {
-          LOG(ERROR) << result.error();
-        }
-      }));
-}
-
-void DaemonProcessLinux::OnRemoteDisplaySessionChanged(
-    std::string_view display_name,
-    const RemoteDisplaySessionManager::RemoteDisplayInfo& info) {
-  DCHECK(caller_task_runner()->BelongsToCurrentThread());
-
-  LOG(INFO) << "Remote display session changed.";
-  LOG(INFO) << "  display_name: " << display_name;
-  LOG(INFO) << "  session_object_path: "
-            << info.session_info->object_path.value();
-  for (const auto& [key, value] : info.environment_variables) {
-    LOG(INFO) << "  " << key << "=" << value;
-  }
-}
-
-void DaemonProcessLinux::OnRemoteDisplayTerminated(
-    std::string_view display_name) {
-  LOG(INFO) << "Remote display terminated: " << display_name;
+  // TODO: crbug.com/475611769 - Remove this.
+  CreateDesktopSession(1, {}, false);
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
@@ -260,7 +238,7 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
   auto daemon_process = std::make_unique<DaemonProcessLinux>(
       caller_task_runner, io_task_runner, std::move(stopped_callback));
 
-  daemon_process->StartRemoteDisplaySessionManager();
+  daemon_process->StartDesktopSessionFactory();
 
   // Finishes configuring the Daemon process and launches the network process.
   daemon_process->Initialize();

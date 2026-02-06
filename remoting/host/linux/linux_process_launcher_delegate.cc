@@ -131,8 +131,8 @@ void LinuxWorkerProcessLauncherDelegate::LaunchProcess(
 void LinuxWorkerProcessLauncherDelegate::GetRemoteAssociatedInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO: crbug.com/475611769 - Implement.
-  NOTIMPLEMENTED_LOG_ONCE();
+
+  channel_->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 void LinuxWorkerProcessLauncherDelegate::CloseChannel() {
@@ -156,22 +156,25 @@ void LinuxWorkerProcessLauncherDelegate::KillProcess() {
 
 void LinuxWorkerProcessLauncherDelegate::OnChannelConnected(int32_t peer_pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO: crbug.com/475611769 - Implement.
-  NOTIMPLEMENTED_LOG_ONCE();
+
+  if (event_handler_) {
+    event_handler_->OnChannelConnected(peer_pid);
+  }
 }
 
 void LinuxWorkerProcessLauncherDelegate::OnChannelError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO: crbug.com/475611769 - Implement.
-  NOTIMPLEMENTED_LOG_ONCE();
+
+  event_handler_->OnChannelError();
 }
 
 void LinuxWorkerProcessLauncherDelegate::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO: crbug.com/475611769 - Implement.
-  NOTIMPLEMENTED_LOG_ONCE();
+
+  event_handler_->OnAssociatedInterfaceRequest(interface_name,
+                                               std::move(handle));
 }
 
 void LinuxWorkerProcessLauncherDelegate::ReportFatalError() {
