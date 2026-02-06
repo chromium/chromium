@@ -423,7 +423,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
   void OnDestroyResource() { --num_inflight_resources_; }
-  void SetResourceRecyclingEnabled(bool value);
 
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return unused_resources_reclaim_timer_.IsRunning();
@@ -490,6 +489,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
+  bool resource_recycling_enabled_ = true;
+
  private:
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -544,7 +545,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
   base::OneShotTimer unused_resources_reclaim_timer_;
-  bool resource_recycling_enabled_ = true;
 
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the
@@ -617,6 +617,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
+
+  void SetResourceRecyclingEnabled(bool value);
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage

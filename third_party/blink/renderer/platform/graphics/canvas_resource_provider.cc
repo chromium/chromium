@@ -420,7 +420,7 @@ void CanvasResourceProviderSharedImage::OnResourceRefReturned(
   }
 }
 
-void CanvasResourceProviderSharedImage::SetResourceRecyclingEnabled(
+void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
     bool value) {
   resource_recycling_enabled_ = value;
   if (!resource_recycling_enabled_) {
