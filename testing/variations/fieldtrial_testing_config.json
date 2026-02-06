@@ -12392,6 +12392,7 @@
                         "GlicDaisyChainNewTabs",
                         "GlicDefaultTabContextSetting",
                         "GlicEnableMultiInstanceBasedOnTier",
+                        "GlicLiveModeOnlyGlow",
                         "GlicMultiInstance",
                         "GlicMultiTab"
                     ]

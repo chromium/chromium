@@ -262,8 +262,15 @@ class ContextSharingBorderViewUiTestBase : public test::InteractiveGlicTest {
     RunTestSequence(
         // See https://crrev.com/c/6373789: the glic window is in detach mode by
         // default.
-        OpenGlic(), ExecuteJsAt(test::kGlicContentsElementId,
-                                kContextAccessIndicatorCheckBox, kClickFn));
+        OpenGlic(), Do([this]() {
+          if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+            if (auto* instance = GetGlicInstanceImpl()) {
+              instance->OnInteractionModeChange(mojom::WebClientMode::kAudio);
+            }
+          }
+        }),
+        ExecuteJsAt(test::kGlicContentsElementId,
+                    kContextAccessIndicatorCheckBox, kClickFn));
   }
 
   void CloseGlicWindow() {

@@ -602,6 +602,7 @@ void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   interaction_mode_ = new_mode;
   sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
                                            interaction_mode_);
+  ContextAccessIndicatorChanged(host().IsContextAccessIndicatorEnabled());
 }
 
 void GlicInstanceImpl::AddStateObserver(PanelStateObserver* observer) {
