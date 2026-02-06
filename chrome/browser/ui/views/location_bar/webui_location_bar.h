@@ -33,9 +33,15 @@ class WebUILocationBar : public LocationBar {
   LocationBarModel* GetLocationBarModel() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
+  ui::TrackedElement* GetAnchorOrNull() override;
+  Browser* GetBrowser() override;
   void OnChanged() override;
   void UpdateWithoutTabRestore() override;
   bool IsVisible() const override;
+  bool IsDrawn() const override;
+  bool IsTopLevelFullscreen() const override;
+  bool IsEditingOrEmpty() const override;
+  void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
   gfx::Size MinimumSize() const override;
   gfx::Size PreferredSize() const override;

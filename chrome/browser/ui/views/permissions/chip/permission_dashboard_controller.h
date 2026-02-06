@@ -16,14 +16,15 @@
 #include "content/public/browser/global_routing_id.h"
 #include "ui/views/view_tracker.h"
 
-class LocationBarView;
+class LocationBar;
 class ChipController;
 class ContentSettingImageModel;
 
 class PermissionDashboardController : public PermissionChipView::Observer {
  public:
   PermissionDashboardController(
-      LocationBarView* location_bar_view,
+      LocationBar* location_bar,
+      ContentSettingImageViewDelegate* content_settings_image_delegate,
       PermissionDashboardView* permission_dashboard_view);
 
   ~PermissionDashboardController() override;
@@ -41,8 +42,10 @@ class PermissionDashboardController : public PermissionChipView::Observer {
 
   // This method updates UI based on `ContentSettingImageModel` state. Returns
   // `true` if there are user-visible changes, otherwise returns `false`.
-  bool Update(ContentSettingImageModel* indicator_model,
-              ContentSettingImageView::Delegate* delegate);
+  //
+  // Assumes that `content_settings_image_delegate` passed to the constructor is
+  // appropriate to use with `indicator_model`.
+  bool Update(ContentSettingImageModel* indicator_model);
 
   // PermissionChipView::Observer
   void OnChipVisibilityChanged(bool is_visible) override;
@@ -80,12 +83,16 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   void OnIndicatorsChipButtonPressed();
   std::u16string GetIndicatorTitle(ContentSettingImageModel* model);
 
-  // `LocationBarView` owns this.
-  raw_ptr<LocationBarView> location_bar_view_ = nullptr;
+  // The implementation of `LocationBar` owns this.
+  raw_ptr<LocationBar> location_bar_ = nullptr;
+
+  // This image delegate is passed w/the location bar, and this class assumes
+  // that it's the appropriate delegate to use for everything shown.
+  raw_ptr<ContentSettingImageViewDelegate> content_setting_image_delegate_ =
+      nullptr;
   raw_ptr<PermissionDashboardView> permission_dashboard_view_ = nullptr;
   // Currently only Camera and Mic are supported.
   raw_ptr<ContentSettingImageModel> content_setting_image_model_ = nullptr;
-  raw_ptr<ContentSettingImageView::Delegate> delegate_;
   std::unique_ptr<ChipController> request_chip_controller_;
   // A timer used to collapse indicators after a delay.
   base::OneShotTimer collapse_timer_;

@@ -190,6 +190,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/property_effects.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -304,12 +305,13 @@ void LocationBarView::Init() {
 
     permission_dashboard_controller_ =
         std::make_unique<PermissionDashboardController>(
-            this, permission_dashboard_view_);
+            this, this, permission_dashboard_view_);
   } else {
     chip_controller_ = std::make_unique<ChipController>(
-        this, AddChildViewAt(std::make_unique<PermissionChipView>(
-                                 PermissionChipView::PressedCallback()),
-                             0));
+        this, this,
+        AddChildViewAt(std::make_unique<PermissionChipView>(
+                           PermissionChipView::PressedCallback()),
+                       0));
   }
 
   const auto& typography_provider = views::TypographyProvider::Get();
@@ -1227,8 +1229,28 @@ LocationBarView::GetChipAnchor() {
   return std::nullopt;
 }
 
+ui::TrackedElement* LocationBarView::GetAnchorOrNull() {
+  return views::ElementTrackerViews::GetInstance()->GetElementForView(this);
+}
+
+Browser* LocationBarView::GetBrowser() {
+  return browser();
+}
+
 bool LocationBarView::IsVisible() const {
   return GetVisible();
+}
+
+bool LocationBarView::IsDrawn() const {
+  return View::IsDrawn();
+}
+
+bool LocationBarView::IsTopLevelFullscreen() const {
+  return GetWidget()->GetTopLevelWidget()->IsFullscreen();
+}
+
+void LocationBarView::InvalidateLayout() {
+  View::InvalidateLayout();
 }
 
 gfx::Rect LocationBarView::Bounds() const {
@@ -1574,7 +1596,7 @@ bool LocationBarView::RefreshContentSettingViews() {
         base::FeatureList::IsEnabled(
             content_settings::features::kLeftHandSideActivityIndicators)) {
       visibility_changed |= permission_dashboard_controller()->Update(
-          v->content_setting_image_model(), v->delegate());
+          v->content_setting_image_model());
     } else {
       v->Update();
       if (was_visible != v->GetVisible()) {

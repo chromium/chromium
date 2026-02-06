@@ -103,7 +103,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageView,
 ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
     IconLabelBubbleView::Delegate* parent_delegate,
-    Delegate* delegate,
+    ContentSettingImageViewDelegate* delegate,
     Browser* browser,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),

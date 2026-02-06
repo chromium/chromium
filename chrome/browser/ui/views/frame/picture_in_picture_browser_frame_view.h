@@ -47,15 +47,14 @@ namespace {
 class WindowEventObserver;
 }  // namespace
 
-class PictureInPictureBrowserFrameView
-    : public BrowserFrameView,
-      public ChromeLocationBarModelDelegate,
-      public LocationIconView::Delegate,
-      public IconLabelBubbleView::Delegate,
-      public ContentSettingImageView::Delegate,
-      public views::WidgetObserver,
-      public PictureInPictureWindow,
-      public gfx::AnimationDelegate {
+class PictureInPictureBrowserFrameView : public BrowserFrameView,
+                                         public ChromeLocationBarModelDelegate,
+                                         public LocationIconView::Delegate,
+                                         public IconLabelBubbleView::Delegate,
+                                         public ContentSettingImageViewDelegate,
+                                         public views::WidgetObserver,
+                                         public PictureInPictureWindow,
+                                         public gfx::AnimationDelegate {
   METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserFrameView)
 
  public:
@@ -109,7 +108,7 @@ class PictureInPictureBrowserFrameView
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
-  // ContentSettingImageView::Delegate:
+  // ContentSettingImageViewDelegate:
   bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()

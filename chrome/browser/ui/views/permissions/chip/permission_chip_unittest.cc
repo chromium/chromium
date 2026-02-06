@@ -239,6 +239,7 @@ class PermissionChipUnitTest : public TestWithBrowserView {
 
   void SetUp() override {
     TestWithBrowserView::SetUp();
+    browser_view()->Show();
 
     AddTab(browser(), GURL("http://a.com"));
     web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -563,13 +564,6 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
 }
 
 class PermissionPromiseLifetimeModulationTest : public PermissionChipUnitTest {
- public:
-  void SetUp() override {
-    TestWithBrowserView::SetUp();
-
-    AddTab(browser(), GURL("http://a.com"));
-    web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
 };
 
 TEST_F(PermissionPromiseLifetimeModulationTest,

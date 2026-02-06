@@ -21,12 +21,13 @@
 #include "components/permissions/permission_util.h"
 #include "ui/views/widget/widget_observer.h"
 
-class PermissionPromptChipModel;
-class LocationBarView;
-class PermissionDashboardView;
-class PermissionDashboardController;
-class PermissionPromptBubbleBaseView;
 class ContentSettingBubbleContents;
+class ContentSettingImageViewDelegate;
+class LocationBar;
+class PermissionDashboardController;
+class PermissionDashboardView;
+class PermissionPromptBubbleBaseView;
+class PermissionPromptChipModel;
 
 // ButtonController that NotifyClick from being called when the
 // BubbleOwnerDelegate's bubble is showing. Otherwise the bubble will show again
@@ -59,7 +60,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   };
 
   ChipController(
-      LocationBarView* location_bar_view,
+      LocationBar* location_bar,
+      ContentSettingImageViewDelegate* content_settings_image_delegate,
       PermissionChipView* chip_view,
       PermissionDashboardView* permission_dashboard_view = nullptr,
       PermissionDashboardController* permission_dashboard_controller = nullptr);
@@ -250,14 +252,19 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void StartDismissTimer();
   void ResetTimers();
 
-  // The location bar view to which the chip is attached.
-  LocationBarView* GetLocationBarView() { return location_bar_view_; }
+  // The location bar to which the chip is attached.
+  LocationBar* GetLocationBar() { return location_bar_; }
 
   bool is_confirmation_showing_ = false;
   bool is_waiting_for_confirmation_collapse_ = false;
 
-  // `LocationBarView` owns this.
-  raw_ptr<LocationBarView> location_bar_view_ = nullptr;
+  // `LocationBar` owns this (sometimes indirectly via
+  // PermissionDashboardController).
+  raw_ptr<LocationBar> location_bar_ = nullptr;
+
+  raw_ptr<ContentSettingImageViewDelegate> content_settings_image_delegate_ =
+      nullptr;
+
   // The chip view this controller modifies.
   raw_ptr<PermissionChipView> chip_;
 

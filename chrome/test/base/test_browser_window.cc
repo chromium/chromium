@@ -74,8 +74,28 @@ TestBrowserWindow::TestLocationBar::GetChipAnchor() {
   return {};
 }
 
+ui::TrackedElement* TestBrowserWindow::TestLocationBar::GetAnchorOrNull() {
+  return nullptr;
+}
+
+Browser* TestBrowserWindow::TestLocationBar::GetBrowser() {
+  return nullptr;
+}
+
 bool TestBrowserWindow::TestLocationBar::IsVisible() const {
   return true;
+}
+
+bool TestBrowserWindow::TestLocationBar::IsDrawn() const {
+  return true;
+}
+
+bool TestBrowserWindow::TestLocationBar::IsTopLevelFullscreen() const {
+  return false;
+}
+
+bool TestBrowserWindow::TestLocationBar::IsEditingOrEmpty() const {
+  return false;
 }
 
 gfx::Rect TestBrowserWindow::TestLocationBar::Bounds() const {

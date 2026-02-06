@@ -101,7 +101,7 @@ class LocationBarView
       public views::AnimationDelegateViews,
       public IconLabelBubbleView::Delegate,
       public LocationIconView::Delegate,
-      public ContentSettingImageView::Delegate,
+      public ContentSettingImageViewDelegate,
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
       public device::GeolocationSystemPermissionManager::PermissionObserver,
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
@@ -214,7 +214,12 @@ class LocationBarView
   content::WebContents* GetWebContents() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
+  ui::TrackedElement* GetAnchorOrNull() override;
+  Browser* GetBrowser() override;
   bool IsVisible() const override;
+  bool IsDrawn() const override;
+  bool IsTopLevelFullscreen() const override;
+  void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
   gfx::Size MinimumSize() const override;
   gfx::Size PreferredSize() const override;
@@ -241,7 +246,7 @@ class LocationBarView
   SkAlpha GetIconLabelBubbleSeparatorAlpha() const override;
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
-  // ContentSettingImageView::Delegate:
+  // ContentSettingImageViewDelegate:
   bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()

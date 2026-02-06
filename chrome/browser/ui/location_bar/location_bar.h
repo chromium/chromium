@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+class Browser;
 class ChipController;
 class CommandUpdater;
 class LocationBarModel;
@@ -30,6 +31,10 @@ struct AnchorConfiguration;
 
 namespace content {
 class WebContents;
+}
+
+namespace ui {
+class TrackedElement;
 }
 
 // The LocationBar class is a virtual interface, defining access to the
@@ -111,8 +116,31 @@ class LocationBar {
   CommandUpdater* command_updater() { return command_updater_; }
   const CommandUpdater* command_updater() const { return command_updater_; }
 
+  // Warning: this may be null if the location bar is not visible.
+  // Gets an anchor for the entire location bar.
+  virtual ui::TrackedElement* GetAnchorOrNull() = 0;
+
+  // Returns the Browser object this is for. This may be nullptr sometimes;
+  // known cases include captive portals on ChromeOS and
+  // PresentationReceiverWindowView.
+  virtual Browser* GetBrowser() = 0;
+
   // Returns true if the location bar is visible.
   virtual bool IsVisible() const = 0;
+
+  // True if the location bar is drawn on screen; this is basically a recursive
+  // equivalent of IsVisible() that also checks the parent UI elements.
+  virtual bool IsDrawn() const = 0;
+
+  // True if the top-level window this location bar is on is in a full-screen
+  // mode.
+  virtual bool IsTopLevelFullscreen() const = 0;
+
+  // Returns true if corresponding omnibox is editing text or empty.
+  virtual bool IsEditingOrEmpty() const = 0;
+
+  // Tells whatever UI system is used that it should recompute sizes of things.
+  virtual void InvalidateLayout() = 0;
 
   // Returns the the location bar's bounds; see views::View::bounds().
   virtual gfx::Rect Bounds() const = 0;

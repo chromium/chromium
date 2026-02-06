@@ -67,6 +67,16 @@ WebUILocationBar::GetChipAnchor() {
   return {{nullptr, nullptr, views::BubbleBorder::TOP_LEFT}};
 }
 
+ui::TrackedElement* WebUILocationBar::GetAnchorOrNull() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+Browser* WebUILocationBar::GetBrowser() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void WebUILocationBar::OnChanged() {
   NOTIMPLEMENTED();
 }
@@ -78,6 +88,25 @@ void WebUILocationBar::UpdateWithoutTabRestore() {
 bool WebUILocationBar::IsVisible() const {
   NOTIMPLEMENTED();
   return true;
+}
+
+bool WebUILocationBar::IsDrawn() const {
+  NOTIMPLEMENTED();
+  return true;
+}
+
+bool WebUILocationBar::IsTopLevelFullscreen() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool WebUILocationBar::IsEditingOrEmpty() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void WebUILocationBar::InvalidateLayout() {
+  NOTIMPLEMENTED();
 }
 
 gfx::Rect WebUILocationBar::Bounds() const {

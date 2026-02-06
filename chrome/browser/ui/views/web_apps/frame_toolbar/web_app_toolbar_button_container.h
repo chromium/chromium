@@ -37,7 +37,7 @@ class ExtensionsToolbarCoordinator;
 
 class WebAppToolbarButtonContainer : public views::View,
                                      public IconLabelBubbleView::Delegate,
-                                     public ContentSettingImageView::Delegate,
+                                     public ContentSettingImageViewDelegate,
                                      public ImmersiveModeController::Observer,
                                      public PageActionIconView::Delegate,
                                      public PageActionIconContainer {

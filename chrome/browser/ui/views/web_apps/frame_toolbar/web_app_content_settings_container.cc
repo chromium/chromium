@@ -24,7 +24,7 @@ constexpr base::TimeDelta kContentSettingsFadeInDuration =
 WebAppContentSettingsContainer::WebAppContentSettingsContainer(
     Browser* browser,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-    ContentSettingImageView::Delegate* content_setting_image_delegate) {
+    ContentSettingImageViewDelegate* content_setting_image_delegate) {
   views::BoxLayout& layout =
       *SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
