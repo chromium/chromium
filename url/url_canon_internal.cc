@@ -41,7 +41,10 @@ size_t FindInitialQuerySafeString(std::string_view source) {
   for (i = 0; i < base::bits::AlignDown(source.length(), kChunkSize);
        i += kChunkSize) {
     char b __attribute__((vector_size(16)));
-    UNSAFE_TODO(memcpy(&b, source.data() + i, sizeof(b)));
+    // SAFETY: The size of `b` is sizeof(b), of course. `source.data() + i` has
+    // sizeof(b), which is 16, because the loop condition with
+    // base::bits::AlignDown() ensures it.
+    UNSAFE_BUFFERS(memcpy(&b, source.data() + i, sizeof(b)));
 
     // Compare each element with the ranges for CHAR_QUERY
     // (see kSharedCharTypeTable), vectorized so that it creates
