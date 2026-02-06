@@ -363,7 +363,7 @@ pub fn collect_crate_files(
                                     collect_kind| {
             root_dirs.extend(
                 config
-                    .get_combined_set(&p.package_name, entry_getter)
+                    .get_combined_set(&p.package_name, &p.version, entry_getter)
                     .into_iter()
                     .map(|path| RootDir { path: lib_root.join(path), collect: collect_kind }),
             );

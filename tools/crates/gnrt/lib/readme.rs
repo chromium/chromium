@@ -78,7 +78,7 @@ fn readme_file_from_package<'a>(
     let crate_build_dir = get_build_dir_for_package(paths, package.name(), package.version());
     let crate_vendor_dir = get_vendor_dir_for_package(paths, package.name(), package.version());
 
-    let crate_config = extra_config.per_crate_config.get(package.name());
+    let crate_config = extra_config.get_crate_config(package.name(), package.version());
     let group = find_group(package.id());
 
     let security_critical = find_security_critical(package.id()).unwrap_or(match group {

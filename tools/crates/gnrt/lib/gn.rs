@@ -156,24 +156,21 @@ pub fn build_rule_from_dep(
 ) -> Result<Vec<Rule>> {
     let cargo_pkg_authors =
         if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
-    let per_crate_config = extra_config.per_crate_config.get(&*dep.package_name);
+    let per_crate_config = extra_config.get_crate_config(&dep.package_name, &dep.version);
     let normalized_crate_name = NormalizedName::from_crate_name(&dep.package_name);
     let crate_epoch = Epoch::from_version(&dep.version);
 
     // Get deps to exclude from resolved deps.
-    let exclude_deps: Vec<String> = per_crate_config
-        .iter()
-        .flat_map(|c| &c.exclude_deps_in_gn)
-        .chain(&extra_config.all_config.exclude_deps_in_gn)
-        .cloned()
+    let exclude_deps: Vec<String> = extra_config
+        .get_combined_set(&dep.package_name, &dep.version, |c| &c.exclude_deps_in_gn)
+        .into_iter()
+        .map(|s| s.to_string())
         .collect();
 
     // Get the config's extra (key, value) pairs, which are passed as-is to the
     // build file template engine.
-    let mut extra_kv = extra_config.all_config.extra_kv.clone();
-    if let Some(per_crate) = per_crate_config {
-        extra_kv.extend(per_crate.extra_kv.iter().map(|(k, v)| (k.clone(), v.clone())));
-    }
+    let extra_kv =
+        extra_config.get_combined_map_cloned(&dep.package_name, &dep.version, |c| &c.extra_kv);
 
     let allow_first_party_usage = match extra_kv.get("allow_first_party_usage") {
         Some(serde_json::Value::Bool(b)) => *b,
@@ -280,7 +277,7 @@ pub fn build_rule_from_dep(
 
     let unexpected_features: Vec<&str> = {
         let banned_features =
-            extra_config.get_combined_set(&dep.package_name, |cfg| &cfg.ban_features);
+            extra_config.get_combined_set(&dep.package_name, &dep.version, |cfg| &cfg.ban_features);
         let mut actual_features = HashSet::new();
         actual_features.extend(requested_features_for_normal.iter().map(Deref::deref));
         actual_features.extend(requested_features_for_build.iter().map(Deref::deref));

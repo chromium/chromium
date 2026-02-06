@@ -9,8 +9,8 @@ use guppy::graph::PackageGraph;
 use guppy::PackageId;
 
 fn get_group(id: &PackageId, graph: &PackageGraph, config: &config::BuildConfig) -> Option<Group> {
-    let name = graph.metadata(id).unwrap().name();
-    config.per_crate_config.get(name)?.group
+    let metadata = graph.metadata(id).unwrap();
+    config.get_crate_config(metadata.name(), metadata.version())?.group
 }
 
 // TODO(https://crbug.com/395924069): Delete this functiona and use `collect_dependencies` result
@@ -126,8 +126,10 @@ pub fn find_inherited_security_critical_flag(
     config: &config::BuildConfig,
 ) -> Option<bool> {
     let get_security_critical = |id: &PackageId| {
-        let name = graph.metadata(id).unwrap().name();
-        config.per_crate_config.get(name).and_then(|config| config.security_critical)
+        let metadata = graph.metadata(id).unwrap();
+        config
+            .get_crate_config(metadata.name(), metadata.version())
+            .and_then(|c| c.security_critical)
     };
     let get_top_level_security_critical = |group: Option<Group>| {
         // If the dependency is a top-level dep of Chromium and is not put into the test
@@ -162,8 +164,8 @@ pub fn find_inherited_shipped_flag(
     config: &config::BuildConfig,
 ) -> Option<bool> {
     let get_shipped = |id: &PackageId| {
-        let name = graph.metadata(id).unwrap().name();
-        config.per_crate_config.get(name).and_then(|config| config.shipped)
+        let metadata = graph.metadata(id).unwrap();
+        config.get_crate_config(metadata.name(), metadata.version()).and_then(|c| c.shipped)
     };
     let get_top_level_shipped = |group: Option<Group>| {
         // If the dependency is a top-level dep of Chromium and is not put into the test

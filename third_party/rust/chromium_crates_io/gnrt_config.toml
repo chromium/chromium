@@ -8,7 +8,15 @@
 # regenerate `gnrt`-managed files with the new `gnrt_config.toml` contents.
 #
 # `[crate.foo]` sections below can configure generation of `BUILD.gn` and/or
-# `README.chromium` by specifying the following options:
+# `README.chromium`.
+#
+# For crates from multiple epochs that need different configuration for
+# different epochs, use epoch-specific config sections like `[crate."foo@v1"]`
+# or `[crate."foo@v2"]`.  A crate must use either unversioned config
+# (`[crate.foo]`) OR one or more versioned configs (`[crate."foo@v1"]`), but not
+# both.
+#
+# The following options are available:
 #
 # allow_first_party_usage: If false, the crate should not be visible to first
 #   party code even though it is present in the Cargo.toml file. It defaults to

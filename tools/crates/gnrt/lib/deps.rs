@@ -444,7 +444,9 @@ impl<'g> guppy::graph::PackageResolver<'g> for PackageResolver<'_> {
             return false;
         }
         let remove_deps =
-            self.extra_config.get_combined_set(link.from().name(), |cfg| &cfg.remove_deps);
+            self.extra_config.get_combined_set(link.from().name(), link.from().version(), |cfg| {
+                &cfg.remove_deps
+            });
         if remove_deps.contains(link.to().name()) {
             return false;
         }
@@ -576,7 +578,9 @@ fn get_build_targets(
     let mut build_script = None;
 
     let allowed_bin_targets =
-        extra_config.get_combined_set(package.name(), |crate_cfg| &crate_cfg.bin_targets);
+        extra_config.get_combined_set(package.name(), package.version(), |crate_cfg| {
+            &crate_cfg.bin_targets
+        });
     for target in package.build_targets() {
         let root = target.path().as_std_path().into();
         let target_type = match target.id() {
@@ -660,10 +664,8 @@ mod tests {
     fn collect_dependencies_on_sample_output() {
         use crate::config::CrateConfig;
         let foo_config = CrateConfig { group: Some(Group::Test), ..CrateConfig::default() };
-        let build_config = BuildConfig {
-            per_crate_config: [("foo".to_string(), foo_config)].into_iter().collect(),
-            ..BuildConfig::default()
-        };
+        let mut build_config = BuildConfig::default();
+        build_config.insert_crate_config_for_testing("foo", foo_config);
 
         let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA).unwrap();
         let dependencies =
@@ -1050,8 +1052,8 @@ mod tests {
         // Use a config with `remove_crates` and `remove_deps` entries.
         let mut config = BuildConfig::default();
         config.resolve.remove_crates.insert("num_threads".to_string());
-        config.per_crate_config.insert(
-            "time".to_string(),
+        config.insert_crate_config_for_testing(
+            "time",
             CrateConfig { remove_deps: vec!["num_threads".to_string()], ..CrateConfig::default() },
         );
 
