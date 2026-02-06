@@ -508,3 +508,29 @@ TEST_F(FileUploadPanelMediatorTest, DoesNotAllowDirectorySelection) {
     EXPECT_NSEQ(@[ UTTypeItem ], mediator.acceptedDocumentTypes);
   }
 }
+
+// Tests that submitting an image selection with missing image data cancels the
+// selection and logs diagnostic histograms.
+TEST_F(FileUploadPanelMediatorTest, SubmitImageSelectionMissingImage) {
+  if (@available(iOS 18.4, *)) {
+    FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
+        initWithChooseFileController:controller_.get()];
+    mediator.fileUploadPanelHandler = handler_;
+
+    NSDictionary<UIImagePickerControllerInfoKey, id>* mediaInfo = @{
+      UIImagePickerControllerMediaType : UTTypeImage.identifier,
+    };
+
+    [mediator submitFileSelectionWithMediaInfo:mediaInfo];
+
+    // Expect cancellation (0 submitted files).
+    histogram_tester_.ExpectUniqueSample(
+        "IOS.FileUploadPanel.SubmittedFileCount", 0, 1);
+
+    // Expect diagnostic histograms.
+    histogram_tester_.ExpectUniqueSample(
+        "IOS.FileUploadPanel.NilImageInfo.MediaType", true, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "IOS.FileUploadPanel.NilImageInfo.OriginalImage", false, 1);
+  }
+}
