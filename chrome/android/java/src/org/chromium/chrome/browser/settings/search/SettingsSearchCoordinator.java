@@ -293,11 +293,15 @@ public class SettingsSearchCoordinator
             AccessibilityState.State oldAccessibilityState,
             AccessibilityState.State newAccessibilityState) {
         if (!oldAccessibilityState.equals(newAccessibilityState)) {
-            mIndexData.setNeedsIndexing();
-            initIndex();
-            EditText queryEdit = mActivity.findViewById(R.id.search_query);
-            queryEdit.requestFocus();
-            onQueryUpdated(queryEdit.getText().toString());
+            if (mIndexData != null) {
+                mIndexData.setNeedsIndexing();
+                initIndex();
+            }
+            if (mFragmentState != FS_SETTINGS) {
+                EditText queryEdit = mActivity.findViewById(R.id.search_query);
+                queryEdit.requestFocus();
+                onQueryUpdated(queryEdit.getText().toString());
+            }
         }
     }
 
@@ -400,7 +404,11 @@ public class SettingsSearchCoordinator
                             @Override
                             public void onFragmentResumed(FragmentManager fm, Fragment f) {
                                 View searchBox = mActivity.findViewById(R.id.search_box);
-                                showUiInSingleColumn(searchBox, f.getClass() == MainSettings.class);
+                                if (f instanceof MainSettings) {
+                                    showUiInSingleColumn(searchBox, true);
+                                } else if (f instanceof PreferenceFragmentCompat) {
+                                    showUiInSingleColumn(searchBox, false);
+                                }
                             }
                         },
                         false);
