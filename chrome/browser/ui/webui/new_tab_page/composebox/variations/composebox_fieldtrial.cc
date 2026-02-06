@@ -135,7 +135,7 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
 
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile->GetPrefs()) &&
-      !ntp_composebox::kShowModelPicker.Get()) {
+      !base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     return false;
   }
 
@@ -234,10 +234,6 @@ const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription(
     "EnableEphemeralContextMenuDescription",
     false);
 
-const base::FeatureParam<bool> kShowModelPicker(&kNtpComposebox,
-                                                "NtpComposeboxShowModelPicker",
-                                                false);
-
 const base::FeatureParam<bool> kShowContextMenuHeaders(&kNtpComposebox,
                                                        "ShowContextMenuHeaders",
                                                        true);
@@ -315,7 +311,7 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
 
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile->GetPrefs()) &&
-      !ntp_composebox::kShowModelPicker.Get()) {
+      !base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     return false;
   }
 

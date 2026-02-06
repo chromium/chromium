@@ -462,8 +462,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
   protected accessor showModelPicker_: boolean =
-      loadTimeData.valueExists('contextualMenuShowModelPicker') ?
-      loadTimeData.getBoolean('contextualMenuShowModelPicker') :
+      loadTimeData.valueExists('contextualMenuUsePecApi') ?
+      loadTimeData.getBoolean('contextualMenuUsePecApi') :
       false;
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor selectedMatch_: AutocompleteMatch|null = null;

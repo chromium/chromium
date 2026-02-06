@@ -1580,15 +1580,6 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
     {"EnableEphemeralContextMenuDescription", "true"},
 };
-const FeatureEntry::FeatureParam kComposeboxNextWithModelPicker[] = {
-    {"NtpComposeboxShowContextMenu", "true"},
-    {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
-    {"NtpComposeboxShowRecentTabChip", "true"},
-    {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
-    {"EnableEphemeralContextMenuDescription", "true"},
-    {"EnableThreadsRail", "true"},
-    {"NtpComposeboxShowModelPicker", "true"},
-};
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and Suggest, 5 File Limit",
@@ -1604,8 +1595,6 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      nullptr},
     {"- Next Experience Single Context for Realbox Next",
      kComposeboxNextSingleContextForRealboxNext, nullptr},
-    {"- Next Experience with Model Picker", kComposeboxNextWithModelPicker,
-     nullptr},
 };
 
 const FeatureEntry::FeatureParam kShowNextRealboxTallTopContext[] = {

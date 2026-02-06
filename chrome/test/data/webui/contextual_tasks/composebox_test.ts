@@ -248,6 +248,7 @@ suite('ContextualTasksComposeboxTest', () => {
     metrics = fakeMetricsPrivate();
 
     loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
       composeboxShowTypedSuggest: true,
       composeboxShowZps: true,
       enableBasicModeZOrder: true,

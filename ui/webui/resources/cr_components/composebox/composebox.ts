@@ -266,8 +266,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected showVoiceSearchInExpandedComposebox_: boolean =
       loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
   protected accessor showModelPicker_: boolean =
-      loadTimeData.valueExists('contextualMenuShowModelPicker') ?
-      loadTimeData.getBoolean('contextualMenuShowModelPicker') :
+      loadTimeData.valueExists('contextualMenuUsePecApi') ?
+      loadTimeData.getBoolean('contextualMenuUsePecApi') :
       false;
   protected accessor hasAllowedInputs_: boolean = false;
   protected dragAndDropHandler_: DragAndDropHandler;
