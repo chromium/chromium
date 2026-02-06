@@ -3435,6 +3435,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.DocumentTiming.ParseStartToDOMContentLoadedEventFired"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from the time the renderer starts parsing the HTML to
+    the time the DOMContentLoaded event is fired. This is recorded for each page
+    load.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Experimental.ClickInputBurst" units="count"
     expires_after="2026-06-28">
   <owner>dougarnett@chromium.org</owner>
@@ -4879,6 +4892,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from when the HTML parser started, to when the page first
     paints content.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.PaintTiming.ParseStartToLargestContentfulPaint"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from the time the renderer starts parsing the HTML to
+    the time the largest contentful paint occurs. This is recorded for each page
+    load.
   </summary>
 </histogram>
 

@@ -1529,6 +1529,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWrite) {
       internal::kHistogramActualNavigationStartToParseStart, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramNavigationCommitSentToParseStart, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramParseStartToDOMContentLoaded, 1);
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
@@ -3782,6 +3784,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramLargestContentfulPaint, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramParseStartToLargestContentfulPaint, 1);
   auto all_frames_value =
       histogram_tester_
           ->GetAllSamples(internal::kHistogramLargestContentfulPaint)[0]

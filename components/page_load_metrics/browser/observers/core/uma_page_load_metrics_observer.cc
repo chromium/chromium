@@ -106,6 +106,8 @@ const char kHistogramDomContentLoaded[] =
     "PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired";
 const char kBackgroundHistogramDomContentLoaded[] =
     "PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired.Background";
+const char kHistogramParseStartToDOMContentLoaded[] =
+    "PageLoad.DocumentTiming.ParseStartToDOMContentLoadedEventFired";
 const char kHistogramLoad[] =
     "PageLoad.DocumentTiming.NavigationToLoadEventFired";
 const char kBackgroundHistogramLoad[] =
@@ -152,6 +154,8 @@ const char kHistogramLargestContentfulPaintCrossSiteSubFrame[] =
 const char kHistogramLargestContentfulPaintSetSpeculationRulesPrerender[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
     "SetSpeculationRulesPrerender";
+const char kHistogramParseStartToLargestContentfulPaint[] =
+    "PageLoad.PaintTiming.ParseStartToLargestContentfulPaint";
 const char kHistogramNumInteractions[] =
     "PageLoad.InteractiveTiming.NumInteractions";
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
@@ -434,6 +438,17 @@ void UmaPageLoadMetricsObserver::OnDomContentLoadedEventStart(
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramDomContentLoaded,
         timing.document_timing->dom_content_loaded_event_start.value());
+    if (timing.parse_timing && timing.parse_timing->parse_start &&
+        !timing.parse_timing->parse_start->is_negative() &&
+        !timing.document_timing->dom_content_loaded_event_start
+             ->is_negative() &&
+        timing.parse_timing->parse_start.value() <=
+            timing.document_timing->dom_content_loaded_event_start.value()) {
+      PAGE_LOAD_HISTOGRAM2(
+          internal::kHistogramParseStartToDOMContentLoaded,
+          timing.document_timing->dom_content_loaded_event_start.value() -
+              timing.parse_timing->parse_start.value());
+    }
   } else {
     PAGE_LOAD_HISTOGRAM(
         internal::kBackgroundHistogramDomContentLoaded,
@@ -1023,6 +1038,14 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
         PAGE_LOAD_HISTOGRAM2(
             internal::kHistogramActualNavigationStartToLargestContentfulPaint,
             *actual_navigation_offset + lcp_time);
+      }
+      if (main_frame_timing.parse_timing &&
+          main_frame_timing.parse_timing->parse_start &&
+          !main_frame_timing.parse_timing->parse_start->is_negative() &&
+          main_frame_timing.parse_timing->parse_start.value() <= lcp_time) {
+        PAGE_LOAD_HISTOGRAM2(
+            internal::kHistogramParseStartToLargestContentfulPaint,
+            lcp_time - main_frame_timing.parse_timing->parse_start.value());
       }
 
       if (!GetDelegate().IsReloadAfterDiscard()) {

@@ -39,6 +39,7 @@ extern const char kHistogramFirstInputTimestamp4[];
 extern const char kHistogramFirstPaint[];
 extern const char kHistogramFirstImagePaint[];
 extern const char kHistogramDomContentLoaded[];
+extern const char kHistogramParseStartToDOMContentLoaded[];
 extern const char kHistogramLoad[];
 extern const char kHistogramFirstContentfulPaint[];
 extern const char kHistogramLargestContentfulPaint[];
@@ -48,6 +49,7 @@ extern const char kHistogramLargestContentfulPaintMainFrameContentType[];
 extern const char kHistogramLargestContentfulPaintCrossSiteSubFrame[];
 extern const char
     kHistogramLargestContentfulPaintSetSpeculationRulesPrerender[];
+extern const char kHistogramParseStartToLargestContentfulPaint[];
 
 extern const char kBackgroundHistogramFirstContentfulPaint[];
 extern const char kBackgroundHistogramFirstImagePaint[];
