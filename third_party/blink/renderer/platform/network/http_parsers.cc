@@ -502,8 +502,8 @@ bool ParseHTTPRefresh(const String& refresh,
                       CharacterMatchFunctionPtr matcher,
                       base::TimeDelta& delay,
                       String& url) {
-  unsigned len = refresh.length();
-  unsigned pos = 0;
+  wtf_size_t len = refresh.length();
+  wtf_size_t pos = 0;
   matcher = matcher ? matcher : IsWhitespace;
 
   if (!SkipWhiteSpace(refresh, pos, matcher))
@@ -528,7 +528,8 @@ bool ParseHTTPRefresh(const String& refresh,
     ++pos;
   }
   SkipWhiteSpace(refresh, pos, matcher);
-  unsigned url_start_pos = pos;
+
+  wtf_size_t url_start_pos = pos;
   if (refresh.FindIgnoringASCIICase("url", url_start_pos) == url_start_pos) {
     url_start_pos += 3;
     SkipWhiteSpace(refresh, url_start_pos, matcher);
@@ -540,30 +541,23 @@ bool ParseHTTPRefresh(const String& refresh,
     }
   }
 
-  unsigned url_end_pos = len;
+  StringView refresh_url(refresh, url_start_pos);
+  if (refresh_url.starts_with('"') || refresh_url.starts_with('\'')) {
+    const UChar quotation_mark = refresh_url[0];
+    refresh_url.remove_prefix(1);
 
-  if (refresh[url_start_pos] == '"' || refresh[url_start_pos] == '\'') {
-    UChar quotation_mark = refresh[url_start_pos];
-    url_start_pos++;
-    while (url_end_pos > url_start_pos) {
-      url_end_pos--;
-      if (refresh[url_end_pos] == quotation_mark) {
-        break;
-      }
-    }
-
+    const wtf_size_t url_end_pos = refresh_url.rfind(quotation_mark);
     // https://bugs.webkit.org/show_bug.cgi?id=27868
     // Sometimes there is no closing quote for the end of the URL even though
-    // there was an opening quote.  If we looped over the entire alleged URL
-    // string back to the opening quote, just go ahead and use everything
-    // after the opening quote instead.
-    if (url_end_pos == url_start_pos) {
-      url_end_pos = len;
+    // there was an opening quote.  If we didn't find any closing quote to
+    // match the opening quote, just go ahead and use everything after the
+    // opening quote instead.
+    if (url_end_pos != kNotFound) {
+      refresh_url = refresh_url.substr(0, url_end_pos);
     }
   }
 
-  url = refresh.Substring(url_start_pos, url_end_pos - url_start_pos)
-            .StripWhiteSpace();
+  url = refresh_url.StripWhiteSpace().ToString();
   return true;
 }
 
