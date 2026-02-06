@@ -9,8 +9,6 @@
 
 #include "base/check_deref.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
-#include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -23,13 +21,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
-#include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -193,45 +188,28 @@ TEST_F(IsolatedWebAppTrustCheckerTest,
 
 TEST_F(IsolatedWebAppTrustCheckerTest, TrustedViaDevMode) {
   EXPECT_THAT(IsolatedWebAppTrustChecker::IsOperationAllowed(
-
                   *profile(), kWebBundleId1, /*dev_mode=*/true,
-
                   IwaInstallOperation{
-
                       .source = webapps::WebappInstallSource::IWA_DEV_UI}),
-
               base::test::ErrorIs(_));
 
   base::test::ScopedFeatureList feature_list;
-
   feature_list.InitAndEnableFeature(features::kIsolatedWebAppDevMode);
-
   EXPECT_THAT(IsolatedWebAppTrustChecker::IsOperationAllowed(
-
                   *profile(), kWebBundleId1, /*dev_mode=*/true,
-
                   IwaInstallOperation{
-
                       .source = webapps::WebappInstallSource::IWA_DEV_UI}),
-
               base::test::HasValue());
 
   pref_service().SetInteger(
-
       prefs::kDevToolsAvailability,
-
       std::to_underlying(
-
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
 
   EXPECT_THAT(IsolatedWebAppTrustChecker::IsOperationAllowed(
-
                   *profile(), kWebBundleId1, /*dev_mode=*/true,
-
                   IwaInstallOperation{
-
                       .source = webapps::WebappInstallSource::IWA_DEV_UI}),
-
               base::test::ErrorIs(_));
 }
 
