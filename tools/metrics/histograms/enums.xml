@@ -9781,6 +9781,7 @@ from previous Chrome versions.
   <int value="-1584944853" label="TrilinearFiltering:enabled"/>
   <int value="-1584851742" label="ImprovedSigninUIOnDesktop:enabled"/>
   <int value="-1584795743" label="AccessibilityOSSettingsVisibility:enabled"/>
+  <int value="-1584679484" label="ContextualTasksExpandButton:disabled"/>
   <int value="-1584499823" label="EnableZeroStateSuggestions:enabled"/>
   <int value="-1583728573" label="AutofillCreditCardSigninPromo:disabled"/>
   <int value="-1583533050" label="RuntimeHostPermissions:disabled"/>
@@ -13046,6 +13047,7 @@ from previous Chrome versions.
   <int value="-466047052" label="EnableRuntimeCountersTelemetry:disabled"/>
   <int value="-465429170" label="BackGestureRefactorActivityAndroid:enabled"/>
   <int value="-465381408" label="Sharesheet:disabled"/>
+  <int value="-464380210" label="ContextualTasksExpandButton:enabled"/>
   <int value="-463661468" label="FullscreenAlwaysShowTrafficLights:disabled"/>
   <int value="-463161052" label="TearOffWebAppTabOpensWebAppWindow:enabled"/>
   <int value="-462877654" label="FilesMaterializedViews:enabled"/>

@@ -47,6 +47,10 @@ BASE_DECLARE_FEATURE(kEnableNotifyZeroStateRenderedCapability);
 // ContextualTasksSidePanelCoordinator.
 BASE_DECLARE_FEATURE(kContextualTasksTabListInterfaceObserver);
 
+// Replace the overflow menu in the side panel with an explicit button to move
+// the thread to a new tab.
+BASE_DECLARE_FEATURE(kContextualTasksExpandButton);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
@@ -208,6 +212,8 @@ extern const char kContextualTasksContextLibraryName[];
 extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];
 extern const char kContextualTasksContextDescription[];
+extern const char kContextualTasksExpandButtonName[];
+extern const char kContextualTasksExpandButtonDescription[];
 extern const char kContextualTasksSuggestionsEnabledName[];
 extern const char kContextualTasksSuggestionsEnabledDescription[];
 

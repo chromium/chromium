@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
+
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TopToolbarElement} from './top_toolbar.js';
@@ -43,11 +45,20 @@ export function getHtml(this: TopToolbarElement) {
         @click="${this.onSourcesClick_}"
         ?hidden="${!this.shouldShowSourcesMenuButton_()}">
     </contextual-tasks-favicon-group>
-    <cr-icon-button id="more" iron-icon="cr:more-vert"
+    ${this.isExpandButtonEnabled ? html`
+      <cr-icon-button id="more"
+        iron-icon="contextual_tasks:open_in_full_tab"
+        class="no-overlap" title="$i18n{openInNewTab}"
+        aria-label="i18n{openInNewTab}"
+        @click="${this.onOpenInNewTabClick_}">
+      </cr-icon-button>
+    ` :html`
+      <cr-icon-button id="more" iron-icon="cr:more-vert"
         class="no-overlap" title="$i18n{moreOptionsTooltip}"
         aria-label="i18n{moreOptionsTooltip}"
         @click="${this.onMoreClick_}">
-    </cr-icon-button>
+      </cr-icon-button>
+    `}
     <cr-icon-button id="closeButton"
         @click="${this.onCloseButtonClick_}"
         iron-icon="cr:close"
