@@ -58,8 +58,10 @@ class ProjectsPanelTabGroupsViewTest : public views::ViewsTestBase {
   std::unique_ptr<ProjectsPanelTabGroupsView> tab_groups_view_;
 
   void VerifyNoTabGroupsView() {
-    // Should contain only the no tab groups message.
-    EXPECT_EQ(1u, tab_groups_view_->children().size());
+    // Should contain the "Create new tab group" button and the no tab groups
+    // message.
+    EXPECT_EQ(2u, tab_groups_view_->children().size());
+    // Index 0 is the "Create new tab group" button.
     views::Label* no_tabs_label = static_cast<views::Label*>(
         tab_groups_view_->no_tab_groups_view_for_testing()->children()[0]);
     EXPECT_EQ(
@@ -90,9 +92,11 @@ TEST_F(ProjectsPanelTabGroupsViewTest, PopulatesTabGroups) {
 
   tab_groups_view_->SetTabGroups(groups);
 
-  ASSERT_EQ(2u, tab_groups_view_->children().size());
+  // Groups + "Create new tab group" button.
+  ASSERT_EQ(groups.size() + 1, tab_groups_view_->children().size());
 
+  // Index 0 is the "Create new tab group" button.
   for (size_t i = 0; i < groups.size(); ++i) {
-    EXPECT_THAT(tab_groups_view_->children()[i], IsForTabGroup(groups[i]));
+    EXPECT_THAT(tab_groups_view_->children()[i + 1], IsForTabGroup(groups[i]));
   }
 }

@@ -143,7 +143,8 @@ class ProjectsPanelTabGroupsInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // TODO(crbug.com/481446933): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40759171): Flaky on Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_MoreButtonVisibilityOnHover DISABLED_MoreButtonVisibilityOnHover
 #else
 #define MAYBE_MoreButtonVisibilityOnHover MoreButtonVisibilityOnHover
@@ -225,8 +226,14 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelTabGroupsInteractiveUiTest,
       WaitForHide(kProjectsPanelViewElementId));
 }
 
+// TODO(crbug.com/40759171): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MoreButtonClickShowsMenu DISABLED_MoreButtonClickShowsMenu
+#else
+#define MAYBE_MoreButtonClickShowsMenu MoreButtonClickShowsMenu
+#endif
 IN_PROC_BROWSER_TEST_F(ProjectsPanelTabGroupsInteractiveUiTest,
-                       MoreButtonClickShowsMenu) {
+                       MAYBE_MoreButtonClickShowsMenu) {
   RunTestSequence(
       WaitForShow(kVerticalTabStripTopContainerElementId),
       AddTabGroup(u"Test Group"), OpenProjectsPanel(),

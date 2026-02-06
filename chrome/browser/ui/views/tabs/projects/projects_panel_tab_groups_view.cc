@@ -6,7 +6,8 @@
 
 #include <utility>
 
-#include "base/notimplemented.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
@@ -16,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
@@ -24,6 +26,30 @@
 namespace {
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kSpacingBetweenChildren = 2;
+
+class ProjectsPanelNewTabGroupButton : public views::LabelButton {
+  METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::LabelButton)
+
+ public:
+  explicit ProjectsPanelNewTabGroupButton(base::RepeatingClosure callback)
+      : views::LabelButton(
+            std::move(callback),
+            l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)) {
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon, ui::kColorIcon));
+    SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
+  ProjectsPanelNewTabGroupButton(const ProjectsPanelNewTabGroupButton&) =
+      delete;
+  ProjectsPanelNewTabGroupButton& operator=(
+      const ProjectsPanelNewTabGroupButton&) = delete;
+  ~ProjectsPanelNewTabGroupButton() override = default;
+};
+
+BEGIN_METADATA(ProjectsPanelNewTabGroupButton)
+END_METADATA
+
 }  // namespace
 
 ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
@@ -39,6 +65,12 @@ ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   layout->set_between_child_spacing(kSpacingBetweenChildren);
 
+  // TODO(crbug.com/481410391): Wire up button to create a new tab group.
+  create_new_tab_group_button_ = AddChildView(
+      std::make_unique<ProjectsPanelNewTabGroupButton>(base::DoNothing()));
+  create_new_tab_group_button_->SetProperty(
+      views::kElementIdentifierKey, kProjectsPanelNewTabGroupButtonElementId);
+
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelTabGroupsViewElementId);
 }
@@ -47,12 +79,18 @@ ProjectsPanelTabGroupsView::~ProjectsPanelTabGroupsView() = default;
 
 void ProjectsPanelTabGroupsView::SetTabGroups(
     const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
+  // Reset the pointer before removing the view to avoid a dangling pointer.
   no_tab_groups_view_ = nullptr;
-  RemoveAllChildViews();
 
-  for (const auto& group : tab_groups) {
-    AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(
-        group, tab_group_button_callback_, more_button_callback_));
+  // Remove all children except the new tab group button.
+  std::vector<views::View*> children_to_remove;
+  for (views::View* child : children()) {
+    if (child != create_new_tab_group_button_) {
+      children_to_remove.push_back(child);
+    }
+  }
+  for (views::View* child : children_to_remove) {
+    RemoveChildViewT(child);
   }
 
   if (tab_groups.empty()) {
@@ -60,6 +98,11 @@ void ProjectsPanelTabGroupsView::SetTabGroups(
         AddChildView(std::make_unique<ProjectsPanelNoTabGroupsView>());
     no_tab_groups_view_->SetProperty(views::kMarginsKey,
                                      kNoTabsInteriorMargins);
+  } else {
+    for (const auto& group : tab_groups) {
+      AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(
+          group, tab_group_button_callback_, more_button_callback_));
+    }
   }
 }
 

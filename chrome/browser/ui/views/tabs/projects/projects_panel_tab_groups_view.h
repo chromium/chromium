@@ -19,6 +19,7 @@ class ActionItem;
 namespace views {
 class ActionViewController;
 class Label;
+class LabelButton;
 }  // namespace views
 
 class ProjectsPanelNoTabGroupsView;
@@ -54,7 +55,8 @@ class ProjectsPanelTabGroupsView : public views::View {
   ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
       more_button_callback_;
   raw_ptr<views::Label> title_ = nullptr;
-  std::vector<raw_ptr<ProjectsPanelTabGroupsItemView>> item_views_;
+  raw_ptr<views::LabelButton> create_new_tab_group_button_ = nullptr;
+
   raw_ptr<ProjectsPanelNoTabGroupsView> no_tab_groups_view_ = nullptr;
 };
 
