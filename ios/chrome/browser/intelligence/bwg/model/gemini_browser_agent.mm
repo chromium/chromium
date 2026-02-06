@@ -189,6 +189,10 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
 
 void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   CHECK(IsGeminiCopresenceEnabled());
+  if (is_visible == is_keyboard_visible_) {
+    return;
+  }
+
   is_keyboard_visible_ = is_visible;
 }
 
@@ -526,7 +530,10 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
 void GeminiBrowserAgent::ShowFloatyIfInvoked(
     bool animated,
     gemini::FloatyUpdateSource source) {
-  if (!is_floaty_invoked_ || !is_floaty_temporarily_hidden_) {
+  bool force_show_floaty =
+      source == gemini::FloatyUpdateSource::ForcedFromQueryResponse;
+  if ((!is_floaty_invoked_ || !is_floaty_temporarily_hidden_) &&
+      !force_show_floaty) {
     return;
   }
 
@@ -624,6 +631,10 @@ void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
 void GeminiBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
+  if (!is_floaty_invoked_) {
+    return;
+  }
+
   // Catch-all in case the floaty is still in a temporarily hidden state. A
   // fullscreen update implies a user is interacting with the web page,
   // therefore we should force-show the floaty if invoked. Uses the command
@@ -639,19 +650,15 @@ void GeminiBrowserAgent::FullscreenProgressUpdated(
     return;
   }
 
-  CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);
-
-  // When fullscreen mode is disabled (progress == 1), the offset will be a
-  // positive value. When fullscreen mode is enabled (progress == 0), the offset
-  // will be a negative value.
-  if (is_keyboard_visible_) {
-    // When the keyboard is visible, force the opacity to 1.0 (fully opaque) to
-    // prevent the floaty from disappearing, even if the fullscreen progress is
-    // 0 (enabled).
-    ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
-  } else {
-    ios::provider::UpdateOverlayOffsetWithOpacity(offset, progress);
+  // Avoids fullscreen updates while the keyboard is being used with the
+  // floaty.
+  if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
+      is_keyboard_visible_) {
+    return;
   }
+
+  CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);
+  ios::provider::UpdateOverlayOffsetWithOpacity(offset, progress);
 }
 
 void GeminiBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,
