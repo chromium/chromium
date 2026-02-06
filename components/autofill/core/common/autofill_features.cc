@@ -534,7 +534,7 @@ BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
 // Controls if Chrome Keyboard Accessory on Android displays 2 line chips.
 // TODO: crbug.com/385172647 - Clean up after the feature is launched.
 BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -542,7 +542,7 @@ BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign,
 // the first 2 chips to display a part of the next one on the screen.
 // TODO: crbug.com/385172647 - Clean up after the feature is launched.
 BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipWidthAdjustment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, the precedence is given to the field label over the name when
