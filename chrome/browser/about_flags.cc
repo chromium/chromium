@@ -1648,14 +1648,12 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
 
 const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndSuggestMultiFile[] = {
-        {"ShowComposeboxZps", "true"},
         {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
         {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndSuggestMultiFileNoViewport[] = {
-        {"ShowComposeboxZps", "true"},
         {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
         {"ShowRecentTabChip", "true"},
@@ -1663,7 +1661,6 @@ const FeatureEntry::FeatureParam
 };
 const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews[] = {
-        {"ShowComposeboxZps", "true"},
         {"ShowComposeboxTypedSuggest", "true"},
         {"ShowContextMenu", "true"},
         {"ShowRecentTabChip", "true"},
@@ -1672,7 +1669,6 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowContextMenu", "true"},
     {"ShowContextMenuTabPreviews", "true"},
-    {"ShowComposeboxZps", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
     {"ShowRecentTabChip", "true"},
     {"CloseComposeboxByEscape", "false"},
@@ -1683,7 +1679,6 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"MaxNumFiles", "1"},
     {"ShowContextMenu", "true"},
     {"ShowContextMenuTabPreviews", "true"},
-    {"ShowComposeboxZps", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
     {"ShowRecentTabChip", "true"},
     {"CloseComposeboxByEscape", "false"},
