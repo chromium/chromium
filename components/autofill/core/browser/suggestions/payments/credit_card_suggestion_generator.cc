@@ -34,6 +34,54 @@
 
 namespace autofill {
 
+namespace {
+
+Suggestion CreateBnplSuggestion(const BnplIssuer& bnpl_issuer) {
+  Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
+
+  const bool is_linked = bnpl_issuer.payment_instrument().has_value();
+
+  if (is_linked) {
+    bnpl_suggestion.main_text = Suggestion::Text(
+        bnpl_issuer.GetDisplayName(), Suggestion::Text::IsPrimary(true));
+  } else {
+    bnpl_suggestion.main_text = Suggestion::Text(
+        l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_BNPL_UNLINKED_ISSUER_SUGGESTION_MAIN_TEXT,
+            bnpl_issuer.GetDisplayName()),
+        Suggestion::Text::IsPrimary(true));
+  }
+
+  switch (bnpl_issuer.issuer_id()) {
+    case BnplIssuer::IssuerId::kBnplAffirm:
+      bnpl_suggestion.icon = is_linked ? Suggestion::Icon::kBnplAffirmLinked
+                                       : Suggestion::Icon::kBnplAffirmUnlinked;
+      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY))}};
+      break;
+    case BnplIssuer::IssuerId::kBnplKlarna:
+      bnpl_suggestion.icon = is_linked ? Suggestion::Icon::kBnplKlarnaLinked
+                                       : Suggestion::Icon::kBnplKlarnaUnlinked;
+      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA))}};
+      break;
+    case BnplIssuer::IssuerId::kBnplZip:
+      bnpl_suggestion.icon = is_linked ? Suggestion::Icon::kBnplZipLinked
+                                       : Suggestion::Icon::kBnplZipUnlinked;
+      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_ZIP))}};
+      break;
+    case BnplIssuer::IssuerId::kBnplAfterpay:
+      NOTREACHED();
+  }
+
+  bnpl_suggestion.payload = Suggestion::BnplIssuer(bnpl_issuer);
+
+  return bnpl_suggestion;
+}
+
+}  // namespace
+
 using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 using SuggestionData = SuggestionGenerator::SuggestionData;
 
@@ -143,11 +191,26 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   const bool display_gpay_logo = std::ranges::none_of(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
-  const bool should_show_bnpl_suggestion = payments::ShouldAppendBnplSuggestion(
-      client, is_card_number_field_empty, trigger_field_type);
+
+  const bool should_show_bnpl_suggestions =
+      payments::ShouldAppendBnplSuggestion(client, is_card_number_field_empty,
+                                           trigger_field_type);
+
+  // TODO(crbug.com/477689220) Randomize issuers and sort based on eligiblity,
+  // using BnplManager::GetSortedBnplIssuerContext() as an example.
+  if (should_show_bnpl_suggestions &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    for (const BnplIssuer& bnpl_issuer : client.GetPersonalDataManager()
+                                             .payments_data_manager()
+                                             .GetBnplIssuers()) {
+      suggestions.push_back(CreateBnplSuggestion(bnpl_issuer));
+    }
+  }
+
   std::ranges::move(
       GetCreditCardFooterSuggestions(
-          client, should_show_bnpl_suggestion, should_show_scan_credit_card,
+          client, should_show_bnpl_suggestions, should_show_scan_credit_card,
           trigger_field.is_autofilled(), display_gpay_logo,
           amount_extraction_status),
       std::back_inserter(suggestions));

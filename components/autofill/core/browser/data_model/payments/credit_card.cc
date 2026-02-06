@@ -354,7 +354,13 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kUndo:
-    case Suggestion::Icon::kBnpl:
+    case Suggestion::Icon::kBnplGeneric:
+    case Suggestion::Icon::kBnplAffirmUnlinked:
+    case Suggestion::Icon::kBnplAffirmLinked:
+    case Suggestion::Icon::kBnplZipUnlinked:
+    case Suggestion::Icon::kBnplZipLinked:
+    case Suggestion::Icon::kBnplKlarnaUnlinked:
+    case Suggestion::Icon::kBnplKlarnaLinked:
     case Suggestion::Icon::kGoogleWallet:
     case Suggestion::Icon::kGoogleWalletMonochrome:
     case Suggestion::Icon::kAndroidMessages:

@@ -152,7 +152,13 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_WORK_PROFILE_ICON_ACCESSIBILITY_LABEL);
     case Suggestion::Icon::kAccount:
-    case Suggestion::Icon::kBnpl:
+    case Suggestion::Icon::kBnplGeneric:
+    case Suggestion::Icon::kBnplAffirmLinked:
+    case Suggestion::Icon::kBnplAffirmUnlinked:
+    case Suggestion::Icon::kBnplZipLinked:
+    case Suggestion::Icon::kBnplZipUnlinked:
+    case Suggestion::Icon::kBnplKlarnaLinked:
+    case Suggestion::Icon::kBnplKlarnaUnlinked:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
     case Suggestion::Icon::kDelete:
@@ -486,7 +492,13 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardUnionPay:
     case Suggestion::Icon::kCardVerve:
     case Suggestion::Icon::kCardVisa:
-    case Suggestion::Icon::kBnpl:
+    case Suggestion::Icon::kBnplGeneric:
+    case Suggestion::Icon::kBnplAffirmLinked:
+    case Suggestion::Icon::kBnplAffirmUnlinked:
+    case Suggestion::Icon::kBnplZipLinked:
+    case Suggestion::Icon::kBnplZipUnlinked:
+    case Suggestion::Icon::kBnplKlarnaLinked:
+    case Suggestion::Icon::kBnplKlarnaUnlinked:
     case Suggestion::Icon::kAndroidMessages: {
       // For other suggestion entries, get the icon from PNG files.
       int icon_id = GetIconResourceID(icon);

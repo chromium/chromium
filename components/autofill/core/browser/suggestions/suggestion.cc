@@ -146,8 +146,20 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kPlusAddress";
     case Suggestion::Icon::kNoIcon:
       return "kNoIcon";
-    case Suggestion::Icon::kBnpl:
-      return "kBnpl";
+    case Suggestion::Icon::kBnplGeneric:
+      return "kBnplGeneric";
+    case Suggestion::Icon::kBnplAffirmLinked:
+      return "kBnplAffirmLinked";
+    case Suggestion::Icon::kBnplAffirmUnlinked:
+      return "kBnplAffirmUnlinked";
+    case Suggestion::Icon::kBnplZipLinked:
+      return "kBnplZipLinked";
+    case Suggestion::Icon::kBnplZipUnlinked:
+      return "kBnplZipUnlinked";
+    case Suggestion::Icon::kBnplKlarnaLinked:
+      return "kBnplKlarnaLinked";
+    case Suggestion::Icon::kBnplKlarnaUnlinked:
+      return "kBnplKlarnaUnlinked";
     case Suggestion::Icon::kSaveAndFill:
       return "kSaveAndFill";
     case Suggestion::Icon::kAndroidMessages:

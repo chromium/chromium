@@ -1003,6 +1003,15 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
       Pay in 4 or monthly (subject to eligibility)
   </message>
+    <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY" desc="Text for the payment option button in the BNPL Pay Later tab, explaining that users can pay monthly or in installments. It is specifically for Affirm and Afterpay options.">
+      Monthly or 4 installments
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_ZIP" desc="Text for the payment option button in the BNPL Pay Later tab, explaining that users can pay monthly or in installments. It is specifically for Zip options.">
+      Pay in easy installments
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA" desc="Text for the payment option button in the BNPL Pay Later tab, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
+      Pay in 4 or monthly
+  </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT" desc="Text for the disabled payment option button in the BNPL select provider screen, explaining that the provider is not supported by the merchant based on the page's URL.">
       Not supported by merchant
   </message>
@@ -1128,6 +1137,9 @@
   </message>
   <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_THREE_ISSUERS" desc="Text that shows the three issuers present that can be used in a payments autofill BNPL flow. Shown in the second line of the BNPL suggestion in the payments autofill dropdown.">
     <ph name="ISSUER_1_NAME">$1<ex>Affirm</ex></ph>, <ph name="ISSUER_2_NAME">$2<ex>Zip</ex></ph>, or <ph name="ISSUER_3_NAME">$3<ex>Klarna</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_UNLINKED_ISSUER_SUGGESTION_MAIN_TEXT" desc="Main text for a BNPL suggestion when the user has not yet linked their account with the issuer.">
+    Link <ph name="ISSUER_NAME">$1<ex>Affirm</ex></ph> to pay over time
   </message>
   <message name="IDS_AUTOFILL_BNPL_SUGGESTION_LABEL_FOR_UNAVAILABLE_PURCHASE" desc="One line label shows the Buy Now Pay Later option is unavailable for the purchase in the autofill credit card popup." formatter_data="android_java">
     Unavailable for this purchase

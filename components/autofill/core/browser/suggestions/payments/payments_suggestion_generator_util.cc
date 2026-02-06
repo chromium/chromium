@@ -766,7 +766,7 @@ Suggestion CreateBnplSuggestion(
     std::optional<int64_t> extracted_amount_in_micros,
     const payments::AmountExtractionStatus& amount_extraction_status) {
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
-  bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
+  bnpl_suggestion.icon = Suggestion::Icon::kBnplGeneric;
   bnpl_suggestion.main_text = Suggestion::Text(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
       Suggestion::Text::IsPrimary(true));
@@ -1359,7 +1359,9 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
 
   // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
   // for this transaction if the previous amount extraction is timeout.
-  if (should_show_bnpl_suggestion) {
+  if (should_show_bnpl_suggestion &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
     if (base::FeatureList::IsEnabled(
             features::
                 kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {

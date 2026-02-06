@@ -47,7 +47,15 @@ constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
     {Suggestion::Icon::kCardVerve, IDR_AUTOFILL_METADATA_CC_VERVE_OLD},
     {Suggestion::Icon::kCardVisa, IDR_AUTOFILL_METADATA_CC_VISA_OLD},
     {Suggestion::Icon::kIban, IDR_AUTOFILL_IBAN_OLD},
-    {Suggestion::Icon::kBnpl, IDR_AUTOFILL_METADATA_BNPL_GENERIC_OLD},
+    {Suggestion::Icon::kBnplGeneric, IDR_AUTOFILL_METADATA_BNPL_GENERIC_OLD},
+    // TODO(crbug.com/477689220): Replace with metadata icons when available.
+    // These should be theme agnostic, similar to BNPL_GENERIC.
+    {Suggestion::Icon::kBnplAffirmUnlinked, IDR_AUTOFILL_AFFIRM_UNLINKED},
+    {Suggestion::Icon::kBnplAffirmLinked, IDR_AUTOFILL_AFFIRM_LINKED},
+    {Suggestion::Icon::kBnplZipUnlinked, IDR_AUTOFILL_ZIP_UNLINKED},
+    {Suggestion::Icon::kBnplZipLinked, IDR_AUTOFILL_ZIP_LINKED},
+    {Suggestion::Icon::kBnplKlarnaUnlinked, IDR_AUTOFILL_KLARNA_UNLINKED},
+    {Suggestion::Icon::kBnplKlarnaLinked, IDR_AUTOFILL_KLARNA_LINKED},
 #if BUILDFLAG(IS_ANDROID)
     {Suggestion::Icon::kHome, IDR_ANDROID_AUTOFILL_HOME},
     {Suggestion::Icon::kScanCreditCard, IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
@@ -77,7 +85,15 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kCardVerve, IDR_AUTOFILL_METADATA_CC_VERVE},
     {Suggestion::Icon::kCardVisa, IDR_AUTOFILL_METADATA_CC_VISA},
     {Suggestion::Icon::kIban, IDR_AUTOFILL_IBAN},
-    {Suggestion::Icon::kBnpl, IDR_AUTOFILL_METADATA_BNPL_GENERIC},
+    {Suggestion::Icon::kBnplGeneric, IDR_AUTOFILL_METADATA_BNPL_GENERIC},
+    // TODO(crbug.com/477689220): Replace with metadata icons when available.
+    // These should be theme agnostic, similar to BNPL_GENERIC.
+    {Suggestion::Icon::kBnplAffirmUnlinked, IDR_AUTOFILL_AFFIRM_UNLINKED},
+    {Suggestion::Icon::kBnplAffirmLinked, IDR_AUTOFILL_AFFIRM_LINKED},
+    {Suggestion::Icon::kBnplZipUnlinked, IDR_AUTOFILL_ZIP_UNLINKED},
+    {Suggestion::Icon::kBnplZipLinked, IDR_AUTOFILL_ZIP_LINKED},
+    {Suggestion::Icon::kBnplKlarnaUnlinked, IDR_AUTOFILL_KLARNA_UNLINKED},
+    {Suggestion::Icon::kBnplKlarnaLinked, IDR_AUTOFILL_KLARNA_LINKED},
 #if BUILDFLAG(IS_ANDROID)
     {Suggestion::Icon::kHome, IDR_ANDROID_AUTOFILL_HOME},
     {Suggestion::Icon::kScanCreditCard, IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
