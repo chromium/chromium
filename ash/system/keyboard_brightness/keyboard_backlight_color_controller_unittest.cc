@@ -90,6 +90,7 @@ class KeyboardBacklightColorControllerTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    wallpaper_controller_ = nullptr;
     controller_.reset();
     NoSessionAshTestBase::TearDown();
   }
@@ -118,8 +119,7 @@ class KeyboardBacklightColorControllerTest : public NoSessionAshTestBase {
   }
 
   std::unique_ptr<KeyboardBacklightColorController> controller_;
-  raw_ptr<WallpaperControllerImpl, DanglingUntriaged> wallpaper_controller_ =
-      nullptr;
+  raw_ptr<WallpaperControllerImpl> wallpaper_controller_ = nullptr;
 };
 
 TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorUpdatesPref) {
