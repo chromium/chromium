@@ -118,6 +118,7 @@ class MockSkillsService : public SkillsService {
               GetControllerDelegate,
               ());
   MOCK_METHOD(void, SyncStatusChanged, ());
+  MOCK_METHOD(void, SetServiceStatusForTesting, (ServiceStatus));
 };
 
 class SkillsSyncBridgeTest : public testing::Test {

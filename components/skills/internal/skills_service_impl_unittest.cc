@@ -40,6 +40,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::Exactly;
 using ::testing::IsEmpty;
@@ -78,7 +79,6 @@ class MockObserver : public SkillsService::Observer {
               OnSkillUpdated,
               (std::string_view skill_id,
                SkillsService::UpdateSource update_source));
-  MOCK_METHOD(void, OnInitialized, ());
   MOCK_METHOD(void, OnStatusChanged, ());
 };
 
@@ -219,7 +219,7 @@ TEST_F(SkillsServiceImplTest, LoadInitialSkills) {
 }
 
 TEST_F(SkillsServiceImplTest, NotifyOnServiceStatusChange) {
-  EXPECT_CALL(mock_observer_, OnStatusChanged);
+  EXPECT_CALL(mock_observer_, OnStatusChanged).Times(AtLeast(1));
   InitServiceWithoutSync();
   testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
@@ -322,7 +322,7 @@ TEST_F(SkillsServiceImplTest, DeleteSkillFromSync) {
 }
 
 TEST_F(SkillsServiceImplTest, Observer) {
-  EXPECT_CALL(mock_observer_, OnInitialized);
+  EXPECT_CALL(mock_observer_, OnStatusChanged).Times(AtLeast(1));
   InitService();
 
   EXPECT_CALL(mock_observer_,
@@ -339,7 +339,7 @@ TEST_F(SkillsServiceImplTest, Observer) {
 }
 
 TEST_F(SkillsServiceImplTest, ObserverNoNotificationForNoOps) {
-  EXPECT_CALL(mock_observer_, OnInitialized);
+  EXPECT_CALL(mock_observer_, OnStatusChanged).Times(AtLeast(1));
   InitService();
   testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 

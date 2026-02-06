@@ -2069,7 +2069,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void OnInitialized() override {
+  void OnStatusChanged() override {
     if (!web_client_) {
       return;
     }

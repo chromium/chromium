@@ -46,7 +46,6 @@ class SkillsServiceImpl : public SkillsService {
   void Shutdown() override;
 
   // SkillsService implementation.
-  bool IsInitialized() const override;
   ServiceStatus GetServiceStatus() const override;
   void LoadInitialSkills(
       std::vector<std::unique_ptr<Skill>> initial_skills) override;
@@ -83,6 +82,7 @@ class SkillsServiceImpl : public SkillsService {
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
   void SyncStatusChanged() override;
+  void SetServiceStatusForTesting(ServiceStatus status) override;
 
  private:
   void NotifySkillChanged(std::string_view skill_id,
@@ -126,6 +126,10 @@ class SkillsServiceImpl : public SkillsService {
 
   // Downloader for 1P skills.
   std::unique_ptr<SkillsDownloader> skills_downloader_;
+
+  // Service status for testing purposes which overrides the actual service
+  // status.
+  std::optional<ServiceStatus> service_status_for_testing_;
 
   // Weak pointer factory for posting tasks.
   base::WeakPtrFactory<SkillsServiceImpl> weak_ptr_factory_{this};

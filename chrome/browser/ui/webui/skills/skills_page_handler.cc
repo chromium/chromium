@@ -72,7 +72,8 @@ void SkillsPageHandler::GetInitialUserSkills(
       std::move(callback), std::vector<skills::Skill>());
   auto* service =
       SkillsServiceFactory::GetForProfile(base::to_address(profile_));
-  if (!service || !service->IsInitialized()) {
+  if (!service ||
+      service->GetServiceStatus() == SkillsService::ServiceStatus::kReady) {
     return;
   }
 
@@ -115,7 +116,8 @@ void SkillsPageHandler::GetInitial1PSkills(
       std::move(callback), FirstPartySkillsMap());
   auto* service =
       SkillsServiceFactory::GetForProfile(base::to_address(profile_));
-  if (!service || !service->IsInitialized()) {
+  if (!service ||
+      service->GetServiceStatus() != SkillsService::ServiceStatus::kReady) {
     return;
   }
   std::move(scoped_callback).Run(Translate1PSkillsMap(service->Get1PSkills()));

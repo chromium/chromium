@@ -4,6 +4,7 @@
 
 #include "components/skills/internal/skills_service_impl.h"
 
+#include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -64,8 +65,9 @@ void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
 const Skill* SkillsServiceImpl::AddSkill(const std::string& name,
                                          const std::string& icon,
                                          const std::string& prompt) {
-  // TODO(crbug.com/471795213): verify that the service is ready to use.
-  CHECK(is_initialized_);
+  if (GetServiceStatus() != ServiceStatus::kReady) {
+    return nullptr;
+  }
 
   auto skill = std::make_unique<Skill>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name, icon, prompt);
@@ -80,7 +82,7 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
     base::Time creation_time,
     base::Time last_update_time,
     sync_pb::SkillSource source) {
-  CHECK(is_initialized_);
+  CHECK_EQ(GetServiceStatus(), ServiceStatus::kReady);
 
   if (Skill* skill = GetMutableSkillById(skill_id)) {
     // Skill already exists, update its fields.
@@ -103,7 +105,9 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
                                             std::string_view name,
                                             std::string_view icon,
                                             std::string_view prompt) {
-  CHECK(is_initialized_);
+  if (GetServiceStatus() != ServiceStatus::kReady) {
+    return nullptr;
+  }
 
   Skill* skill = GetMutableSkillById(skill_id);
   if (!skill) {
@@ -124,9 +128,6 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
 
 void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
                                     UpdateSource update_source) {
-  CHECK(is_initialized_);
-
-  // TODO(crbug.com/475855831): Add a check to ensure service is initialized.
   const std::string id_copy(skill_id);
   const size_t num_erased =
       std::erase_if(skills_, [&id_copy](const std::unique_ptr<Skill>& skill) {
@@ -139,7 +140,6 @@ void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
 }
 
 const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
-  CHECK(is_initialized_);
   for (const std::unique_ptr<Skill>& skill : skills_) {
     if (skill->id == skill_id) {
       return skill.get();
@@ -150,13 +150,10 @@ const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
 
 const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
     const {
-  CHECK(is_initialized_);
   return skills_;
 }
 
 const SkillsService::SkillsMap& SkillsServiceImpl::Get1PSkills() const {
-  CHECK(is_initialized_);
-
   return first_party_skills_map_;
 }
 
@@ -169,16 +166,15 @@ void SkillsServiceImpl::LoadInitialSkills(
   is_initialized_ = true;
 
   for (Observer& observer : observers_) {
-    observer.OnInitialized();
     observer.OnStatusChanged();
   }
 }
 
-bool SkillsServiceImpl::IsInitialized() const {
-  return is_initialized_;
-}
-
 SkillsService::ServiceStatus SkillsServiceImpl::GetServiceStatus() const {
+  if (service_status_for_testing_.has_value()) {
+    CHECK_IS_TEST();
+    return *service_status_for_testing_;
+  }
   if (!is_initialized_) {
     return ServiceStatus::kNotInitialized;
   }
@@ -196,9 +192,7 @@ void SkillsServiceImpl::SortSkills() {
 
 void SkillsServiceImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  if (is_initialized_) {
-    observer->OnInitialized();
-  }
+  observer->OnStatusChanged();
 }
 
 void SkillsServiceImpl::RemoveObserver(Observer* observer) {
@@ -214,6 +208,13 @@ SkillsServiceImpl::GetControllerDelegate() {
 }
 
 void SkillsServiceImpl::SyncStatusChanged() {
+  for (Observer& observer : observers_) {
+    observer.OnStatusChanged();
+  }
+}
+
+void SkillsServiceImpl::SetServiceStatusForTesting(ServiceStatus status) {
+  service_status_for_testing_ = status;
   for (Observer& observer : observers_) {
     observer.OnStatusChanged();
   }

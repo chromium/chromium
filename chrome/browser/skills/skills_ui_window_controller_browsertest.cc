@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +33,15 @@ class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
  public:
   SkillsUiWindowControllerBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kSkillsEnabled);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    skills::SkillsService* skills_service =
+        skills::SkillsServiceFactory::GetForProfile(browser()->profile());
+    ASSERT_TRUE(skills_service);
+    skills_service->SetServiceStatusForTesting(
+        skills::SkillsService::ServiceStatus::kReady);
   }
 
   SkillsUiWindowController* window_controller() {

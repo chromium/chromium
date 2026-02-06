@@ -3785,6 +3785,8 @@ class GlicApiTestWithSkills : public GlicApiTest {
     service_ =
         skills::SkillsServiceFactory::GetForProfile(browser()->profile());
     ASSERT_TRUE(service_);
+    service_->SetServiceStatusForTesting(
+        skills::SkillsService::ServiceStatus::kReady);
 
     NavigateTabAndOpenGlic();
   }
