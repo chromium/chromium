@@ -268,15 +268,24 @@ public Tab getTabByIdChecked(String tabId) {
 
 [`Activity.findViewById()`]: https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/app/Activity.java?q=symbol%3A%5Cbandroid.app.Activity.findViewById%5Cb%20case%3Ayes
 
+### Suppliers
+
+* To pass a `Supplier<T>` to a method that accepts a `Supplier<@Nullable T>`,
+  you must explicitly cast it to the nullable form. See
+  https://github.com/uber/NullAway/issues/1356 for why this is.
+* To pass a `Supplier<@Nullable T>` to a method that accepts a `Supplier<T>`,
+  use `SupplierUtils.asNonNull()`.
+  * If the value might be null at the time of conversion, change the parameter
+    type a `Supplier<@Nullable T>`, and add `assumeNonNull()` / `assertNonNull()`
+    to `.get()` calls accordingly.
+
 ## NullAway Shortcomings
 
 Does not work: `boolean isNull = thing == null; if (!isNull) { ... }`
 * Feature request: https://github.com/uber/NullAway/issues/98
 
-Nullness of method reference not recognized when calling `ObservableSupplier.addObserver()`
-* Bug: https://github.com/uber/NullAway/issues/1307
-
-Validation of (but not use of) `@Contract` is buggy.
+Checking that `@Contract` is correct is buggy (we disable it). `@Contract`
+still apply to callers though (they are assumed to be true).
 * Bug: https://github.com/uber/NullAway/issues/1104
 
 ## FAQ
