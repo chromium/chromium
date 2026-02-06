@@ -428,6 +428,12 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
               // Mono output. Output channels are averaged.
               EXPECT_NE(left_channel_energy, 0);
               EXPECT_NE(right_channel_energy, 0);
+            } else if (use_apm) {
+              // Stereo output. Output channels might be independent, averaged
+              // or partly averaged, depending on adaptive remixing in APM. Only
+              // verify that remixing does not result in non-zero channel
+              // content being zeroed.
+              EXPECT_NE(left_channel_energy, 0);
             } else {
               // Stereo output. Output channels are independent.
               EXPECT_NE(left_channel_energy, 0);
