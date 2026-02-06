@@ -25,6 +25,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_snapshot_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
@@ -451,7 +453,11 @@ void BwgTabHelper::DidStartNavigation(
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  if (profile->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
+  raw_ptr<BwgService> bwg_service = BwgServiceFactory::GetForProfile(profile);
+  const bool gemini_available =
+      bwg_service && bwg_service->IsBwgAvailableForWebState(web_state_);
+  if (gemini_available &&
+      profile->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
     bool can_request_metadata =
         optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
             profile->IsOffTheRecord(), profile->GetPrefs());

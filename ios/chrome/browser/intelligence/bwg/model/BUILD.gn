@@ -89,6 +89,8 @@ source_set("tab_helper") {
     "gemini_tab_helper_observer.h",
   ]
   deps = [
+    ":bwg_service",
+    ":bwg_service_factory",
     ":page_context",
     ":snapshot_utils",
     "//components/favicon/ios",
@@ -208,6 +210,7 @@ source_set("unit_tests") {
   deps = [
     ":browser_agent",
     ":bwg_service",
+    ":bwg_service_factory",
     ":model",
     ":snapshot_utils",
     ":tab_helper",

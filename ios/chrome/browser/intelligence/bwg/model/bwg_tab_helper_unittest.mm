@@ -20,9 +20,13 @@
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -37,6 +41,10 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -75,8 +83,29 @@ class BwgTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         feature_engagement::TrackerFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    builder.AddTestingFactory(BwgServiceFactory::GetInstance(),
+                              BwgServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
+
+    // Set up a signed in user with the capability to enable Gemini.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
+    AccountInfo account = signin::MakePrimaryAccountAvailable(
+        identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+    // Grant the user the capability to use Gemini.
+    AccountCapabilitiesTestMutator mutator(&account.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    signin::UpdateAccountInfoForAccount(identity_manager, account);
     profile_->GetPrefs()->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
+
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
     BwgTabHelper::CreateForWebState(web_state_.get());
@@ -144,6 +173,28 @@ class BwgTabHelperTest : public PlatformTest {
     metadata.set_any_metadata(any_metadata);
     optimization_guide_service->AddHintForTesting(
         GURL(url), optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
+  }
+
+  void AddZeroStateSuggestionsHint(const GURL& url,
+                                   bool should_simulate_eligibility) {
+    OptimizationGuideService* optimization_guide_service =
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
+    optimization_guide::proto::GlicZeroStateSuggestionsMetadata
+        suggestions_metadata;
+    suggestions_metadata.set_contextual_suggestions_eligible(true);
+    optimization_guide::proto::Any any_metadata;
+    any_metadata.set_type_url(
+        "type.googleapis.com/"
+        "optimization_guide.proto.GlicZeroStateSuggestionsMetadata");
+    suggestions_metadata.SerializeToString(any_metadata.mutable_value());
+    optimization_guide::OptimizationMetadata metadata;
+    metadata.set_any_metadata(any_metadata);
+    optimization_guide_service->AddHintForTesting(
+        GURL(url), optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+        metadata);
+    if (should_simulate_eligibility) {
+      SimulateGeminiEligibilityDecisionReceived(url, metadata);
+    }
   }
 
   void SimulateFirstRunRecency(feature_engagement::Tracker* tracker, int days) {
@@ -354,6 +405,7 @@ TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsImageRemixIPH) {
       mock_location_bar_badge_handler_);
   tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
   web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
+  web_state_->SetContentsMimeType("text/html");
 
   feature_engagement::Tracker* tracker = InitializeTracker();
   SimulateFirstRunRecency(tracker, 2);
@@ -364,18 +416,7 @@ TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsImageRemixIPH) {
   OCMExpect([mock_help_handler_
       presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
 
-  optimization_guide::proto::GlicZeroStateSuggestionsMetadata
-      suggestions_metadata;
-  suggestions_metadata.set_contextual_suggestions_eligible(true);
-  optimization_guide::proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/"
-      "optimization_guide.proto.GlicZeroStateSuggestionsMetadata");
-  suggestions_metadata.SerializeToString(any_metadata.mutable_value());
-  optimization_guide::OptimizationMetadata metadata;
-  metadata.set_any_metadata(any_metadata);
-  SimulateGeminiEligibilityDecisionReceived(web_state_->GetVisibleURL(),
-                                            metadata);
+  AddZeroStateSuggestionsHint(web_state_->GetVisibleURL(), true);
 
   EXPECT_OCMOCK_VERIFY(mock_help_handler_);
 }
@@ -406,18 +447,7 @@ TEST_F(BwgTabHelperTest,
   OCMReject([mock_help_handler_
       presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
 
-  optimization_guide::proto::GlicZeroStateSuggestionsMetadata
-      suggestions_metadata;
-  suggestions_metadata.set_contextual_suggestions_eligible(true);
-  optimization_guide::proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/"
-      "optimization_guide.proto.GlicZeroStateSuggestionsMetadata");
-  suggestions_metadata.SerializeToString(any_metadata.mutable_value());
-  optimization_guide::OptimizationMetadata metadata;
-  metadata.set_any_metadata(any_metadata);
-  SimulateGeminiEligibilityDecisionReceived(web_state_->GetVisibleURL(),
-                                            metadata);
+  AddZeroStateSuggestionsHint(web_state_->GetVisibleURL(), true);
 
   EXPECT_OCMOCK_VERIFY(mock_help_handler_);
 }
@@ -700,4 +730,43 @@ TEST_F(BwgTabHelperTest, TestGeneratePageContext_Partial) {
   EXPECT_FALSE(fakeWrapper.shouldGetAnnotatedPageContent);
   EXPECT_FALSE(fakeWrapper.shouldGetSnapshot);
   EXPECT_TRUE(fakeWrapper.populateCalled);
+}
+
+TEST_F(BwgTabHelperTest,
+       TestDidStartNavigation_DoesNotShowImageRemixIPH_WhenBwgNotAvailable) {
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list;
+  iph_feature_list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSGeminiImageRemixFeature, kPageActionMenu,
+       kGeminiImageRemixTool, kZeroStateSuggestions});
+
+  web_state_ = std::make_unique<web::FakeWebState>();
+  web_state_->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state_.get());
+  tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
+  tab_helper_->SetBwgCommandsHandler(mock_bwg_handler_);
+  tab_helper_->SetLocationBarBadgeCommandsHandler(
+      mock_location_bar_badge_handler_);
+  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
+  web_state_->SetContentsMimeType("text/html");
+
+  // Disable Gemini by policy to simulate BWG not being available.
+  profile_->GetPrefs()->SetInteger(prefs::kGeminiEnabledByPolicy, 1);
+
+  feature_engagement::Tracker* tracker = InitializeTracker();
+  SimulateFirstRunRecency(tracker, 2);
+
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+  AddZeroStateSuggestionsHint(web_state_->GetVisibleURL(), false);
+
+  OCMReject([mock_help_handler_
+      presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
+
+  auto navigation_context = std::make_unique<web::FakeNavigationContext>();
+  navigation_context->SetUrl(web_state_->GetVisibleURL());
+  tab_helper_->DidStartNavigation(web_state_.get(), navigation_context.get());
+
+  EXPECT_OCMOCK_VERIFY(mock_help_handler_);
 }
