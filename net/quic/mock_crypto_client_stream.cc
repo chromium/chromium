@@ -81,10 +81,6 @@ MockCryptoClientStream::MockCryptoClientStream(
   crypto_framer_.set_visitor(this);
   // Simulate a negotiated cipher_suite with a fake value.
   crypto_negotiated_params_->cipher_suite = 1;
-  if (!proof_verify_details_) {
-    static_cast<QuicChromiumClientSession*>(session)
-        ->set_allow_any_url_for_testing();
-  }
 }
 
 MockCryptoClientStream::~MockCryptoClientStream() = default;
