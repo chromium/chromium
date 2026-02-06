@@ -28,7 +28,6 @@
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -212,17 +211,6 @@ void MaybeClearAccountKeyedPreferences(
     user_settings.KeepAccountSettingsPrefsOnlyForUsers(gaia_ids);
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
-std::unique_ptr<DeviceStatisticsRequest> CreateDeviceStatisticsRequest(
-    signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string_view user_agent,
-    const CoreAccountInfo& account,
-    const GURL& url) {
-  return std::make_unique<DeviceStatisticsRequestImpl>(
-      identity_manager, std::move(url_loader_factory), user_agent, account,
-      url);
 }
 
 }  // namespace
@@ -1974,6 +1962,20 @@ void SyncServiceImpl::OnIdentityManagerShutdown(
   NOTREACHED(base::NotFatalUntil::M142);
 }
 
+std::unique_ptr<DeviceStatisticsRequest>
+SyncServiceImpl::CreateDeviceStatisticsRequest(const CoreAccountInfo& account,
+                                               const GURL& url) {
+  return std::make_unique<DeviceStatisticsRequestImpl>(
+      sync_client_->GetIdentityManager(), url_loader_factory_,
+      MakeUserAgentForSync(channel_), account, url);
+}
+
+std::vector<std::string>
+SyncServiceImpl::GetCurrentDeviceCacheGuidsForDeviceStatistics() {
+  return SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+      sync_client_->GetPrefService());
+}
+
 void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     base::OnceClosure callback) {
@@ -2516,13 +2518,8 @@ void SyncServiceImpl::MaybeStartDeviceStatisticsScheduler() {
   }
 
   device_statistics_scheduler_ = std::make_unique<DeviceStatisticsScheduler>(
-      sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
-      sync_service_url_,
-      base::BindRepeating(&CreateDeviceStatisticsRequest,
-                          sync_client_->GetIdentityManager(),
-                          url_loader_factory_, MakeUserAgentForSync(channel_)),
-      base::BindRepeating(&SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds,
-                          sync_client_->GetPrefService()));
+      /*delegate=*/this, sync_client_->GetPrefService(),
+      sync_client_->GetIdentityManager(), sync_service_url_);
 }
 
 }  // namespace syncer

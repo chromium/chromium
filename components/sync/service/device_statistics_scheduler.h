@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
@@ -30,25 +29,27 @@ class DeviceStatisticsTracker;
 // (from DeviceStatisticsTracker) once per day.
 class DeviceStatisticsScheduler {
  public:
-  using RequestFactory = base::RepeatingCallback<std::unique_ptr<
-      DeviceStatisticsRequest>(const CoreAccountInfo&, const GURL&)>;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
 
-  using GetCurrentDeviceCacheGuidsCallback =
-      base::RepeatingCallback<std::vector<std::string>()>;
+    virtual std::unique_ptr<DeviceStatisticsRequest>
+    CreateDeviceStatisticsRequest(const CoreAccountInfo&, const GURL&) = 0;
+
+    virtual std::vector<std::string>
+    GetCurrentDeviceCacheGuidsForDeviceStatistics() = 0;
+  };
 
   // Starts the periodic recording of metrics once per day: If there was no
   // previous invocation today, kicks off a recording run immediately. If
   // metrics *were* recorded today already, and every time a recording run
   // finishes, schedules another run for the next day.
-  // `pref_service` and `identity_manager` must not be null.
-  // TODO(crbug.com/465716865): Replace the two callbacks with a delegate
-  // interface.
-  DeviceStatisticsScheduler(
-      PrefService* pref_service,
-      signin::IdentityManager* identity_manager,
-      const GURL& sync_server_url,
-      RequestFactory request_factory,
-      GetCurrentDeviceCacheGuidsCallback get_current_device_cache_guids);
+  // `delegate, `pref_service`, and `identity_manager` must not be null and must
+  // outlive this object.
+  DeviceStatisticsScheduler(Delegate* delegate,
+                            PrefService* pref_service,
+                            signin::IdentityManager* identity_manager,
+                            const GURL& sync_server_url);
   ~DeviceStatisticsScheduler();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -57,14 +58,11 @@ class DeviceStatisticsScheduler {
   void StartTracker();
   void TrackerDone();
 
+  const raw_ptr<Delegate> delegate_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const GURL sync_server_url_;
-
-  const RequestFactory request_factory_;
-
-  const GetCurrentDeviceCacheGuidsCallback get_current_device_cache_guids_;
 
   std::unique_ptr<DeviceStatisticsTracker> tracker_;
 };

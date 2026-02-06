@@ -18,23 +18,25 @@ namespace syncer {
 
 namespace {
 
-class DeviceStatisticsSchedulerTest : public testing::Test {
+class DeviceStatisticsSchedulerTest
+    : public testing::Test,
+      public DeviceStatisticsScheduler::Delegate {
  public:
   DeviceStatisticsSchedulerTest() {
     DeviceStatisticsScheduler::RegisterProfilePrefs(pref_service_.registry());
   }
 
-  std::unique_ptr<DeviceStatisticsRequest> CreateRequest(
+  std::unique_ptr<DeviceStatisticsRequest> CreateDeviceStatisticsRequest(
       const CoreAccountInfo& account,
-      const GURL& url) {
+      const GURL& url) override {
     auto request = std::make_unique<FakeDeviceStatisticsRequest>();
     fake_requests_.emplace(account.gaia, request->GetWeakPtr());
     return request;
   }
 
-  DeviceStatisticsTracker::RequestFactory CreateRequestFactory() {
-    return base::BindRepeating(&DeviceStatisticsSchedulerTest::CreateRequest,
-                               base::Unretained(this));
+  std::vector<std::string> GetCurrentDeviceCacheGuidsForDeviceStatistics()
+      override {
+    return std::vector<std::string>{"test_guid"};
   }
 
  protected:
@@ -54,11 +56,9 @@ TEST_F(DeviceStatisticsSchedulerTest, DoesNotStartTrackerIfPrefIsRecent) {
 
   pref_service_.SetTime("sync.device_statistics_timestamp", base::Time::Now());
 
-  DeviceStatisticsScheduler scheduler(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(),
-      base::BindRepeating(
-          []() { return std::vector<std::string>{"test_guid"}; }));
+  DeviceStatisticsScheduler scheduler(/*delegate=*/this, &pref_service_,
+                                      identity_test_env_.identity_manager(),
+                                      GURL("https://example.com/"));
 
   // Give the scheduler a chance to start the tracker.
   base::RunLoop run_loop;
@@ -77,11 +77,9 @@ TEST_F(DeviceStatisticsSchedulerTest, StartsTrackerIfPrefIsOld) {
   pref_service_.SetTime("sync.device_statistics_timestamp",
                         base::Time::Now() - base::Hours(25));
 
-  DeviceStatisticsScheduler scheduler(
-      &pref_service_, identity_test_env_.identity_manager(),
-      GURL("https://example.com/"), CreateRequestFactory(),
-      base::BindRepeating(
-          []() { return std::vector<std::string>{"test_guid"}; }));
+  DeviceStatisticsScheduler scheduler(/*delegate=*/this, &pref_service_,
+                                      identity_test_env_.identity_manager(),
+                                      GURL("https://example.com/"));
 
   // Give the scheduler a chance to start the tracker.
   base::RunLoop run_loop;

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/time.h"
@@ -22,21 +23,17 @@ constexpr char kLastAttemptedToRecordPref[] =
 }  // namespace
 
 DeviceStatisticsScheduler::DeviceStatisticsScheduler(
+    Delegate* delegate,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    const GURL& sync_server_url,
-    RequestFactory request_factory,
-    GetCurrentDeviceCacheGuidsCallback get_current_device_cache_guids)
-    : pref_service_(pref_service),
+    const GURL& sync_server_url)
+    : delegate_(delegate),
+      pref_service_(pref_service),
       identity_manager_(identity_manager),
-      sync_server_url_(sync_server_url),
-      request_factory_(std::move(request_factory)),
-      get_current_device_cache_guids_(
-          std::move(get_current_device_cache_guids)) {
+      sync_server_url_(sync_server_url) {
+  CHECK(delegate_);
   CHECK(pref_service_);
   CHECK(identity_manager_);
-  CHECK(request_factory_);
-  CHECK(get_current_device_cache_guids_);
 
   StartTracker();
 }
@@ -63,10 +60,15 @@ void DeviceStatisticsScheduler::StartTracker() {
 
   pref_service_->SetTime(kLastAttemptedToRecordPref, now);
 
+  // `Unretained` is safe because `this` owns the `tracker_`, and `delegate_`
+  // must outlive `this`.
   tracker_ = std::make_unique<DeviceStatisticsTracker>(
-      identity_manager_, sync_server_url_, request_factory_,
-      get_current_device_cache_guids_.Run());
+      identity_manager_, sync_server_url_,
+      base::BindRepeating(&Delegate::CreateDeviceStatisticsRequest,
+                          base::Unretained(delegate_)),
+      delegate_->GetCurrentDeviceCacheGuidsForDeviceStatistics());
 
+  // `Unretained` is safe because `this` owns the `tracker_`.
   tracker_->Start(base::BindOnce(&DeviceStatisticsScheduler::TrackerDone,
                                  base::Unretained(this)));
 }

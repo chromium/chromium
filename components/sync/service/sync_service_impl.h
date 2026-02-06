@@ -77,7 +77,8 @@ class SyncServiceImpl : public SyncService,
                         public SyncAuthManager::Delegate,
                         public SyncServiceCrypto::Delegate,
                         public SyncUserSettingsImpl::Delegate,
-                        public signin::IdentityManager::Observer {
+                        public signin::IdentityManager::Observer,
+                        public DeviceStatisticsScheduler::Delegate {
  public:
   // Bundles the arguments for SyncServiceImpl construction. This is a
   // movable struct. Because of the non-POD data members, it needs out-of-line
@@ -231,7 +232,15 @@ class SyncServiceImpl : public SyncService,
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
-  // Similar to above but with a callback that will be invoked on completion.
+  // DeviceStatisticsScheduler::Delegate implementation.
+  std::unique_ptr<DeviceStatisticsRequest> CreateDeviceStatisticsRequest(
+      const CoreAccountInfo&,
+      const GURL&) override;
+  std::vector<std::string> GetCurrentDeviceCacheGuidsForDeviceStatistics()
+      override;
+
+  // Similar to OnAccountsInCookieUpdated() but with a callback that will be
+  // invoked on completion.
   void OnAccountsInCookieUpdatedWithCallback(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       base::OnceClosure callback);
