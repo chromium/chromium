@@ -68,6 +68,12 @@
                 "crossbench_name": "jetstream_2",
                 "arguments": []
             },
+            "jetstream3-turbolev_future.crossbench": {
+                "crossbench_name": "jetstream_3",
+                "arguments": [
+                    "--js-flags=--turbolev-future"
+                ]
+            },
             "jetstream3.crossbench": {
                 "crossbench_name": "jetstream_3",
                 "arguments": []
@@ -87,11 +93,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 184,
-        "predicted_min_shard_time": 3692,
+        "num_stories": 185,
+        "predicted_min_shard_time": 3872.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 3692,
+        "predicted_max_shard_time": 3872.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 3692
+        "shard #0": 3872.0
     }
 }

@@ -572,6 +572,7 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
     _motionmark1_3_crossbench(),
     _jetstream2_crossbench(),
     _jetstream3_crossbench(),
+    _jetstream3_turbolev_future_crossbench(),
 ])
 
 # TODO(crbug.com/338630584): Remove it when other benchmarks can be run on

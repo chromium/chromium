@@ -1,5 +1,9 @@
 [
     {
+        "duration": "98.0",
+        "name": "jetstream2/JetStream2"
+    },
+    {
         "duration": "60.0",
         "name": "components_perftests/_gtest_"
     }

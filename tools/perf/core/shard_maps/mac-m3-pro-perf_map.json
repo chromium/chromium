@@ -18,9 +18,11 @@
                 "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "jetstream3.crossbench": {
+            "jetstream3-turbolev_future.crossbench": {
                 "crossbench_name": "jetstream_3",
-                "arguments": []
+                "arguments": [
+                    "--js-flags=--turbolev-future"
+                ]
             }
         },
         "benchmarks": {}
@@ -31,8 +33,8 @@
                 "crossbench_name": "speedometer_3",
                 "arguments": []
             },
-            "motionmark1.3.crossbench": {
-                "crossbench_name": "motionmark_1.3",
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
                 "arguments": []
             }
         },
@@ -44,6 +46,10 @@
                 "crossbench_name": "speedometer_3",
                 "arguments": []
             },
+            "motionmark1.3.crossbench": {
+                "crossbench_name": "motionmark_1.3",
+                "arguments": []
+            },
             "speedometer2.crossbench": {
                 "crossbench_name": "speedometer_2",
                 "arguments": []
@@ -52,14 +58,14 @@
         "benchmarks": {}
     },
     "extra_infos": {
-        "num_stories": 8,
-        "predicted_min_shard_time": 120,
-        "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 420,
-        "predicted_max_shard_index": 2,
+        "num_stories": 9,
+        "predicted_min_shard_time": 240,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 480,
+        "predicted_max_shard_index": 3,
         "shard #0": 240,
         "shard #1": 240,
-        "shard #2": 420,
-        "shard #3": 120
+        "shard #2": 240,
+        "shard #3": 480
     }
 }

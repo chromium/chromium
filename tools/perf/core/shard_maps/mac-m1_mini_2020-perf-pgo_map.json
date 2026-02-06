@@ -4,6 +4,10 @@
             "jetstream2.crossbench": {
                 "crossbench_name": "jetstream_2",
                 "arguments": []
+            },
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
+                "arguments": []
             }
         },
         "benchmarks": {
@@ -22,9 +26,11 @@
     },
     "1": {
         "crossbench": {
-            "jetstream3.crossbench": {
+            "jetstream3-turbolev_future.crossbench": {
                 "crossbench_name": "jetstream_3",
-                "arguments": []
+                "arguments": [
+                    "--js-flags=--turbolev-future"
+                ]
             },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
@@ -50,6 +56,10 @@
             "jetstream2.crossbench": {
                 "crossbench_name": "jetstream_2",
                 "arguments": []
+            },
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
+                "arguments": []
             }
         },
         "benchmarks": {
@@ -68,9 +78,11 @@
     },
     "3": {
         "crossbench": {
-            "jetstream3.crossbench": {
+            "jetstream3-turbolev_future.crossbench": {
                 "crossbench_name": "jetstream_3",
-                "arguments": []
+                "arguments": [
+                    "--js-flags=--turbolev-future"
+                ]
             },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
@@ -118,6 +130,12 @@
     },
     "5": {
         "crossbench": {
+            "jetstream3-turbolev_future.crossbench": {
+                "crossbench_name": "jetstream_3",
+                "arguments": [
+                    "--js-flags=--turbolev-future"
+                ]
+            },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": []
@@ -160,6 +178,12 @@
                 "crossbench_name": "jetstream_3",
                 "arguments": []
             },
+            "jetstream3-turbolev_future.crossbench": {
+                "crossbench_name": "jetstream_3",
+                "arguments": [
+                    "--js-flags=--turbolev-future"
+                ]
+            },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": []
@@ -175,17 +199,17 @@
         }
     },
     "extra_infos": {
-        "num_stories": 33,
-        "predicted_min_shard_time": 1182.0,
+        "num_stories": 37,
+        "predicted_min_shard_time": 1274.0,
         "predicted_min_shard_index": 5,
-        "predicted_max_shard_time": 2311.0,
+        "predicted_max_shard_time": 2403.0,
         "predicted_max_shard_index": 6,
-        "shard #0": 1327.0,
-        "shard #1": 1387.0,
-        "shard #2": 1327.0,
-        "shard #3": 1387.0,
-        "shard #4": 1507.0,
-        "shard #5": 1182.0,
-        "shard #6": 2311.0
+        "shard #0": 1417.0,
+        "shard #1": 1297.0,
+        "shard #2": 1417.0,
+        "shard #3": 1297.0,
+        "shard #4": 1417.0,
+        "shard #5": 1274.0,
+        "shard #6": 2403.0
     }
 }

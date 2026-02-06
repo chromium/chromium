@@ -1,14 +1,238 @@
 [
     {
+        "duration": "10.0",
+        "name": "blink_perf.dom/clone-node-containing-form-elements-inserted-into-collection.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.dom/custom-element-default-style-with-shadow.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.dom/custom-element-default-style.html"
+    },
+    {
+        "duration": "37.0",
+        "name": "blink_perf.dom/customizable-select-single-add.html"
+    },
+    {
+        "duration": "33.0",
+        "name": "blink_perf.dom/customizable-select-single-remove.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.dom/deep-tree-clonenode.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.dom/dom-parts-api-flat-append.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.dom/dom-parts-api-flat-clone.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.dom/dom-parts-api-flat-parts.html"
+    },
+    {
+        "duration": "16.0",
+        "name": "blink_perf.dom/dom-parts-api-manual-append.html"
+    },
+    {
+        "duration": "16.0",
+        "name": "blink_perf.dom/dom-parts-api-manual-clone.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.dom/dom-parts-api-manual-parts.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.dom/dom-parts-api-nested-append.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.dom/dom-parts-api-nested-clone.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.dom/dom-parts-api-nested-parts.html"
+    },
+    {
+        "duration": "26.0",
+        "name": "blink_perf.dom/insert-text-with-dir-auto.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.dom/long-sibling-list.html"
+    },
+    {
+        "duration": "2.0",
+        "name": "blink_perf.dom/modify-element-classname.html"
+    },
+    {
+        "duration": "2.0",
+        "name": "blink_perf.dom/modify-element-id.html"
+    },
+    {
+        "duration": "1.0",
+        "name": "blink_perf.dom/modify-element-title.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.dom/replace-text-with-dir-auto.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.dom/select-multiple-add.html"
+    },
+    {
+        "duration": "2.0",
+        "name": "blink_perf.dom/select-open-picker.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.dom/select-single-add.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.dom/select-single-remove.html"
+    },
+    {
+        "duration": "53.0",
+        "name": "jetstream2/JetStream2"
+    },
+    {
+        "duration": "11.0",
+        "name": "media.desktop/mse.html?media=aac_audio.mp4"
+    },
+    {
+        "duration": "11.0",
+        "name": "media.desktop/mse.html?media=aac_audio.mp4,h264_video.mp4"
+    },
+    {
+        "duration": "11.0",
+        "name": "media.desktop/mse.html?media=h264_video.mp4"
+    },
+    {
+        "duration": "11.0",
+        "name": "media.desktop/mse.html?media=tulip0.av1.mp4"
+    },
+    {
+        "duration": "11.0",
+        "name": "media.desktop/mse.html?media=tulip2.vp9.webm"
+    },
+    {
+        "duration": "2.0",
+        "name": "media.desktop/video.html?src=boat_1080p60fps_vp9.webm"
+    },
+    {
+        "duration": "19.0",
+        "name": "media.desktop/video.html?src=crowd1080.mp4"
+    },
+    {
+        "duration": "19.0",
+        "name": "media.desktop/video.html?src=crowd1080.webm"
+    },
+    {
+        "duration": "18.0",
+        "name": "media.desktop/video.html?src=crowd1080_vp9.webm"
+    },
+    {
+        "duration": "130.0",
+        "name": "media.desktop/video.html?src=foodmarket_720p30fps.mp4"
+    },
+    {
+        "duration": "2.0",
+        "name": "media.desktop/video.html?src=garden2_10s.mp4&seek"
+    },
+    {
+        "duration": "2.0",
+        "name": "media.desktop/video.html?src=garden2_10s.webm&seek"
+    },
+    {
+        "duration": "2.0",
+        "name": "media.desktop/video.html?src=smpte_3840x2160_60fps_vp9.webm&seek"
+    },
+    {
+        "duration": "2.0",
+        "name": "media.desktop/video.html?src=tulip0.av1.mp4"
+    },
+    {
+        "duration": "9.0",
+        "name": "media.desktop/video.html?src=tulip0.av1.mp4&seek"
+    },
+    {
+        "duration": "26.0",
+        "name": "media.desktop/video.html?src=tulip2.m4a&type=audio"
+    },
+    {
+        "duration": "26.0",
+        "name": "media.desktop/video.html?src=tulip2.mp3&type=audio"
+    },
+    {
+        "duration": "8.0",
+        "name": "media.desktop/video.html?src=tulip2.mp3&type=audio&seek"
+    },
+    {
+        "duration": "26.0",
+        "name": "media.desktop/video.html?src=tulip2.mp4"
+    },
+    {
+        "duration": "63.0",
+        "name": "media.desktop/video.html?src=tulip2.mp4&busyjs"
+    },
+    {
+        "duration": "26.0",
+        "name": "media.desktop/video.html?src=tulip2.ogg&type=audio"
+    },
+    {
+        "duration": "9.0",
+        "name": "media.desktop/video.html?src=tulip2.ogg&type=audio&seek"
+    },
+    {
+        "duration": "26.0",
+        "name": "media.desktop/video.html?src=tulip2.vp9.webm"
+    },
+    {
+        "duration": "19.0",
+        "name": "media.desktop/video.html?src=tulip2.vp9.webm&background"
+    },
+    {
+        "duration": "26.0",
+        "name": "media.desktop/video.html?src=tulip2.vp9.webm_WiFi"
+    },
+    {
+        "duration": "315.0",
+        "name": "rendering.desktop.notracing/motionmark_ramp_composite"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.desktop/css_value_type_shadow"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.desktop/main_30fps_impl_60fps"
+    },
+    {
+        "duration": "24.0",
+        "name": "speedometer2/Speedometer2"
+    },
+    {
+        "duration": "26.0",
+        "name": "speedometer3/Speedometer3"
+    },
+    {
+        "duration": "200.0",
+        "name": "base_perftests/_gtest_"
+    },
+    {
         "duration": "7.0",
         "name": "views_perftests/_gtest_"
     },
     {
         "duration": "125.0",
         "name": "components_perftests/_gtest_"
-    },
-    {
-        "duration": "200.0",
-        "name": "base_perftests/_gtest_"
     }
 ]

@@ -1,6 +1,6 @@
 [
     {
-        "duration": "75.0",
+        "duration": "66.0",
         "name": "jetstream2/JetStream2"
     },
     {
@@ -12,7 +12,7 @@
         "name": "speedometer2/Speedometer2"
     },
     {
-        "duration": "35.0",
+        "duration": "33.0",
         "name": "speedometer3/Speedometer3"
     }
 ]
