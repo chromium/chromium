@@ -64,7 +64,7 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeNameView(
           views::BoxLayout::CrossAxisAlignment::kStart);
   attribute_name_wrapper->AddChildView(
       views::Builder<views::Label>()
-          .SetText(attribute_name)
+          .SetText(std::move(attribute_name))
           .SetEnabledColor(ui::kColorSysOnSurfaceSubtle)
           .SetTextStyle(views::style::STYLE_BODY_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -137,7 +137,7 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
       label->GetLineHeight(), gfx::WRAP_LONG_WORDS, &substrings);
   // At least one string should always exist.
   if (substrings.empty()) {
-    label->SetText(attribute_value);
+    label->SetText(std::move(attribute_value));
     updated_entity_dot_and_value_wrapper->AddChildView(std::move(label));
     return attribute_value_wrapper;
   }
@@ -147,12 +147,12 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
   updated_entity_dot_and_value_wrapper->AddChildView(std::move(label));
   // One line was not enough.
   if (first_line != attribute_value) {
-    std::u16string remaining_lines = attribute_value.substr(first_line.size());
-    base::TrimWhitespace(std::move(remaining_lines), base::TRIM_ALL,
-                         &remaining_lines);
+    auto remaining_lines = std::u16string(base::TrimWhitespace(
+        std::u16string_view(attribute_value).substr(first_line.size()),
+        base::TRIM_ALL));
     attribute_value_wrapper->AddChildView(
         views::Builder<views::Label>()
-            .SetText(remaining_lines)
+            .SetText(std::move(remaining_lines))
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
             .SetTextStyle(use_medium_font ? views::style::STYLE_BODY_4_MEDIUM
                                           : views::style::STYLE_BODY_4)
@@ -166,7 +166,7 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
     if (accessibility_value) {
       attribute_value_wrapper->SetAccessibleRole(ax::mojom::Role::kDefinition);
       attribute_value_wrapper->GetViewAccessibility().SetName(
-          *accessibility_value);
+          *std::move(accessibility_value));
     }
   }
   return attribute_value_wrapper;
@@ -190,8 +190,7 @@ ui::ImageModel CreateWalletIcon() {
 #endif
 }
 
-std::unique_ptr<views::View> CreateWalletBubbleTitleView(
-    const std::u16string& title) {
+std::unique_ptr<views::View> CreateWalletBubbleTitleView(std::u16string title) {
   auto title_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -200,7 +199,7 @@ std::unique_ptr<views::View> CreateWalletBubbleTitleView(
 
   auto* label = title_view->AddChildView(
       views::Builder<views::Label>()
-          .SetText(title)
+          .SetText(std::move(title))
           .SetTextStyle(views::style::STYLE_HEADLINE_4)
           .SetMultiLine(true)
           .SetAccessibleRole(ax::mojom::Role::kTitleBar)
@@ -232,9 +231,11 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeRow(
                  .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
                  .Build();
 
-  row->AddChildView(CreateAutofillAiBubbleAttributeNameView(attribute_name));
+  row->AddChildView(
+      CreateAutofillAiBubbleAttributeNameView(std::move(attribute_name)));
   row->AddChildView(CreateAutofillAiBubbleAttributeValueView(
-      attribute_value, accessibility_value, with_blue_dot, use_medium_font));
+      std::move(attribute_value), std::move(accessibility_value), with_blue_dot,
+      use_medium_font));
 
   // Set every child to expand with the same ratio.
   for (auto child : row->children()) {

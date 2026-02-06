@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 namespace gfx {
 class Insets;
@@ -31,8 +32,7 @@ inline constexpr int kAutofillAiBubbleWidth = 320;
 ui::ImageModel CreateWalletIcon();
 
 // Creates a title view for a Wallet bubble.
-std::unique_ptr<views::View> CreateWalletBubbleTitleView(
-    const std::u16string& title);
+std::unique_ptr<views::View> CreateWalletBubbleTitleView(std::u16string title);
 
 // Returns the inner margins for the autofill ai bubble.
 gfx::Insets GetAutofillAiBubbleInnerMargins();
