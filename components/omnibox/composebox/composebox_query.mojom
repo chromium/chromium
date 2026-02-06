@@ -43,6 +43,7 @@ enum FileUploadErrorType {
 };
 
 // The AIM model mode.
+// LINT.IfChange(ModelMode)
 enum ModelMode {
   // Model is unspecified.
   kUnspecified = 0,
@@ -53,8 +54,10 @@ enum ModelMode {
   // Uses Gemini Pro Model with automatic routing capabilities.
   kGeminiProAutoroute = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchAimModel)
 
 // The AIM tool mode.
+// LINT.IfChange(ToolMode)
 enum ToolMode {
   // Tool is unspecified.
   kUnspecified = 0,
@@ -71,6 +74,7 @@ enum ToolMode {
   // Enables Image Generation for Selfie type images.
   kImageGenSelfie = 6,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchAimTool)
 
 // The AIM input type.
 enum InputType {

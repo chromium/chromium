@@ -8,6 +8,8 @@
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace contextual_search {
 
@@ -218,16 +220,6 @@ void ContextualSearchMetricsRecorder::RecordToolsSubmissionType(
       base::StrCat(
           {"ContextualSearch.Tools.SubmissionType", ".", metrics_suffix_}),
       submission_type);
-}
-
-void ContextualSearchMetricsRecorder::RecordToolState(
-    SubmissionType submission_type,
-    AimToolState tool_state) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ContextualSearch.Tools.",
-                    SubmissionTypeToString(submission_type), ".",
-                    metrics_suffix_}),
-      tool_state);
 }
 
 void ContextualSearchMetricsRecorder::NotifySessionStarted() {
@@ -455,6 +447,20 @@ void ContextualSearchMetricsRecorder::RecordConfigParseSuccess(
       base::StrCat({"ContextualSearch.ConfigParseSuccess", ".",
                     ContextualSearchSourceToString(source)}),
       success);
+}
+
+void ContextualSearchMetricsRecorder::RecordToolMode(
+    omnibox::ToolMode tool_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Tools", ".", metrics_suffix_}), tool_mode,
+      static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordModelMode(
+    omnibox::ModelMode model_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Models", ".", metrics_suffix_}),
+      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
 }
 
 }  // namespace contextual_search
