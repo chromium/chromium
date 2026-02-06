@@ -2315,7 +2315,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest, DisableBookmarks) {
 IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest, DisableSync) {
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_TRUE(GetClient(1)->DisableSyncForAllDatatypes());
+  ASSERT_TRUE(GetClient(1)->DisableAllSelectableTypes());
   ASSERT_NE(nullptr, AddFolder(0, IndexedFolderName(0), GetStoreType()));
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(0), GetSyncService(0), GetFakeServer(),

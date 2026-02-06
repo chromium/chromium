@@ -611,10 +611,6 @@ bool SyncServiceImplHarness::EnableAllSelectableTypes() {
   return false;
 }
 
-bool SyncServiceImplHarness::DisableSyncForAllDatatypes() {
-  return DisableAllSelectableTypes();
-}
-
 bool SyncServiceImplHarness::DisableAllSelectableTypes() {
   DVLOG(1) << GetClientInfoString("DisableAllSelectableTypes");
 

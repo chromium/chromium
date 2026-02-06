@@ -187,11 +187,6 @@ class SyncServiceImplHarness {
   // already be signed in, or this will have no effect. Returns true on success.
   [[nodiscard]] bool EnableHistorySyncNoWaitForCompletion();
 
-  // Disables sync for all sync datatypes. Returns true on success.
-  // TODO(crbug.com/353425612): Replace all calls to this with
-  // DisableAllSelectableTypes() which is identical.
-  [[nodiscard]] bool DisableSyncForAllDatatypes();
-
   // Enables/disables a particular selectable type. The user must already be
   // signed in, or this has no effect.
   [[nodiscard]] bool EnableSelectableType(syncer::UserSelectableType type);

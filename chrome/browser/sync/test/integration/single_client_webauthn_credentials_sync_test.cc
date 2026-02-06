@@ -1156,7 +1156,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                        ClearingModelDataOnSyncStartup) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
+  ASSERT_TRUE(GetClient(0)->DisableAllSelectableTypes());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   EXPECT_TRUE(
