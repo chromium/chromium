@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
-                       DelegateSwapTriggersPinStatusNotifications) {
+                       DelegateSwapTriggersPinNotifications) {
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);
@@ -447,16 +447,27 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   // Events all fire upon delegate swap, so we must setup assertions ahead of
   // time.
   std::vector<std::pair<tabs::TabInterface*, bool>> expected_pin_status_changes;
+  struct ExpectedEvent {
+    raw_ptr<tabs::TabInterface> tab;
+    bool is_pin;
+  };
+  std::vector<ExpectedEvent> expected_pin_events;
 
   // First, verify tabs 0, 1, 2 send unpinned notifications.
   expected_pin_status_changes.emplace_back(handles[0].Get(), false);
   expected_pin_status_changes.emplace_back(handles[1].Get(), false);
   expected_pin_status_changes.emplace_back(handles[2].Get(), false);
+  expected_pin_events.push_back({handles[0].Get(), false});
+  expected_pin_events.push_back({handles[1].Get(), false});
+  expected_pin_events.push_back({handles[2].Get(), false});
 
   // Then, verify tabs 1, 3, 4 send pinned notifications.
   expected_pin_status_changes.emplace_back(handles[1].Get(), true);
   expected_pin_status_changes.emplace_back(handles[3].Get(), true);
   expected_pin_status_changes.emplace_back(handles[4].Get(), true);
+  expected_pin_events.push_back({handles[1].Get(), true});
+  expected_pin_events.push_back({handles[3].Get(), true});
+  expected_pin_events.push_back({handles[4].Get(), true});
 
   // Setup subscription to consume status changes and make assertions (in
   // order).
@@ -471,11 +482,25 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
         expected_pin_status_changes.erase(expected_pin_status_changes.begin());
       }));
 
+  auto pin_event_sub =
+      manager_.AddTabPinningStatusEventCallback(base::BindLambdaForTesting(
+          [&](tabs::TabInterface* tab, GlicPinningStatusEvent event) {
+            auto expected = expected_pin_events.front();
+            EXPECT_EQ(expected.tab, tab);
+            if (expected.is_pin) {
+              ASSERT_TRUE(std::holds_alternative<GlicPinEvent>(event));
+            } else {
+              ASSERT_TRUE(std::holds_alternative<GlicUnpinEvent>(event));
+            }
+            expected_pin_events.erase(expected_pin_events.begin());
+          }));
+
   // Trigger delegate swap.
   manager_.SetDelegate(&manager2);
 
   // Verify we triggered all expected notifications.
   ASSERT_TRUE(expected_pin_status_changes.empty());
+  ASSERT_TRUE(expected_pin_events.empty());
 
   // Verify final state matches manager 2.
   EXPECT_FALSE(manager_.IsTabPinned(handles[0]));
