@@ -70,6 +70,13 @@ PaywallSignal ToPaywallSignal(std::optional<bool> paywall_signal) {
 }  // namespace
 
 OmniboxTabHelper::~OmniboxTabHelper() = default;
+
+// static
+void OmniboxTabHelper::ClearOmniboxInputState(
+    content::WebContents* web_contents) {
+  web_contents->SetUserData(kOmniboxStateKey, nullptr);
+}
+
 OmniboxTabHelper::OmniboxTabHelper(content::WebContents* contents,
                                    Profile* profile)
     : content::WebContentsUserData<OmniboxTabHelper>(*contents),

@@ -75,6 +75,14 @@ class OmniboxTabHelper
   // the signal could not be calculated.
   std::optional<bool> IsPagePaywalled();
 
+  // Clears the saved omnibox input state for the given WebContents.
+  static void ClearOmniboxInputState(content::WebContents* web_contents);
+
+  // Key used to store omnibox state (user-typed text, selection, etc.) in
+  // WebContents UserData. Defined here so it can be shared between
+  // OmniboxViewViews and OmniboxTabHelper.
+  static constexpr char kOmniboxStateKey[] = "OmniboxState";
+
  private:
   OmniboxTabHelper(content::WebContents* contents, Profile* profile);
   friend class content::WebContentsUserData<OmniboxTabHelper>;

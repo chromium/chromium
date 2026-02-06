@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -339,6 +340,13 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
 
   std::unique_ptr<content::WebContents> contents_move =
       source_tabstrip->DetachWebContentsAtForInsertion(found_tab_index.value());
+
+  // Clear omnibox state to prevent stale user-typed text from appearing in the
+  // target browser. When reparenting between app windows and browser windows,
+  // the omnibox context changes significantly and old state is inappropriate.
+  // See https://crbug.com/40697091
+  OmniboxTabHelper::ClearOmniboxInputState(web_contents);
+
   TabStripModel* const target_tab_strip_model =
       target_browser->GetTabStripModel();
   int location = target_tab_strip_model->count();
