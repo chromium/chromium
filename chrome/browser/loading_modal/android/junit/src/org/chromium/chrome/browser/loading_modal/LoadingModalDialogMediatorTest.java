@@ -16,12 +16,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -36,17 +36,16 @@ public class LoadingModalDialogMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ModalDialogManager mModalDialogManager;
-
-    @Mock private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-
     @Mock private LoadingModalDialogCoordinator.Observer mDialogCoordinatorObserver;
 
+    private final SettableMonotonicObservableSupplier<ModalDialogManager>
+            mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
     private LoadingModalDialogMediator mMediator;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        Mockito.when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
+        mModalDialogManagerSupplier.set(mModalDialogManager);
         mMediator = new LoadingModalDialogMediator(mModalDialogManagerSupplier, new Handler());
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

@@ -75,7 +75,6 @@ public class HubManagerImplUnitTest {
     @Mock private ViewGroup mIncognitoTabSwitcherPaneView;
     @Mock private MenuOrKeyboardActionHandler mIncognitoTabSwitcherMenuOrKeyboardActionHandler;
     @Mock private HubLayoutController mHubLayoutController;
-    @Mock private MonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
@@ -86,6 +85,8 @@ public class HubManagerImplUnitTest {
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
 
+    private final MonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier =
+            ObservableSuppliers.alwaysNull();
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
     private SettableMonotonicObservableSupplier<DisplayButtonData> mReferenceButtonDataSupplier;

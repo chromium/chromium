@@ -368,9 +368,9 @@ public class HomeModulesCoordinatorUnitTest {
         Callback<Boolean> callback = Mockito.mock(Callback.class);
         mCoordinator.show(callback);
 
-        verify(mProfileSupplier).addObserver(mProfileObserver.capture());
+        assertTrue(mProfileSupplier.hasObservers());
         mProfileSupplier.set(mProfile);
-        verify(mProfileSupplier).removeObserver(mProfileObserver.capture());
+        assertFalse(mProfileSupplier.hasObservers());
     }
 
     @Test

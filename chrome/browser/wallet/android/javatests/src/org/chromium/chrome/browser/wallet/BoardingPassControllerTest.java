@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.wallet;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -22,8 +23,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -35,16 +36,15 @@ import org.chromium.url.GURL;
 public class BoardingPassControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private MonotonicObservableSupplier<Tab> mMockTabProvider;
 
     @Mock private Tab mMockTab;
 
     @Mock private BoardingPassBridge.Natives mMockBoardingPassBridgeJni;
 
-    @Captor private ArgumentCaptor<Callback<Tab>> mTabSupplierCallbackCaptor;
-
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
+    private final SettableMonotonicObservableSupplier<Tab> mMockTabProvider =
+            ObservableSuppliers.createMonotonic();
     private BoardingPassController mController;
 
     @Before
@@ -80,14 +80,13 @@ public class BoardingPassControllerTest {
 
     private void createControllerAndVerify() {
         mController = new BoardingPassController(mMockTabProvider);
-        verify(mMockTabProvider).addObserver(mTabSupplierCallbackCaptor.capture());
-        mTabSupplierCallbackCaptor.getValue().onResult(mMockTab);
+        mMockTabProvider.set(mMockTab);
         verify(mMockTab).addObserver(mTabObserverCaptor.capture());
     }
 
     private void destoryControllerAndVerify() {
         mController.destroy();
         verify(mMockTab).removeObserver(mTabObserverCaptor.getValue());
-        verify(mMockTabProvider).removeObserver(mTabSupplierCallbackCaptor.getValue());
+        assertFalse(mMockTabProvider.hasObservers());
     }
 }

@@ -102,16 +102,13 @@ public class HubColorMixerImplUnitTest {
                         false);
         mHubColorMixer.destroy();
 
-        verify(mHubVisibilitySupplier).removeObserver(any());
-        verify(mFocusedPaneSupplier).removeObserver(any());
+        assertFalse(mHubVisibilitySupplier.hasObservers());
+        assertFalse(mFocusedPaneSupplier.hasObservers());
     }
 
     @Test
     public void testInit() {
         reset(mAnimatorSetBuilder);
-
-        mHubVisibilitySupplier = spy(ObservableSuppliers.createNonNull(false));
-        mFocusedPaneSupplier = spy(ObservableSuppliers.createMonotonic());
 
         mHubColorMixer =
                 new HubColorMixerImpl(
@@ -125,8 +122,8 @@ public class HubColorMixerImplUnitTest {
         assertEquals(Color.TRANSPARENT, (int) mHubColorMixer.getOverviewColorSupplier().get());
         assertFalse(mHubColorMixer.getOverviewMode());
 
-        verify(mHubVisibilitySupplier).addObserver(any());
-        verify(mFocusedPaneSupplier).addObserver(any());
+        assertTrue(mHubVisibilitySupplier.hasObservers());
+        assertTrue(mFocusedPaneSupplier.hasObservers());
         verify(mAnimatorSetBuilder).registerBlend(any());
     }
 

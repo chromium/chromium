@@ -39,8 +39,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -88,11 +88,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Mock private Resources mMockResources;
 
     @Mock private MerchantTrustMessageScheduler mMockMerchantMessageScheduler;
-
-    @Mock private MonotonicObservableSupplier<Tab> mMockTabProvider;
-
     @Mock private Tab mMockTab;
-
     @Mock private Profile mMockProfile;
 
     @Mock private MerchantTrustMetrics mMockMetrics;
@@ -129,6 +125,9 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @Captor private ArgumentCaptor<Runnable> mOnBottomSheetDismissedCaptor;
 
+    private final SettableMonotonicObservableSupplier<Tab> mMockTabProvider =
+            ObservableSuppliers.createMonotonic();
+
     private static final String FAKE_HOST = "fake_host";
     private static final String DIFFERENT_HOST = "different_host";
     private static final String FAKE_URL = "fake_url";
@@ -159,7 +158,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(FAKE_HOST).when(mMockMerchantTrustSignalsEvent).getKey();
         doReturn(false).when(mMockProfile).isOffTheRecord();
         doReturn(FAKE_HOST).when(mMockGurl).getSpec();
-        doReturn(mMockTab).when(mMockTabProvider).get();
+        mMockTabProvider.set(mMockTab);
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
         doAnswer((Answer<String>) invocation -> mSerializedTimestamps)
                 .when(mMockPrefService)
@@ -201,6 +200,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @After
     public void tearDown() {
         mCoordinator.destroy();
+        Assert.assertFalse(mMockTabProvider.hasObservers());
         verify(mMockMerchantTrustStorageFactory, times(1)).destroy();
     }
 
