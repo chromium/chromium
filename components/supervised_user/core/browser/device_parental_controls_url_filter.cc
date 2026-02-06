@@ -66,6 +66,8 @@ void DeviceParentalControlsUrlFilter::GetFilteringBehavior(
     const GURL& url,
     WebFilteringResult::Callback callback,
     const WebFilterMetricsOptions& options) {
+  callback = WrapCallbackWithUrlServiceMetrics(std::move(callback), options);
+
   WebFilteringResult result = GetFilteringBehavior(url);
   if (result.IsAllowedBecauseOfDisabledFilter()) {
     std::move(callback).Run(result);
@@ -82,4 +84,12 @@ void DeviceParentalControlsUrlFilter::OnDeviceParentalControlsChanged(
     const DeviceParentalControls& controls) const {
   NotifyUrlFilteringDelegateChanged();
 }
+
+std::string_view DeviceParentalControlsUrlFilter::GetName() const {
+  // LINT.IfChange(device_parental_controls_url_filtering_delegate)
+  static constexpr std::string_view kName = "Device";
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:device_parental_controls_url_filtering_delegate)
+  return kName;
+}
+
 }  // namespace supervised_user

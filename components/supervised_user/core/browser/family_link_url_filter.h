@@ -169,6 +169,7 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
       const GURL& main_frame_url,
       WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options) override;
+  std::string_view GetName() const override;
 
  private:
   // Allows proxying deprecated calls to the filter for the time of migration.

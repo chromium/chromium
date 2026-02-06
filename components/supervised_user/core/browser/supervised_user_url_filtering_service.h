@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTERING_SERVICE_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTERING_SERVICE_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -80,6 +84,10 @@ struct WebFilteringResult {
       Callback callback,
       const GURL& requested_url,
       InterstitialMode interstitial_mode);
+
+  // Serializes this instance as a top level filtering result. Undefined if
+  // FilteringBehavior is kInvalid.
+  SupervisedUserFilterTopLevelResult ToTopLevelResult() const;
 };
 
 // Internal observer interface for communication between delegates and the
@@ -130,6 +138,10 @@ class UrlFilteringDelegate {
 
   base::WeakPtr<UrlFilteringDelegate> GetWeakPtr();
 
+  // Returns the unique name of the delegate. Used to eg.: generate histogram
+  // names.
+  virtual std::string_view GetName() const = 0;
+
   void AddObserver(UrlFilteringDelegateObserver* observer);
   void RemoveObserver(UrlFilteringDelegateObserver* observer);
 
@@ -138,9 +150,14 @@ class UrlFilteringDelegate {
   void NotifyUrlFilteringDelegateChanged() const;
   void NotifyUrlChecked(WebFilteringResult result) const;
 
+  // Wraps the callback with a metrics callback (see ::EmitMetrics) that records
+  // details about the url filtering result.
+  WebFilteringResult::Callback WrapCallbackWithUrlServiceMetrics(
+      WebFilteringResult::Callback callback,
+      const WebFilterMetricsOptions& options) const;
+
  private:
   base::ObserverList<UrlFilteringDelegateObserver> observers_;
-
   base::WeakPtrFactory<UrlFilteringDelegate> weak_ptr_factory_{this};
 };
 

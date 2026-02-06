@@ -43,6 +43,23 @@ std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type) {
   }
 }
 
+// LINT.IfChange(top_level_filtering_context)
+std::string GetFilteringContextName(FilteringContext context) {
+  switch (context) {
+    case FilteringContext::kDefault:
+      return ".Default";
+    case FilteringContext::kNavigationThrottle:
+      return ".NavigationThrottle";
+    case FilteringContext::kNavigationObserver:
+      return ".NavigationObserver";
+    case FilteringContext::kFamilyLinkSettingsUpdated:
+      return ".FamilyLinkSettingsUpdated";
+    default:
+      NOTREACHED();
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
+
 int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
   int value =
       static_cast<int>(ui::PageTransitionStripQualifier(transition_type));

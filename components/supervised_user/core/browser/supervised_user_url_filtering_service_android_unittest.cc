@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
@@ -32,7 +33,10 @@ class SupervisedUserUrlFilteringServiceTestBase : public testing::Test {
     return test_environment_;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
+  base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_;
   SupervisedUserTestEnvironment test_environment_;
 };
@@ -264,6 +268,14 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       url, base::BindLambdaForTesting([](WebFilteringResult result) {
         EXPECT_TRUE(result.IsAllowed());
       }));
+
+  // Histograms are recorded twice (for main frame and subframe checks).
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.All.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kAllow, 2);
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.Account.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kAllow, 2);
 }
 
 TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
@@ -297,6 +309,14 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       url, base::BindLambdaForTesting([](WebFilteringResult result) {
         EXPECT_TRUE(result.IsAllowed());
       }));
+
+  // Histograms are recorded twice (for main frame and subframe checks).
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.All.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kAllow, 2);
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.Device.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kAllow, 2);
 }
 
 TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
@@ -330,6 +350,17 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       url, base::BindLambdaForTesting([](WebFilteringResult result) {
         EXPECT_TRUE(result.IsAllowed());
       }));
+
+  // Histograms are recorded twice (for main frame and subframe checks).
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.All.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kAllow, 2);
+
+  // In legacy mode, the family link client was used in lieu of device
+  // parental controls.
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.Account.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kAllow, 2);
 }
 
 TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
@@ -367,6 +398,14 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       url, base::BindLambdaForTesting([](WebFilteringResult result) {
         EXPECT_TRUE(result.IsBlocked());
       }));
+
+  // Histograms are recorded twice (for main frame and subframe checks).
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.All.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 2);
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.Device.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 2);
 }
 
 TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
@@ -408,6 +447,17 @@ TEST_P(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
       url, base::BindLambdaForTesting([](WebFilteringResult result) {
         EXPECT_TRUE(result.IsBlocked());
       }));
+
+  // Histograms are recorded twice (for main frame and subframe checks).
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.All.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 2);
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.Device.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kAllow, 2);
+  histogram_tester().ExpectUniqueSample(
+      "SupervisedUsers.Account.TopLevelFilteringResult.Default",
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 2);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

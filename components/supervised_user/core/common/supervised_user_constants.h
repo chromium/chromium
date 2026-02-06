@@ -133,6 +133,8 @@ enum class FilteringContext : int {
   // Use for filtering triggered by changes to Family Link.
   kFamilyLinkSettingsUpdated = 3
 };
+
+std::string GetFilteringContextName(FilteringContext context);
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
 
 // LINT.IfChange(top_level_filtering_result)

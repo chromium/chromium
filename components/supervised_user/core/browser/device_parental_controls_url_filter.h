@@ -37,6 +37,7 @@ class DeviceParentalControlsUrlFilter : public UrlFilteringDelegate {
       const GURL& main_frame_url,
       WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options) override;
+  std::string_view GetName() const override;
 
  private:
   void OnDeviceParentalControlsChanged(
