@@ -136,8 +136,28 @@ bool HTMLVideoElement::HasPendingActivity() const {
 
 Node::InsertionNotificationRequest HTMLVideoElement::InsertedInto(
     ContainerNode& insertion_point) {
-  if (insertion_point.isConnected())
+  if (insertion_point.isConnected()) {
     custom_controls_fullscreen_detector_->Attach();
+
+    // Tag the element as an ad if it is being inserted into the DOM by an ad
+    // script. Once tagged, the element remains tagged for its lifetime.
+    //
+    // We apply a monkey-patch exclusion heuristic to ensure we only tag
+    // videos genuinely originating from ad code, avoiding analytics scripts
+    // that proxy the call from the main content.
+    if (LocalFrame* frame = GetDocument().GetFrame()) {
+      if (AdTracker* ad_tracker = frame->GetAdTracker()) {
+        if (!IsAdRelated() &&
+            ad_tracker->IsAdScriptInStack(
+                AdTracker::StackType::kTopOnly,
+                /*ignore_monkey_patch=*/
+                AdTracker::MonkeyPatchableApi::kNodeAppendChild,
+                /*out_ad_script_ancestry=*/nullptr)) {
+          SetIsAdRelated();
+        }
+      }
+    }
+  }
 
   auto insertion_notification_request =
       HTMLMediaElement::InsertedInto(insertion_point);

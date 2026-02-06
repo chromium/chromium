@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-15000">
+<head>
+</head>
+<body>
+<script type="text/javascript">
+if (window.testRunner) {
+  testRunner.setHighlightAds();
+
+  // Mark 'create-ad-video-script.js' as an ad.
+  testRunner.setDisallowedSubresourcePathSuffixes(["create-ad-video-script.js"], /*block_subresources=*/false);
+}
+
+// Dynamically append the ad script. The <video> element created by this script
+// will be ad-tagged.
+var script = document.createElement('script');
+script.src = "resources/create-ad-video-script.js";
+document.body.appendChild(script);
+
+if (window.testRunner)
+  testRunner.waitUntilDone();
+</script>
+</body>
+</html>
