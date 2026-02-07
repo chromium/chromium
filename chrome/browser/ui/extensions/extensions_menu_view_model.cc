@@ -1204,6 +1204,8 @@ void ExtensionsMenuViewModel::Populate() {
   CHECK(action_models_.empty());
   CHECK(host_access_requests_.empty());
 
+  is_populated_ = true;
+
   // Create and sort the action models by name.
   for (const auto& id : toolbar_model_->action_ids()) {
     auto model = delegate_->CreateActionViewModel(id);

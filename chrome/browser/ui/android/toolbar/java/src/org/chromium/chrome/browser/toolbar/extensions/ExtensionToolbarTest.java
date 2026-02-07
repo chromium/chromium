@@ -92,8 +92,7 @@ public class ExtensionToolbarTest {
                 .perform(click());
 
         // Verify that the test extension is in the menu.
-        // TODO(crbug.com/435305159): The label should be the extension name, not the action name.
-        ViewUtils.onViewWaiting(withText("Test Action")).check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withText("Test Extension")).check(matches(isDisplayed()));
     }
 
     @Test

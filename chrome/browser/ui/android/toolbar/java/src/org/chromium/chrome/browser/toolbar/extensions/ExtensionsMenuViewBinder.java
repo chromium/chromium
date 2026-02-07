@@ -21,6 +21,18 @@ public class ExtensionsMenuViewBinder {
             view.findViewById(R.id.extensions_menu_discover_extensions_button)
                     .setOnClickListener(
                             model.get(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER));
+        } else if (key == ExtensionsMenuProperties.IS_ZERO_STATE) {
+            boolean isZeroState = model.get(ExtensionsMenuProperties.IS_ZERO_STATE);
+            View listView = view.findViewById(R.id.extensions_menu_items);
+            View zeroStateView = view.findViewById(R.id.extensions_menu_zero_state);
+
+            if (isZeroState) {
+                listView.setVisibility(View.GONE);
+                zeroStateView.setVisibility(View.VISIBLE);
+            } else {
+                listView.setVisibility(View.VISIBLE);
+                zeroStateView.setVisibility(View.GONE);
+            }
         } else if (key == ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER) {
             view.findViewById(R.id.extensions_menu_manage_extensions_button)
                     .setOnClickListener(
