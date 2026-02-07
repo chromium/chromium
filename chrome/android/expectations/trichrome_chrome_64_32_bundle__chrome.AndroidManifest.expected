@@ -344,7 +344,6 @@
     <activity  # DIFF-ANCHOR: e86e2b49
         android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$TrampolineActivity"
         android:autoRemoveFromRecents="true"
-        android:documentLaunchMode="always"
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"
@@ -353,7 +352,6 @@
     <activity  # DIFF-ANCHOR: 7ff74272
         android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl$DismissNotificationChromeActivity"
         android:autoRemoveFromRecents="true"
-        android:documentLaunchMode="always"
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"
@@ -362,7 +360,6 @@
     <activity  # DIFF-ANCHOR: 71702606
         android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl$TrampolineActivity"
         android:autoRemoveFromRecents="true"
-        android:documentLaunchMode="always"
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"

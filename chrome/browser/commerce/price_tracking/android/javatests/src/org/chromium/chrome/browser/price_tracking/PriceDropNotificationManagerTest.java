@@ -142,9 +142,11 @@ public class PriceDropNotificationManagerTest {
         assertEquals(
                 DismissNotificationChromeActivity.class.getName(),
                 intent.getComponent().getClassName());
-        assertEquals(
-                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT,
-                intent.getFlags());
+        int expectedFlags = Intent.FLAG_ACTIVITY_NEW_TASK;
+        if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
+            expectedFlags |= Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
+        }
+        assertEquals(expectedFlags, intent.getFlags());
         assertEquals(
                 ContextUtils.getApplicationContext().getPackageName(),
                 intent.getStringExtra(Browser.EXTRA_APPLICATION_ID));

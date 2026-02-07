@@ -1126,7 +1126,6 @@ by a child template that "extends" this file.
             android:exported="false"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
-            android:documentLaunchMode="always"
             android:noHistory="true"/>
 
         <activity
@@ -1135,7 +1134,6 @@ by a child template that "extends" this file.
             android:exported="false"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
-            android:documentLaunchMode="always"
             android:noHistory="true"/>
 
         <activity
@@ -1144,7 +1142,6 @@ by a child template that "extends" this file.
             android:exported="false"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
-            android:documentLaunchMode="always"
             android:noHistory="true"/>
 
         <!-- Activities for task manager. -->

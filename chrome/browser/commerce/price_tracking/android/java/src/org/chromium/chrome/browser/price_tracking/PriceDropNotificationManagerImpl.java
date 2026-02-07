@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -348,10 +349,13 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
                         .setAction(Intent.ACTION_VIEW)
                         .setData(Uri.parse(url))
                         .setClass(mContext, DismissNotificationChromeActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName())
                         .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true)
                         .putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+        if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
         IntentUtils.addTrustedIntentExtras(intent);
         return intent;
     }
@@ -393,6 +397,10 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             if (clusterId != null) intent.putExtra(EXTRA_PRODUCT_CLUSTER_ID, clusterId);
             intent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
             IntentUtils.addTrustedIntentExtras(intent);
+            if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
+                intent.addFlags(
+                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            }
             return intent;
         }
     }

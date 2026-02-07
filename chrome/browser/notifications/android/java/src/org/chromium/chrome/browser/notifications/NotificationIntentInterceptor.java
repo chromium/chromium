@@ -262,6 +262,20 @@ public class NotificationIntentInterceptor {
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION);
         }
 
+        // Required because we are starting an Activity from a non-Activity context.
+        if (!shouldUseBroadcast) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+
+        // To preserve legacy behavior, FLAG_ACTIVITY_NEW_DOCUMENT and
+        // FLAG_ACTIVITY_MULTIPLE_TASK are added to replicate the previous
+        // documentLaunchMode="always" behavior.
+        // TODO(crbug.com/445326737): remove once the experiment is fully rolled out.
+        if (!shouldUseBroadcast
+                && !ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+
         // This flag ensures the broadcast is delivered with foreground priority to speed up the
         // broadcast delivery.
         if (shouldUseBroadcast) intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);

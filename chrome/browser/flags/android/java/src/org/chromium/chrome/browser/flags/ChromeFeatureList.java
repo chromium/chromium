@@ -506,6 +506,8 @@ public abstract class ChromeFeatureList {
             "NotificationPermissionBottomSheet";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_TRAMPOLINE = "NotificationTrampoline";
+    public static final String NOTIFICATION_TRAMPOLINE_NO_NEW_TASK =
+            "NotificationTrampolineNoNewTask";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
     public static final String OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP =
             "OmniboxAutofocusOnIncognitoNtp";
@@ -994,6 +996,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_V2, false, true);
     public static final CachedFlag sNotificationTrampoline =
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
+    public static final CachedFlag sNotificationTrampolineNoNewTask =
+            newCachedFlag(NOTIFICATION_TRAMPOLINE_NO_NEW_TASK, false);
     public static final CachedFlag sPCctMinimumHeight = newCachedFlag(PCCT_MINIMUM_HEIGHT, true);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPersistAcrossReboots =
@@ -1227,6 +1231,7 @@ public abstract class ChromeFeatureList {
                     sNewTabPageCustomizationToolbarButton,
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
+                    sNotificationTrampolineNoNewTask,
                     sPCctMinimumHeight,
                     sPaintPreviewDemo,
                     sPersistAcrossReboots,
