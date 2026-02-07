@@ -3,17 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
-#include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "extensions/common/extension_features.h"
-#include "ui/views/controls/styled_label.h"
 
 class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
  public:
@@ -29,8 +27,12 @@ class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
   ~ExtensionsMenuEntryViewTest() override = default;
 
  protected:
-  ExtensionsMenuButton* primary_button() { return primary_button_; }
-  HoverButton* context_menu_button() { return context_menu_button_; }
+  ExtensionsMenuButton* primary_button() {
+    return menu_entry_->primary_action_button_for_testing();
+  }
+  HoverButton* context_menu_button() {
+    return menu_entry_->context_menu_button_for_testing();
+  }
 
   // ExtensionsToolbarUnitTest:
   void SetUp() override;
@@ -39,10 +41,8 @@ class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
   const std::u16string initial_extension_name_;
   const std::u16string initial_tooltip_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<ExtensionsMenuButton, DanglingUntriaged> primary_button_ = nullptr;
-  raw_ptr<HoverButton, DanglingUntriaged> pin_button_ = nullptr;
-  raw_ptr<HoverButton, DanglingUntriaged> context_menu_button_ = nullptr;
-  raw_ptr<TestToolbarActionViewModel, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<ExtensionsMenuEntryView> menu_entry_ = nullptr;
+  raw_ptr<TestToolbarActionViewModel> model_ = nullptr;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -79,13 +79,14 @@ void ExtensionsMenuEntryViewTest::SetUp() {
           browser(), /*is_enterprise=*/false, action_model_holder_.get(),
           /*site_access_toggle_callback*/ base::DoNothing(),
           /*site_permissions_button_callback=*/base::RepeatingClosure());
-  primary_button_ = menu_entry->primary_action_button_for_testing();
-  context_menu_button_ = menu_entry->context_menu_button_for_testing();
+  menu_entry_ = menu_entry.get();
 
   widget_->SetContentsView(std::move(menu_entry));
 }
 
 void ExtensionsMenuEntryViewTest::TearDown() {
+  menu_entry_ = nullptr;
+  model_ = nullptr;
   // All windows need to be closed before tear down.
   widget_.reset();
 
@@ -93,13 +94,12 @@ void ExtensionsMenuEntryViewTest::TearDown() {
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayCorrectActionTitle) {
-  EXPECT_EQ(primary_button()->label_text_for_testing(),
-            initial_extension_name_);
+  EXPECT_EQ(primary_button()->GetText(), initial_extension_name_);
 
   std::u16string extension_name = u"Extension Name";
   model_->SetActionName(extension_name);
 
-  EXPECT_EQ(primary_button()->label_text_for_testing(), extension_name);
+  EXPECT_EQ(primary_button()->GetText(), extension_name);
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayTooltip) {
