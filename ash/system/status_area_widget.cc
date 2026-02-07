@@ -36,6 +36,7 @@
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_animation_controller.h"
 #include "ash/system/status_area_widget_delegate.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -50,6 +51,7 @@
 #include "ash/wm_mode/wm_mode_button_tray.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_pin_type.h"
@@ -644,6 +646,21 @@ void StatusAreaWidget::InitializeTrayButtonsAccessibleNavFocus() {
   for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->UpdateAccessibleNavFocus(shelf_);
   }
+}
+
+bool StatusAreaWidget::AddTrayIcon(const TrayIconConfiguration& configuration,
+                                   base::RepeatingClosure callback) {
+  return false;
+}
+
+bool StatusAreaWidget::UpdateTrayIcon(
+    const TrayIconConfiguration& configuration) {
+  return false;
+}
+
+bool StatusAreaWidget::RemoveTrayIcon(
+    const TrayIconConfiguration& configuration) {
+  return false;
 }
 
 void StatusAreaWidget::SetOpenShelfPodBubble(

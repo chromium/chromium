@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_component.h"
 #include "ash/shell_observer.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center.h"
@@ -47,6 +48,7 @@ class StatusAreaWidgetDelegate;
 class StopRecordingButtonTray;
 class TrayBackgroundView;
 class TrayBubbleView;
+struct TrayIconConfiguration;
 class UnifiedSystemTray;
 class VideoConferenceTray;
 class VirtualKeyboardTray;
@@ -186,6 +188,23 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   void SetOpenShelfPodBubble(TrayBubbleView* open_tray_bubble);
 
   void InitializeAccessibleProperties();
+
+  // Adds a new status tray icon using the provided configuration. The
+  // `callback` will be invoked when the icon is clicked by the user.
+  // Returns true if the icon was successfully added, or false if an icon with
+  // the sameID already exists.
+  bool AddTrayIcon(const TrayIconConfiguration& configuration,
+                   base::RepeatingClosure callback);
+
+  // Updates the visual properties (image, tooltip) of an existing tray icon
+  // identified by the ID in `configuration`.
+  // Returns whether the icon was found and updated.
+  bool UpdateTrayIcon(const TrayIconConfiguration& configuration);
+
+  // Removes the tray icon identified by the ID in |configuration| from the
+  // status area.
+  // Returns whether the icon was found and removed.
+  bool RemoveTrayIcon(const TrayIconConfiguration& configuration);
 
   // TODO(jamescook): Introduce a test API instead of these methods.
   LogoutButtonTray* logout_button_tray_for_testing() {

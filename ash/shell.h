@@ -6,6 +6,7 @@
 #define ASH_SHELL_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -23,6 +24,7 @@
 #include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
 #include "ash/system/toast/system_nudge_pause_manager_impl.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -61,6 +63,7 @@ class NativeDisplayDelegate;
 }  // namespace display
 
 namespace gfx {
+class ImageSkia;
 class Point;
 }  // namespace gfx
 
@@ -297,6 +300,22 @@ class Mediator;
 namespace curtain {
 class SecurityCurtainController;
 }  // namespace curtain
+
+// Configuration data required to register or update a tray icon in the status
+// area.
+// TODO(b:463430279): Maybe move it to `ash/public`?
+struct ASH_EXPORT TrayIconConfiguration {
+  TrayIconConfiguration();
+
+  TrayIconConfiguration(const TrayIconConfiguration&) = delete;
+  TrayIconConfiguration& operator=(const TrayIconConfiguration&) = delete;
+
+  ~TrayIconConfiguration();
+
+  int64_t id;
+  std::optional<gfx::ImageSkia> image;
+  std::optional<std::u16string> tool_tip;
+};
 
 // Shell is a singleton object that presents the Shell API and implements the
 // RootWindow's delegate interface.
@@ -930,6 +949,26 @@ class ASH_EXPORT Shell : public SessionObserver,
   LoginUnlockThroughputRecorder* login_unlock_throughput_recorder() {
     return login_unlock_throughput_recorder_.get();
   }
+
+  // Adds a status tray icon with the specified `configuration` to the status
+  // area on the display identified by `display_id`. The `callback` will be run
+  // when the icon is clicked.
+  // Returns whether the icon was successfully added.
+  bool AddStatusTrayIcon(const TrayIconConfiguration& configuration,
+                         int64_t display_id,
+                         base::RepeatingClosure callback);
+
+  // Updates the visual properties (e.g. image, tooltip) of the status tray icon
+  // identified by |configuration| on the display identified by `display_id`.
+  // Returns whether the icon was found and updated.
+  bool UpdateStatusTrayIcon(const TrayIconConfiguration& configuration,
+                            int64_t display_id);
+
+  // Removes the status tray icon identified by `configuration` from the status
+  // area on the display identified by `display_id`.
+  // Returns whether the icon was found and removed.
+  bool RemoveStatusTrayIcon(const TrayIconConfiguration& configuration,
+                            int64_t display_id);
 
   // Workaround for testing to simulat user sign-out without Chrome process
   // termination, which conflicts with production behavior.
