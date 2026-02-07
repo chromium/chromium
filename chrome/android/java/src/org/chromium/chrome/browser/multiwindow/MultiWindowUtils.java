@@ -281,8 +281,15 @@ public class MultiWindowUtils implements ActivityStateListener {
             return false;
         }
         if (instanceSwitcherEnabled() && isMultiInstanceApi31Enabled()) {
-            // Moving tabs should be possible to any other instance.
-            return getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
+            @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                if (tabModelSelector.isIncognitoBrandedModelSelected()) {
+                    return getIncognitoInstanceCount(/* activeOnly= */ true) > 1;
+                } else {
+                    instanceType |= PersistedInstanceType.REGULAR;
+                }
+            }
+            return getInstanceCountWithFallback(instanceType) > 1;
         } else {
             return isOpenInOtherWindowSupported(activity);
         }

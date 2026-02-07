@@ -57,12 +57,14 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -349,12 +351,136 @@ public class MultiWindowUtilsUnitTest {
 
         // Instance with no tabs (ID_1) still counts as long as it is alive.
         writeInstanceInfo(
-                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+                INSTANCE_ID_0,
+                URL_1,
+                /* tabCount= */ 3,
+                /* incognitoTabCount= */ 2,
+                TASK_ID_5,
+                /* profileType= */ SupportedProfileType.MIXED);
         writeInstanceInfo(
-                INSTANCE_ID_1, URL_2, /* tabCount= */ 0, /* incognitoTabCount= */ 0, TASK_ID_6);
+                INSTANCE_ID_1,
+                URL_2,
+                /* tabCount= */ 0,
+                /* incognitoTabCount= */ 0,
+                TASK_ID_6,
+                /* profileType= */ SupportedProfileType.MIXED);
+
+        // Mock that the tasks for the 2 active instances are running.
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+                new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
 
         assertTrue(
                 "Should return true on Android R+ with multiple tabs.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testIsMoveOtherWindowSupported_SingleActiveRegularWindow_ReturnsFalse() {
+        MultiWindowTestUtils.enableMultiInstance();
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
+
+        writeInstanceInfo(
+                INSTANCE_ID_0,
+                URL_1,
+                /* tabCount= */ 3,
+                /* incognitoTabCount= */ 0,
+                TASK_ID_5,
+                /* profileType= */ SupportedProfileType.REGULAR);
+
+        // Mock that the tasks for the active instance is running.
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5)));
+
+        assertFalse(
+                "Should return false since there is only one regular window.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testIsMoveOtherWindowSupported_MultipleActiveRegularWindow_ReturnsTrue() {
+        MultiWindowTestUtils.enableMultiInstance();
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
+
+        writeInstanceInfo(
+                INSTANCE_ID_0,
+                URL_1,
+                /* tabCount= */ 3,
+                /* incognitoTabCount= */ 0,
+                TASK_ID_5,
+                /* profileType= */ SupportedProfileType.REGULAR);
+        writeInstanceInfo(
+                INSTANCE_ID_1,
+                URL_2,
+                /* tabCount= */ 2,
+                /* incognitoTabCount= */ 0,
+                TASK_ID_6,
+                /* profileType= */ SupportedProfileType.REGULAR);
+
+        // Mock that the tasks for the 2 active instances are running.
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+                new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
+
+        assertTrue(
+                "Should return true since there are multiple regular windows.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testIsMoveOtherWindowSupported_SingleActiveIncognitoWindow_ReturnsFalse() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowTestUtils.enableMultiInstance();
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+
+        writeInstanceInfo(
+                INSTANCE_ID_0,
+                URL_1,
+                /* tabCount= */ 0,
+                /* incognitoTabCount= */ 2,
+                TASK_ID_5,
+                /* profileType= */ SupportedProfileType.OFF_THE_RECORD);
+
+        // Mock that the task for the active instance is running.
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5)));
+
+        assertFalse(
+                "Should return false since there is only one incognito window.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testIsMoveOtherWindowSupported_MultipleActiveIncognitoWindow_ReturnsTrue() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowTestUtils.enableMultiInstance();
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+
+        writeInstanceInfo(
+                INSTANCE_ID_0,
+                URL_1,
+                /* tabCount= */ 0,
+                /* incognitoTabCount= */ 2,
+                TASK_ID_5,
+                /* profileType= */ SupportedProfileType.OFF_THE_RECORD);
+        writeInstanceInfo(
+                INSTANCE_ID_1,
+                URL_2,
+                /* tabCount= */ 0,
+                /* incognitoTabCount= */ 2,
+                TASK_ID_6,
+                /* profileType= */ SupportedProfileType.OFF_THE_RECORD);
+
+        // Mock that the tasks for the 2 active instances are running.
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+                new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
+
+        assertTrue(
+                "Should return true since there are multiple incognito windows.",
                 mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
     }
 
@@ -1155,10 +1281,22 @@ public class MultiWindowUtilsUnitTest {
     }
 
     private void writeInstanceInfo(
-            int instanceId, String url, int tabCount, int incognitoTabCount, int taskId) {
+            int instanceId,
+            String url,
+            int tabCount,
+            int incognitoTabCount,
+            int taskId,
+            @SupportedProfileType int profileType) {
         MultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
         MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
         MultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
+        MultiInstancePersistentStore.writeProfileType(instanceId, profileType);
+    }
+
+    private void writeInstanceInfo(
+            int instanceId, String url, int tabCount, int incognitoTabCount, int taskId) {
+        writeInstanceInfo(
+                instanceId, url, tabCount, incognitoTabCount, taskId, SupportedProfileType.MIXED);
     }
 }
