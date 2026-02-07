@@ -17,6 +17,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -115,6 +116,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 PreferenceUpdateObserver {
     private static final String TAG = "SettingsActivity";
 
+    // Key used to store activity start time in the Bundle to have it survive activity re-creation.
+    private static final String KEY_START_TIME = "start_time";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
 
@@ -181,6 +185,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     // multi-column mode is enabled.
     private @Nullable TitleUpdater mTitleUpdater;
     private @Nullable MultiColumnTitleUpdater mMultiColumnTitleUpdater;
+
+    // Used to record the Settings activity usage duration in ms. This is recorded at |onDestroy|
+    // of the activity for the main settings only when user actually quits the Settings, not for
+    // activity destruction & re-creation due to configuration change or OS.
+    private long mStartTime;
+
+    // Whether the start time is saved for the restoration after re-creation. These transient
+    // destroy events won't record the duration if this is true.
+    private boolean mStartTimeSaved;
 
     @SuppressLint("InlinedApi")
     @Override
@@ -337,6 +350,19 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             appBarLayout.setElevation(0);
             appBarLayout.setStateListAnimator(null);
         }
+
+        mStartTime = 0;
+        if (savedInstanceState != null) {
+            long startTime = savedInstanceState.getLong(KEY_START_TIME, 0);
+            if (startTime > 0) mStartTime = startTime;
+        } else if (isForMainSettings()) {
+            mStartTime = SystemClock.elapsedRealtime();
+            RecordUserAction.record("Android.Settings.Opened");
+        }
+    }
+
+    private boolean isForMainSettings() {
+        return getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT) == null;
     }
 
     @Override
@@ -727,6 +753,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             // cluttered while showing other settings activities on top.
             mSearchCoordinator.updateSingleColumnSearchUiWidth();
         }
+        mStartTimeSaved = false;
     }
 
     private static @SettingsFragment.AnimationType int getAnimationType(Fragment fragment) {
@@ -795,6 +822,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 mMultiColumnSettings.removeObserver(mSearchCoordinator);
             }
             mSearchCoordinator.destroy();
+        }
+
+        if (!mStartTimeSaved && isForMainSettings()) {
+            long timeSpent = SystemClock.elapsedRealtime() - mStartTime;
+            RecordHistogram.recordLongTimesHistogram("Settings.SessionDuration", timeSpent);
+            if (mSearchCoordinator != null && mSearchCoordinator.searchCompleted()) {
+                RecordHistogram.recordLongTimesHistogram(
+                        "Settings.SessionDuration.SearchCompleted", timeSpent);
+            }
         }
         super.onDestroy();
     }
@@ -1069,6 +1105,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mSearchCoordinator != null) mSearchCoordinator.onSaveInstanceState(outState);
+        if (mStartTime > 0) {
+            outState.putLong(KEY_START_TIME, mStartTime);
+            mStartTimeSaved = true;
+        }
     }
 
     private class TitleUpdater extends FragmentManager.FragmentLifecycleCallbacks {

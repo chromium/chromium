@@ -43,6 +43,7 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -99,6 +100,9 @@ public class SettingsSearchCoordinator
     private static final String KEY_QUERY = "Query";
     private static final String KEY_SELECTION_START = "SelectionStart";
     private static final String KEY_SELECTION_END = "SelectionEnd";
+    private static final String KEY_FIRST_UI_ENTERED = "FirstUiEntered";
+    private static final String KEY_RESULT_UPDATED = "ResultUpdated";
+    private static final String KEY_SEARCH_COMPLETED = "SearchCompleted";
 
     private final AppCompatActivity mActivity;
     private final BooleanSupplier mUseMultiColumnSupplier;
@@ -148,6 +152,19 @@ public class SettingsSearchCoordinator
 
     // True if empty fragment is showing.
     private boolean mShowingEmptyFragment;
+
+    // Flags for metrics:
+    // Whether the search UI is entered for the first time for the current settings activity
+    // session. Used to record the event a user ever entered search since the settings is opened.
+    private boolean mFirstUiEntered = true;
+
+    // Whether the result for a new query is displayed. Used to record the event 'a user tapped
+    // search result' only once per search result.
+    private boolean mResultUpdated;
+
+    // Whether user went through the critical user journey of performing search and clicked
+    // the search result.
+    private boolean mSearchCompleted;
 
     // Interface to communite with search backend and receive results asynchronously.
     public interface SearchCallback {
@@ -217,7 +234,7 @@ public class SettingsSearchCoordinator
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_query, actionBar, true);
         View searchBox = mActivity.findViewById(R.id.search_box);
         setSearchBoxVerticalMargin(searchBox, mUseMultiColumn);
-        searchBox.setOnClickListener(v -> enterSearchState(/* showZeroState= */ true));
+        searchBox.setOnClickListener(this::onClickSearchBox);
 
         View query = mActivity.findViewById(R.id.search_query_container);
         Drawable bg = ContextCompat.getDrawable(mActivity, R.drawable.pill_background);
@@ -261,7 +278,20 @@ public class SettingsSearchCoordinator
                 restoreFragmentState();
             }
             mPaneOpenedBySearch = savedState.getBoolean(KEY_PANE_OPENED_BY_SEARCH);
+            mFirstUiEntered = savedState.getBoolean(KEY_FIRST_UI_ENTERED);
+            mResultUpdated = savedState.getBoolean(KEY_RESULT_UPDATED);
+            mSearchCompleted = savedState.getBoolean(KEY_SEARCH_COMPLETED);
         }
+    }
+
+    private void onClickSearchBox(View view) {
+        RecordUserAction.record("Android.Settings.Search.UiOpened");
+        if (mFirstUiEntered) {
+            RecordUserAction.record("Android.Settings.Search.UiOpenedPerSession");
+            mFirstUiEntered = false;
+        }
+
+        enterSearchState(/* showZeroState= */ true);
     }
 
     private void restoreFragmentState() {
@@ -966,7 +996,13 @@ public class SettingsSearchCoordinator
         }
         if (!query.isEmpty()) {
             mQueryEntered = true;
-            mSearchRunnable = () -> callback.onSearchResults(mIndexData.search(query));
+            mSearchRunnable =
+                    () -> {
+                        if (mShowingEmptyFragment) {
+                            RecordUserAction.record("Android.Settings.Search.Performed");
+                        }
+                        callback.onSearchResults(mIndexData.search(query));
+                    };
             mHandler.postDelayed(mSearchRunnable, 200);
         } else if (mQueryEntered) {
             // Do this only after a query has been entered at least once.
@@ -989,6 +1025,7 @@ public class SettingsSearchCoordinator
                     R.drawable.settings_no_match,
                     /* addToBackStack= */ false,
                     this::openHelpCenter);
+            RecordUserAction.record("Android.Settings.Search.NoMatchFound");
             return;
         }
         // Create a new instance of the fragment and pass the results
@@ -1004,6 +1041,7 @@ public class SettingsSearchCoordinator
                 .setReorderingAllowed(true)
                 .commit();
         mShowingEmptyFragment = false;
+        mResultUpdated = true;
     }
 
     /**
@@ -1024,6 +1062,11 @@ public class SettingsSearchCoordinator
             boolean highlight,
             @Nullable String highlightKey,
             int subViewPos) {
+        if (mResultUpdated) {
+            RecordUserAction.record("Android.Settings.Search.ResultClicked");
+            mResultUpdated = false;
+            mSearchCompleted = true;
+        }
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
         if (preferenceFragment == null) {
@@ -1073,6 +1116,11 @@ public class SettingsSearchCoordinator
         }
 
         enterResultState();
+    }
+
+    /** Returns whether user performed search and clicked the result. */
+    public boolean searchCompleted() {
+        return mSearchCompleted;
     }
 
     private void enterResultState() {
@@ -1255,6 +1303,9 @@ public class SettingsSearchCoordinator
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(KEY_FRAGMENT_STATE, mFragmentState);
         outState.putBoolean(KEY_PANE_OPENED_BY_SEARCH, mPaneOpenedBySearch);
+        outState.putBoolean(KEY_FIRST_UI_ENTERED, mFirstUiEntered);
+        outState.putBoolean(KEY_RESULT_UPDATED, mResultUpdated);
+        outState.putBoolean(KEY_SEARCH_COMPLETED, mSearchCompleted);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         String queryText = queryEdit.getText().toString();
         if (!TextUtils.isEmpty(queryText)) {
