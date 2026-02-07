@@ -218,7 +218,6 @@ class LocationBarMediator
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedWithoutAnimations;
-    private boolean mUrlFocusedWithPastedText;
     private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
     private boolean mIsComposeplateEnabled;
@@ -242,7 +241,6 @@ class LocationBarMediator
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
-    private final boolean mPersistEditingState;
     private @Nullable AutocompleteInput mCurrentInput;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
@@ -342,10 +340,6 @@ class LocationBarMediator
                         this::shouldShowZoomButton,
                         (result) -> mLocationBarLayout.setZoomButtonVisibility(result));
 
-        mPersistEditingState =
-                OmniboxFeatures.sOmniboxImprovementForLFF.isEnabled()
-                        && OmniboxFeatures.sOmniboxImprovementForLFFPersistEditingState.getValue()
-                        && mIsTablet;
         mMultiInstanceManager = multiInstanceManager;
 
         mFuseboxCoordinator
@@ -413,14 +407,6 @@ class LocationBarMediator
 
         if (hasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
-            boolean shouldRetainOmniboxOnFocus = OmniboxFeatures.shouldRetainOmniboxOnFocus();
-            if (!mUrlFocusedWithPastedText
-                    && !shouldRetainOmniboxOnFocus
-                    && mLocationBarLayout.shouldClearTextOnFocus()) {
-                setUrlBarText(UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
-            } else if (shouldRetainOmniboxOnFocus) {
-                mUrlCoordinator.setSelectAllOnFocus(true);
-            }
         } else {
             mUrlFocusedWithoutAnimations = false;
         }
@@ -622,7 +608,7 @@ class LocationBarMediator
             if (NativePage.isChromePageUrl(currentUrl, mLocationBarDataProvider.isOffTheRecord())
                     && mCurrentInput != null) {
                 mCurrentInput.setUserText(null);
-                refreshAutocompleteForCurrentInput();
+                beginOrResumeInput(/* activateNewSession= */ false);
             } else {
                 setUrlBarText(
                         mLocationBarDataProvider.getUrlBarData(),
@@ -876,7 +862,7 @@ class LocationBarMediator
         if (mCurrentInput == null) return; // session not started yet.
 
         mCurrentInput.setUserText(null);
-        refreshAutocompleteForCurrentInput();
+        beginOrResumeInput(/* activateNewSession= */ false);
         updateButtonVisibility();
         mUrlCoordinator.requestAccessibilityFocus();
     }
@@ -980,7 +966,7 @@ class LocationBarMediator
                 // Existing text (e.g. if the user pasted via the fakebox) from the fake box
                 // should be restored after toggling the focus.
                 if (mCurrentInput != null && !mCurrentInput.getUserText().isEmpty()) {
-                    refreshAutocompleteForCurrentInput();
+                    beginOrResumeInput(/* activateNewSession= */ false);
                 }
             }
 
@@ -1015,9 +1001,6 @@ class LocationBarMediator
             mLocationBarLayout.setUrlFocusChangePercent(
                     urlFocusChangeFraction, urlFocusChangeFraction, false);
         }
-        // Reset to the default values.
-        mUrlCoordinator.setSelectAllOnFocus(false);
-        mUrlFocusedWithPastedText = false;
     }
 
     /**
@@ -1047,6 +1030,10 @@ class LocationBarMediator
         session.setSessionActive(true);
         mCurrentInput = session.getAutocompleteInput();
         mCurrentInput.getRequestTypeSupplier().addSyncObserver(mAutocompleteRequestTypeObserver);
+
+        UrlBarData data = UrlBarData.forNonUrlText(mCurrentInput.getUserText());
+        mUrlCoordinator.setUrlBarData(
+                data, UrlBar.ScrollType.NO_SCROLL, mCurrentInput.getSelection());
 
         // In the event input session was activated before native initialization we cannot
         // correctly determine the page classification, rendering the AutocompleteInput
@@ -1364,34 +1351,6 @@ class LocationBarMediator
             UrlBarData urlBarData, @UrlBar.ScrollType int scrollType, Range<Integer> selection) {
         return mUrlCoordinator.setUrlBarData(urlBarData, scrollType, selection);
     }
-
-    /**
-     * Sets the text in the URL bar and triggers a refresh of the autocomplete suggestions. If
-     * `text` is null, the URL bar text will be cleared.
-     *
-     * @param text The text to set in the URL bar. If null, the text is cleared.
-     * @param selectText Whether the text should be selected.
-     * @return Whether this changed the existing text.
-     */
-    /* package */ boolean refreshAutocompleteForCurrentInput() {
-        if (mCurrentInput == null) return false;
-        UrlBarData data = UrlBarData.forNonUrlText(mCurrentInput.getUserText());
-        // TODO(crbug.com/475620206): move to AutocompleteMediator#beginInput() and retire method.
-        boolean wasChanged =
-                mUrlCoordinator.setUrlBarData(
-                        data, UrlBar.ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
-        mUrlCoordinator.setSelection(
-                mCurrentInput.getSelectionStart(), mCurrentInput.getSelectionEnd());
-        // Handle the case of active input with deleted user text: triggers Autocomplete restart.
-        beginOrResumeInput(/* activateNewSession= */ false);
-
-        return wasChanged;
-    }
-
-    /**
-     * Triggers a refresh of the autocomplete suggestions based on the current text in the URL bar.
-     */
-    /* package */ void refreshAutocomplete() {}
 
     /**
      * Requests the URL focus.
@@ -1850,18 +1809,6 @@ class LocationBarMediator
             state.getAutocompleteInput()
                     .setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
             setUrlBarFocus(state.getAutocompleteInput());
-            if (mPersistEditingState) {
-                // Need to post this as the url will not apply the text instantly.
-                PostTask.postTask(
-                        TaskTraits.UI_USER_VISIBLE,
-                        () -> {
-                            if (mCurrentInput != null) {
-                                mUrlCoordinator.setSelection(
-                                        mCurrentInput.getSelectionStart(),
-                                        mCurrentInput.getSelectionEnd());
-                            }
-                        });
-            }
         }
 
         // Set zoom indicator tooltip
@@ -1946,7 +1893,6 @@ class LocationBarMediator
             if (shouldShowLensButton()) LensMetrics.recordOmniboxFocusedWhenLensShown();
         }
 
-        mUrlFocusedWithPastedText = !input.getUserText().isEmpty();
         if (mUrlHasFocus && mUrlFocusedWithoutAnimations) {
             handleUrlFocusAnimation(true);
         } else {
@@ -1954,7 +1900,7 @@ class LocationBarMediator
         }
 
         // Wait for the Url focus change before refreshing autocomplete.
-        refreshAutocompleteForCurrentInput();
+        beginOrResumeInput(/* activateNewSession= */ true);
     }
 
     @Override

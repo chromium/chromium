@@ -5,6 +5,7 @@
 package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
+import android.util.Range;
 
 import androidx.annotation.IntDef;
 
@@ -57,8 +58,7 @@ public class AutocompleteInput implements UserData {
     private String mUserText;
     private boolean mAllowExactKeywordMatch;
     private boolean mHasAttachments;
-    private int mSelectionStart;
-    private int mSelectionEnd;
+    private Range<Integer> mSelection;
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
     private @OmniboxFocusReason int mFocusReason;
@@ -236,8 +236,8 @@ public class AutocompleteInput implements UserData {
         mAllowExactKeywordMatch &= !(oldTextUsesKeywordActivator && !newTextUsesKeywordActivator);
 
         mUserText = text;
-        mSelectionStart = text.length();
-        mSelectionEnd = mSelectionStart;
+        // Place cursor at the end of text.
+        mSelection = Range.create(text.length(), text.length());
         return this;
     }
 
@@ -282,17 +282,12 @@ public class AutocompleteInput implements UserData {
     }
 
     public AutocompleteInput setSelection(int rangeStart, int rangeEnd) {
-        mSelectionStart = rangeStart;
-        mSelectionEnd = rangeEnd;
+        mSelection = Range.create(rangeStart, rangeEnd);
         return this;
     }
 
-    public int getSelectionStart() {
-        return mSelectionStart;
-    }
-
-    public int getSelectionEnd() {
-        return mSelectionEnd;
+    public Range<Integer> getSelection() {
+        return mSelection;
     }
 
     /** Returns the current RefineActionUsage. */
@@ -321,8 +316,8 @@ public class AutocompleteInput implements UserData {
         mPageUrl = GURL.emptyGURL();
         mPageTitle = "";
         mHasAttachments = false;
-        mSelectionStart = 0;
-        mSelectionEnd = 0;
+        // Selection after all text
+        mSelection = Range.create(Integer.MAX_VALUE, Integer.MAX_VALUE);
         mRefineActionUsage = RefineActionUsage.NOT_USED;
         mPageClassification = PageClassification.BLANK_VALUE;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
