@@ -176,6 +176,7 @@ class WebAppBrowserController : public AppBrowserController,
   void OnMetadataObtainedTriggerUpdateDialog(
       base::TimeTicks start_time,
       std::optional<WebAppIdentityUpdate> identity_update) const;
+  void OnUpdateDialogResult(WebAppIdentityUpdateResult result) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void CheckDigitalAssetLinkRelationshipForAndroidApp(

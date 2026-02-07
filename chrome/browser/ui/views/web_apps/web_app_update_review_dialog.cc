@@ -16,7 +16,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -24,17 +23,13 @@
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_update_identity_view.h"
-#include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -137,8 +132,8 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
                        UpdateReviewDialogCallback callback,
                        Browser& browser)
       : app_id_(app_id), callback_(std::move(callback)), browser_(browser) {
-    web_app_provider_ = WebAppProvider::GetForWebApps(browser_->profile());
-    install_manager_observation_.Observe(&web_app_provider_->install_manager());
+    install_manager_observation_.Observe(
+        &WebAppProvider::GetForWebApps(browser_->profile())->install_manager());
     browser_->GetBrowserView().SetProperty(kIsPwaUpdateDialogShowingKey, true);
   }
   ~UpdateDialogDelegate() override {
@@ -150,41 +145,20 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
 
   // Schedule the pending manifest update application, and terminate the dialog.
   void OnAcceptButtonClicked() {
-    CHECK(web_app_provider_);
     CHECK(callback_);
-    CHECK(!browser_->profile()->IsOffTheRecord());
-    auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
-        browser_->profile(), ProfileKeepAliveOrigin::kWebAppUpdate);
-    if (!profile_keep_alive) {
-      // Profile is scheduled for destruction, abort.
-      std::move(callback_).Run(WebAppIdentityUpdateResult::kUnexpectedError);
-      return;
-    }
-    auto keep_alive = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
-    web_app_provider_->scheduler().ScheduleApplyPendingManifestUpdate(
-        app_id_, std::move(keep_alive), std::move(profile_keep_alive),
-        base::DoNothing());
     std::move(callback_).Run(WebAppIdentityUpdateResult::kAccept);
   }
 
   // Close the dialog if the "Ignore" button is clicked after storing that state
   // for the web app.
   void OnIgnoreButtonClicked(const ui::Event& event) {
-    CHECK(web_app_provider_);
     CHECK(callback_);
-    web_app_provider_->scheduler().MarkAppPendingUpdateAsIgnored(
-        app_id_, base::BindOnce(std::move(callback_),
-                                WebAppIdentityUpdateResult::kIgnore));
+    std::move(callback_).Run(WebAppIdentityUpdateResult::kIgnore);
     CHECK(dialog_model() && dialog_model()->host());
     dialog_model()->host()->Close();
   }
 
   void OnUninstallButtonClicked() {
-    CHECK(web_app_provider_);
-    web_app_provider_->ui_manager().PresentUserUninstallDialog(
-        app_id_, webapps::WebappUninstallSource::kAppMenu, browser_->window(),
-        base::DoNothing());
     std::move(callback_).Run(WebAppIdentityUpdateResult::kUninstallApp);
   }
 
@@ -255,7 +229,6 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
   const webapps::AppId app_id_;
   UpdateReviewDialogCallback callback_;
   raw_ref<Browser> browser_;
-  raw_ptr<WebAppProvider> web_app_provider_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

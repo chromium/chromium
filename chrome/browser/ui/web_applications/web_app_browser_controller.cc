@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -799,14 +801,50 @@ void WebAppBrowserController::OnMetadataObtainedTriggerUpdateDialog(
     return;
   }
 
-  // TODO(crbug.com/436868803): Pipe calling of the final update command to this
-  // function.
   web_app::ShowWebAppReviewUpdateDialog(
       app_id(), *identity_update, browser(), start_time,
-      base::BindOnce([](WebAppIdentityUpdateResult result) {
-        base::UmaHistogramEnumeration("WebApp.PredictableUpdateDialog.Result",
-                                      result);
-      }));
+      base::BindOnce(&WebAppBrowserController::OnUpdateDialogResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebAppBrowserController::OnUpdateDialogResult(
+    WebAppIdentityUpdateResult result) const {
+  CHECK(!browser()->profile()->IsOffTheRecord());
+  base::UmaHistogramEnumeration("WebApp.PredictableUpdateDialog.Result",
+                                result);
+  auto* web_app_provider = WebAppProvider::GetForWebApps(browser()->profile());
+  CHECK(web_app_provider);
+
+  switch (result) {
+    case WebAppIdentityUpdateResult::kAccept: {
+      auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
+          browser()->profile(), ProfileKeepAliveOrigin::kWebAppUpdate);
+      if (!profile_keep_alive) {
+        // Profile is scheduled for destruction, abort.
+        return;
+      }
+      auto keep_alive = std::make_unique<ScopedKeepAlive>(
+          KeepAliveOrigin::APP_MANIFEST_UPDATE,
+          KeepAliveRestartOption::DISABLED);
+      web_app_provider->scheduler().ScheduleApplyPendingManifestUpdate(
+          app_id(), std::move(keep_alive), std::move(profile_keep_alive),
+          base::DoNothing());
+      return;
+    }
+    case WebAppIdentityUpdateResult::kIgnore:
+      web_app_provider->scheduler().MarkAppPendingUpdateAsIgnored(
+          app_id(), base::DoNothing());
+      return;
+    case WebAppIdentityUpdateResult::kUninstallApp:
+      web_app_provider->ui_manager().PresentUserUninstallDialog(
+          app_id(), webapps::WebappUninstallSource::kAppMenu,
+          browser()->window(), base::DoNothing());
+      return;
+    case WebAppIdentityUpdateResult::kAppUninstalledDuringDialog:
+    case WebAppIdentityUpdateResult::kUnexpectedError:
+      return;
+  }
+  NOTREACHED();
 }
 
 std::optional<SkColor>
