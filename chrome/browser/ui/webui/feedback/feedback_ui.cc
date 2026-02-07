@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 
+#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/feedback_resources.h"
 #include "chrome/grit/feedback_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,6 +49,9 @@ void AddStringResources(content::WebUIDataSource* source,
       {"pageTitle", IDS_FEEDBACK_REPORT_PAGE_TITLE},
       {"pageUrl", IDS_FEEDBACK_REPORT_URL_LABEL},
       {"privacyNote", IDS_FEEDBACK_PRIVACY_NOTE},
+      {"reportUnsafeSiteDescription",
+       IDS_REPORT_UNSAFE_SITE_DIALOG_DESCRIPTION},
+      {"reportUnsafeSiteTitle", IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE},
       {"screenshot", IDS_FEEDBACK_SCREENSHOT_LABEL},
       {"screenshotA11y", IDS_FEEDBACK_SCREENSHOT_A11Y_TEXT},
       {"sendReport", IDS_FEEDBACK_SEND_REPORT},
@@ -68,6 +73,12 @@ void AddStringResources(content::WebUIDataSource* source,
   source->AddLocalizedString("sysInfo",
                              IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_CHKBOX);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (feedback::ReportUnsafeSiteDialog::IsEnabled(*profile)) {
+    source->AddResourcePath(
+        "report-unsafe-site",
+        IDR_FEEDBACK_REPORT_UNSAFE_SITE_REPORT_UNSAFE_SITE_HTML);
+  }
 }
 
 void CreateAndAddFeedbackHTMLSource(Profile* profile) {

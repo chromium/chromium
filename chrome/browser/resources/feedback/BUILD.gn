@@ -65,5 +65,9 @@ build_webui("build") {
   ts_path_mappings = [ "/shared/key_value_pair_viewer/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/key_value_pair_viewer_shared/tsc/*",
                            target_gen_dir) ]
+
+  extra_grdp_deps = [ "report_unsafe_site:build_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/report_unsafe_site/resources.grdp" ]
+
   webui_context_type = "trusted"
 }

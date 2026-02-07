@@ -3190,6 +3190,15 @@ Google Chrome is unable to recover your settings.
          desc="Label for the 'Learn more' button in the default search engine reset notification, which opens a help center article.">
         Learn more
       </message>
+
+      <!--Report-unsafe-site Dialog (accessed from Help menu)-->
+      <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE" desc="Title of the dialog for reporting an unsafe site to Google">
+        Report this site to Google
+      </message>
+
+      <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_DESCRIPTION" desc="Explanatory text in dialog for reporting an unsafe site to Google">
+        Improve online safety for everyone when you report a site you think is harmful. Learn more about <ph name="BEGIN_LINK">&lt;a href="https://safebrowsing.google.com/#policies"&gt;</ph>Google's unsafe site policy.<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
     </messages>
   </release>
 </grit>

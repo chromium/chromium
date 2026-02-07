@@ -3164,6 +3164,15 @@ Chromium is unable to recover your settings.
          desc="Label for the 'Learn more' button in the default search engine reset notification, which opens a help center article.">
         Learn more
       </message>
+
+      <!--Report-unsafe-site Dialog (accessed from Help menu)-->
+      <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE" desc="Title of the dialog for reporting an unsafe site to Chromium">
+        Report this site
+      </message>
+
+      <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_DESCRIPTION" desc="Explanatory text in dialog for reporting an unsafe site to Chromium">
+        Improve online safety for everyone when you report a site you think is harmful.
+      </message>
     </messages>
   </release>
 </grit>

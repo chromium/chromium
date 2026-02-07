@@ -60,8 +60,16 @@ source_set("feedback") {
 }
 
 source_set("feedback_impl") {
-  sources = []
-  deps = [ ":feedback" ]
+  sources = [
+    "report_unsafe_site_dialog.cc",
+    "report_unsafe_site_dialog.h",
+  ]
+  deps = [
+    ":feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+  ]
   public_deps = [ "//components/feedback" ]
   if (!is_android) {
     sources += [
@@ -106,7 +114,6 @@ source_set("feedback_impl") {
       "//chrome/browser/first_party_sets",
       "//chrome/browser/google",
       "//chrome/browser/performance_manager/public/user_tuning",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
@@ -159,4 +166,19 @@ source_set("feedback_impl") {
     ]
     deps += [ "//ui/ozone" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "report_unsafe_site_dialog_unittest.cc" ]
+  deps = [
+    ":feedback_impl",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/safe_browsing/core/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }
