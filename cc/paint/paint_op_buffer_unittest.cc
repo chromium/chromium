@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -1338,7 +1334,7 @@ class SimpleSerializer {
 
       bytes_written_[op_idx] = bytes_written;
       op_idx++;
-      current_ += bytes_written;
+      UNSAFE_TODO(current_ += bytes_written);
       remaining_ -= bytes_written;
 
       // Number of bytes bytes_written must be a multiple of
@@ -1384,9 +1380,9 @@ class DeserializerIterator {
                                 input_size_, input_size_, options_);
   }
   DeserializerIterator end() {
-    return DeserializerIterator(input_,
-                                static_cast<const char*>(input_) + input_size_,
-                                input_size_, 0, options_);
+    return DeserializerIterator(
+        input_, UNSAFE_TODO(static_cast<const char*>(input_) + input_size_),
+        input_size_, 0, options_);
   }
   bool operator!=(const DeserializerIterator& other) {
     return input_ != other.input_ || current_ != other.current_ ||
@@ -1394,7 +1390,7 @@ class DeserializerIterator {
   }
   DeserializerIterator& operator++() {
     CHECK_GE(remaining_, last_bytes_read_);
-    current_ += last_bytes_read_;
+    UNSAFE_TODO(current_ += last_bytes_read_);
     remaining_ -= last_bytes_read_;
 
     if (remaining_ > 0)
@@ -1786,7 +1782,7 @@ void PushDrawTextBlobOps(PaintOpBuffer* buffer) {
         int glyph_count = 5;
         const auto& run = builder.allocRun(font, glyph_count, 1.2f, 2.3f);
         // allocRun() allocates only the glyph buffer.
-        std::fill(run.glyphs, run.glyphs + glyph_count, 0);
+        std::fill(run.glyphs, UNSAFE_TODO(run.glyphs + glyph_count), 0);
         return builder.make();
       }(),
       [] {
@@ -1797,22 +1793,22 @@ void PushDrawTextBlobOps(PaintOpBuffer* buffer) {
         int glyph_count = 5;
         const auto& run1 = builder.allocRun(font, glyph_count, 1.2f, 2.3f);
         // allocRun() allocates only the glyph buffer.
-        std::fill(run1.glyphs, run1.glyphs + glyph_count, 0);
+        std::fill(run1.glyphs, UNSAFE_TODO(run1.glyphs + glyph_count), 0);
 
         glyph_count = 16;
         const auto& run2 = builder.allocRunPos(font, glyph_count);
         // allocRun() allocates the glyph buffer, and 2 scalars per glyph for
         // the pos buffer.
-        std::fill(run2.glyphs, run2.glyphs + glyph_count, 0);
-        std::fill(run2.pos, run2.pos + glyph_count * 2, 0);
+        std::fill(run2.glyphs, UNSAFE_TODO(run2.glyphs + glyph_count), 0);
+        std::fill(run2.pos, UNSAFE_TODO(run2.pos + glyph_count * 2), 0);
 
         font.setTypeface(test_typefaces[1][1]);
         glyph_count = 8;
         const auto& run3 = builder.allocRunPosH(font, glyph_count, 0);
         // allocRun() allocates the glyph buffer, and 1 scalar per glyph for the
         // pos buffer.
-        std::fill(run3.glyphs, run3.glyphs + glyph_count, 0);
-        std::fill(run3.pos, run3.pos + glyph_count, 0);
+        std::fill(run3.glyphs, UNSAFE_TODO(run3.glyphs + glyph_count), 0);
+        std::fill(run3.pos, UNSAFE_TODO(run3.pos + glyph_count), 0);
         return builder.make();
       }(),
   };
@@ -2288,7 +2284,7 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
     // Restore the correct serialized_size.
     PaintOpWriter::WriteHeaderForTesting(current, serialized_type,
                                          serialized_size);
-    current += serialized_size;
+    UNSAFE_TODO(current += serialized_size);
     total_read += serialized_size;
   }
 }
@@ -2604,8 +2600,8 @@ TEST(PaintOpBufferTest, ValidateRects) {
       deserialized[kLargestPaintOpAlignedSize];
   // We may read uninitialized gaps in this test. Initialize the buffer with a
   // special value to avoid MSAN errors.
-  memset(serialized.get(), 0xA5, kSerializedBytesPerOp);
-  memset(deserialized, 0x5A, std::size(deserialized));
+  UNSAFE_TODO(memset(serialized.get(), 0xA5, kSerializedBytesPerOp));
+  UNSAFE_TODO(memset(deserialized, 0x5A, std::size(deserialized)));
 
   float rect_size = 0x8.765432p1;
   SkRect rect = SkRect::MakeWH(rect_size, rect_size);
@@ -2645,7 +2641,7 @@ TEST(PaintOpBufferTest, ValidateRects) {
     // Replace the first occurrence of rect_size with NaN to make the ClipRectOp
     // invalid.
     for (size_t i = 0; i < bytes_written; i += sizeof(float)) {
-      float* f = reinterpret_cast<float*>(serialized.get() + i);
+      float* f = reinterpret_cast<float*>(UNSAFE_TODO(serialized.get() + i));
       if (*f == rect_size) {
         *f = std::numeric_limits<float>::quiet_NaN();
         break;
@@ -3523,7 +3519,7 @@ TEST(PaintOpBufferTest, RecordPaintFilterDeserializationInvalidPaintOp) {
   TestOptionsProvider options_provider;
   const size_t memory_size = kDefaultSerializedBufferSize;
   auto memory = AllocateSerializedBuffer(memory_size);
-  std::memset(memory.get(), 0x5A, memory_size);
+  UNSAFE_TODO(std::memset(memory.get(), 0x5A, memory_size));
   PaintOpWriter writer(memory.get(), memory_size,
                        options_provider.serialize_options(), false);
   writer.Write(filter.get(), SkM44());
@@ -3532,7 +3528,7 @@ TEST(PaintOpBufferTest, RecordPaintFilterDeserializationInvalidPaintOp) {
   // Replace the first occurrence of rect_size with NaN to make the ClipRectOp
   // invalid.
   for (size_t i = 0; i < writer.size(); i += sizeof(float)) {
-    float* f = reinterpret_cast<float*>(memory.get() + i);
+    float* f = reinterpret_cast<float*>(UNSAFE_TODO(memory.get() + i));
     if (*f == rect_size) {
       *f = std::numeric_limits<float>::quiet_NaN();
       break;

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <cstdint>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -120,7 +116,7 @@ void Raster(GrDirectContext* gr_context,
     deserialized_op->DestroyThis();
 
     size -= bytes_read;
-    data += bytes_read;
+    UNSAFE_TODO(data += bytes_read);
   }
 }
 
@@ -143,7 +139,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     bytes_for_fonts = size / 2;
   }
   const uint8_t* raster_data = base::bits::AlignDown(
-      data + bytes_for_fonts, cc::PaintOpWriter::kMaxAlignment);
+      UNSAFE_TODO(data + bytes_for_fonts), cc::PaintOpWriter::kMaxAlignment);
   if (raster_data < data) {
     return 0;
   }
