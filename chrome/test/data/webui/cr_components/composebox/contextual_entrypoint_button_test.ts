@@ -28,6 +28,25 @@ suite('ContextualEntrypointButton', () => {
         disabledModels: [],
         disabledTools: [],
         disabledInputTypes: [],
+        toolConfigs: [
+          {
+            tool: ToolMode.kDeepSearch,
+            menuLabel: 'Deep Search',
+            chipLabel: 'Deep Search',
+            hintText: 'Deep Search hint',
+            disableActiveModelSelection: false,
+          },
+        ],
+        modelConfigs: [
+          {
+            model: ModelMode.kGeminiPro,
+            menuLabel: 'Gemini Pro',
+            hintText: 'Gemini Pro hint',
+          },
+        ],
+        modelSectionConfig: {
+          header: 'Models',
+        },
       },
     });
     document.body.appendChild(entrypointButton);
