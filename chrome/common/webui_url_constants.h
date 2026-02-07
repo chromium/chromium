@@ -290,7 +290,6 @@ inline constexpr char kChromeUISignoutConfirmationURL[] =
 inline constexpr char kChromeUISiteEngagementHost[] = "site-engagement";
 inline constexpr char kChromeUISkillsHost[] = "skills";
 inline constexpr char kChromeUISkillsURL[] = "chrome://skills/";
-inline constexpr char kChromeUISkillsDialogPath[] = "dialog";
 inline constexpr char kChromeUISplitViewNewTabPageURL[] =
     "chrome://tab-search.top-chrome/split_new_tab_page.html";
 inline constexpr char kChromeUISuggestInternalsHost[] = "suggest-internals";
