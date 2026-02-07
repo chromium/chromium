@@ -283,8 +283,6 @@ class ScopedExecutionEngineFactory {
 
 class MockPolicyChecker : public EnterprisePolicyUrlChecker {
  public:
-  static const MockPolicyChecker* NoEnterprisePolicyChecker();
-
   explicit MockPolicyChecker(EnterprisePolicyBlockReason reason);
   ~MockPolicyChecker();
 
