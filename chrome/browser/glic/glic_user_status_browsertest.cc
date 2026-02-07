@@ -877,6 +877,35 @@ IN_PROC_BROWSER_TEST_P(GlicShareImageEnablementBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(GlicShareImageEnablementBrowserTest, LiveEligibility) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // If enterprise checks are enabled, we should reject if value is pending.
+  EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+
+  // In all cases, share image should be enabled here.
+  EXPECT_TRUE(IsShareImageEnabled());
+
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo primary_account =
+      identity_manager->FindExtendedAccountInfoByAccountId(
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(primary_account.IsEmpty());
+
+  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
+                                      primary_account);
+
+  // Share image should now be disabled without this capability.
+  EXPECT_FALSE(IsShareImageEnabled());
+}
+
 class GlicShareImageGlicDisabledBrowserTest
     : public GlicUserStatusBrowserTest,
       public testing::WithParamInterface<bool> {
