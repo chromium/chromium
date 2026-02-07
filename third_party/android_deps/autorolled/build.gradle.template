@@ -54,7 +54,7 @@ dependencies {
     compileLatest 'com.google.android.gms:play-services-auth-api-phone:+'
     compileLatest 'com.google.android.gms:play-services-auth-base:18.3.0'
     compileLatest 'com.google.android.gms:play-services-auth-blockstore:+'
-    compileLatest 'com.google.android.gms:play-services-auth:21.5.0'
+    compileLatest 'com.google.android.gms:play-services-auth:21.4.0'
     compileLatest 'com.google.android.gms:play-services-base:+'
     compileLatest 'com.google.android.gms:play-services-basement:+'
     compileLatest 'com.google.android.gms:play-services-cast-framework:+'
