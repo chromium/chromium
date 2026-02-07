@@ -595,7 +595,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1959445535228047762">Testua eta orriaren edukia Google-ri bidaliko zaizkio, eta baliteke eginbidea hobetzeko erabiltzea.
   <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1960664692890490165">Chrome-n erosketak egitean, ikusi txartelak ez diren ordainketa-metodoak aukera gisa</translation>
-<translation id="196146181975453736">Bizkorrago ordaintzeko, egin aldi bakarreko segurtasun-egiaztapena</translation>
+<translation id="196146181975453736">Bizkorrago ordaintzeko, egin aldi baterako segurtasun-egiaztapena</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> domeinuko laster-markak</translation>
 <translation id="1973335181906896915">Serializazio-errorea</translation>
 <translation id="1973785048533660168">Funtzionario- eta administrazio-lanpostuak</translation>
@@ -2335,7 +2335,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4764680219299728632">Sukaldeak, suak eta labeak</translation>
 <translation id="4764776831041365478">Baliteke <ph name="URL" /> helbideko web-orria tarte batez ez funtzionatzea edo beste web-helbide batera betiko aldatu izatea.</translation>
 <translation id="4766713847338118463">Bi grapa behean</translation>
-<translation id="4768816584204270288">Epeka ordaintzen baduzu, aldi bakarreko txartel birtualaren zenbaki bat beteko da. Erosketa honetarako txartelaren xehetasunak kopiatzeko eta itsasteko, sakatu hau.</translation>
+<translation id="4768816584204270288">Epeka ordaintzen baduzu, erabilera bakarreko txartel birtualaren zenbaki bat beteko da. Erosketa honetarako txartelaren xehetasunak kopiatzeko eta itsasteko, sakatu hau.</translation>
 <translation id="4768864802656530630">Sistemaren erregistro xehatuak. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4771249073710170730">Irratiz kontrolatutako ibilgailuak eta modelismoa</translation>
 <translation id="4771973620359291008">Errore ezezagun bat gertatu da.</translation>
@@ -2461,7 +2461,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4961708452830821006">Mikrofonoa erabiltzeko, eman Chrome-ri baimena hemen: <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Paisaien diseinua</translation>
 <translation id="4967366744630699583">Editatu helbidea</translation>
-<translation id="4968046291688599384">Bete da <ph name="BNPL_ISSUER_NAME" /> zerbitzuko aldi bakarreko txartel birtualaren zenbakia.</translation>
+<translation id="4968046291688599384">Bete da <ph name="BNPL_ISSUER_NAME" /> zerbitzuko erabilera bakarreko txartel birtualaren zenbakia.</translation>
 <translation id="4968522289500246572">Mugikorretan erabiltzeko dago diseinatuta aplikazioa, eta agian ez da behar bezala aldatuko tamaina. Litekeena da aplikazioak arazoak izatea edo berrabiaraztea.</translation>
 <translation id="4968665849807487749">Leihoak pantaila guztietan kudeatzea eska dezake</translation>
 <translation id="4969341057194253438">Ezabatu grabaketa</translation>
