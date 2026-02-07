@@ -3277,7 +3277,13 @@ DispatchEventResult Node::DispatchDOMActivateEvent(int detail,
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
   UIEvent& event = *UIEvent::Create();
-  event.initUIEvent(event_type_names::kDOMActivate, true, true,
+  // DOMActivate inherits bubbles from the underlying event to prevent
+  // activation behavior of parent elements from running when it doesn't bubble.
+  const bool bubbles =
+      RuntimeEnabledFeatures::DOMActivateBubblesInheritanceEnabled()
+          ? underlying_event.bubbles()
+          : true;
+  event.initUIEvent(event_type_names::kDOMActivate, bubbles, true,
                     GetDocument().domWindow(), detail);
   event.SetUnderlyingEvent(&underlying_event);
   event.SetComposed(underlying_event.composed());

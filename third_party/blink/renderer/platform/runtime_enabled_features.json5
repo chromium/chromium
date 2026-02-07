@@ -2157,6 +2157,13 @@
       name: "DocumentWrite",
     },
     {
+      // DOMActivate event inherits bubbles from the underlying event to
+      // prevent activation behavior of parent elements when it doesn't bubble.
+      // crbug.com/41431966
+      name: "DOMActivateBubblesInheritance",
+      status: "stable",
+    },
+    {
       name: "DOMPartsAPI",
       status: "experimental",
       implied_by: ["DOMPartsAPIMinimal"],
