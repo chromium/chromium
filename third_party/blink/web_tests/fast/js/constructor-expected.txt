@@ -13,8 +13,8 @@ PASS window.document.body.constructor.prototype.__proto__ === window.HTMLBodyEle
 PASS window.document.body.constructor.prototype.__proto__ === window.HTMLElement.prototype is true
 PASS htmlCollection.constructor === window.HTMLCollection is true
 PASS htmlCollection.constructor.prototype === window.HTMLCollection.prototype is true
-PASS mutationEvent.constructor === window.MutationEvent is true
-PASS mutationEvent.constructor.prototype.__proto__ === window.Event.prototype is true
+PASS customEvent.constructor === window.CustomEvent is true
+PASS customEvent.constructor.prototype.__proto__ === window.Event.prototype is true
 PASS successfullyParsed is true
 
 TEST COMPLETE

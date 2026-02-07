@@ -235,7 +235,6 @@ crbug.com/1446498 fast/dom/MutationObserver/observe-characterdata.html [ Failure
 crbug.com/1446498 fast/dom/Window/get-set-properties.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/Window/window-lookup-precedence.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/shadow/shadow-boundary-crossing.html [ Failure Pass ]
-crbug.com/1446498 fast/js/constructor.html [ Failure Pass ]
 crbug.com/1446498 http/tests/xmlhttprequest/reentrant-cancel-abort.html [ Failure Pass ]
 
 crbug.com/1446498 editing/pasteboard/drag-and-drop-image-contenteditable.html [ Pass Timeout ]
