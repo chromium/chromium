@@ -1329,7 +1329,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5868644772996939262">I-autofill ang mga password at passkey</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="5873179562631407582">I-tap at i-hold ang anumang nakabukas na tab</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="5887400589839399685">Na-save ang card</translation>
 <translation id="5888889603768021126">Naka-sign in gamit ang</translation>
 <translation id="5889333064153755823">I-delete ang Data mula sa Pag-browse</translation>
@@ -1666,6 +1665,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Gawing default sa Mga Setting…</translation>
 <translation id="7007970306646738803">Piliin kung ano ang gagawin sa kasalukuyang data mula sa pag-browse sa device na ito, tulad ng mga tab, history, at mga password.</translation>
+<translation id="7012978439516925343">I-verify na ikaw ito para makagawa ng passkey</translation>
 <translation id="7015418667643980944">Split view</translation>
 <translation id="7016070607649558507">Mayroon kang 1 mahinang password. Ayusin ito ngayon para manatiling ligtas.</translation>
 <translation id="7016958933495968912">Mga opsyon para sa Discover</translation>

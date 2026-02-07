@@ -564,6 +564,17 @@ Si cette règle est désactivée ou n'est pas configurée, les appareils ne reç
 Cette règle ne concerne que les anciens modèles qui ne reçoivent pas automatiquement les mises à jour étendues.
 
 Pour en savoir plus, veuillez consulter https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
+<translation id="1432008122934973720">Par défaut, les autorisations d'accès au réseau local (LNA) ne peuvent être demandées dans les sous-frames multi-origine que si elles sont explicitement déléguées. Cette règle peut être utilisée pour remplacer ce comportement par défaut afin que les autorisations LNA soient héritées par défaut dans les sous-frames, sauf si elles sont explicitement refusées dans la règle sur les autorisations.
+
+Si cette règle est activée, toutes les fonctionnalités de la règle sur les autorisations LNA sont déléguées par défaut aux sous-frames, qui peuvent envoyer des requêtes réseau locales (ce qui déclenche l'invite d'autorisation).
+
+Si cette règle est désactivée ou n'est pas configurée, la fonctionnalité de la règle sur les autorisations doit être déléguée explicitement aux sous-frames pour qu'ils puissent envoyer des requêtes réseau locales et déclencher l'invite d'autorisation.
+
+Cette règle s'applique aux fonctionnalités <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />, <ph name="LOOPBACK_NETWORK_FEATURE_NAME" /> et <ph name="LOCAL_NETWORK_FEATURE_NAME" /> de la règle sur les autorisations.
+
+Pour en savoir plus sur l'accès au réseau local, consultez https://wicg.github.io/local-network-access/ et https://developer.chrome.com/blog/local-network-access.
+
+Pour en savoir plus sur la règle sur les autorisations, consultez https://developer.mozilla.org/fr/docs/Web/HTTP/Guides/Permissions_Policy.</translation>
 <translation id="1432834104376790711">Cette règle active ou désactive le mode Économiseur de batterie.
       Dans Chrome, ce paramètre limite la fréquence d'images afin de réduire la consommation d'énergie. Si cette règle n'est pas configurée, l'utilisateur final peut contrôler ce paramètre dans chrome://settings/performance.
       Sous ChromeOS, ce paramètre limite la fréquence d'images et la fréquence du processeur, diminue la luminosité des rétroéclairages et active le mode Économiseur de batterie d'Android. Sur les appareils dotés de plusieurs processeurs, certains processeurs sont désactivés.
@@ -1565,6 +1576,7 @@ Cette règle relative aux appareils est équivalente à la règle relative aux u
 <translation id="2090939118981888335">Si vous activez cette règle, le proxy de compression des données est activé. Si vous la désactivez, le proxy est désactivé.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si vous ne la configurez pas, les utilisateurs peuvent choisir d'utiliser ou non la fonctionnalité.</translation>
+<translation id="2091689441590064807">Ne pas autoriser les requêtes LNA dans les sous-frames sans délégation explicite</translation>
 <translation id="2093552723795057221">Ne pas signaler l'état audio</translation>
 <translation id="209388704279338003">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> à la place.</translation>
 <translation id="2093951844062548778">Cette règle autorise Réponses rapides à accéder au contenu sélectionné et à envoyer au serveur les infos pour obtenir les résultats de la définition.
@@ -7596,6 +7608,7 @@ Cette règle peut être utilisée si l'élimination de la prise en charge de l'A
 REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="6083281887050888160">Activer l'association Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (clients Windows) :</translation>
+<translation id="6085580138417523410">Autoriser les demandes d'accès au réseau local (LNA) dans les sous-frames sans délégation explicite</translation>
 <translation id="6087413944876892918">Utiliser l'algorithme <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Définir le niveau de batterie minimal autorisé avec l'alimentation alternée en heures pleines</translation>
 <translation id="6089679180657323464">Contrôle les paramètres du dispositif de contrôle de diagnostic et de télémétrie de Wilco.</translation>
@@ -10118,6 +10131,7 @@ Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les
 <translation id="7669630878711068277">Si vous activez cette règle ou que vous ne la configurez pas, les utilisateurs peuvent imprimer dans <ph name="PRODUCT_NAME" />. En revanche, ils ne peuvent pas modifier ce paramètre.
 
       Si vous la désactivez, les utilisateurs ne peuvent pas imprimer à partir de <ph name="PRODUCT_NAME" />. La fonctionnalité d'impression est désactivée dans le menu à trois points, les extensions et les applications JavaScript.</translation>
+<translation id="7672510074688643558">Autoriser les requêtes LNA dans les sous-frames sans délégation explicite</translation>
 <translation id="7673194325208122247">Période (millisecondes)</translation>
 <translation id="7677220829878081413">
       Si la règle est définie sur "ArcSession", elle contraint l'appareil à redémarrer lorsqu'un utilisateur se déconnecte si Android est en cours d'exécution.

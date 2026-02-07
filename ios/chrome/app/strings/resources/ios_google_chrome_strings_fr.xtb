@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1035560095760914532">Placez Chrome dans la zone du bas pour y accéder à tout moment</translation>
 <translation id="1076643793026027628">Chrome ouvre automatiquement les liens YouTube en navigation privée en mode navigation privée.</translation>
 <translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le Gestionnaire de mots de passe de Google, car ils ne répondent pas aux exigences.</translation>
 <translation id="1086486568852410168">Rechercher avec Google Lens</translation>
@@ -89,6 +90,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="288992067439702510">Vous avez atteint la limite de <ph name="LIMIT" /> favoris Google Chrome. Par conséquent, certains de vos favoris n'ont pas encore été enregistrés dans votre compte Google.
 
 Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que vous n'en aurez pas supprimé. Si vous vous déconnectez maintenant, les favoris non enregistrés seront supprimés.</translation>
+<translation id="2901621928549457170">Ouvrez Chrome instantanément lorsque vous utilisez votre iPad</translation>
 <translation id="2922914028977213693">Appuyez ici pour exploiter tout le potentiel de Chrome sur votre iPad.</translation>
 <translation id="292371311537977079">Paramètres de Chrome</translation>
 <translation id="2923827943290349720">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
@@ -173,6 +175,8 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5123188916260706415">Effectuer une recherche vocale dans Chrome</translation>
 <translation id="5162467219239570114">Version de Chrome obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chrome.</translation>
+<translation id="5172049865623113551">Ouvrez Chrome instantanément lorsque vous utilisez votre iPhone</translation>
+<translation id="5179095426828744632">Accédez plus rapidement à Chrome depuis votre dock</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5190139289262548459">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chrome est utilisé.</translation>
 <translation id="5209238444239954363">Chrome n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>

@@ -514,6 +514,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1333965224356556482">Não permitir que os sites vejam a sua localização</translation>
 <translation id="1335282218035876586">O seu Chromebook já não está a receber atualizações de segurança e software. Atualize o Chromebook para obter a melhor experiência.</translation>
 <translation id="133535873114485416">Introdução preferida</translation>
+<translation id="13356285923490863">Nome da Política</translation>
 <translation id="1335929031622236846">Inscreva o seu dispositivo</translation>
 <translation id="133660899895084533">Ler dados e informações de periféricos Bluetooth</translation>
 <translation id="1336902454946927954">A sua chave de segurança está bloqueada porque não foi possível reconhecer a sua impressão digital. Para a desbloquear, introduza o seu PIN.</translation>
@@ -2628,6 +2629,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Rever gramática com a ortografia</translation>
 <translation id="2750020734439919571">Mais definições e autorizações da app Chrome</translation>
+<translation id="275010360476017464">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada)</translation>
 <translation id="2750602041558385535">Transferência não validada bloqueada</translation>
 <translation id="2751454300227269244">Mova a boca para a direita</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> quer saber qual é o número de ID da sua chave de segurança. O site irá saber exatamente qual é a chave de segurança que está a usar.</translation>
@@ -4731,6 +4733,7 @@ Quer pará-lo?</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Partilhar separador com o Gemini}other{Partilhar # separadores com o Gemini}}</translation>
+<translation id="4172944993779635350">A sua palavra-passe para "<ph name="URL" />" está guardada apenas neste dispositivo. Para a usar nos seus outros dispositivos, guarde-a na sua conta.</translation>
 <translation id="4173129130568053653">O Gemini pode ajudar a marcar reuniões, criar carrinhos de compras ou realizar outras tarefas que lhe atribuir.</translation>
 <translation id="4175137578744761569">Roxo claro e branco</translation>
 <translation id="4176463684765177261">Desativado</translation>
@@ -5047,6 +5050,7 @@ Quer pará-lo?</translation>
 <translation id="4386604394450371010">vista geral</translation>
 <translation id="4387890294700445764">Palavras-passe comprometidas</translation>
 <translation id="4388650384344483842">Use, pelo menos, 8 carateres</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Palavra-passe para <ph name="URL" />}other{Palavras-passe para <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores</translation>
 <translation id="439266289085815679">A configuração do Bluetooth é controlada por <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edite o ficheiro de configuração.</translation>
@@ -5576,6 +5580,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4762849514113423887">Palavra-passe incorreta. Tente novamente.</translation>
 <translation id="4763408175235639573">Foram definidos os seguintes cookies quando viu esta página</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> não é uma conta do Google for Education válida. Contacte o seu administrador. Se for um administrador, pode configurar a sua organização ao visitar: g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} palavra-passe para "<ph name="URL" />" está guardada apenas neste dispositivo. Para a usar nos seus outros dispositivos, guarde-a na sua conta.}other{{COUNT} palavras-passe para "<ph name="URL" />" estão guardadas apenas neste dispositivo. Para as usar nos seus outros dispositivos, guarde-as na sua conta.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Este dispositivo vai ser guardado durante 1 mês e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {MONTHS} meses e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="476563889641554689">Selecione uma área para pesquisar com o Lens</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{A verificar a chave pública e o bloqueio de integridade… Falta menos de 1 minuto}=1{A verificar a chave pública e o bloqueio de integridade… Falta 1 minuto}other{A verificar a chave pública e o bloqueio de integridade… Faltam # minutos}}</translation>
@@ -5763,6 +5768,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4881685975363383806">Não lembrar novamente</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Tem acesso a este site</translation>
+<translation id="4882848900607400156">Quando partilha a sua localização exata, o Gemini pode responder às suas perguntas com mais precisão. Os seus dados não são usados para melhorar os modelos de IA generativa.</translation>
 <translation id="4882919381756638075">Normalmente, os sites utilizam o seu microfone para funcionalidades de comunicação como chat de vídeo.</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestor de &amp;Tarefas</translation>
@@ -5853,6 +5859,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4945439665401275950">Para configurar a impressão digital, peça à criança para tocar no botão ligar/desligar. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">Launcher + seta para cima</translation>
 <translation id="4947376546135294974">Dados do site que está a visitar</translation>
+<translation id="4948370357877377178">Continue as suas tarefas</translation>
 <translation id="4950100687509657457">Criar perfil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Ações</translation>
@@ -6046,6 +6053,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Com encriptação RSA</translation>
 <translation id="5090637338841444533">Sem autorização para monitorizar a posição da câmara</translation>
 <translation id="5091636240353511739">Mostrar PIN</translation>
+<translation id="5093447877601682598">Enviar feedback sobre a Faixa de separadores</translation>
 <translation id="5093477827231450397">Lista de sites bloqueados que não quer que sugiram anúncios para outros sites</translation>
 <translation id="5093569275467863761">Subframe de Navegação anónima na cache para a frente/para trás: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Pode abrir e editar ficheiros suportados com esta app a partir da app Files ou outras apps. Para controlar que ficheiros abrem esta app por predefinição, <ph name="BEGIN_LINK" />saiba como definir apps predefinidas no dispositivo<ph name="END_LINK" />.</translation>
@@ -8253,6 +8261,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6636623428211296678">Explore mais definições abaixo ou conclua agora</translation>
 <translation id="6639554308659482635">Memória SQLite</translation>
 <translation id="6640268266988685324">Separador aberto</translation>
+<translation id="664271268954513498">Valor da Política</translation>
 <translation id="6642720633335369752">Para ver todas as janelas de apps abertas, deslize rapidamente para cima a partir da parte inferior e mantenha pressionado.</translation>
 <translation id="664290675870910564">Seleção de rede</translation>
 <translation id="6643016212128521049">Limpar</translation>
@@ -8879,6 +8888,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7057567173736333354">Descreva a imagem</translation>
 <translation id="70577934383983846">Use esta palavra-passe em todos os seus dispositivos</translation>
 <translation id="7058024590501568315">Rede oculta</translation>
+<translation id="7058325593717863084">Enviar feedback sobre a Faixa de separadores</translation>
 <translation id="7059858479264779982">Definir para iniciação automática</translation>
 <translation id="7060004353663489242">O campo <ph name="FIELD_LIST" /> é obrigatório</translation>
 <translation id="7063129466199351735">A processar atalhos...</translation>
@@ -9079,6 +9089,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sair da página}other{Sair das páginas}}</translation>
 <translation id="7207457272187520234">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
 <translation id="7207631048330366454">Pesquisar apps</translation>
+<translation id="7209958456051239069">Quando partilha a sua localização exata, o Gemini pode responder às suas perguntas com mais precisão</translation>
 <translation id="7210257969463271891">As apps Web que instalar são apresentadas aqui</translation>
 <translation id="7210432570808024354">Tocar e arrastar para mover itens</translation>
 <translation id="7210499381659830293">Impressoras por extensão</translation>
@@ -10698,6 +10709,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8288032458496410887">Desinstalar app <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Extrair texto do PDF</translation>
 <translation id="8289128870594824098">Tamanho do disco</translation>
+<translation id="8289200713453671499">Alterne rapidamente entre os seus grupos de separadores e as suas conversas de IA recentes sem perder o seu lugar.</translation>
 <translation id="8289509909262565712">Damos-lhe as boas-vindas ao <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Transfira o Chrome</translation>
 <translation id="8291942417224950075">Para utilização pessoal</translation>
@@ -11678,6 +11690,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8945508919180478719">Microfone de estúdio</translation>
 <translation id="8946359700442089734">As funcionalidades de depuração não foram totalmente ativadas neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Reduzir todos os pedidos na barra de endereço</translation>
+<translation id="8946996840522387154">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada) Os seus dados não são usados para melhorar os modelos de IA generativa.</translation>
 <translation id="894763922177556086">Boa</translation>
 <translation id="895054485242522631">Os sites podem utilizar sensores de movimentos</translation>
 <translation id="8951256747718668828">Não foi possível concluir o restauro devido a um erro.</translation>

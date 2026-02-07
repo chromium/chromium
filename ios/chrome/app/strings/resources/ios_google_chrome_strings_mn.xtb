@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1035560095760914532">Chrome-д хүссэн үедээ хандахын тулд доод хэсэгт байрлуулна уу</translation>
 <translation id="1076643793026027628">Chrome YouTube-н нууцлалтай холбоосыг Нууцлалтай горимд автоматаар нээнэ.</translation>
 <translation id="1081114897601629648">Дараах нууц үгнүүд шаардлагад нийцэхгүй байгаа тул Google Нууц үгний менежер лүү импортлоогүй.</translation>
 <translation id="1086486568852410168">Google Lens-р хайх</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Та Google Chrome-н <ph name="LIMIT" /> хавчуургын хязгаарт хүрсэн тул таны зарим хавчуургыг Google Бүртгэлд тань хараахан хадгалаагүй байна.
 
 Та зарим хавчуургаа устгах хүртэл бүртгэлдээ шинэ хавчуурга хадгалах боломжгүй. Хэрэв та одоо гарвал хадгалаагүй хавчуургыг устгана.</translation>
+<translation id="2901621928549457170">iPad ашиглаж байхдаа Chrome-г шуурхай нээгээрэй</translation>
 <translation id="2922914028977213693">iPad дээрээ Chrome-г бүрэн ашиглахын тулд энд товшоорой.</translation>
 <translation id="292371311537977079">Chrome-н тохиргоо</translation>
 <translation id="2923827943290349720">Таныг Chrome-г хаах үед Нууцлалтай табуудыг түгжинэ</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome-г сонгоно уу</translation>
 <translation id="5123188916260706415">Chrome-д дуу хоолойгоор хайх</translation>
 <translation id="5162467219239570114">Chrome хуучирсан байна. <ph name="BEGIN_LINK" />Апп дэлгүүр<ph name="END_LINK" />-т шинэчлэлт байхгүй бол төхөөрөмж тань Chrome-н шинэ хувилбарыг цаашид дэмжихгүй байж болзошгүй.</translation>
+<translation id="5172049865623113551">iPhone ашиглаж байхдаа Chrome-г шуурхай нээгээрэй</translation>
+<translation id="5179095426828744632">Сууриас Chrome-д илүү хурдан хандаарай</translation>
 <translation id="5184329579814168207">Chrome-д нээх</translation>
 <translation id="5190139289262548459">Танай байгууллага, <ph name="DOMAIN" /> таны нэвтэрсэн бүртгэл болон Chrome-г хэрхэн ашиглахыг удирдана.</translation>
 <translation id="5209238444239954363">Chrome-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>

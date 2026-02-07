@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1035560095760914532">Ilagay ang Chrome sa ibabang bahagi para ma-access ito anumang oras</translation>
 <translation id="1076643793026027628">Awtomatikong binubuksan ng Chrome sa Incognito ang mga Incognito na link ng YouTube.</translation>
 <translation id="1081114897601629648">Hindi na-import ang mga sumusunod na password sa Google Password Manager, dahil hindi tumutugma ang mga ito sa mga requirement.</translation>
 <translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
@@ -89,6 +90,7 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="288992067439702510">Naabot mo ang limitasyon ng Google Chrome na <ph name="LIMIT" /> (na) bookmark, kaya hindi pa nase-save sa iyong Google Account ang ilan sa mga bookmark mo.
 
 Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde-delete ng ilan. Kung magsa-sign out ka ngayon, made-delete ang mga hindi na-save na bookmark.</translation>
+<translation id="2901621928549457170">Buksan kaagad ang Chrome kapag ginagamit mo ang iPad mo</translation>
 <translation id="2922914028977213693">Mag-tap dito para masulit ang Chrome sa iyong iPad.</translation>
 <translation id="292371311537977079">Mga setting ng Chrome</translation>
 <translation id="2923827943290349720">I-lock ang mga tab na Incognito kapag isinara mo ang Chrome</translation>
@@ -173,6 +175,8 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="5119391094379141756">Piliin ang Chrome</translation>
 <translation id="5123188916260706415">Maghanap gamit ang boses sa Chrome</translation>
 <translation id="5162467219239570114">Luma na ang Chrome. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chrome.</translation>
+<translation id="5172049865623113551">Buksan kaagad ang Chrome kapag ginagamit mo ang iPhone mo</translation>
+<translation id="5179095426828744632">Mas mabilis na i-access ang Chrome mula sa iyong dock</translation>
 <translation id="5184329579814168207">Buksan sa Chrome</translation>
 <translation id="5190139289262548459">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chrome.</translation>
 <translation id="5209238444239954363">Hindi matingnan ng Chrome kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>

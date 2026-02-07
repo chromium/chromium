@@ -1329,7 +1329,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5868644772996939262">Automatické vyplňování hesel a přístupových klíčů</translation>
 <translation id="5869522115854928033">Uložená hesla</translation>
 <translation id="5873179562631407582">Klepněte a podržte libovolné otevřené karty</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Spravováno vaší organizací.</translation>
 <translation id="5887400589839399685">Karta byla uložena</translation>
 <translation id="5888889603768021126">Poskytovatel přihlášení</translation>
 <translation id="5889333064153755823">Vymazat údaje o prohlížení</translation>
@@ -1666,6 +1665,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Nastavit v Nastavení jako výchozí…</translation>
 <translation id="7007970306646738803">Vyberte, co chcete udělat se stávajícími údaji o prohlížení na tomto zařízení, jako jsou karty, historie a hesla.</translation>
+<translation id="7012978439516925343">K vytvoření přístupového klíče ověřte, že jste to vy</translation>
 <translation id="7015418667643980944">Rozdělené zobrazení</translation>
 <translation id="7016070607649558507">Máte jedno slabé heslo. Pokud chcete být v bezpečí, ihned to vyřešte.</translation>
 <translation id="7016958933495968912">Možnosti funkce Objevit</translation>

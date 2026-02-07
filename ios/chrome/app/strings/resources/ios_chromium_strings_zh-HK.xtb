@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">這代表 Chromium 每次都會要求取得流動網站。</translation>
 <translation id="1115463765356382667">完成下列建議動作，充分運用 Chromium 的各項功能。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
+<translation id="119044033865561140">在 iPad 上即時開啟 Chromium</translation>
 <translation id="1211450393895337634">準備好在 iPad 瀏覽時可以更快開啟 Chromium。</translation>
 <translation id="1229234641991056119">在 Chromium 使用 Safari 密碼、記錄、書籤和信用卡</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕按 [設定] 並允許 Chromium 新增您的相片</translation>
 <translation id="1260702988262336471">開啟 Chromium 選單</translation>
 <translation id="12739128458173458">如要將此分頁傳送至其他裝置，請在這兩部裝置上登入 Chromium。</translation>
+<translation id="1279797561821266129">從 Dock 更快存取 Chromium</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果<ph name="BEGIN_LINK" />應用程式商店<ph name="END_LINK" />沒有提供任何更新，您的裝置可能已停止支援新版本的 Chromium。</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1423007117030725713">在新的 Chromium 分頁上開始搜尋。</translation>
@@ -176,6 +178,7 @@
 <translation id="4790638144988730920">繼續使用 Google 帳戶中的 Chromium 資料。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼。請稍後再試。</translation>
 <translation id="4856138222358683580">Chromium 操作</translation>
+<translation id="4869706986935301458">在 iPhone 上即時開啟 Chromium</translation>
 <translation id="4904452304169763785">在 Chromium 偵測到任何私隱或安全問題時接收快訊。</translation>
 <translation id="4908570938463711775">瞭解實用的 Chromium 基礎知識以開始使用</translation>
 <translation id="4962295957157529683">請完成你在其他已開啟的 Chromium 視窗中正在執行的動作。</translation>
@@ -295,6 +298,7 @@
 <translation id="7395825497086981028">系統會將密碼儲存在 <ph name="EMAIL" /> 的「密碼管理工具」。</translation>
 <translation id="7434848749522628428">此密鑰會儲存至 <ph name="USER_EMAIL" /> 的「密碼管理工具」</translation>
 <translation id="7504829997542308412">開啟 Chromium</translation>
+<translation id="7507535968973352823">將 Chromium 放在底部區域，方便隨時存取</translation>
 <translation id="7531461704633548377">來自 Chromium</translation>
 <translation id="7554983317097061001">Chromium 提示：將 Chromium 移至捷徑列</translation>
 <translation id="7576863740961052505">管理 Chromium 設定</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1035560095760914532">Novietojiet pārlūku Chrome apakšējā apgabalā, lai jebkurā laikā varētu tam piekļūt</translation>
 <translation id="1076643793026027628">Pārlūkā Chrome YouTube inkognito saites tiek automātiski atvērtas inkognito režīmā.</translation>
 <translation id="1081114897601629648">Tālāk norādītās paroles netika importētas Google paroļu pārvaldniekā, jo tās neatbilst prasībām.</translation>
 <translation id="1086486568852410168">Meklēt, izmantojot Google Lens</translation>
@@ -89,6 +90,7 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="288992067439702510">Ir sasniegts Google Chrome grāmatzīmju skaita ierobežojums (<ph name="LIMIT" />), tāpēc noteiktas jūsu grāmatzīmes vēl nav saglabātas jūsu Google kontā.
 
 Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas esošajām. Ja izrakstīsieties tūlīt, nesaglabātās grāmatzīmes tiks dzēstas.</translation>
+<translation id="2901621928549457170">Atveriet pārlūku Chrome uzreiz, kad izmantojat iPad planšetdatoru</translation>
 <translation id="2922914028977213693">Pieskarieties šeit, lai iPad planšetdatorā pilnvērtīgi izmantotu visas Chrome iespējas.</translation>
 <translation id="292371311537977079">Chrome iestatījumi</translation>
 <translation id="2923827943290349720">Bloķēt inkognito cilnes, aizverot pārlūku Chrome</translation>
@@ -173,6 +175,8 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="5119391094379141756">Atlasiet Chrome</translation>
 <translation id="5123188916260706415">Meklēšana ar balsi pārlūkā Chrome.</translation>
 <translation id="5162467219239570114">Pārlūka Chrome versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chrome jaunās versijas.</translation>
+<translation id="5172049865623113551">Atveriet pārlūku Chrome uzreiz, kad izmantojat iPhone tālruni</translation>
+<translation id="5179095426828744632">Ātrāk piekļūstiet pārlūkam Chrome no doka</translation>
 <translation id="5184329579814168207">Atvērt pārlūkā Chrome</translation>
 <translation id="5190139289262548459">Jūsu organizācija (<ph name="DOMAIN" />) pārvalda kontu, kurā esat pierakstījies, un to, kā tiek izmantots pārlūks Chrome.</translation>
 <translation id="5209238444239954363">Pārlūkā Chrome nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>

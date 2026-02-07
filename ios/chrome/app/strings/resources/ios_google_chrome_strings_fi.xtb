@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1035560095760914532">Sijoita Chrome alaosaan, niin voit käyttää sitä milloin tahansa</translation>
 <translation id="1076643793026027628">Chrome avaa YouTuben incognito-linkit automaattisesti incognito-tilassa.</translation>
 <translation id="1081114897601629648">Seuraavia salasanoja ei tuotu Google Salasanoihin, koska ne eivät täytä vaatimuksia.</translation>
 <translation id="1086486568852410168">Hae Google Lensilla</translation>
@@ -89,6 +90,7 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="288992067439702510">Olet saavuttanut Google Chromen <ph name="LIMIT" /> kirjanmerkin rajan, joten kaikkia kirjanmerkkejäsi ei ole vielä tallennettu Google-tilillesi.
 
 Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. Jos kirjaudut ulos nyt, tallentamattomat kirjanmerkit poistetaan.</translation>
+<translation id="2901621928549457170">Avaa Chrome heti, kun käytät iPadia</translation>
 <translation id="2922914028977213693">Napauta tästä, niin saat parhaan hyödyn Chromesta iPadilla.</translation>
 <translation id="292371311537977079">Chromen asetukset</translation>
 <translation id="2923827943290349720">Lukitse incognito-välilehdet, kun suljet Chromen</translation>
@@ -173,6 +175,8 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="5119391094379141756">Valitse Chrome</translation>
 <translation id="5123188916260706415">Hae puhumalla Chromesta</translation>
 <translation id="5162467219239570114">Chrome on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromen uusia versioita.</translation>
+<translation id="5172049865623113551">Avaa Chrome heti, kun käytät iPhonea</translation>
+<translation id="5179095426828744632">Käytä Chromea nopeammin alapalkista</translation>
 <translation id="5184329579814168207">Avaa Chromessa</translation>
 <translation id="5190139289262548459">Organisaatiosi (<ph name="DOMAIN" />) ylläpitää tiliä, jolla olet kirjautuneena sisään ja sitä, miten Chromea käytetään.</translation>
 <translation id="5209238444239954363">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>

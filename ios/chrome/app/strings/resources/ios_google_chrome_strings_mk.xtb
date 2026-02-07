@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1035560095760914532">Поставете го Chrome во долната област за да пристапувате до него кога сакате</translation>
 <translation id="1076643793026027628">Chrome автоматски ги отвора линковите на YouTube „Инкогнито“ во режим „Инкогнито“.</translation>
 <translation id="1081114897601629648">Следниве лозинки не се увезени во Google Password Manager бидејќи не ги исполнуваат барањата.</translation>
 <translation id="1086486568852410168">Пребарај со Google Lens</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Го достигнавте ограничувањето на Google Chrome од <ph name="LIMIT" /> обележувачи, па некои од вашите обележувачи сѐ уште не се зачувани во вашата сметка на Google.
 
 Новите обележувачи не може да се зачувуваат во сметката сѐ додека не избришете неколку од постојните. Ако се одјавите сега, незачуваните обележувачи ќе се избришат.</translation>
+<translation id="2901621928549457170">Отворајте го Chrome веднаш кога сте на вашиот iPad</translation>
 <translation id="2922914028977213693">Допрете овде за да извлечете максимум од Chrome на вашиот iPad.</translation>
 <translation id="292371311537977079">Поставки за Chrome</translation>
 <translation id="2923827943290349720">Заклучувај ги картичките „Инкогнито“ кога ќе го затворам Chrome</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Изберете Chrome</translation>
 <translation id="5123188916260706415">Пребарувајте со глас во Chrome</translation>
 <translation id="5162467219239570114">Chrome е застарен. Ако нема достапно ажурирање во <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, можно е уредот веќе да не поддржува нови верзии на Chrome.</translation>
+<translation id="5172049865623113551">Отворајте го Chrome веднаш кога сте на вашиот iPhone</translation>
+<translation id="5179095426828744632">Пристапувајте до Chrome побрзо од докот</translation>
 <translation id="5184329579814168207">Отвори во Chrome</translation>
 <translation id="5190139289262548459">Вашата организација, <ph name="DOMAIN" />, управува со сметката на којашто сте најавени, а и со тоа како се користи Chrome.</translation>
 <translation id="5209238444239954363">Chrome не можеше да провери дали има ажурирања. Обидете се повторно подоцна.</translation>

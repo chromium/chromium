@@ -578,6 +578,17 @@ modellerde geçerlidir.
 
 Daha fazla ayrıntı için lütfen
 https://support.google.com/chrome/a/?p=extended_updates_support adresine bakın.</translation>
+<translation id="1432008122934973720">Varsayılan olarak, yerel ağ erişimi (LNA) izinlerinin kaynaklar arası alt çerçevelerde istenmesine yalnızca açıkça yetkilendirildikleri takdirde izin verilir. Bu politika, bu varsayılan davranışı geçersiz kılmak için kullanılabilir. Böylece LNA izinleri, izin politikasında açıkça reddedilmediği sürece alt çerçevelere varsayılan olarak devredilir.
+
+Bu politika, etkin değerine ayarlanırsa alt çerçeveler tüm LNA izin politikası özellikleri için varsayılan olarak yetkilendirilir ve yerel ağ isteği gönderebilir (bu işlem, izin istemini tetikler).
+
+Bu politika, devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa alt çerçevelerin yerel ağ isteği gönderebilmesi ve izin istemini tetikleyebilmesi için izin politikası özelliğiyle açıkça yetkilendirilmesi gerekir.
+
+Bu politika; <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />, <ph name="LOOPBACK_NETWORK_FEATURE_NAME" /> ve <ph name="LOCAL_NETWORK_FEATURE_NAME" /> izin politikası özellikleri için geçerlidir.
+
+Yerel ağ erişimi hakkında daha fazla bilgiyi https://wicg.github.io/local-network-access/ ve https://developer.chrome.com/blog/local-network-access sayfasında bulabilirsiniz.
+
+İzin politikası hakkında daha fazla bilgiyi https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy sayfasında bulabilirsiniz.</translation>
 <translation id="1432834104376790711">Bu politika, Pil Tasarrufu Modu ayarını etkinleştirir veya devre dışı bırakır.
       Chrome'da bu ayar, güç tüketimini azaltmak için kare hızının kısıtlanmasını sağlar. Bu politika ayarlanmazsa son kullanıcı bu ayarı chrome://settings/performance bölümünden kontrol edebilir.
       ChromeOS'te bu ayar, kare hızının ve CPU frekansının kısıtlanmasını, arka ışıkların kısılmasını ve Android'in, Pil Tasarrufu Modu'na alınmasını sağlar. Birden fazla CPU'su olan cihazlarda bazı CPU'lar kapatılır.
@@ -1593,6 +1604,7 @@ Bu cihaz politikası, mevcut <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NA
 <translation id="2090939118981888335">Politika, Etkin değerine ayarlanırsa veri sıkıştırma proxy'sine izin verilir. Politika, Devre Dışı değerine ayarlanırsa proxy'ye izin verilmez.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Politika ayarlanmadan bırakılırsa kullanıcılar, özelliği kullanmayı seçebilir.</translation>
+<translation id="2091689441590064807">Açıkça yetki verilmeden alt çerçevelerde LNA isteklerine izin verme</translation>
 <translation id="2093552723795057221">Ses durumunu bildirme</translation>
 <translation id="209388704279338003">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="2093951844062548778">Bu politika, tanım sonuçlarını almak için Bil bakalım'a seçilen içeriğe erişme ve sunucuya bilgi gönderme izni verir.
@@ -7718,6 +7730,7 @@ NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
 yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6083281887050888160">"Just Works" Bluetooth eşlemeyi etkinleştir</translation>
 <translation id="6083631234867522991">Windows (Windows istemcileri):</translation>
+<translation id="6085580138417523410">Açıkça yetki verilmeden alt çerçevelerde yerel ağ erişimi (LNA) isteklerine izin ver</translation>
 <translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" /> algoritmasını kullan</translation>
 <translation id="608788685013546076">Güç tüketimi en üst düzeydeyken pil kullanımına geçme eşiği yüzdesini ayarla</translation>
 <translation id="6089679180657323464">Wilco teşhis ve telemetri denetleyicisi ayarlarını kontrol eder.</translation>
@@ -10314,6 +10327,7 @@ Not: Bu politika yalnızca uzantıları destekleyen platformlarda geçerlidir.</
 <translation id="7669630878711068277">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar <ph name="PRODUCT_NAME" /> üzerinde yazdırabilir ve bu ayarı değiştiremez.
 
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar <ph name="PRODUCT_NAME" /> üzerinden yazdırma işlemi gerçekleştiremez. Üç nokta menüsünde, uzantılarda ve JavaScript uygulamalarında yazdırma işlemi devre dışı bırakılır.</translation>
+<translation id="7672510074688643558">Açıkça yetki verilmeden alt çerçevelerde LNA isteklerine izin ver</translation>
 <translation id="7673194325208122247">Dönem (milisaniye)</translation>
 <translation id="7677220829878081413">
       Bu politika ArcSession değerine ayarlandığında, Android başlatılmışsa kullanıcı oturumu kapatıldığında cihazı yeniden başlamaya zorlar.

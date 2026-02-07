@@ -1329,7 +1329,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5868644772996939262">Preencha automaticamente palavras-passe e chaves de acesso</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5873179562631407582">Toque sem soltar em qualquer separador aberto</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Gerido pela sua organização.</translation>
 <translation id="5887400589839399685">Cartão guardado</translation>
 <translation id="5888889603768021126">Com sessão iniciada com</translation>
 <translation id="5889333064153755823">Eliminar dados de navegação</translation>
@@ -1666,6 +1665,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Predefinir nas Definições…</translation>
 <translation id="7007970306646738803">Escolha o que fazer com os dados de navegação existentes neste dispositivo, como separadores, histórico e palavras-passe.</translation>
+<translation id="7012978439516925343">Valide a sua identidade para criar uma chave de acesso</translation>
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tem 1 palavra-passe fraca. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="7016958933495968912">Opções para o Discover</translation>

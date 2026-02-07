@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1035560095760914532">Col·loca Chrome a l'àrea inferior per accedir-hi en qualsevol moment</translation>
 <translation id="1076643793026027628">Chrome obre automàticament els enllaços d'incògnit de YouTube en el mode d'incògnit.</translation>
 <translation id="1081114897601629648">Les contrasenyes següents no s'han importat al gestor de contrasenyes de Google perquè no compleixen els requisits.</translation>
 <translation id="1086486568852410168">Cerca amb Google Lens</translation>
@@ -89,6 +90,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="288992067439702510">Has arribat al límit de <ph name="LIMIT" /> adreces d'interès de Google Chrome, de manera que algunes encara no s'han desat al teu Compte de Google.
 
 No es poden desar adreces d'interès noves al teu compte fins que no en suprimeixis algunes. Si tanques la sessió ara, se suprimiran les adreces d'interès no desades.</translation>
+<translation id="2901621928549457170">Obre Chrome a l'instant quan siguis a l'iPad</translation>
 <translation id="2922914028977213693">Toca aquí per treure el màxim profit de Chrome a l'iPad.</translation>
 <translation id="292371311537977079">Configuració de Chrome</translation>
 <translation id="2923827943290349720">Bloqueja les pestanyes d'incògnit després de tancar Chrome</translation>
@@ -173,6 +175,8 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
 <translation id="5123188916260706415">Cerca amb la veu a Chrome</translation>
 <translation id="5162467219239570114">Chrome no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chrome.</translation>
+<translation id="5172049865623113551">Obre Chrome a l'instant quan siguis a l'iPhone</translation>
+<translation id="5179095426828744632">Accedeix a Chrome més ràpidament des de la barra</translation>
 <translation id="5184329579814168207">Obre a Chrome</translation>
 <translation id="5190139289262548459">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chrome.</translation>
 <translation id="5209238444239954363">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>

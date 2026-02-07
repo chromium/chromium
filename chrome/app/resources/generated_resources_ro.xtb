@@ -515,6 +515,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1333965224356556482">Nu permite site-urilor să-ți vadă locația</translation>
 <translation id="1335282218035876586">Chromebookul nu mai primește actualizări de securitate și de software. Fă upgrade Chromebookului pentru o experiență optimă.</translation>
 <translation id="133535873114485416">Metoda preferată de introducere</translation>
+<translation id="13356285923490863">Numele politicii</translation>
 <translation id="1335929031622236846">Înregistrează dispozitivul</translation>
 <translation id="133660899895084533">Citește informații și date despre dispozitivele periferice Bluetooth</translation>
 <translation id="1336902454946927954">Cheia de securitate este blocată, deoarece amprenta nu a fost recunoscută. Introdu codul PIN ca să o deblochezi.</translation>
@@ -2629,6 +2630,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Verificare gramaticală și ortografică</translation>
 <translation id="2750020734439919571">Mai multe setări și permisiuni pentru aplicația Chrome</translation>
+<translation id="275010360476017464">Folosește microfonul pentru a conversa prin chat cu Gemini. Când vorbești cu Gemini, conținutul audio este stocat în Activitatea din Aplicațiile Gemini (dacă este activată).</translation>
 <translation id="2750602041558385535">Descărcarea neconfirmată a fost blocată</translation>
 <translation id="2751454300227269244">Mișcă-ți gura spre dreapta</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> dorește să afle ID-ul cheii de securitate. Site-ul va ști exact ce cheie de securitate folosești.</translation>
@@ -5761,6 +5763,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4881685975363383806">Nu-mi reaminti data viitoare</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4882312758060467256">Are acces la acest site</translation>
+<translation id="4882848900607400156">Când permiți accesul la locația exactă, Gemini poate să-ți răspundă mai precis la întrebări. Datele tale nu sunt folosite pentru a îmbunătăți modelele de AI generativ.</translation>
 <translation id="4882919381756638075">Site-urile folosesc de obicei microfonul pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="4883436287898674711">Toate site-urile <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Manager de ac&amp;tivități</translation>
@@ -5851,6 +5854,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4945439665401275950">Pentru a configura amprenta, solicită-i copilului tău să atingă butonul de pornire. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">Lansator + săgeată în sus</translation>
 <translation id="4947376546135294974">Date de la site-ul pe care îl accesezi</translation>
+<translation id="4948370357877377178">Continuă activitățile</translation>
 <translation id="4950100687509657457">Creați un profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="495170559598752135">Acțiuni</translation>
@@ -8251,6 +8255,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6636623428211296678">Explorează mai multe dintre setările de mai jos sau finalizează acum</translation>
 <translation id="6639554308659482635">Memorie SQLite</translation>
 <translation id="6640268266988685324">Filă deschisă</translation>
+<translation id="664271268954513498">Valoare politică</translation>
 <translation id="6642720633335369752">Pentru a vedea toate ferestrele aplicațiilor deschise, glisează în sus din partea de jos și menține.</translation>
 <translation id="664290675870910564">Selectarea rețelei</translation>
 <translation id="6643016212128521049">Șterge</translation>
@@ -9077,6 +9082,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Închide pagina}few{Închide paginile}other{Închide paginile}}</translation>
 <translation id="7207457272187520234">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această setare este impusă de proprietar. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google.</translation>
 <translation id="7207631048330366454">Caută aplicații</translation>
+<translation id="7209958456051239069">Când permiți accesul la locația exactă, Gemini poate să-ți răspundă mai precis la întrebări</translation>
 <translation id="7210257969463271891">Aplicațiile web pe care le instalezi apar aici</translation>
 <translation id="7210432570808024354">Atinge și trage pentru a muta elemente</translation>
 <translation id="7210499381659830293">Imprimante de extensie</translation>
@@ -10696,6 +10702,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8288032458496410887">Dezinstalează <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Extrage text din PDF</translation>
 <translation id="8289128870594824098">Dimensiunea discului</translation>
+<translation id="8289200713453671499">Alternează rapid între grupurile de file și conversațiile recente cu AI, fără să ratezi momente.</translation>
 <translation id="8289509909262565712">Bun venit la <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Descarcă Chrome</translation>
 <translation id="8291942417224950075">Pentru uz personal</translation>
@@ -11677,6 +11684,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8945508919180478719">Microfon de studio</translation>
 <translation id="8946359700442089734">Funcțiile de remediere a erorilor nu au fost activate complet pe acest dispozitiv <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Restrânge toate solicitările din bara de adrese</translation>
+<translation id="8946996840522387154">Folosește microfonul pentru a conversa prin chat cu Gemini. Când vorbești cu Gemini, conținutul audio este stocat în Activitatea din Aplicațiile Gemini (dacă este activată). Datele tale nu sunt folosite pentru a îmbunătăți modelele de AI generativ.</translation>
 <translation id="894763922177556086">Bună</translation>
 <translation id="895054485242522631">Site-urile pot folosi senzori de mișcare</translation>
 <translation id="8951256747718668828">Nu s-a putut finaliza restabilirea din cauza unei erori</translation>

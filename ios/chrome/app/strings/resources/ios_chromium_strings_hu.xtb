@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Ez azt jelenti, hogy a Chromium mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="1115463765356382667">Hajtsa végre az alábbi javasolt műveleteket, hogy a lehető legtöbbet ki tudja hozni a Chromiumból.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
+<translation id="119044033865561140">A Chromium azonnali megnyitása iPad eszközön</translation>
 <translation id="1211450393895337634">Gyorsabban megnyithatja a Chromiumot, amikor iPad eszközén szeretne böngészni.</translation>
 <translation id="1229234641991056119">Használhatja a Safari jelszavait, előzményeit, könyvjelzőit és bankkártyáit a Chromiumban</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1260702988262336471">A Chromium-menü megnyitása</translation>
 <translation id="12739128458173458">A lap másik eszközre való elküldéséhez jelentkezzen be a Chromiumba mindkét eszközön.</translation>
+<translation id="1279797561821266129">Gyorsabb hozzáférés a Chromiumhoz a Dockról</translation>
 <translation id="1361748954329991663">A Chromium elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chromium újabb verzióit.</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1423007117030725713">Keresés indítása új Chromium-lapon.</translation>
@@ -176,6 +178,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="4790638144988730920">Továbbra is használhatja a Google-fiókjában lévő Chromium-adatokat.</translation>
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
 <translation id="4856138222358683580">Chromium-műveletek</translation>
+<translation id="4869706986935301458">A Chromium azonnali megnyitása iPhone eszközön</translation>
 <translation id="4904452304169763785">Értesítéseket kap a Chromium által észlelt adatvédelmi és biztonsági problémákról.</translation>
 <translation id="4908570938463711775">Kezdő lépésként ismerkedjen meg a Chromium hasznos alapfunkcióival</translation>
 <translation id="4962295957157529683">A másik megnyitott Chromium-ablakban fejezze be, amit csinál.</translation>
@@ -295,6 +298,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7395825497086981028">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>
 <translation id="7434848749522628428">Ez az azonosítókulcs a fiókjához (<ph name="USER_EMAIL" />) kapcsolt Jelszókezelőbe lesz mentve.</translation>
 <translation id="7504829997542308412">Nyissa meg a Chromiumot.</translation>
+<translation id="7507535968973352823">Helyezze a Chromiumot az alsó területre, hogy bármikor hozzáférhessen</translation>
 <translation id="7531461704633548377">A Chromiumból</translation>
 <translation id="7554983317097061001">Chromium-tipp: Helyezze át a Chromiumot a Dockra</translation>
 <translation id="7576863740961052505">A Chromium beállításainak kezelése</translation>

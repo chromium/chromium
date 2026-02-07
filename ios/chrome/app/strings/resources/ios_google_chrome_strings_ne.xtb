@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1035560095760914532">जुनसुकै बेला Chrome एक्सेस गर्न यसलाई पुछारको क्षेत्रमा राख्नुहोस्</translation>
 <translation id="1076643793026027628">Chrome ले YouTube इन्कोग्निटो लिंकहरू स्वतः इन्कोग्निटो मोडमा खोल्छ।</translation>
 <translation id="1081114897601629648">निम्न पासवर्डहरू तोकिएका मापदण्डहरू अनुरूप नभएकाले यी पासवर्डहरू Google पासवर्ड म्यानेजरमा इम्पोर्ट गरिएनन्:</translation>
 <translation id="1086486568852410168">Google लेन्समार्फत खोज्नुहोस्</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">तपाईंले Google Chrome मा सेभ गर्न मिल्ने जति (अर्थात् <ph name="LIMIT" /> वटा) बुकमार्क सेभ गरिसक्नुभएको छ। त्यसैले तपाईंका केही बुकमार्कहरू अहिलेसम्म तपाईंको Google खातामा सेभ गरिएका छैनन्।
 
 केही बुकमार्कहरू मेटाएपछि मात्र तपाईं आफ्नो खातामा नयाँ बुकमार्कहरू सेभ गर्न सक्नुहुन्छ। तपाईंले अहिले नै साइन आउट गर्नुभयो भने सेभ नगरिएका बुकमार्कहरू मेटाइने छन्।</translation>
+<translation id="2901621928549457170">आफ्नो iPad मा Chrome तुरुन्तै खोल्नुहोस्</translation>
 <translation id="2922914028977213693">आफ्नो iPad मा Chrome बाट बढीभन्दा बढी फाइदा लिन यहाँ ट्याप गर्नुहोस्।</translation>
 <translation id="292371311537977079">Chrome का सेटिङ</translation>
 <translation id="2923827943290349720">Chrome बन्द गरेपछि इन्कोग्निटो ट्याब लक गर्नुहोस्</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome चयन गर्नुहोस्</translation>
 <translation id="5123188916260706415">Chrome मा आवाज प्रयोग गरी खोज्नुहोस्</translation>
 <translation id="5162467219239570114">Chrome पुरानो भइसकेको छ। <ph name="BEGIN_LINK" />एप स्टोर<ph name="END_LINK" />मा कुनै पनि अपडेट उपलब्ध छैन भने तपाईंको डिभाइसमा अब उप्रान्त Chrome का नयाँ संस्करण प्रयोग गर्न नमिल्न सक्छ।</translation>
+<translation id="5172049865623113551">आफ्नो iPhone मा Chrome तुरुन्तै खोल्नुहोस्</translation>
+<translation id="5179095426828744632">आफ्नो डकबाट Chrome अझ छिटो एक्सेस गर्नुहोस्</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
 <translation id="5190139289262548459">तपाईंको सङ्गठन, <ph name="DOMAIN" /> ले तपाईंले साइन इन गर्नुभएको खाता र Chrome प्रयोग गरिने तरिका व्यवस्थापन गर्छ।</translation>
 <translation id="5209238444239954363">Chrome ले अपडेटहरू उपलब्ध छन् कि छैनन् भन्ने कुरा जाँच गर्न सकेन। पछि फेरि प्रयास गर्नुहोस्।</translation>

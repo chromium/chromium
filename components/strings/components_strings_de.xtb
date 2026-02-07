@@ -2090,7 +2090,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4300272766492248925">App öffnen</translation>
 <translation id="4300675098767811073">Mehrfache Lochung rechts</translation>
 <translation id="4300841966382281549">Fahrt</translation>
-<translation id="4302514097724775343">Tippe auf den Dino, um die Wiedergabe zu starten</translation>
+<translation id="4302514097724775343">Tippe auf den Dino, um zu spielen</translation>
 <translation id="4304049446746819918">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei nach <ph name="DESTINATION_NAME" /> zu verschieben}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien nach <ph name="DESTINATION_NAME" /> zu verschieben}}</translation>
 <translation id="4304485328308299773">Du kannst Kundenbewertungen und ‑rezensionen zu Produkten, Dienstleistungen oder Angeboten lesen, um fundiertere Entscheidungen zu treffen.</translation>
 <translation id="4305666528087210886">Zugriff auf die Datei nicht möglich</translation>
@@ -2960,7 +2960,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5730040223043577876">Chrome empfiehlt, dein Passwort zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="5732392974455271431">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="573555826359077410">Button „Formular erstellen“ – aktivieren, um schnell ein neues Formular in Google Formulare zu erstellen</translation>
-<translation id="5737022235680044108">Deine Organisation hat <ph name="HOST_NAME" /> im Inkognitomodus blockiert.</translation>
 <translation id="5738385766833540397">Lege fest, wie du über Preisnachlässe bei beobachteten Produkten benachrichtigt werden willst</translation>
 <translation id="5739619009927381786">Du kannst dein Display im nächsten Schritt auf gewohnte Weise per Fingerabdruck entsperren. Alternativ kannst du eine <ph name="BEGIN_LINK" />andere Bestätigungsmethode ausprobieren<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
@@ -3643,7 +3642,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6844998850832008753">Handtracking dieses Mal zugelassen</translation>
 <translation id="6849023911358004088">Button „Sicherheitseinstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen beispielsweise Safe Browsing zu verwalten</translation>
 <translation id="6850286078059909152">Schriftfarbe</translation>
-<translation id="685163597635765693">Deine Organisation hat „<ph name="HOST_NAME" />“-Links im Inkognitomodus blockiert.</translation>
 <translation id="6852204201400771460">App neu laden?</translation>
 <translation id="6854691830678097752">Du kannst diesen CVC in deinem Konto <ph name="ACCOUNT_EMAIL" /> speichern, um schneller zu bezahlen</translation>
 <translation id="6857776781123259569">Passwörter verwalten…</translation>

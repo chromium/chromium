@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1035560095760914532">Mova o Chrome para a parte inferior da tela e agilize seu acesso</translation>
 <translation id="1076643793026027628">O Chrome abre automaticamente os links anônimos do YouTube na navegação anônima.</translation>
 <translation id="1081114897601629648">As senhas a seguir não foram importadas para o Gerenciador de Senhas do Google porque não atendem aos requisitos.</translation>
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
@@ -87,6 +88,7 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="2788811701191021538">Abre a página de configurações de formas de pagamento do Chrome.</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="288992067439702510">Você atingiu o limite de <ph name="LIMIT" /> favoritos no Google Chrome. Exclua alguns dos favoritos na sua Conta do Google para poder salvar novos. Se você sair agora, os favoritos que não foram salvos serão excluídos.</translation>
+<translation id="2901621928549457170">Abra o Chrome em instantes no seu iPad</translation>
 <translation id="2922914028977213693">Toque aqui para aproveitar o Chrome ao máximo no iPad.</translation>
 <translation id="292371311537977079">Configurações do Chrome</translation>
 <translation id="2923827943290349720">Bloquear guias anônimas ao fechar o Chrome</translation>
@@ -171,6 +173,8 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="5119391094379141756">Selecione o Chrome</translation>
 <translation id="5123188916260706415">Pesquisar com a voz no Chrome</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
+<translation id="5172049865623113551">Abra o Chrome em instantes no seu iPhone</translation>
+<translation id="5179095426828744632">Acesse o Chrome com mais rapidez pelo Dock</translation>
 <translation id="5184329579814168207">Abrir no Google Chrome</translation>
 <translation id="5190139289262548459">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e a forma como o Chrome é usado.</translation>
 <translation id="5209238444239954363">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1035560095760914532">Chrome を下部に配置して、いつでもアクセス</translation>
 <translation id="1076643793026027628">YouTube のシークレット リンクが Chrome のシークレット モードで自動的に開きます。</translation>
 <translation id="1081114897601629648">次のパスワードは要件を満たしていないため、Google パスワード マネージャーにインポートされませんでした。</translation>
 <translation id="1086486568852410168">Google レンズで検索</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Google Chrome のブックマーク数の上限（<ph name="LIMIT" /> 個）に達したため、Google アカウントにまだ保存されていないブックマークがあります。
 
 新しいブックマークをアカウントに保存するには、既存のブックマークを削除してください。今すぐログアウトすると、保存されていないブックマークは削除されます。</translation>
+<translation id="2901621928549457170">iPad で Chrome をすぐに開くことができます</translation>
 <translation id="2922914028977213693">iPad で Chrome を最大限に活用するには、ここをタップしてください。</translation>
 <translation id="292371311537977079">Chrome の設定</translation>
 <translation id="2923827943290349720">Chrome を終了するときにシークレット タブをロックする</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">[Chrome] を選択します</translation>
 <translation id="5123188916260706415">Chrome で音声検索する</translation>
 <translation id="5162467219239570114">Chrome は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chrome がサポートされなくなった可能性があります。</translation>
+<translation id="5172049865623113551">iPhone で Chrome をすぐに開くことができます</translation>
+<translation id="5179095426828744632">Dock から Chrome にすばやくアクセス</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5190139289262548459">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。</translation>
 <translation id="5209238444239954363">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>

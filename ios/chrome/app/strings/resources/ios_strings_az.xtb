@@ -1329,7 +1329,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5868644772996939262">Parol və giriş açarlarını avtomatik doldurun</translation>
 <translation id="5869522115854928033">Saxlanılmış parollar</translation>
 <translation id="5873179562631407582">İstənilən açıq tablara toxunub saxlayın</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Təşkilatınız tərəfindən idarə olunur.</translation>
 <translation id="5887400589839399685">Kart yadda saxlanıldı</translation>
 <translation id="5888889603768021126">Bununla daxil olunub</translation>
 <translation id="5889333064153755823">Baxış datasını silin</translation>
@@ -1666,6 +1665,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Ayarlarda defolt edin…</translation>
 <translation id="7007970306646738803">Bu cihazda tablar, tarixçə və parollar kimi mövcud axtarış datası ilə nə edəcəyinizi seçin.</translation>
+<translation id="7012978439516925343">Giriş açarı yaratmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="7015418667643980944">Bölünmüş görüntü</translation>
 <translation id="7016070607649558507">1 zəif parol var. Təhlükəsizlik üçün bunu indi həll edin.</translation>
 <translation id="7016958933495968912">"Kəşf edin" üçün seçimlər</translation>

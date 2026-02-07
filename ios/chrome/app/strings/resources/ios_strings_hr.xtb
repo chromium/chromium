@@ -1329,7 +1329,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5868644772996939262">Automatsko popunjavanje zaporki i pristupnih ključeva</translation>
 <translation id="5869522115854928033">Spremljene zaporke</translation>
 <translation id="5873179562631407582">Dodirnite i zadržite bilo koju otvorenu karticu</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Pod upravljanjem vaše organizacije.</translation>
 <translation id="5887400589839399685">Kartica je spremljena</translation>
 <translation id="5888889603768021126">Prijavljeni ste na uslugu</translation>
 <translation id="5889333064153755823">Izbriši podatke o pregledavanju</translation>
@@ -1666,6 +1665,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Postavi kao zadano u Postavkama…</translation>
 <translation id="7007970306646738803">Odaberite što želite učiniti s postojećim podacima o pregledavanju na ovom uređaju, na primjer s karticama, poviješću i zaporkama.</translation>
+<translation id="7012978439516925343">Potvrdite svoj identitet da biste izradili pristupni ključ</translation>
 <translation id="7015418667643980944">Podijeljeni prikaz</translation>
 <translation id="7016070607649558507">Imate jednu slabu zaporku. Riješite problem odmah da biste se zaštitili.</translation>
 <translation id="7016958933495968912">Opcije za Discover</translation>

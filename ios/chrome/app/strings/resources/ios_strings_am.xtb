@@ -1329,7 +1329,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5868644772996939262">የይለፍ ቃላትን እና የይለፍ ቁልፎችን ራስ-ሙላ</translation>
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
 <translation id="5873179562631407582">ማናቸውም ክፍት ትሮች ላይ መታ አድርገው ይያዙ</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />። በእርስዎ ድርጅት የሚተዳደር።</translation>
 <translation id="5887400589839399685">ካርድ ተቀምጧል</translation>
 <translation id="5888889603768021126">በሚከተለው በመለያ ተገብቷል</translation>
 <translation id="5889333064153755823">የአሰሳ ውሂብን ይሰርዙ</translation>
@@ -1666,6 +1665,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">በቅንብሮች ውስጥ ነባሪ አድርግ…</translation>
 <translation id="7007970306646738803">እንደ ትሮች፣ ታሪክ እና የይለፍ ቃሎች ባለ በዚህ መሣሪያ ላይ ያለ ነባር የአሰሳ ውሂብ ምን ማድረግ እንዳለብዎት ይምረጡ።</translation>
+<translation id="7012978439516925343">የይለፍ ቁልፍ ለመፍጠር እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="7015418667643980944">የተከፈለ ዕይታ</translation>
 <translation id="7016070607649558507">1 ደካማ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።</translation>
 <translation id="7016958933495968912">የምርምር አማራጮች</translation>

@@ -565,6 +565,17 @@ Diese Richtlinie ist nur für ältere Modelle relevant, die nicht automatisch ve
 
 Weitere Informationen findest du unter
 https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
+<translation id="1432008122934973720">Standardmäßig dürfen Berechtigungen für den Zugriff auf das lokale Netzwerk (Local Network Access, LNA) nur in Unterframes mit unterschiedlicher Herkunft angefordert werden, wenn sie explizit delegiert wurden. Mit dieser Richtlinie kann dieses Standardverhalten überschrieben werden, sodass LNA-Berechtigungen standardmäßig in Unterframes übernommen werden, es sei denn, dies wird in der Berechtigungsrichtlinie explizit abgelehnt.
+
+Wenn diese Richtlinie aktiviert ist, werden standardmäßig alle Funktionen der LNA-Berechtigungsrichtlinien an Unterframes delegiert und sie können Anfragen an das lokale Netzwerk senden (wodurch die Berechtigungsaufforderung ausgelöst wird).
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, muss die Funktion der Berechtigungsrichtlinie explizit an Unterframes delegiert werden, damit sie lokale Netzwerkanfragen stellen und die Berechtigungsaufforderung auslösen können.
+
+Diese Richtlinie gilt für die Funktionen „<ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />“, „<ph name="LOOPBACK_NETWORK_FEATURE_NAME" />“ und „<ph name="LOCAL_NETWORK_FEATURE_NAME" />“ der Berechtigungsrichtlinie.
+
+Weitere Informationen zum Zugriff auf das lokale Netzwerk findest du unter https://wicg.github.io/local-network-access/ und https://developer.chrome.com/blog/local-network-access.
+
+Weitere Informationen zur Berechtigungsrichtlinie findest du unter https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy.</translation>
 <translation id="1432834104376790711">Mit dieser Richtlinie wird der Energiesparmodus aktiviert oder deaktiviert.
       In Chrome wird mit dieser Einstellung die Framerate gedrosselt, um den Energieverbrauch zu reduzieren. Wenn die Richtlinie nicht konfiguriert ist, kann der Endnutzer diese Einstellung unter chrome://settings/performance verwalten.
       Unter ChromeOS bewirkt diese Einstellung, dass die Framerate und CPU-Frequenz gedrosselt, die Hintergrundbeleuchtung gedimmt und Android in den Energiesparmodus versetzt werden. Auf Geräten mit mehreren CPUs werden einige CPUs deaktiviert.
@@ -1563,6 +1574,7 @@ Diese Geräterichtlinie entspricht der vorhandenen Nutzerrichtlinie „<ph name=
 <translation id="2090939118981888335">Wenn diese Richtlinie aktiviert ist, wird der Proxy zur Datenkomprimierung zugelassen. Ist die Richtlinie deaktiviert, kann der Proxy nicht verwendet werden.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wenn sie nicht konfiguriert ist, können Nutzer entscheiden, ob die Funktion genutzt werden soll.</translation>
+<translation id="2091689441590064807">LNA-Anfragen in Unterframes ohne explizite Delegierung nicht zulassen</translation>
 <translation id="2093552723795057221">Audiostatus nicht melden</translation>
 <translation id="209388704279338003">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />“.</translation>
 <translation id="2093951844062548778">Mit dieser Richtlinie erhält die Funktion „Schnellinfo“ die Berechtigung, auf ausgewählte Inhalte zuzugreifen und die Informationen an den Server zu senden, um Definitionsergebnisse zu erhalten.
@@ -7582,6 +7594,7 @@ Diese Richtlinie kann verwendet werden, wenn die fehlende Unterstützung für di
 HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
 <translation id="6083281887050888160">„Just Works“-Bluetooth-Kopplung aktivieren</translation>
 <translation id="6083631234867522991">Windows (Windows-Clients):</translation>
+<translation id="6085580138417523410">Anfragen für den Zugriff auf das lokale Netzwerk (Local Network Access, LNA) in Unterframes ohne explizite Delegierung zulassen</translation>
 <translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus verwenden</translation>
 <translation id="608788685013546076">Schwellenwert des Akkus für das Umschalten bei Leistungsspitzen in Prozent festlegen</translation>
 <translation id="6089679180657323464">Legt die Einstellungen für Wilco Diagnostics and Telemetry Controller fest.</translation>
@@ -10101,6 +10114,7 @@ Hinweis: Diese Richtlinie gilt nur für Plattformen, die Erweiterungen unterstü
 <translation id="7669630878711068277">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer in „<ph name="PRODUCT_NAME" />“ drucken. Nutzer können diese Einstellung nicht ändern.
 
       Ist die Richtlinie deaktiviert, können die Nutzer in „<ph name="PRODUCT_NAME" />“ nicht drucken. Im Dreipunkt-Menü, in den Erweiterungen und in JavaScript-Anwendungen ist die Option zum Drucken deaktiviert.</translation>
+<translation id="7672510074688643558">LNA-Anfragen in Unterframes ohne explizite Delegierung zulassen</translation>
 <translation id="7673194325208122247">Zeitraum (Millisekunden)</translation>
 <translation id="7677220829878081413">
       Ist diese Richtlinie auf "ArcSession" gesetzt und wurde Android gestartet, wird nach einer Nutzerabmeldung ein Neustart des Geräts erzwungen.

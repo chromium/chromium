@@ -1329,7 +1329,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5868644772996939262">Completează automat parolele și cheile de acces</translation>
 <translation id="5869522115854928033">Parole salvate</translation>
 <translation id="5873179562631407582">Atinge lung orice filă deschisă</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Gestionat de organizația ta.</translation>
 <translation id="5887400589839399685">Cardul a fost salvat</translation>
 <translation id="5888889603768021126">Conectat(ă) cu</translation>
 <translation id="5889333064153755823">Șterge datele de navigare</translation>
@@ -1666,6 +1665,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Setează ca prestabilit în Setări…</translation>
 <translation id="7007970306646738803">Alege ce să faci cu datele de navigare existente de pe acest dispozitiv, cum ar fi filele, istoricul și parolele.</translation>
+<translation id="7012978439516925343">Confirmă-ți identitatea pentru a crea o cheie de acces</translation>
 <translation id="7015418667643980944">Afișare împărțită</translation>
 <translation id="7016070607649558507">Ai o parolă slabă. Remediază problema acum pentru a rămâne în siguranță.</translation>
 <translation id="7016958933495968912">Opțiuni pentru Discover</translation>

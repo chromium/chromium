@@ -514,6 +514,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1333965224356556482">Ikke la nettsteder se posisjonen din</translation>
 <translation id="1335282218035876586">Chromebooken din får ikke sikkerhets- eller programvareoppdateringer lenger. Oppgrader Chromebooken for å få den beste opplevelsen.</translation>
 <translation id="133535873114485416">Foretrukket inndatametode</translation>
+<translation id="13356285923490863">Navn på retningslinje</translation>
 <translation id="1335929031622236846">Registrer enheten din</translation>
 <translation id="133660899895084533">lese informasjon og data fra eksterne Bluetooth-enheter</translation>
 <translation id="1336902454946927954">Sikkerhetsnøkkelen er låst fordi fingeravtrykket ikke ble gjenkjent. For å låse den opp, skriv inn PIN-koden.</translation>
@@ -8256,6 +8257,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
 <translation id="6640268266988685324">Åpne fane</translation>
+<translation id="664271268954513498">Retningslinjeverdi</translation>
 <translation id="6642720633335369752">For å se alle åpne appvinduer, sveip opp fra bunnen og hold inne.</translation>
 <translation id="664290675870910564">Nettverksvalg</translation>
 <translation id="6643016212128521049">Tøm</translation>
@@ -9154,7 +9156,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7258192266780953209">Transformasjoner</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7260186537988033909">Registreringen som kiosk- og skiltenhet er fullført</translation>
-<translation id="7260206782629605806">Hvis du senker terskelen, kan du bruke en forsiktig bevegelse. Hvis du øker terskelen, kan det hende du må gjøre en mer overdrevet bevegelse.</translation>
+<translation id="7260206782629605806">Hvis du senker terskelen, kan du bruke en forsiktig bevegelse. Hvis du øker terskelen, kan det hende du må gjøre en større bevegelse.</translation>
 <translation id="7260802376010589729">Bruk «C» for å slippe en museknapp</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7261612856573623172">Systemstemme for tekst til tale</translation>

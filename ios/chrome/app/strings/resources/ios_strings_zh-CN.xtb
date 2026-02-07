@@ -1329,7 +1329,6 @@
 <translation id="5868644772996939262">自动填充密码和通行密钥</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5873179562631407582">按住任意打开的标签页</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />。由您的组织管理。</translation>
 <translation id="5887400589839399685">已保存卡片</translation>
 <translation id="5888889603768021126">所用登录身份</translation>
 <translation id="5889333064153755823">删除浏览数据</translation>
@@ -1666,6 +1665,7 @@
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">在“设置”中设为默认选项…</translation>
 <translation id="7007970306646738803">选择如何处理此设备上现有的浏览数据，例如标签页、历史记录和密码。</translation>
+<translation id="7012978439516925343">验证您的身份以创建通行密钥</translation>
 <translation id="7015418667643980944">拆分视图</translation>
 <translation id="7016070607649558507">您有 1 个安全系数低的密码。请立即修正它以确保安全。</translation>
 <translation id="7016958933495968912">“探索”选项</translation>

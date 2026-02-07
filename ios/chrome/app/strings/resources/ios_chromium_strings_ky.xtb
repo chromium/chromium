@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Chromium'ду ар дайым мобилдик түзмөктө ачуу керек болот.</translation>
 <translation id="1115463765356382667">Chromium'дун бардык мүмкүнчүлүктөрүн пайдалануу үчүн төмөндө сунушталган аракеттерди аткарыңыз.</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
+<translation id="119044033865561140">iPad'да Chromium'ду ыкчам ачасыз</translation>
 <translation id="1211450393895337634">iPad'дан Интернетке киргиңиз келгенде Chromium тезирээк ачылат.</translation>
 <translation id="1229234641991056119">Safari'деги сырсөздөрүңүздү, таржымалыңызды, кыстармаларыңызды жана насыя карталарыңызды Chromium'да колдонуңуз</translation>
 <translation id="1257458525759135959">Сүрөттөрдү сактоо үчүн, Параметрлерди таптап, Chromium'га сүрөттөрүңүздү кошууга уруксат бериңиз.</translation>
 <translation id="1260702988262336471">Chromium менюсун ачуу</translation>
 <translation id="12739128458173458">Бул өтмөктү башка түзмөккө жөнөтүү үчүн эки түзмөктөн тең Chromium'га кириңиз.</translation>
+<translation id="1279797561821266129">Chromium'ду док бекеттен тезирээк ачасыз</translation>
 <translation id="1361748954329991663">Chromium эскирип калган. Эгер <ph name="BEGIN_LINK" />Колдонмолор дүкөнүндө<ph name="END_LINK" /> жаңыртуу болбосо, түзмөгүңүз Chromium'дун жаңы версияларын мындан ары колдоого албай калышы мүмкүн.</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1423007117030725713">Chromium'дун жаңы өтмөгүндө издеңиз.</translation>
@@ -176,6 +178,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="4790638144988730920">Google аккаунтуңуздагы Chromium маалыматын колдоно бериңиз.</translation>
 <translation id="4828317641996116749">Chromium бардык сырсөздөрдү текшере алган жок. Кийинчерээк кайталаңыз.</translation>
 <translation id="4856138222358683580">Chromium аракеттери</translation>
+<translation id="4869706986935301458">iPhone'до Chromium'ду ыкчам ачасыз</translation>
 <translation id="4904452304169763785">Chromium аныктаган купуялык же коопсуздукка байланыштуу көйгөйлөр тууралуу эскертүүлөр.</translation>
 <translation id="4908570938463711775">Баштоо үчүн Chromium'дун негиздери менен таанышып чыгыңыз</translation>
 <translation id="4962295957157529683">Жасап жаткан нерсени Chromium'дун ачык терезесинде улантыңыз.</translation>
@@ -295,6 +298,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="7395825497086981028">Сырсөзүңүз <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат.</translation>
 <translation id="7434848749522628428">Бул киргизүүчү ачкыч <ph name="USER_EMAIL" /> аккаунту үчүн Сырсөздөрдү башкаргычка сакталат</translation>
 <translation id="7504829997542308412">Chromium'ду ачуу</translation>
+<translation id="7507535968973352823">Каалаган убакта ачуу үчүн Chromium'ду төмөнкү аймакка жайгаштырыңыз</translation>
 <translation id="7531461704633548377">Chromium'дан</translation>
 <translation id="7554983317097061001">Chromium кеңеши: Chromium'ду док бекетке жылдырыңыз</translation>
 <translation id="7576863740961052505">Chromium параметрлерин тескөө</translation>

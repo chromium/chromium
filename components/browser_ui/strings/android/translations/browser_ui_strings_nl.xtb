@@ -38,6 +38,7 @@
 <translation id="1415855080660575082">Sta toe dat Chrome je recente tabbladen deelt met je apparaat zodat je ze kunt zien in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd aan- of uitzetten in de Chrome-instellingen.</translation>
 <translation id="1420688843103859429">Navigeer heen en weer door met 2 vingers te swipen op de touchpad</translation>
 <translation id="1432650420699700107">Sites kunnen vragen of ze verbinding mogen maken met apparaten in je lokale netwerk</translation>
+<translation id="1442081309487427303">Links voor de leesmodus aanzetten</translation>
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="1464044141348608623">Niet toestaan dat sites weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1766455884659449403">Meldingen van Chrome-tips krijgen</translation>
 <translation id="1777815584158991902">Blad onderaan voor Discover-feed</translation>
 <translation id="1779089405699405702">Image Decoder</translation>
+<translation id="1781533683087883868">Links voor de leesmodus uitzetten</translation>
 <translation id="1785415724048343560">Aanbevolen voor de beste functionaliteit</translation>
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1799920918471566157">Chrome-tips</translation>

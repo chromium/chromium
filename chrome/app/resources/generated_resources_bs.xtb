@@ -516,6 +516,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1333965224356556482">Nemoj dozvoliti web lokacijama prikaz lokacije</translation>
 <translation id="1335282218035876586">Chromebook više ne prima sigurnosna i softverska ažuriranja. Nadogradite Chromebook za najbolje iskustvo.</translation>
 <translation id="133535873114485416">Preferirani način unosa</translation>
+<translation id="13356285923490863">Naziv pravila</translation>
 <translation id="1335929031622236846">Registrirajte uređaj</translation>
 <translation id="133660899895084533">Čitaj informacije i podatke s perifernih Bluetooth uređaja</translation>
 <translation id="1336902454946927954">Vaš sigurnosni ključ je zaključan jer prepoznavanje vašeg otiska prsta nije uspjelo. Da ga otključate, unesite PIN.</translation>
@@ -2640,6 +2641,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Provjera gramatike i pravopisa</translation>
 <translation id="2750020734439919571">Više postavki i odobrenja za aplikaciju Chrome</translation>
+<translation id="275010360476017464">Koristite mikrofon da chatate s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u Aktivnosti u aplikacijama Gemini (ako je uključeno).</translation>
 <translation id="2750602041558385535">Nepotvrđeno preuzimanje je blokirano</translation>
 <translation id="2751454300227269244">Pomicanje usta udesno</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> želi saznati ID broj sigurnosnog ključa. Web lokacija će znati koji tačno sigurnosni ključ koristite.</translation>
@@ -5774,6 +5776,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4881685975363383806">Ne podsjećaj me sljedeći put</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4882312758060467256">Ima pristup ovoj web lokaciji</translation>
+<translation id="4882848900607400156">Kada podijelite tačnu lokaciju, Gemini može preciznije odgovarati na vaša pitanja. Vaši podaci se ne koriste za poboljšavanje generativnih AI modela.</translation>
 <translation id="4882919381756638075">Web lokacije obično koriste mikrofon za funkcije komuniciranja kao što je video chat</translation>
 <translation id="4883436287898674711">sve web lokacije <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Upravitelj zadataka</translation>
@@ -5864,6 +5867,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4945439665401275950">Da postavi otisak prsta, vaše dijete treba dodirnuti dugme za uključivanje. Podaci otiska prsta vašeg djeteta se sigurno pohranjuju i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">pokretač + strelica nagore</translation>
 <translation id="4947376546135294974">Podaci s web lokacije koju posjećujete</translation>
+<translation id="4948370357877377178">Nastavite sa zadacima</translation>
 <translation id="4950100687509657457">Izradi profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="495170559598752135">Radnje</translation>
@@ -8267,6 +8271,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6636623428211296678">Istražite više postavki u nastavku ili završite odmah</translation>
 <translation id="6639554308659482635">SQLite memorija</translation>
 <translation id="6640268266988685324">Otvorena kartica</translation>
+<translation id="664271268954513498">Vrijednost pravila</translation>
 <translation id="6642720633335369752">Da vidite sve prozore otvorenih aplikacija, prevucite prstom s dna ekrana prema gore i zadržite.</translation>
 <translation id="664290675870910564">Odabir mreže</translation>
 <translation id="6643016212128521049">Obriši</translation>
@@ -9093,6 +9098,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Izađi sa stranice}one{Izađi sa stranica}few{Izađi sa stranica}other{Izađi sa stranica}}</translation>
 <translation id="7207457272187520234">Šaljite podatke o korištenju i dijagnostici. Ovaj uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. To će pomoći stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ovu postavku je nametnuo vlasnik. Ako vam je uključena postavka dodatna Aktivnost na webu i u aplikacijama, ti podaci će možda biti sačuvani na vašem Google računu.</translation>
 <translation id="7207631048330366454">Pretražite aplikacije</translation>
+<translation id="7209958456051239069">Kada podijelite tačnu lokaciju, Gemini može preciznije odgovarati na vaša pitanja</translation>
 <translation id="7210257969463271891">Ovdje se prikazuju web aplikacije koje ste instalirali</translation>
 <translation id="7210432570808024354">Pomicanje stavki dodirom i prevlačenjem</translation>
 <translation id="7210499381659830293">Štampači ekstenzija</translation>
@@ -10712,6 +10718,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8288032458496410887">Deinstaliranje aplikacije <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Izdvoji tekst iz PDF-a</translation>
 <translation id="8289128870594824098">Veličina diska</translation>
+<translation id="8289200713453671499">Brzo se prebacujte između grupa kartica i nedavnih AI razgovora bez gubitka mjesta.</translation>
 <translation id="8289509909262565712">Dobro došli u <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Preuzmi Chrome</translation>
 <translation id="8291942417224950075">Za ličnu upotrebu</translation>
@@ -11694,6 +11701,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8945508919180478719">Studijski mikrofon</translation>
 <translation id="8946359700442089734">Funkcije za uklanjanje grešaka nisu u potpunosti omogućene na ovom <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaju.</translation>
 <translation id="8946954897220903437">Suzi sve zahtjeve u traci za adresu</translation>
+<translation id="8946996840522387154">Koristite mikrofon da chatate s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u Aktivnosti u aplikacijama Gemini (ako je uključeno). Vaši podaci se ne koriste za poboljšavanje generativnih AI modela.</translation>
 <translation id="894763922177556086">Dobra</translation>
 <translation id="895054485242522631">Web lokacije mogu koristiti senzore kretanja</translation>
 <translation id="8951256747718668828">Vraćanje nije uspjelo zbog greške</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1035560095760914532">যেকোনও সময় অ্যাক্সেস করতে Chrome-কে নিচের দিকে রেখে দিন</translation>
 <translation id="1076643793026027628">Chrome ছদ্মবেশী মোডে, অটোমেটিক YouTube ছদ্মবেশী লিঙ্ক খোলে।</translation>
 <translation id="1081114897601629648">এইসব পাসওয়ার্ড Google Password Manager-এ ইমপোর্ট করা হয়নি কারণ তা প্রয়োজনীয়তার সাথে মেলেনি।</translation>
 <translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">আপনি Google Chrome-এর <ph name="LIMIT" />টি বুকমার্কের সীমায় পৌঁছে গেছেন, তাই আপনার কিছু বুকমার্ক এখনও Google অ্যাকাউন্টে সেভ করা হয়নি।
 
 আপনি কিছু বুকমার্ক না মোছা পর্যন্ত আপনার অ্যাকাউন্টে নতুন বুকমার্ক সেভ করা যাবে না। আপনি এখন সাইন-আউট করলে, সেভ না করা বুকমার্ক মুছে যাবে।</translation>
+<translation id="2901621928549457170">আপনার iPad ব্যবহারের সময় ইনস্ট্যান্ট Chrome খুলুন</translation>
 <translation id="2922914028977213693">আপনার iPad-এ Chrome-এর সবচেয়ে বেশি সুবিধা পেতে, এখানে ট্যাপ করুন।</translation>
 <translation id="292371311537977079">Chrome সেটিংস</translation>
 <translation id="2923827943290349720">আপনি Chrome বন্ধ করলে, ছদ্মবেশী ট্যাব লক হয়ে যায়</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome বেছে নিন</translation>
 <translation id="5123188916260706415">Chrome-এ ভয়েসের মাধ্যমে সার্চ করুন</translation>
 <translation id="5162467219239570114">Chrome-এর এই ভার্সন পুরনো হয়ে গেছে। যদি <ph name="BEGIN_LINK" />অ্যাপ স্টোরে<ph name="END_LINK" /> কোনও আপডেট উপলভ্য না থাকে, তাহলে এমন হতে পারে যে আপনার ডিভাইস Chrome-এর নতুন ভার্সনের সাথে আর কাজ করতে পারবে না।</translation>
+<translation id="5172049865623113551">আপনার iPhone ব্যবহারের সময় ইনস্ট্যান্ট Chrome খুলুন</translation>
+<translation id="5179095426828744632">আপনার ডক থেকেও দ্রুত Chrome অ্যাক্সেস করুন</translation>
 <translation id="5184329579814168207">Chrome এ খুলুন</translation>
 <translation id="5190139289262548459">আপনার সাইন-ইন করে থাকা অ্যাকাউন্ট এবং Chrome কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="DOMAIN" />, ম্যানেজ করে।</translation>
 <translation id="5209238444239954363">Chrome-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>

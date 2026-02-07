@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1035560095760914532">Postavite Chrome u donje područje da biste mu uvijek mogli pristupiti</translation>
 <translation id="1076643793026027628">Chrome automatski otvara anonimne veze na YouTube u anonimnom načinu.</translation>
 <translation id="1081114897601629648">Sljedeće zaporke nisu uvezene u Google upravitelj zaporki jer ne ispunjavaju zahtjeve.</translation>
 <translation id="1086486568852410168">Pretraži pomoću Google objektiva</translation>
@@ -89,6 +90,7 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="288992067439702510">Dosegnuli ste ograničenje broja oznaka za Google Chrome (<ph name="LIMIT" />), pa neke vaše oznake još nisu spremljene na vaš Google račun.
 
 Nove oznake ne mogu se spremiti na vaš račun dok neke ne izbrišete. Ako se sada odjavite, nespremljene oznake će se izbrisati.</translation>
+<translation id="2901621928549457170">Odmah otvorite Chrome kad ste na iPadu</translation>
 <translation id="2922914028977213693">Dodirnite ovdje da biste iskoristili sve prednosti Chromea na iPadu.</translation>
 <translation id="292371311537977079">Postavke preglednika Chrome</translation>
 <translation id="2923827943290349720">Zaključaj anonimne kartice pri zatvaranju Chromea</translation>
@@ -173,6 +175,8 @@ Nove oznake ne mogu se spremiti na vaš račun dok neke ne izbrišete. Ako se sa
 <translation id="5119391094379141756">Odaberite Chrome</translation>
 <translation id="5123188916260706415">Glasovno pretraživanje u Chromeu</translation>
 <translation id="5162467219239570114">Chrome je zastario. Ako u <ph name="BEGIN_LINK" />trgovini aplikacija<ph name="END_LINK" /> nema dostupnih ažuriranja, postoji mogućnost da vaš uređaj više ne podržava nove verzije Chromea.</translation>
+<translation id="5172049865623113551">Odmah otvorite Chrome kad ste na iPhoneu</translation>
+<translation id="5179095426828744632">Brže pristupite Chromeu putem trake</translation>
 <translation id="5184329579814168207">Otvori u Chromeu</translation>
 <translation id="5190139289262548459">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chrome upotrebljava.</translation>
 <translation id="5209238444239954363">Chrome nije uspio provjeriti ima li ažuriranja. Pokušajte ponovno kasnije.</translation>

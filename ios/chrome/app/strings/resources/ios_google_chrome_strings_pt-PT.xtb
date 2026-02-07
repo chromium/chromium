@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1035560095760914532">Coloque o Chrome na área inferior para aceder ao mesmo em qualquer altura</translation>
 <translation id="1076643793026027628">O Chrome abre automaticamente links de Navegação anónima do YouTube na Navegação anónima.</translation>
 <translation id="1081114897601629648">As seguintes palavras-passe não foram importadas para o Gestor de Palavras-passe da Google porque não correspondem aos requisitos.</translation>
 <translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
@@ -89,6 +90,7 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="288992067439702510">Atingiu o limite de <ph name="LIMIT" /> marcadores do Google Chrome, por isso, alguns dos seus marcadores ainda não foram guardados na sua Conta Google.
 
 Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se terminar sessão agora, os marcadores não guardados são eliminados.</translation>
+<translation id="2901621928549457170">Abra o Chrome instantaneamente quando estiver no seu iPad</translation>
 <translation id="2922914028977213693">Toque aqui para tirar o máximo partido do Chrome no seu iPad.</translation>
 <translation id="292371311537977079">Definições do Chrome</translation>
 <translation id="2923827943290349720">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
@@ -173,6 +175,8 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="5119391094379141756">Selecione o Chrome</translation>
 <translation id="5123188916260706415">Pesquise com a voz no Chrome</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chrome.</translation>
+<translation id="5172049865623113551">Abra o Chrome instantaneamente quando estiver no seu iPhone</translation>
+<translation id="5179095426828744632">Aceda ao Chrome mais rapidamente a partir da dock</translation>
 <translation id="5184329579814168207">Abrir no Chrome</translation>
 <translation id="5190139289262548459">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chrome é usado.</translation>
 <translation id="5209238444239954363">O Chrome não conseguiu verificar se existem atualizações. Tente mais tarde.</translation>

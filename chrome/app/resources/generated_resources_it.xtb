@@ -514,6 +514,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1333965224356556482">Non consentire ai siti di vedere la tua posizione</translation>
 <translation id="1335282218035876586">Il tuo Chromebook non riceve più aggiornamenti della sicurezza e del software. Esegui l'upgrade di Chromebook per un'esperienza ottimale.</translation>
 <translation id="133535873114485416">Metodo di immissione preferito</translation>
+<translation id="13356285923490863">Nome criterio</translation>
 <translation id="1335929031622236846">Registra il tuo dispositivo</translation>
 <translation id="133660899895084533">Lettura di dati e informazioni delle periferiche Bluetooth</translation>
 <translation id="1336902454946927954">Il token di sicurezza è bloccato perché non è stato possibile riconoscere la tua impronta. Per sbloccarlo, inserisci il PIN.</translation>
@@ -2628,6 +2629,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Controllo ortografia e grammatica</translation>
 <translation id="2750020734439919571">Altre impostazioni e autorizzazioni per le app di Chrome</translation>
+<translation id="275010360476017464">Usa il microfono per parlare con Gemini. Quando parli con Gemini, l'audio viene memorizzato nell'Attività delle app Gemini (se è attiva).</translation>
 <translation id="2750602041558385535">Download non verificato bloccato</translation>
 <translation id="2751454300227269244">Muovi la bocca verso destra</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> vuole accedere al numero ID del tuo token di sicurezza. Il sito saprà esattamente quale token di sicurezza stai usando.</translation>
@@ -5761,6 +5763,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4881685975363383806">Non visualizzare più il promemoria</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4882312758060467256">Ha accesso a questo sito</translation>
+<translation id="4882848900607400156">Se condividi la tua posizione esatta, Gemini può rispondere alle tue domande in modo più accurato. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="4882919381756638075">In genere, i siti usano il microfono per funzionalità di comunicazione come la chat video</translation>
 <translation id="4883436287898674711">Tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>
@@ -5851,6 +5854,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4945439665401275950">Per configurare l'impronta, chiedi a tuo figlio di toccare il tasto di accensione. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">Avvio app + Freccia su</translation>
 <translation id="4947376546135294974">Dati dal sito che stai visitando</translation>
+<translation id="4948370357877377178">Continua le tue attività</translation>
 <translation id="4950100687509657457">Crea profilo</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un file}other{# file}}</translation>
 <translation id="495170559598752135">Azioni</translation>
@@ -8247,6 +8251,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6636623428211296678">Scopri altre impostazioni qui sotto oppure termina ora</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6640268266988685324">Scheda aperta</translation>
+<translation id="664271268954513498">Valore criterio</translation>
 <translation id="6642720633335369752">Per visualizzare le finestre di tutte le app aperte, scorri dal basso verso l'alto e tieni premuto.</translation>
 <translation id="664290675870910564">Selezione rete</translation>
 <translation id="6643016212128521049">Cancella</translation>
@@ -9073,6 +9078,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="7207457272187520234">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="7207631048330366454">Cerca nelle app</translation>
+<translation id="7209958456051239069">Se condividi la tua posizione esatta, Gemini può rispondere alle tue domande in modo più accurato</translation>
 <translation id="7210257969463271891">Qui vengono visualizzate le app web che installi</translation>
 <translation id="7210432570808024354">Tocca e trascina per spostare gli elementi</translation>
 <translation id="7210499381659830293">Stampanti estensione</translation>
@@ -10692,6 +10698,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8288032458496410887">Disinstalla <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Estrai testo dal PDF</translation>
 <translation id="8289128870594824098">Dimensione disco</translation>
+<translation id="8289200713453671499">Passa rapidamente tra gruppi di schede e le conversazioni recenti con l'AI senza perdere il filo.</translation>
 <translation id="8289509909262565712">Ti diamo il benvenuto in <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Scarica Chrome</translation>
 <translation id="8291942417224950075">Per uso personale</translation>
@@ -11672,6 +11679,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8945508919180478719">Microfono in stile studio</translation>
 <translation id="8946359700442089734">Le funzioni di debug non sono state attivate completamente su questo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Comprimi tutte le richieste nella barra degli indirizzi</translation>
+<translation id="8946996840522387154">Usa il microfono per parlare con Gemini. Quando parli con Gemini, l'audio viene memorizzato nell'Attività delle app Gemini (se è attiva). I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="894763922177556086">Buona</translation>
 <translation id="895054485242522631">I siti possono usare i sensori di movimento</translation>
 <translation id="8951256747718668828">Impossibile completare il ripristino a causa di un errore.</translation>

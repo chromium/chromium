@@ -514,6 +514,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1333965224356556482">Non permitir que os sitios vexan a túa localización</translation>
 <translation id="1335282218035876586">O teu Chromebook xa non vai recibir máis actualizacións de seguranza e software. Faite cun novo para desfrutar da mellor experiencia.</translation>
 <translation id="133535873114485416">Entrada de voz preferida</translation>
+<translation id="13356285923490863">Nome da política</translation>
 <translation id="1335929031622236846">Inscribir o teu dispositivo</translation>
 <translation id="133660899895084533">Ler datos e información dos periféricos de Bluetooth</translation>
 <translation id="1336902454946927954">Bloqueouse a chave de seguranza porque non se puido recoñecer a túa impresión dixital. Para desbloqueala, escribe o PIN.</translation>
@@ -2627,6 +2628,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Comprobar a gramática e a ortografía</translation>
 <translation id="2750020734439919571">Máis opcións de configuración e permisos da aplicación Chrome</translation>
+<translation id="275010360476017464">Usa o micrófono para chatear con Gemini. Ao falar o audio almacénase na actividade das aplicacións Gemini (se a opción está activada).</translation>
 <translation id="2750602041558385535">Carga non verificada bloqueada</translation>
 <translation id="2751454300227269244">Mover a boca cara á dereita</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> quere coñecer o número de identificación da túa chave de seguranza. O sitio saberá que chave de seguranza estás utilizando exactamente.</translation>
@@ -5764,6 +5766,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4881685975363383806">Non lembrar a próxima vez</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Ten acceso a este sitio</translation>
+<translation id="4882848900607400156">Se compartes a túa localización precisa, Gemini poderá responder as túas preguntas con máis precisión. Os teus datos non se usarán para mellorar os modelos de IA xenerativa.</translation>
 <translation id="4882919381756638075">Os sitios adoitan usar o micrófono para ofrecerche determinadas funcións relacionadas coa comunicación (por exemplo, chat de vídeo)</translation>
 <translation id="4883436287898674711">Todos os sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Xes&amp;tor de tarefas</translation>
@@ -5854,6 +5857,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4945439665401275950">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o botón de acendido. Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="4946998421534856407">menú de aplicacións + frecha arriba</translation>
 <translation id="4947376546135294974">Datos do sitio que estás visitando</translation>
+<translation id="4948370357877377178">Continúa coas túas tarefas</translation>
 <translation id="4950100687509657457">Crear perfil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Accións</translation>
@@ -9075,6 +9079,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Páxina de saída}other{Páxinas de saída}}</translation>
 <translation id="7207457272187520234">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicacións</translation>
+<translation id="7209958456051239069">Se compartes a túa localización precisa, Gemini poderá responder as túas preguntas con máis precisión</translation>
 <translation id="7210257969463271891">As aplicacións web que instales mostraranse aquí</translation>
 <translation id="7210432570808024354">Tocar e arrastrar elementos para movelos</translation>
 <translation id="7210499381659830293">Impresoras da extensión</translation>
@@ -10693,6 +10698,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8288032458496410887">Desinstalar a aplicación <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Extraer texto do PDF</translation>
 <translation id="8289128870594824098">Tamaño do disco</translation>
+<translation id="8289200713453671499">Cambia rapidamente entre os grupos de pestanas e as conversas recentes coa IA sen perder o fío.</translation>
 <translation id="8289509909262565712">Dámosche a benvida a <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Descargar Chrome</translation>
 <translation id="8291942417224950075">Para uso persoal</translation>
@@ -11673,6 +11679,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8945508919180478719">Micrófono de estudio</translation>
 <translation id="8946359700442089734">As funcións de depuración non se activaron completamente neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Contraer todas as solicitudes na barra de enderezos</translation>
+<translation id="8946996840522387154">Usa o micrófono para chatear con Gemini. Ao falar o audio almacénase na actividade das aplicacións Gemini (se a opción está activada). Os teus datos non se usarán para mellorar os modelos de IA xenerativa.</translation>
 <translation id="894763922177556086">Boa</translation>
 <translation id="895054485242522631">Os sitios poden usar os sensores de movemento</translation>
 <translation id="8951256747718668828">Non se puido completar a restauración debido a un erro</translation>

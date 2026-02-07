@@ -514,6 +514,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1333965224356556482">Moenie werwe toelaat om jou ligging te sien nie</translation>
 <translation id="1335282218035876586">Jou Chromebook ontvang nie meer sekuriteit- en sagtewareopdaterings nie. Gradeer jou Chromebook op vir die beste ervaring.</translation>
 <translation id="133535873114485416">Voorkeurinvoer</translation>
+<translation id="13356285923490863">Beleidnaam</translation>
 <translation id="1335929031622236846">Skryf jou toestel in</translation>
 <translation id="133660899895084533">Lees Bluetooth-randtoestelle se inligting en data</translation>
 <translation id="1336902454946927954">Jou sekuriteitsleutel is gesluit omdat jou vingerafdruk nie herken kon word nie. Voer jou PIN in om dit te ontsluit.</translation>
@@ -2641,6 +2642,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Gaan grammatika saam met spelling na</translation>
 <translation id="2750020734439919571">Meer instellings en toestemmings vir die Chrome-app</translation>
+<translation id="275010360476017464">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-appsaktiwiteit gestoor (as dit aan is).</translation>
 <translation id="2750602041558385535">Ongeverifieerde aflaai is geblokkeer</translation>
 <translation id="2751454300227269244">Beweeg jou mond regs</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> wil uitvind wat die ID-nommer van jou sekuriteitsleutel is. Die werf sal presies weet watter sekuriteitsleutel jy gebruik.</translation>
@@ -5775,6 +5777,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4881685975363383806">Moenie my volgende keer herinner nie</translation>
 <translation id="4881695831933465202">Maak oop</translation>
 <translation id="4882312758060467256">Het toegang tot hierdie werf</translation>
+<translation id="4882848900607400156">Wanneer jy jou presiese ligging deel, kan Gemini jou vrae akkurater beantwoord. Jou data word nie gebruik om generatiewe KI-modelle te verbeter nie.</translation>
 <translation id="4882919381756638075">Werwe gebruik gewoonlik jou mikrofoon vir kommunikasiekenmerke soos videoklets</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-werwe</translation>
 <translation id="48838266408104654">Taakbestuurder</translation>
@@ -5865,6 +5868,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4945439665401275950">Laat jou kind aan die aan/af-skakelaar raak om die vingerafdruk op te stel. Jou kind se vingerafdrukdata word veilig geberg en verlaat nooit hierdie <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="4946998421534856407">lanseerder + oppyl</translation>
 <translation id="4947376546135294974">Data van die webwerf wat jy besoek</translation>
+<translation id="4948370357877377178">Gaan voort met jou take</translation>
 <translation id="4950100687509657457">Skep profiel</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{’n lêer}other{# lêers}}</translation>
 <translation id="495170559598752135">Handelinge</translation>
@@ -9090,6 +9094,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Verlaat bladsy}other{Verlaat bladsye}}</translation>
 <translation id="7207457272187520234">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie instelling word deur die eienaar toegepas. As jou bykomende Web- en App-aktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
 <translation id="7207631048330366454">Deursoek programme</translation>
+<translation id="7209958456051239069">Wanneer jy jou presiese ligging deel, kan Gemini jou vrae akkurater beantwoord</translation>
 <translation id="7210257969463271891">Webapps wat jy installeer, verskyn hier</translation>
 <translation id="7210432570808024354">Tik en sleep om items te skuif</translation>
 <translation id="7210499381659830293">Uitbreidingdrukkers</translation>
@@ -10708,6 +10713,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8288032458496410887">Deïnstalleer tans <ph name="APP" /> …</translation>
 <translation id="8288553158681886528">Onttrek teks uit PDF</translation>
 <translation id="8289128870594824098">Skyfgrootte</translation>
+<translation id="8289200713453671499">Wissel vinnig tussen jou oortjiegroepe en jou onlangse KI-gesprekke sonder om jou plek te verloor.</translation>
 <translation id="8289509909262565712">Welkom by <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Laai Chrome af</translation>
 <translation id="8291942417224950075">Vir persoonlike gebruik</translation>
@@ -11688,6 +11694,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8945508919180478719">Ateljeestyl mikrofoon</translation>
 <translation id="8946359700442089734">Ontfoutingkenmerke is nie heeltemal op hierdie <ph name="IDS_SHORT_PRODUCT_NAME" />-toestel geaktiveer nie.</translation>
 <translation id="8946954897220903437">Vou alle versoeke in die adresbalk in</translation>
+<translation id="8946996840522387154">Gebruik jou mikrofoon om met Gemini te klets. Wanneer jy met Gemini praat, word oudio in Gemini-appsaktiwiteit gestoor (as dit aan is). Jou data word nie gebruik om generatiewe KI-modelle te verbeter nie.</translation>
 <translation id="894763922177556086">Goed</translation>
 <translation id="895054485242522631">Werwe kan bewegingsensors gebruik</translation>
 <translation id="8951256747718668828">Terugstelling kon weens 'n probleem nie voltooi word nie</translation>

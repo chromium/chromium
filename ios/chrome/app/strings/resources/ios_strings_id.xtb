@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">Sandi &amp; kunci sandi tersimpan</translation>
 <translation id="3143515551205905069">Batalkan sinkronisasi</translation>
 <translation id="3144126448740580210">SELESAI</translation>
+<translation id="3147521114983561406">Kunci sandi disimpan ke pengelola sandi Anda. Kunci sandi dapat diakses di tab Samaran dan tab biasa.</translation>
 <translation id="3148052723910099040">Petak Tab Biasa</translation>
 <translation id="3148237711805373460">Arahkan ke sana</translation>
 <translation id="3157387275655328056">Tambahkan ke Daftar Bacaan</translation>
@@ -1329,7 +1330,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5868644772996939262">Isi otomatis sandi dan kunci sandi</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>
 <translation id="5873179562631407582">Sentuh lama tab yang terbuka</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Dikelola oleh organisasi Anda.</translation>
 <translation id="5887400589839399685">Kartu disimpan</translation>
 <translation id="5888889603768021126">Login dengan</translation>
 <translation id="5889333064153755823">Hapus Data Penjelajahan</translation>
@@ -2098,6 +2098,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8587001564479545614">Buat PIN pemulihan</translation>
 <translation id="8588404856427128947">Nonaktif</translation>
 <translation id="8590286732816598906">Grup tab, <ph name="GROUP_TITLE" />, Menu.</translation>
+<translation id="8593317261815647019">Buat kunci sandi di luar mode Samaran?</translation>
 <translation id="8600272508328041907">Beralih ke terjemahan Halaman penuh</translation>
 <translation id="860043288473659153">Nama pemegang kartu</translation>
 <translation id="8601611099293226919">Telusuri layar Anda dengan Google Lens</translation>

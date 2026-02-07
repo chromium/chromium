@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chromium.</translation>
 <translation id="1115463765356382667">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chromium.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
+<translation id="119044033865561140">Öppna Chromium omedelbart på din iPad</translation>
 <translation id="1211450393895337634">Öppna Chromium snabbare när du är vill surfa på din iPad.</translation>
 <translation id="1229234641991056119">Använd lösenord, historik, bokmärken och kreditkort från Safari i Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
 <translation id="1260702988262336471">Öppna Chromium-menyn</translation>
 <translation id="12739128458173458">Om du vill skicka den här fliken till en annan enhet loggar du in i Chromium på båda enheterna.</translation>
+<translation id="1279797561821266129">Kom åt Chromium snabbare från dockan</translation>
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1423007117030725713">Börja söka på en ny Chromium-flik.</translation>
@@ -176,6 +178,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="4790638144988730920">Fortsätt använda Chromium-data i Google-kontot.</translation>
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="4856138222358683580">Chromium-åtgärder</translation>
+<translation id="4869706986935301458">Öppna Chromium omedelbart på din iPhone</translation>
 <translation id="4904452304169763785">Varningar om integritets- eller säkerhetsproblem som identifieras av Chromium.</translation>
 <translation id="4908570938463711775">Lär dig grunderna i Chromium för att komma igång</translation>
 <translation id="4962295957157529683">Gör klart det du höll på med i det andra öppna Chromium-fönstret.</translation>
@@ -295,6 +298,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7395825497086981028">Lösenordet sparas med Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Den här nyckeln sparas i Lösenordshantering för <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Öppna Chromium</translation>
+<translation id="7507535968973352823">Placera Chromium längst ned så att du kan komma åt den när som helst</translation>
 <translation id="7531461704633548377">Från Chromium</translation>
 <translation id="7554983317097061001">Tips för Chromium: Flytta Chromium till dockan</translation>
 <translation id="7576863740961052505">Hantera inställningar för Chromium</translation>

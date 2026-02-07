@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Esto significa que Chromium siempre solicitará la vista del sitio web como móvil.</translation>
 <translation id="1115463765356382667">Completa las acciones que te sugerimos a continuación para sacar el máximo partido a Chromium.</translation>
 <translation id="1185134272377778587">Información de Chromium</translation>
+<translation id="119044033865561140">Abre Chromium al instante cuando estés en tu iPad</translation>
 <translation id="1211450393895337634">Abre Chromium más rápido al navegar en tu iPad.</translation>
 <translation id="1229234641991056119">Usa tus contraseñas, historial, marcadores y tarjetas de crédito de Safari en Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, toca Ajustes y permite que Chromium añada fotos.</translation>
 <translation id="1260702988262336471">Abre el menú de Chromium</translation>
 <translation id="12739128458173458">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chromium en ambos dispositivos.</translation>
+<translation id="1279797561821266129">Accede más rápido a Chromium desde el Dock</translation>
 <translation id="1361748954329991663">Chromium no está actualizado. Si no hay ninguna actualización disponible en el <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que el dispositivo ya no sea compatible con las nuevas versiones de Chromium.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1423007117030725713">Inicia una búsqueda en una nueva pestaña de Chromium.</translation>
@@ -176,6 +178,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 <translation id="4790638144988730920">Sigue usando los datos de Chromium en tu cuenta de Google.</translation>
 <translation id="4828317641996116749">Chromium no ha podido comprobar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="4856138222358683580">Acciones de Chromium</translation>
+<translation id="4869706986935301458">Abre Chromium al instante cuando estés en tu iPhone</translation>
 <translation id="4904452304169763785">Alertas sobre los problemas de privacidad o seguridad detectados por Chromium.</translation>
 <translation id="4908570938463711775">Aprende los conceptos básicos de Chromium para empezar</translation>
 <translation id="4962295957157529683">Termina lo que estabas haciendo en otra ventana abierta de Chromium.</translation>
@@ -295,6 +298,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7395825497086981028">Tu contraseña se guardará en el gestor de contraseñas de <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Esta llave de acceso se guardará en el Gestor de contraseñas de <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Abre Chromium</translation>
+<translation id="7507535968973352823">Coloca Chromium en la parte inferior para acceder en cualquier momento</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Consejo de Chromium: mueve Chromium al Dock</translation>
 <translation id="7576863740961052505">Gestionar la configuración de Chromium</translation>

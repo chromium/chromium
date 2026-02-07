@@ -1329,7 +1329,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5868644772996939262">Autocompletar contraseñas y llaves de acceso</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
 <translation id="5873179562631407582">Mantén presionadas las pestañas abiertas.</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Administrado por tu organización.</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5888889603768021126">Accediste con</translation>
 <translation id="5889333064153755823">Borrar datos de navegación</translation>
@@ -1666,6 +1665,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Establecer como predeterminado</translation>
 <translation id="7007970306646738803">Elige qué hacer con los datos de navegación existentes en este dispositivo, como las pestañas, el historial y las contraseñas.</translation>
+<translation id="7012978439516925343">Verifica tu identidad para crear una llave de acceso</translation>
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tienes 1 contraseña poco segura. Cámbiala ahora para mantener tu cuenta segura.</translation>
 <translation id="7016958933495968912">Opciones para Descubre</translation>

@@ -1329,7 +1329,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5868644772996939262">Salasanojen ja avainkoodien automaattinen täyttö</translation>
 <translation id="5869522115854928033">Tallennetut salasanat</translation>
 <translation id="5873179562631407582">Kosketa avoimia välilehtiä pitkään</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Organisaatiosi ylläpitämä.</translation>
 <translation id="5887400589839399685">Kortti tallennettu</translation>
 <translation id="5888889603768021126">Kirjauduttu palvelulla</translation>
 <translation id="5889333064153755823">Poista selausdata</translation>
@@ -1666,6 +1665,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Muuta oletusselaimeksi asetuksissa…</translation>
 <translation id="7007970306646738803">Valitse, mitä tällä laitteella olevalle selausdatalle (esim. välilehdille, historialle ja salasanoille) tehdään.</translation>
+<translation id="7012978439516925343">Vahvista henkilöllisyytesi, jotta voit luoda avainkoodin</translation>
 <translation id="7015418667643980944">Jaettu näkymä</translation>
 <translation id="7016070607649558507">Sinulla on 1 heikko salasana. Korjaa se nyt, jotta pysyt turvassa.</translation>
 <translation id="7016958933495968912">Discover-asetukset</translation>

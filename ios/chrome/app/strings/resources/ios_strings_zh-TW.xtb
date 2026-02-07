@@ -1329,7 +1329,6 @@
 <translation id="5868644772996939262">自動填入密碼和密碼金鑰</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5873179562631407582">按住任何開啟的分頁</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />。由貴機構管理。</translation>
 <translation id="5887400589839399685">已儲存卡片</translation>
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889333064153755823">刪除瀏覽資料</translation>
@@ -1666,6 +1665,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">在「設定」中設為預設…</translation>
 <translation id="7007970306646738803">請選擇如何處理這部裝置上的現有瀏覽資料，例如分頁、歷史記錄和密碼。</translation>
+<translation id="7012978439516925343">驗證身分以建立密碼金鑰</translation>
 <translation id="7015418667643980944">分割畫面</translation>
 <translation id="7016070607649558507">你有 1 組低強度密碼，請立即修正以確保安全。</translation>
 <translation id="7016958933495968912">探索的選項</translation>

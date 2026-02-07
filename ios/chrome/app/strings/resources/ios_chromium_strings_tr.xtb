@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Bu durumda Chromium her seferinde mobil siteyi ister.</translation>
 <translation id="1115463765356382667">Chromium'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
+<translation id="119044033865561140">iPad'inizde Chromium'u anında açın</translation>
 <translation id="1211450393895337634">iPad'inizde internette gezinmeye hazır olduğunuzda Chromium'u daha hızlı açın.</translation>
 <translation id="1229234641991056119">Chromium'da Safari şifrelerinizi, geçmişinizi, yer işaretlerinizi ve kredi kartlarınızı kullanın</translation>
 <translation id="1257458525759135959">Resimleri kaydetmek için Ayarlar'a dokunup Chromium'un resimlerinize eklemesine izin verin</translation>
 <translation id="1260702988262336471">Chromium menüsünü açın</translation>
 <translation id="12739128458173458">Bu sekmeyi başka bir cihaza göndermek için her iki cihazda da Chromium'da oturum açın.</translation>
+<translation id="1279797561821266129">Dock'unuzdan Chromium'a daha hızlı erişin</translation>
 <translation id="1361748954329991663">Chromium sürümü eski. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />'da güncelleme yoksa cihazınız artık Chromium'un yeni sürümlerini desteklemiyor olabilir.</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1423007117030725713">Yeni bir Chromium sekmesinde arama başlatır.</translation>
@@ -176,6 +178,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium v
 <translation id="4790638144988730920">Google Hesabınızdaki Chromium verilerini kullanmaya devam edin.</translation>
 <translation id="4828317641996116749">Chromium, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="4856138222358683580">Chromium işlemleri</translation>
+<translation id="4869706986935301458">iPhone'unuzda Chromium'u anında açın</translation>
 <translation id="4904452304169763785">Chromium'un sizin için tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar.</translation>
 <translation id="4908570938463711775">Chromium'un faydalı temel özelliklerini öğrenin ve bunları kullanmaya başlayın</translation>
 <translation id="4962295957157529683">Açık olan diğer Chromium pencerenizde yaptığınız işlemi tamamlayın.</translation>
@@ -295,6 +298,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7395825497086981028">Şifreniz, <ph name="EMAIL" /> için Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="7434848749522628428">Bu geçiş anahtarı, <ph name="USER_EMAIL" /> için Şifre Yöneticisi'ne kaydedilecek.</translation>
 <translation id="7504829997542308412">Chromium'u açın</translation>
+<translation id="7507535968973352823">İstediğiniz zaman erişmek için Chromium'u alt kısma yerleştirin</translation>
 <translation id="7531461704633548377">Chromium'dan</translation>
 <translation id="7554983317097061001">Chromium ipucu: Chromium'u yuvaya taşıyın</translation>
 <translation id="7576863740961052505">Chromium ayarlarını yönet</translation>

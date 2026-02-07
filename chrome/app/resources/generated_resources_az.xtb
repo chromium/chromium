@@ -514,6 +514,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1333965224356556482">Saytlara məkanınıza baxmaq icazəsi verməyin</translation>
 <translation id="1335282218035876586">Chromebook artıq təhlükəsizlik və proqram təminatı güncəllənmələri qəbul etmir. Keyfiyyətli təcrübə üçün Chromebook-u təkmilləşdirin.</translation>
 <translation id="133535873114485416">Tərcih edilmiş daxiletmə</translation>
+<translation id="13356285923490863">Qayda adı</translation>
 <translation id="1335929031622236846">Cihazınızı qeydiyyatdan keçirin</translation>
 <translation id="133660899895084533">Bluetooth periferiya qurğuları üzrə məlumat və datanın oxunması</translation>
 <translation id="1336902454946927954">Barmaq izinizi tanımaq mümkün olmadığı üçün təhlükəsizlik açarınız kilidləndi. Onu kiliddən çıxarmaq üçün PIN'nizi daxil edin.</translation>
@@ -2631,6 +2632,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Qrammatikanı Orfoqrafiya ilə yoxlayın</translation>
 <translation id="2750020734439919571">Chrome tətbiqi üzrə digər ayar və icazələr</translation>
+<translation id="275010360476017464">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini Tətbiq Fəaliyyətində saxlanılır (aktivdirsə).</translation>
 <translation id="2750602041558385535">Doğrulanmamış endirmə bloklandı</translation>
 <translation id="2751454300227269244">Mausu sağa hərəkət etdirin</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> təhlükəsizlik açarınızın ID nömrəsini öyrənmək istəyir. Sayt dəqiqliklə hansı təhlükəsizlik açarını istifadə etdiyinizi biləcək.</translation>
@@ -5763,6 +5765,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4881685975363383806">Növbəti dəfə xatırlatmayın</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4882312758060467256">Bu sayta girişi var</translation>
+<translation id="4882848900607400156">Dəqiq məkanınızı paylaşdığınız zaman Gemini suallarınızı daha dəqiq cavablandıra bilər. Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir.</translation>
 <translation id="4882919381756638075">Saytlar adətən video çat kimi ünsiyyət xüsusiyyətləri üçün mikrofondan istifadə edir</translation>
 <translation id="4883436287898674711">Bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="48838266408104654">&amp;Tapşırıq Meneceri</translation>
@@ -5853,6 +5856,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4945439665401275950">Barmaq izini ayarlamaq üçün övladınız qidalanma düyməsinə toxunmalıdır. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="4946998421534856407">başladıcı + yuxarı ox</translation>
 <translation id="4947376546135294974">Daxil olduğunuz saytdan əldə edilən data</translation>
+<translation id="4948370357877377178">Tapşırıqlarınıza davam edin</translation>
 <translation id="4950100687509657457">Profil yaradın</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fayl}other{# fayl}}</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
@@ -9075,6 +9079,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Səhifədən Çıxın}other{Səhifələrdən Çıxın}}</translation>
 <translation id="7207457272187520234">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik Google'a göndərir. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Bu ayar sahibi tərəfindən tətbiq edilir. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda yadda saxlanıla bilər.</translation>
 <translation id="7207631048330366454">Tətbiqlərdə axtarın</translation>
+<translation id="7209958456051239069">Dəqiq məkanınızı paylaşdığınız zaman Gemini suallarınıza daha dəqiq cavab verə bilər</translation>
 <translation id="7210257969463271891">Quraşdırdığınız veb-tətbiqlər burada görünür</translation>
 <translation id="7210432570808024354">Elementləri köçürmək üçün toxunub sürüşdürün</translation>
 <translation id="7210499381659830293">Artırma printerləri</translation>
@@ -10693,6 +10698,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8288032458496410887"><ph name="APP" /> tətbiqini sistemdən silin...</translation>
 <translation id="8288553158681886528">PDF-dən mətn çıxarın</translation>
 <translation id="8289128870594824098">Disk ölçüsü</translation>
+<translation id="8289200713453671499">Yerini itirmədən tab qrupları və son Sİ söhbətləri arasında sürətlə keçid edin.</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> cihazına xoş gəlmisiniz</translation>
 <translation id="8291415872436043161">Chrome'u endirin</translation>
 <translation id="8291942417224950075">Şəxsi istifadə üçün</translation>
@@ -11671,6 +11677,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8945508919180478719">Studio üslublu mikrofon</translation>
 <translation id="8946359700442089734">Debaq funksiyaları bu <ph name="IDS_SHORT_PRODUCT_NAME" /> cihazında yarımçıq aktiv edilib.</translation>
 <translation id="8946954897220903437">Ünvan panelindəki bütün sorğuları yığcamlaşdırın</translation>
+<translation id="8946996840522387154">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini Tətbiq Fəaliyyətində saxlanılır (aktivdirsə). Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir.</translation>
 <translation id="894763922177556086">Yaxşı</translation>
 <translation id="895054485242522631">Saytlar hərəkət sensorlarından istifadə edə bilər</translation>
 <translation id="8951256747718668828">Xəta baş verdiyinə görə bərpa tamamlanmadı</translation>

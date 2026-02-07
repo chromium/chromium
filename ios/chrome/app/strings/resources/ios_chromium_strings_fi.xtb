@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Tämä tarkoittaa, että Chromium pyytää aina mobiilisivustoa.</translation>
 <translation id="1115463765356382667">Näillä ehdotuksilla saat Chromiumista parhaan hyödyn.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
+<translation id="119044033865561140">Avaa Chromium heti, kun käytät iPadia</translation>
 <translation id="1211450393895337634">Avaa Chromium nopeammin, kun olet valmis selaamaan iPadilla.</translation>
 <translation id="1229234641991056119">Käytä Safarin salasanoja, historiaa, kirjanmerkkejä ja credit-kortteja Chromiumissa</translation>
 <translation id="1257458525759135959">Anna Chromiumin lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="1260702988262336471">Avaa Chromiumin valikko</translation>
 <translation id="12739128458173458">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu Chromiumiin molemmilla laitteilla.</translation>
+<translation id="1279797561821266129">Käytä Chromiumia nopeammin alapalkista</translation>
 <translation id="1361748954329991663">Chromium on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromiumin uusia versioita.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1423007117030725713">Aloita haku uudella Chromium-välilehdellä.</translation>
@@ -176,6 +178,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="4790638144988730920">Jatka Chromium-datan käyttöä Google-tilillä.</translation>
 <translation id="4828317641996116749">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="4856138222358683580">Chromium-toiminnot</translation>
+<translation id="4869706986935301458">Avaa Chromium heti, kun käytät iPhonea</translation>
 <translation id="4904452304169763785">Ilmoittaa yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee puolestasi.</translation>
 <translation id="4908570938463711775">Aloita tutustumalla Chromiumin perusteisiin</translation>
 <translation id="4962295957157529683">Siirry toiseen avoimeen Chromium-ikkunaan ja viimeistele aloittamasi.</translation>
@@ -295,6 +298,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7395825497086981028">Salasana tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Tämä avainkoodi tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Avaa Chromium</translation>
+<translation id="7507535968973352823">Aseta Chromium alareunaan, niin voit käyttää sitä milloin tahansa</translation>
 <translation id="7531461704633548377">Chromiumista</translation>
 <translation id="7554983317097061001">Chromium-vinkki: Siirrä Chromium alapalkkiin</translation>
 <translation id="7576863740961052505">Muuta Chromiumin asetuksia</translation>

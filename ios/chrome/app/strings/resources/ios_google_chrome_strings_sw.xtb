@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
+<translation id="1035560095760914532">Weka Chrome katika sehemu ya chini ili uifikie wakati wowote</translation>
 <translation id="1076643793026027628">Chrome hufungua kiotomatiki viungo vya Faraghani vya YouTube katika hali ya Faraghani.</translation>
 <translation id="1081114897601629648">Manenosiri yafuatayo hayakuhamishiwa kwenye Kidhibiti cha Manenosiri cha Google, kwa sababu hayatimizi masharti.</translation>
 <translation id="1086486568852410168">Tafuta ukitumia Lenzi ya Google</translation>
@@ -89,6 +90,7 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="288992067439702510">Umefikia kikomo cha Google Chrome cha alamisho <ph name="LIMIT" />, kwa hivyo baadhi ya alamisho zako bado hazijahifadhiwa kwenye Akaunti yako ya Google.
 
 Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho. Ukiondoka kwenye akaunti sasa, alamisho ambazo hazijahifadhiwa zitafutwa.</translation>
+<translation id="2901621928549457170">Fungua Chrome papo hapo ukiwa kwenye iPad yako</translation>
 <translation id="2922914028977213693">Gusa hapa ili unufaike zaidi na Chrome kwenye iPad yako.</translation>
 <translation id="292371311537977079">Mipangilio ya Chrome</translation>
 <translation id="2923827943290349720">Funga vichupo Fiche unapofunga Chrome</translation>
@@ -173,6 +175,8 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="5119391094379141756">Chagua Chrome</translation>
 <translation id="5123188916260706415">Tafuta ukitumia sauti kwenye Chrome</translation>
 <translation id="5162467219239570114">Toleo hili la Chrome limepitwa na wakati. Iwapo hakuna sasisho kwenye <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kuna uwezekano kuwa kifaa chako hakitumii tena matoleo mapya ya Chrome.</translation>
+<translation id="5172049865623113551">Fungua Chrome papo hapo ukiwa kwenye iPhone yako</translation>
+<translation id="5179095426828744632">Fikia Chrome kwa haraka zaidi katika sehemu yako ya kupachika</translation>
 <translation id="5184329579814168207">Fungulia katika Chrome</translation>
 <translation id="5190139289262548459">Shirika lako, <ph name="DOMAIN" />, linasimamia akaunti uliyotumia kuingia na jinsi Chrome inavyotumika.</translation>
 <translation id="5209238444239954363">Chrome imeshindwa kuangalia iwapo kuna masasisho. Jaribu tena baadaye.</translation>

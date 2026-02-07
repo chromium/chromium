@@ -1329,7 +1329,6 @@
 <translation id="5868644772996939262">पासवर्ड तथा पासकीहरू अटोफिल गर्नुहोस्</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
 <translation id="5873179562631407582">कुनै पनि खुला ट्याबमा ट्याप गरी थिचिरहनुहोस्</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />। तपाईंको सङ्गठनले व्यवस्थापन गरेको।</translation>
 <translation id="5887400589839399685">कार्ड सेभ गरियो</translation>
 <translation id="5888889603768021126">यसमार्फत साइन इन गरिएको</translation>
 <translation id="5889333064153755823">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
@@ -1666,6 +1665,7 @@
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">सेटिङमा गई यसलाई डिफल्ट ब्राउजर बनाउनुहोस्…</translation>
 <translation id="7007970306646738803">हाल यो डिभाइसमा भएका ट्याब, हिस्ट्री र पासवर्ड जस्ता ब्राउजिङ डेटा के गर्ने भन्ने कुरा छनौट गर्नुहोस्।</translation>
+<translation id="7012978439516925343">पासकी बनाउन आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7015418667643980944">स्प्लिट भ्यू</translation>
 <translation id="7016070607649558507">तपाईंको एउटा पासवर्ड कमजोर छ। सुरक्षित रहन अहिले नै यो समस्या निवारण गर्नुहोस्।</translation>
 <translation id="7016958933495968912">Discover का विकल्पहरू</translation>

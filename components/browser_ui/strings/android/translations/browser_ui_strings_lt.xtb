@@ -38,6 +38,7 @@
 <translation id="1415855080660575082">Leiskite „Chrome“ bendrinti naujausius skirtukus su įrenginiu, kad juos matytumėte įrenginio programų sąraše ir paieškos rezultatuose. Galite įjungti arba išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="1420688843103859429">Eikite atgal ir pirmyn perbraukdami dviem pirštais jutiklinėje dalyje</translation>
 <translation id="1432650420699700107">Svetainės gali prašyti prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
+<translation id="1442081309487427303">Įjungti Teksto perskaitymo režimo nuorodas</translation>
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="1464044141348608623">Neleisti svetainėms sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> svetainė}one{<ph name="SITE_COUNT" /> svetainė}few{<ph name="SITE_COUNT" /> svetainės}many{<ph name="SITE_COUNT" /> svetainės}other{<ph name="SITE_COUNT" /> svetainių}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1766455884659449403">Gaukite „Chrome“ patarimų pranešimus</translation>
 <translation id="1777815584158991902">„Discover“ sklaidos kanalo apatinis lapas</translation>
 <translation id="1779089405699405702">Vaizdų dekoderis</translation>
+<translation id="1781533683087883868">Išjungti Teksto perskaitymo režimo nuorodas</translation>
 <translation id="1785415724048343560">Rekomenduojama siekiant užtikrinti geriausią patirtį</translation>
 <translation id="1796588414813960292">Funkcijos, kurioms reikalingas garsas, neveiks</translation>
 <translation id="1799920918471566157">„Chrome“ patarimai</translation>

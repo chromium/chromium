@@ -38,6 +38,7 @@
 <translation id="1415855080660575082">Gadewch i Chrome rannu'ch tabiau diweddar gyda'ch dyfais i'w gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch droi hwn ymlaen neu ei ddiffodd yng ngosodiadau Chrome.</translation>
 <translation id="1420688843103859429">Llywiwch yn ôl ac ymlaen trwy sweipio gyda dau fys ar y pad cyffwrdd</translation>
 <translation id="1432650420699700107">Gall gwefannau ofyn am gael cysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
+<translation id="1442081309487427303">Troi dolenni Modd Darllen ymlaen</translation>
 <translation id="1448064542941920355">Pellhau</translation>
 <translation id="1464044141348608623">Peidio â chaniatáu i wefannau wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> wefan}zero{<ph name="SITE_COUNT" /> gwefannau}two{<ph name="SITE_COUNT" /> wefan}few{<ph name="SITE_COUNT" /> gwefan}many{<ph name="SITE_COUNT" /> gwefan}other{<ph name="SITE_COUNT" /> gwefan}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1766455884659449403">Cael hysbysiadau awgrymiadau Chrome</translation>
 <translation id="1777815584158991902">Dalen waelod ffrwd darganfod</translation>
 <translation id="1779089405699405702">Datgodiwr lluniau</translation>
+<translation id="1781533683087883868">Diffodd dolenni Modd Darllen</translation>
 <translation id="1785415724048343560">Argymhellir ar gyfer y profiad gorau</translation>
 <translation id="1796588414813960292">Ni fydd nodweddion sy'n gofyn am sain yn gweithio</translation>
 <translation id="1799920918471566157">Awgrymiadau Chrome</translation>

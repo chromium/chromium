@@ -579,6 +579,17 @@ automaticamente gli aggiornamenti estesi.
 
 Per ulteriori dettagli, visita la pagina
 https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
+<translation id="1432008122934973720">Per impostazione predefinita, le autorizzazioni per l'accesso alla rete locale (LNA) possono essere richieste nei subframe cross-origin solo se sono esplicitamente delegati. Questa policy può essere utilizzata per ignorare questo comportamento predefinito in modo che le autorizzazioni di LNA vengano ereditate per impostazione predefinita nei subframe, a meno che non vengano negate esplicitamente nella policy relativa alle autorizzazioni.
+
+Se questa policy viene attivata, per impostazione predefinita i subframe vengono delegati per tutte le funzionalità della policy relativa alle autorizzazioni di LNA e possono effettuare richieste di rete locale (attivando il comando di autorizzazione).
+
+Se questa policy viene disattivata o se non viene configurata, i subframe devono essere esplicitamente delegati per la funzionalità della policy relativa alle autorizzazioni al fine di effettuare richieste di rete locale e attivare il comando di autorizzazione.
+
+Questa policy si applica alle funzionalità della policy relativa alle autorizzazioni <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />, <ph name="LOOPBACK_NETWORK_FEATURE_NAME" /> e <ph name="LOCAL_NETWORK_FEATURE_NAME" />.
+
+Per saperne di più sull'accesso alla rete locale, visita le pagine https://wicg.github.io/local-network-access/ e https://developer.chrome.com/blog/local-network-access.
+
+Per ulteriori informazioni sulla policy relativa alle autorizzazioni, consulta https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy.</translation>
 <translation id="1432834104376790711">Questa policy attiva o disattiva l'impostazione della modalità Risparmio energetico.
       Su Chrome, questa impostazione fa sì che la frequenza fotogrammi venga limitata per ridurre il consumo energetico. Se questa policy non è impostata, l'utente finale può controllare questa impostazione all'indirizzo chrome://settings/performance.
       Su ChromeOS, questa impostazione fa sì che la frequenza fotogrammi e la frequenza della CPU vengano limitate, le retroilluminazione siano attenuate e Android venga attivato nella modalità Risparmio energetico. Sui dispositivi con più CPU, alcune CPU verranno disattivate.
@@ -1603,6 +1614,7 @@ Questa policy del dispositivo è equivalente alla policy per gli utenti esistent
 <translation id="2090939118981888335">Se la policy viene impostata su Attivata, è consentito il proxy di compressione dei dati. Se viene impostata su Disattivata, il proxy non è consentito.
 
       Se la policy viene configurata, gli utenti non possono modificarla. In caso contrario, gli utenti possono scegliere di utilizzare la funzionalità.</translation>
+<translation id="2091689441590064807">Non consentire le richieste di LNA nei subframe senza delega esplicita</translation>
 <translation id="2093552723795057221">Non viene segnalato lo stato dell'audio</translation>
 <translation id="209388704279338003">Questa policy è stata deprecata e non è supportata. Utilizza la policy <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="2093951844062548778">Questa policy consente di autorizzare Risposte rapide ad accedere ai contenuti selezionati e a inviare le informazioni al server per ricevere i risultati della definizione.
@@ -7690,6 +7702,7 @@ Questa policy può essere usata qualora la nostra procedura in corso di eliminaz
 NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="6083281887050888160">Attiva l'accoppiamento Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (client Windows):</translation>
+<translation id="6085580138417523410">Consenti le richieste di accesso alla rete locale (LNA) nei subframe senza delega esplicita</translation>
 <translation id="6087413944876892918">Utilizza l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
@@ -10283,6 +10296,7 @@ Nota: questa policy si applica solo alle piattaforme che supportano le estension
 <translation id="7669630878711068277">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti possono stampare in <ph name="PRODUCT_NAME" /> e non possono modificare questa impostazione.
 
       Se la policy viene impostata su Disattivata, gli utenti non possono stampare da <ph name="PRODUCT_NAME" />. L'opzione di stampa è disattivata nel menu con tre puntini, nelle estensioni e nelle applicazioni JavaScript.</translation>
+<translation id="7672510074688643558">Consenti le richieste di LNA nei subframe senza delega esplicita</translation>
 <translation id="7673194325208122247">Periodo di tempo (millisecondi)</translation>
 <translation id="7677220829878081413">
       Se è impostata su ArcSession, questa policy forza il riavvio del dispositivo all'uscita dell'utente se Android è stato avviato.

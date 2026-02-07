@@ -1329,7 +1329,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5868644772996939262">Emplena automàticament les contrasenyes i les claus d'accés</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
 <translation id="5873179562631407582">Mantén premuda qualsevol pestanya oberta</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Gestionat per la teva organització.</translation>
 <translation id="5887400589839399685">S'ha desat la targeta</translation>
 <translation id="5888889603768021126">S'ha iniciat la sessió amb</translation>
 <translation id="5889333064153755823">Suprimeix les dades de navegació</translation>
@@ -1666,6 +1665,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Estableix com a predeterminat a Configuració…</translation>
 <translation id="7007970306646738803">Tria què vols fer amb les dades de navegació que hi ha en aquest dispositiu, com ara les pestanyes, l'historial i les contrasenyes.</translation>
+<translation id="7012978439516925343">Verifica la teva identitat per crear una clau d'accés</translation>
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tens 1 contrasenya poc segura. Corregeix el problema per protegir-te.</translation>
 <translation id="7016958933495968912">Opcions per a Discover</translation>

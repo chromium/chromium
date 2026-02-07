@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1035560095760914532">Přidejte si Chrome do spodní oblasti, ať ho máte kdykoli k dispozici</translation>
 <translation id="1076643793026027628">Odkazy z YouTube v anonymním režimu otevírá Chrome automaticky v anonymních oknech.</translation>
 <translation id="1081114897601629648">Následující hesla se do Správce hesel Google neimportovala, protože neodpovídají požadavkům.</translation>
 <translation id="1086486568852410168">Vyhledat pomocí Google Lens</translation>
@@ -89,6 +90,7 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="288992067439702510">V Google Chrome jste dosáhli limitu <ph name="LIMIT" /> záložek. Některé záložky se vám proto zatím neuložily do účtu Google.
 
 Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Pokud se teď odhlásíte, neuložené záložky se smažou.</translation>
+<translation id="2901621928549457170">Otevírejte Chrome na iPadu okamžitě</translation>
 <translation id="2922914028977213693">Pokud chcete Chrome na iPadu využít na maximum, klepněte sem.</translation>
 <translation id="292371311537977079">Nastavení Chromu</translation>
 <translation id="2923827943290349720">Při zavření Chromu zamknout anonymní karty</translation>
@@ -173,6 +175,8 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="5119391094379141756">Vyberte Chrome.</translation>
 <translation id="5123188916260706415">Vyhledávat hlasem v prohlížeči Chrome</translation>
 <translation id="5162467219239570114">Chrome je zastaralý. Pokud v obchodě <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> není k dispozici žádná aktualizace, je možné, že vaše zařízení již nové verze Chromu nepodporuje.</translation>
+<translation id="5172049865623113551">Otevírejte Chrome na iPhonu okamžitě</translation>
+<translation id="5179095426828744632">Otevírejte Chrome rychleji přímo z Docku</translation>
 <translation id="5184329579814168207">Otevřít v Chromu</translation>
 <translation id="5190139289262548459">Účet, ke kterému jste přihlášeni, a způsob používání prohlížeče Chrome spravuje doména <ph name="DOMAIN" />.</translation>
 <translation id="5209238444239954363">Chrome nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>

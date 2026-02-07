@@ -1329,7 +1329,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5868644772996939262">Jelszavak és azonosítókulcsok automatikus kitöltése</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
 <translation id="5873179562631407582">Tartsa lenyomva az ujját bármelyik megnyitott lapon.</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Az Ön szervezete kezeli.</translation>
 <translation id="5887400589839399685">Kártya elmentve</translation>
 <translation id="5888889603768021126">Bejelentkezve a következővel:</translation>
 <translation id="5889333064153755823">Böngészési adatok törlése</translation>
@@ -1666,6 +1665,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="7005768247344091502">Beállítás alapértelmezettként a Beállításokban…</translation>
 <translation id="7007970306646738803">Válassza ki, hogy mit szeretne tenni az ezen az eszközön meglévő böngészési adatokkal (lapokkal, előzményekkel és jelszavakkal).</translation>
+<translation id="7012978439516925343">Azonosítókulcs létrehozásához igazolja személyazonosságát</translation>
 <translation id="7015418667643980944">Osztott nézet</translation>
 <translation id="7016070607649558507">1 gyenge jelszava van. A biztonság megőrzése érdekében javítsa ki most.</translation>
 <translation id="7016958933495968912">A Discover beállításai</translation>

@@ -514,6 +514,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1333965224356556482">Saytlarga joylashuvingiz axborotini koʻrishni taqiqlash</translation>
 <translation id="1335282218035876586">Chromebook qurilmangiz endi xavfsizlikka oid va dasturiy yangilanishlar olmaydi. Barcha imkoniyatlardan foydalanish uchun Chromebookni yangilang.</translation>
 <translation id="133535873114485416">Asosiy matn kiritish usuli</translation>
+<translation id="13356285923490863">Parametr nomi</translation>
 <translation id="1335929031622236846">Qurilmangizni qayd qiling</translation>
 <translation id="133660899895084533">Bluetooth tashqi qurilmalari maʼlumotlarini oʻqing</translation>
 <translation id="1336902454946927954">Barmoq izingiz tasdiqlanmagani sababli elektron kalitingiz qulflandi. Uni qulfdan chiqarish uchun PIN kodingizni kiriting.</translation>
@@ -2630,6 +2631,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Grammatikani imlo bilan tekshirish</translation>
 <translation id="2750020734439919571">Boshqa Chrome ilovasi sozlamalari va ruxsatlari</translation>
+<translation id="275010360476017464">Gemini bilan suhbat qilish uchun mirofondan foydalaning. Geminiga gapirganingizda audio Gemini ilovalaridagi faoliyat tarixida saqlanadi (yoniq boʻlsa).</translation>
 <translation id="2750602041558385535">Tekshirilmagan yuklanma bloklandi</translation>
 <translation id="2751454300227269244">Oʻngga jilmaying</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> elektron kalitingiz identifikatori axborotiga ruxsat olmoqchi. Sayt qaysi elektron kalitdan foydalanayotganingizni bilib oladi.</translation>
@@ -5761,6 +5763,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4881685975363383806">Boshqa eslatilmasin</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="4882312758060467256">Bu saytga ruxsati bor</translation>
+<translation id="4882848900607400156">Aniq joylashuvingizni ulashsangiz, Gemini savollaringizga aniqroq javob berishi mumkin. Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="4882919381756638075">Saytlar odatda video chat kabi aloqa xizmatlarida mikrofondan foydalanadi</translation>
 <translation id="4883436287898674711">Barcha <ph name="WEBSITE_1" /> saytlari</translation>
 <translation id="48838266408104654">&amp;Vazifalar menejeri</translation>
@@ -5851,6 +5854,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4945439665401275950">Barmoq izini sozlash uchun farzandingiz quvvat tugmasini bossin. Farzandingiz barmoq izlari yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmasida saqlanadi.</translation>
 <translation id="4946998421534856407">launcher + tepaga strelka</translation>
 <translation id="4947376546135294974">Ochilgan sayt maʼlumotlari</translation>
+<translation id="4948370357877377178">Vazifalarni davom ettiring</translation>
 <translation id="4950100687509657457">Profil yaratish</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fayl}other{# ta fayl}}</translation>
 <translation id="495170559598752135">Harakatlar</translation>
@@ -9075,6 +9079,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sahifani yopish}other{Sahifalarni yopish}}</translation>
 <translation id="7207457272187520234">Foydalanish statistikasi va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu parametr qurilma egasi tomonidan oʻrnatilgan. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilsa, bu maʼlumotlar Google hisobingizda saqlanadi.</translation>
 <translation id="7207631048330366454">Ilovalar ichidan qidirish</translation>
+<translation id="7209958456051239069">Aniq joylashuvingizni ulashsangiz, Gemini savollaringizga aniqroq javob berishi mumkin</translation>
 <translation id="7210257969463271891">Oʻrnatilgan veb ilovalar shu yerda chiqadi</translation>
 <translation id="7210432570808024354">Fayllarni koʻchirish uchun ustiga bosib, torting</translation>
 <translation id="7210499381659830293">Kengaytmalar ishlatuvchi printerlar</translation>
@@ -10693,6 +10698,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8288032458496410887"><ph name="APP" /> o‘chirilmoqda...</translation>
 <translation id="8288553158681886528">PDF ichidan matn chiqarish</translation>
 <translation id="8289128870594824098">Disk hajmi</translation>
+<translation id="8289200713453671499">Joyingizni yoʻqotmasdan varaqlar guruhi va oxirgi AI suhbatlari orasida tezda almashing.</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> xizmatiga xush kelibsiz!</translation>
 <translation id="8291415872436043161">Chrome brauzerini yuklab olish</translation>
 <translation id="8291942417224950075">Shaxsiy foydalanish uchun</translation>
@@ -11673,6 +11679,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8945508919180478719">Studiyaviy mikrofon</translation>
 <translation id="8946359700442089734">Nosozliklarni ko‘rib chiqish xususiyatlari <ph name="IDS_SHORT_PRODUCT_NAME" /> qurilmaga to‘liq yoqilmagan.</translation>
 <translation id="8946954897220903437">Barcha soʻrovlarni manzil qatorida yigʻish</translation>
+<translation id="8946996840522387154">Gemini bilan suhbat qilish uchun mirofondan foydalaning. Geminiga gapirganingizda audio Gemini ilovalaridagi faoliyat tarixida saqlanadi (yoniq boʻlsa). Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="894763922177556086">Yaxshi</translation>
 <translation id="895054485242522631">Saytlar harakat sensorlaridan foydalanishi mumkin</translation>
 <translation id="8951256747718668828">Xato tufayli tiklanmadi</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1035560095760914532">Размясціце Chrome ў ніжняй частцы экрана, каб мець доступ да браўзера ў любы час</translation>
 <translation id="1076643793026027628">Калі Chrome працуе ў рэжыме інкогніта, спасылкі аўтаматычна адкрываюцца ў YouTube інкогніта.</translation>
 <translation id="1081114897601629648">Наступныя паролі не былі імпартаваны ў Менеджар пароляў Google, бо яны не адпавядаюць патрабаванням.</translation>
 <translation id="1086486568852410168">Пошук праз Google Аб’ектыў</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Вы дасягнулі ліміту закладак у Chrome (<ph name="LIMIT" />), таму некаторыя з вашых закладак яшчэ не захаваны ва Уліковым запісе Google.
 
 Новыя закладкі нельга будзе захаваць ва ўліковым запісе, пакуль вы не выдаліце некаторыя з існуючых. Калі выйсці з уліковага запісу зараз, незахаваныя закладкі будуць выдалены.</translation>
+<translation id="2901621928549457170">Адкрывайце Chrome імгненна на iPad</translation>
 <translation id="2922914028977213693">Націсніце тут, каб выкарыстоўваць усе магчымасці Chrome на iPad.</translation>
 <translation id="292371311537977079">Налады Chrome</translation>
 <translation id="2923827943290349720">Блакіраваць укладкі ў рэжыме інкогніта пры закрыцці Chrome</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Выберыце Chrome.</translation>
 <translation id="5123188916260706415">Выканаць галасавы пошук у Chrome</translation>
 <translation id="5162467219239570114">Ваша версія Chrome састарэла. Калі ў <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> абнаўленняў няма, магчыма, прылада больш не падтрымлівае новыя версіі Chrome.</translation>
+<translation id="5172049865623113551">Адкрывайце Chrome імгненна на iPhone</translation>
+<translation id="5179095426828744632">Адкрывайце Chrome хутчэй, выкарыстоўваючы панэль Dock</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
 <translation id="5190139289262548459">Ваша арганізацыя, <ph name="DOMAIN" />, кіруе ўліковым запісам, у які вы ўвайшлі, а таксама тым, як выкарыстоўваецца Chrome.</translation>
 <translation id="5209238444239954363">Браўзеру Chrome не ўдалося праверыць наяўнасць абнаўленняў. Паўтарыце спробу пазней.</translation>

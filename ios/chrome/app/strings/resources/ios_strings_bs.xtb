@@ -1329,7 +1329,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5868644772996939262">Automatsko popunjavanje lozinki i pristupnih ključeva</translation>
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
 <translation id="5873179562631407582">Dodirnite i zadržite bilo koju otvorenu karticu</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Računom upravlja vaša organizacija.</translation>
 <translation id="5887400589839399685">Kartica je sačuvana</translation>
 <translation id="5888889603768021126">Prijavljeni ste koristeći</translation>
 <translation id="5889333064153755823">Izbrišite podatke pregledanja</translation>
@@ -1666,6 +1665,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Postavljanje kao zadanog u Postavkama…</translation>
 <translation id="7007970306646738803">Odaberite radnju koju treba poduzeti s postojećim podacima o pregledanju na uređaju, poput kartica, historije i lozinki.</translation>
+<translation id="7012978439516925343">Potvrdite identitet da kreirate pristupni ključ</translation>
 <translation id="7015418667643980944">Podijeljeni prikaz</translation>
 <translation id="7016070607649558507">Imate 1 slabu lozinku. Riješite taj problem radi sigurnosti.</translation>
 <translation id="7016958933495968912">Opcije za Discover</translation>

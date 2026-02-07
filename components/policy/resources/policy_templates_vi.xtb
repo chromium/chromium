@@ -567,6 +567,17 @@ Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặ
 Chính sách này chỉ áp dụng cho các kiểu máy cũ không tự động nhận được bản cập nhật mở rộng.
 
 Để biết thêm chi tiết, vui lòng truy cập https://support.google.com/chrome/a/?p=Expand_updates_support.</translation>
+<translation id="1432008122934973720">Theo mặc định, các quyền đối với Quyền truy cập mạng cục bộ (LNA) chỉ được phép yêu cầu trong các khung phụ trên nhiều nguồn gốc nếu được uỷ quyền rõ ràng. Bạn có thể sử dụng chính sách này để ghi đè chế độ mặc định này, sao cho quyền LNA được kế thừa theo mặc định vào các khung con, trừ phi bị từ chối rõ ràng trong chính sách quyền.
+
+Nếu bạn đặt chính sách này thành bật, thì theo mặc định, các khung con sẽ được uỷ quyền tất cả các tính năng của chính sách quyền LNA và có thể gửi yêu cầu đến mạng cục bộ (kích hoạt lời nhắc cấp quyền).
+
+Nếu bạn đặt chính sách này thành tắt hoặc không đặt, thì các khung con phải được uỷ quyền rõ ràng tính năng chính sách quyền để đưa ra yêu cầu về mạng cục bộ và kích hoạt lời nhắc về quyền.
+
+Chính sách này áp dụng cho các tính năng của chính sách quyền <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />, <ph name="LOOPBACK_NETWORK_FEATURE_NAME" /> và <ph name="LOCAL_NETWORK_FEATURE_NAME" />.
+
+Để biết thêm thông tin về Quyền truy cập mạng cục bộ, hãy xem https://wicg.github.io/local-network-access/ và https://developer.chrome.com/blog/local-network-access.
+
+Để biết thêm thông tin về chính sách quyền, hãy xem https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy.</translation>
 <translation id="1432834104376790711">Chính sách này bật hoặc tắt Chế độ tiết kiệm pin.
       Trên Chrome, chế độ cài đặt này điều chỉnh tốc độ khung hình để giảm mức tiêu thụ điện năng. Nếu bạn không đặt chính sách này, thì người dùng cuối có thể kiểm soát chế độ cài đặt này trong chrome://settings/performance.
       Trên ChromeOS, chế độ cài đặt này điều chỉnh tốc độ khung hình và tần suất của CPU, giảm độ sáng đèn nền và bật Chế độ tiết kiệm pin cho Android. Trên các thiết bị có nhiều CPU, một số CPU sẽ bị tắt.
@@ -1579,6 +1590,7 @@ Chính sách thiết bị này tương đương với chính sách người dùn
 <translation id="2090939118981888335">Nếu bạn đặt chính sách này thành Bật, proxy nén dữ liệu sẽ được phép hoạt động. Nếu bạn đặt chính sách này thành Tắt, proxy nén dữ liệu sẽ không được phép hoạt động.
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, người dùng có thể chọn sử dụng tính năng này.</translation>
+<translation id="2091689441590064807">Không cho phép các yêu cầu LNA trong khung phụ mà không cần uỷ quyền rõ ràng</translation>
 <translation id="2093552723795057221">Không báo cáo trạng thái âm thanh</translation>
 <translation id="209388704279338003">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="2093951844062548778">Chính sách này cấp cho tính năng Thông tin nhanh quyền truy cập vào nội dung đã chọn và gửi thông tin đó đến máy chủ để nhận kết quả tra định nghĩa.
@@ -7698,6 +7710,7 @@ LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới
 chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="6083281887050888160">Cho phép ghép nối Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (ứng dụng Windows):</translation>
+<translation id="6085580138417523410">Cho phép các yêu cầu về Quyền truy cập mạng cục bộ (LNA) trong khung phụ mà không cần uỷ quyền rõ ràng</translation>
 <translation id="6087413944876892918">Sử dụng thuật toán <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Đặt ngưỡng pin cho chế độ chuyển đổi điện năng cao điểm theo phần trăm</translation>
 <translation id="6089679180657323464">Kiểm soát các tùy chọn cài đặt của bộ điều khiển đo từ xa và chẩn đoán wilco.</translation>
@@ -10294,6 +10307,7 @@ Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ 
 <translation id="7669630878711068277">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng có thể in trong <ph name="PRODUCT_NAME" /> và không thể thay đổi tùy chọn cài đặt này.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể in từ <ph name="PRODUCT_NAME" />. Tính năng in bị tắt trong trình đơn ba chấm, các tiện ích và ứng dụng JavaScript.</translation>
+<translation id="7672510074688643558">Cho phép các yêu cầu LNA trong khung phụ mà không cần uỷ quyền rõ ràng</translation>
 <translation id="7673194325208122247">Khoảng thời gian (mili giây)</translation>
 <translation id="7677220829878081413">
       Khi bạn đặt chính sách này thành ArcSession, nếu Android đã khởi động, thì chính sách này sẽ buộc thiết bị khởi động lại khi người dùng đăng xuất.

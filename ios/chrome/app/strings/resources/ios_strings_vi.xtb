@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">Sản phẩm đã được thêm vào danh sách sản phẩm bạn theo dõi.</translation>
 <translation id="2230173723195178503">Đã tải trang web</translation>
 <translation id="2236949375853147973">Hoạt động của tôi</translation>
+<translation id="2237869114829007407">Xem thông tin tổng quan và thông tin chi tiết quan trọng về trang hoặc chủ đề bất kỳ</translation>
 <translation id="2240256190924001613">Hồ sơ cấu hình có sẵn</translation>
 <translation id="2244080985779413662">Trang web này muốn tải một tệp xuống rồi mở tệp đó trong Wallet của bạn.</translation>
 <translation id="2245007488813216650">Đang dịch…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">xem thêm</translation>
 <translation id="3311748811247479259">Đang tắt</translation>
 <translation id="3312300514034250578">Duyệt web an toàn có tăng cường bảo vệ</translation>
+<translation id="3315786055700307152">Mặt hàng bạn theo dõi hiện đang giảm giá 15%</translation>
 <translation id="3324193307694657476">Địa chỉ 2</translation>
 <translation id="3328801116991980348">Thông tin về trang web</translation>
 <translation id="333229797575847124">Cách bật tính năng này</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">Tạo một khoá truy cập cho</translation>
 <translation id="3380352560400387991">Trang web này đang tìm cách mở một ứng dụng. Thao tác này sẽ đưa bạn ra khỏi chế độ ẩn danh.</translation>
 <translation id="3385742921291399323">Sử dụng mật khẩu, thẻ, dấu trang mà bạn đã lưu và nhiều dữ liệu khác.</translation>
+<translation id="3391765987934722383">Đừng bỏ lỡ đợt giảm giá</translation>
 <translation id="3392923070107623576">Sắp xếp bằng cách tạo các nhóm thẻ</translation>
 <translation id="3404232721752787413">Lưu vào Google Photos</translation>
 <translation id="3406506285180498376">Chia sẻ trang…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3955740319737378355">Xong</translation>
 <translation id="3955822496205734389">Bạn có mật khẩu yếu.</translation>
+<translation id="3957016963627617921">Làm được nhiều việc hơn với Gemini trong Chrome</translation>
 <translation id="3958312024468322930">Kéo biểu tượng ứng dụng vào thanh dock ở cuối Màn hình chính</translation>
 <translation id="3962326069546168954">Lưu</translation>
 <translation id="3967327056943561740">Dấu trang</translation>
@@ -1325,7 +1329,6 @@
 <translation id="5868644772996939262">Tự động điền mật khẩu và khoá truy cập</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
 <translation id="5873179562631407582">Nhấn và giữ bất kỳ thẻ đang mở nào</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Do tổ chức của bạn quản lý.</translation>
 <translation id="5887400589839399685">Đã lưu thẻ</translation>
 <translation id="5888889603768021126">Đã đăng nhập bằng</translation>
 <translation id="5889333064153755823">Xoá dữ liệu duyệt web</translation>
@@ -1662,6 +1665,7 @@
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Đặt thành mặc định trong phần Cài đặt…</translation>
 <translation id="7007970306646738803">Chọn cách xử lý dữ liệu duyệt web hiện có trên thiết bị này, chẳng hạn như thẻ, nhật ký và mật khẩu.</translation>
+<translation id="7012978439516925343">Xác minh danh tính để tạo khoá truy cập</translation>
 <translation id="7015418667643980944">Chế độ xem chia đôi màn hình</translation>
 <translation id="7016070607649558507">Bạn có 1 mật khẩu yếu. Hãy khắc phục ngay để giữ an toàn.</translation>
 <translation id="7016958933495968912">Các lựa chọn cho nguồn cấp dữ liệu khám phá</translation>
@@ -2163,6 +2167,7 @@
 <translation id="8803639129939845298">Bảo mật</translation>
 <translation id="8813277370772331957">Nhắc tôi sau</translation>
 <translation id="8814719628147284151">Tiếp tục</translation>
+<translation id="8817524703470045896">Theo dõi giá và nhận thông báo khi có chương trình giảm giá trên bất cứ trang web nào</translation>
 <translation id="8819155700324279105">Bổ sung một lớp bảo vệ trước các mối đe doạ trên mạng</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
 <translation id="8822421075653507124">Để đảm bảo bạn có thể dùng thiết bị này một cách an toàn, tổ chức bạn có thể cần xem thông tin về hệ điều hành, trình duyệt, chế độ cài đặt và phần mềm được cài đặt trên thiết bị.</translation>
@@ -2170,6 +2175,7 @@
 <translation id="8829809207373502270">Khoá truy cập này không còn hoạt động nữa. Khoá đã bị xoá khỏi <ph name="WEBSITE" /> và sẽ sớm bị xoá khỏi đây. <ph name="BEGIN_LINK" />Giới thiệu về khoá truy cập<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Đóng tất cả các thẻ không hoạt động</translation>
 <translation id="8837654851594567190">Sắp xếp theo nhà xuất bản</translation>
+<translation id="8844136307393039959">Sản phẩm bạn theo dõi đang giảm giá</translation>
 <translation id="8848286253339013170">Đang lưu hình ảnh vào Google Photos cho <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Đã ẩn</translation>
 <translation id="8855242995793521265">Gần như không ảnh hưởng đến tốc độ của trình duyệt hoặc thiết bị.</translation>
@@ -2213,6 +2219,7 @@
 <translation id="8976382372951310360">Trợ giúp</translation>
 <translation id="8976414606286374109">Các thẻ sẽ được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="8981454092730389528">Kiểm soát hoạt động trên Google</translation>
+<translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, trang web đã được ghim</translation>
 <translation id="8998289560386111590">Tính năng đăng nhập không hoạt động trên thiết bị của bạn</translation>
 <translation id="9000532564152265066">Tất cả các thẻ</translation>
 <translation id="9003677638446136377">Kiểm tra lại</translation>

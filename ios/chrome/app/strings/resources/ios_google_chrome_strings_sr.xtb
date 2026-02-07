@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1035560095760914532">Поставите Chrome у доњу област да бисте му приступали кад год желите</translation>
 <translation id="1076643793026027628">Chrome аутоматски отвара YouTube линкове без архивирања у режиму без архивирања.</translation>
 <translation id="1081114897601629648">Следеће лозинке нису увезене у Google менаџер лозинки јер не испуњавају услове.</translation>
 <translation id="1086486568852410168">Претражите помоћу Google објектива</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Достигли сте ограничење Google Chrome-а за обележиваче (<ph name="LIMIT" />), па неки обележивачи још увек нису сачувани на Google налогу.
 
 Не можете да сачувате нове обележиваче на налогу док неке не избришете. Ако се одјавите одмах, избрисаћете несачуване обележиваче.</translation>
+<translation id="2901621928549457170">Одмах отворите Chrome када сте на iPad-у</translation>
 <translation id="2922914028977213693">Додирните овде да бисте искористили Chrome на најбољи начин на iPad-у.</translation>
 <translation id="292371311537977079">Подешавања Chrome-а</translation>
 <translation id="2923827943290349720">Закључај картице без архивирања после затварања Chrome-а</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Изаберите Chrome</translation>
 <translation id="5123188916260706415">Претраживање гласом у Chrome-у</translation>
 <translation id="5162467219239570114">Chrome је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chrome-а.</translation>
+<translation id="5172049865623113551">Одмах отворите Chrome када сте на iPhone-у</translation>
+<translation id="5179095426828744632">Брже приступајте Chrome-у преко траке с апликацијама</translation>
 <translation id="5184329579814168207">Отвори у Chrome-у</translation>
 <translation id="5190139289262548459">Ваша организација, <ph name="DOMAIN" />, управља налогом на који сте пријављени и начином на који се Chrome користи.</translation>
 <translation id="5209238444239954363">Chrome не може да тражи ажурирања. Пробајте поново касније.</translation>

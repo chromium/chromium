@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1035560095760914532">Placer Chrome i det nederste område for at få adgang til appen når som helst</translation>
 <translation id="1076643793026027628">Chrome åbner automatisk YouTube-inkognitolinks i inkognitotilstand.</translation>
 <translation id="1081114897601629648">Følgende adgangskoder blev ikke importeret til Google Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>
 <translation id="1086486568852410168">Søg med Google Lens</translation>
@@ -89,6 +90,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="288992067439702510">Du har nået Google Chromes grænse på <ph name="LIMIT" /> bogmærker, så nogle af dine bogmærker er endnu ikke gemt på din Google-konto.
 
 Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du logger ud nu, slettes bogmærker, der ikke er gemt.</translation>
+<translation id="2901621928549457170">Åbn Chrome med det samme, når du bruger din iPad</translation>
 <translation id="2922914028977213693">Tryk her for at få mest muligt ud af Chrome på din iPad.</translation>
 <translation id="292371311537977079">Indstillinger for Chrome</translation>
 <translation id="2923827943290349720">Lås inkognitofaner, når du lukker Chrome</translation>
@@ -173,6 +175,8 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="5119391094379141756">Vælg Chrome</translation>
 <translation id="5123188916260706415">Søg med stemmen i Chrome</translation>
 <translation id="5162467219239570114">Chrome er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chrome-versioner.</translation>
+<translation id="5172049865623113551">Åbn Chrome med det samme, når du bruger din iPhone</translation>
+<translation id="5179095426828744632">Få hurtigere adgang til Chrome via din dock</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chrome bruges.</translation>
 <translation id="5209238444239954363">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>

@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Энэ нь Chromium тухай бүрд мобайл сайтын хүсэлт тавина гэсэн үг юм.</translation>
 <translation id="1115463765356382667">Chromium-г бүрэн ашиглахын тулд доорх санал болгосон эдгээр үйлдлийг гүйцэтгэнэ үү.</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
+<translation id="119044033865561140">iPad ашиглаж байхдаа Chromium-г шуурхай нээгээрэй</translation>
 <translation id="1211450393895337634">Та iPad дээрээ үзэхэд бэлэн байхдаа Chromium-г илүү хурдан нээгээрэй.</translation>
 <translation id="1229234641991056119">Safari-н нууц үг, түүх, хавчуурга, кредит картаа Chromium-д ашиглаарай</translation>
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
 <translation id="1260702988262336471">Chromium-н цэсийг нээнэ үү</translation>
 <translation id="12739128458173458">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд хоёр төхөөрөмж дээр хоёулан дээр нь Chromium-д нэвтэрнэ үү.</translation>
+<translation id="1279797561821266129">Сууриас Chromium-д илүү хурдан хандаарай</translation>
 <translation id="1361748954329991663">Chromium хуучирсан байна. <ph name="BEGIN_LINK" />Апп дэлгүүр<ph name="END_LINK" />-т шинэчлэлт байхгүй бол таны төхөөрөмж Chromium-н шинэ хувилбарыг цаашид дэмжихгүй байж болзошгүй.</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1423007117030725713">Chromium-н шинэ табд хайлт эхлүүлнэ үү.</translation>
@@ -176,6 +178,7 @@
 <translation id="4790638144988730920">Google Бүртгэлдээ Chromium-н өгөгдлийг үргэлжлүүлэн ашиглана уу</translation>
 <translation id="4828317641996116749">Chromium бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="4856138222358683580">Chromium-н үйлдлүүд</translation>
+<translation id="4869706986935301458">iPhone ашиглаж байхдаа Chromium-г шуурхай нээгээрэй</translation>
 <translation id="4904452304169763785">Chromium-н танд илрүүлж өгсөн нууцлал эсвэл аюулгүй байдлын аливаа асуудлын талаарх сэрэмжлүүлэг.</translation>
 <translation id="4908570938463711775">Эхлэхэд тань туслах Chromium-н хэрэгтэй үндсэн ойлголтуудыг мэдэж аваарай</translation>
 <translation id="4962295957157529683">Chromium-н нээлттэй нөгөө цонхон дээрээ хийж байсан зүйлээ дуусгана уу.</translation>
@@ -295,6 +298,7 @@
 <translation id="7395825497086981028">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Нууц үгний менежерт хадгална.</translation>
 <translation id="7434848749522628428">Энэ нэвтрэх түлхүүрийг <ph name="USER_EMAIL" />-н Нууц үгний менежерт хадгална</translation>
 <translation id="7504829997542308412">Chromium-г нээнэ үү</translation>
+<translation id="7507535968973352823">Chromium-д хүссэн үедээ хандахын тулд доод хэсэгт байрлуулна уу</translation>
 <translation id="7531461704633548377">Chromium-с</translation>
 <translation id="7554983317097061001">Chromium-н зөвлөгөө: Chromium-г суурилуулагч руу зөөнө үү</translation>
 <translation id="7576863740961052505">Chromium-н тохиргоог удирдах</translation>

@@ -1329,7 +1329,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5868644772996939262">Parol va kalitlarni avtomatik kiritish</translation>
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>
 <translation id="5873179562631407582">Istalgan ochiq varaqni tanlab, ustiga bosib turing</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Tashkilotingiz tomonidan boshqariladi.</translation>
 <translation id="5887400589839399685">Karta saqlandi</translation>
 <translation id="5888889603768021126">Kirilgan hisob:</translation>
 <translation id="5889333064153755823">Brauzer maʼlumotlarini oʻchirish</translation>
@@ -1666,6 +1665,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Sozlamalar orqali Birlamchi qilish…</translation>
 <translation id="7007970306646738803">Bu qurilmada mavjud varaqlar, tarix va parollar kabi brauzer maʼlumotlari bilan qanday amal bajarishni tanlang.</translation>
+<translation id="7012978439516925343">Kirish kalitini yaratish uchun shaxsingizni tasdiqlang</translation>
 <translation id="7015418667643980944">Ajratilgan ekran</translation>
 <translation id="7016070607649558507">1 ta kuchsiz parol topildi. Xavfsiz qolish uchun uni tuzating.</translation>
 <translation id="7016958933495968912">Discover parametrlari</translation>

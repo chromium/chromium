@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1035560095760914532">İstənilən vaxt daxil olmaq üçün Chrome-u aşağı hissəyə yerləşdirin</translation>
 <translation id="1076643793026027628">Chrome YouTube Anonim keçidlərini avtomatik olaraq Anonim rejimdə açır.</translation>
 <translation id="1081114897601629648">Aşağıdakı parollar tələblərə uyğun olmadığı üçün Google Parol Menecerinə import edilmədi.</translation>
 <translation id="1086486568852410168">Google Linza ilə axtarın</translation>
@@ -89,6 +90,7 @@ Nəzərə alın ki:
 <translation id="288992067439702510">Google Chrome-un əlfəcin limitinə (<ph name="LIMIT" />) çatdınız, ona görə də əlfəcinlərinizin bir hissəsi hələ Google Hesabınızda yadda saxlanılmayıb.
 
 Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq olmur. İndi çıxsanız, yadda saxlanılmamış əlfəcinlər silinəcək.</translation>
+<translation id="2901621928549457170">iPad-də olduğunuz zaman Chrome-u dərhal açın</translation>
 <translation id="2922914028977213693">iPad-də Chrome-dan maksimum yararlanmaq üçün buraya toxunun.</translation>
 <translation id="292371311537977079">Chrome ayarları</translation>
 <translation id="2923827943290349720">Chrome bağlandıqda Anonim tablar kilidlənsin</translation>
@@ -173,6 +175,8 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="5119391094379141756">Chrome seçin</translation>
 <translation id="5123188916260706415">Chrome-da səs ilə axtarın</translation>
 <translation id="5162467219239570114">Chrome köhnəlib. <ph name="BEGIN_LINK" />App Store'da<ph name="END_LINK" /> əlçatan güncəlləmə yoxdursa, ola bilər ki, cihazınız artıq Chrome'un yeni versiyalarını dəstəkləmir.</translation>
+<translation id="5172049865623113551">iPhone-da olduğunuz zaman Chrome-u dərhal açın</translation>
+<translation id="5179095426828744632">Dokdan Chrome-a daha tez daxil olun</translation>
 <translation id="5184329579814168207">Chrome'da açın</translation>
 <translation id="5190139289262548459">Təşkilat (<ph name="DOMAIN" />) daxil olduğunuz hesabı və Chrome-un istifadə qaydasını idarə edir.</translation>
 <translation id="5209238444239954363">Chrome güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>

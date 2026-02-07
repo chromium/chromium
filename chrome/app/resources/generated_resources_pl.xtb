@@ -516,6 +516,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1333965224356556482">Nie zezwalaj witrynom na wyświetlanie lokalizacji</translation>
 <translation id="1335282218035876586">Twój Chromebook nie otrzymuje już aktualizacji zabezpieczeń ani oprogramowania. Aby korzystać ze wszystkich funkcji, uaktualnij Chromebooka.</translation>
 <translation id="133535873114485416">Preferowane urządzenie wejściowe</translation>
+<translation id="13356285923490863">Nazwa zasady</translation>
 <translation id="1335929031622236846">Zarejestruj swoje urządzenie</translation>
 <translation id="133660899895084533">Odczytywanie informacji i danych z urządzeń peryferyjnych Bluetooth</translation>
 <translation id="1336902454946927954">Klucz bezpieczeństwa jest zablokowany, bo nie udało się rozpoznać Twojego odcisku palca. Aby odblokować klucz bezpieczeństwa, wpisz kod PIN.</translation>
@@ -8239,6 +8240,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6636623428211296678">Zobacz więcej ustawień poniżej lub zakończ</translation>
 <translation id="6639554308659482635">Pamięć SQLite</translation>
 <translation id="6640268266988685324">Otwórz kartę</translation>
+<translation id="664271268954513498">Ustawienie zasady</translation>
 <translation id="6642720633335369752">Aby zobaczyć wszystkie otwarte okna aplikacji, przesuń palcem w górę od dołu ekranu i przytrzymaj.</translation>
 <translation id="664290675870910564">Wybór sieci</translation>
 <translation id="6643016212128521049">Wyczyść</translation>

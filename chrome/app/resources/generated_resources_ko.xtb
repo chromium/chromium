@@ -514,6 +514,7 @@
 <translation id="1333965224356556482">사이트에서 내 위치를 확인하도록 허용하지 않음</translation>
 <translation id="1335282218035876586">Chromebook에 더 이상 보안 및 소프트웨어 업데이트가 적용되지 않습니다. 최적의 환경에서 사용하려면 Chromebook을 업그레이드하세요.</translation>
 <translation id="133535873114485416">선호하는 입력 방식</translation>
+<translation id="13356285923490863">정책 이름</translation>
 <translation id="1335929031622236846">기기 등록</translation>
 <translation id="133660899895084533">블루투스 주변기기 정보 및 데이터 읽기</translation>
 <translation id="1336902454946927954">지문을 인식할 수 없어 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 PIN을 입력하세요.</translation>
@@ -2643,6 +2644,7 @@
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">영문 철자 및 문법 검사</translation>
 <translation id="2750020734439919571">Chrome 앱 설정 및 권한 더보기</translation>
+<translation id="275010360476017464">마이크를 사용하여 Gemini와 대화하세요. Gemini와 대화할 때 오디오가 Gemini 앱 활동에 저장됩니다(사용 설정된 경우).</translation>
 <translation id="2750602041558385535">확인되지 않은 다운로드 차단됨</translation>
 <translation id="2751454300227269244">입을 오른쪽으로 움직이기</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" />에서 보안 키의 ID 번호를 알고 싶어 합니다. 사이트에서 내가 사용하는 보안 키를 정확히 알 수 있습니다.</translation>
@@ -5776,6 +5778,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4881685975363383806">다음번에 알리지 않음</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4882312758060467256">이 사이트의 액세스 권한이 있습니다.</translation>
+<translation id="4882848900607400156">정확한 위치를 공유하면 Gemini가 질문에 더 정확하게 답변할 수 있습니다. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="4882919381756638075">사이트에서는 일반적으로 영상 채팅 같은 커뮤니케이션 기능에 마이크를 사용합니다.</translation>
 <translation id="4883436287898674711">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="48838266408104654">작업 관리자(&amp;T)</translation>
@@ -5866,6 +5869,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4945439665401275950">지문을 설정하려면 자녀가 전원 버튼을 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다</translation>
 <translation id="4946998421534856407">런처 + 위쪽 화살표</translation>
 <translation id="4947376546135294974">방문 중인 사이트의 데이터</translation>
+<translation id="4948370357877377178">작업 계속하기</translation>
 <translation id="4950100687509657457">프로필 만들기</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="495170559598752135">작업</translation>
@@ -8265,6 +8269,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6636623428211296678">아래에서 더 많은 설정을 살펴보거나 지금 완료하세요</translation>
 <translation id="6639554308659482635">SQLite 메모리</translation>
 <translation id="6640268266988685324">탭 열기</translation>
+<translation id="664271268954513498">정책 값</translation>
 <translation id="6642720633335369752">열려 있는 모든 앱 창을 보려면 하단에서 위로 스와이프한 다음 길게 누르세요.</translation>
 <translation id="664290675870910564">네트워크 선택</translation>
 <translation id="6643016212128521049">삭제</translation>
@@ -9091,6 +9096,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{페이지 나가기}other{페이지 나가기}}</translation>
 <translation id="7207457272187520234">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="7207631048330366454">앱 검색</translation>
+<translation id="7209958456051239069">정확한 위치를 공유하면 Gemini가 질문에 더 정확하게 답변할 수 있습니다.</translation>
 <translation id="7210257969463271891">설치한 웹 앱이 여기에 표시됩니다</translation>
 <translation id="7210432570808024354">항목을 이동하려면 탭하여 드래그</translation>
 <translation id="7210499381659830293">확장 프로그램 프린터</translation>
@@ -10710,6 +10716,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8288032458496410887"><ph name="APP" /> 제거...</translation>
 <translation id="8288553158681886528">PDF에서 텍스트 추출</translation>
 <translation id="8289128870594824098">디스크 크기</translation>
+<translation id="8289200713453671499">현재 위치를 유지하면서 탭 그룹과 최근 AI 대화 간에 빠르게 전환할 수 있습니다.</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> 시작하기</translation>
 <translation id="8291415872436043161">Chrome 다운로드</translation>
 <translation id="8291942417224950075">개인용</translation>
@@ -11690,6 +11697,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8945508919180478719">스튜디오 스타일 마이크</translation>
 <translation id="8946359700442089734">이 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기에서 디버깅 기능의 사용 설정을 완료하지 못했습니다.</translation>
 <translation id="8946954897220903437">주소 표시줄의 모든 요청 접기</translation>
+<translation id="8946996840522387154">마이크를 사용하여 Gemini와 대화하세요. Gemini와 대화할 때 오디오가 Gemini 앱 활동에 저장됩니다(사용 설정된 경우). 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="894763922177556086">좋음</translation>
 <translation id="895054485242522631">사이트에서 움직임 감지 센서를 사용할 수 있음</translation>
 <translation id="8951256747718668828">오류로 인해 복원을 완료할 수 없습니다.</translation>

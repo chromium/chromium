@@ -515,6 +515,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1333965224356556482">Tillad ikke, at websites ser din lokation</translation>
 <translation id="1335282218035876586">Din Chromebook modtager ikke længere sikkerheds- og softwareopdateringer. Opgrader din Chromebook for at få den bedst mulige oplevelse.</translation>
 <translation id="133535873114485416">Foretrukket input</translation>
+<translation id="13356285923490863">Navn på politik</translation>
 <translation id="1335929031622236846">Tilmeld din enhed</translation>
 <translation id="133660899895084533">Læs oplysninger og data fra eksterne Bluetooth-enheder</translation>
 <translation id="1336902454946927954">Din sikkerhedsnøgle er låst, fordi dit fingeraftryk ikke blev genkendt. Du kan låse den op ved at angive din pinkode.</translation>
@@ -2643,6 +2644,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2749836841884031656">SIM-kort</translation>
 <translation id="2749881179542288782">Kontrollér grammatik med stavning</translation>
 <translation id="2750020734439919571">Flere indstillinger og tilladelser for Chrome-appen</translation>
+<translation id="275010360476017464">Brug din mikrofon til at chatte med Gemini. Når du taler med Gemini, gemmes lyden i Gemini-appaktivitet (hvis den er aktiveret).</translation>
 <translation id="2750602041558385535">En uverificeret download er blokeret</translation>
 <translation id="2751454300227269244">Spids munden mod højre</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> anmoder om din sikkerhedsnøgles id-nummer. Websitet får at vide, præcis hvilken sikkerhedsnøgle du bruger.</translation>
@@ -4745,6 +4747,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4170314459383239649">Ryd ved lukning</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Del fane med Gemini}one{Del # fane med Gemini}other{Del # faner med Gemini}}</translation>
+<translation id="4172944993779635350">Din adgangskode til "<ph name="URL" />" gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din konto.</translation>
 <translation id="4173129130568053653">Gemini kan hjælpe dig med at booke aftaler, føje varer til kurve eller udføre andre opgaver, du giver den.</translation>
 <translation id="4175137578744761569">Lyslilla og hvid</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
@@ -5061,6 +5064,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4386604394450371010">oversigt</translation>
 <translation id="4387890294700445764">Kompromitterede adgangskoder</translation>
 <translation id="4388650384344483842">Brug mindst 8 tegn</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Adgangskode til <ph name="URL" />}one{Adgangskode til <ph name="URL" /> ({COUNT})}other{Adgangskoder til <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og <ph name="NUMBER_OF_OTHER_SWITCHES" /> andre kontakter</translation>
 <translation id="439266289085815679">Bluetooth-konfiguration kontrolleres af <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Rediger konfigurationsfilen</translation>
@@ -5590,6 +5594,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4762849514113423887">Forkert adgangskode. Prøv igen.</translation>
 <translation id="4763408175235639573">Følgende cookies blev gemt, da du fik vist denne side</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> er ikke en gyldig Google for Education-konto. Kontakt din administrator. Hvis du er administrator, kan du konfigurere din organisation ved at gå til: g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} adgangskode til "<ph name="URL" />" gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din konto.}one{{COUNT} adgangskode til "<ph name="URL" />" gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din konto.}other{{COUNT} adgangskoder til "<ph name="URL" />" gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din konto.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Denne enhed gemmes i 1 måned, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}one{Denne enhed gemmes i {MONTHS} måned, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}other{Denne enhed gemmes i {MONTHS} måneder, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}}</translation>
 <translation id="476563889641554689">Vælg et område, du vil søge i med Lens</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Tjekker offentlig nøgle og integritetsblokering... Mindre end 1 minut tilbage}=1{Tjekker offentlig nøgle og integritetsblokering... 1 minut tilbage}one{Tjekker offentlig nøgle og integritetsblokering... # minut tilbage}other{Tjekker offentlig nøgle og integritetsblokering... # minutter tilbage}}</translation>
@@ -5777,6 +5782,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4881685975363383806">Påmind mig ikke næste gang</translation>
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="4882312758060467256">Udvidelsen har adgang til dette website.</translation>
+<translation id="4882848900607400156">Når du deler din præcise lokation, kan Gemini besvare dine spørgsmål mere nøjagtigt. Dine data anvendes ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="4882919381756638075">Websites bruger normalt din mikrofon til kommunikationsformål såsom videochat</translation>
 <translation id="4883436287898674711">Alle websites på <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Jobliste</translation>
@@ -5867,6 +5873,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4945439665401275950">Du kan konfigurere et fingeraftryk ved at få dit barn til at røre afbryderknappen. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">appliste + pil op</translation>
 <translation id="4947376546135294974">Data fra det website, du besøger</translation>
+<translation id="4948370357877377178">Fortsæt med dine opgaver</translation>
 <translation id="4950100687509657457">Opret profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}one{# fil}other{# filer}}</translation>
 <translation id="495170559598752135">Handlinger</translation>
@@ -6060,6 +6067,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5090637338841444533">Har ikke tilladelse til at spore din kameraposition</translation>
 <translation id="5091636240353511739">Vis pinkode</translation>
+<translation id="5093447877601682598">Send feedback om fanelinjen</translation>
 <translation id="5093477827231450397">Liste over websites, du har blokeret, som du ikke vil have skal foreslå annoncer på andre websites</translation>
 <translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Du kan åbne og redigere understøttede filer med denne app via appen Filer eller andre apps. Hvis du vil styre, hvilke filer der som standard skal åbnes i denne app, kan du <ph name="BEGIN_LINK" />se, hvordan du angiver standardapps på din enhed<ph name="END_LINK" />.</translation>
@@ -8268,6 +8276,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6636623428211296678">Find flere indstillinger nedenfor, eller afslut nu</translation>
 <translation id="6639554308659482635">SQLite-hukommelse</translation>
 <translation id="6640268266988685324">Åben fane</translation>
+<translation id="664271268954513498">Politikkens værdi</translation>
 <translation id="6642720633335369752">Hvis du vil se alle åbne appvinduer, skal du stryge opad fra bunden og holde fingeren nede.</translation>
 <translation id="664290675870910564">Valg af netværk</translation>
 <translation id="6643016212128521049">Ryd</translation>
@@ -8894,6 +8903,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7057567173736333354">Beskriv dit billede</translation>
 <translation id="70577934383983846">Brug denne adgangskode på alle dine enheder</translation>
 <translation id="7058024590501568315">Skjult netværk</translation>
+<translation id="7058325593717863084">Send feedback om fanelinjen</translation>
 <translation id="7059858479264779982">Indstil til automatisk opstart</translation>
 <translation id="7060004353663489242"><ph name="FIELD_LIST" /> skal udfyldes</translation>
 <translation id="7063129466199351735">Genveje behandles...</translation>
@@ -9094,6 +9104,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Forlad side}one{Forlad side}other{Forlad sider}}</translation>
 <translation id="7207457272187520234">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse aggregerede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
 <translation id="7207631048330366454">Søg efter apps</translation>
+<translation id="7209958456051239069">Når du deler din præcise lokation, kan Gemini besvare dine spørgsmål mere nøjagtigt</translation>
 <translation id="7210257969463271891">De webapps, du installerer, vises her</translation>
 <translation id="7210432570808024354">Tryk og træk for at flytte elementer</translation>
 <translation id="7210499381659830293">Udvidelsesprintere</translation>
@@ -10713,6 +10724,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8288032458496410887">Afinstaller <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Udtræk tekst fra PDF</translation>
 <translation id="8289128870594824098">Diskstørrelse</translation>
+<translation id="8289200713453671499">Skift hurtigt mellem dine fanegrupper og dine seneste AI-samtaler uden at miste overblikket.</translation>
 <translation id="8289509909262565712">Velkommen til <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Download Chrome</translation>
 <translation id="8291942417224950075">Til privat brug</translation>
@@ -11695,6 +11707,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8945508919180478719">Studiemikrofon</translation>
 <translation id="8946359700442089734">Fejlretningsfunktionerne blev ikke aktiveret korrekt på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed.</translation>
 <translation id="8946954897220903437">Skjul alle anmodninger i adresselinjen</translation>
+<translation id="8946996840522387154">Brug din mikrofon til at chatte med Gemini. Når du taler med Gemini, gemmes lyden i Gemini-appaktivitet (hvis den er aktiveret). Dine data anvendes ikke til at forbedre generativ AI-modeller.</translation>
 <translation id="894763922177556086">God</translation>
 <translation id="895054485242522631">Websites kan bruge bevægelsessensorer</translation>
 <translation id="8951256747718668828">Gendannelsen kunne ikke fuldføres på grund af en fejl</translation>

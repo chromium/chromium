@@ -1330,7 +1330,6 @@
 <translation id="5868644772996939262">পাসওয়ার্ড ও পাসকী অটোফিল করুন</translation>
 <translation id="5869522115854928033">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="5873179562631407582">খোলা যেকোনও ট্যাব ট্যাপ করে ধরে থাকুন</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />। আপনার সংস্থা ম্যানেজ করে।</translation>
 <translation id="5887400589839399685">কার্ড সেভ করা হয়েছে</translation>
 <translation id="5888889603768021126">এর মাধ্যমে সাইন-ইন করেছেন</translation>
 <translation id="5889333064153755823">ব্রাউজ করা ডেটা মুছে দিন</translation>
@@ -1667,6 +1666,7 @@
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">সেটিংসে ডিফল্ট হিসেবে সেট করুন…</translation>
 <translation id="7007970306646738803">এই ডিভাইসে আগে থাকা ব্রাউজ করা ডেটা যেমন, ট্যাব, ইতিহাস ও পাসওয়ার্ড ব্যবহার করে কী করবেন তা বেছে নিন।</translation>
+<translation id="7012978439516925343">পাসকী তৈরি করতে আপনার পরিচয় যাচাই করান</translation>
 <translation id="7015418667643980944">স্প্লিট ভিউ</translation>
 <translation id="7016070607649558507">আপনার ১টি দুর্বল পাসওয়ার্ড আছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
 <translation id="7016958933495968912">ডিসকভার সংক্রান্ত বিকল্প</translation>

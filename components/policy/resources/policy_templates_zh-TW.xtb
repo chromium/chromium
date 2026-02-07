@@ -551,6 +551,17 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 這項政策僅適用於不會自動延展更新的舊機型。
 
 詳情請參閱 https://support.google.com/chrome/a/?p=extended_updates_support。</translation>
+<translation id="1432008122934973720">根據預設，只有明確委派時，才能在跨來源子框架中要求區域網路存取 (LNA) 權限。你可以使用這項政策覆寫預設行為，讓子框架預設繼承 LNA 權限，除非權限政策明確拒絕。
+
+如果將這項政策設為啟用，子框架預設會取得所有 LNA 權限政策功能，並可提出區域網路要求 (觸發權限提示)。
+
+如果將這項政策設為停用或不設定，子框架必須獲得該權限政策功能的明確委派，才能提出區域網路要求及觸發權限提示。
+
+這項政策適用於權限政策功能「<ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />」、「<ph name="LOOPBACK_NETWORK_FEATURE_NAME" />」和「<ph name="LOCAL_NETWORK_FEATURE_NAME" />」。
+
+如要進一步瞭解區域網路存取權，請參閱 https://wicg.github.io/local-network-access/ 和 https://developer.chrome.com/blog/local-network-access。
+
+如要進一步瞭解權限政策，請參閱 https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy。</translation>
 <translation id="1432834104376790711">這項政策會啟用或停用省電模式設定。
       如果是 Chrome，啟用這項設定會限制畫面更新率，以降低耗電量。如果不設定這項政策，使用者可前往 chrome://settings/performance 控管這項設定。
       如果是 ChromeOS，啟用這項設定會限制畫面更新率和 CPU 頻率、調暗背光。如果是 Android，啟用這項設定會進入省電模式。如果是搭載多個 CPU 的裝置，系統會關閉部分 CPU。
@@ -1527,6 +1538,7 @@ Attribution Reporting API 已淘汰，因此這項政策也已在 <ph name="PROD
 <translation id="2090939118981888335">如果將這項政策設為啟用，代表允許使用資料壓縮 Proxy。如果將這項政策設為停用，則代表禁止使用該 Proxy。
 
       如果設定這項政策，使用者將無法變更設定。如果不設定，使用者可選擇使用該功能。</translation>
+<translation id="2091689441590064807">未明確委派時，不允許在子框架中提出 LNA 要求</translation>
 <translation id="2093552723795057221">不要回報音訊狀態</translation>
 <translation id="209388704279338003">這項政策已淘汰，因此系統不再支援，請改用 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />。</translation>
 <translation id="2093951844062548778">這項政策可讓快速解答功能存取所選內容，並將相關資訊傳送給伺服器，進而取得定義結果。
@@ -7408,6 +7420,7 @@ IP 位址空間覆寫有兩種形式：
 注意：在瀏覽器執行期間，只有新啟動的轉譯器程序會套用這項政策的變更。</translation>
 <translation id="6083281887050888160">啟用「Just Works」藍牙配對</translation>
 <translation id="6083631234867522991">Windows (Windows 用戶端)：</translation>
+<translation id="6085580138417523410">允許子框架在未獲得明確委派下提出區域網路存取 (LNA) 要求</translation>
 <translation id="6087413944876892918">使用 <ph name="HAPPY_EYEBALLS_V3" /> 演算法</translation>
 <translation id="608788685013546076">設定用電尖峰轉移電池閾值 (以百分比為單位)</translation>
 <translation id="6089679180657323464">控管 wilco 診斷與遙測控制器設定。</translation>
@@ -9866,6 +9879,7 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 <translation id="7669630878711068277">如果將這項政策設為啟用或不設定，使用者將可在 <ph name="PRODUCT_NAME" /> 中列印，且無法變更這項設定。
 
       如果將這項政策設為停用，則使用者無法透過 <ph name="PRODUCT_NAME" /> 列印。在三點圖示選單、擴充功能和 JavaScript 應用程式中，列印功能皆會關閉。</translation>
+<translation id="7672510074688643558">允許子框架中的 LNA 要求，無需明確委派</translation>
 <translation id="7673194325208122247">時間範圍 (毫秒)</translation>
 <translation id="7677220829878081413">
       如果將這項政策設為 [ArcSession]，在 Android 已啟動的情況下，系統會在使用者登出時強制重新啟動裝置。

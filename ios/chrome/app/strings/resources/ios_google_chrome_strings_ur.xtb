@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1035560095760914532">‏کسی بھی وقت رسائی حاصل کرنے کے لیے Chrome کو نیچے والے علاقے میں رکھیں</translation>
 <translation id="1076643793026027628">‏‫Chrome خودکار طور پر YouTube پوشیدگی کے لنکس کو پوشیدگی میں کھولتا ہے۔</translation>
 <translation id="1081114897601629648">‏درج ذیل پاس ورڈز کو Google پاس ورڈ مینیجر میں درآمد نہیں کیا گیا تھا، کیونکہ وہ تقاضوں سے مماثل نہیں ہیں۔</translation>
 <translation id="1086486568852410168">‏Google لینز سے تلاش کریں</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">‏آپ Google Chrome کے <ph name="LIMIT" /> بُک مارکس کی حد تک پہنچ گئے ہیں، اس لیے آپ کے کچھ بُک مارکس ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوئے ہیں۔
 
 جب تک آپ کچھ بُک مارکس کو حذف نہیں کرتے ہیں تب تک نئے بُک مارکس آپ کے اکاؤنٹ میں محفوظ نہیں کیے جا سکتے۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو غیر محفوظ کردہ بُک مارکس حذف ہو جائیں گے۔</translation>
+<translation id="2901621928549457170">‏جب آپ اپنے iPad پر ہوں تو Chrome کو فوری طور پر کھولیں</translation>
 <translation id="2922914028977213693">‏اپنے iPad پر Chrome سے زیادہ سے زیادہ فائدہ اٹھانے کے لیے یہاں تھپتھپائیں۔</translation>
 <translation id="292371311537977079">‏Chrome کی ترتیبات</translation>
 <translation id="2923827943290349720">‏جب آپ Chrome کو بند کرتے ہیں تب پوشیدگی ٹیبز کو مقفل کریں</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">‏Chrome منتخب کریں</translation>
 <translation id="5123188916260706415">‏‫Chrome میں آواز سے تلاش کریں</translation>
 <translation id="5162467219239570114">‏Chrome پرانا ہے۔ اگر کوئی اپ ڈیٹ <ph name="BEGIN_LINK" />App اسٹور<ph name="END_LINK" /> میں دستیاب نہیں ہے تو یہ ممکن ہے کہ آپ کا آلہ مزید Chrome کے نئے ورژنز کو سپورٹ نہیں کرتا ہے۔</translation>
+<translation id="5172049865623113551">‏جب آپ اپنے iPhone پر ہوں تو Chrome کو فوری طور پر کھولیں</translation>
+<translation id="5179095426828744632">‏اپنے ڈاک سے Chrome تک تیزی سے رسائی حاصل کریں</translation>
 <translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5190139289262548459">‏آپ کی تنظیم، <ph name="DOMAIN" />، اس اکاؤنٹ کا نظم کرتا ہے جس میں آپ سائن ان ہیں اور اس بات کا نظم کرتا ہے کہ Chrome کا استعمال کیسے کیا جاتا ہے۔</translation>
 <translation id="5209238444239954363">‏‫Chrome اپ ڈیٹس چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>

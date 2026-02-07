@@ -1329,7 +1329,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5868644772996939262">Inserisci automaticamente password e passkey</translation>
 <translation id="5869522115854928033">Password salvate</translation>
 <translation id="5873179562631407582">Tocca e tieni premute una scheda aperta</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Gestito dalla tua organizzazione.</translation>
 <translation id="5887400589839399685">Carta salvata</translation>
 <translation id="5888889603768021126">Accesso eseguito con</translation>
 <translation id="5889333064153755823">Elimina dati di navigazione</translation>
@@ -1666,6 +1665,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Rendilo predefinito nelle Impostazioni…</translation>
 <translation id="7007970306646738803">Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo, ad esempio schede, cronologia e password.</translation>
+<translation id="7012978439516925343">Verifica la tua identità per creare una passkey</translation>
 <translation id="7015418667643980944">Visualizzazione divisa</translation>
 <translation id="7016070607649558507">Hai 1 password inefficace. Sistemala subito per rimanere al sicuro.</translation>
 <translation id="7016958933495968912">Opzioni per Feed personalizzato</translation>

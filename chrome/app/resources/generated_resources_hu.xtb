@@ -514,6 +514,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1333965224356556482">A webhelyek nem tekinthetik meg az Ön tartózkodási helyét</translation>
 <translation id="1335282218035876586">Chromebookja a továbbiakban nem kap biztonsági és szoftverfrissítéseket. A legjobb élmény érdekében váltson újabb Chromebookra.</translation>
 <translation id="133535873114485416">Elsődleges bevitel</translation>
+<translation id="13356285923490863">A szabály neve</translation>
 <translation id="1335929031622236846">Az eszköz regisztrálása</translation>
 <translation id="133660899895084533">Bluetooth-perifériák információinak és adatainak olvasása</translation>
 <translation id="1336902454946927954">A biztonsági kulcsot zároltuk, mert nem tudtuk azonosítani az ujjlenyomatot. A feloldáshoz adja meg a PIN-kódot.</translation>
@@ -2640,6 +2641,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Nyelvhelyesség és helyesírás ellenőrzése</translation>
 <translation id="2750020734439919571">A Chrome alkalmazás további beállításai és engedélyei</translation>
+<translation id="275010360476017464">A mikrofon használatával cseveghet a Geminivel. Amikor a Geminivel beszél, a hanganyagot elmenti a rendszer a Gemini-appokban végzett tevékenységek közé (ha be van kapcsolva).</translation>
 <translation id="2750602041558385535">Nem ellenőrzött letöltés letiltva</translation>
 <translation id="2751454300227269244">Száj elhúzása jobbra</translation>
 <translation id="2751883373055093745">A(z) <ph name="WEBSITE" /> szeretné megtudni az Ön biztonsági kulcsának az azonosítószámát. A webhely pontosan tudja majd, hogy Ön melyik biztonsági kulcsot használja.</translation>
@@ -5773,6 +5775,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4881685975363383806">Ne emlékeztessen többször</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
 <translation id="4882312758060467256">Hozzáfér ehhez a webhelyhez</translation>
+<translation id="4882848900607400156">Ha megosztja pontos helyét, a Gemini pontosabban tud válaszolni a kérdéseire. Az Ön adatait nem használjuk fel a generatív AI-modellek továbbfejlesztéséhez.</translation>
 <translation id="4882919381756638075">A webhelyek általában kommunikációs szolgáltatások (például videocsevegés) biztosítása érdekében férnek hozzá a mikrofonhoz</translation>
 <translation id="4883436287898674711">Minden <ph name="WEBSITE_1" /> webhelyen</translation>
 <translation id="48838266408104654">&amp;Feladatkezelő</translation>
@@ -5863,6 +5866,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4945439665401275950">Az ujjlenyomat beállításához a gyermekének hozzá kell érintenie az ujját a bekapcsológombhoz. Gyermeke ujjlenyomatadatait a rendszer biztonságosan tárolja, és ezek az adatok soha nem kerülnek ki az eszközről (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4946998421534856407">indító + felfelé nyíl</translation>
 <translation id="4947376546135294974">A felkeresett webhelyről származó adatok</translation>
+<translation id="4948370357877377178">Feladatok folytatása</translation>
 <translation id="4950100687509657457">Profil létrehozása</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{egy fájlt}other{# fájlt}}</translation>
 <translation id="495170559598752135">Műveletek</translation>
@@ -8263,6 +8267,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6636623428211296678">Felfedezheti alább a többi beállítást, vagy befejezheti most az áttekintést</translation>
 <translation id="6639554308659482635">SQLite memória</translation>
 <translation id="6640268266988685324">Lap megnyitása</translation>
+<translation id="664271268954513498">Házirend értéke</translation>
 <translation id="6642720633335369752">Az összes megnyitott alkalmazásablak megtekintéséhez csúsztassa fel ujját a képernyő aljától, majd tartsa lenyomva.</translation>
 <translation id="664290675870910564">Hálózat kiválasztása</translation>
 <translation id="6643016212128521049">Törlés</translation>
@@ -9089,6 +9094,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Oldal elhagyása}other{Oldalak elhagyása}}</translation>
 <translation id="7207457272187520234">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a beállítást kötelezővé tette az eszköz tulajdonosa. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat az Ön Google-fiókjába is mentheti.</translation>
 <translation id="7207631048330366454">Alkalmazások keresése</translation>
+<translation id="7209958456051239069">Ha megosztja pontos helyét, a Gemini pontosabban tud válaszolni a kérdéseire</translation>
 <translation id="7210257969463271891">A telepített internetes alkalmazások itt jelennek meg</translation>
 <translation id="7210432570808024354">Az elemek áthelyezése húzással</translation>
 <translation id="7210499381659830293">Bővítményalapú nyomtatók</translation>
@@ -10707,6 +10713,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8288032458496410887"><ph name="APP" /> eltávolítása…</translation>
 <translation id="8288553158681886528">Szöveg kinyerése PDF-ből</translation>
 <translation id="8289128870594824098">Lemezméret</translation>
+<translation id="8289200713453671499">Gyorsan válthat a lapcsoportok és a legutóbbi AI-beszélgetések között, anélkül hogy elvesztené a fonalat.</translation>
 <translation id="8289509909262565712">Üdvözli a(z) <ph name="DEVICE_OS" /> rendszer!</translation>
 <translation id="8291415872436043161">A Chrome letöltése</translation>
 <translation id="8291942417224950075">Személyes használatra</translation>
@@ -11687,6 +11694,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8945508919180478719">Stúdiójellegű mikrofon</translation>
 <translation id="8946359700442089734">A hibakereső szolgáltatásokat nem kapcsolták be teljes körűen ezen a(z) <ph name="IDS_SHORT_PRODUCT_NAME" /> eszközön.</translation>
 <translation id="8946954897220903437">Az összes kérelem összecsukása a címsávban</translation>
+<translation id="8946996840522387154">A mikrofon használatával cseveghet a Geminivel. Amikor a Geminivel beszél, a hanganyagot elmenti a rendszer a Gemini-appokban végzett tevékenységek közé (ha be van kapcsolva). Az Ön adatait nem használjuk fel a generatív AI-modellek továbbfejlesztéséhez.</translation>
 <translation id="894763922177556086">Jó</translation>
 <translation id="895054485242522631">A webhelyek használhatják a mozgásérzékelőket</translation>
 <translation id="8951256747718668828">Hiba történt, ezért nem lehetett végrehajtani a visszaállítást.</translation>

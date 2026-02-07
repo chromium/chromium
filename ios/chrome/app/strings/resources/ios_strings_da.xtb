@@ -1329,7 +1329,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5868644772996939262">Udfyld adgangskoder og adgangsnøgler automatisk</translation>
 <translation id="5869522115854928033">Gemte adgangskoder</translation>
 <translation id="5873179562631407582">Hold fingeren på en åben fane</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Administreres af din organisation.</translation>
 <translation id="5887400589839399685">Kortet er gemt</translation>
 <translation id="5888889603768021126">Du er logget ind med</translation>
 <translation id="5889333064153755823">Slet browserdata</translation>
@@ -1666,6 +1665,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Angiv som standard i Indstillinger…</translation>
 <translation id="7007970306646738803">Vælg, hvad der skal ske med de eksisterende browserdata på denne enhed, f.eks. faner, historik og adgangskoder.</translation>
+<translation id="7012978439516925343">Verificer din identitet for at oprette en adgangsnøgle</translation>
 <translation id="7015418667643980944">Opdelt visning</translation>
 <translation id="7016070607649558507">Du har 1 svag adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
 <translation id="7016958933495968912">Indstillinger for Discover</translation>

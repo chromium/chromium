@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1035560095760914532">Coloca Chrome na parte inferior para acceder a el en calquera momento</translation>
 <translation id="1076643793026027628">Chrome abre automaticamente as ligazóns de incógnito de YouTube no modo de incógnito.</translation>
 <translation id="1081114897601629648">Non se importaron os seguintes contrasinais ao xestor de contrasinais de Google porque non cumpren os requisitos.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
@@ -89,6 +90,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="288992067439702510">Alcanzaches o límite de <ph name="LIMIT" /> marcadores de Chrome, polo que algúns aínda non se gardaron na túa Conta de Google.
 
 Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora, eliminaranse os marcadores sen gardar.</translation>
+<translation id="2901621928549457170">Abre Chrome ao instante cando esteas no iPad</translation>
 <translation id="2922914028977213693">Toca aquí para aproveitar todo o que Chrome che ofrece no teu iPad.</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
 <translation id="2923827943290349720">Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
@@ -173,6 +175,8 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5123188916260706415">Fai buscas por voz en Chrome</translation>
 <translation id="5162467219239570114">A versión de Chrome está desactualizada. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chrome.</translation>
+<translation id="5172049865623113551">Abre Chrome ao instante cando esteas no iPhone</translation>
+<translation id="5179095426828744632">Accede a Chrome máis rápido desde a barra de aplicacións</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5190139289262548459">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que tes a sesión iniciada e o xeito no que se usa Chrome.</translation>
 <translation id="5209238444239954363">Chrome non puido comprobar se hai actualizacións. Téntao de novo máis tarde.</translation>

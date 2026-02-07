@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Αυτό σημαίνει ότι το Chromium θα ζητάει κάθε φορά τον ιστότοπο για κινητά.</translation>
 <translation id="1115463765356382667">Ολοκληρώστε αυτές τις προτεινόμενες ενέργειες παρακάτω, για να αξιοποιήσετε στο έπακρο το Chromium.</translation>
 <translation id="1185134272377778587">Σχετικά με το Chromium</translation>
+<translation id="119044033865561140">Ανοίξτε το Chromium άμεσα όταν χρησιμοποιείτε το iPad</translation>
 <translation id="1211450393895337634">Ανοίξτε πιο γρήγορα το Chromium, όταν είστε έτοιμοι να περιηγηθείτε στο iPad.</translation>
 <translation id="1229234641991056119">Χρησιμοποιήστε τους κωδικούς πρόσβασης, το ιστορικό, τους σελιδοδείκτες και τις πιστωτικές κάρτες του Safari στο Chromium</translation>
 <translation id="1257458525759135959">Για αποθήκευση εικόνων, πατήστε Ρυθμίσεις για να επιτρέψετε στο Chromium να προσθέτει φωτογραφίες.</translation>
 <translation id="1260702988262336471">Άνοιγμα μενού του Chromium</translation>
 <translation id="12739128458173458">Για να στείλετε αυτή την καρτέλα σε άλλη συσκευή, συνδεθείτε στο Chromium και στις δύο συσκευές.</translation>
+<translation id="1279797561821266129">Αποκτήστε πιο γρήγορη πρόσβαση στο Chromium από το dock</translation>
 <translation id="1361748954329991663">Το Chromium δεν είναι ενημερωμένο. Εάν δεν υπάρχει καμία διαθέσιμη ενημέρωση στο <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, είναι πιθανό ότι η συσκευή σας δεν υποστηρίζει πλέον νέες εκδόσεις του Chromium.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1423007117030725713">Ξεκινήστε μια αναζήτηση σε μια νέα καρτέλα του Chromium.</translation>
@@ -176,6 +178,7 @@
 <translation id="4790638144988730920">Συνεχίστε να χρησιμοποιείτε τα δεδομένα του Chromium στον Λογαριασμό σας Google.</translation>
 <translation id="4828317641996116749">Το Chromium δεν μπόρεσε να ελέγξει όλους τους κωδικούς πρόσβασης. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="4856138222358683580">Ενέργειες Chromium</translation>
+<translation id="4869706986935301458">Ανοίξτε το Chromium άμεσα όταν χρησιμοποιείτε το iPhone</translation>
 <translation id="4904452304169763785">Ειδοποιήσεις για τυχόν ζητήματα απορρήτου ή ασφάλειας που εντοπίζει το Chromium για εσάς.</translation>
 <translation id="4908570938463711775">Μάθετε τα βασικά χρήσιμα στοιχεία του Chromium για να ξεκινήσετε</translation>
 <translation id="4962295957157529683">Ολοκληρώστε την εργασία σας στο άλλο ανοικτό παράθυρο του Chromium.</translation>
@@ -295,6 +298,7 @@
 <translation id="7395825497086981028">Ο κωδικός πρόσβασης θα αποθηκευτεί στον Διαχειριστή κωδικών πρόσβασης για τον λογαριασμό <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Το συγκεκριμένο κλειδί πρόσβασης θα αποθηκευτεί στη Διαχείριση κωδικών πρόσβασης για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Ανοίξτε το Chromium</translation>
+<translation id="7507535968973352823">Τοποθετήστε το Chromium στην κάτω περιοχή για να έχετε πρόσβαση σε αυτό ανά πάσα στιγμή</translation>
 <translation id="7531461704633548377">Από το Chromium</translation>
 <translation id="7554983317097061001">Συμβουλή για το Chromium: Μετακινήστε το Chromium στο dock</translation>
 <translation id="7576863740961052505">Διαχείριση ρυθμίσεων Chromium</translation>

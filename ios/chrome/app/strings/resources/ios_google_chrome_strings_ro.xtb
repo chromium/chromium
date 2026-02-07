@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1035560095760914532">Plasează Chrome în partea de jos pentru a-l accesa oricând</translation>
 <translation id="1076643793026027628">Chrome deschide automat linkurile YouTube incognito în modul incognito.</translation>
 <translation id="1081114897601629648">Următoarele parole nu au fost importate în Managerul de parole Google deoarece nu corespund cerințelor.</translation>
 <translation id="1086486568852410168">Caută cu Google Lens</translation>
@@ -89,6 +90,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="288992067439702510">Ai atins limita de <ph name="LIMIT" /> marcaje pentru Google Chrome, așadar unele dintre marcaje nu au fost salvate încă în Contul Google.
 
 Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te deconectezi acum, marcajele nesalvate vor fi șterse.</translation>
+<translation id="2901621928549457170">Deschide instantaneu Chrome când folosești iPadul</translation>
 <translation id="2922914028977213693">Atinge aici pentru a profita din plin de Chrome pe iPad.</translation>
 <translation id="292371311537977079">Setări Chrome</translation>
 <translation id="2923827943290349720">Blochează filele incognito când închizi Chrome</translation>
@@ -173,6 +175,8 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="5119391094379141756">Selectează Chrome.</translation>
 <translation id="5123188916260706415">Căutarea vocală în Chrome</translation>
 <translation id="5162467219239570114">Chrome nu este actualizat. Dacă nu este disponibilă nicio actualizare în <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, e posibil ca dispozitivul tău să nu mai accepte versiuni noi de Chrome.</translation>
+<translation id="5172049865623113551">Deschide instantaneu Chrome când folosești iPhone-ul</translation>
+<translation id="5179095426828744632">Accesează Chrome mai rapid din bara de andocare</translation>
 <translation id="5184329579814168207">Deschide în Chrome</translation>
 <translation id="5190139289262548459">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te-ai conectat și modul în care folosești Chrome.</translation>
 <translation id="5209238444239954363">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>

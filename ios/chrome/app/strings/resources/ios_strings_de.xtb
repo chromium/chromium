@@ -1329,7 +1329,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5868644772996939262">Passwörter und Passkeys automatisch ausfüllen lassen</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5873179562631407582">Geöffnete Tabs gedrückt halten</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Von deiner Organisation verwaltet.</translation>
 <translation id="5887400589839399685">Karte gespeichert</translation>
 <translation id="5888889603768021126">Angemeldet mit</translation>
 <translation id="5889333064153755823">Browserdaten löschen</translation>
@@ -1666,6 +1665,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Zu den Einstellungen</translation>
 <translation id="7007970306646738803">Wähle aus, was mit den Browserdaten auf diesem Gerät geschehen soll, z. B. deinen Tabs, deinem Verlauf und deinen Passwörtern.</translation>
+<translation id="7012978439516925343">Bestätige deine Identität, um einen Passkey zu erstellen</translation>
 <translation id="7015418667643980944">Geteilte Ansicht</translation>
 <translation id="7016070607649558507">Du nutzt 1 schwaches Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="7016958933495968912">Optionen für Discover</translation>

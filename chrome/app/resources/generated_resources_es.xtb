@@ -514,6 +514,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1333965224356556482">No permitir que los sitios accedan a tu ubicación</translation>
 <translation id="1335282218035876586">Tu Chromebook ya no recibe actualizaciones de seguridad ni de software. Cambia de Chromebook para disfrutar de la mejor experiencia.</translation>
 <translation id="133535873114485416">Método de introducción preferido</translation>
+<translation id="13356285923490863">Nombre de la política</translation>
 <translation id="1335929031622236846">Registra el dispositivo</translation>
 <translation id="133660899895084533">Leer información y datos de los periféricos Bluetooth</translation>
 <translation id="1336902454946927954">Tu llave de seguridad está bloqueada porque no se ha podido reconocer tu huella digital. Para desbloquearla, escribe tu PIN.</translation>
@@ -2629,6 +2630,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Comprobar la ortografía y la gramática</translation>
 <translation id="2750020734439919571">Más ajustes y permisos de la aplicación Chrome</translation>
+<translation id="275010360476017464">Usa el micrófono para hablar con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las Aplicaciones de Gemini (si la opción está activada).</translation>
 <translation id="2750602041558385535">Descarga no verificada bloqueada</translation>
 <translation id="2751454300227269244">Mueve la boca hacia la derecha</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> quiere saber el número de ID de tu llave de seguridad. El sitio sabrá exactamente qué llave de seguridad estás usando.</translation>
@@ -5761,6 +5763,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4881685975363383806">No me lo recuerdes la próxima vez</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Tiene acceso a este sitio web</translation>
+<translation id="4882848900607400156">Si compartes tu ubicación precisa, Gemini podrá responder a tus preguntas con más precisión. Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="4882919381756638075">Los sitios suelen acceder al micrófono para utilizarlo en funciones relacionadas con la comunicación, como el chat de vídeo.</translation>
 <translation id="4883436287898674711">Todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Administrador de tareas</translation>
@@ -5851,6 +5854,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4945439665401275950">Para configurar la huella digital, pídele a tu hijo/a que toque el botón de encendido. Los datos de la huella digital de tu hijo/a se almacenarán de forma segura y nunca saldrán de este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">Tecla del menú de aplicaciones + flecha hacia arriba</translation>
 <translation id="4947376546135294974">Datos del sitio que estás visitando</translation>
+<translation id="4948370357877377178">Continuar con tus tareas</translation>
 <translation id="4950100687509657457">Crear perfil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un archivo}other{# archivos}}</translation>
 <translation id="495170559598752135">Acciones</translation>
@@ -7459,7 +7463,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6077476112742402730">Hablar para escribir</translation>
 <translation id="6078121669093215958">{0,plural, =1{Invitado}other{# ventanas de invitado abiertas}}</translation>
 <translation id="6078199831684941650">Se ha actualizado a la versión <ph name="VERSION" /></translation>
-<translation id="6078323886959318429">Añadir acceso directo</translation>
+<translation id="6078323886959318429">Acceso directo</translation>
 <translation id="6078752646384677957">Comprueba el volumen del micrófono y del audio.</translation>
 <translation id="608029822688206592">No se ha encontrado ninguna red. Inserta tu tarjeta SIM y vuelve a intentarlo.</translation>
 <translation id="6080689532560039067">Comprueba la hora del sistema</translation>
@@ -8249,6 +8253,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6636623428211296678">Consulta más ajustes a continuación o termina ahora</translation>
 <translation id="6639554308659482635">Memoria de SQLite</translation>
 <translation id="6640268266988685324">Pestaña abierta</translation>
+<translation id="664271268954513498">Valor de la política</translation>
 <translation id="6642720633335369752">Para ver todas las ventanas de las aplicaciones abiertas, desliza el dedo hacia arriba y no lo levantes.</translation>
 <translation id="664290675870910564">Selección de red</translation>
 <translation id="6643016212128521049">Borrar</translation>
@@ -9075,6 +9080,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. El propietario ha aplicado este ajuste. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicaciones</translation>
+<translation id="7209958456051239069">Si compartes tu ubicación precisa, Gemini podrá responder a tus preguntas con más precisión</translation>
 <translation id="7210257969463271891">Las aplicaciones web que instales se mostrarán aquí</translation>
 <translation id="7210432570808024354">Tocar y arrastrar para mover elementos</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
@@ -10694,6 +10700,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Extraer texto de PDF</translation>
 <translation id="8289128870594824098">Tamaño de disco</translation>
+<translation id="8289200713453671499">Cambia rápidamente entre tus grupos de pestañas y tus conversaciones recientes con la IA sin perder el hilo.</translation>
 <translation id="8289509909262565712">Te damos la bienvenida a <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Descarga Chrome</translation>
 <translation id="8291942417224950075">Para uso personal</translation>
@@ -11674,6 +11681,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8945508919180478719">Micrófono de estudio</translation>
 <translation id="8946359700442089734">Las funciones de depuración no se han habilitado completamente en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Ocultar todas las solicitudes en la barra de direcciones</translation>
+<translation id="8946996840522387154">Usa el micrófono para hablar con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las Aplicaciones de Gemini (si la opción está activada). Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="894763922177556086">Buena</translation>
 <translation id="895054485242522631">Los sitios pueden utilizar sensores de movimiento</translation>
 <translation id="8951256747718668828">No se ha podido completar la restauración debido a un error</translation>

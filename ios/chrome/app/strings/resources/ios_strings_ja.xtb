@@ -1329,7 +1329,6 @@
 <translation id="5868644772996939262">パスワードとパスキーを自動入力</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="5873179562631407582">開いているタブを長押しします</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />、組織によって管理されています。</translation>
 <translation id="5887400589839399685">カードが保存されました</translation>
 <translation id="5888889603768021126">ログインに使用した ID プロバイダ</translation>
 <translation id="5889333064153755823">閲覧履歴データの削除</translation>
@@ -1666,6 +1665,7 @@
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">[設定] でデフォルトにする…</translation>
 <translation id="7007970306646738803">このデバイスの既存の閲覧データ（タブ、履歴、パスワードなど）の処理方法を選択してください。</translation>
+<translation id="7012978439516925343">パスキーを作成するには、本人確認を行ってください</translation>
 <translation id="7015418667643980944">分割表示</translation>
 <translation id="7016070607649558507">脆弱なパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
 <translation id="7016958933495968912">Discover のオプション</translation>

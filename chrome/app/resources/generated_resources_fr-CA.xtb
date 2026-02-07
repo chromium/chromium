@@ -515,6 +515,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1333965224356556482">Ne pas autoriser les sites à accéder à votre position</translation>
 <translation id="1335282218035876586">Votre Chromebook ne reçoit plus les mises à jour de sécurité ni les mises à jour logicielles. Mettez à niveau votre Chromebook pour une expérience optimale.</translation>
 <translation id="133535873114485416">Entrée préférée</translation>
+<translation id="13356285923490863">Nom de la politique</translation>
 <translation id="1335929031622236846">Inscrivez votre appareil</translation>
 <translation id="133660899895084533">Lire les informations et les données des périphériques Bluetooth</translation>
 <translation id="1336902454946927954">Votre clé de sécurité est verrouillée parce que votre empreinte digitale n'a pas été reconnue. Pour la déverrouiller, entrez votre NIP.</translation>
@@ -2630,6 +2631,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2749836841884031656">Carte SIM</translation>
 <translation id="2749881179542288782">Vérifier la grammaire et l'orthographe</translation>
 <translation id="2750020734439919571">Plus de paramètres et d'autorisations pour l'application Chrome</translation>
+<translation id="275010360476017464">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'activité dans les applis Gemini (si ce paramètre est activé).</translation>
 <translation id="2750602041558385535">Téléchargement non vérifié bloqué</translation>
 <translation id="2751454300227269244">Bougez votre bouche vers la droite</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> souhaite connaître le numéro d'identifiant de votre clé de sécurité. Le site saura exactement quelle clé de sécurité vous utilisez.</translation>
@@ -5764,6 +5766,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4881685975363383806">Ne pas me le rappeler la prochaine fois</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4882312758060467256">A accès à ce site</translation>
+<translation id="4882848900607400156">Lorsque vous partagez votre position exacte, Gemini peut répondre à vos questions avec plus de précision. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="4882919381756638075">Les sites utilisent généralement votre micro pour proposer des fonctionnalités de communication, comme le clavardage vidéo</translation>
 <translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestionnaire de &amp;tâches</translation>
@@ -5854,6 +5857,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4945439665401275950">Pour configurer une empreinte digitale, demandez à votre enfant de toucher l'interrupteur. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais cet appareil : <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">lanceur+flèche vers le haut</translation>
 <translation id="4947376546135294974">Données du site que vous visitez</translation>
+<translation id="4948370357877377178">Continuez vos tâches</translation>
 <translation id="4950100687509657457">Créer le profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="495170559598752135">Actions</translation>
@@ -9079,6 +9083,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="7207457272187520234">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Ce paramètre est appliqué par le propriétaire du compte. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="7207631048330366454">Rechercher dans les applications</translation>
+<translation id="7209958456051239069">Lorsque vous partagez votre position exacte, Gemini peut répondre à vos questions avec plus de précision</translation>
 <translation id="7210257969463271891">Les applications Web que vous installez apparaissent ici</translation>
 <translation id="7210432570808024354">Touchez et faites glisser pour déplacer des éléments</translation>
 <translation id="7210499381659830293">Imprimantes d'extension</translation>
@@ -10697,6 +10702,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8288032458496410887">Désinstaller <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Extraire le texte d'un fichier PDF</translation>
 <translation id="8289128870594824098">Taille du disque</translation>
+<translation id="8289200713453671499">Passez rapidement d'un groupe d'onglets à vos conversations récentes avec l'IA sans perdre votre place.</translation>
 <translation id="8289509909262565712">Bienvenue dans <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Télécharger Chrome</translation>
 <translation id="8291942417224950075">Pour un usage personnel</translation>
@@ -11677,6 +11683,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8945508919180478719">Micro de type studio</translation>
 <translation id="8946359700442089734">Les fonctionnalités de débogage ne sont pas complètement activées sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Réduire toutes les requêtes dans la barre d'adresse</translation>
+<translation id="8946996840522387154">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'activité dans les applis Gemini (si ce paramètre est activé). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="894763922177556086">Bonne</translation>
 <translation id="895054485242522631">Les sites peuvent utiliser des capteurs de mouvement</translation>
 <translation id="8951256747718668828">Une erreur s'est produite et la restauration n'a pas pu être terminée</translation>

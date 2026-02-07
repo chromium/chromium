@@ -2962,7 +2962,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5730040223043577876">Chrome, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
 <translation id="5732392974455271431">Ebeveynleriniz engellemeyi kaldırabilir</translation>
 <translation id="573555826359077410">Form oluştur düğmesi, Google Formlar'da hızlıca yeni bir form oluşturmak için etkinleştirin</translation>
-<translation id="5737022235680044108">Kuruluşunuz, gizli modda <ph name="HOST_NAME" /> sitesini engelledi.</translation>
 <translation id="5738385766833540397">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarılarını nasıl alacağınızı yönetin</translation>
 <translation id="5739619009927381786">Sonraki adımda ekranınızın kilidini açın (genellikle parmak iziniz kullanılır). <ph name="BEGIN_LINK" />Başka bir doğrulama yöntemini<ph name="END_LINK" /> de kullanabilirsiniz.</translation>
 <translation id="573974402615125334">Sekme gruplarını paylaşmak, bunlara katılmak ve gruplarda ortak çalışma yapmak için geçmişinizi ve sekmelerinizi senkronize edin</translation>
@@ -3645,7 +3644,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6844998850832008753">El takibine bu sefer izin veriliyor</translation>
 <translation id="6849023911358004088">Güvenlik ayarlarını yönet düğmesi, Chrome ayarlarında Güvenli Tarama ve diğer özellikleri yönetmek için etkinleştirin</translation>
 <translation id="6850286078059909152">Metin rengi</translation>
-<translation id="685163597635765693">Kuruluşunuz, Gizli modda "<ph name="HOST_NAME" />" bağlantılarını engelledi.</translation>
 <translation id="6852204201400771460">Uygulama yeniden yüklensin mi?</translation>
 <translation id="6854691830678097752">Daha hızlı ödeme yapmak için bu CVC'yi <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydedin</translation>
 <translation id="6857776781123259569">Şifreleri Yönet...</translation>

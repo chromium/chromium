@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">Çelësat e kalimit dhe fjalëkalimet e ruajtura</translation>
 <translation id="3143515551205905069">Anulo sinkronizimin</translation>
 <translation id="3144126448740580210">U KRYE</translation>
+<translation id="3147521114983561406">Çelësat e kalimit ruhen te menaxheri i fjalëkalimeve. Ata janë të arritshëm në skedat "I fshehtë" dhe të zakonshme.</translation>
 <translation id="3148052723910099040">Rrjeta e skedave të zakonshme</translation>
 <translation id="3148237711805373460">Më ço atje</translation>
 <translation id="3157387275655328056">Shto te lista e leximit</translation>
@@ -1329,7 +1330,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5868644772996939262">Plotëso automatikisht fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
 <translation id="5873179562631407582">Trokit dhe mbaj shtypur çdo skedë të hapur</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Menaxhohet nga organizata jote.</translation>
 <translation id="5887400589839399685">Karta u ruajt</translation>
 <translation id="5888889603768021126">Identifikuar me</translation>
 <translation id="5889333064153755823">Fshi të dhënat e shfletimit</translation>
@@ -2098,6 +2098,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8587001564479545614">Krijo një kod PIN për rikuperimin</translation>
 <translation id="8588404856427128947">Joaktiv</translation>
 <translation id="8590286732816598906">Grupi i skedave, <ph name="GROUP_TITLE" />, menyja.</translation>
+<translation id="8593317261815647019">Të krijohet një çelës kalimi jashtë modalitetit "I fshehtë"?</translation>
 <translation id="8600272508328041907">Kalo te përkthimi në faqe të plotë</translation>
 <translation id="860043288473659153">Emri i mbajtësit të kartës</translation>
 <translation id="8601611099293226919">Kërko në ekranin tënd me "Lenten e Google"</translation>

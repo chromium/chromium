@@ -2958,7 +2958,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5730040223043577876">Pokud jste heslo použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="5732392974455271431">Rodiče ti jej mohou odblokovat.</translation>
 <translation id="573555826359077410">Tlačítko Vytvořit formulář, aktivací rychle vytvoříte nový formulář ve Formulářích Google</translation>
-<translation id="5737022235680044108">Vaše organizace v anonymním režimu adresu <ph name="HOST_NAME" /> zablokovala.</translation>
 <translation id="5738385766833540397">Nastavte, jak chcete dostávat upozornění na pokles cen produktů, které sledujete</translation>
 <translation id="5739619009927381786">V dalším kroku odemkněte obrazovku, obvykle otiskem prstu. Nebo můžete <ph name="BEGIN_LINK" />ověření provést jiným způsobem<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, synchronizujte historii a karty</translation>
@@ -3640,7 +3639,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6844998850832008753">Sledování rukou je tentokrát povoleno</translation>
 <translation id="6849023911358004088">Tlačítko Spravovat nastavení zabezpečení, aktivací můžete spravovat Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
 <translation id="6850286078059909152">Barva textu</translation>
-<translation id="685163597635765693">Vaše organizace v anonymním režimu odkazy „<ph name="HOST_NAME" />“ zablokovala.</translation>
 <translation id="6852204201400771460">Načíst aplikaci znovu?</translation>
 <translation id="6854691830678097752">Pokud chcete platit rychleji, uložte si tento kód CVC do svého účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Spravovat hesla…</translation>
@@ -4520,6 +4518,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8241707690549784388">Stránka, kterou hledáte, používala vámi zadané informace. Návrat na tuto stránku by mohl způsobit, že akce, kterou jste provedli, bude opakována. Přejete si pokračovat?</translation>
 <translation id="8241712895048303527">Na tomto webu blokovat</translation>
 <translation id="8242426110754782860">Pokračovat</translation>
+<translation id="824620968958405573">Úkol automatického procházení</translation>
 <translation id="8246482227229072868">Kruhy</translation>
 <translation id="8248406213705193919">Bezpečně uložit kartu?</translation>
 <translation id="8249296373107784235">Zrušit</translation>

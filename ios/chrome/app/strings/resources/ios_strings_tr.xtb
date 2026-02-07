@@ -1329,7 +1329,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5868644772996939262">Şifreleri ve geçiş anahtarlarını otomatik doldurun</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5873179562631407582">Açık sekmelerden birine dokunup basılı tutun</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />, kuruluşunuz tarafından yönetiliyor.</translation>
 <translation id="5887400589839399685">Kart kaydedildi</translation>
 <translation id="5888889603768021126">Şununla oturum açıldı:</translation>
 <translation id="5889333064153755823">Tarama Verilerini Sil</translation>
@@ -1666,6 +1665,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Ayarlar'dan varsayılan yap…</translation>
 <translation id="7007970306646738803">Bu cihazdaki sekmeler, geçmiş ve şifreler gibi mevcut tarama verileri ile ne yapılacağını seçin.</translation>
+<translation id="7012978439516925343">Geçiş anahtarı oluşturmak için kimliğinizi doğrulayın</translation>
 <translation id="7015418667643980944">Bölünmüş görünüm</translation>
 <translation id="7016070607649558507">1 tane zayıf şifreniz var. Güvende kalmak için sorunu hemen giderin.</translation>
 <translation id="7016958933495968912">Keşfet seçenekleri</translation>

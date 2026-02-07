@@ -564,6 +564,17 @@ Si se inhabilita esta política o no se define, los dispositivos dejarán de rec
 Esta política solo es aplicable a los modelos antiguos que no reciben automáticamente actualizaciones ampliadas.
 
 Para obtener más información, consulta esta página: https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
+<translation id="1432008122934973720">De forma predeterminada, solo se pueden solicitar permisos de acceso a la red local (LNA) en subframes de origen cruzado si se delegan explícitamente. Esta política se puede usar para anular este comportamiento predeterminado de forma que los permisos de LNA se hereden de forma predeterminada en los subframes, a menos que se deniegue explícitamente en la política de permisos.
+
+Si se habilita esta política, se delegarán de forma predeterminada todas las funciones de la política de permisos de LNA a los subframes, que podrán hacer solicitudes de red local (lo que activará la solicitud de permiso).
+
+Si se inhabilita esta política o no se define, los subframes deberán tener delegada explícitamente la función de política de permisos para poder hacer solicitudes de red local y activar la solicitud de permiso.
+
+Esta política se aplica a las funciones <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />, <ph name="LOOPBACK_NETWORK_FEATURE_NAME" /> y <ph name="LOCAL_NETWORK_FEATURE_NAME" /> de la política de permisos.
+
+Para obtener más información sobre el acceso a la red local, consulta https://wicg.github.io/local-network-access/ y https://developer.chrome.com/blog/local-network-access.
+
+Para obtener más información sobre la política de permisos, consulta https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy.</translation>
 <translation id="1432834104376790711">Esta política habilita o inhabilita el ajuste Modo Ahorro de batería.
       En Chrome, este ajuste limita la velocidad de fotogramas para reducir el consumo de energía. Si no se define esta política, el usuario final podrá controlar este ajuste en chrome://settings/performance.
       En ChromeOS, este ajuste limita la velocidad de fotogramas y la frecuencia de la CPU, atenúa la retroiluminación y activa el modo Ahorro de batería de Android. En los dispositivos con varias CPUs, algunas se desactivarán.
@@ -1566,6 +1577,7 @@ Esta política de dispositivos es equivalente a la política de usuarios actual 
 <translation id="2090939118981888335">Si se habilita esta política, se permitirá usar el proxy de compresión de datos. Si se inhabilita esta política, no se permitirá usar este proxy.
 
       Si se asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios podrán elegir si quieren usar esta función.</translation>
+<translation id="2091689441590064807">No permitir solicitudes de LNA en subframes sin delegación explícita</translation>
 <translation id="2093552723795057221">No informar sobre el estado del audio</translation>
 <translation id="209388704279338003">Esta política está obsoleta y no se admite. Usa <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2093951844062548778">Esta política da permiso a la función Respuestas rápidas para acceder al contenido seleccionado y enviar la información al servidor con el fin de obtener resultados de definición.
@@ -7624,6 +7636,7 @@ Esta política se puede usar en caso de que surjan problemas debido a que estamo
 NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente reflejarán los cambios de esta política mientras se esté ejecutando el navegador.</translation>
 <translation id="6083281887050888160">Habilitar el emparejamiento por Bluetooth "Funciona sin configuración"</translation>
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
+<translation id="6085580138417523410">Permitir solicitudes de acceso a la red local (LNA) en subframes sin delegación explícita</translation>
 <translation id="6087413944876892918">Usar el algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Establece el umbral de batería de Peak Shift en forma de porcentaje</translation>
 <translation id="6089679180657323464">Controla los ajustes del controlador de diagnóstico y telemetría wilco.</translation>
@@ -10168,6 +10181,7 @@ Nota: Esta política solo se aplica a las plataformas compatibles con extensione
 <translation id="7669630878711068277">Si se habilita esta política o no se le asigna ningún valor, los usuarios podrán imprimir en <ph name="PRODUCT_NAME" /> y no podrán cambiar este ajuste.
 
       Si se inhabilita esta política, los usuarios no podrán imprimir desde <ph name="PRODUCT_NAME" />. La opción de imprimir estará desactivada en el menú de tres puntos, las extensiones y las aplicaciones de JavaScript.</translation>
+<translation id="7672510074688643558">Permitir solicitudes de LNA en subframes sin delegación explícita</translation>
 <translation id="7673194325208122247">Periodo de tiempo (milisegundos)</translation>
 <translation id="7677220829878081413">
       Si se asigna el valor "ArcSession" a esta política, fuerza al dispositivo a reiniciarse cuando el usuario cierre sesión (si Android se ha iniciado).

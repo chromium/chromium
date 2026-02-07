@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1035560095760914532">Розмістіть вебпереглядач Chrome у нижній частині екрана, щоб у будь-який момент мати до нього доступ</translation>
 <translation id="1076643793026027628">Chrome автоматично відкриває посилання YouTube, надіслані із сеансу в анонімному режимі, у тому самому режимі.</translation>
 <translation id="1081114897601629648">Ці паролі не імпортовано в Google Менеджер паролів, оскільки вони не відповідають вимогам.</translation>
 <translation id="1086486568852410168">Шукати через Об’єктив</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Ви додали максимальну кількість закладок у Google Chrome (<ph name="LIMIT" />), тому деякі з них іще не збережено у вашому обліковому записі Google.
 
 Щоб зберегти нові закладки в обліковому записі, видаліть деякі з наявних. Якщо вийти зараз, незбережені закладки буде видалено.</translation>
+<translation id="2901621928549457170">Миттєво відкривайте Chrome на iPad</translation>
 <translation id="2922914028977213693">Натисніть тут, щоб користуватися всіма можливостями Chrome на iPad.</translation>
 <translation id="292371311537977079">Налаштування Chrome</translation>
 <translation id="2923827943290349720">Блокувати анонімні вкладки після закриття Chrome</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Виберіть Chrome</translation>
 <translation id="5123188916260706415">Шукати за допомогою голосу в Chrome</translation>
 <translation id="5162467219239570114">Версія Chrome застаріла. Якщо оновлень в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> немає, можливо, ваш пристрій більше не підтримує нові версії Chrome.</translation>
+<translation id="5172049865623113551">Миттєво відкривайте Chrome на iPhone</translation>
+<translation id="5179095426828744632">Швидше відкривайте Chrome із панелі Dock</translation>
 <translation id="5184329579814168207">Відкрити в Chrome</translation>
 <translation id="5190139289262548459">Ваша організація (<ph name="DOMAIN" />) керує обліковим записом, у який ви ввійшли, і тим, як використовується Chrome.</translation>
 <translation id="5209238444239954363">Chrome не вдалося перевірити наявність оновлень. Повторіть спробу пізніше.</translation>

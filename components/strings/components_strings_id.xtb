@@ -2791,6 +2791,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5466018172325111652">Tidak menerima kode Anda? <ph name="BEGIN_LINK" />Dapatkan kode baru<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplikasi pembayaran</translation>
 <translation id="5470861586879999274">&amp;Ulangi pengeditan</translation>
+<translation id="5471158297908124590">Verifikasi diri Anda untuk mengedit metode pembayaran</translation>
 <translation id="5472588168895083535">Pelacakan tangan diblokir</translation>
 <translation id="5477756102936130143">Aktifkan pengalihan ke aplikasi pembayaran yang didukung</translation>
 <translation id="5479505548832623900">Kemungkinan diabaikan oleh ekstensi.</translation>
@@ -2962,7 +2963,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5730040223043577876">Chrome menyarankan untuk menyetel ulang sandi jika Anda juga menggunakannya di situs lain.</translation>
 <translation id="5732392974455271431">Orang tua dapat berhenti memblokirnya untukmu</translation>
 <translation id="573555826359077410">Tombol Buat formulir, aktifkan untuk membuat formulir baru di Google Formulir dengan cepat</translation>
-<translation id="5737022235680044108">Organisasi Anda telah memblokir <ph name="HOST_NAME" /> dalam mode Samaran.</translation>
 <translation id="5738385766833540397">Kelola cara Anda menerima notifikasi diskon untuk produk yang dipantau</translation>
 <translation id="5739619009927381786">Buka kunci layar Anda di langkah berikutnya, biasanya menggunakan sidik jari Anda. Atau, Anda dapat <ph name="BEGIN_LINK" />memverifikasi dengan cara lain<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Untuk berbagi, bergabung, dan berkolaborasi dalam grup tab, sinkronkan histori dan tab Anda</translation>
@@ -3175,6 +3175,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6093795393556121384">Kartu Anda diverifikasi</translation>
 <translation id="6094253940069566294">Edit kendaraan</translation>
 <translation id="6094290315941448991">Kebijakan administrator akan menonaktifkan perekaman layar saat konten rahasia terlihat</translation>
+<translation id="6097297436119286254">Verifikasi diri Anda untuk mengisikan info pembayaran</translation>
 <translation id="6099269767116481177">22 x 29,5 inci (55 x 74 cm)</translation>
 <translation id="6101583188322746099">Layanan Pesan Antar Bahan Makanan</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -3645,7 +3646,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6844998850832008753">Pelacakan tangan diizinkan kali ini</translation>
 <translation id="6849023911358004088">Tombol Kelola setelan keamanan, aktifkan untuk mengelola Safe Browsing dan lainnya di setelan Chrome</translation>
 <translation id="6850286078059909152">Warna teks</translation>
-<translation id="685163597635765693">Organisasi Anda telah memblokir link “<ph name="HOST_NAME" />” dalam mode Samaran.</translation>
 <translation id="6852204201400771460">Muat ulang aplikasi?</translation>
 <translation id="6854691830678097752">Untuk checkout yang lebih cepat, simpan CVC ini di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6857776781123259569">Kelola Sandi ...</translation>
@@ -4919,6 +4919,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8897428486789851669">Renang</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Perbesar</translation>
+<translation id="8903998444169664879">Verifikasi diri Anda untuk mengubah setelan pembayaran</translation>
 <translation id="890493561996401738">Hapus tombol Saran, tekan Enter untuk menghapus, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inci (20 x 25 cm)</translation>
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>

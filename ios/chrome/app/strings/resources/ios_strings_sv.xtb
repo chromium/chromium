@@ -1329,7 +1329,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5868644772996939262">Autofyll lösenord och nycklar</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
 <translation id="5873179562631407582">Tryck länge på en öppen flik</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Hanteras av organisationen.</translation>
 <translation id="5887400589839399685">Kortet har sparats</translation>
 <translation id="5888889603768021126">Inloggad med</translation>
 <translation id="5889333064153755823">Radera webbinformation</translation>
@@ -1666,6 +1665,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Använd som standard i Inställningar …</translation>
 <translation id="7007970306646738803">Välj vad du vill göra med befintlig webbinformation på den här enheten, till exempel flikar, historik och lösenord.</translation>
+<translation id="7012978439516925343">Verifiera din identitet för att skapa en nyckel</translation>
 <translation id="7015418667643980944">Delad skärm</translation>
 <translation id="7016070607649558507">Du har 1 svagt lösenord. Åtgärda det nu för att hålla dig säker.</translation>
 <translation id="7016958933495968912">Alternativ för Förslag</translation>

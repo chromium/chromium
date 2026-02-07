@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Chromium ഓരോ തവണയും മൊബൈൽ സൈറ്റ് ആവശ്യപ്പെടുമെന്നാണ് ഇതിനർത്ഥം.</translation>
 <translation id="1115463765356382667">Chromium പരമാവധി പ്രയോജനപ്പെടുത്തുന്നതിന്, ചുവടെ നിർദ്ദേശിച്ചിരിക്കുന്ന ഈ പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കുക.</translation>
 <translation id="1185134272377778587">Chromium-ത്തിനെക്കുറിച്ച്</translation>
+<translation id="119044033865561140">നിങ്ങൾ iPad ഉപയോഗിക്കുമ്പോൾ തൽക്ഷണം Chromium തുറക്കുക</translation>
 <translation id="1211450393895337634">നിങ്ങളുടെ iPad-ൽ ബ്രൗസ് ചെയ്യാൻ തയ്യാറാകുമ്പോൾ അതിവേഗം Chromium തുറക്കുക.</translation>
 <translation id="1229234641991056119">നിങ്ങളുടെ Safari പാസ്‌വേഡുകൾ, ചരിത്രം, ബുക്ക്‌മാർക്കുകൾ, ക്രെഡിറ്റ് കാർഡുകൾ എന്നിവ Chromium-ൽ ഉപയോഗിക്കുക</translation>
 <translation id="1257458525759135959">ചിത്രങ്ങൾ‌ സംരക്ഷിക്കാൻ, ക്രമീകരണത്തിൽ ടാപ്പ് ചെയ്‌ത് അവ നിങ്ങളുടെ ഫോട്ടോകളിലേക്ക് ചേർക്കാൻ Chromium-നെ അനുവദിക്കുക</translation>
 <translation id="1260702988262336471">Chromium മെനു തുറക്കുക</translation>
 <translation id="12739128458173458">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, രണ്ട് ഉപകരണങ്ങളിലെയും Chromium-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
+<translation id="1279797561821266129">നിങ്ങളുടെ ഡോക്കിൽ നിന്ന് അതിവേഗം Chromium ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1361748954329991663">Chromium കാലഹരണപ്പെട്ടു. <ph name="BEGIN_LINK" />ആപ്പ് സ്റ്റോറിൽ<ph name="END_LINK" /> അപ്ഡേറ്റ് ലഭ്യമല്ലെങ്കിൽ, നിങ്ങളുടെ ഉപകരണം ഇനി Chromium-ന്റെ പുതിയ പതിപ്പുകളെ പിന്തുണയ്ക്കാൻ സാധ്യതയില്ല.</translation>
 <translation id="1383876407941801731">തിരയുക</translation>
 <translation id="1423007117030725713">പുതിയ Chromium ടാബിൽ തിരയൽ ആരംഭിക്കുക.</translation>
@@ -176,6 +178,7 @@
 <translation id="4790638144988730920">നിങ്ങളുടെ Google Account-ലെ Chromium ഡാറ്റ ഉപയോഗിക്കുന്നത് തുടരുക.</translation>
 <translation id="4828317641996116749">എല്ലാ പാസ്‌വേഡുകളും Chromium-ന് പരിശോധിക്കാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4856138222358683580">Chromium പ്രവർത്തനങ്ങൾ</translation>
+<translation id="4869706986935301458">നിങ്ങൾ iPhone ഉപയോഗിക്കുമ്പോൾ തൽക്ഷണം Chromium തുറക്കുക</translation>
 <translation id="4904452304169763785">Chromium നിങ്ങൾക്കായി കണ്ടെത്തുന്ന, സ്വകാര്യതയുമായോ സുരക്ഷയുമായോ ബന്ധപ്പെട്ട എല്ലാ പ്രശ്നങ്ങളെയും കുറിച്ചുള്ള മുന്നറിയിപ്പുകൾ.</translation>
 <translation id="4908570938463711775">ആരംഭിക്കുന്നതിന് സഹായകരമായ Chromium-നെക്കുറിച്ചുള്ള അടിസ്ഥാനകാര്യങ്ങൾ മനസ്സിലാക്കുക</translation>
 <translation id="4962295957157529683">തുറന്ന മറ്റ് Chromium വിൻഡോയിൽ നിങ്ങൾ ചെയ്തുകൊണ്ടിരുന്നത് പൂർത്തിയാക്കുക.</translation>
@@ -295,6 +298,7 @@
 <translation id="7395825497086981028">നിങ്ങളുടെ പാസ്‌വേഡ് <ph name="EMAIL" /> എന്നതിനുള്ള പാസ്‌വേഡ് മാനേജറിൽ സംരക്ഷിക്കും.</translation>
 <translation id="7434848749522628428"><ph name="USER_EMAIL" /> എന്നതിനുള്ള Password Manager-ൽ ഈ പാസ്‌കീ സംരക്ഷിക്കും</translation>
 <translation id="7504829997542308412">Chromium തുറക്കുക</translation>
+<translation id="7507535968973352823">എപ്പോൾ വേണമെങ്കിലും ആക്‌സസ് ചെയ്യാൻ, താഴെയുള്ള ഏരിയയിൽ Chromium സ്ഥാപിക്കുക</translation>
 <translation id="7531461704633548377">Chromium-ൽ നിന്ന്</translation>
 <translation id="7554983317097061001">Chromium നുറുങ്ങ്: ഡോക്കിലേക്ക് Chromium നീക്കുക</translation>
 <translation id="7576863740961052505">Chromium ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>

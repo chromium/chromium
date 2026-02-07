@@ -350,6 +350,7 @@
 <translation id="2225701818156393674">המוצר נוסף לרשימת המוצרים שבמעקב.</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
 <translation id="2236949375853147973">הפעילות שלי</translation>
+<translation id="2237869114829007407">אפשר לקבל סקירה כללית ותובנות מרכזיות על כל דף או נושא</translation>
 <translation id="2240256190924001613">יש פרופיל של הגדרות אישיות</translation>
 <translation id="2244080985779413662">‏האתר הזה מבקש להוריד קובץ ולפתוח אותו ב-Wallet.</translation>
 <translation id="2245007488813216650">בתהליך תרגום…</translation>
@@ -624,6 +625,7 @@
 <translation id="3305294846493618482">עוד</translation>
 <translation id="3311748811247479259">כבוי</translation>
 <translation id="3312300514034250578">גרסה משופרת של גלישה בטוחה</translation>
+<translation id="3315786055700307152">הפריט נמכר עכשיו ב-15% הנחה</translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="333229797575847124">איך מפעילים את התכונה הזו</translation>
@@ -639,6 +641,7 @@
 <translation id="3378214228000661758">יצירה של מפתח גישה בשביל</translation>
 <translation id="3380352560400387991">האתר הזה מנסה לפתוח אפליקציה. הפעולה הזו תוציא אותך ממצב פרטי.</translation>
 <translation id="3385742921291399323">אפשר לקבל גישה לסיסמאות, לכרטיסיות, לסימניות ולנתונים שמורים נוספים.</translation>
+<translation id="3391765987934722383">לא כדאי לפספס ירידה במחיר</translation>
 <translation id="3392923070107623576">אפשר ליצור קבוצות של כרטיסיות כדי לשמור על הסדר</translation>
 <translation id="3404232721752787413">‏שמירה ב-Google Photos</translation>
 <translation id="3406506285180498376">שיתוף הדף…</translation>
@@ -787,6 +790,7 @@
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3955740319737378355">סיום</translation>
 <translation id="3955822496205734389">יש לך סיסמאות חלשות.</translation>
+<translation id="3957016963627617921">‏אפשר להספיק יותר עם Gemini ב-Chrome</translation>
 <translation id="3958312024468322930">‏גוררים את הסמל אל ה-Dock שבחלק התחתון של מסך הבית</translation>
 <translation id="3962326069546168954">שמירה</translation>
 <translation id="3967327056943561740">סימניות</translation>
@@ -1325,7 +1329,6 @@
 <translation id="5868644772996939262">מילוי אוטומטי של סיסמאות ומפתחות גישה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="5873179562631407582">לוחצים לחיצה ארוכה על כרטיסיות פתוחות</translation>
-<translation id="5878899964490256268">החשבון <ph name="EMAIL" /> מנוהל על-ידי הארגון שלך.</translation>
 <translation id="5887400589839399685">הכרטיס נשמר</translation>
 <translation id="5888889603768021126">נכנסת באמצעות</translation>
 <translation id="5889333064153755823">מחיקת נתוני הגלישה</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8803639129939845298">מאובטח</translation>
 <translation id="8813277370772331957">אני רוצה לקבל תזכורת אחר כך</translation>
 <translation id="8814719628147284151">המשך</translation>
+<translation id="8817524703470045896">כדאי לעקוב אחר מחירים ולקבל התראות על ירידות במחיר בכל אתר</translation>
 <translation id="8819155700324279105">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8822421075653507124">כדי לוודא שאפשר להשתמש במכשיר באופן בטוח, האדמין של הארגון צריך לקבל מידע על מערכת ההפעלה, הדפדפן וההגדרות של המכשיר, וגם על התוכנה שמותקנת במכשיר.</translation>
@@ -2170,6 +2174,7 @@
 <translation id="8829809207373502270">מפתח הגישה הזה לא עובד יותר. הוא נמחק מ-<ph name="WEBSITE" /> ויוסר מכאן בקרוב. ‫<ph name="BEGIN_LINK" />מידע על מפתחות גישה<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">סגירת כל הכרטיסיות הלא פעילות</translation>
 <translation id="8837654851594567190">מיון לפי המקור</translation>
+<translation id="8844136307393039959">זוהתה ירידה במחיר של מוצר שנמצא אצלך במעקב</translation>
 <translation id="8848286253339013170">‏התמונה נשמרת ב-Google Photos של <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">מוסתר</translation>
 <translation id="8855242995793521265">ההגנה המשופרת לא מאטה במידה משמעותית את הדפדפן או המכשיר.</translation>
@@ -2213,6 +2218,7 @@
 <translation id="8976382372951310360">עזרה</translation>
 <translation id="8976414606286374109">‏הכרטיסים נשמרים בחשבון Google.</translation>
 <translation id="8981454092730389528">‏בחירת הפעילויות ב-Google</translation>
+<translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />, אתר מוצמד</translation>
 <translation id="8998289560386111590">לא זמין במכשיר שלך</translation>
 <translation id="9000532564152265066">כל הכרטיסיות</translation>
 <translation id="9003677638446136377">בדיקה נוספת</translation>

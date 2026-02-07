@@ -1329,7 +1329,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5868644772996939262">Paroļu un piekļuves atslēgu automātiskā aizpilde</translation>
 <translation id="5869522115854928033">Saglabātās paroles</translation>
 <translation id="5873179562631407582">Pieskarieties jebkurai atvērtajai cilnei un turiet to.</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Pārvalda jūsu organizācija.</translation>
 <translation id="5887400589839399685">Kartīte ir saglabāta</translation>
 <translation id="5888889603768021126">Pierakstījies kā</translation>
 <translation id="5889333064153755823">Dzēst pārlūkošanas datus</translation>
@@ -1666,6 +1665,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Padarīt par noklusējumu sadaļā “Iestatījumi”…</translation>
 <translation id="7007970306646738803">Izvēlieties, kā rīkoties ar šajā ierīcē esošajiem pārlūkošanas datiem, piemēram, cilnēm, vēsturi un parolēm.</translation>
+<translation id="7012978439516925343">Apstipriniet savu identitāti, lai varētu izveidot piekļuves atslēgu.</translation>
 <translation id="7015418667643980944">Dalīts skats</translation>
 <translation id="7016070607649558507">Jums ir viena nedroša parole. Labojiet to tūlīt, lai gādātu par savu drošību.</translation>
 <translation id="7016958933495968912">Discover iespējas</translation>

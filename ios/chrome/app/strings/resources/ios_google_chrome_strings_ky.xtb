@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1035560095760914532">Каалаган убакта ачуу үчүн Chrome'ду төмөнкү аймакка жайгаштырыңыз</translation>
 <translation id="1076643793026027628">Chrome YouTube'дун жашыруун шилтемелерин автоматтык түрдө Жашыруун режимде ачат.</translation>
 <translation id="1081114897601629648">Талаптарга жооп бербегендиктен, төмөнкү сырсөздөр Сырсөздөрдү башкаргычка импорттолгон жок.</translation>
 <translation id="1086486568852410168">Google Lens аркылуу издөө</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Google Chrome'догу кыстармалардын саны чегине (<ph name="LIMIT" />) жеткендиктен, айрым кыстармаларыңыз Google аккаунтуңузга сактала элек.
 
 Айрымдарын өчүргөнгө чейин жаңы кыстармаларды аккаунтуңузга сактоого болбойт. Эгер азыр чыгып кетсеңиз, сакталбаган кыстармалар өчүрүлөт.</translation>
+<translation id="2901621928549457170">iPad'да Chrome'ду ыкчам ачасыз</translation>
 <translation id="2922914028977213693">iPad'да Chrome'дун бардык мүмкүнчүлүктөрүн колдонуу үчүн бул жерди таптаңыз.</translation>
 <translation id="292371311537977079">Chrome'дун параметрлери</translation>
 <translation id="2923827943290349720">Chrome жабылганда, жашыруун өтмөктөрдү кулпулоо</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome'ду тандаңыз</translation>
 <translation id="5123188916260706415">Chrome'до оозеки издөө</translation>
 <translation id="5162467219239570114">Chrome эскирип калган. Эгер <ph name="BEGIN_LINK" />Колдонмолор дүкөнүндө<ph name="END_LINK" /> жаңыртуу болбосо, түзмөгүңүз Chrome'дун жаңы версияларын мындан ары колдоого албай калышы мүмкүн.</translation>
+<translation id="5172049865623113551">iPhone'до Chrome'ду ыкчам ачасыз</translation>
+<translation id="5179095426828744632">Chrome'ду док бекеттен тезирээк ачасыз</translation>
 <translation id="5184329579814168207">Chrome'до ачуу</translation>
 <translation id="5190139289262548459">Кирип турган аккаунтуңузду жана Chrome'дун колдонулушун уюмуңуз жана <ph name="DOMAIN" /> тескейт.</translation>
 <translation id="5209238444239954363">Chrome жаңыртууларды текшере алган жок. Кийинчерээк кайталап көрүңүз.</translation>

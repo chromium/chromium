@@ -514,6 +514,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1333965224356556482">Ära luba saitidel minu asukohta näha</translation>
 <translation id="1335282218035876586">Teie Chromebook ei saa enam turva- ja tarkvaravärskendusi. Parima kasutuskogemuse saamiseks värskendage oma Chromebooki.</translation>
 <translation id="133535873114485416">Eelistatud sisend</translation>
+<translation id="13356285923490863">Reegli nimi</translation>
 <translation id="1335929031622236846">Seadme registreerimine</translation>
 <translation id="133660899895084533">Bluetoothi välisseadmete teabe ja andmete lugemine</translation>
 <translation id="1336902454946927954">Teie turvavõti on lukustatud, kuna teie sõrmejälge ei õnnestunud tuvastada. Selle avamiseks sisestage oma PIN-kood.</translation>
@@ -8258,6 +8259,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6636623428211296678">Avastage allpool rohkem seadeid või lõpetage kohe</translation>
 <translation id="6639554308659482635">SQLite'i mälu</translation>
 <translation id="6640268266988685324">Avatud vaheleht</translation>
+<translation id="664271268954513498">Reegli väärtus</translation>
 <translation id="6642720633335369752">Kõigi avatud rakenduste akende nägemiseks pühkige alt üles ja hoidke sõrme ekraanil.</translation>
 <translation id="664290675870910564">Võrgu valimine</translation>
 <translation id="6643016212128521049">Tühjenda</translation>

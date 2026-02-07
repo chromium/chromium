@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1035560095760914532">将 Chrome 放在底部区域，方便随时访问</translation>
 <translation id="1076643793026027628">Chrome 会自动在无痕模式下打开 YouTube 无痕式链接。</translation>
 <translation id="1081114897601629648">以下密码不符合要求，因此未导入 Google 密码管理工具。</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">您的 Google Chrome 书签数量已达到上限（<ph name="LIMIT" /> 个），因此部分书签尚未保存到您的 Google 账号中。
 
 请先删除一些书签，否则新书签将无法保存到您的账号中。如果现在退出账号，未保存的书签将被删除。</translation>
+<translation id="2901621928549457170">在 iPad 上即时打开 Chrome</translation>
 <translation id="2922914028977213693">点按此处，让 iPad 上的 Chrome 发挥最大功用。</translation>
 <translation id="292371311537977079">Chrome 设置</translation>
 <translation id="2923827943290349720">在您关闭 Chrome 时锁定无痕式标签页</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">选择“Chrome”</translation>
 <translation id="5123188916260706415">在 Chrome 中使用语音搜索</translation>
 <translation id="5162467219239570114">Chrome 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chrome。</translation>
+<translation id="5172049865623113551">在 iPhone 上即时打开 Chrome</translation>
+<translation id="5179095426828744632">从程序坞更快地访问 Chrome</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5190139289262548459">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chrome 的使用方式。</translation>
 <translation id="5209238444239954363">Chrome 无法检查是否有更新，请稍后重试。</translation>

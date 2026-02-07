@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1035560095760914532">Jarri Chrome beheko eremuan, edonoiz atzitzeko</translation>
 <translation id="1076643793026027628">Chrome-k ezkutuko moduan irekitzen ditu automatikoki YouTube-ko ezkutuko moduko estekak.</translation>
 <translation id="1081114897601629648">Pasahitz hauek ez dira inportatu Google-ren Pasahitz-kudeatzailea zerbitzura, eskakizunak betetzen ez dituztelako.</translation>
 <translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
@@ -89,6 +90,7 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="288992067439702510">Google Chrome-k onartzen dituen laster-marken mugara iritsi zara (<ph name="LIMIT" />). Beraz, laster-marka batzuk ez dira gorde Google-ko kontuan oraindik.
 
 Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan. Orain saioa amaitzen baduzu, gorde gabeko laster-markak ezabatuko dira.</translation>
+<translation id="2901621928549457170">Ireki Chrome berehala iPad-a erabiltzen ari zarenean</translation>
 <translation id="2922914028977213693">Sakatu hau Chrome-ri etekinik handiena ateratzeko iPad-ean.</translation>
 <translation id="292371311537977079">Chrome-ren ezarpenak</translation>
 <translation id="2923827943290349720">Blokeatu ezkutuko moduko fitxak Chrome ixten duzunean</translation>
@@ -173,6 +175,8 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="5119391094379141756">Hautatu Chrome.</translation>
 <translation id="5123188916260706415">Bilatu ahotsarekin Chrome-n</translation>
 <translation id="5162467219239570114">Chrome zaharkituta dago. Ez badago eguneratzerik <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> dendan, baliteke gailua Chrome-ren bertsio berriekin bateragarria ez izatea.</translation>
+<translation id="5172049865623113551">Ireki Chrome berehala iPhone-a erabiltzen ari zarenean</translation>
+<translation id="5179095426828744632">Sartu Chrome-n bizkorrago aplikazioen zintaren bidez</translation>
 <translation id="5184329579814168207">Ireki Chrome-n</translation>
 <translation id="5190139289262548459"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabili duzun kontua eta Chrome erabiltzeko modua.</translation>
 <translation id="5209238444239954363">Chrome-k ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1035560095760914532">Chrome unten platzieren, um jederzeit darauf zugreifen zu können</translation>
 <translation id="1076643793026027628">In Chrome werden YouTube-Inkognitolinks automatisch im Inkognitomodus geöffnet.</translation>
 <translation id="1081114897601629648">Die folgenden Passwörter wurden nicht in den Google Passwortmanager importiert, da sie die Anforderungen nicht erfüllen.</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
@@ -89,6 +90,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="288992067439702510">Du hast das Chrome-Limit von <ph name="LIMIT" /> Lesezeichen erreicht. Einige deiner Lesezeichen wurden daher noch nicht in deinem Google-Konto gespeichert.
 
 Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelöscht hast. Wenn du dich jetzt abmeldest, werden nicht gespeicherte Lesezeichen gelöscht.</translation>
+<translation id="2901621928549457170">Chrome sofort öffnen, wenn du dein iPad verwendest</translation>
 <translation id="2922914028977213693">Tippe hier, um Chrome auf deinem iPad optimal zu nutzen.</translation>
 <translation id="292371311537977079">Chrome-Einstellungen</translation>
 <translation id="2923827943290349720">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
@@ -173,6 +175,8 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="5119391094379141756">Wähle Chrome aus</translation>
 <translation id="5123188916260706415">Sprachsuche in Chrome</translation>
 <translation id="5162467219239570114">Chrome ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chrome möglicherweise nicht mehr.</translation>
+<translation id="5172049865623113551">Chrome sofort öffnen, wenn du dein iPhone verwendest</translation>
+<translation id="5179095426828744632">Über das Dock schneller auf Chrome zugreifen</translation>
 <translation id="5184329579814168207">In Chrome öffnen</translation>
 <translation id="5190139289262548459">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chrome.</translation>
 <translation id="5209238444239954363">Chrome konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>

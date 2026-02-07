@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1035560095760914532">Coloca Chrome en la parte inferior para acceder a él en cualquier momento</translation>
 <translation id="1076643793026027628">Chrome abre automáticamente los vínculos de Incógnito de YouTube en modo Incógnito.</translation>
 <translation id="1081114897601629648">No se importaron las siguientes contraseñas al Administrador de contraseñas de Google porque no cumplen con los requisitos.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
@@ -89,6 +90,7 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="288992067439702510">Alcanzaste el límite de <ph name="LIMIT" /> favoritos de Google Chrome, por lo que aún no se guardaron algunos de tus favoritos en tu Cuenta de Google.
 
 No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si sales ahora, se borrarán los favoritos no guardados.</translation>
+<translation id="2901621928549457170">Abre Chrome al instante cuando estés en tu iPad</translation>
 <translation id="2922914028977213693">Presiona aquí para aprovechar Chrome al máximo en tu iPad.</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
 <translation id="2923827943290349720">Bloquear las pestañas de incógnito cuando cierres Chrome</translation>
@@ -173,6 +175,8 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
 <translation id="5123188916260706415">Realizar búsquedas con la voz en Chrome</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chrome.</translation>
+<translation id="5172049865623113551">Abre Chrome al instante cuando estés en tu iPhone</translation>
+<translation id="5179095426828744632">Accede a Chrome más rápido desde el Dock</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5190139289262548459">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chrome.</translation>
 <translation id="5209238444239954363">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>

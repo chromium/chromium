@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1035560095760914532">Placera Chrome längst ned så att du kan komma åt den när som helst</translation>
 <translation id="1076643793026027628">Chrome öppnar automatiskt inkognitolänkar till YouTube i inkognitoläget.</translation>
 <translation id="1081114897601629648">Följande lösenord importerades inte till Google Lösenordshantering eftersom de inte uppfyller kraven.</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
@@ -89,6 +90,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="288992067439702510">Du har nått gränsen på <ph name="LIMIT" /> bokmärken i Google Chrome, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
 
 Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>
+<translation id="2901621928549457170">Öppna Chrome omedelbart på din iPad</translation>
 <translation id="2922914028977213693">Tryck här för att få ut mesta möjliga av Chrome på din iPad.</translation>
 <translation id="292371311537977079">Inställningar för Chrome</translation>
 <translation id="2923827943290349720">Lås inkognitoflikar när du stänger Chrome</translation>
@@ -173,6 +175,8 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="5119391094379141756">Välj Chrome</translation>
 <translation id="5123188916260706415">Sök med rösten i Chrome</translation>
 <translation id="5162467219239570114">Den här versionen av Chrome är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chrome.</translation>
+<translation id="5172049865623113551">Öppna Chrome omedelbart på din iPhone</translation>
+<translation id="5179095426828744632">Kom åt Chrome snabbare från dockan</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chrome används.</translation>
 <translation id="5209238444239954363">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>

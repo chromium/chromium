@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1035560095760914532">എപ്പോൾ വേണമെങ്കിലും ആക്‌സസ് ചെയ്യാൻ താഴെയുള്ള ഏരിയയിൽ Chrome വയ്ക്കുക</translation>
 <translation id="1076643793026027628">അദൃശ്യ മോഡിൽ, YouTube അദൃശ്യ മോഡ് ലിങ്കുകൾ Chrome സ്വയമേവ തുറക്കുന്നു.</translation>
 <translation id="1081114897601629648">ആവശ്യകതകളുമായി പൊരുത്തപ്പെടാത്തതിനാൽ, ഇനിപ്പറയുന്ന പാസ്‌വേഡുകൾ Google Password Manager-ലേക്ക് ഇമ്പോർട്ട് ചെയ്തില്ല.</translation>
 <translation id="1086486568852410168">Google Lens ഉപയോഗിച്ച് തിരയുക</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">നിങ്ങൾ <ph name="LIMIT" /> ബുക്ക്‌മാർക്കുകൾ എന്ന Google Chrome-ന്റെ പരിധിയിലെത്തി, അതിനാൽ ചില ബുക്ക്‌മാർക്കുകൾ ഇതുവരെ Google Account-ൽ സംരക്ഷിച്ചിട്ടില്ല.
 
 ഏതാനും ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കുന്നത് വരെ നിങ്ങളുടെ അക്കൗണ്ടിൽ പുതിയവ സംരക്ഷിക്കാനാകില്ല. നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യുകയാണെങ്കിൽ, സംരക്ഷിക്കാത്ത ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കും.</translation>
+<translation id="2901621928549457170">നിങ്ങൾ iPad ഉപയോഗിക്കുമ്പോൾ Chrome തൽക്ഷണം തുറക്കുക</translation>
 <translation id="2922914028977213693">നിങ്ങളുടെ iPad-ൽ Chrome പരമാവധി പ്രയോജനപ്പെടുത്താൻ ഇവിടെ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="292371311537977079">Chrome ക്രമീകരണം</translation>
 <translation id="2923827943290349720">Chrome അടയ്‌ക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യുക</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5123188916260706415">Chrome-ൽ ശബ്ദം ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="5162467219239570114">Chrome കാലഹരണപ്പെട്ടു. <ph name="BEGIN_LINK" />ആപ്പ് സ്റ്റോറിൽ<ph name="END_LINK" /> അപ്ഡേറ്റ് ലഭ്യമല്ലെങ്കിൽ, നിങ്ങളുടെ ഉപകരണം ഇനി Chrome-ന്റെ പുതിയ പതിപ്പുകളെ പിന്തുണയ്ക്കാൻ സാധ്യതയില്ല.</translation>
+<translation id="5172049865623113551">നിങ്ങൾ iPhone ഉപയോഗിക്കുമ്പോൾ Chrome തൽക്ഷണം തുറക്കുക</translation>
+<translation id="5179095426828744632">നിങ്ങളുടെ ഡോക്കിൽ നിന്ന് അതിവേഗം Chrome ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="5184329579814168207">Chrome-ൽ തുറക്കുക</translation>
 <translation id="5190139289262548459">നിങ്ങൾ സൈൻ ചെയ്തിരിക്കുന്ന അക്കൗണ്ടും Chrome ഉപയോഗിക്കുന്ന രീതിയും മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ ഓർഗനൈസേഷനായ <ph name="DOMAIN" /> ആണ്.</translation>
 <translation id="5209238444239954363">Chrome-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>

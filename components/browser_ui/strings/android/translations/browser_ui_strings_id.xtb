@@ -292,6 +292,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3903738175795615004">Tarik dari atas atau tekan tombol Esc untuk keluar dari layar penuh.</translation>
 <translation id="3905475044299942653">Menghentikan banyak notifikasi</translation>
 <translation id="3922092564198021702">Di ponsel Anda, buka Setelan</translation>
+<translation id="3924858949939391676">Tampilkan link setelah Mode Baca aktif</translation>
 <translation id="3933121352599513978">Ciutkan permintaan yang tidak diinginkan (direkomendasikan)</translation>
 <translation id="3934905113567851655">Cubit untuk mengubah ukuran</translation>
 <translation id="3955193568934677022">Izinkan situs memutar konten yang dilindungi (direkomendasikan)</translation>
@@ -355,6 +356,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4644713492825682049">Hapus &amp; reset</translation>
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4652266463001779298">Tidak diizinkan</translation>
+<translation id="4655846733459137112">Ketuk Ya untuk menggunakan sandi ini dengan mudah saat Anda login lagi</translation>
 <translation id="4663373278480897665">Kamera diizinkan</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Ketuk Aplikasi browser, lalu ketuk Chrome</translation>
@@ -461,6 +463,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5804241973901381774">Izin</translation>
 <translation id="5817042798620209981">Informasi situs, dialog</translation>
 <translation id="5822675474983796325">Sheet bawah sesuaikan halaman tab baru terbuka sepenuhnya</translation>
+<translation id="5826403277762134844">Panel bawah petunjuk penyimpanan sandi di Chrome</translation>
 <translation id="5833899990800318936">Jangan izinkan situs menggunakan JavaScript</translation>
 <translation id="583673505367439042">Situs dapat meminta untuk mengedit file dan folder di perangkat Anda</translation>
 <translation id="5844448279347999754">Jika diaktifkan, situs dapat meminta untuk melihat teks dan gambar yang disimpan ke papan klip Anda. Jika dinonaktifkan, situs tidak dapat melihat teks atau gambar yang disimpan ke papan klip Anda.</translation>
@@ -640,6 +643,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="775043444390799886">Cabut izin</translation>
 <translation id="7758789811447313947">Tema violet</translation>
 <translation id="7759147511335618829">Program ulang &amp; kontrol perangkat MIDI</translation>
+<translation id="7771089277295008211">Panel bawah petunjuk penyimpanan sandi telah ditutup</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="780301667611848630">Lain kali</translation>
@@ -657,6 +661,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7948081750384205628">Pelajari lebih lanjut <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Situs dapat meminta untuk melihat teks dan gambar di papan klip Anda</translation>
+<translation id="7958779728312669715">Panel bawah petunjuk penyimpanan sandi telah dibuka sepenuhnya</translation>
 <translation id="798299424881500862">Tema oranye</translation>
 <translation id="7986741934819883144">Pilih kontak</translation>
 <translation id="7990211076305263060">Jika diaktifkan, situs dapat meminta untuk menggunakan mikrofon Anda. Jika dinonaktifkan, situs tidak dapat menggunakan mikrofon Anda.</translation>
@@ -753,6 +758,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8889294078294184559">Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Perbesar</translation>
+<translation id="8919911527569629802">Login ke situs mana pun</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8926666909099850184">NFC dinonaktifkan di perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
@@ -780,6 +786,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="9182556968660520230">Jangan izinkan situs memutar konten yang dilindungi</translation>
 <translation id="947156494302904893">Situs yang Anda buka dapat memverifikasi bahwa Anda adalah orang sungguhan dan bukan bot</translation>
 <translation id="959682366969460160">Atur dengan mudah</translation>
+<translation id="960590623979248167">Tampilkan hyperlink</translation>
 <translation id="961930410699694996">Lokasi diizinkan kali ini</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="969975166333045662">Blokir situs agar tidak menggunakan pengoptimal V8.</translation>

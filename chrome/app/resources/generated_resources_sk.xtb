@@ -516,6 +516,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1333965224356556482">Nepovoliť webom zobrazovať polohu</translation>
 <translation id="1335282218035876586">Váš Chromebook už nedostáva bezpečnostné aktualizácie ani aktualizácie softvéru. Ak chcete mať k dispozícii to najlepšie prostredie, inovujte Chromebook.</translation>
 <translation id="133535873114485416">Preferovaný vstup</translation>
+<translation id="13356285923490863">Názov pravidla</translation>
 <translation id="1335929031622236846">Registrácia vášho zariadenia</translation>
 <translation id="133660899895084533">Čítať informácie a údaje periférií s rozhraním Bluetooth</translation>
 <translation id="1336902454946927954">Bezpečnostný kľúč je uzamknutý, pretože sa nepodarilo rozpoznať odtlačok prsta. Ak ho chcete odomknúť, zadajte PIN.</translation>
@@ -2630,6 +2631,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Skontrolovať gramatiku s pravopisom</translation>
 <translation id="2750020734439919571">Ďalšie nastavenia a povolenia aplikácie Chrome</translation>
+<translation id="275010360476017464">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do aktivity v aplikáciách Gemini (ak je zapnutá).</translation>
 <translation id="2750602041558385535">Neoverené sťahovanie bolo zablokované</translation>
 <translation id="2751454300227269244">Pohnite ústami doprava</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> chce zistiť identifikačné číslo vášho bezpečnostného kľúča. Tento web bude vedieť, ktorý bezpečnostný kľúč používate.</translation>
@@ -5763,6 +5765,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4881685975363383806">Nabudúce nepripomínať</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
 <translation id="4882312758060467256">Má prístup k tomuto webu</translation>
+<translation id="4882848900607400156">Keď budete zdieľať svoju presnú polohu, Gemini bude môcť na vaše otázky odpovedať presnejšie. Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="4882919381756638075">Weby zvyčajne používajú váš mikrofón, aby mohli poskytovať komunikačné funkcie, ako sú videohovory</translation>
 <translation id="4883436287898674711">Všetky weby <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Správca úloh</translation>
@@ -5853,6 +5856,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4945439665401275950">Ak chcete nastaviť odtlačok prsta, vaše dieťa sa musí dotknúť vypínača. Údaje odtlačku prsta vášho dieťaťa sa bezpečne uložia a nikdy neopustia zariadenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">kláves spúšťača + šípka nahor</translation>
 <translation id="4947376546135294974">Dáta z webu, ktorý navštevujete</translation>
+<translation id="4948370357877377178">Pokračujte v úlohách</translation>
 <translation id="4950100687509657457">Vytvoriť profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{súbor}few{# súbory}many{# files}other{# súborov}}</translation>
 <translation id="495170559598752135">Akcie</translation>
@@ -8255,6 +8259,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6636623428211296678">Preskúmajte ďalšie nastavenia nižšie alebo dokončite kontrolu</translation>
 <translation id="6639554308659482635">Pamäť nástroja SQLite</translation>
 <translation id="6640268266988685324">Otvoriť kartu</translation>
+<translation id="664271268954513498">Hodnota pravidiel</translation>
 <translation id="6642720633335369752">Všetky otvorené okná aplikácie zobrazíte potiahnutím zdola nahor a pridržaním.</translation>
 <translation id="664290675870910564">Výber siete</translation>
 <translation id="6643016212128521049">Vymazať</translation>
@@ -9081,6 +9086,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Opustiť stránku}few{Opustiť stránky}many{Opustiť stránky}other{Opustiť stránky}}</translation>
 <translation id="7207457272187520234">Odosielanie údajov o využití a diagnostiky. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o používaní zariadenia a aplikácií. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom pre Android. Používanie tohto nastavenia je presadzované vlastníkom. Ak aktivujete ďalšiu aktivitu na internete a v aplikáciách, tieto údaje sa uložia vo vašom účte Google.</translation>
 <translation id="7207631048330366454">Vyhľadajte aplikácie</translation>
+<translation id="7209958456051239069">Keď budete zdieľať svoju presnú polohu, Gemini bude môcť na vaše otázky odpovedať presnejšie</translation>
 <translation id="7210257969463271891">Tu sa zobrazujú nainštalované webové aplikácie</translation>
 <translation id="7210432570808024354">Posúvať položky klepnutím a presunutím</translation>
 <translation id="7210499381659830293">Tlačiarne s rozšíreniami</translation>
@@ -10699,6 +10705,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8288032458496410887">Odinštalovať aplikáciu <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Extrahovať text zo súboru PDF</translation>
 <translation id="8289128870594824098">Veľkosť na disku</translation>
+<translation id="8289200713453671499">Rýchlo prepínajte medzi skupinami kariet a nedávnymi konverzáciami s umelou inteligenciou bez toho, aby ste stratili prehľad.</translation>
 <translation id="8289509909262565712">Víta vás <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Stiahnuť Chrome</translation>
 <translation id="8291942417224950075">Na osobné použitie</translation>
@@ -11681,6 +11688,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8945508919180478719">Štúdiový mikrofón</translation>
 <translation id="8946359700442089734">Na tomto zariadení <ph name="IDS_SHORT_PRODUCT_NAME" /> neboli úplne povolené funkcie ladenia</translation>
 <translation id="8946954897220903437">Zbaliť všetky požiadavky v paneli s adresou</translation>
+<translation id="8946996840522387154">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do aktivity v aplikáciách Gemini (ak je zapnutá). Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="894763922177556086">Dobré</translation>
 <translation id="895054485242522631">Weby môžu používať senzory pohybu</translation>
 <translation id="8951256747718668828">Obnovovanie sa nepodarilo dokončiť pre chybu</translation>

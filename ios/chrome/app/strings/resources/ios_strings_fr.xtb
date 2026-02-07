@@ -1329,7 +1329,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5868644772996939262">Saisir automatiquement les mots de passe et les clés d'accès</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5873179562631407582">Appuyez de manière prolongée sur un onglet ouvert</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Géré par votre organisation.</translation>
 <translation id="5887400589839399685">Carte enregistrée</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5889333064153755823">Supprimer les données de navigation</translation>
@@ -1666,6 +1665,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Configurer par défaut dans les réglages…</translation>
 <translation id="7007970306646738803">Choisissez comment gérer les données de navigation existantes sur cet appareil (onglets, historique ou mots de passe, par exemple).</translation>
+<translation id="7012978439516925343">Confirmez votre identité pour créer une clé d'accès</translation>
 <translation id="7015418667643980944">Vue fractionnée</translation>
 <translation id="7016070607649558507">Vous avez 1 mot de passe peu sécurisé. Modifiez-le pour vous protéger.</translation>
 <translation id="7016958933495968912">Options pour Discover</translation>

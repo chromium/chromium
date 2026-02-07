@@ -514,6 +514,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1333965224356556482">No permetis que els llocs web vegin la teva ubicació</translation>
 <translation id="1335282218035876586">El teu Chromebook ja no rep actualitzacions de seguretat ni de programari. Compra't un Chromebook nou per gaudir de la millor experiència.</translation>
 <translation id="133535873114485416">Mètode d'introducció preferit</translation>
+<translation id="13356285923490863">Nom de la política</translation>
 <translation id="1335929031622236846">Inscriu el dispositiu</translation>
 <translation id="133660899895084533">Llegir informació i dades de perifèrics Bluetooth</translation>
 <translation id="1336902454946927954">La clau de seguretat està bloquejada perquè la teva empremta digital no s'ha pogut reconèixer. Per desbloquejar-la, introdueix el PIN.</translation>
@@ -2628,6 +2629,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Comprova la gramàtica amb l'ortografia</translation>
 <translation id="2750020734439919571">Més opcions de configuració i permisos de l'aplicació Chrome</translation>
+<translation id="275010360476017464">Utilitza el micròfon per xatejar amb Gemini. Quan parles amb Gemini, l'àudio s'emmagatzema a l'activitat en aplicacions de Gemini (si està activada).</translation>
 <translation id="2750602041558385535">S'ha bloquejat una baixada sense verificar</translation>
 <translation id="2751454300227269244">Mou la boca cap a la dreta</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> vol saber el número d'identificador de la teva clau de seguretat. El lloc web sabrà quina clau de seguretat estàs fent servir exactament.</translation>
@@ -5758,6 +5760,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4881685975363383806">No m'ho recordis la pròxima vegada</translation>
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4882312758060467256">Té accés a aquest lloc web</translation>
+<translation id="4882848900607400156">Quan comparteixes la teva ubicació precisa, Gemini et pot respondre a les preguntes d'una manera més exacta. Les teves dades no s'utilitzen per millorar els models d'IA generativa.</translation>
 <translation id="4882919381756638075">Els llocs web solen utilitzar el micròfon per a funcions de comunicació com ara el xat de vídeo</translation>
 <translation id="4883436287898674711">Tots els llocs web de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Gestor de tasques</translation>
@@ -5848,6 +5851,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4945439665401275950">Per configurar una impremta digital, fes que el teu fill toqui el botó d'engegada. Les dades de l'empremta digital del teu fill s'emmagatzemen de manera segura i no surten mai del dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">menú d'aplicacions+fletxa amunt</translation>
 <translation id="4947376546135294974">Dades del lloc web que estàs visitant</translation>
+<translation id="4948370357877377178">Continua les teves tasques</translation>
 <translation id="4950100687509657457">Creació d'un perfil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="495170559598752135">Accions</translation>
@@ -8245,6 +8249,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6636623428211296678">Explora més opcions de configuració a continuació o acaba ara</translation>
 <translation id="6639554308659482635">Memòria SQLite</translation>
 <translation id="6640268266988685324">Obre la pestanya</translation>
+<translation id="664271268954513498">Valor de la política</translation>
 <translation id="6642720633335369752">Per veure totes les finestres d'aplicacions obertes, llisca cap amunt des de la part inferior i mantén premut.</translation>
 <translation id="664290675870910564">Selecció de xarxa</translation>
 <translation id="6643016212128521049">Esborra</translation>
@@ -9071,6 +9076,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Surt de la pàgina}other{Surt de les pàgines}}</translation>
 <translation id="7207457272187520234">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta opció de configuració. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google.</translation>
 <translation id="7207631048330366454">Cerca aplicacions</translation>
+<translation id="7209958456051239069">Quan comparteixes la teva ubicació precisa, Gemini et pot respondre a les preguntes d'una manera més exacta</translation>
 <translation id="7210257969463271891">Les aplicacions web que instal·lis es mostraran aquí</translation>
 <translation id="7210432570808024354">Toca i arrossega per moure elements</translation>
 <translation id="7210499381659830293">Impressores d'extensions</translation>
@@ -10690,6 +10696,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8288032458496410887">Desinstal·la <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Extreu el text del PDF</translation>
 <translation id="8289128870594824098">Mida del disc</translation>
+<translation id="8289200713453671499">Canvia ràpidament entre els grups de pestanyes i les converses recents amb la IA sense perdre el fil.</translation>
 <translation id="8289509909262565712">Et donem la benvinguda a <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Baixa Chrome</translation>
 <translation id="8291942417224950075">Per a ús personal</translation>
@@ -11670,6 +11677,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8945508919180478719">Micròfon d'estudi</translation>
 <translation id="8946359700442089734">Les funcions de depuració no s'han activat del tot en aquest dispositiu <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Replega totes les sol·licituds a la barra d'adreces</translation>
+<translation id="8946996840522387154">Utilitza el micròfon per xatejar amb Gemini. Quan parles amb Gemini, l'àudio s'emmagatzema a l'activitat en aplicacions de Gemini (si està activada). Les teves dades no s'utilitzen per millorar els models d'IA generativa.</translation>
 <translation id="894763922177556086">Bona</translation>
 <translation id="895054485242522631">Els llocs web poden utilitzar sensors de moviment</translation>
 <translation id="8951256747718668828">La restauració no s'ha pogut completar a causa d'un error</translation>

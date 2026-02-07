@@ -581,6 +581,17 @@ atualizações estendidas automaticamente.
 
 Para mais detalhes, acesse
 https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
+<translation id="1432008122934973720">Por padrão, as permissões de acesso à rede local (LNA) só podem ser solicitadas em subframes de origem cruzada quando há delegação explícita. Esta política pode ser usada para substituir o comportamento padrão, porque ela transmite automaticamente para os subframes as permissões de LNA, a menos que sejam explicitamente negadas na política de permissões.
+
+Se a política estiver ativada, os subframes recebem por padrão todas as permissões de LNA e podem fazer solicitações à rede local, o que aciona o aviso de permissão.
+
+Se a política estiver desativada ou sem uma configuração definida, os subframes precisarão receber a delegação explícita da permissão para fazer solicitações à rede local e acionar o comando de permissão.
+
+Esta política se aplica aos recursos da política de permissões <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME" />, <ph name="LOOPBACK_NETWORK_FEATURE_NAME" /> e <ph name="LOCAL_NETWORK_FEATURE_NAME" />.
+
+Para mais informações sobre o acesso à rede local, consulte https://wicg.github.io/local-network-access/ (em inglês) e https://developer.chrome.com/blog/local-network-access?hl=pt-br.
+
+Para mais informações sobre a política de permissões, consulte https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy (em inglês).</translation>
 <translation id="1432834104376790711">Esta política ativa ou desativa a configuração do modo de economia de bateria.
       No Chrome, essa configuração limita o frame rate para reduzir o consumo de energia. Se a política for deixada sem definição, o usuário final poderá controlar essa configuração em chrome://settings/performance.
       No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
@@ -1615,6 +1626,7 @@ A política do dispositivo é equivalente à política do usuário <ph name="SEC
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão escolher como usar o recurso.</translation>
+<translation id="2091689441590064807">Não permitir solicitações de LNA em subframes sem delegação explícita</translation>
 <translation id="2093552723795057221">Não informar o status do áudio</translation>
 <translation id="209388704279338003">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="2093951844062548778">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor para receber resultados de definição.
@@ -7854,6 +7866,7 @@ OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir a
 política enquanto o navegador estiver em execução.</translation>
 <translation id="6083281887050888160">Ativar o pareamento Bluetooth "Just Works"</translation>
 <translation id="6083631234867522991">Windows (clientes do Windows):</translation>
+<translation id="6085580138417523410">Permitir que subframes sem delegação explícita solicitem acesso à rede local (LNA)</translation>
 <translation id="6087413944876892918">Usar o algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Definir o limite de bateria (em porcentagem) para a economia de energia no período de pico</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
@@ -10537,6 +10550,7 @@ Observação: esta política só se aplica a plataformas que são compatíveis c
 <translation id="7669630878711068277">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir com o <ph name="PRODUCT_NAME" /> e não poderão mudar esta configuração.
 
       Se a política for definida como "Desativada", os usuários não poderão imprimir usando o <ph name="PRODUCT_NAME" />. A impressão ficará desativada no menu de três pontos, nas extensões e nos aplicativos JavaScript.</translation>
+<translation id="7672510074688643558">Permitir solicitações de LNA em subframes sem delegação explícita</translation>
 <translation id="7673194325208122247">Período (milissegundos)</translation>
 <translation id="7677220829878081413">
       Esta política, quando definida como ArcSession, força o dispositivo a reinicializar depois que o usuário sai, se o Android tiver sido iniciado.

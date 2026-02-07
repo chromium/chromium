@@ -1329,7 +1329,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5868644772996939262">Remplissage automatique des mots de passe et des clés d'accès</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5873179562631407582">Maintenez le doigt sur n'importe quel onglet ouvert</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Géré par votre organisation.</translation>
 <translation id="5887400589839399685">Carte enregistrée</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5889333064153755823">Supprimer les données de navigation</translation>
@@ -1666,6 +1665,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Définir par défaut dans les réglages…</translation>
 <translation id="7007970306646738803">Choisissez ce que vous voulez faire avec les données de navigation existantes sur cet appareil, comme les onglets, l'historique et les mots de passe.</translation>
+<translation id="7012978439516925343">Confirmez votre identité pour créer une clé d'accès</translation>
 <translation id="7015418667643980944">Affichage partagé</translation>
 <translation id="7016070607649558507">Vous avez 1 mot de passe faible. Réglez ce problème maintenant pour rester en sécurité.</translation>
 <translation id="7016958933495968912">Options pour Découvertes</translation>

@@ -1329,7 +1329,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5868644772996939262">Automatické dopĺňanie hesiel a prístupových kľúčov</translation>
 <translation id="5869522115854928033">Uložené heslá</translation>
 <translation id="5873179562631407582">Pridržte ľubovoľné otvorené karty</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Spravuje vaša organizácia.</translation>
 <translation id="5887400589839399685">Karta bola uložená</translation>
 <translation id="5888889603768021126">Prihlásenie cez poskytovateľa</translation>
 <translation id="5889333064153755823">Odstrániť dáta prehliadania</translation>
@@ -1666,6 +1665,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Nastaviť ako predvolený v Nastaveniach…</translation>
 <translation id="7007970306646738803">Vyberte, čo chcete urobiť s existujúcimi dátami prehliadania v tomto zariadení, napríklad s kartami, históriou a heslami.</translation>
+<translation id="7012978439516925343">Ak chcete vytvoriť prístupový kľúč, overte svoju totožnosť</translation>
 <translation id="7015418667643980944">Rozdelené zobrazenie</translation>
 <translation id="7016070607649558507">Máte jedno slabé heslo. Tento problém odstráňte, aby ste boli v bezpečí.</translation>
 <translation id="7016958933495968912">Možnosti kanála Objaviť</translation>

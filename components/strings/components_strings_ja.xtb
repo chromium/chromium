@@ -2962,7 +2962,6 @@
 <translation id="5730040223043577876">パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="5732392974455271431">ブロックの解除は保護者が行うことができます</translation>
 <translation id="573555826359077410">[フォームを作成] ボタンです。実行すると、Google フォームで新しいフォームをすばやく作成できます</translation>
-<translation id="5737022235680044108">シークレット モードでは、<ph name="HOST_NAME" /> は組織によってブロックされています。</translation>
 <translation id="5738385766833540397">トラッキングしている商品の値下げアラートを受け取る方法を管理します</translation>
 <translation id="5739619009927381786">次のステップで画面のロックを解除します（通常は指紋認証を使用します）。<ph name="BEGIN_LINK" />別の方法で確認<ph name="END_LINK" />することもできます。</translation>
 <translation id="573974402615125334">タブグループの共有、参加、共同作業を行うには、履歴とタブを同期してください</translation>
@@ -3645,7 +3644,6 @@
 <translation id="6844998850832008753">今回のみハンド トラッキングを許可しました</translation>
 <translation id="6849023911358004088">[セキュリティ設定を管理] ボタンです。実行すると、Chrome の設定でセーフ ブラウジングなどを管理できます</translation>
 <translation id="6850286078059909152">テキストの色</translation>
-<translation id="685163597635765693">シークレット モードでは、「<ph name="HOST_NAME" />」のリンクは組織によってブロックされています。</translation>
 <translation id="6852204201400771460">アプリを再読み込みしますか？</translation>
 <translation id="6854691830678097752">購入手続きをすばやく行うには、この CVC をアカウント（<ph name="ACCOUNT_EMAIL" />）に保存してください</translation>
 <translation id="6857776781123259569">パスワードを管理...</translation>

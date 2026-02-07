@@ -2140,6 +2140,17 @@ Als je dit beleid niet instelt of instelt op Onwaar, wordt stil afdrukken uitgez
 <translation id="2466131534462628618">Captive portal-verificatie negeert proxyserver</translation>
 <translation id="2467181864598429837">Standaard browsergedrag</translation>
 <translation id="2467896267442150508">Tijdsinterval van maximaal één week. Is de begintijd later dan de eindtijd, dan eindigt het interval op de aangegeven eindtijd op de volgende dag.</translation>
+<translation id="2475594733565572760">Dit beleid definieert de standaardinstelling voor alle gedekte generatieve AI-functies. Als je dit beleid bijvoorbeeld instelt op de waarde 1, is 1 de standaardinstelling voor alle gedekte generatieve AI-functies. Dit heeft geen invloed op handmatig ingestelde beleidswaarden. Met deze instelling definieer je de standaardwaarden voor gedekte generatieve AI-functies in Chrome. Raadpleeg de lijst met gedekte functies op https://support.google.com/chrome/a?p=generative_ai_settings.
+
+Sommige beleidsregels, zoals <ph name="GEMINI_SETTINGS_POLICY_NAME" />, ondersteunen alleen de status Toegestaan en Niet toegestaan. In dit geval wordt deze functie aangezet als je <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> instelt op 0 of 1. Als je <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> instelt op 2, wordt deze functie uitgezet. De documentatie voor elke functie bevat meer informatie over hoe deze omgaat met waarden in dit beleid (bijv. Gemini in Chrome: https://support.google.com/chrome/a/?p=gemini_in_chrome). Dit geldt voor de volgende functies: Gemini in Chrome, Google Lens en de AI-modus, omdat ze onder hun eigen garanties en/of Servicevoorwaarden vallen (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="2476249479201711962">Toegang tot het contextmenu van de standaard zoekprovider aanzetten</translation>
 <translation id="2478756867046106663">Toestaan dat sites met misleidende functionaliteit nieuwe vensters of tabbladen openen</translation>
 <translation id="2479760962196319822">Met dit beleid wordt bepaald of <ph name="PRODUCT_OS_NAME" />-gebruikers gegevens wel of niet lokaal kunnen opslaan.
@@ -4270,6 +4281,7 @@ Het beleid kan worden gecombineerd met <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="3927291637826333102">Bureaublad-, venster- en tabbladopname door deze oorsprongen toestaan</translation>
 <translation id="3928726028264020458">Rapportage van VPD-informatie van apparaat aanzetten</translation>
 <translation id="3935592079035695061">Milliseconden sinds middernacht.</translation>
+<translation id="3937800910397007337">Voorgrondprioriteit afdwingen voor alle tabbladen</translation>
 <translation id="3941289958028934630">Gesproken feedback op het inlogscherm uitzetten</translation>
 <translation id="3943930334592166130">Met dit beleid bepaal je of de gebruiker wordt gevraagd een clientcertificaat te selecteren als meerdere certificaten overeenkomen met <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Als je dit beleid toepast, wordt de gebruiker gevraagd een clientcertificaat te selecteren als het beleid voor automatisch selecteren overeenkomt met meerdere certificaten.
@@ -6185,6 +6197,7 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
       * Gemiddeld, kan de gebruiker alleen de gemiddelde beperkte modus en de strenge beperkte modus selecteren op YouTube, maar kan de gebruiker de beperkte modus niet uitzetten.
 
       * Uit of als je geen waarde instelt, werkt YouTube niet in de beperkte modus in Chrome. De beperkte modus kan echter nog steeds worden afgedwongen door externe beleidsregels zoals het YouTube-beleid.</translation>
+<translation id="5191007233343702012">Standaard prioriteit geven aan tabbladen gebruiken</translation>
 <translation id="5191476996923842491">Standaardgedrag voor vastzetten van de functie setTimeout().</translation>
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
 <translation id="5192555640439947289">Als je het beleid toepast, vraagt <ph name="PRODUCT_OS_NAME" /> gebruikers om een wachtwoord om het apparaat te ontgrendelen als het in de slaapstand staat of als de klep is gesloten.
@@ -6404,6 +6417,7 @@ Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 <translation id="530949964068726932">Toegankelijkheidsopties verbergen in het systeemvakmenu</translation>
 <translation id="5309944663104291505">Niet toestaan dat afgedwongen geïnstalleerde geïsoleerde web-apps en kiosk-apps de Device Attributes API gebruiken</translation>
 <translation id="5311275381462687162">Instelling voor standaardgedrag voor verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
+<translation id="5311430612584074035">Voorgrondprioriteit afdwingen voor alle tabbladen in het profiel</translation>
 <translation id="5312253627576569499">Het percentage waarmee de dimvertraging van het scherm wordt geschaald wanneer er gebruikersactiviteit wordt waargenomen terwijl het scherm is gedimd of kort nadat het scherm is uitgegaan</translation>
 <translation id="5316856058059940708">Grote cursor uitzetten</translation>
 <translation id="5318185076587284965">Relayservers laten gebruiken door de host voor externe toegang</translation>
@@ -6441,6 +6455,15 @@ Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een m
 <translation id="5345892164332459671">Zwevende SSO uitzetten en de webserviceverificaties van de gebruiker niet naar een nieuw apparaat verplaatsen</translation>
 <translation id="5345910753471481870">De Google Lens-knop niet tonen in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="5346587320074666194">Toegang tot sensoren op deze sites blokkeren</translation>
+<translation id="5347735051291224683">Met dit beleid bepaal je of webcontent op de achtergrond moet worden uitgevoerd met prioriteit op de voorgrond.
+
+De browser optimaliseert standaard resources door content op tabbladen op de achtergrond minder prioriteit te geven. Als je dit beleid aanzet, wordt dat gedrag overschreven en worden achtergrondtabbladen op dezelfde manier gepland als het actieve tabblad.
+
+Als je achtergrondcontent dwingt om te worden uitgevoerd met voorgrondprioriteit, kan dit de reactiesnelheid van het actieve tabblad enigszins beïnvloeden.
+
+Als je dit beleid toepast, wordt alle webcontent uitgevoerd met prioriteit op de voorgrond, ongeacht de zichtbaarheidsstatus.
+
+Als je dit beleid niet toepast of niet instelt, bepaalt de browser de prioriteit op basis van standaardheuristiek (bijvoorbeeld door content met een lagere prioriteit te geven die niet zichtbaar is, geen audio afspeelt of niet deelneemt aan videogesprekken).</translation>
 <translation id="534836255587440809">Automatisch klikken op het inlogscherm uitzetten</translation>
 <translation id="5348658899015174540">Met de <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API kunnen web-apps meerdere schermen tegelijk vastleggen.
       Dit beleid ontgrendelt de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> voor web-apps op gedefinieerde oorsprongen.

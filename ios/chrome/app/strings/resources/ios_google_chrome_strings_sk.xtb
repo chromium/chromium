@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1035560095760914532">Umiestnite Chrome do spodnej časti, aby ste k nemu mali kedykoľvek prístup</translation>
 <translation id="1076643793026027628">Chrome automaticky otvára odkazy na YouTube v režime inkognito.</translation>
 <translation id="1081114897601629648">Nasledujúce heslá neboli importované do Správcu hesiel Google, pretože nespĺňajú požiadavky.</translation>
 <translation id="1086486568852410168">Vyhľadávať pomocou funkcie Google Lens</translation>
@@ -89,6 +90,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="288992067439702510">Dosiahli ste limit záložiek (<ph name="LIMIT" />) v Google Chrome, takže niektoré vaše záložky ešte neboli uložené vo vašom účte Google.
 
 Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neodstránite. Ak sa teraz odhlásite, neuložené záložky budú odstránené.</translation>
+<translation id="2901621928549457170">Otvárajte Chrome v iPade okamžite</translation>
 <translation id="2922914028977213693">Klepnite tu a začnite využívať Chrome v iPade naplno.</translation>
 <translation id="292371311537977079">Nastavenia Chromu</translation>
 <translation id="2923827943290349720">Uzamknúť karty inkognito pri zavretí Chromu</translation>
@@ -173,6 +175,8 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="5119391094379141756">Vyberte Chrome</translation>
 <translation id="5123188916260706415">Vyhľadávajte hlasom v Chrome</translation>
 <translation id="5162467219239570114">Chrome je zastaraný. Ak v <ph name="BEGIN_LINK" />obchode s aplikáciami<ph name="END_LINK" /> nie je dostupná aktualizácia, vaše zariadenie možno už nepodporuje nové verzie Chromu.</translation>
+<translation id="5172049865623113551">Otvárajte Chrome v iPhone okamžite</translation>
+<translation id="5179095426828744632">Získavajte prístup k Chromu rýchlejšie z Docku</translation>
 <translation id="5184329579814168207">Otvoriť v prehliadači Chrome</translation>
 <translation id="5190139289262548459">Vaša organizácia <ph name="DOMAIN" /> spravuje účet, v ktorom máte aktívne prihlásenie, a spôsob používania Chromu.</translation>
 <translation id="5209238444239954363">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>

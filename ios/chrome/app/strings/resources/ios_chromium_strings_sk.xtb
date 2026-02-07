@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Znamená to, že Chromium bude zakaždým žiadať o mobilný web.</translation>
 <translation id="1115463765356382667">Vykonajte tieto navrhované akcie nižšie, ktoré vám umožnia využívať Chromium naplno.</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
+<translation id="119044033865561140">Otvárajte Chromium v iPade okamžite</translation>
 <translation id="1211450393895337634">Keď budete chcieť prehliadať v iPade, otvárajte Chromium rýchlejšie.</translation>
 <translation id="1229234641991056119">Používajte heslá, históriu, záložky a kreditné karty z prehliadača Safari v prehliadači Chromium</translation>
 <translation id="1257458525759135959">Ak chcete ukladať obrázky, klepnutím na Nastavenia povoľte prehliadaču Chromium pridávať do vašich fotiek</translation>
 <translation id="1260702988262336471">Otvorte Ponuku prehliadača Chromium</translation>
 <translation id="12739128458173458">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v oboch zariadeniach do prehliadača Chromium.</translation>
+<translation id="1279797561821266129">Získavajte prístup k prehliadaču Chromium rýchlejšie z Docku</translation>
 <translation id="1361748954329991663">Prehliadač Chromium je zastaraný. Ak v <ph name="BEGIN_LINK" />obchode s aplikáciami<ph name="END_LINK" /> nie je dostupná aktualizácia, je možné, že vaše zariadenie už nepodporuje nové verzie prehliadača Chromium.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1423007117030725713">Začnite vyhľadávanie na novej karte prehliadača Chromium.</translation>
@@ -176,6 +178,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="4790638144988730920">Naďalej používajte údaje prehliadača Chromium vo svojom účte Google.</translation>
 <translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
 <translation id="4856138222358683580">Akcie v prehliadači Chromium</translation>
+<translation id="4869706986935301458">Otvárajte Chromium v iPhone okamžite</translation>
 <translation id="4904452304169763785">Upozornenia na všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás Chromium zistí.</translation>
 <translation id="4908570938463711775">Najprv sa oboznámte s užitočnými základmi prehliadača Chromium</translation>
 <translation id="4962295957157529683">V ďalšom otvorenom okne prehliadača Chromium dokončite, čo ste robili.</translation>
@@ -295,6 +298,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="7395825497086981028">Heslo bude uložené do správcu hesiel v účte <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Tento prístupový kľúč bude uložený do Správcu hesiel pre <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Otvorte Chromium</translation>
+<translation id="7507535968973352823">Umiestnite Chromium do spodnej časti, aby ste k nemu mali kedykoľvek prístup</translation>
 <translation id="7531461704633548377">Z prehliadača Chromium</translation>
 <translation id="7554983317097061001">Tip pre Chromium: presuňte Chromium do Docku</translation>
 <translation id="7576863740961052505">Správa nastavení prehliadača Chromium</translation>

@@ -1329,7 +1329,6 @@
 <translation id="5868644772996939262">Bete pasahitzak eta sarbide-gakoak automatikoki</translation>
 <translation id="5869522115854928033">Gordetako pasahitzak</translation>
 <translation id="5873179562631407582">Eduki sakatuta irekita dauden fitxak.</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Erakundeak kudeatzen du.</translation>
 <translation id="5887400589839399685">Gorde da txartela</translation>
 <translation id="5888889603768021126">Honekin hasi da saioa:</translation>
 <translation id="5889333064153755823">Ezabatu arakatze-datuak</translation>
@@ -1666,6 +1665,7 @@
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Ezarri balio lehenetsia ezarpenetan…</translation>
 <translation id="7007970306646738803">Aukeratu zer egin nahi duzun gailu honetan lehendik dauden arakatze-datuekin (adibidez, fitxak, historia eta pasahitzak).</translation>
+<translation id="7012978439516925343">Egiaztatu zeu zarela sarbide-gako bat sortzeko</translation>
 <translation id="7015418667643980944">Ikuspegi zatitua</translation>
 <translation id="7016070607649558507">Segurua ez den pasahitz bat daukazu. Segurtasuna bermatzeko, alda ezazu.</translation>
 <translation id="7016958933495968912">Discover-en aukerak</translation>

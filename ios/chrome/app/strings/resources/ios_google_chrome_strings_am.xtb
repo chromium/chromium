@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1035560095760914532">Chromeን በማንኛውም ጊዜ ለመድረስ ከታች ባለው ቦታ ላይ ያስቀምጡት</translation>
 <translation id="1076643793026027628">Chrome የYouTube ማንነት የማያሳውቁ አገናኞችን በራስ-ሰር በማንነት የማያሳውቅ ይከፍታል።</translation>
 <translation id="1081114897601629648">የሚከተሉት የይለፍ ቃላት ወደ Google የይለፍ ቃል አስተዳዳሪ አልመጡም፣ ምክንያቱም ከመስፈርቶቹ ጋር አይዛመዱም።</translation>
 <translation id="1086486568852410168">በGoogle ሌንስ ይፈልጉ</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">የGoogle Chrome <ph name="LIMIT" /> የእልባቶች ገደብ ላይ ደርሰዋል፣ ስለዚህ የተወሰኑ እልባቶችዎ እስካሁን በGoogle መለያዎ ውስጥ አልተቀመጡም።
 
 የተወሰነ እስኪሰርዙ ድረስ አዲስ እልባቶች በመለያዎ ውስጥ መቀመጥ አይችሉም። አሁን ዘግተው ከወጡ፣ ያልተቀመጡ እልባቶች ይሰረዛሉ።</translation>
+<translation id="2901621928549457170">በእርስዎ iPad ላይ ሲሆኑ Chromeን በቅጽበት ይክፈቱ</translation>
 <translation id="2922914028977213693">በእርስዎ iPad ላይ ከChrome ምርጡን ለማግኘት እዚህ መታ ያድርጉ።</translation>
 <translation id="292371311537977079">የChrome ቅንብሮች</translation>
 <translation id="2923827943290349720">Chromeን ሲዘጉ ማንነት የማያሳውቁ ትሮችን ይቆልፉ</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chromeን ይምረጡ</translation>
 <translation id="5123188916260706415">Chrome ውስጥ በድምፅ ይፈልጉ</translation>
 <translation id="5162467219239570114">Chrome ጊዜው አልፎበታል። በ<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ውስጥ ምንም ዝማኔ ከሌለ የእርስዎ መሣሪያ አዲስ የChrome ስሪቶችን ከእንግዲህ ላይደግፍ ይችላል።</translation>
+<translation id="5172049865623113551">በእርስዎ iPhone ላይ ሲሆኑ Chromeን በቅጽበት ይክፈቱ</translation>
+<translation id="5179095426828744632">Chromeን ከመትከያዎ በፍጥነት ይድረሱ</translation>
 <translation id="5184329579814168207">በChrome ውስጥ ክፈት</translation>
 <translation id="5190139289262548459">ድርጅትዎ፣ <ph name="DOMAIN" />፣ የገቡበትን መለያ እና Chrome እንዴት ጥቅም ላይ እንደሚውል ያስተዳድራል።</translation>
 <translation id="5209238444239954363">Chrome ዝማኔዎች መኖራቸውን መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>

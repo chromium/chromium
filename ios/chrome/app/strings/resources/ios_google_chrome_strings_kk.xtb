@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1035560095760914532">Chrome-ды кез келген уақытта ашу үшін төменгі жағына қойыңыз</translation>
 <translation id="1076643793026027628">Chrome браузері YouTube-тің инкогнито сілтемелерін автоматты түрде инкогнито режимінде ашады.</translation>
 <translation id="1081114897601629648">Келесі құпия сөздер Google Password Manager-ге импортталмады, себебі олар талаптарға сай емес.</translation>
 <translation id="1086486568852410168">Google Lens арқылы іздеу</translation>
@@ -89,6 +90,7 @@
 <translation id="288992067439702510">Google Chrome-ның <ph name="LIMIT" /> бетбелгі шегіне жеттіңіз, сондықтан кейбір бетбелгілер Google аккаунтыңызға әлі сақталмады.
 
 Кейбір бетбелгілерді жоймайынша, аккаунтыңызға жаңа бетбелгілерді сақтау мүмкін емес. Аккаунттан қазір шықсаңыз, сақталмаған бетбелгілер жойылады.</translation>
+<translation id="2901621928549457170">iPad-та Chrome-ды жылдам ашыңыз</translation>
 <translation id="2922914028977213693">Chrome-ды iPad-та барынша тиімді пайдалану үшін осы жерді түртіңіз.</translation>
 <translation id="292371311537977079">Chrome параметрлері</translation>
 <translation id="2923827943290349720">Chrome браузерін жабу кезінде инкогнито қойындыларын құлыптау</translation>
@@ -173,6 +175,8 @@
 <translation id="5119391094379141756">Chrome браузерін таңдаңыз.</translation>
 <translation id="5123188916260706415">Chrome-да дауыспен іздеу</translation>
 <translation id="5162467219239570114">Chrome ескірген. Егер <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> дүкенінде жаңа нұсқа болмаса, құрылғыңыз Chrome-ның жаңа нұсқаларын бұдан былай қолдамайтын болуы мүмкін.</translation>
+<translation id="5172049865623113551">iPhone-да Chrome-ды жылдам ашыңыз</translation>
+<translation id="5179095426828744632">Бекіту аймағынан Chrome-ға жылдам кіріңіз</translation>
 <translation id="5184329579814168207">Chrome жүйесінде ашу</translation>
 <translation id="5190139289262548459">Ұйымыңыз (<ph name="DOMAIN" />) сіз кірген аккаунт пен Chrome-ды пайдалану жолын басқарады.</translation>
 <translation id="5209238444239954363">Chrome жаңа нұсқалардың бар-жоғын тексере алмады. Кейінірек қайталап көріңіз.</translation>

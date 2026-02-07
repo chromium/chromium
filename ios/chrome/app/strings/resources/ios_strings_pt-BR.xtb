@@ -1329,7 +1329,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5868644772996939262">Preenchimento automático de senhas e chaves de acesso</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
 <translation id="5873179562631407582">Toque e pressione as guias abertas</translation>
-<translation id="5878899964490256268"><ph name="EMAIL" />. Conta gerenciada pela sua organização.</translation>
 <translation id="5887400589839399685">Cartão salvo</translation>
 <translation id="5888889603768021126">Login feito com</translation>
 <translation id="5889333064153755823">Excluir dados de navegação</translation>
@@ -1666,6 +1665,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Definir como padrão nas Configurações…</translation>
 <translation id="7007970306646738803">Escolha o que fazer com os dados de navegação atuais neste dispositivo, como guias, histórico e senhas.</translation>
+<translation id="7012978439516925343">Confirme sua identidade para criar uma chave de acesso</translation>
 <translation id="7015418667643980944">Visualização dividida</translation>
 <translation id="7016070607649558507">Você tem uma senha fraca. Corrija o problema agora para se proteger.</translation>
 <translation id="7016958933495968912">Opções do Discover</translation>

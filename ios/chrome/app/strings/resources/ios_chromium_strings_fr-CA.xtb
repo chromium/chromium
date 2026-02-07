@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">Cela signifie que Chromium demandera toujours la version mobile du site.</translation>
 <translation id="1115463765356382667">Effectuez les actions suggérées ci-dessous pour tirer le meilleur parti de Chromium.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
+<translation id="119044033865561140">Ouvrez Chromium instantanément lorsque vous êtes sur votre iPad</translation>
 <translation id="1211450393895337634">Ouvrez Chromium plus rapidement lorsque vous êtes prêt à naviguer sur votre iPad.</translation>
 <translation id="1229234641991056119">Utilisez vos mots de passe, votre historique, vos favoris et vos cartes de crédit Safari dans Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
 <translation id="1260702988262336471">Ouvrez le menu Chromium</translation>
 <translation id="12739128458173458">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chromium sur les deux appareils.</translation>
+<translation id="1279797561821266129">Accédez plus rapidement à Chromium à partir de votre Dock</translation>
 <translation id="1361748954329991663">Chromium n'est pas à jour. Si aucune mise à jour n'est offerte dans l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, il est possible que votre appareil ne prenne plus en charge les nouvelles versions de Chromium.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1423007117030725713">Lance une recherche dans un nouvel onglet Chromium.</translation>
@@ -176,6 +178,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="4790638144988730920">Continuez à utiliser les données Chromium dans votre compte Google.</translation>
 <translation id="4828317641996116749">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="4856138222358683580">Actions de Chromium</translation>
+<translation id="4869706986935301458">Ouvrez Chromium instantanément lorsque vous êtes sur votre iPhone</translation>
 <translation id="4904452304169763785">Alertes concernant tout problème de confidentialité ou de sécurité que Chromium détecte pour vous.</translation>
 <translation id="4908570938463711775">Découvrez les notions de base utiles de Chromium pour commencer</translation>
 <translation id="4962295957157529683">Terminez ce que vous faisiez dans votre autre fenêtre ouverte de Chromium.</translation>
@@ -295,6 +298,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7395825497086981028">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe du compte <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Cette clé d'accès sera enregistrée dans le gestionnaire de mots de passe du compte <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Ouvrez Chromium</translation>
+<translation id="7507535968973352823">Placez Chromium dans la zone inférieure pour y accéder à tout moment</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Astuce Chromium : Déplacez Chromium vers le Dock</translation>
 <translation id="7576863740961052505">Gérer les paramètres de Chromium</translation>

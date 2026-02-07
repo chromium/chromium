@@ -514,6 +514,7 @@
 <translation id="1333965224356556482">不允许网站查看您的位置信息</translation>
 <translation id="1335282218035876586">您的 Chromebook 将不会再收到安全更新和软件更新。请升级您的 Chromebook 以获得最佳体验。</translation>
 <translation id="133535873114485416">首选输入模式</translation>
+<translation id="13356285923490863">政策名称</translation>
 <translation id="1335929031622236846">注册您的设备</translation>
 <translation id="133660899895084533">读取蓝牙外围设备的信息和数据</translation>
 <translation id="1336902454946927954">您的安全密钥已被锁定，因为无法识别您的指纹。若要解锁，请输入 PIN 码。</translation>
@@ -2620,6 +2621,7 @@
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">检查拼写和语法</translation>
 <translation id="2750020734439919571">更多 Chrome 应用设置和权限</translation>
+<translation id="275010360476017464">使用麦克风与 Gemini 对话。与 Gemini 对话时，对话音频会存储在 Gemini 应用活动记录中（如果已开启这项设置）。</translation>
 <translation id="2750602041558385535">已拦截未经验证的下载内容</translation>
 <translation id="2751454300227269244">将嘴向右移</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> 想知道您的安全密钥的 ID 编号。此网站将会确切地知道您正在使用哪个安全密钥。</translation>
@@ -5750,6 +5752,7 @@
 <translation id="4881685975363383806">下次不再提醒我</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4882312758060467256">可以访问此网站</translation>
+<translation id="4882848900607400156">分享精确位置后，Gemini 可以更准确地回答您的问题。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="4882919381756638075">网站通常会使用您的麦克风以实现通信功能（例如视频聊天）</translation>
 <translation id="4883436287898674711">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="48838266408104654">任务管理器(&amp;T)</translation>
@@ -5840,6 +5843,7 @@
 <translation id="4945439665401275950">若要设置指纹，请让您的孩子轻触电源按钮。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="4946998421534856407">启动器键 + 向上键</translation>
 <translation id="4947376546135294974">来自您当前访问网站的数据</translation>
+<translation id="4948370357877377178">继续处理任务</translation>
 <translation id="4950100687509657457">创建个人资料</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="495170559598752135">操作</translation>
@@ -8235,6 +8239,7 @@
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6639554308659482635">SQLite 内存</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
+<translation id="664271268954513498">政策值</translation>
 <translation id="6642720633335369752">要查看所有已打开的应用窗口，请从屏幕底部向上滑动并按住屏幕。</translation>
 <translation id="664290675870910564">选择网络</translation>
 <translation id="6643016212128521049">清除</translation>
@@ -9061,6 +9066,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{退出网页}other{退出网页}}</translation>
 <translation id="7207457272187520234">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 账号中。</translation>
 <translation id="7207631048330366454">搜索应用</translation>
+<translation id="7209958456051239069">分享精确位置后，Gemini 可以更准确地回答您的问题</translation>
 <translation id="7210257969463271891">您安装的 Web 应用会显示在此处</translation>
 <translation id="7210432570808024354">点按并拖动即可移动内容</translation>
 <translation id="7210499381659830293">扩展打印机</translation>
@@ -10680,6 +10686,7 @@
 <translation id="8288032458496410887">卸载 <ph name="APP" />…</translation>
 <translation id="8288553158681886528">提取 PDF 文件中的文本</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
+<translation id="8289200713453671499">在不丢失当前浏览位置的情况下，快速在标签页分组和最近的 AI 对话之间切换。</translation>
 <translation id="8289509909262565712">欢迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">下载 Chrome</translation>
 <translation id="8291942417224950075">个人使用</translation>
@@ -11660,6 +11667,7 @@
 <translation id="8945508919180478719">录音室级麦克风</translation>
 <translation id="8946359700442089734">此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上未完全启用调试功能。</translation>
 <translation id="8946954897220903437">收起地址栏中的所有请求</translation>
+<translation id="8946996840522387154">使用麦克风与 Gemini 对话。与 Gemini 对话时，对话音频会存储在 Gemini 应用活动记录中（如果已开启这项设置）。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="894763922177556086">良好</translation>
 <translation id="895054485242522631">网站可以使用移动传感器</translation>
 <translation id="8951256747718668828">发生错误，因此无法完成恢复</translation>

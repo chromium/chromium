@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1035560095760914532">Coloca Chrome en la parte inferior para acceder en cualquier momento</translation>
 <translation id="1076643793026027628">Chrome abre automáticamente los enlaces de Incógnito de YouTube en el modo Incógnito.</translation>
 <translation id="1081114897601629648">Las siguientes contraseñas no se han importado al Gestor de contraseñas de Google porque no cumplen los requisitos.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
@@ -89,6 +90,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="288992067439702510">Has alcanzado el límite de marcadores de Google Chrome (<ph name="LIMIT" />), por lo que algunos de ellos aún no se han guardado en tu cuenta de Google.
 
 No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si cierras sesión ahora, se eliminarán los marcadores que no hayas guardado.</translation>
+<translation id="2901621928549457170">Abre Chrome al instante cuando estés en tu iPad</translation>
 <translation id="2922914028977213693">Toca aquí para sacar el máximo partido a Chrome en tu iPad.</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
 <translation id="2923827943290349720">Ocultar las pestañas de Incógnito al cerrar Chrome</translation>
@@ -173,6 +175,8 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5123188916260706415">Buscar por voz en Chrome</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay ninguna actualización disponible en el <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que el dispositivo ya no sea compatible con las nuevas versiones de Chrome.</translation>
+<translation id="5172049865623113551">Abre Chrome al instante cuando estés en tu iPhone</translation>
+<translation id="5179095426828744632">Accede más rápido a Chrome desde el Dock</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5190139289262548459">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en que se usa Chrome.</translation>
 <translation id="5209238444239954363">Chrome no ha podido comprobar si hay actualizaciones. Inténtalo de nuevo más tarde.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1035560095760914532">Placez Chrome dans la zone inférieure pour y accéder à tout moment</translation>
 <translation id="1076643793026027628">Chrome ouvre automatiquement les liens de la Navigation privée YouTube en mode Navigation privée.</translation>
 <translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le gestionnaire de mots de passe Google parce qu'ils ne répondent pas aux exigences.</translation>
 <translation id="1086486568852410168">Rechercher avec Lentille Google</translation>
@@ -89,6 +90,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="288992067439702510">Vous avez atteint la limite de <ph name="LIMIT" /> favoris de Google Chrome. Certains de vos favoris n'ont donc pas encore été enregistrés dans votre compte Google.
 
 Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que vous n'en aurez pas supprimé certains. Si vous vous déconnectez maintenant, les favoris non enregistrés seront supprimés.</translation>
+<translation id="2901621928549457170">Ouvrez Chrome instantanément lorsque vous êtes sur votre iPad</translation>
 <translation id="2922914028977213693">Touchez ici pour tirer le meilleur parti de Chrome sur votre iPad.</translation>
 <translation id="292371311537977079">Paramètres de Chrome</translation>
 <translation id="2923827943290349720">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
@@ -173,6 +175,8 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5123188916260706415">Effectuer une recherche vocale dans Chrome</translation>
 <translation id="5162467219239570114">Google Chrome n'est plus à jour. Si aucune mise à jour n'est offerte dans l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, il est possible que votre appareil ne prenne plus en charge les nouvelles versions de Chrome.</translation>
+<translation id="5172049865623113551">Ouvrez Chrome instantanément lorsque vous êtes sur votre iPhone</translation>
+<translation id="5179095426828744632">Accédez plus rapidement à Chrome à partir de votre Dock</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5190139289262548459">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chrome est utilisé.</translation>
 <translation id="5209238444239954363">Chrome n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
