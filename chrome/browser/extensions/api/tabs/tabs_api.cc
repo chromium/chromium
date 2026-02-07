@@ -2982,6 +2982,82 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   return RespondNow(WithArguments(group_id));
 }
 
+ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
+  std::optional<tabs::Ungroup::Params> params =
+      tabs::Ungroup::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::vector<int> tab_ids;
+  if (params->tab_ids.as_integers) {
+    tab_ids = *params->tab_ids.as_integers;
+    EXTENSION_FUNCTION_VALIDATE(!tab_ids.empty());
+  } else {
+    EXTENSION_FUNCTION_VALIDATE(params->tab_ids.as_integer);
+    tab_ids.push_back(*params->tab_ids.as_integer);
+  }
+
+  std::string error;
+  for (int tab_id : tab_ids) {
+    if (!UngroupTab(tab_id, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+  }
+
+  return RespondNow(NoArguments());
+}
+
+bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
+  WindowController* window = nullptr;
+  int tab_index = -1;
+  if (!tabs_internal::GetTabById(tab_id, browser_context(),
+                                 include_incognito_information(), &window,
+                                 nullptr, &tab_index, error) ||
+      !window) {
+    return false;
+  }
+
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
+
+  BrowserWindowInterface* browser_window = window->GetBrowserWindowInterface();
+  if (!ExtensionTabUtil::SupportsTabGroups(browser_window)) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+
+  TabListInterface* tab_list = TabListInterface::From(browser_window);
+  std::set<::tabs::TabHandle> tabs;
+
+  ::tabs::TabInterface* tab = tab_list->GetTab(tab_index);
+  CHECK(tab);
+  tabs.insert(tab->GetHandle());
+
+  // TODO(https://crbug.com/480192698): When split tabs are available on
+  // android, port this logic.
+#if !BUILDFLAG(IS_ANDROID)
+  // Extend selection for any split tabs.
+  TabStripModel* tab_strip = window->GetBrowser()->tab_strip_model();
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_strip->GetSplitForTab(tab_index);
+  if (split_id.has_value()) {
+    // All the tabs in a split should be contiguous.
+    std::vector<::tabs::TabInterface*> split_tabs =
+        tab_strip->GetSplitData(split_id.value())->ListTabs();
+    size_t start = tab_strip->GetIndexOfTab(split_tabs[0]);
+    for (size_t i = start; i < start + split_tabs.size(); ++i) {
+      ::tabs::TabInterface* split_tab = tab_list->GetTab(i);
+      CHECK(split_tab);
+      tabs.insert(split_tab->GetHandle());
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  tab_list->Ungroup(tabs);
+  return true;
+}
+
 ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   std::optional<tabs::DetectLanguage::Params> params =
       tabs::DetectLanguage::Params::Create(args());

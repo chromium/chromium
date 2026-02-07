@@ -21,5 +21,20 @@ chrome.test.runTests([
       chrome.test.assertEq(null, tabGroup);
       chrome.test.succeed();
     });
+  },
+  async function testGetFailsAfterUngroup() {
+    // Create a group and then ungroup it, then try to get the group.
+    const tab = await chrome.tabs.create({});
+    const groupId = await chrome.tabs.group({tabIds: tab.id});
+    let tabGroup = await chrome.tabGroups.get(groupId);
+    chrome.test.assertNoLastError();
+    chrome.test.assertNe(0, tabGroup.id);
+
+    await chrome.tabs.ungroup(tab.id);
+    chrome.tabGroups.get(groupId, (tabGroup) => {
+      chrome.test.assertLastError(`No group with id: ${groupId}.`);
+      chrome.test.assertEq(null, tabGroup);
+      chrome.test.succeed();
+    });
   }
 ]);

@@ -16,13 +16,6 @@ constexpr char kTabsNotImplemented[] = "chrome.tabs not implemented";
 
 // Tabs ------------------------------------------------------------------------
 
-ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
-  std::optional<tabs::Ungroup::Params> params =
-      tabs::Ungroup::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 TabsDiscardFunction::TabsDiscardFunction() = default;
 TabsDiscardFunction::~TabsDiscardFunction() = default;
 
