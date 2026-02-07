@@ -3712,6 +3712,38 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesAddedInputs) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_StandardSearch_DoesNotIncludeAddedInputs) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create search URL.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Verify AddedInputs param is NOT present.
+  std::string added_inputs_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(search_url, kAddedInputsParameterKey,
+                                          &added_inputs_param));
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        CreateClientToAimRequest_IncludesAddedInputs) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
