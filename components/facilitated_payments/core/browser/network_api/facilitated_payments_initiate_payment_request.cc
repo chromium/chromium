@@ -85,13 +85,30 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
             request_details_->billing_customer_number_.value()));
     context.Set("customer_context", std::move(customer_context));
   }
+
+  // If there are any chrome experiment IDs, include them in the client context.
+  if (!request_details_->chrome_experiment_ids_.empty()) {
+    base::Value chrome_experiment_ids_list(base::Value::Type::LIST);
+    for (int64_t exp_id : request_details_->chrome_experiment_ids_) {
+      chrome_experiment_ids_list.GetList().Append(
+          base::checked_cast<int>(exp_id));
+    }
+    context.Set("integrator_experiment_ids",
+                std::move(chrome_experiment_ids_list));
+  }
   request_dict.Set("context", std::move(context));
 
+  base::DictValue merchant_info;
   if (request_details_->merchant_payment_page_hostname_.has_value()) {
-    base::DictValue merchant_info;
     merchant_info.Set(
         "merchant_checkout_page_url",
         request_details_->merchant_payment_page_hostname_.value());
+  }
+  if (request_details_->psp_hostname_.has_value()) {
+    merchant_info.Set("payment_trigger_page_url",
+                      request_details_->psp_hostname_.value());
+  }
+  if (!merchant_info.empty()) {
     request_dict.Set("merchant_info", std::move(merchant_info));
   }
 

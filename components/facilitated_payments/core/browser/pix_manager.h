@@ -73,6 +73,8 @@ class PixManager {
   friend class PixManagerTestForUiScreens;
   friend class PixManagerPaymentsNetworkInterfaceTest;
   // Keep all entries in alphabetical order!
+  // TODO(crbug.com/479520609): Remove all FRIEND_TEST_ALL_PREFIXES macros from
+  // PixManager by introducing a new PixManagerTestApi.
   FRIEND_TEST_ALL_PREFIXES(PixManagerPaymentsNetworkInterfaceTest,
                            OnInitiatePaymentResponseReceived_FailureResponse);
   FRIEND_TEST_ALL_PREFIXES(PixManagerPaymentsNetworkInterfaceTest,
@@ -98,10 +100,19 @@ class PixManager {
                            CopyTrigger_UrlInAllowlist_PixValidationTriggered);
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTestWithAccountLinkingEnabled,
+      CopyTrigger_UrlInAllowlist__ControlIdPopulatedInInitiatePaymentRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
       CopyTrigger_UrlNotInAllowlist_PixValidationNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTestWithAccountLinkingEnabled,
       CopyTrigger_UrlNotInAllowlist_PayflowExitedHistogramLogged);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
+      CopyTrigger_InIframe_PspHostnamePopulatedInInitiatePaymentRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
+      CopyTrigger_InIframe_ExperimentIdPopulatedInInitiatePaymentRequest);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            DismissPrompt);
   FRIEND_TEST_ALL_PREFIXES(

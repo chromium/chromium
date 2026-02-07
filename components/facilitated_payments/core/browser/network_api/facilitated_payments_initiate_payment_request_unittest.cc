@@ -31,6 +31,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   request_details_full->merchant_payment_page_hostname_ = "foo.com";
   request_details_full->instrument_id_ = 13;
   request_details_full->pix_code_ = "a valid code";
+  request_details_full->chrome_experiment_ids_.push_back(1111);
 
   auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
       std::move(request_details_full), /*response_callback=*/base::DoNothing(),
@@ -45,8 +46,49 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
       "{\"chrome_user_context\":{\"full_sync_enabled\":true},\"client_token\":"
       "\"dG9rZW4=\",\"context\":{\"billable_service\":70154,\"customer_"
       "context\":{"
-      "\"external_customer_id\":\"11\"},\"language_code\":\"US\"},\"merchant_"
+      "\"external_customer_id\":\"11\"},\"integrator_experiment_ids\":[1111],"
+      "\"language_code\":\"US\"},\"merchant_"
       "info\":{\"merchant_checkout_page_url\":\"foo.com\"},\"payment_details\":"
+      "{\"payment_rail\":\"PIX\",\"qr_code\":\"a "
+      "valid "
+      "code\"},\"risk_data_encoded\":{\"encoding_type\":\"BASE_64\",\"message_"
+      "type\":\"BROWSER_NATIVE_FINGERPRINTING\",\"value\":\"seems pretty "
+      "risky\"},\"sender_instrument_id\":\"13\"}");
+}
+
+TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
+       PixRequestContents_IframeFlow_WithPspHostname) {
+  auto request_details_full =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  request_details_full->risk_data_ = "seems pretty risky";
+  // The client token will be base64 encoded as "dG9rZW4=" in the request
+  // content.
+  request_details_full->client_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  request_details_full->billing_customer_number_ = 11;
+  request_details_full->merchant_payment_page_hostname_ = "foo.com";
+  request_details_full->psp_hostname_ = "psp.com";
+  request_details_full->instrument_id_ = 13;
+  request_details_full->pix_code_ = "a valid code";
+  request_details_full->chrome_experiment_ids_.push_back(2222);
+
+  auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::move(request_details_full), /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+
+  EXPECT_EQ(request->GetRequestUrlPath(),
+            "payments/apis-secure/chromepaymentsservice/initiatepayment");
+  EXPECT_EQ(request->GetRequestContentType(), "application/json");
+  // Verify that all the data is added to the request content.
+  EXPECT_EQ(
+      request->GetRequestContent(),
+      "{\"chrome_user_context\":{\"full_sync_enabled\":true},\"client_token\":"
+      "\"dG9rZW4=\",\"context\":{\"billable_service\":70154,\"customer_"
+      "context\":{"
+      "\"external_customer_id\":\"11\"},\"integrator_experiment_ids\":[2222],"
+      "\"language_code\":\"US\"},\"merchant_"
+      "info\":{\"merchant_checkout_page_url\":\"foo.com\",\"payment_trigger_"
+      "page_url\":\"psp.com\"},\"payment_details\":"
       "{\"payment_rail\":\"PIX\",\"qr_code\":\"a "
       "valid "
       "code\"},\"risk_data_encoded\":{\"encoding_type\":\"BASE_64\",\"message_"

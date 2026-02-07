@@ -27,6 +27,9 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
   bool IsReadyForPixPayment();
 
   std::string risk_data_;
+  // A list of Chrome experiment IDs associated with the Pix transaction. These
+  // are passed to the backend as integratorExperimentIds.
+  std::vector<int64_t> chrome_experiment_ids_;
   // A vector of bytes containing device information, which is needed to invoke
   // payment server APIs.
   std::vector<uint8_t> client_token_;
@@ -37,6 +40,9 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
   std::optional<int64_t> instrument_id_;
   std::optional<std::string> pix_code_;
   std::string payment_link_;
+  // The hostname of the Payment Service Provider (PSP). This is captured if the
+  // Pix code is copied from an allowlisted iframe.
+  std::optional<std::string> psp_hostname_;
 };
 
 }  // namespace payments::facilitated
