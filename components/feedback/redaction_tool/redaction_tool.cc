@@ -569,13 +569,12 @@ constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 
 }  // namespace
 
-RedactionTool::RedactionTool(
-    base::span<const char* const> first_party_extension_ids)
+RedactionTool::RedactionTool(const char* const* first_party_extension_ids)
     : RedactionTool(first_party_extension_ids,
                     RedactionToolMetricsRecorder::Create()) {}
 
 RedactionTool::RedactionTool(
-    base::span<const char* const> first_party_extension_ids,
+    const char* const* first_party_extension_ids,
     std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder)
     : first_party_extension_ids_(first_party_extension_ids),
       metrics_recorder_(std::move(metrics_recorder)) {
@@ -1226,7 +1225,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
 // This takes a |url| argument and returns true if the URL is exempt from
 // redaction, returns false otherwise.
 bool IsUrlExempt(std::string_view url,
-                 base::span<const char* const> first_party_extension_ids) {
+                 const char* const* first_party_extension_ids) {
   // We do not exempt anything with a query parameter.
   if (url.find("?") != std::string_view::npos) {
     return false;
@@ -1253,7 +1252,7 @@ bool IsUrlExempt(std::string_view url,
     return false;
   }
 
-  if (first_party_extension_ids.empty()) {
+  if (!first_party_extension_ids) {
     return false;
   }
 
@@ -1343,8 +1342,16 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
 
 RedactionToolContainer::RedactionToolContainer(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::span<const char* const> first_party_extension_ids)
+    const char* const* first_party_extension_ids)
     : redactor_(new RedactionTool(first_party_extension_ids)),
+      task_runner_(task_runner) {}
+
+RedactionToolContainer::RedactionToolContainer(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const char* const* first_party_extension_ids,
+    std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder)
+    : redactor_(new RedactionTool(first_party_extension_ids,
+                                  std::move(metrics_recorder))),
       task_runner_(task_runner) {}
 
 RedactionToolContainer::~RedactionToolContainer() {

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -58,7 +57,7 @@ void Redact(redaction::RedactionTool* redactor, SystemLogsResponse* response) {
 
 SystemLogsFetcher::SystemLogsFetcher(
     bool scrub_data,
-    base::span<const char* const> first_party_extension_ids)
+    const char* const first_party_extension_ids[])
     : response_(std::make_unique<SystemLogsResponse>()),
       num_pending_requests_(0),
       task_runner_for_redactor_(

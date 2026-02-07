@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -148,7 +147,7 @@ void IncludeVariations(scoped_refptr<feedback::FeedbackData> feedback_data) {
 #endif
 
 void RedactFeedbackData(scoped_refptr<feedback::FeedbackData> feedback_data) {
-  redaction::RedactionTool redactor;
+  redaction::RedactionTool redactor(nullptr);
   redactor.EnableCreditCardRedaction(true);
   feedback_data->RedactDescription(redactor);
 }

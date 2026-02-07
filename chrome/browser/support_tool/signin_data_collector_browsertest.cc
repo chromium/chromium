@@ -69,7 +69,7 @@ class SigninDataCollectorBrowserTestAsh
         base::ThreadPool::CreateSequencedTaskRunner({});
     redaction_tool_container_ =
         base::MakeRefCounted<redaction::RedactionToolContainer>(
-            task_runner_for_redaction_tool_);
+            task_runner_for_redaction_tool_, nullptr);
 
     logged_in_user_mixin_.LogInUser();
   }

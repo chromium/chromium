@@ -108,7 +108,8 @@ LogSourceAccessManager::LogSourceAccessManager(content::BrowserContext* context)
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       redactor_container_(
           base::MakeRefCounted<redaction::RedactionToolContainer>(
-              task_runner_for_redactor_)) {}
+              task_runner_for_redactor_,
+              /* first_party_extension_ids= */ nullptr)) {}
 
 LogSourceAccessManager::~LogSourceAccessManager() = default;
 
