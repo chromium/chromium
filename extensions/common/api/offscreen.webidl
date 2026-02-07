@@ -74,13 +74,12 @@ interface Offscreen {
   // |parameters|: The parameters describing the offscreen document to create.
   // |Returns|: Promise that resolves when the offscreen document is created
   // and has completed its initial page load.
-  [requiredCallback] static Promise<undefined> createDocument(
-      CreateParameters parameters);
+  static Promise<undefined> createDocument(CreateParameters parameters);
 
   // Closes the currently-open offscreen document for the extension.
   // |Returns|: Promise that resolves when the offscreen document has been
   // closed.
-  [requiredCallback] static Promise<undefined> closeDocument();
+  static Promise<undefined> closeDocument();
 
   // Determines whether the extension has an active document.
   // TODO(crbug.com/40849649): This probably isn't something we want to
