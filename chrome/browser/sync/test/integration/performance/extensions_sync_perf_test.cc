@@ -48,6 +48,10 @@ class ExtensionsSyncPerfTest : public SyncTest {
   ExtensionsSyncPerfTest(const ExtensionsSyncPerfTest&) = delete;
   ExtensionsSyncPerfTest& operator=(const ExtensionsSyncPerfTest&) = delete;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
   // Adds |num_extensions| new unique extensions to |profile|.
   void AddExtensions(int profile, int num_extensions);
 
