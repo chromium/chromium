@@ -97,10 +97,6 @@ class FileAnalysisRequestBaseTest : public testing::Test {
   base::test::TaskEnvironment task_environment;
 };
 
-// TODO(crbug.com/461531817): Remove the `is_fuchsia` build flag.
-// Test fails on fuschsia likely due to platform-specific differences in the
-// underlying file system
-#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(FileAnalysisRequestBaseTest, InvalidFiles) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -161,7 +157,6 @@ TEST_F(FileAnalysisRequestBaseTest, InvalidFiles) {
     EXPECT_TRUE(data.mime_type.empty());
   }
 }
-#endif
 
 TEST_F(FileAnalysisRequestBaseTest, NormalFiles) {
   ScanRequestUploadResult result;
