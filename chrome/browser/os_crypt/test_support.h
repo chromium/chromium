@@ -5,12 +5,7 @@
 #ifndef CHROME_BROWSER_OS_CRYPT_TEST_SUPPORT_H_
 #define CHROME_BROWSER_OS_CRYPT_TEST_SUPPORT_H_
 
-#include <optional>
-
-#include "base/functional/callback_helpers.h"
 #include "chrome/install_static/install_details.h"
-
-class ScopedLogGrabber;
 
 namespace os_crypt {
 
@@ -42,16 +37,6 @@ class FakeInstallDetails : public install_static::PrimaryInstallDetails {
  private:
   install_static::InstallConstants constants_;
 };
-
-// Install the elevation service corresponding to the set of install details for
-// the current process, returns a closure that will uninstall the service when
-// it goes out of scope. Logs from the service will be spooled to the passed
-// `log_grabber` which should outlive the lifetime of the service. If
-// `fake_reencrypt` is true then the elevation service will signal that returned
-// data should be re-encrypted by the client if a DecryptData call is made.
-[[nodiscard]] std::optional<base::ScopedClosureRunner> InstallService(
-    const ScopedLogGrabber& log_grabber,
-    bool fake_reencrypt = false);
 
 }  // namespace os_crypt
 

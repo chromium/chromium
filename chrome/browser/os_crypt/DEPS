@@ -8,7 +8,4 @@ specific_include_rules = {
     "+chrome/windows_services/service_program/test_support",
     "+services/test",
   ],
-  "test_support\.cc": [
-    "+chrome/windows_services/service_program/test_support",
-  ],
 }

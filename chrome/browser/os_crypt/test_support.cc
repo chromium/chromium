@@ -4,29 +4,12 @@
 
 #include "chrome/browser/os_crypt/test_support.h"
 
-#include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_modes.h"
-#include "chrome/installer/util/install_service_work_item.h"
-#include "chrome/installer/util/util_constants.h"
-#include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
 
 namespace os_crypt {
-
-namespace {
-
-void UnInstallService() {
-  std::ignore = installer::InstallServiceWorkItem::DeleteService(
-      install_static::GetElevationServiceName(),
-      install_static::GetClientStateKeyPath(),
-      {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
-}
-
-}  // namespace
 
 namespace switches {
 
@@ -84,35 +67,6 @@ FakeInstallDetails::FakeInstallDetails(bool use_old_elevator_interface)
 
   set_mode(&constants_);
   set_system_level(true);
-}
-
-std::optional<base::ScopedClosureRunner> InstallService(
-    const ScopedLogGrabber& log_grabber,
-    bool fake_reencrypt) {
-  base::FilePath exe_dir;
-  base::PathService::Get(base::DIR_EXE, &exe_dir);
-  base::CommandLine service_cmd(
-      exe_dir.Append(installer::kElevationServiceExe));
-  service_cmd.AppendSwitch(
-      elevation_service::switches::kElevatorClsIdForTestingSwitch);
-  log_grabber.AddLoggingSwitches(service_cmd);
-  if (fake_reencrypt) {
-    service_cmd.AppendSwitch(
-        elevation_service::switches::kFakeReencryptForTestingSwitch);
-  }
-  installer::InstallServiceWorkItem install_service_work_item(
-      install_static::GetElevationServiceName(),
-      install_static::GetElevationServiceDisplayName(), /*description=*/{},
-      SERVICE_DEMAND_START, service_cmd,
-      base::CommandLine(base::CommandLine::NO_PROGRAM),
-      install_static::GetClientStateKeyPath(),
-      {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
-  install_service_work_item.set_best_effort(true);
-  install_service_work_item.set_rollback_enabled(false);
-  if (!install_service_work_item.Do()) {
-    return std::nullopt;
-  }
-  return base::ScopedClosureRunner(base::BindOnce(&UnInstallService));
 }
 
 }  // namespace os_crypt

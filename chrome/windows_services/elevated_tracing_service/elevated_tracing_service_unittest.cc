@@ -14,6 +14,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -265,7 +266,9 @@ class TracingServiceTest : public elevated_tracing_service::WithChildTest {
     service_environment_ = new ServiceEnvironment(
         L"Test Tracing Service",
         FILE_PATH_LITERAL("elevated_tracing_service.exe"),
-        elevated_tracing_service::switches::kSystemTracingClsIdForTestingSwitch,
+        base::span_from_ref(
+            std::string_view(elevated_tracing_service::switches::
+                                 kSystemTracingClsIdForTestingSwitch)),
         elevated_tracing_service::kTestSystemTracingSessionClsid,
         __uuidof(ISystemTraceSession));
     ASSERT_TRUE(service_environment_->is_valid());

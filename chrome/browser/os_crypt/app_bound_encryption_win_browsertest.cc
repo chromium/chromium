@@ -40,8 +40,9 @@
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/install_service_work_item.h"
+#include "chrome/installer/util/util_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
+#include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -100,8 +101,12 @@ class AppBoundEncryptionWinTestBase : public InProcessBrowserTest {
     GTEST_SKIP() << "Temporarily disabled on 32-bit. See crbug.com/430106357.";
 #else
     if (should_install_service_) {
-      maybe_uninstall_service_ = InstallService(log_grabber_);
-      EXPECT_TRUE(maybe_uninstall_service_.has_value());
+      maybe_service_environment_.emplace(
+          install_static::GetElevationServiceName(),
+          installer::kElevationServiceExe,
+          base::span_from_ref(std::string_view(
+              elevation_service::switches::kElevatorClsIdForTestingSwitch)),
+          install_static::GetElevatorClsid(), install_static::GetElevatorIid());
     }
     // Browser tests use a custom user data dir, which would normally result in
     // App-Bound encryption being disabled with
@@ -115,7 +120,7 @@ class AppBoundEncryptionWinTestBase : public InProcessBrowserTest {
 #endif  // defined(ARCH_CPU_32_BITS)
   }
 
-  void TearDown() override { maybe_uninstall_service_.reset(); }
+  void TearDown() override { maybe_service_environment_.reset(); }
 
   // Used by multi-stage tests to persist data between each part of the test.
   void StoreData(base::span<const uint8_t> data) {
@@ -139,8 +144,7 @@ class AppBoundEncryptionWinTestBase : public InProcessBrowserTest {
   }
 
   base::HistogramTester histogram_tester_;
-  std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
-  ScopedLogGrabber log_grabber_;
+  std::optional<ServiceEnvironment> maybe_service_environment_;
   bool set_default_user_data_dir_ = true;
   bool should_install_service_ = true;
 
@@ -458,9 +462,16 @@ class AppBoundEncryptionWinReencryptTest
     if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
       GTEST_SKIP() << "Elevation is required for this test.";
     }
-    maybe_uninstall_service_ =
-        InstallService(log_grabber_, std::get<0>(GetParam()));
-    EXPECT_TRUE(maybe_uninstall_service_.has_value());
+    std::vector<std::string_view> switches = {
+        elevation_service::switches::kElevatorClsIdForTestingSwitch};
+    if (std::get<0>(GetParam())) {
+      switches.push_back(
+          elevation_service::switches::kFakeReencryptForTestingSwitch);
+    }
+    maybe_service_environment_.emplace(
+        install_static::GetElevationServiceName(),
+        installer::kElevationServiceExe, switches,
+        install_static::GetElevatorClsid(), install_static::GetElevatorIid());
     // Service already installed, do not try installing again.
     should_install_service_ = false;
     AppBoundEncryptionWinTest::SetUp();

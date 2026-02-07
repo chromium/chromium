@@ -33,8 +33,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/common/chrome_paths_internal.h"
+#include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
-#include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
+#include "chrome/installer/util/util_constants.h"
+#include "chrome/windows_services/service_program/test_support/service_environment.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
@@ -173,8 +175,13 @@ class CookieEncryptionProviderBrowserTest
     switch (configuration) {
       case kOSCryptAsync:
 #if BUILDFLAG(IS_WIN)
-        maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
-        EXPECT_TRUE(maybe_uninstall_service_.has_value());
+        maybe_service_environment_.emplace(
+            install_static::GetElevationServiceName(),
+            installer::kElevationServiceExe,
+            base::span_from_ref(std::string_view(
+                elevation_service::switches::kElevatorClsIdForTestingSwitch)),
+            install_static::GetElevatorClsid(),
+            install_static::GetElevatorIid());
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
         disabled_features.push_back(features::kDbusSecretPortal);
@@ -184,8 +191,13 @@ class CookieEncryptionProviderBrowserTest
       case kOSCryptAsyncNoService:
         break;
       case kOSCryptAsyncDisabledByPolicy:
-        maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
-        EXPECT_TRUE(maybe_uninstall_service_.has_value());
+        maybe_service_environment_.emplace(
+            install_static::GetElevationServiceName(),
+            installer::kElevationServiceExe,
+            base::span_from_ref(std::string_view(
+                elevation_service::switches::kElevatorClsIdForTestingSwitch)),
+            install_static::GetElevatorClsid(),
+            install_static::GetElevatorIid());
         policy_provider_.SetDefaultReturns(
             /*is_initialization_complete_return=*/true,
             /*is_first_policy_load_complete_return=*/true);
@@ -226,7 +238,7 @@ class CookieEncryptionProviderBrowserTest
     }
 
 #if BUILDFLAG(IS_WIN)
-    maybe_uninstall_service_.reset();
+    maybe_service_environment_.reset();
 #endif  // BUILDFLAG(IS_WIN)
 
     auto metrics_expectation = content::IsPreTest()
@@ -301,8 +313,7 @@ class CookieEncryptionProviderBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 #if BUILDFLAG(IS_WIN)
-  ScopedLogGrabber log_grabber_;
-  std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
+  std::optional<ServiceEnvironment> maybe_service_environment_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)

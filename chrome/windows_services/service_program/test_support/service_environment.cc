@@ -5,14 +5,18 @@
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/path_service.h"
 #include "chrome/common/env_vars.h"
 #include "chrome/windows_services/service_program/switches.h"
+#include "chrome/windows_services/service_program/test_support/scoped_install_service.h"
+#include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
 
 namespace {
 
@@ -30,7 +34,7 @@ void AddUnattendedTestSwitch(base::CommandLine& command_line) {
 ServiceEnvironment::ServiceEnvironment(
     std::wstring_view display_name,
     base::FilePath::StringViewType service_exe_name,
-    std::string_view testing_switch,
+    base::span<const std::string_view> testing_switches,
     const CLSID& clsid,
     const IID& iid) {
   std::wstring service_name(display_name);
@@ -41,7 +45,7 @@ ServiceEnvironment::ServiceEnvironment(
 
   AddUnattendedTestSwitch(service_command);
 
-  if (!testing_switch.empty()) {
+  for (const auto& testing_switch : testing_switches) {
     service_command.AppendSwitch(testing_switch);
   }
   log_grabber_.AddLoggingSwitches(service_command);
