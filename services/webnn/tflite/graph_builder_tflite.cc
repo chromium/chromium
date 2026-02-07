@@ -58,6 +58,14 @@ BASE_FEATURE(kApplyQDQFusion, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr size_t kWeightsAlignment = 8;
 
+// Flatbuffers cannot be larger than 2 GiB however the library does not provide
+// feedback when this limit is exceeded and can instead encounter integer
+// overflows. To avoid this, limit the size of buffers that have to be included
+// directly in the Flatbuffer (rather than as external weights) and refuse to
+// add additional buffers once the total size approaches a safety threshold.
+constexpr size_t kMaxInlineBufferSize = 128 * 1024 * 1024;        /* 128 MiB */
+constexpr size_t kFlatbufferSafetyThreshold = 1536 * 1024 * 1024; /* 1.5 GiB */
+
 // Maps a DataType to a `::tflite::TensorType`. Other `TensorTypeMap` overloads
 // may be declared below as needed.
 //
@@ -3002,6 +3010,12 @@ auto GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNTfliteDumpModel) ||
       !weights_file_.IsValid()) {
+    if (buffer.size() > kMaxInlineBufferSize) {
+      return base::unexpected("Buffer size is over inline limit.");
+    }
+    if (builder_.GetSize() > kFlatbufferSafetyThreshold) {
+      return base::unexpected("Model too large.");
+    }
     buffers_.emplace_back(::tflite::CreateBuffer(
         builder_, builder_.CreateVector(buffer.data(), buffer.size())));
   } else {
@@ -7016,9 +7030,18 @@ auto GraphBuilderTflite::SerializeQuantizeParams(
   // scale will be resized to shape {1, 4, 1} with data {1, 1, 5, 5}.
   if (axis && scale_shape[*axis] != input_operand_shape[*axis]) {
     const uint32_t block_size = input_operand_shape[*axis] / scale_shape[*axis];
-    scale_offset = BlockwiseExpandConstant<float>(scale_value, block_size);
-    zero_point_offset =
+    auto expanded_scale =
+        BlockwiseExpandConstant<float>(scale_value, block_size);
+    if (!expanded_scale.has_value()) {
+      return std::nullopt;
+    }
+    scale_offset = *expanded_scale;
+    auto expanded_zero_point =
         BlockwiseExpandConstant<int64_t>(zero_point_value, block_size);
+    if (!expanded_zero_point.has_value()) {
+      return std::nullopt;
+    }
+    zero_point_offset = *expanded_zero_point;
   } else {
     scale_offset = builder_.CreateVector<float>(scale_value);
     zero_point_offset = builder_.CreateVector<int64_t>(zero_point_value);
@@ -7047,9 +7070,18 @@ auto GraphBuilderTflite::SerializeQuantizeParams(
 }
 
 template <typename DataType>
-std::tuple<flatbuffers::Offset<flatbuffers::Vector<DataType>>,
-           base::span<DataType>>
-GraphBuilderTflite::CreateUninitializedVector(size_t length) {
+auto GraphBuilderTflite::CreateUninitializedVector(size_t length)
+    -> base::expected<
+        std::tuple<flatbuffers::Offset<flatbuffers::Vector<DataType>>,
+                   base::span<DataType>>,
+        std::string> {
+  if (length * sizeof(DataType) > kMaxInlineBufferSize) {
+    return base::unexpected("Buffer size is over inline limit.");
+  }
+  if (builder_.GetSize() > kFlatbufferSafetyThreshold) {
+    return base::unexpected("Model too large.");
+  }
+
   DataType* buffer = nullptr;
   auto offset = builder_.CreateUninitializedVector<DataType>(length, &buffer);
 
@@ -7059,11 +7091,12 @@ GraphBuilderTflite::CreateUninitializedVector(size_t length) {
 
 template <typename DataType>
   requires(std::is_same_v<DataType, float> || std::is_same_v<DataType, int64_t>)
-flatbuffers::Offset<flatbuffers::Vector<DataType>>
+base::expected<flatbuffers::Offset<flatbuffers::Vector<DataType>>, std::string>
 GraphBuilderTflite::BlockwiseExpandConstant(base::span<const DataType> values,
                                             uint32_t block_size) {
-  auto [block_wise_offset, block_wise_span_buffer] =
-      CreateUninitializedVector<DataType>(block_size * values.size());
+  ASSIGN_OR_RETURN(
+      (auto [block_wise_offset, block_wise_span_buffer]),
+      CreateUninitializedVector<DataType>(block_size * values.size()));
   for (size_t i = 0; i < values.size(); ++i) {
     std::ranges::fill(
         block_wise_span_buffer.subspan(i * block_size, block_size), values[i]);

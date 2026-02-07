@@ -358,16 +358,18 @@ class GraphBuilderTflite final {
 
   // Create a uninitialized flatbuffers vector and return the buffer as span.
   template <typename DataType>
-  std::tuple<flatbuffers::Offset<flatbuffers::Vector<DataType>>,
-             base::span<DataType>>
+  base::expected<std::tuple<flatbuffers::Offset<flatbuffers::Vector<DataType>>,
+                            base::span<DataType>>,
+                 std::string>
   CreateUninitializedVector(size_t length);
   // Block-wise expand constant scale and zero point.
   template <typename DataType>
     requires(std::is_same_v<DataType, float> ||
              std::is_same_v<DataType, int64_t>)
-  flatbuffers::Offset<flatbuffers::Vector<DataType>> BlockwiseExpandConstant(
-      base::span<const DataType> values,
-      uint32_t block_size);
+  base::expected<flatbuffers::Offset<flatbuffers::Vector<DataType>>,
+                 std::string>
+  BlockwiseExpandConstant(base::span<const DataType> values,
+                          uint32_t block_size);
   // Block-wise expand the dimension of input tensor along the given axis.
   base::expected<TensorIndex, std::string> BlockwiseExpandAlongAxis(
       base::span<const int32_t> input_dimensions,
