@@ -18,9 +18,11 @@
 #include "content/browser/preloading/preload_serving_metrics.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/preloading.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/gurl.h"
 
@@ -329,9 +331,10 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchNetworkContext* GetNetworkContext(
       bool is_isolated_network_context_required) const;
 
-  // The network context used to make network requests for the next prefetch.
-  PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch(
-      PrefetchService* prefetch_service);
+  // Creates the network context for `is_isolated_network_context_required`.
+  PrefetchNetworkContext* CreateNetworkContext(
+      bool is_isolated_network_context_required,
+      mojo::Remote<network::mojom::NetworkContext> isolated_network_context);
 
   // Closes idle connections for all elements in |network_contexts_|.
   void CloseIdleConnections();

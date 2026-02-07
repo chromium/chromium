@@ -12,9 +12,13 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/embedder_support/user_agent_utils.h"
+#include "components/variations/net/omnibox_autofocus_http_headers.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
@@ -24,14 +28,18 @@
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
+#include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
@@ -39,14 +47,17 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_partition_key_collection.h"
@@ -55,10 +66,14 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -1735,6 +1750,109 @@ void PrefetchService::MaybeSetPrefetchMatchMissedTimeForMetrics(
   }
 }
 
+namespace {
+
+// Enable Zstd for cross-site prefetch (crbug.com/444393104).
+BASE_FEATURE(kZstdForCrossSiteSpeculationRulesPrefetch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allow the variations header to be treated as CORS exempted for cross-site
+// prefetch (crbug.com/444264052).
+BASE_FEATURE(kVariationsHeaderForCrossSiteSpeculationRulesPrefetch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
+mojo::Remote<network::mojom::NetworkContext>
+PrefetchService::CreateIsolatedNetworkContext(
+    bool is_proxy_required_when_cross_origin) {
+  auto context_params = network::mojom::NetworkContextParams::New();
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+
+  // These should be synced with
+  // `SystemNetworkContextManager::ConfigureDefaultNetworkContextParams()`.
+  // TODO(crbug.com/444335342): Unify NetworkContextParams setup with other
+  // places.
+  context_params->enable_zstd =
+      base::FeatureList::IsEnabled(kZstdForCrossSiteSpeculationRulesPrefetch);
+  context_params->user_agent = embedder_support::GetUserAgent();
+
+  // The verifier created here does not have the same parameters as used in the
+  // profile (where additional parameters are added in
+  // chrome/browser/net/profile_network_context_service.h
+  // ProfileNetworkContextService::ConfigureNetworkContextParamsInternal, as
+  // well as updates in ProfileNetworkContextService::UpdateCertificatePolicy).
+  //
+  // Currently this does not cause problems as additional parameters only ensure
+  // more requests validate, so the only harm is that prefetch requests will
+  // fail and then later succeed when they are actually fetched. In the future
+  // when additional parameters can cause validations to fail, this will cause
+  // problems.
+  //
+  // TODO(crbug.com/40928765): figure out how to get this verifier in sync with
+  // the profile verifier.
+  context_params->cert_verifier_params = GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  context_params->cors_exempt_header_list = {blink::kPurposeHeaderName};
+  if (base::FeatureList::IsEnabled(
+          kVariationsHeaderForCrossSiteSpeculationRulesPrefetch)) {
+    variations::UpdateCorsExemptHeaderForVariations(context_params.get());
+    variations::UpdateCorsExemptHeaderForOmniboxAutofocus(context_params.get());
+  }
+  context_params->cookie_manager_params =
+      network::mojom::CookieManagerParams::New();
+
+  if (delegate_) {
+    context_params->accept_language = delegate_->GetAcceptLanguageHeader();
+  }
+
+  context_params->http_cache_enabled = true;
+  CHECK(!context_params->file_paths->http_cache_directory);
+
+  if (is_proxy_required_when_cross_origin) {
+    CHECK(prefetch_proxy_configurator_);
+
+    context_params->initial_custom_proxy_config =
+        prefetch_proxy_configurator_->CreateCustomProxyConfig();
+    context_params->custom_proxy_connection_observer_remote =
+        prefetch_proxy_configurator_->NewProxyConnectionObserverRemote();
+
+    // Register a client config receiver so that updates to the set of proxy
+    // hosts or proxy headers will be updated.
+    mojo::Remote<network::mojom::CustomProxyConfigClient> config_client;
+    context_params->custom_proxy_config_client_receiver =
+        config_client.BindNewPipeAndPassReceiver();
+    prefetch_proxy_configurator_->AddCustomProxyConfigClient(
+        std::move(config_client), base::DoNothing());
+  }
+
+  // Explicitly disallow network service features which could cause a privacy
+  // leak.
+  context_params->enable_certificate_reporting = false;
+  context_params->enable_domain_reliability = false;
+
+  mojo::Remote<network::mojom::NetworkContext> network_context;
+  CreateNetworkContextInNetworkService(
+      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
+
+  if (is_proxy_required_when_cross_origin) {
+    // Configure a context client to ensure Web Reports and other privacy leak
+    // surfaces won't be enabled.
+    mojo::PendingRemote<network::mojom::NetworkContextClient> client_remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<PrefetchNetworkContextClient>(),
+        client_remote.InitWithNewPipeAndPassReceiver());
+    network_context->SetClient(std::move(client_remote));
+  }
+  return network_context;
+}
+
+mojo::Remote<network::mojom::NetworkContext>
+PrefetchService::CreateIsolatedNetworkContextForTesting(  // IN-TEST
+    bool is_proxy_required_when_cross_origin) {
+  return CreateIsolatedNetworkContext(is_proxy_required_when_cross_origin);
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
@@ -1742,7 +1860,31 @@ PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
   if (g_url_loader_factory_for_testing) {
     return base::WrapRefCounted(g_url_loader_factory_for_testing);
   }
-  return prefetch_container->GetOrCreateNetworkContextForCurrentPrefetch(this)
+
+  const bool is_isolated_network_context_required =
+      prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch();
+
+  if (PrefetchNetworkContext* network_context =
+          prefetch_container->GetNetworkContext(
+              is_isolated_network_context_required)) {
+    return network_context->GetURLLoaderFactory();
+  }
+
+  mojo::Remote<network::mojom::NetworkContext> isolated_network_context;
+  if (is_isolated_network_context_required) {
+    const bool is_proxy_required_when_cross_origin =
+        prefetch_container->request()
+            .prefetch_type()
+            .IsProxyRequiredWhenCrossOrigin() &&
+        !prefetch_container->request()
+             .prefetch_type()
+             .IsProxyBypassedForTesting();  // IN-TEST
+    isolated_network_context =
+        CreateIsolatedNetworkContext(is_proxy_required_when_cross_origin);
+  }
+  return prefetch_container
+      ->CreateNetworkContext(is_isolated_network_context_required,
+                             std::move(isolated_network_context))
       ->GetURLLoaderFactory();
 }
 

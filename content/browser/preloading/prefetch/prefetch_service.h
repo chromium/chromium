@@ -247,6 +247,10 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   }
   PrefetchScheduler& GetPrefetchSchedulerForTesting() { return *scheduler_; }
 
+  mojo::Remote<network::mojom::NetworkContext>
+  CreateIsolatedNetworkContextForTesting(
+      bool is_proxy_required_when_cross_origin);
+
   base::WeakPtr<PrefetchService> GetWeakPtr();
 
  private:
@@ -353,6 +357,12 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // |prefetch_container|. |MakePrefetchRequest| must have been previously
   // called.
   void SendPrefetchRequest(base::WeakPtr<PrefetchContainer> prefetch_container);
+
+  // Creates an isolated network context for prefetching. While the returned
+  // `NetworkContext` will be owned/used by a `PrefetchContainer`, the creation
+  // logic here itself doesn't depend on `PrefetchContainer`.
+  mojo::Remote<network::mojom::NetworkContext> CreateIsolatedNetworkContext(
+      bool is_proxy_required_when_cross_origin);
 
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.

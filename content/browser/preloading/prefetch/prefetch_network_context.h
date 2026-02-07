@@ -18,18 +18,19 @@
 namespace content {
 
 class BrowserContext;
-class PrefetchService;
 
 // An isolated network context used for prefetches. The purpose of using a
 // separate network context is to set a custom proxy configuration, and separate
 // any cookies.
 class CONTENT_EXPORT PrefetchNetworkContext {
  public:
-  // Creates an isolated `NetworkContext` (if `use_isolated_network_context`)
-  // and `URLLoaderFactory` inside ctor.
+  // Creates the `URLLoaderFactory` inside ctor.
+  // If `use_isolated_network_context` is true, a valid
+  // `isolated_network_context` should be passed.
   PrefetchNetworkContext(
-      PrefetchService* service,
+      BrowserContext* browser_context,
       bool use_isolated_network_context,
+      mojo::Remote<network::mojom::NetworkContext> isolated_network_context,
       const PrefetchType& prefetch_type,
       const GlobalRenderFrameHostId& referring_render_frame_host_id,
       const std::optional<url::Origin>& referring_origin);
@@ -54,11 +55,6 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   scoped_refptr<network::SharedURLLoaderFactory> CreateNewURLLoaderFactory(
       BrowserContext* browser_context,
       network::mojom::NetworkContext* network_context);
-
-  // Bind |network_context_| to a new network context and configure it to use
-  // the prefetch proxy. Also set up |url_loader_factory_| as a new URL loader
-  // factory for |network_context_|.
-  void CreateIsolatedURLLoaderFactory(PrefetchService* service);
 
   // Whether an isolated network context or the default network context should
   // be used.

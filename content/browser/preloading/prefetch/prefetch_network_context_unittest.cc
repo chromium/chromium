@@ -77,8 +77,10 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
-          prefetch_service(),
+          browser_context(),
           /*use_isolated_network_context=*/true,
+          prefetch_service()->CreateIsolatedNetworkContextForTesting(
+              /*is_proxy_required_when_cross_origin=*/false),
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kImmediate),
@@ -104,8 +106,10 @@ TEST_F(PrefetchNetworkContextTest,
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
-          prefetch_service(),
+          browser_context(),
           /*use_isolated_network_context=*/false,
+          /*isolated_network_context=*/
+          mojo::Remote<network::mojom::NetworkContext>(),
           PrefetchType(PreloadingTriggerType::kSpeculationRule,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kImmediate),
@@ -130,8 +134,10 @@ TEST_F(PrefetchNetworkContextTest,
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
-          prefetch_service(),
+          browser_context(),
           /*use_isolated_network_context=*/false,
+          /*isolated_network_context=*/
+          mojo::Remote<network::mojom::NetworkContext>(),
           PrefetchType(PreloadingTriggerType::kEmbedder,
                        /*use_prefetch_proxy=*/false),
           /*referring_render_frame_host_id=*/GlobalRenderFrameHostId(),
