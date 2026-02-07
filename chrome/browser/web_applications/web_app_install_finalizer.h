@@ -136,15 +136,11 @@ class WebAppInstallFinalizer {
 
   Profile* profile() { return profile_; }
 
-  // Writes external config data to the web_app DB, mapped per source.
-  void WriteExternalConfigMapInfo(
-      WebApp& web_app,
-      WebAppManagement::Type source,
-      bool is_placeholder,
-      GURL install_url,
-      std::vector<std::string> additional_policy_ids);
-
   void SetClockForTesting(base::Clock* clock);
+
+  base::WeakPtr<WebAppInstallFinalizer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class FinalizeInstallJob;
@@ -155,13 +151,6 @@ class WebAppInstallFinalizer {
                             InstallFinalizedCallback callback,
                             const webapps::AppId& app_id,
                             webapps::InstallResultCode code);
-
-  void UpdateIsolationDataAndResetPendingUpdateInfo(
-      WebApp* web_app,
-      const IsolatedWebAppStorageLocation& location,
-      const IwaVersion& version,
-      const std::optional<GURL>& iwa_update_manifest_url,
-      std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
 
   void OnOriginAssociationValidatedForUpdate(
       WebAppInstallInfo web_app_info,

@@ -82,181 +82,6 @@
 
 namespace web_app {
 namespace {
-
-// Overwrite the user display mode if the install source indicates a
-// user-initiated installation
-bool ShouldInstallOverwriteUserDisplayMode(
-    webapps::WebappInstallSource source) {
-  using InstallSource = webapps::WebappInstallSource;
-  switch (source) {
-    case InstallSource::MENU_BROWSER_TAB:
-    case InstallSource::MENU_CUSTOM_TAB:
-    case InstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
-    case InstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
-    case InstallSource::API_BROWSER_TAB:
-    case InstallSource::API_CUSTOM_TAB:
-    case InstallSource::AMBIENT_BADGE_BROWSER_TAB:
-    case InstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-    case InstallSource::RICH_INSTALL_UI_WEBLAYER:
-    case InstallSource::ARC:
-    case InstallSource::CHROME_SERVICE:
-    case InstallSource::ML_PROMOTION:
-    case InstallSource::OMNIBOX_INSTALL_ICON:
-    case InstallSource::MENU_CREATE_SHORTCUT:
-    case InstallSource::PROFILE_MENU:
-    case InstallSource::ALMANAC_INSTALL_APP_URI:
-    case InstallSource::WEBAPK_RESTORE:
-    case InstallSource::OOBE_APP_RECOMMENDATIONS:
-    case InstallSource::WEB_INSTALL:
-    case InstallSource::CHROMEOS_HELP_APP:
-      return true;
-    case InstallSource::DEVTOOLS:
-    case InstallSource::MANAGEMENT_API:
-    case InstallSource::INTERNAL_DEFAULT:
-    case InstallSource::IWA_DEV_UI:
-    case InstallSource::IWA_DEV_COMMAND_LINE:
-    case InstallSource::IWA_GRAPHICAL_INSTALLER:
-    case InstallSource::IWA_EXTERNAL_POLICY:
-    case InstallSource::IWA_SHIMLESS_RMA:
-    case InstallSource::EXTERNAL_DEFAULT:
-    case InstallSource::EXTERNAL_POLICY:
-    case InstallSource::EXTERNAL_LOCK_SCREEN:
-    case InstallSource::SYSTEM_DEFAULT:
-    case InstallSource::SYNC:
-    case InstallSource::SUB_APP:
-    case InstallSource::KIOSK:
-    case InstallSource::PRELOADED_OEM:
-    case InstallSource::PRELOADED_DEFAULT:
-    case InstallSource::MICROSOFT_365_SETUP:
-    case InstallSource::MIGRATION:
-      return false;
-  }
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-// When web apps are added to sync on ChromeOS the value of
-// user_display_mode_default should be set in certain cases to avoid poor sync
-// install states on pre-M122 devices and non-CrOS devices with particular web
-// apps.
-// See switch for specific cases being mitigated against.
-// See go/udm-desync#bookmark=id.cg753kjyrruo for design doc.
-// TODO(b/320771282): Add automated tests.
-void ApplyUserDisplayModeSyncMitigations(
-    const WebAppInstallFinalizer::FinalizeOptions& options,
-    WebApp& web_app) {
-  if (WebAppInstallFinalizer::
-          DisableUserDisplayModeSyncMitigationsForTesting()) {
-    return;
-  }
-
-  // Guaranteed by EnsureAppsHaveUserDisplayModeForCurrentPlatform().
-  CHECK(web_app.sync_proto().has_user_display_mode_cros());
-
-  // Don't mitigate installations from sync, this is only for installs that will
-  // be newly uploaded to sync.
-  if (options.install_surface == webapps::WebappInstallSource::SYNC) {
-    return;
-  }
-
-  // Only mitigate if web app is being added to sync.
-  if (options.source != WebAppManagement::Type::kSync) {
-    return;
-  }
-
-  // Don't override existing default-platform value.
-  if (web_app.sync_proto().has_user_display_mode_default()) {
-    return;
-  }
-
-  sync_pb::WebAppSpecifics sync_proto = web_app.sync_proto();
-
-  switch (web_app.sync_proto().user_display_mode_cros()) {
-    case sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER:
-      // Pre-M122 CrOS devices use the user_display_mode_default sync field
-      // instead of user_display_mode_cros. If user_display_mode_default is ever
-      // unset they will fallback to using kStandalone even if
-      // user_display_mode_cros is set to kBrowser. This mitigation ensures
-      // user_display_mode_default is set to kBrowser for these devices. Example
-      // user journey:
-      // - Install web app as browser shortcut on post-M122 CrOS device.
-      // - Sync installation to pre-M122 CrOS device.
-      // - Check that it is synced as a browser shortcut.
-      // TODO(b/321617981): Remove when there are sufficiently few pre-M122 CrOS
-      // devices in circulation.
-      sync_proto.set_user_display_mode_default(
-          sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-      break;
-
-    case sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE: {
-      // Ensure standalone averse apps don't get defaulted to kStandalone on
-      // non-CrOS devices via sync.
-      // Example user journey:
-      // - Install Google Docs as a standalone web app.
-      // - Sync installation to non-CrOS device.
-      // - Check that it is synced as a browser shortcut.
-      // TODO(b/321617972): Remove when Windows/Mac/Linux support for tabbed web
-      // apps is in sufficient circulation.
-      bool is_standalone_averse_app =
-          web_app.app_id() == ash::kGoogleDocsAppId ||
-          web_app.app_id() == ash::kGoogleSheetsAppId ||
-          web_app.app_id() == ash::kGoogleSlidesAppId;
-      if (!is_standalone_averse_app) {
-        break;
-      }
-      sync_proto.set_user_display_mode_default(
-          sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-      break;
-    }
-
-    case sync_pb::WebAppSpecifics_UserDisplayMode_TABBED:
-      // This can only be reached when kDesktopPWAsTabStripSettings is enabled,
-      // this is only for testing and is planned to be removed.
-      return;
-    case sync_pb::WebAppSpecifics_UserDisplayMode_UNSPECIFIED:
-      // Ignore unknown UserDisplayMode values.
-      return;
-  }
-
-  web_app.SetSyncProto(std::move(sync_proto));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-std::optional<ApiApprovalState> AdjustFileHandlerUserApproval(
-    const WebAppRegistrar& registrar,
-    base::optional_ref<const WebApp> existing_app,
-    const WebApp& new_app) {
-  // Reset the previously obtained file handler approval if the new app's file
-  // handlers form a superset of the existing (approved) file handlers.
-  // Force-installed IWAs are exempt from this rule.
-  if (existing_app &&
-      existing_app->file_handler_approval_state() ==
-          ApiApprovalState::kAllowed &&
-      !registrar.AppMatches(new_app.app_id(),
-                            WebAppFilter::PolicyInstalledIsolatedWebApp()) &&
-      !AreNewFileHandlersASubsetOfOld(existing_app->file_handlers(),
-                                      new_app.file_handlers())) {
-    return ApiApprovalState::kRequiresPrompt;
-  }
-
-  // Isolated sub-apps inherit the force installed parent app's file handler
-  // approval.
-  if (new_app.parent_app_id() &&
-      registrar.AppMatches(*new_app.parent_app_id(),
-                           WebAppFilter::PolicyInstalledIsolatedWebApp())) {
-    return registrar.GetAppFileHandlerUserApprovalState(
-        *new_app.parent_app_id());
-  }
-
-  // First-time IWA installations gain a file handler approval; the user can
-  // reset it in settings.
-  if (!existing_app &&
-      new_app.GetSources().Has(WebAppManagement::Type::kIwaPolicy)) {
-    return ApiApprovalState::kAllowed;
-  }
-
-  return std::nullopt;
-}
-
 }  // namespace
 
 WebAppInstallFinalizer::FinalizeOptions::IwaOptions::IwaOptions(
@@ -313,8 +138,9 @@ void WebAppInstallFinalizer::FinalizeInstall(
   }
 
   std::unique_ptr<FinalizeInstallJob> web_app_install_job =
-      std::make_unique<FinalizeInstallJob>(*profile_, *provider_, *this,
-                                           std::move(web_app_info), options);
+      std::make_unique<FinalizeInstallJob>(*profile_, *provider_, clock_.get(),
+                                           *this, std::move(web_app_info),
+                                           options);
   FinalizeInstallJob* job_ptr = web_app_install_job.get();
   install_jobs_.insert(std::move(web_app_install_job));
   job_ptr->Start(base::BindOnce(&WebAppInstallFinalizer::OnInstallJobFinished,
@@ -330,218 +156,6 @@ void WebAppInstallFinalizer::OnInstallJobFinished(
     webapps::InstallResultCode code) {
   install_jobs_.erase(job);
   std::move(callback).Run(app_id, code);
-}
-
-void WebAppInstallFinalizer::OnOriginAssociationValidated(
-    WebAppInstallInfo web_app_info,
-    FinalizeOptions options,
-    InstallFinalizedCallback callback,
-    OriginAssociations validated_origin_associations) {
-  webapps::AppId app_id = GenerateAppIdFromManifestId(
-      web_app_info.manifest_id(), web_app_info.parent_app_manifest_id);
-
-  const WebApp* existing_web_app =
-      provider_->registrar_unsafe().GetAppById(app_id);
-  std::unique_ptr<WebApp> web_app;
-  if (existing_web_app) {
-    web_app = std::make_unique<WebApp>(*existing_web_app);
-  } else {
-    // Must drop the fragments and queries per `scope` rules
-    // https://w3c.github.io/manifest/#scope-member
-    GURL::Replacements replacements;
-    replacements.ClearRef();
-    replacements.ClearQuery();
-    web_app_info.scope = web_app_info.scope.ReplaceComponents(replacements);
-
-    // TODO(b/344718166): Ensure that manifest_id corresponds to app_id here.
-    web_app = std::make_unique<WebApp>(
-        web_app_info.manifest_id(), web_app_info.start_url(),
-        web_app_info.scope, web_app_info.parent_app_id,
-        web_app_info.parent_app_manifest_id);
-    web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
-  }
-
-  ScopeExtensions validated_scope_extensions =
-      web_app_info.validated_scope_extensions.value_or(
-          validated_origin_associations.scope_extensions);
-  for (auto& scope_extension : validated_scope_extensions) {
-    // This is done to prune any queries or fragments from the scope URL which
-    // may have been skipped by WebAppOriginAssociationManager validation.
-    scope_extension = ScopeExtensionInfo::CreateForScope(
-        scope_extension.scope, scope_extension.has_origin_wildcard);
-  }
-  web_app->SetValidatedScopeExtensions(validated_scope_extensions);
-  web_app->SetValidatedMigrationSources(
-      validated_origin_associations.migration_sources);
-
-  // When testing, the database state is compared with the in-memory registry,
-  // and because proto time has less granularity, this comparison fails unless
-  // we pre-downgrade to proto time and back before saving in our database.
-  const base::Time now_time =
-      syncer::ProtoTimeToTime(syncer::TimeToProtoTime(clock_->Now()));
-
-  // The UI may initiate a full install to overwrite the existing
-  // non-locally-installed app. Therefore, `install_state` can be
-  // promoted to `INSTALLED_WITH_OS_INTEGRATION`, but not vice versa.
-  if (options.install_state ==
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
-    web_app->SetInstallState(
-        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-    // The last install time is always updated if the app has been locally
-    // installed, but the first install time is updated only once.
-    if (web_app->first_install_time().is_null()) {
-      web_app->SetFirstInstallTime(now_time);
-    }
-    // The last install time is updated whenever we (re)install/update.
-    web_app->SetLatestInstallTime(now_time);
-  }
-
-  // Handle going from SUGGESTED_FROM_ANOTHER_DEVICE ->
-  // INSTALLED_WITHOUT_OS_INTEGRATION
-  if (web_app->install_state() ==
-          proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE &&
-      options.install_state ==
-          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION) {
-    web_app->SetInstallState(
-        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
-  }
-
-  // Handle going from SUGGESTED_FROM_MIGRATION to any other state. This
-  // ensures that the apps under migration can have their state overridden by
-  // flows that are allowed to do so, like a sync install.
-  if (web_app->install_state() ==
-          proto::InstallState::SUGGESTED_FROM_MIGRATION &&
-      options.install_state != proto::InstallState::SUGGESTED_FROM_MIGRATION) {
-    web_app->SetInstallState(options.install_state);
-  }
-
-  // If the app install state is explicitly set to be suggested from migration,
-  // honor that over any existing values.
-  if (options.install_state == proto::InstallState::SUGGESTED_FROM_MIGRATION) {
-    web_app->SetInstallState(proto::InstallState::SUGGESTED_FROM_MIGRATION);
-  }
-
-  // Set |user_display_mode| and any user-controllable fields here if this
-  // install is user initiated or it's a new app.
-  if (ShouldInstallOverwriteUserDisplayMode(options.install_surface) ||
-      !existing_web_app) {
-    DCHECK(web_app_info.user_display_mode.has_value());
-    web_app->SetUserDisplayMode(*web_app_info.user_display_mode);
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  ApplyUserDisplayModeSyncMitigations(options, *web_app);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  CHECK(HasCurrentPlatformUserDisplayMode(web_app->sync_proto()));
-
-#if BUILDFLAG(IS_MAC)
-  // Only set this flag for newly installed DIY apps on Mac
-  if (web_app->is_diy_app() &&
-      (!existing_web_app || options.overwrite_existing_manifest_fields)) {
-    web_app->SetDiyAppIconsMaskedOnMac(true);
-  }
-#endif
-
-  // `WebApp::chromeos_data` has a default value already. Only override if the
-  // caller provided a new value.
-  if (options.chromeos_data.has_value())
-    web_app->SetWebAppChromeOsData(options.chromeos_data.value());
-
-  if (provider_->policy_manager().IsWebAppInDisabledList(app_id) &&
-      web_app->chromeos_data().has_value() &&
-      !web_app->chromeos_data()->is_disabled) {
-    std::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
-    cros_data->is_disabled = true;
-    web_app->SetWebAppChromeOsData(std::move(cros_data));
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // `WebApp::system_web_app_data` has a default value already. Only override if
-  // the caller provided a new value.
-  if (options.system_web_app_data.has_value()) {
-    web_app->client_data()->system_web_app_data =
-        options.system_web_app_data.value();
-  }
-#endif
-
-  if (options.iwa_options) {
-    UpdateIsolationDataAndResetPendingUpdateInfo(
-        web_app.get(), options.iwa_options->location,
-        web_app_info.isolated_web_app_version(),
-        web_app_info.iwa_update_manifest_url,
-        options.iwa_options->integrity_block_data);
-
-    HostContentSettingsMap* const host_content_settings_map =
-        HostContentSettingsMapFactory::GetForProfile(profile_);
-
-    host_content_settings_map->SetContentSettingDefaultScope(
-        web_app_info.scope, web_app_info.scope, ContentSettingsType::POPUPS,
-        CONTENT_SETTING_ALLOW);
-  }
-
-  web_app->SetParentAppId(web_app_info.parent_app_id);
-  web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
-
-  bool is_app_suggested_for_migration =
-      web_app->install_state() == proto::SUGGESTED_FROM_MIGRATION;
-  if (is_app_suggested_for_migration) {
-    CHECK_NE(options.source, WebAppManagement::kSync)
-        << " sync installs are not allowed for apps suggested from migration";
-  }
-  web_app->AddSource(options.source);
-  if (options.source == WebAppManagement::kUserInstalled &&
-      IsSyncEnabledForApps(profile_) && !is_app_suggested_for_migration) {
-    web_app->AddSource(WebAppManagement::kSync);
-  }
-
-  web_app->SetIsFromSyncAndPendingInstallation(false);
-  web_app->SetLatestInstallSource(options.install_surface);
-
-  if (!web_app->generated_icon_fix().has_value()) {
-    web_app->SetGeneratedIconFix(web_app_info.generated_icon_fix);
-  }
-
-  if (web_app_info.installed_by.has_value()) {
-    web_app->AddInstalledByInfo(
-        AppInstalledBy(clock_->Now(), web_app_info.installed_by.value()));
-  }
-
-  WriteExternalConfigMapInfo(
-      *web_app, options.source, web_app_info.is_placeholder,
-      web_app_info.install_url, web_app_info.additional_policy_ids);
-
-  if (options.install_state !=
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
-    DCHECK(!(options.add_to_applications_menu || options.add_to_desktop ||
-             options.add_to_quick_launch_bar))
-        << "Cannot create os hooks for a non-fully installed app";
-  }
-
-  std::optional<WebAppScope> old_scope;
-  if (existing_web_app) {
-    old_scope = existing_web_app->GetScope();
-  }
-
-  CommitCallback commit_callback = base::BindOnce(
-      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id, options,
-      std::move(old_scope));
-
-  // Ensure that the pending update info is always reset whenever Finalize*() is
-  // called, to ensure that the state of icons on disk or new installs do not
-  // have left over pending updates.
-  if (options.overwrite_existing_manifest_fields) {
-    web_app->SetPendingUpdateInfo(std::nullopt);
-  }
-
-  if (options.overwrite_existing_manifest_fields || !existing_web_app) {
-    SetWebAppManifestFieldsAndWriteData(
-        web_app_info, std::move(web_app), std::move(commit_callback),
-        options.skip_icon_writes_on_download_failure);
-  } else {
-    // Updates the web app with an additional source.
-    CommitToSyncBridge(std::move(web_app), std::move(commit_callback),
-                       /*success=*/true);
-  }
 }
 
 void WebAppInstallFinalizer::FinalizeUpdate(const WebAppInstallInfo& web_app_info,
@@ -609,29 +223,6 @@ void WebAppInstallFinalizer::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
-void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
-    WebApp* web_app,
-    const IsolatedWebAppStorageLocation& location,
-    const IwaVersion& version,
-    const std::optional<GURL>& iwa_update_manifest_url,
-    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data) {
-  IsolationData::Builder builder(location, version);
-
-  if (web_app->isolation_data()) {
-    builder.PersistFieldsForUpdate(*web_app->isolation_data());
-  }
-
-  if (iwa_update_manifest_url) {
-    builder.SetUpdateManifestUrl(*iwa_update_manifest_url);
-  }
-
-  if (integrity_block_data) {
-    builder.SetIntegrityBlockData(std::move(*integrity_block_data));
-  }
-
-  web_app->SetIsolationData(std::move(builder).Build());
-}
-
 void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
     WebAppInstallInfo web_app_info,
     InstallFinalizedCallback callback,
@@ -669,7 +260,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
            "`IsolationData::PendingUpdateInfo` is set.";
     CHECK_EQ(web_app_info.isolated_web_app_version(),
              pending_update_info->version);
-    UpdateIsolationDataAndResetPendingUpdateInfo(
+    FinalizeInstallJob::UpdateIsolationDataAndResetPendingUpdateInfo(
         web_app.get(), pending_update_info->location,
         pending_update_info->version, web_app_info.iwa_update_manifest_url,
         pending_update_info->integrity_block_data);
@@ -707,23 +298,8 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
   SetWebAppManifestFields(web_app_info, *web_app,
                           skip_icon_writes_on_download_failure);
-  if (auto approval_state =
-          AdjustFileHandlerUserApproval(registrar, existing_app, *web_app)) {
-    web_app->SetFileHandlerApprovalState(*approval_state);
-  }
-
-  // If the validated migration sources change, schedule a command to update
-  // the pending migration info field for all web apps to reflect these
-  // changes.
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
-    auto old_sources = existing_app
-                           ? existing_app->validated_migration_sources()
-                           : std::vector<proto::WebAppMigrationSource>{};
-    if (old_sources != web_app->validated_migration_sources()) {
-      provider_->scheduler().ScheduleResolveWebAppPendingMigrationInfo(
-          base::DoNothing());
-    }
-  }
+  FinalizeInstallJob::AdjustAppStateBeforeCommit(existing_app, *web_app,
+                                                 *provider_);
 
   webapps::AppId app_id = web_app->app_id();
   auto write_translations_callback = base::BindOnce(
@@ -924,30 +500,6 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
   provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
   std::move(callback).Run(app_id,
                           webapps::InstallResultCode::kSuccessAlreadyInstalled);
-}
-
-void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
-    WebApp& web_app,
-    WebAppManagement::Type source,
-    bool is_placeholder,
-    GURL install_url,
-    std::vector<std::string> additional_policy_ids) {
-  DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
-  DCHECK(!(source == WebAppManagement::Type::kUserInstalled && is_placeholder));
-  if (source != WebAppManagement::Type::kSync &&
-      source != WebAppManagement::Type::kUserInstalled &&
-      !WebAppManagement::IsIwaType(source)) {
-    web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
-                                                            is_placeholder);
-    if (install_url.is_valid()) {
-      web_app.AddInstallURLToManagementExternalConfigMap(
-          source, std::move(install_url));
-    }
-    for (const auto& policy_id : additional_policy_ids) {
-      web_app.AddPolicyIdToManagementExternalConfigMap(source,
-                                                       std::move(policy_id));
-    }
-  }
 }
 
 FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
