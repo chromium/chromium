@@ -28,7 +28,8 @@ namespace chrome {
 NSMenu* BuildMainMenu(NSApplication* nsapp,
                       id<NSApplicationDelegate> app_delegate,
                       const std::u16string& product_name,
-                      bool is_pwa);
+                      bool is_pwa,
+                      bool is_rtl);
 
 NSMenuItem* BuildFileMenuForTesting(bool is_pwa);
 

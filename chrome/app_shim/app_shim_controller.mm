@@ -656,7 +656,8 @@ void AppShimController::SendBootstrapOnShimConnected(
 }
 
 void AppShimController::SetUpMenu() {
-  chrome::BuildMainMenu(NSApp, delegate_, params_.app_name, true);
+  chrome::BuildMainMenu(NSApp, delegate_, params_.app_name, /*is_pwa=*/true,
+                        /*is_rtl=*/false);
   UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>());
 }
 
