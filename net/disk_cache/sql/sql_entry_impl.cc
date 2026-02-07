@@ -431,6 +431,10 @@ RangeResult SqlEntryImpl::GetAvailableRange(int64_t offset,
     return RangeResult(net::ERR_INVALID_ARGUMENT);
   }
 
+  // Since the processing of GetAvailableRange is implemented only on the DB,
+  // flush all write buffers.
+  FlushBuffer();
+
   return backend_->GetEntryAvailableRange(key_, db_handle_, offset, len,
                                           std::move(callback));
 }

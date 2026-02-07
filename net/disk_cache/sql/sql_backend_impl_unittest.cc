@@ -2923,5 +2923,48 @@ TEST_F(SqlBackendImplTest, ReadCachingGlobalLimit) {
   entry2_open->Close();
 }
 
+TEST_F(SqlBackendImplTest, GetAvailableRangeWithBufferedWrite) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{net::features::kSqlDiskCacheOptimisticWriteBufferSize.name, "1024"},
+       {net::features::kSqlDiskCacheMaxWriteBufferTotalSize.name, "1024"}});
+
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+  const std::string kData = "some data";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // Write data. This should be buffered because it's small and write buffering
+  // is enabled.
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+  EXPECT_EQ(entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(write_buffer->size()));
+
+  // Verify it is buffered.
+  EXPECT_EQ(backend->GetWriteBufferTotalSizeForTesting(), write_buffer->size());
+
+  // Check GetAvailableRange.
+  base::test::TestFuture<const RangeResult&> range_future;
+  RangeResult result =
+      entry->GetAvailableRange(0, kData.size(), range_future.GetCallback());
+
+  ASSERT_THAT(result.net_error, IsError(net::ERR_IO_PENDING));
+
+  result = range_future.Get();
+  EXPECT_THAT(result.net_error, IsOk());
+  EXPECT_EQ(result.start, 0);
+  EXPECT_EQ(result.available_len, static_cast<int>(kData.size()));
+
+  entry->Close();
+}
+
 }  // namespace
 }  // namespace disk_cache
