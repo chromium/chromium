@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
@@ -326,11 +327,12 @@ export class TraceRecorderElement extends CrLitElement {
     this.updateUrlFromConfig_();
   }
 
-  protected onCategoryChange_(event: Event, categoryName: string): void {
+  protected onCategoryChange_(event: Event): void {
     if (!this.trackEventConfig) {
       return;
     }
     const isChecked = (event.target as HTMLInputElement).checked;
+    const categoryName = (event.currentTarget as HTMLElement).dataset['name']!;
 
     if (isChecked) {
       this.enabledCategories.add(categoryName);
@@ -354,9 +356,11 @@ export class TraceRecorderElement extends CrLitElement {
     return this.enabledEtwEvents[provider].has(keyword);
   }
 
-  protected onEtwEVentChange_(
-      event: CustomEvent<boolean>, provider: EtwProviderType,
-      keyword: string): void {
+  protected onEtwEVentChange_(event: CustomEvent<boolean>) {
+    const index = Number((event.currentTarget as HTMLElement).dataset['index']);
+    const provider = this.etwEvents[index]!.provider;
+    const keyword = this.etwEvents[index]!.keyword;
+
     if (!this.traceConfig) {
       return;
     }
@@ -395,7 +399,17 @@ export class TraceRecorderElement extends CrLitElement {
   }
   // </if>
 
-  protected onTagsChange_(event: Event, tagName: string, enabled: boolean):
+  protected onTagsChangeTrue_(event: Event) {
+    const tagName = (event.currentTarget as HTMLElement).dataset['tag']!;
+    this.onTagsChange_(event, tagName, true);
+  }
+
+  protected onTagsChangeFalse_(event: Event) {
+    const tagName = (event.currentTarget as HTMLElement).dataset['tag']!;
+    this.onTagsChange_(event, tagName, false);
+  }
+
+  private onTagsChange_(event: Event, tagName: string, enabled: boolean):
       void {
     if (!this.trackEventConfig) {
       return;

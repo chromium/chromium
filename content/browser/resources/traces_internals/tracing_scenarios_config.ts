@@ -235,6 +235,14 @@ export class TracingScenariosConfigElement extends CrLitElement {
     }
   }
   // </if>
+
+  protected shouldShowPresetConfig_(): boolean {
+    return this.localConfig_ !== null && this.localConfig_.length > 0;
+  }
+
+  protected shouldShowFieldConfig_(): boolean {
+    return this.fieldConfig_ !== null && this.fieldConfig_.length > 0;
+  }
 }
 
 declare global {

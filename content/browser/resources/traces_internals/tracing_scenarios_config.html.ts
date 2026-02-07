@@ -2,98 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TracingScenariosConfigElement} from './tracing_scenarios_config.js';
-
-function getPresetConfigHtml(this: TracingScenariosConfigElement) {
-  // clang-format off
-  if (this.localConfig_ === null || this.localConfig_.length <= 0) {
-    return nothing;
-  }
-
-  return html`
-  <h2>Local Scenarios</h2>
-  <div class="scenario-list-container">
-  ${this.localConfig_.map((item) => html`
-    <tracing-scenario
-        .scenario="${item}"
-        .enabled="${this.isScenarioEnabled_(item)}"
-        @value-changed="${this.valueDidChange_}"
-        data-key="${item.scenarioName}">
-    </tracing-scenario>`)}
-  </div>`;
-  // clang-format on
-}
-
-function getFieldConfigHtml(this: TracingScenariosConfigElement) {
-  // clang-format off
-  if (this.fieldConfig_ === null || this.fieldConfig_.length <= 0) {
-    return nothing;
-  }
-
-  return html`
-  <h2>Field Scenarios</h2>
-  <div class="scenario-list-container">
-  ${this.fieldConfig_.map((item, index) => html`
-    <tracing-scenario
-        .scenario="${item}"
-        .enabled="${item.isEnabled}"
-        data-index="${index}">
-    </tracing-scenario>
-  `)}
-  </div>`;
-  // clang-format on
-}
-
-function getSystemTracingHtml(this: TracingScenariosConfigElement) {
-  // clang-format off
-  // <if expr="is_win">
-  if (!this.tracingServiceSupported_) {
-    return nothing;
-  }
-
-  return html`
-    <h2>System Tracing</h2>
-    <div class="config-toggle-container">
-      <div class="config-toggle-description">
-        <em>Enable system tracing</em>
-        <span>When on, traces include system-wide events. You must have
-          administrative rights on your computer to modify this setting.</span>
-      </div>
-      <cr-toggle
-          class="config-toggle"
-          ?checked="${this.tracingServiceRegistered_}"
-          @change="${this.onSystemTracingChange_}">
-      </cr-toggle>
-      ${this.securityShieldIconUrl_
-          ? html`<img id="system-tracing-shield"
-                      src="${this.securityShieldIconUrl_}"/>`
-          : nothing}
-    </div>`;
-  // </if>
-  // <if expr="not is_win">
-  return nothing;
-  // </if>
-  // clang-format on
-}
-
-function getPrivacyFilterHtml(this: TracingScenariosConfigElement) {
-  return html`
-    <h2>Privacy Filters</h2>
-    <div class="config-toggle-container">
-      <div class="config-toggle-description">
-        <em>Enable privacy filters</em>
-        <span>Remove untyped and sensitive data like URLs from local scenarios.
-        Needs restart to take effect.</span>
-      </div>
-      <cr-toggle
-          class="config-toggle"
-          ?checked="${this.privacyFilterEnabled_}"
-          @change="${this.privacyFilterDidChange_}">
-      </cr-toggle>
-    </div>`;
-}
 
 export function getHtml(this: TracingScenariosConfigElement) {
   // clang-format off
@@ -103,8 +14,41 @@ export function getHtml(this: TracingScenariosConfigElement) {
     This configuration is designed for local trace collection, enabling you to
     capture detailed information about application execution on your machine.
   </h3>
-  ${getPrivacyFilterHtml.bind(this)()}
-  ${getSystemTracingHtml.bind(this)()}
+  <h2>Privacy Filters</h2>
+  <div class="config-toggle-container">
+    <div class="config-toggle-description">
+      <em>Enable privacy filters</em>
+      <span>Remove untyped and sensitive data like URLs from local scenarios.
+      Needs restart to take effect.</span>
+    </div>
+    <cr-toggle
+        class="config-toggle"
+        ?checked="${this.privacyFilterEnabled_}"
+        @change="${this.privacyFilterDidChange_}">
+    </cr-toggle>
+  </div>
+  <if expr="is_win">
+    ${this.tracingServiceSupported_ ? html`
+      <h2>System Tracing</h2>
+      <div class="config-toggle-container">
+        <div class="config-toggle-description">
+          <em>Enable system tracing</em>
+          <span>When on, traces include system-wide events. You must have
+            administrative rights on your computer to modify this
+            setting.</span>
+        </div>
+        <cr-toggle
+            class="config-toggle"
+            ?checked="${this.tracingServiceRegistered_}"
+            @change="${this.onSystemTracingChange_}">
+        </cr-toggle>
+        ${this.securityShieldIconUrl_ ? html`
+          <img id="system-tracing-shield"
+              src="${this.securityShieldIconUrl_}"/>
+        ` : ''}
+      </div>
+    ` : ''}
+  </if>
   <h2>Scenarios Config</h2>
   <h3>
     You can select a proto (.pb) or base64 encoded (.txt) file that contains
@@ -117,8 +61,30 @@ export function getHtml(this: TracingScenariosConfigElement) {
       @change="${this.onAddConfig_}">
   </input>
   ${this.isLoading_ ? html`<div class="spinner"></div>` : html`
-  ${getFieldConfigHtml.bind(this)()}
-  ${getPresetConfigHtml.bind(this)()}
+  ${this.shouldShowFieldConfig_() ? html`
+    <h2>Field Scenarios</h2>
+    <div class="scenario-list-container">
+    ${this.fieldConfig_.map((item, index) => html`
+      <tracing-scenario
+          .scenario="${item}"
+          .enabled="${item.isEnabled}"
+          data-index="${index}">
+      </tracing-scenario>
+    `)}
+    </div>
+  ` : ''}
+  ${this.shouldShowPresetConfig_() ? html`
+    <h2>Local Scenarios</h2>
+    <div class="scenario-list-container">
+    ${this.localConfig_.map((item) => html`
+      <tracing-scenario
+          .scenario="${item}"
+          .enabled="${this.isScenarioEnabled_(item)}"
+          @value-changed="${this.valueDidChange_}"
+          data-key="${item.scenarioName}">
+      </tracing-scenario>`)}
+    </div>
+  ` : ''}
   <div class="action-panel">
     <cr-button class="action-button"
         @click="${this.resetAllClick_}">
