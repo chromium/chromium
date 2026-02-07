@@ -71,7 +71,10 @@ class OmniboxMetricsProvider : public metrics::MetricsProvider {
   void RecordContextualSearchPrecisionRecallUsage(const OmniboxLog& log);
 
   // Subscription for receiving Omnibox event callbacks.
-  base::CallbackListSubscription subscription_;
+  const base::CallbackListSubscription subscription_;
+
+  // Whether metrics recording is currently enabled.
+  bool metrics_recording_enabled_ = false;
 
   // Saved cache of generated Omnibox event protos, to be copied into the UMA
   // proto when ProvideCurrentSessionData() is called.
