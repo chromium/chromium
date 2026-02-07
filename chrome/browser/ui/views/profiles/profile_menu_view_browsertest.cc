@@ -239,7 +239,7 @@ const char kPasswordManagerPWAUrl[] = "chrome://password-manager/?source=pwa";
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>(
-      webapps::ManifestId(kPasswordManagerId), GURL(kPasswordManagerPWAUrl));
+      webapps::ManifestId(GURL(kPasswordManagerId)), GURL(kPasswordManagerPWAUrl));
   web_app_info->title = u"Password Manager";
   return web_app_info;
 }
