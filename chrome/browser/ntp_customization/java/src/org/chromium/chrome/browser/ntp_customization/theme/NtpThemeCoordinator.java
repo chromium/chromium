@@ -145,7 +145,7 @@ public class NtpThemeCoordinator {
                     NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
                             mContext, bitmap);
             NtpCustomizationConfigManager.getInstance().onUploadedImageSelected(bitmap, info);
-            onImageSelectedForPreviewImpl();
+            onPreviewClosed(/* isImageSelected= */ true);
             return;
         }
 
