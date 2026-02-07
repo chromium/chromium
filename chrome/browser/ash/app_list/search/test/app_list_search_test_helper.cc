@@ -31,10 +31,6 @@ void ResultsWaiter::Wait() {
   run_loop_.Run();
 }
 
-AppListSearchBrowserTest::AppListSearchBrowserTest() {
-  scoped_feature_list_.InitWithFeatures({ash::features::kHelpAppLauncherSearch},
-                                        {});
-}
 
 void AppListSearchBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();

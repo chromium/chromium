@@ -7203,10 +7203,6 @@ inline constexpr char kHelpAppHomePageAppArticlesDescription[] =
     "If enabled, the home page of the Help App will show a section containing"
     "articles about apps.";
 
-inline constexpr char kHelpAppLauncherSearchName[] = "Help App launcher search";
-inline constexpr char kHelpAppLauncherSearchDescription[] =
-    "Enables showing search results from the help app in the launcher.";
-
 inline constexpr char kHelpAppOnboardingRevampName[] =
     "Help App onboarding revamp";
 inline constexpr char kHelpAppOnboardingRevampDescription[] =

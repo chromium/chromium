@@ -66,7 +66,7 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   using ResultType = ash::AppListSearchResultType;
   using DisplayType = ash::SearchResultDisplayType;
 
-  AppListSearchBrowserTest();
+  AppListSearchBrowserTest() = default;
   ~AppListSearchBrowserTest() override = default;
 
   AppListSearchBrowserTest(const AppListSearchBrowserTest&) = delete;

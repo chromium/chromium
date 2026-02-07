@@ -13778,21 +13778,6 @@
             ]
         }
     ],
-    "HelpAppLauncherSearch": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HelpAppLauncherSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "HideDelegatedFrameHostMac": [
         {
             "platforms": [

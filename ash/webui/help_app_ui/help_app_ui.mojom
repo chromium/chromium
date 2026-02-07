@@ -90,9 +90,6 @@ interface PageHandler {
   // TODO(crbug.com/385152937): Remove this since this is no-op.
   TriggerWelcomeTipCallToAction(ActionTypeId action_type_id);
 
-  // Returns true if the Help App Launcher Search feature is enabled.
-  IsLauncherSearchEnabled() => (bool enabled);
-
   // Launches the MS365 setup flow (or shows the final screen of the flow if it
   // was already completed).
   LaunchMicrosoft365Setup();

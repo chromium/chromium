@@ -126,12 +126,10 @@ void HelpAppUI::BindInterface(
 
 void HelpAppUI::BindInterface(
     mojo::PendingReceiver<help_app::mojom::SearchHandler> receiver) {
-  if (base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch)) {
-    help_app::HelpAppManagerFactory::GetForBrowserContext(
-        web_ui()->GetWebContents()->GetBrowserContext())
-        ->search_handler()
-        ->BindInterface(std::move(receiver));
-  }
+  help_app::HelpAppManagerFactory::GetForBrowserContext(
+      web_ui()->GetWebContents()->GetBrowserContext())
+      ->search_handler()
+      ->BindInterface(std::move(receiver));
 }
 
 void HelpAppUI::CreatePageHandler(

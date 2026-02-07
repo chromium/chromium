@@ -1013,9 +1013,6 @@ BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
 // articles about apps.
 BASE_FEATURE(kHelpAppHomePageAppArticles, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable showing search results from the help app in the launcher.
-BASE_FEATURE(kHelpAppLauncherSearch, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a new onboarding experience in the Help App.
 BASE_FEATURE(kHelpAppOnboardingRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
