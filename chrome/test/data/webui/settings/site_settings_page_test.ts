@@ -78,12 +78,6 @@ suite('SiteSettingsPage', function() {
           },
         },
       },
-      tracking_protection: {
-        block_all_3pc_toggle_enabled: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true,
-        },
-      },
     };
     document.body.appendChild(page);
     flush();
