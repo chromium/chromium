@@ -140,6 +140,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Context.QueryEmbeddingLatency" units="ms"
+    expires_after="2026-07-12">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is made in the contextual tasks framework.
+    Records the duration it took to calculate the query embedding.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.RelevantTabsCount" units="count"
     expires_after="2026-07-05">
   <owner>sophiechang@chromium.org</owner>
