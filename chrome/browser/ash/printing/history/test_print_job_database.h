@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_TEST_PRINT_JOB_DATABASE_H_
 
 #include <string>
-#include <unordered_map>
 
 #include "chrome/browser/ash/printing/history/print_job_database.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 
@@ -33,7 +33,7 @@ class TestPrintJobDatabase : public PrintJobDatabase {
 
  private:
   // In-memory database of PrintJobInfo.
-  std::unordered_map<std::string, printing::proto::PrintJobInfo> database_;
+  absl::flat_hash_map<std::string, printing::proto::PrintJobInfo> database_;
 };
 
 }  // namespace ash

@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_DATABASE_IMPL_H_
 
 #include <queue>
-#include <unordered_map>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class FilePath;
@@ -83,7 +83,7 @@ class PrintJobDatabaseImpl : public PrintJobDatabase {
       database_;
 
   // Cached PrintJobInfo entries.
-  std::unordered_map<std::string, printing::proto::PrintJobInfo> cache_;
+  absl::flat_hash_map<std::string, printing::proto::PrintJobInfo> cache_;
 
   // Indicates the status of database initialization.
   InitStatus init_status_;
