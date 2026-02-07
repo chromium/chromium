@@ -23,10 +23,12 @@
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
@@ -37,9 +39,12 @@
 namespace {
 constexpr char kInstallElementId[] = "install-app";
 constexpr char kInstallDialogName[] = "WebAppSimpleInstallDialog";
-// TODO(crbug.com/469026174): Add element-specific telemetry/buckets.
-constexpr char kInstallResultUma[] = "WebApp.WebInstallApi.Result";
-constexpr char kInstallTypeUma[] = "WebApp.WebInstallApi.InstallType";
+constexpr char kInstallResultUma[] = "WebApp.WebInstallElement.Result";
+constexpr char kInstallTypeUma[] = "WebApp.WebInstallElement.InstallType";
+constexpr char kVariantedInstallTypeUma[] =
+    "WebApp.WebInstallService.Element.InstallType";
+constexpr char kVariantedInstallResultUma[] =
+    "WebApp.WebInstallService.Element.Result";
 constexpr char kInstallElementPageStartUrl[] =
     "/web_apps/install_element/index.html";
 constexpr char kInstallElementPageId[] = "/some_id";
@@ -50,6 +55,8 @@ constexpr char kNoCustomIdPageInstallUrl[] =
     "/web_apps/install_url/install_url.html";
 // Since this page has no custom id, it defaults to start_url.
 constexpr char kNoCustomIdPageId[] = "/web_apps/install_url/index.html";
+constexpr char kElementRequestingPageUkm[] = "ElementResultByRequestingPage";
+constexpr char kElementInstalledAppUkm[] = "ElementResultByInstalledApp";
 }  // namespace
 
 namespace web_app {
@@ -172,10 +179,21 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
       GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL("/some_id")));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
-
+  // Check use counter.
   histograms.ExpectBucketCount(
       "Blink.UseCounter.WebDXFeatures",
       blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
+
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 // Test installing from a background document (installurl only).
@@ -192,6 +210,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
   // Setup test listeners and dialog auto-accepts.
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Dynamically set the installurl attribute.
   // Since we're installing by URL only, the manifest must contain an id.
@@ -217,10 +236,38 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
       webapps::ManifestId(https_server()->GetURL(kInstallElementPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
-
+  // Check use counter.
   histograms.ExpectBucketCount(
       "Blink.UseCounter.WebDXFeatures",
       blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
+
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kVariantedInstallTypeUma,
+      web_app::WebInstallServiceType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for element-triggered install.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], kElementRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kSuccess));
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[1], kElementInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kSuccess));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
 }
 
 // Test installing from a background document (both installurl and manifestid).
@@ -237,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
   // Setup test listeners and dialog auto-accepts.
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Dynamically set the installurl and manifestid attributes.
   const GURL install_url = https_server()->GetURL(kNoCustomIdPageInstallUrl);
@@ -262,10 +310,38 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
   webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
-
+  // Check use counter.
   histograms.ExpectBucketCount(
       "Blink.UseCounter.WebDXFeatures",
       blink::mojom::WebDXFeature::kDRAFT_InstallElement, 1);
+
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kVariantedInstallTypeUma,
+      web_app::WebInstallServiceType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for element-triggered install.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], kElementRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kSuccess));
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[1], kElementInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kSuccess));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
@@ -276,6 +352,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
   // Simulate the user declining the install prompt.
   auto auto_decline_pwa_install_confirmation =
       SetAutoDeclinePWAInstallConfirmationForTesting();
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Dynamically set the installurl attribute.
   // Since we're installing by URL only, the manifest must contain an id.
@@ -293,6 +371,34 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
       GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL(kCustomIdPageId)));
   EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallServiceResult::kCanceledByUser, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kCanceledByUser, 1);
+  histograms.ExpectBucketCount(
+      kVariantedInstallTypeUma,
+      web_app::WebInstallServiceType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for element-triggered install cancellation.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], kElementRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kCanceledByUser));
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[1], kElementInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kCanceledByUser));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
 }
 
 // Test that current document install succeeds even when permission is denied,
@@ -305,6 +411,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
 
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
+  base::HistogramTester histograms;
 
   // Block the web install permission for the current document origin.
   BlockWebInstallPermission(current_document_url);
@@ -329,12 +436,22 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
       webapps::ManifestId(https_server()->GetURL(kInstallElementPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 // Test that when permission is denied for background document install, install
 // still occurs. <install> elements bypass permission.
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
-                       InstallWithUrl_IgnoreDeniedPermission) {
+                       InstallWithUrl_IgnoresDeniedPermission) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
@@ -346,6 +463,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   // Dynamically set the installurl attribute to a background document URL.
   const GURL install_url = https_server()->GetURL(kCustomIdPageInstallUrl);
   ASSERT_TRUE(SetButtonInstallUrl(install_url));
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Block the web install permission for this origin.
   BlockWebInstallPermission(install_url);
@@ -369,6 +488,37 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
       GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL(kCustomIdPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  // The element does not check or use the permission.
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallServiceResult::kPermissionDenied,
+      0);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kPermissionDenied, 0);
+  histograms.ExpectBucketCount(
+      kVariantedInstallTypeUma,
+      web_app::WebInstallServiceType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for element-triggered install.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], kElementRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kSuccess));
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[1], kElementInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallServiceResult::kSuccess));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
@@ -419,14 +569,20 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       generated_app_id, WebAppFilter::LaunchableFromInstallApi()));
 
-  // TODO(crbug.com/469026174): Add element-specific telemetry/buckets.
   histograms.ExpectBucketCount("WebApp.LaunchSource",
                                apps::LaunchSource::kFromWebInstallApi, 1);
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
-      1);
+      kInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
   histograms.ExpectBucketCount(
-      kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  histograms.ExpectBucketCount(
+      kVariantedInstallTypeUma,
+      web_app::WebInstallServiceType::kBackgroundDocument, 1);
 }
 
 // Tests the case where an app is already installed on initial page load, then

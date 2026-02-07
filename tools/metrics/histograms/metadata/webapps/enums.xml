@@ -816,9 +816,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FailedErrorPageLoaded"/>
 </enum>
 
-<!-- LINT.IfChange(WebInstallApiResult) -->
+<!-- LINT.IfChange(WebInstallServiceResult) -->
 
-<enum name="WebInstallApiResult">
+<enum name="WebInstallServiceResult">
   <int value="0" label="Success"/>
   <int value="1" label="Success Already Installed"/>
   <int value="2" label="Unexpected failure"/>
@@ -830,16 +830,16 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Manifest id mismatch"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/web_applications/web_install_service_impl.h:WebInstallApiResult) -->
+<!-- LINT.ThenChange(/chrome/browser/web_applications/web_install_service_impl.h:WebInstallServiceResult) -->
 
-<!-- LINT.IfChange(WebInstallApiType) -->
+<!-- LINT.IfChange(WebInstallServiceType) -->
 
-<enum name="WebInstallApiType">
+<enum name="WebInstallServiceType">
   <int value="0" label="Current Document"/>
   <int value="1" label="Background Document"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/web_applications/web_install_service_impl.h:WebInstallApiType) -->
+<!-- LINT.ThenChange(/chrome/browser/web_applications/web_install_service_impl.h:WebInstallServiceType) -->
 
 <enum name="WinRegistryErrorCode">
   <int value="0" label="ERROR_OTHER"/>

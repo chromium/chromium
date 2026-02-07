@@ -71,6 +71,10 @@ constexpr char kNotAllowedError[] = "NotAllowedError";
 constexpr char kTypeError[] = "TypeError";
 constexpr char kInstallResultUma[] = "WebApp.WebInstallApi.Result";
 constexpr char kInstallTypeUma[] = "WebApp.WebInstallApi.InstallType";
+constexpr char kVariantedInstallTypeUma[] =
+    "WebApp.WebInstallService.Api.InstallType";
+constexpr char kVariantedInstallResultUma[] =
+    "WebApp.WebInstallService.Api.Result";
 constexpr char kRequestingPageUkm[] = "ResultByRequestingPage";
 constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 }  // namespace
@@ -211,9 +215,15 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
                                 /*sample=*/true, 1);
 
   histograms.ExpectBucketCount(kInstallResultUma,
-                               web_app::WebInstallApiResult::kSuccess, 1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 
   // TODO(crbug.com/402806158): Log the correct InstallMetrics for current
   // document installs. Until we refactor all the commands, just verify that
@@ -260,9 +270,16 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   histograms.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource,
                                 1);
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kCanceledByUser, 1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kCanceledByUser, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kCanceledByUser, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -307,10 +324,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   histograms.ExpectUniqueSample("WebApp.LaunchSource",
                                 apps::LaunchSource::kFromReparenting, 2);
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
-      1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -344,10 +368,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 
   // Validate browser results.
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
-      1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -400,10 +431,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 
   // Validate browser results.
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
-      1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kSuccessAlreadyInstalled, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 // Tests for WebAppInstallNotSupportedDialog appearing in Incognito and Guest
@@ -455,9 +493,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
   EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
 
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
+      1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
@@ -508,9 +554,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
   EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
 
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
+      1);
   histograms.ExpectBucketCount(
-      kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(
+      kVariantedInstallTypeUma,
+      web_app::WebInstallServiceType::kBackgroundDocument, 1);
 
   // Verify UKM entries.
   auto ukm_entries = ukm_recorder.GetEntriesByName(
@@ -518,13 +572,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
   ASSERT_EQ(2u, ukm_entries.size());
   ukm_recorder.ExpectEntryMetric(
       ukm_entries[0], kRequestingPageUkm,
-      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
   // First entry should be of source type, NAVIGATION_ID.
   EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
             ukm::SourceIdType::NAVIGATION_ID);
   ukm_recorder.ExpectEntryMetric(
       ukm_entries[1], kInstalledAppUkm,
-      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
   // Second entry should be of source type, APP_ID.
   EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
             ukm::SourceIdType::APP_ID);
@@ -566,9 +620,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
   EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
 
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
+      1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 class WebInstallGuestModeTest : public WebInstallCurrentDocumentBrowserTest {
@@ -640,9 +702,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
   EXPECT_EQ(GetErrorName(guest_web_contents), kAbortError);
 
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
+      1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
@@ -700,9 +770,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
   EXPECT_EQ(GetErrorName(guest_web_contents), kAbortError);
 
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
+      1);
   histograms.ExpectBucketCount(
-      kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+      kInstallTypeUma, web_app::WebInstallServiceType::kBackgroundDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(
+      kVariantedInstallTypeUma,
+      web_app::WebInstallServiceType::kBackgroundDocument, 1);
 
   // Verify UKM entries.
   auto ukm_entries = ukm_recorder.GetEntriesByName(
@@ -710,13 +788,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
   ASSERT_EQ(2u, ukm_entries.size());
   ukm_recorder.ExpectEntryMetric(
       ukm_entries[0], kRequestingPageUkm,
-      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
   // First entry should be of source type, NAVIGATION_ID.
   EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
             ukm::SourceIdType::NAVIGATION_ID);
   ukm_recorder.ExpectEntryMetric(
       ukm_entries[1], kInstalledAppUkm,
-      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+      static_cast<int>(web_app::WebInstallServiceResult::kUnsupportedProfile));
   // Second entry should be of source type, APP_ID.
   EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
             ukm::SourceIdType::APP_ID);
@@ -797,9 +875,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallPolicyDisabledTest,
   EXPECT_EQ(GetErrorName(web_contents_ptr), kAbortError);
 
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kUnsupportedProfile,
+      1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -825,10 +911,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kInstallCommandFailed,
-      1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma,
+      web_app::WebInstallServiceResult::kInstallCommandFailed, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kInstallCommandFailed, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
@@ -844,9 +937,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectBucketCount(
-      kInstallResultUma, web_app::WebInstallApiResult::kNoCustomManifestId, 1);
-  histograms.ExpectBucketCount(kInstallTypeUma,
-                               web_app::WebInstallApiType::kCurrentDocument, 1);
+      kInstallResultUma, web_app::WebInstallServiceResult::kNoCustomManifestId,
+      1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 1);
+  // Check the varianted UMAs.
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kNoCustomManifestId, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               1);
 }
 
 // Test that closing the web contents during manifest retrieval doesn't cause

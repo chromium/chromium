@@ -28165,12 +28165,14 @@ be describing additional metrics about the same event.
   <owner>pwa-team@google.com</owner>
   <summary>
     Recorded when a site attempts to install another site that isn't the current
-    document via Web Install API.
+    document. There are two possible entry points to the install - The Web
+    Install API (navigator.install) and the install element. For any given
+    install, either the first *or* second metric pairs will be recorded.
   </summary>
-  <metric name="ResultByInstalledApp" enum="WebInstallApiResult">
+  <metric name="ElementResultByInstalledApp" enum="WebInstallServiceResult">
     <summary>
-      Records the result of the Web Install API for the URL of the target site
-      that we attempted to install as a web app via the API.
+      Records the result of one activation of the install element for the URL of
+      the target site that we attempted to install.
     </summary>
     <aggregation>
       <history>
@@ -28180,7 +28182,26 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="ResultByRequestingPage" enum="WebInstallApiResult">
+  <metric name="ElementResultByRequestingPage" enum="WebInstallServiceResult">
+    <summary>
+      Records the result of one activation of the install element for the URL of
+      the requesting page that the element was activated from.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ResultByInstalledApp" enum="WebInstallServiceResult">
+    <summary>
+      Records the result of the Web Install API for the URL of the target site
+      that we attempted to install as a web app via the API.
+    </summary>
+  </metric>
+  <metric name="ResultByRequestingPage" enum="WebInstallServiceResult">
     <summary>
       Records the result of the Web Install API for the URL of the requesting
       page that invoked the API.

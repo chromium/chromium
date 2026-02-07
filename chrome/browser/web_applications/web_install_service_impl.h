@@ -38,8 +38,8 @@ class WebAppProvider;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange(WebInstallApiResult)
-enum class WebInstallApiResult {
+// LINT.IfChange(WebInstallServiceResult)
+enum class WebInstallServiceResult {
   kSuccess = 0,
   kSuccessAlreadyInstalled = 1,
   kUnexpectedFailure = 2,
@@ -52,25 +52,25 @@ enum class WebInstallApiResult {
   // Insert new values above this line.
   kMaxValue = kManifestIdMismatch,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallApiResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallServiceResult)
 
 // Install types for the Web Install API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange(WebInstallApiType)
-enum class WebInstallApiType {
+// LINT.IfChange(WebInstallServiceType)
+enum class WebInstallServiceType {
   kCurrentDocument = 0,
   kBackgroundDocument = 1,
   // Insert new values above this line.
   kMaxValue = kBackgroundDocument,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallApiType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallServiceType)
 
 // Used to coordinate running the `InstallCallback` from `Install()` with firing
 // the appropriate Uma result.
 using InstallCallbackWithMetrics =
-    base::OnceCallback<void(web_app::WebInstallApiResult,
+    base::OnceCallback<void(web_app::WebInstallServiceResult,
                             blink::mojom::WebInstallServiceResult,
                             webapps::ManifestId)>;
 
