@@ -109,13 +109,8 @@ void FilteredGestureProvider::OnUnconfirmedTapConvertedToTap() {
   gesture_provider_->OnUnconfirmedTapConvertedToTap();
 }
 
-bool FilteredGestureProvider::HasPendingTapTimeoutForTesting() const {
-  if (!gesture_provider_->GetGestureDetectorForTesting()) {  // IN-TEST
-    return false;
-  }
-  return gesture_provider_
-      ->GetGestureDetectorForTesting()     // IN-TEST
-      ->HasPendingTapTimeoutForTesting();  // IN-TEST
+GestureDetector* FilteredGestureProvider::GetGestureDetectorForTesting() {
+  return gesture_provider_->GetGestureDetectorForTesting();  // IN-TEST
 }
 
 void FilteredGestureProvider::OnGestureEvent(const GestureEventData& event) {

@@ -129,6 +129,17 @@ class GestureDetector::TimeoutGestureHandler {
     return timeout_timers_[event].IsRunning();
   }
 
+  void SetTaskRunnerForTesting(  // IN-TEST
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    for (auto& timer : timeout_timers_) {
+      timer.SetTaskRunner(task_runner);
+    }
+  }
+
+  base::TimeDelta GetTimeoutDelayForTesting(TimeoutEvent event) const {
+    return timeout_delays_[event];
+  }
+
  private:
   typedef void (GestureDetector::*ReceiverMethod)();
 
@@ -262,8 +273,10 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
       if (double_tap_listener_ && should_process_double_tap) {
         is_down_candidate_for_repeated_single_tap_ = false;
         bool had_tap_message = timeout_handler_->HasTimeout(TAP);
-        if (had_tap_message)
+        if (had_tap_message) {
           timeout_handler_->StopTimeout(TAP);
+          unconfirmed_tap_was_converted_to_tap_ = false;
+        }
         if (is_repeated_tap && had_tap_message) {
           // This is a second tap.
           is_double_tapping_ = true;
@@ -517,6 +530,11 @@ void GestureDetector::OnLongPressTimeout() {
 }
 
 void GestureDetector::OnTapTimeout() {
+  if (base::FeatureList::IsEnabled(kFixDoubleClickNotWorking) &&
+      unconfirmed_tap_was_converted_to_tap_) {
+    unconfirmed_tap_was_converted_to_tap_ = false;
+    return;
+  }
   if (!double_tap_listener_)
     return;
   if (!still_down_) {
@@ -675,11 +693,19 @@ const MotionEvent* GestureDetector::GetSourcePointerDownEvent(
 }
 
 void GestureDetector::OnUnconfirmedTapConvertedToTap() {
-  timeout_handler_->StopTimeout(TAP);
+  unconfirmed_tap_was_converted_to_tap_ = true;
+  if (!base::FeatureList::IsEnabled(kFixDoubleClickNotWorking)) {
+    timeout_handler_->StopTimeout(TAP);
+  }
 }
 
-bool GestureDetector::HasPendingTapTimeoutForTesting() const {
-  return timeout_handler_->HasTimeout(TAP);
+void GestureDetector::SetGestureTimeoutHandlerTaskRunnerForTesting(  // IN-TEST
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  timeout_handler_->SetTaskRunnerForTesting(std::move(task_runner));  // IN-TEST
+}
+
+base::TimeDelta GestureDetector::GetDoubleTapTimeoutForTesting() const {
+  return timeout_handler_->GetTimeoutDelayForTesting(TAP);  // IN-TEST
 }
 
 }  // namespace ui

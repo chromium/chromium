@@ -32,6 +32,11 @@ extern const base::FeatureParam<bool>
 EVENTS_BASE_EXPORT
 BASE_DECLARE_FEATURE(kLegacyKeyRepeatSynthesis);
 
+// TODO(https://crbug.com/479387350): Cleanup kill-switch once it's confirmed
+// the fix works well in field.
+EVENTS_BASE_EXPORT
+BASE_DECLARE_FEATURE(kFixDoubleClickNotWorking);
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_FEATURES_H_
