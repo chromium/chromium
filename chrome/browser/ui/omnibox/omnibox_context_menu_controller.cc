@@ -726,18 +726,24 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           composebox_handler->SetActiveModelMode(
               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
         }
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
         break;
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
         if (use_input_state_model) {
           composebox_handler->SetActiveModelMode(
               omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
         }
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
         break;
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
         if (use_input_state_model) {
           composebox_handler->SetActiveModelMode(
               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
         }
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
         break;
       default:
         NOTREACHED();
