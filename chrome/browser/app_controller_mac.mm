@@ -95,8 +95,10 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -538,6 +540,11 @@ Profile* GetLastProfileMac() {
 // Reset `_keepAlive` if Chrome is running in hidden mode, recreating it when
 // Chrome is no longer hidden.
 - (void)resetKeepAliveWhileHidden;
+
+// A callback that updates the relevant commands in the tab menu that depend on
+// position of the tab strip.
+- (void)onVerticalTabStripModeChanged:
+    (tabs::VerticalTabStripStateController*)stateController;
 @end
 
 class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
@@ -747,6 +754,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // By remembering this bit, Chromium knows whether to enable or disable
   // Cmd+Shift+T and the related "File > Reopen Closed Tab" entry.
   BOOL _tabRestoreWasEnabled;
+
+  // Callback subscription that notifies when the mode of the vertical tab strip
+  // state controller changes.
+  base::CallbackListSubscription _verticalTabSubscription;
 
   // The color provider associated with the last active browser view.
   raw_ptr<const ui::ColorProvider, DanglingUntriaged> _lastActiveColorProvider;
@@ -1069,12 +1080,36 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   if (!browser)
     return;
 
+  // Since we may have different windows with different profiles, we clear the
+  // subscription each time a window becomes the main.
+  _verticalTabSubscription = {};
+
   if (browser->is_type_normal()) {
     if (!_tabMenuBridge) {
       _tabMenuBridge = std::make_unique<TabMenuBridge>(
           [[NSApp mainMenu] itemWithTag:IDC_TAB_MENU]);
     }
     _tabMenuBridge->SetTabStripModel(browser->tab_strip_model());
+
+    if (tabs::IsVerticalTabsFeatureEnabled()) {
+      if (auto* vertical_tab_strip_state_controller =
+              tabs::VerticalTabStripStateController::From(browser)) {
+        _verticalTabSubscription =
+            vertical_tab_strip_state_controller->RegisterOnModeChanged(
+                base::BindRepeating(
+                    [](AppController* controller,
+                       tabs::VerticalTabStripStateController*
+                           state_controller) {
+                      [controller
+                          onVerticalTabStripModeChanged:state_controller];
+                    },
+                    self));
+        // If the browser begins in VT mode, we want to ensure that we have the
+        // correct text.
+        [self
+            onVerticalTabStripModeChanged:vertical_tab_strip_state_controller];
+      }
+    }
   } else if (_tabMenuBridge) {
     _tabMenuBridge->SetTabStripModel(nullptr);
   }
@@ -1083,6 +1118,32 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   [self setLastProfile:profile];
   _lastActiveColorProvider = browser->window()->GetColorProvider();
+}
+
+- (void)onVerticalTabStripModeChanged:
+    (tabs::VerticalTabStripStateController*)stateController {
+  if (_tabMenuBridge) {
+    NSMenu* tabSubmenu = [[[NSApp mainMenu] itemWithTag:IDC_TAB_MENU] submenu];
+    NSMenuItem* newTabPositionalItem =
+        [tabSubmenu itemWithTag:IDC_NEW_TAB_TO_RIGHT];
+    NSMenuItem* closeTabsPositionalItem =
+        [tabSubmenu itemWithTag:IDC_WINDOW_CLOSE_TABS_TO_RIGHT];
+
+    bool enabled = stateController->ShouldDisplayVerticalTabs();
+    bool is_rtl = base::i18n::IsRTL();
+
+    [newTabPositionalItem
+        setTitle:l10n_util::GetNSString(enabled ? IDS_TAB_CXMENU_NEWTABBELOW
+                                        : is_rtl
+                                            ? IDS_TAB_CXMENU_NEWTABTOLEFT
+                                            : IDS_TAB_CXMENU_NEWTABTORIGHT)];
+
+    [closeTabsPositionalItem
+        setTitle:l10n_util::GetNSString(enabled ? IDS_TAB_CXMENU_CLOSETABSBELOW
+                                        : is_rtl
+                                            ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT)];
+  }
 }
 
 // Called when shutting down or logging out.
