@@ -34,6 +34,7 @@
 #include "components/search_provider_logos/switches.h"
 #include "net/base/url_util.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -317,7 +318,8 @@ TemplateUrlServiceAndroid::GetComposeplateUrl(JNIEnv* env,
                    /*query_start_time=*/base::Time::Now(),
                    /*query_text=*/std::u16string(),
                    lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
-                   /*additional_params=*/{}));
+                   /*additional_params=*/{},
+                   omnibox::ModelMode::MODEL_MODE_UNSPECIFIED));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

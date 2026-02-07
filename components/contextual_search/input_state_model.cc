@@ -454,16 +454,6 @@ std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
       break;
   }
 
-  switch (state_.active_model) {
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
-      additional_params["m"] = "1";
-      break;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
-      additional_params["m"] = "2";
-      break;
-    default:
-      break;
-  }
   return additional_params;
 }
 

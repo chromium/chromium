@@ -19,6 +19,7 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
 
 class KeywordWebDataService;
 class PrefService;
@@ -235,7 +236,8 @@ GURL GetUrlForAim(
     const base::Time& query_start_time,
     const std::u16string& query_text,
     const std::optional<lens::LensOverlayInvocationSource> invocation_source,
-    std::map<std::string, std::string> additional_params);
+    std::map<std::string, std::string> additional_params,
+    omnibox::ModelMode model_mode);
 
 // Retrieves the URL for the AIM web page if the a file was uploaded as part
 // of the input.

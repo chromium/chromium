@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#import "third_party/omnibox_proto/model_mode.pb.h"
 
 bool ShouldShowTopOfFeedSyncPromo() {
   // Checks the flag and ensures that the user is not in first run.
@@ -23,11 +24,11 @@ bool ShouldShowTopOfFeedSyncPromo() {
 
 GURL GetUrlForAim(TemplateURLService* turl_service,
                   const base::Time& query_start_time) {
-  return GetUrlForAim(turl_service,
-                      omnibox::IOS_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT,
-                      query_start_time, /*query_text=*/u"",
-                      lens::LensOverlayInvocationSource::kNtpContextualQuery,
-                      /*additional_params=*/{});
+  return GetUrlForAim(
+      turl_service, omnibox::IOS_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT,
+      query_start_time, /*query_text=*/u"",
+      lens::LensOverlayInvocationSource::kNtpContextualQuery,
+      /*additional_params=*/{}, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 }
 
 UIButtonConfigurationUpdateHandler CreateThemedButtonConfigurationUpdateHandler(

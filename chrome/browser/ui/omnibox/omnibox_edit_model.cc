@@ -87,6 +87,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -808,12 +809,12 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
     }
   }
 
-  GURL ai_mode_url =
-      GetUrlForAim(controller_->client()->GetTemplateURLService(),
-                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
-                   /*query_start_time=*/base::Time::Now(), query_text,
-                   lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
-                   /*additional_params=*/{});
+  GURL ai_mode_url = GetUrlForAim(
+      controller_->client()->GetTemplateURLService(),
+      omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
+      /*query_start_time=*/base::Time::Now(), query_text,
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+      /*additional_params=*/{}, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
   controller_->client()->OpenUrl(ai_mode_url);
 }
 
