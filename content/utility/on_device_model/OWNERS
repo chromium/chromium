@@ -1,2 +1,4 @@
+file://services/on_device_model/OWNERS
+
 per-file on_device_model_sandbox_init.*=set noparent
 per-file on_device_model_sandbox_init.*=file://sandbox/linux/OWNERS
