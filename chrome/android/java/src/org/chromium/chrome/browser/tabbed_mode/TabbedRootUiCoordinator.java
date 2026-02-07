@@ -316,7 +316,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
-    private final @NonNull CrossDeviceSettingImporter mCrossDeviceSettingImporter;
+    private final @Nullable CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private @Nullable SideUiCoordinator mSideUiCoordinator;
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
     private final OneshotSupplierImpl<Boolean> mTrackerInitializedOneshotSupplier =
@@ -644,12 +644,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 });
 
         mCrossDeviceSettingImporter =
-                new CrossDeviceSettingImporter(
-                        activityLifecycleDispatcher,
-                        mActivityTabProvider.asObservable(),
-                        mActivity,
-                        modalDialogManagerSupplier,
-                        snackbarManagerSupplier);
+                DeviceInfo.isDesktop()
+                        ? null
+                        : new CrossDeviceSettingImporter(
+                                activityLifecycleDispatcher,
+                                mActivityTabProvider.asObservable(),
+                                mActivity,
+                                modalDialogManagerSupplier,
+                                snackbarManagerSupplier);
 
         new OneShotCallback<>(mProfileSupplier, this::waitForTrackerInit);
 
@@ -815,7 +817,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager = null;
         }
 
-        mCrossDeviceSettingImporter.destroy();
+        if (mCrossDeviceSettingImporter != null) {
+            mCrossDeviceSettingImporter.destroy();
+        }
 
         if (mSideUiCoordinator != null) {
             mSideUiCoordinator.destroy();
