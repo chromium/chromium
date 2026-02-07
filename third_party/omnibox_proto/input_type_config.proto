@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'InputTypeConfigProto';
+
+package omnibox;
+
+import "input_type.proto";
+import "input_type_rule.proto";
+
+// Configuration for an input type.
+// Next ID: 4
+message InputTypeConfig {
+  // The input type.
+  optional InputType input_type = 1;
+  // The label for the input type in a menu.
+  optional string menu_label = 2;
+  // The constraint rule for the input type.
+  optional InputTypeRule rule = 3;
+}

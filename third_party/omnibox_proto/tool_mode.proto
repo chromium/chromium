@@ -6,7 +6,7 @@ syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
-option java_outer_classname = 'AimToolsProto';
+option java_outer_classname = 'ToolModeProto';
 
 package omnibox;
 
@@ -14,11 +14,17 @@ package omnibox;
 // In the AIM Composebox, tools can be added to a query to enter a
 // specific mode. For example, some modes include "deep search", "create
 // images", and "canvas".
-// Next ID: 5
+// Next ID: 11
 enum ToolMode {
   TOOL_MODE_UNSPECIFIED = 0;
   TOOL_MODE_DEEP_SEARCH = 1;
   TOOL_MODE_CANVAS = 2;
+  TOOL_MODE_GEMINI_PRO = 3;
   TOOL_MODE_IMAGE_GEN = 4;
+  TOOL_MODE_DEEP_BROWSE = 5;
+  TOOL_MODE_IMAGE_GEN_SELFIE = 6;
   TOOL_MODE_IMAGE_GEN_UPLOAD = 7;
+  TOOL_MODE_DISABLE_SUGGEST = 8;
+  TOOL_MODE_AIM = 9;
+  TOOL_MODE_AIM_GEN_PROMPT = 10;
 }

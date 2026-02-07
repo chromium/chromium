@@ -11,9 +11,11 @@ option java_outer_classname = 'ToolConfigProto';
 package omnibox;
 
 import "tool_mode.proto";
+import "tool_rule.proto";
+import "url_param.proto";
 
 // Configuration for a tool mode.
-// Next ID: 6
+// Next ID: 8
 message ToolConfig {
   // The tool mode.
   ToolMode tool = 1;
@@ -27,4 +29,9 @@ message ToolConfig {
   string chip_label = 4;
   // The hint text in the input text field when this tool is selected.
   string hint_text = 5;
+  // The constraint rule for the tool.
+  optional ToolRule rule = 6;
+  // The URL params to be appended to the /search or /folif URLs when this tool
+  // is chosen.
+  repeated UrlParam aim_url_params = 7;
 }

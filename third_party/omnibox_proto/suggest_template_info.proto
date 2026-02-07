@@ -43,6 +43,7 @@ message SuggestTemplateInfo {
     // A sub arrow right icon.
     SUB_ARROW_RIGHT = 5;
     // A globe with a search loop icon, typically used for deep search.
+    //
     GLOBE_WITH_SEARCH_LOOP = 6;
     // Banana icon, typically used for nano banana suggestions.
     // Uses the banana emoji.
@@ -51,6 +52,7 @@ message SuggestTemplateInfo {
     // is from.
     FAVICON = 8;
     // Notes spark icon, used for AIM More Threads suggestions.
+    //
     NOTES_SPARK = 9;
   }
 

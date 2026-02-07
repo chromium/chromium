@@ -10,9 +10,9 @@ option java_outer_classname = 'ModelRuleProto';
 
 package omnibox;
 
+import "input_type.proto";
 import "model_mode.proto";
 import "tool_mode.proto";
-import "input_type.proto";
 
 message ModelRule {
   optional ModelMode model = 1;
