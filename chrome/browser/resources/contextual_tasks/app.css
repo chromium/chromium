@@ -190,6 +190,19 @@
   overflow: hidden;
 }
 
+:host([enable-basic-mode-zorder_]) #threadFrame {
+  background: transparent;
+}
+
+:host([is-in-basic-mode_][enable-basic-mode-zorder_]) #threadFrame {
+  z-index: 1;
+  position: relative;
+}
+
+:host([is-in-basic-mode_][enable-basic-mode-zorder_]) .flex-center {
+  z-index: 0;
+}
+
 /* Disable scroll for zero state. */
 :host([is-zero-state_]) {
   overflow: hidden;

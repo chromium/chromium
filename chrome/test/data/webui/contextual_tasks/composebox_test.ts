@@ -249,6 +249,7 @@ suite('ContextualTasksComposeboxTest', () => {
     loadTimeData.overrideValues({
       composeboxShowTypedSuggest: true,
       composeboxShowZps: true,
+      enableBasicModeZOrder: true,
     });
 
     testProxy = new TestContextualTasksBrowserProxy('https://google.com');
@@ -464,36 +465,86 @@ suite('ContextualTasksComposeboxTest', () => {
         2, mockComposeboxPageHandler.getCallCount('handleLensButtonClick'));
   });
 
-  test('hides composebox and header when hideInput called', async () => {
-    const composebox = contextualTasksApp.$.composebox;
-    const header = contextualTasksApp.$.composeboxHeaderWrapper;
+  test(
+      'hides composebox and header using z-index when hideInput called',
+      async () => {
+        const composeboxElement = contextualTasksApp.$.composebox;
+        const threadFrame = contextualTasksApp.$.threadFrame;
+        const flexCenterContainer = contextualTasksApp.$.flexCenterContainer;
 
-    testProxy.callbackRouterRemote.hideInput();
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
+        testProxy.callbackRouterRemote.hideInput();
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
 
-    assertTrue(!!composebox, 'Composebox should exist after hideInput');
-    assertTrue(!!header, 'Composebox header should exist after hideInput');
+        assertFalse(
+            composeboxElement.hidden,
+            'Composebox should NOT be hidden with z-order flag');
 
-    assertTrue(
-        header.hidden, 'Composebox header should be hidden after hideInput');
-    assertTrue(
-        composebox.hidden, 'Composebox should be hidden after hideInput');
+        const threadFrameStyle = getComputedStyle(threadFrame);
+        const flexCenterStyle = getComputedStyle(flexCenterContainer);
 
-    testProxy.callbackRouterRemote.restoreInput();
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
+        assertEquals(
+            '1', threadFrameStyle.zIndex, 'Thread frame z-index should be 1');
+        assertEquals(
+            '0', flexCenterStyle.zIndex,
+            'Flex center container z-index should be 0');
 
-    assertTrue(!!composebox, 'Composebox should exist after restoreInput');
-    assertFalse(
-        composebox.hidden,
-        'Composebox should not be hidden after restoreInput');
+        testProxy.callbackRouterRemote.restoreInput();
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
 
-    assertTrue(!!header, 'Composebox header should exist after restoreInput');
-    assertFalse(
-        header.hidden,
-        'Composebox header should not be hidden after restoreInput');
-  });
+        const threadFrameStyleRestored = getComputedStyle(threadFrame);
+        const flexCenterStyleRestored = getComputedStyle(flexCenterContainer);
+
+        assertFalse(
+            threadFrameStyleRestored.zIndex === '1',
+            'Thread frame z-index should not be 1 after restore');
+        assertFalse(
+            flexCenterStyleRestored.zIndex === '0',
+            'Flex center container z-index should not be 0 after restore');
+      });
+
+  test(
+      'hides composebox and header when hideInput called  and enableBasicModeZOrder is false',
+      async () => {
+        loadTimeData.overrideValues({enableBasicModeZOrder: false});
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        contextualTasksApp = document.createElement('contextual-tasks-app') as
+            unknown as MockContextualTasksAppElement;
+        document.body.appendChild(contextualTasksApp);
+        await microtasksFinished();
+
+        const composebox = contextualTasksApp.$.composebox;
+        const header = contextualTasksApp.$.composeboxHeaderWrapper;
+
+        testProxy.callbackRouterRemote.hideInput();
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(!!composebox, 'Composebox should exist after hideInput');
+        assertTrue(!!header, 'Composebox header should exist after hideInput');
+
+        assertTrue(
+            header.hidden,
+            'Composebox header should be hidden after hideInput');
+        assertTrue(
+            composebox.hidden, 'Composebox should be hidden after hideInput');
+
+        testProxy.callbackRouterRemote.restoreInput();
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(!!composebox, 'Composebox should exist after restoreInput');
+        assertFalse(
+            composebox.hidden,
+            'Composebox should not be hidden after restoreInput');
+
+        assertTrue(
+            !!header, 'Composebox header should exist after restoreInput');
+        assertFalse(
+            header.hidden,
+            'Composebox header should not be hidden after restoreInput');
+      });
 
   test('Composebox submits then clears input', async () => {
     await uploadFileAndVerify(

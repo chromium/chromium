@@ -21,11 +21,11 @@ export function getHtml(this: ContextualTasksAppElement) {
       </top-toolbar>
     </div>
   `}
-  <webview id="threadFrame"></webview>
+  <webview id="threadFrame" allowtransparency="on"></webview>
   <ghost-loader id="ghostLoader"></ghost-loader>
   <div class="flex-center" id="flexCenterContainer">
     <div id="composeboxHeaderWrapper"
-        ?hidden="${this.isInBasicMode_}">
+        ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}">
       <h1 class="thread-header" id="composeboxHeader">
           ${this.friendlyZeroStateTitle}
           ${this.friendlyZeroStateSubtitle.length > 0 ?
@@ -34,7 +34,7 @@ export function getHtml(this: ContextualTasksAppElement) {
       </h1>
     </div>
     <contextual-tasks-composebox id="composebox"
-          ?hidden="${this.isInBasicMode_}"
+          ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}"
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .enableNativeZeroStateSuggestions=
