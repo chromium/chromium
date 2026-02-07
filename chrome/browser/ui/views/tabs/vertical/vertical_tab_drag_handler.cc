@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -26,6 +27,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/compositor/layer.h"
@@ -552,6 +554,9 @@ void VerticalTabDragHandlerImpl::DestroyDragController() {
 
 void VerticalTabDragHandlerImpl::StartedDragging(
     const std::vector<TabSlotView*>& views) {
+  CHECK(drag_controller_);
+  EnsureDraggedTabsContiguous(drag_controller_->GetSessionData());
+
   for (auto* view : views) {
     auto* slot_view = views::AsViewClass<VerticalTabSlotView>(view);
     CHECK(slot_view);
@@ -685,6 +690,51 @@ void VerticalTabDragHandlerImpl::OnNodeWillDestroy(TabCollectionNode& node) {
 
 void VerticalTabDragHandlerImpl::ResetDragState() {
   drag_controller_.reset();
+}
+
+void VerticalTabDragHandlerImpl::EnsureDraggedTabsContiguous(
+    const DragSessionData& drag_session_data) {
+  // Do nothing if only one tab is being dragged, or all tabs in the strip are
+  // being dragged.
+  if (drag_session_data.num_dragging_tabs() == 1 ||
+      drag_session_data.num_dragging_tabs() == tab_strip_model_->count()) {
+    return;
+  }
+
+  const TabDragData* source_drag_data =
+      drag_session_data.source_view_drag_data();
+  const content::WebContents* source_contents = source_drag_data->contents;
+  if (!source_contents) {
+    return;
+  }
+
+  const tabs::TabInterface* source_tab =
+      tabs::TabInterface::GetFromContents(source_contents);
+  std::optional<tab_groups::TabGroupId> group_id = source_tab->GetGroup();
+
+  int target_index;
+  // If we're dragging full groups and the source tab is in a group, then
+  // move all tabs to be after the group.
+  if (group_id && !drag_session_data.dragging_groups.empty()) {
+    const auto* group = tab_strip_model_->group_model()->GetTabGroup(*group_id);
+    CHECK(group);
+    target_index = group->ListTabs().end() + 1;
+    group_id = std::nullopt;
+  } else {
+    target_index = tab_strip_model_->GetIndexOfWebContents(source_contents);
+  }
+
+  int num_dragged_tabs_before_target = 0;
+  for (const TabDragData& tab_drag_data : drag_session_data.tab_drag_data_) {
+    const content::WebContents* contents = tab_drag_data.contents;
+    if (contents &&
+        tab_strip_model_->GetIndexOfWebContents(contents) < target_index) {
+      ++num_dragged_tabs_before_target;
+    }
+  }
+  target_index = target_index - num_dragged_tabs_before_target;
+  target_index = std::clamp(target_index, 0, tab_strip_model_->count() - 1);
+  tab_strip_model_->MoveSelectedTabsTo(target_index, group_id);
 }
 
 BEGIN_METADATA(VerticalTabDragHandlerImpl)

@@ -170,6 +170,12 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleTabDragOverSplit(const TabCollectionNode& node);
   void HandleTabDragOverGroup(const TabCollectionNode& node);
 
+  // Ensures that all tabs being dragged are congious.
+  // TODO(crbug.com/477230662): Ideally, the tabs animate into contiguous
+  // position, which will require handling this from within
+  // `VerticalDraggedTabsContainer`.
+  void EnsureDraggedTabsContiguous(const DragSessionData& drag_session_data);
+
   // Returns the group id of the dragged group header, or null if the drag
   // was not initiated by a group header.
   std::optional<tab_groups::TabGroupId> GetDraggingGroupHeaderId() const;
