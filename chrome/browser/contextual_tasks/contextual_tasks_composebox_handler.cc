@@ -927,8 +927,8 @@ void ContextualTasksComposeboxHandler::DeleteContext(
         web_ui_interface_->GetWebUIWebContents());
     auto* active_task_context_provider =
         browser_window_interface
-            ? browser_window_interface->GetFeatures()
-                  .contextual_tasks_active_task_context_provider()
+            ? contextual_tasks::ActiveTaskContextProvider::From(
+                  browser_window_interface)
             : nullptr;
     if (active_task_context_provider) {
       active_task_context_provider->RefreshContext();

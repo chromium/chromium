@@ -86,6 +86,9 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   // Subscription for tab switch events.
   base::CallbackListSubscription active_tab_change_subscription_;
 
+  ui::ScopedUnownedUserData<ActiveTaskContextProvider>
+      scoped_unowned_user_data_;
+
   base::WeakPtrFactory<ActiveTaskContextProviderImpl> weak_ptr_factory_{this};
 };
 

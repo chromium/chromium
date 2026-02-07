@@ -63,11 +63,21 @@ std::set<tabs::TabHandle> GetTabsFromContext(
 
 }  // namespace
 
+// static
+ActiveTaskContextProvider* ActiveTaskContextProvider::From(
+    BrowserWindowInterface* window) {
+  return Get(window->GetUnownedUserDataHost());
+}
+
+DEFINE_USER_DATA(ActiveTaskContextProvider);
+
 ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
     BrowserWindowInterface* browser_window,
     ContextualTasksService* contextual_tasks_service)
     : browser_window_(browser_window),
-      contextual_tasks_service_(contextual_tasks_service) {
+      contextual_tasks_service_(contextual_tasks_service),
+      scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
+                                *this) {
   CHECK(contextual_tasks_service_);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
   active_tab_change_subscription_ = browser_window_->RegisterActiveTabDidChange(
