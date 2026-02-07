@@ -110,7 +110,7 @@ class PolicyProcessor {
   // created in the broker process and evaluated in the target process.
 
   // This constructor is just a variant of the previous constructor.
-  explicit PolicyProcessor(PolicyBuffer* policy) : policy_(policy) {
+  explicit PolicyProcessor(const PolicyBuffer* policy) : policy_(policy) {
     SetInternalState(0, EVAL_FALSE, 0U);
   }
 
@@ -142,7 +142,7 @@ class PolicyProcessor {
   // Sets the currently matching action result.
   void SetInternalState(size_t index, EvalResult result, uintptr_t constant);
 
-  raw_ptr<PolicyBuffer, DanglingUntriaged> policy_;
+  raw_ptr<const PolicyBuffer, DanglingUntriaged> policy_;
 };
 
 }  // namespace sandbox

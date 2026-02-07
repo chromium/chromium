@@ -49,7 +49,7 @@ size_t OpcodeFactory::memory_size() const {
 }
 
 template <int>
-EvalResult OpcodeEval(PolicyOpcode* opcode,
+EvalResult OpcodeEval(const PolicyOpcode* opcode,
                       const ParameterSet* pp,
                       MatchContext* match);
 
@@ -62,7 +62,7 @@ PolicyOpcode* OpcodeFactory::MakeOpAlwaysFalse(uint32_t options) {
 }
 
 template <>
-EvalResult OpcodeEval<OP_ALWAYS_FALSE>(PolicyOpcode* opcode,
+EvalResult OpcodeEval<OP_ALWAYS_FALSE>(const PolicyOpcode* opcode,
                                        const ParameterSet* param,
                                        MatchContext* context) {
   return EVAL_FALSE;
@@ -77,7 +77,7 @@ PolicyOpcode* OpcodeFactory::MakeOpAlwaysTrue(uint32_t options) {
 }
 
 template <>
-EvalResult OpcodeEval<OP_ALWAYS_TRUE>(PolicyOpcode* opcode,
+EvalResult OpcodeEval<OP_ALWAYS_TRUE>(const PolicyOpcode* opcode,
                                       const ParameterSet* param,
                                       MatchContext* context) {
   return EVAL_TRUE;
@@ -100,7 +100,7 @@ PolicyOpcode* OpcodeFactory::MakeOpAction(EvalResult action,
 }
 
 template <>
-EvalResult OpcodeEval<OP_ACTION>(PolicyOpcode* opcode,
+EvalResult OpcodeEval<OP_ACTION>(const PolicyOpcode* opcode,
                                  const ParameterSet* param,
                                  MatchContext* context) {
   int action = 0;
@@ -137,7 +137,7 @@ PolicyOpcode* OpcodeFactory::MakeOpVoidPtrMatch(uint8_t selected_param,
 }
 
 template <>
-EvalResult OpcodeEval<OP_NUMBER_MATCH>(PolicyOpcode* opcode,
+EvalResult OpcodeEval<OP_NUMBER_MATCH>(const PolicyOpcode* opcode,
                                        const ParameterSet* param,
                                        MatchContext* context) {
   uint32_t value_uint32 = 0;
@@ -172,7 +172,7 @@ PolicyOpcode* OpcodeFactory::MakeOpNumberAndMatch(uint8_t selected_param,
 }
 
 template <>
-EvalResult OpcodeEval<OP_NUMBER_AND_MATCH>(PolicyOpcode* opcode,
+EvalResult OpcodeEval<OP_NUMBER_AND_MATCH>(const PolicyOpcode* opcode,
                                            const ParameterSet* param,
                                            MatchContext* context) {
   uint32_t value = 0;
@@ -216,7 +216,7 @@ PolicyOpcode* OpcodeFactory::MakeOpWStringMatch(uint8_t selected_param,
 }
 
 template <>
-EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
+EvalResult OpcodeEval<OP_WSTRING_MATCH>(const PolicyOpcode* opcode,
                                         const ParameterSet* param,
                                         MatchContext* context) {
   if (!context) {
@@ -357,7 +357,7 @@ ptrdiff_t OpcodeFactory::AllocRelative(void* start, std::wstring_view str) {
 
 EvalResult PolicyOpcode::Evaluate(const ParameterSet* call_params,
                                   size_t param_count,
-                                  MatchContext* match) {
+                                  MatchContext* match) const {
   if (!call_params)
     return EVAL_ERROR;
   const ParameterSet* selected_param = nullptr;
@@ -397,7 +397,7 @@ EvalResult PolicyOpcode::Evaluate(const ParameterSet* call_params,
     return OpcodeEval<op>(x, y, z)
 
 EvalResult PolicyOpcode::EvaluateHelper(const ParameterSet* parameters,
-                                        MatchContext* match) {
+                                        MatchContext* match) const {
   switch (opcode_id_) {
     OPCODE_EVAL(OP_ALWAYS_FALSE, this, parameters, match);
     OPCODE_EVAL(OP_ALWAYS_TRUE, this, parameters, match);

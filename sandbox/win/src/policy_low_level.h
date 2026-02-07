@@ -74,8 +74,16 @@ namespace sandbox {
 struct PolicyGlobal {
   // Returns true if the IPC for `service` should be registered for the target.
   // Should only be called after Done() has been called to finalize the setup.
-  bool NeedsIpc(IpcTag service) {
-    return UNSAFE_TODO(entry[static_cast<size_t>(service)]) != nullptr;
+  bool NeedsIpc(IpcTag service) { return GetService(service) != nullptr; }
+
+  const PolicyBuffer* GetService(IpcTag service) const {
+    base::span entries(entry);
+    return entries[static_cast<size_t>(service)];
+  }
+
+  void SetService(IpcTag service, PolicyBuffer* buffer) {
+    base::span entries(entry);
+    entries[static_cast<size_t>(service)] = buffer;
   }
 
   PolicyBuffer* entry[kSandboxIpcCount];

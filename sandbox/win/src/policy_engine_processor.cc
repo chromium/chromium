@@ -71,7 +71,7 @@ PolicyResult PolicyProcessor::Evaluate(uint32_t options,
   // after the action depending on kPolUseOREval.
 
   for (size_t ix = 0; ix != count; ++ix) {
-    PolicyOpcode& opcode = UNSAFE_TODO(policy_->opcodes[ix]);
+    const PolicyOpcode& opcode = UNSAFE_TODO(policy_->opcodes[ix]);
     // Skipping block.
     if (skip_group) {
       if (SkipOpcode(opcode, &context, &skip_group))

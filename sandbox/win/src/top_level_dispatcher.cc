@@ -5,10 +5,8 @@
 #include "sandbox/win/src/top_level_dispatcher.h"
 
 #include <stdint.h>
-#include <string.h>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/filesystem_dispatcher.h"
@@ -22,11 +20,8 @@
 
 namespace sandbox {
 
-TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
-  // Initialize the IPC dispatcher array.
-  UNSAFE_TODO(memset(ipc_targets_, 0, sizeof(ipc_targets_)));
-
-  ConfigBase* config = policy_->config();
+TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) {
+  ConfigBase* config = policy->config();
   CHECK(config->IsConfigured());
 
   for (IpcTag service :
@@ -34,11 +29,9 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
         IpcTag::NTQUERYATTRIBUTESFILE, IpcTag::NTQUERYFULLATTRIBUTESFILE}) {
     if (config->NeedsIpc(service)) {
       if (!filesystem_dispatcher_) {
-        filesystem_dispatcher_ =
-            std::make_unique<FilesystemDispatcher>(policy_);
+        filesystem_dispatcher_ = std::make_unique<FilesystemDispatcher>(policy);
       }
-      UNSAFE_TODO(ipc_targets_[static_cast<size_t>(service)]) =
-          filesystem_dispatcher_.get();
+      ipc_targets_[service] = filesystem_dispatcher_.get();
     }
   }
 
@@ -49,8 +42,7 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
         thread_process_dispatcher_ =
             std::make_unique<ThreadProcessDispatcher>();
       }
-      UNSAFE_TODO(ipc_targets_[static_cast<size_t>(service)]) =
-          thread_process_dispatcher_.get();
+      ipc_targets_[service] = thread_process_dispatcher_.get();
     }
   }
 
@@ -60,19 +52,17 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
     if (config->NeedsIpc(service)) {
       if (!process_mitigations_win32k_dispatcher_) {
         process_mitigations_win32k_dispatcher_ =
-            std::make_unique<ProcessMitigationsWin32KDispatcher>(policy_);
+            std::make_unique<ProcessMitigationsWin32KDispatcher>(policy);
       }
       // Technically we don't need to register for IPCs but we do need this
       // here to write the intercepts in SetupService.
-      UNSAFE_TODO(ipc_targets_[static_cast<size_t>(service)]) =
-          process_mitigations_win32k_dispatcher_.get();
+      ipc_targets_[service] = process_mitigations_win32k_dispatcher_.get();
     }
   }
 
   if (config->NeedsIpc(IpcTag::NTCREATESECTION)) {
-    signed_dispatcher_ = std::make_unique<SignedDispatcher>(policy_);
-    ipc_targets_[static_cast<size_t>(IpcTag::NTCREATESECTION)] =
-        signed_dispatcher_.get();
+    signed_dispatcher_ = std::make_unique<SignedDispatcher>(policy);
+    ipc_targets_[IpcTag::NTCREATESECTION] = signed_dispatcher_.get();
   }
 }
 
@@ -80,10 +70,8 @@ TopLevelDispatcher::~TopLevelDispatcher() {}
 
 std::vector<IpcTag> TopLevelDispatcher::ipc_targets() {
   std::vector<IpcTag> results = {IpcTag::PING1, IpcTag::PING2};
-  for (size_t ipc = 0; ipc < kSandboxIpcCount; ipc++) {
-    if (UNSAFE_TODO(ipc_targets_[ipc])) {
-      results.push_back(static_cast<IpcTag>(ipc));
-    }
+  for (const auto& pair : ipc_targets_) {
+    results.push_back(pair.first);
   }
   return results;
 }
@@ -103,11 +91,7 @@ Dispatcher* TopLevelDispatcher::OnMessageReady(IPCParams* ipc,
     return this;
   }
 
-  Dispatcher* dispatcher = GetDispatcher(ipc->ipc_tag);
-  if (!dispatcher) {
-    NOTREACHED();
-  }
-  return dispatcher->OnMessageReady(ipc, callback);
+  return GetDispatcher(ipc->ipc_tag)->OnMessageReady(ipc, callback);
 }
 
 // Delegate to the appropriate dispatcher.
@@ -116,11 +100,7 @@ bool TopLevelDispatcher::SetupService(InterceptionManager* manager,
   if (IpcTag::PING1 == service || IpcTag::PING2 == service)
     return true;
 
-  Dispatcher* dispatcher = GetDispatcher(service);
-  if (!dispatcher) {
-    NOTREACHED();
-  }
-  return dispatcher->SetupService(manager, service);
+  return GetDispatcher(service)->SetupService(manager, service);
 }
 
 // We service PING message which is a way to test a round trip of the
@@ -151,11 +131,8 @@ bool TopLevelDispatcher::Ping(IPCInfo* ipc, void* arg1) {
 }
 
 Dispatcher* TopLevelDispatcher::GetDispatcher(IpcTag ipc_tag) {
-  if (ipc_tag > IpcTag::kMaxValue || ipc_tag == IpcTag::UNUSED) {
-    return nullptr;
-  }
-
-  return UNSAFE_TODO(ipc_targets_[static_cast<size_t>(ipc_tag)]);
+  CHECK(ipc_targets_.contains(ipc_tag));
+  return ipc_targets_[ipc_tag];
 }
 
 }  // namespace sandbox

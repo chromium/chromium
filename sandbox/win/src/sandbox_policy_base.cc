@@ -741,7 +741,7 @@ EvalResult PolicyBase::EvalPolicy(IpcTag service,
         NOTREACHED();
       }
     }
-    PolicyProcessor pol_evaluator(policy->entry[static_cast<size_t>(service)]);
+    PolicyProcessor pol_evaluator(policy->GetService(service));
     PolicyResult result =
         pol_evaluator.Evaluate(kShortEval, params->parameters, params->count);
     if (POLICY_MATCH == result)

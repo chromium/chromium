@@ -147,7 +147,7 @@ class PolicyOpcode {
   // sequence.
   EvalResult Evaluate(const ParameterSet* parameters,
                       size_t count,
-                      MatchContext* match);
+                      MatchContext* match) const;
 
   // Retrieves a stored argument by index. Valid index values are
   // from 0 to < kArgumentCount.
@@ -209,7 +209,7 @@ class PolicyOpcode {
   // Helper function to evaluate the opcode. The parameters have the same
   // meaning that in Evaluate().
   EvalResult EvaluateHelper(const ParameterSet* parameters,
-                            MatchContext* match);
+                            MatchContext* match) const;
   OpcodeID opcode_id_;
   // Used a boolean field but provided as a uint8_t to maintain packing.
   uint8_t has_param_;

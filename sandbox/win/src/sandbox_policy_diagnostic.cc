@@ -308,8 +308,7 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
 base::ListValue GetPolicyOpcodes(const PolicyGlobal* policy_rules,
                                  IpcTag service) {
   base::ListValue entry;
-  PolicyBuffer* policy_buffer =
-      UNSAFE_TODO(policy_rules->entry[static_cast<size_t>(service)]);
+  const PolicyBuffer* policy_buffer = policy_rules->GetService(service);
   // Build up rules and emit when we hit an action.
   std::string cur_rule;
   for (size_t i = 0; i < policy_buffer->opcode_count; i++) {

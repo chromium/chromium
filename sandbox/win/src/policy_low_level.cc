@@ -46,9 +46,7 @@ bool LowLevelPolicy::Done() {
     if (service > IpcTag::kMaxValue) {
       return false;
     }
-    UNSAFE_TODO(policy_store_->entry[static_cast<size_t>(service)]) =
-        current_buffer;
-
+    policy_store_->SetService(service, current_buffer);
     size_t svc_opcode_count = 0;
 
     for (const auto& rule : rule_entry.second) {
