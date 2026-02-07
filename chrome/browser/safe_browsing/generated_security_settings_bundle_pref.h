@@ -12,7 +12,8 @@
 
 namespace safe_browsing {
 
-extern const char kGeneratedSecuritySettingsBundlePref[];
+inline constexpr char kGeneratedSecuritySettingsBundlePref[] =
+    "generated.security_settings_bundle";
 
 // A generated preference which represents the effective Security Settings
 // Bundled state based on the underlying Security Settings Bundle preference.

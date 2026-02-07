@@ -4,13 +4,13 @@
 
 #include "chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h"
 
-#include <algorithm>
-
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/common/pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace settings_private = extensions::settings_private;
@@ -45,9 +45,14 @@ typedef settings_private::GeneratedPrefTestBase
     GeneratedSecuritySettingsBundlePrefTest;
 
 TEST_F(GeneratedSecuritySettingsBundlePrefTest, UpdatePreference) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      safe_browsing::kBundledSecuritySettingsSecureDnsV2);
+
   // Validate that the generated Security Settings Bundle preference correctly
   // updates the base Security Settings Bundle preference.
   auto pref = std::make_unique<GeneratedSecuritySettingsBundlePref>(profile());
+  PrefService* local_state = g_browser_process->local_state();
 
   // Setup baseline profile preference state.
   prefs()->SetDefaultPrefValue(
@@ -55,11 +60,22 @@ TEST_F(GeneratedSecuritySettingsBundlePrefTest, UpdatePreference) {
       base::Value(static_cast<int>(SecuritySettingsBundleSetting::STANDARD)));
 
   // Check all possible settings both correctly update preferences and are
-  // correctly returned by the generated preference.
+  // correctly returned by the generated preference, and verify Secure DNS
+  // automatic-mode prefs are applied when the feature is enabled.
   ValidateGeneratedPrefSetting(prefs(), pref.get(),
                                SecuritySettingsBundleSetting::ENHANCED, 1);
+  EXPECT_EQ(local_state->GetString(prefs::kDnsOverHttpsMode),
+            SecureDnsConfig::kModeAutomatic);
+  EXPECT_EQ(local_state->GetString(prefs::kDnsOverHttpsTemplates), "");
+  EXPECT_TRUE(
+      local_state->GetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh));
   ValidateGeneratedPrefSetting(prefs(), pref.get(),
                                SecuritySettingsBundleSetting::STANDARD, 0);
+  EXPECT_EQ(local_state->GetString(prefs::kDnsOverHttpsMode),
+            SecureDnsConfig::kModeAutomatic);
+  EXPECT_EQ(local_state->GetString(prefs::kDnsOverHttpsTemplates), "");
+  EXPECT_FALSE(
+      local_state->GetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh));
 
   // Confirm that a type mismatch is reported as such.
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(true).get()),
