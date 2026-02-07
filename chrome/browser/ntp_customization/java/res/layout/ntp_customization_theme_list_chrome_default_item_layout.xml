@@ -38,9 +38,9 @@ found in the LICENSE file.
       android:id="@+id/trailing_icon"
       android:layout_width="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
       android:layout_height="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
-      android:importantForAccessibility="no"
       app:tint="@macro/default_icon_color_accent1"
       android:src="@drawable/ic_check_googblue_24dp"
+      android:contentDescription="@string/selected"
       android:visibility="invisible"/>
 
 </org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListItemView>

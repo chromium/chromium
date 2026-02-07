@@ -271,6 +271,9 @@
       <message name="IDS_SELECT" desc="Prompt for user to select something. [CHAR_LIMIT=20]">
         Select
       </message>
+      <message name="IDS_SELECTED" desc="Generic Lable saying something is selected." is_accessibility_with_no_ui="true">
+        Selected
+      </message>
       <message name="IDS_ADD" desc="Prompt for the user to add something, like a new address. [CHAR_LIMIT=20]">
         Add
       </message>

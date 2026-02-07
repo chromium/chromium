@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -40,8 +41,12 @@ public class NtpThemeListItemView extends LinearLayout {
     void updateTrailingIcon(boolean visible, @NtpBackgroundType int sectionType) {
         ImageView ntpThemeListItemTrailingIcon = findViewById(R.id.trailing_icon);
 
+        Resources resources = getResources();
+        String itemSelectedString = resources.getString(R.string.selected);
+
         if (sectionType == NtpBackgroundType.DEFAULT) {
             ntpThemeListItemTrailingIcon.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+            ntpThemeListItemTrailingIcon.setContentDescription(visible ? itemSelectedString : null);
             return;
         }
 
@@ -50,9 +55,12 @@ public class NtpThemeListItemView extends LinearLayout {
         if (visible) {
             iconResId = R.drawable.ic_check_googblue_24dp;
             colorId = SemanticColorUtils.getColorPrimary(getContext());
+            ntpThemeListItemTrailingIcon.setContentDescription(itemSelectedString);
         } else {
             iconResId = R.drawable.forward_arrow_icon;
             colorId = SemanticColorUtils.getDefaultTextColorSecondary(getContext());
+            ntpThemeListItemTrailingIcon.setContentDescription(
+                    resources.getString(R.string.ntp_customization_show_more));
         }
         ntpThemeListItemTrailingIcon.setImageResource(iconResId);
         ImageViewCompat.setImageTintList(
