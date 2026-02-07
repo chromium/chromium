@@ -189,7 +189,6 @@ static_library("crosapi") {
     "//extensions/browser/api/networking_private",
     "//extensions/browser/api/power",
     "//extensions/common",
-    "//headless:headless_non_renderer",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
     "//services/data_decoder/public/cpp",
