@@ -385,7 +385,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       scoped_refptr<net::GrowableIOBuffer> head_buffer,
       int64_t header_size_delta,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
-      SqlPersistentStore::ErrorCallback callback,
+      SqlPersistentStore::ResIdOrErrorCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for a non-optimistic write operation. This method
@@ -397,7 +397,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
-      SqlPersistentStore::ErrorCallback callback,
+      SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
@@ -410,7 +410,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
-      SqlPersistentStore::ErrorCallback callback,
+      SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
@@ -419,10 +419,10 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   void OnOptimisticWriteFinished(
       const CacheEntryKey& key,
       SqlPersistentStore::ResId res_id,
-      SqlPersistentStore::ErrorCallback callback,
+      SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
-      SqlPersistentStore::Error result);
+      SqlPersistentStore::ResIdOrError result);
 
   // Handles the backend logic for `ReadEntryData()`. This method is scheduled
   // as a normal operation via the `ExclusiveOperationCoordinator` and forwards

@@ -186,6 +186,22 @@ inline constexpr const char kUpdateEntryLastUsedByKey_UpdateResourceLastUsed[] =
         "doomed=0";
 // clang-format on
 
+inline constexpr const char kInsertIntoResources[] =
+    // clang-format off
+    "INSERT INTO resources("
+        "last_used,"      // 0
+        "hints,"          // 1
+        "body_end,"       // 2
+        "bytes_usage,"    // 3
+        "doomed,"
+        "check_sum,"      // 4
+        "cache_key_hash," // 5
+        "cache_key,"      // 6
+        "head) "          // 7
+    "VALUES(?,?,?,?,0,?,?,?,?) "
+    "RETURNING res_id";
+// clang-format on
+
 // Use RETURNING 1 so that the caller can detect if the UPDATE affected
 // any rows via the return value of Statement::Step().
 inline constexpr const char kUpdateLastUsed[] =
@@ -506,6 +522,7 @@ enum class Query {
   kDeleteLiveEntriesBetween_SelectLiveResources,
   kDeleteResourceByResIds_DeleteFromResources,
   kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,
+  kInsertIntoResources,
   kUpdateLastUsed,
   kUpdateLastUsedHeader,
   kUpdateLastUsedHeaderHints,
@@ -569,6 +586,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kDeleteResourceByResIds_DeleteFromResources;
     case Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed:
       return internal::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed;
+    case Query::kInsertIntoResources:
+      return internal::kInsertIntoResources;
     case Query::kUpdateLastUsed:
       return internal::kUpdateLastUsed;
     case Query::kUpdateLastUsedHeader:

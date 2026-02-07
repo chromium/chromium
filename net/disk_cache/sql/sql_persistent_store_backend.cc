@@ -68,6 +68,9 @@ using ErrorAndStoreStatus = SqlPersistentStore::ErrorAndStoreStatus;
 using ResIdListOrErrorAndStoreStatus =
     SqlPersistentStore::ResIdListOrErrorAndStoreStatus;
 using ResIdListOrError = SqlPersistentStore::ResIdListOrError;
+using ResIdOrError = SqlPersistentStore::ResIdOrError;
+using ResIdOrErrorAndStoreStatus =
+    SqlPersistentStore::ResIdOrErrorAndStoreStatus;
 using ReadResult = SqlPersistentStore::ReadResult;
 using ReadResultOrError = SqlPersistentStore::ReadResultOrError;
 using Int64OrError = SqlPersistentStore::Int64OrError;
@@ -1150,9 +1153,10 @@ Error SqlPersistentStore::Backend::UpdateEntryLastUsedByKeyInternal(
   return change_count == 0 ? Error::kNotFound : Error::kOk;
 }
 
-ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryDataAndMetadata(
+ResIdOrErrorAndStoreStatus
+SqlPersistentStore::Backend::WriteEntryDataAndMetadata(
     const CacheEntryKey& key,
-    ResId res_id,
+    std::optional<ResId> res_id,
     std::optional<int64_t> old_body_end,
     EntryWriteBuffer buffer,
     base::Time last_used,
@@ -1165,7 +1169,9 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryDataAndMetadata(
                      "data", [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
                        dict.Add("key", key.string());
-                       dict.Add("res_id", res_id.value());
+                       if (res_id) {
+                         dict.Add("res_id", res_id->value());
+                       }
                        dict.Add("has_body_write", old_body_end.has_value());
                        dict.Add("last_used", last_used);
                        PopulateTraceDetails(store_status_, dict);
@@ -1175,16 +1181,18 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryDataAndMetadata(
   auto result = WriteEntryDataAndMetadataInternal(
       key, res_id, old_body_end, std::move(buffer), last_used, new_hints,
       std::move(head_buffer), header_size_delta, corruption_detected);
-  RecordTimeAndErrorResultHistogram("WriteEntryDataAndMetadata", posting_delay,
-                                    timer.Elapsed(), result,
-                                    corruption_detected);
+  RecordTimeAndErrorResultHistogram(
+      "WriteEntryDataAndMetadata", posting_delay, timer.Elapsed(),
+      result.has_value() ? Error::kOk : result.error(), corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.WriteEntryDataAndMetadata",
                    "result", [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
+                     PopulateTraceDetails(
+                         result.has_value() ? Error::kOk : result.error(),
+                         store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ErrorAndStoreStatus(result, store_status_);
+  return ResIdOrErrorAndStoreStatus(result, store_status_);
 }
 
 Error SqlPersistentStore::Backend::WriteEntryBodyDataHelper(
@@ -1256,9 +1264,9 @@ Error SqlPersistentStore::Backend::WriteEntryBodyDataHelper(
   return Error::kOk;
 }
 
-Error SqlPersistentStore::Backend::WriteEntryDataAndMetadataInternal(
+ResIdOrError SqlPersistentStore::Backend::WriteEntryDataAndMetadataInternal(
     const CacheEntryKey& key,
-    ResId res_id,
+    std::optional<ResId> res_id,
     std::optional<int64_t> old_body_end,
     EntryWriteBuffer buffer,
     base::Time last_used,
@@ -1267,24 +1275,57 @@ Error SqlPersistentStore::Backend::WriteEntryDataAndMetadataInternal(
     int64_t header_size_delta,
     bool& corruption_detected) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
-    return db_error;
+    return base::unexpected(db_error);
   }
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return Error::kFailedToStartTransaction;
+    return base::unexpected(Error::kFailedToStartTransaction);
+  }
+
+  base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
+
+  const bool is_new_entry = !res_id.has_value();
+  int64_t body_end_for_new_entry = 0;
+  int64_t bytes_usage_for_new_entry = 0;
+
+  // If `res_id` is nullopt, create a new entry in the resources table.
+  if (is_new_entry) {
+    CHECK_EQ(old_body_end.value_or(0), 0);
+    CHECK_EQ(old_body_end.has_value(), buffer.size != 0);
+    checked_total_size_delta += key.string().size();
+    body_end_for_new_entry = buffer.offset + buffer.size;
+    bytes_usage_for_new_entry = key.string().size() + buffer.size +
+                                (head_buffer ? head_buffer->size() : 0);
+    auto blob_span =
+        head_buffer ? head_buffer->span() : base::span<const uint8_t>();
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(disk_cache_sql_queries::Query::kInsertIntoResources)));
+    statement.BindTime(0, last_used);
+    statement.BindInt(1, new_hints.value_or(MemoryEntryDataHints(0)).value());
+    statement.BindInt64(2, body_end_for_new_entry);
+    statement.BindInt64(3, bytes_usage_for_new_entry);
+    statement.BindInt(4, CalculateCheckSum(blob_span, key.hash()));
+    statement.BindInt(5, key.hash().value());
+    statement.BindString(6, key.string());
+    statement.BindBlob(7, blob_span);
+    if (!statement.Step()) {
+      return base::unexpected(Error::kFailedToExecute);
+    }
+    res_id = ResId(statement.ColumnInt64(0));
   }
 
   int64_t body_end_delta = 0;
-  base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
   int64_t new_body_end = 0;
 
+  // Write the body to the blobs table.
   if (old_body_end.has_value()) {
     if (Error result = WriteEntryBodyDataHelper(
-            key, res_id, *old_body_end, std::move(buffer), /*truncate=*/false,
+            key, *res_id, *old_body_end, std::move(buffer), /*truncate=*/false,
             body_end_delta, checked_total_size_delta, new_body_end,
             corruption_detected);
         result != Error::kOk) {
-      return result;
+      return base::unexpected(result);
     }
   }
 
@@ -1294,15 +1335,18 @@ Error SqlPersistentStore::Backend::WriteEntryDataAndMetadataInternal(
 
   if (!checked_total_size_delta.IsValid()) {
     corruption_detected = true;
-    return Error::kInvalidData;
+    return base::unexpected(Error::kInvalidData);
   }
-  int64_t total_size_delta = checked_total_size_delta.ValueOrDie();
+  const int64_t total_size_delta = checked_total_size_delta.ValueOrDie();
 
-  const bool has_hints = new_hints.has_value();
-  const bool has_body = old_body_end.has_value();
-  const bool has_head = head_buffer != nullptr;
-
-  {
+  if (is_new_entry) {
+    CHECK_EQ(body_end_delta, body_end_for_new_entry);
+    CHECK_EQ(total_size_delta, bytes_usage_for_new_entry);
+  } else {
+    // Update the entry in the resources table.
+    const bool has_hints = new_hints.has_value();
+    const bool has_body = old_body_end.has_value();
+    const bool has_head = head_buffer != nullptr;
     sql::Statement statement(
         has_head
             ? (has_body
@@ -1350,7 +1394,7 @@ Error SqlPersistentStore::Backend::WriteEntryDataAndMetadataInternal(
                         CalculateCheckSum(head_buffer->span(), key.hash()));
       statement.BindBlob(param_index++, head_buffer->span());
     }
-    statement.BindInt64(param_index++, res_id.value());
+    statement.BindInt64(param_index++, res_id->value());
 
     if (statement.Step()) {
       int col = 0;
@@ -1361,30 +1405,34 @@ Error SqlPersistentStore::Backend::WriteEntryDataAndMetadataInternal(
                 static_cast<int64_t>(key.string().size())) {
           // This indicates data corruption in the database.
           corruption_detected = true;
-          return Error::kInvalidData;
+          return base::unexpected(Error::kInvalidData);
         }
       }
       if (has_body) {
         if (statement.ColumnInt64(col++) != new_body_end) {
           // This indicates data corruption in the database.
           corruption_detected = true;
-          return Error::kBodyEndMismatch;
+          return base::unexpected(Error::kBodyEndMismatch);
         }
       }
     } else {
-      return Error::kNotFound;
+      return base::unexpected(Error::kNotFound);
     }
   }
 
-  return UpdateStoreStatusAndCommitTransaction(
-      transaction,
-      /*entry_count_delta=*/0,
-      /*total_size_delta=*/total_size_delta, corruption_detected);
+  if (auto error = UpdateStoreStatusAndCommitTransaction(
+          transaction,
+          /*entry_count_delta=*/is_new_entry ? 1 : 0,
+          /*total_size_delta=*/total_size_delta, corruption_detected);
+      error != Error::kOk) {
+    return base::unexpected(error);
+  }
+  return *res_id;
 }
 
-ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
+ResIdOrErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
     const CacheEntryKey& key,
-    ResId res_id,
+    const ResIdOrTime& res_id_or_last_used_time,
     int64_t old_body_end,
     EntryWriteBuffer buffer,
     bool truncate,
@@ -1394,7 +1442,15 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
                        dict.Add("key", key.string());
-                       dict.Add("res_id", res_id.value());
+                       if (std::holds_alternative<ResId>(
+                               res_id_or_last_used_time)) {
+                         dict.Add(
+                             "res_id",
+                             std::get<ResId>(res_id_or_last_used_time).value());
+                       } else {
+                         dict.Add("last_used", std::get<base::Time>(
+                                                   res_id_or_last_used_time));
+                       }
                        dict.Add("old_body_end", old_body_end);
                        dict.Add("offset", buffer.offset);
                        dict.Add("buf_len", buffer.size);
@@ -1404,59 +1460,98 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result =
-      WriteEntryDataInternal(key, res_id, old_body_end, std::move(buffer),
-                             truncate, corruption_detected);
-  RecordTimeAndErrorResultHistogram("WriteEntryData", posting_delay,
-                                    timer.Elapsed(), result,
-                                    corruption_detected);
+      WriteEntryDataInternal(key, res_id_or_last_used_time, old_body_end,
+                             std::move(buffer), truncate, corruption_detected);
+  RecordTimeAndErrorResultHistogram(
+      "WriteEntryData", posting_delay, timer.Elapsed(),
+      result.has_value() ? Error::kOk : result.error(), corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.WriteEntryData", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
+                     PopulateTraceDetails(
+                         result.has_value() ? Error::kOk : result.error(),
+                         store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  return ErrorAndStoreStatus(result, store_status_);
+  return ResIdOrErrorAndStoreStatus(result, store_status_);
 }
 
-Error SqlPersistentStore::Backend::WriteEntryDataInternal(
+ResIdOrError SqlPersistentStore::Backend::WriteEntryDataInternal(
     const CacheEntryKey& key,
-    ResId res_id,
+    const ResIdOrTime& res_id_or_last_used_time,
     int64_t old_body_end,
     EntryWriteBuffer buffer,
     bool truncate,
     bool& corruption_detected) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
-    return db_error;
+    return base::unexpected(db_error);
   }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return Error::kFailedToStartTransaction;
+    return base::unexpected(Error::kFailedToStartTransaction);
+  }
+
+  base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
+
+  ResId res_id = ResId(0);
+  int64_t body_end_for_new_entry = 0;
+  int64_t bytes_usage_for_new_entry = 0;
+
+  const bool is_new_entry =
+      std::holds_alternative<base::Time>(res_id_or_last_used_time);
+
+  // If `res_id_or_last_used_time` holds `base::Time`, create a new entry in the
+  // resources table.
+  if (is_new_entry) {
+    CHECK_EQ(old_body_end, 0);
+    checked_total_size_delta += key.string().size();
+    body_end_for_new_entry = buffer.offset + buffer.size;
+    bytes_usage_for_new_entry = key.string().size() + buffer.size;
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(
+            disk_cache_sql_queries::Query::kCreateEntry_InsertIntoResources)));
+    statement.BindTime(0, std::get<base::Time>(res_id_or_last_used_time));
+    statement.BindInt64(1, body_end_for_new_entry);
+    statement.BindInt64(2, bytes_usage_for_new_entry);
+    statement.BindInt(3, CalculateCheckSum({}, key.hash()));
+    statement.BindInt(4, key.hash().value());
+    statement.BindString(5, key.string());
+    if (!statement.Step()) {
+      return base::unexpected(Error::kFailedToExecute);
+    }
+    res_id = ResId(statement.ColumnInt64(0));
+  } else {
+    res_id = std::get<ResId>(res_id_or_last_used_time);
   }
 
   int64_t body_end_delta = 0;
-  base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
   int64_t new_body_end = 0;
 
+  // Write the body to the blobs table.
   if (Error result = WriteEntryBodyDataHelper(
           key, res_id, old_body_end, std::move(buffer), truncate,
           body_end_delta, checked_total_size_delta, new_body_end,
           corruption_detected);
       result != Error::kOk) {
-    return result;
+    return base::unexpected(result);
   }
 
   if (!checked_total_size_delta.IsValid()) {
     // If the total size delta calculation resulted in an overflow, it suggests
     // that the size values in the database were corrupt.
     corruption_detected = true;
-    return Error::kInvalidData;
+    return base::unexpected(Error::kInvalidData);
   }
   int64_t total_size_delta = checked_total_size_delta.ValueOrDie();
 
-  // Update the entry's metadata in the `resources` table if the body size
-  // changed or if the total size of blobs changed.
-  if (body_end_delta || total_size_delta) {
+  if (is_new_entry) {
+    CHECK_EQ(body_end_delta, body_end_for_new_entry);
+    CHECK_EQ(total_size_delta, bytes_usage_for_new_entry);
+  } else if (body_end_delta || total_size_delta) {
+    // Update the entry's metadata in the `resources` table if the body size
+    // changed or if the total size of blobs changed.
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kWriteEntryData_UpdateResource)));
     statement.BindInt64(0, body_end_delta);
@@ -1470,7 +1565,7 @@ Error SqlPersistentStore::Backend::WriteEntryDataInternal(
       const int64_t returned_new_body_end = statement.ColumnInt64(0);
       if (returned_new_body_end != new_body_end) {
         corruption_detected = true;
-        return Error::kBodyEndMismatch;
+        return base::unexpected(Error::kBodyEndMismatch);
       }
       // If the entry is doomed, its size is no longer tracked in the cache's
       // total size, so we don't update the store status.
@@ -1480,16 +1575,20 @@ Error SqlPersistentStore::Backend::WriteEntryDataInternal(
       }
     } else {
       // If no rows were updated, it means the entry was not found.
-      return Error::kNotFound;
+      return base::unexpected(Error::kNotFound);
     }
   }
 
   // Commit the transaction, which also updates the in-memory and on-disk store
   // status.
-  return UpdateStoreStatusAndCommitTransaction(
-      transaction,
-      /*entry_count_delta=*/0,
-      /*total_size_delta=*/total_size_delta, corruption_detected);
+  if (auto error = UpdateStoreStatusAndCommitTransaction(
+          transaction,
+          /*entry_count_delta=*/is_new_entry ? 1 : 0,
+          /*total_size_delta=*/total_size_delta, corruption_detected);
+      error != Error::kOk) {
+    return base::unexpected(error);
+  }
+  return res_id;
 }
 
 // This function handles writes that overlap with existing data blobs. It finds

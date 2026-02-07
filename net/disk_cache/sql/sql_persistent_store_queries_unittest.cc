@@ -155,6 +155,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "INDEX index_resources_cache_key_hash_doomed "
             "(cache_key_hash=? AND doomed=?)"},
+           {Query::kInsertIntoResources, ""},
            {Query::kUpdateLastUsed,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},

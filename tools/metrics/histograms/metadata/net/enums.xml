@@ -3071,9 +3071,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="StartEviction"/>
   <int value="4" label="DeleteLiveEntry"/>
   <int value="5" label="DeleteLiveEntriesBetween"/>
+  <int value="6" label="WriteEntryDataAndMetadata"/>
+  <int value="7" label="WriteEntryData"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store_backend_shard.cc:IndexMismatchLocation) -->
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store_backend_shard.h:IndexMismatchLocation) -->
 
 <!-- LINT.IfChange(SqlDiskCacheStoreError) -->
 
