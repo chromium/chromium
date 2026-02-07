@@ -1054,11 +1054,16 @@ void FileSystemManagerImpl::GetPlatformPath(const GURL& path,
                                             GetPlatformPathCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   base::FilePath platform_path;
+  // The access check for `path` runs on the UI thread using a duplicated
+  // ChildProcessSecurityPolicy::Handle, ensuring the SecurityState exists when
+  // the task runs even if `security_policy_handle_` has been deleted.
   context_->default_file_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FileSystemManagerImpl::GetPlatformPathOnFileThread, path,
-                     security_policy_handle_.child_id(), context_, GetWeakPtr(),
-                     receivers_.current_context(), std::move(callback)));
+                     std::make_unique<ChildProcessSecurityPolicyImpl::Handle>(
+                         security_policy_handle_.Duplicate()),
+                     context_, GetWeakPtr(), receivers_.current_context(),
+                     std::move(callback)));
 }
 
 void FileSystemManagerImpl::RegisterBlob(
@@ -1368,7 +1373,8 @@ void FileSystemManagerImpl::DidGetPlatformPath(
 // static
 void FileSystemManagerImpl::GetPlatformPathOnFileThread(
     const GURL& path,
-    ChildProcessId process_id,
+    std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
+        security_policy_handle,
     scoped_refptr<storage::FileSystemContext> context,
     base::WeakPtr<FileSystemManagerImpl> file_system_manager,
     const blink::StorageKey& storage_key,
@@ -1377,7 +1383,7 @@ void FileSystemManagerImpl::GetPlatformPathOnFileThread(
 
   // Bind `context` to the callback to ensure it stays alive.
   DoGetPlatformPath(
-      context, process_id, path, storage_key,
+      context, std::move(security_policy_handle), path, storage_key,
       base::BindOnce(
           [](base::WeakPtr<FileSystemManagerImpl> file_system_manager,
              scoped_refptr<storage::FileSystemContext> context,

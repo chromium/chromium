@@ -280,7 +280,8 @@ class CONTENT_EXPORT FileSystemManagerImpl
                           base::FilePath platform_path);
   static void GetPlatformPathOnFileThread(
       const GURL& path,
-      ChildProcessId process_id,
+      std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
+          security_policy_handle,
       scoped_refptr<storage::FileSystemContext> context,
       base::WeakPtr<FileSystemManagerImpl> file_system_manager,
       const blink::StorageKey& storage_key,

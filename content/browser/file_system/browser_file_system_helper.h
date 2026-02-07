@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_BROWSER_FILE_SYSTEM_HELPER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/common/child_process_id.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -30,7 +31,6 @@ class QuotaManagerProxy;
 namespace content {
 
 class BrowserContext;
-class ChildProcessSecurityPolicyImpl;
 struct DropData;
 
 // Helper method that returns FileSystemContext constructed for
@@ -52,7 +52,8 @@ CONTENT_EXPORT bool FileSystemURLIsValid(storage::FileSystemContext* context,
 using DoGetPlatformPathCB = base::OnceCallback<void(const base::FilePath&)>;
 CONTENT_EXPORT void DoGetPlatformPath(
     scoped_refptr<storage::FileSystemContext> context,
-    ChildProcessId process_id,
+    std::unique_ptr<content::ChildProcessSecurityPolicyImpl::Handle>
+        security_policy_handle,
     const GURL& path,
     const blink::StorageKey& storage_key,
     DoGetPlatformPathCB callback);

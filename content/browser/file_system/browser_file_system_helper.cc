@@ -5,6 +5,7 @@
 #include "content/browser/file_system/browser_file_system_helper.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
@@ -64,21 +66,29 @@ FileSystemOptions CreateBrowserFileSystemOptions(bool is_incognito) {
                            additional_allowed_schemes);
 }
 
-bool CheckCanReadFileSystemFileOnUIThread(ChildProcessId process_id,
-                                          const storage::FileSystemURL& url) {
+bool CheckCanReadFileSystemFileOnUIThread(
+    std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
+        security_policy_handle,
+    const storage::FileSystemURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-  return policy->CanReadFileSystemFile(process_id, url);
+  return security_policy_handle->CanReadFileSystemFile(url);
 }
 
-void GrantReadAccessOnUIThread(ChildProcessId process_id,
-                               const base::FilePath& platform_path) {
+void GrantReadAccessOnUIThread(
+    std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
+        security_policy_handle,
+    const base::FilePath& platform_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanReadFile(process_id, platform_path)) {
-    policy->GrantReadFile(process_id, platform_path);
+
+  // It is only possible to grant new permissions if the RenderProcessHost still
+  // exists by the time this task runs. If it does exist and doesn't yet have
+  // read access to the platform path that corresponds to the FileSystemURL that
+  // was verified in CheckCanReadFileSystemFileOnUIThread, grant access now.
+  ChildProcessId process_id = security_policy_handle->child_id();
+  if (RenderProcessHost::FromID(process_id) &&
+      !security_policy_handle->CanReadFile(platform_path)) {
+    ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(process_id,
+                                                                 platform_path);
   }
 }
 
@@ -86,7 +96,8 @@ void GrantReadAccessOnUIThread(ChildProcessId process_id,
 // path, grant read access, and send return the path via a callback.
 void GetPlatformPathOnFileThread(
     scoped_refptr<storage::FileSystemContext> context,
-    ChildProcessId process_id,
+    std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
+        security_policy_handle,
     const storage::FileSystemURL& url,
     DoGetPlatformPathCB callback,
     bool can_read_filesystem_file) {
@@ -102,7 +113,8 @@ void GetPlatformPathOnFileThread(
 
   GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&GrantReadAccessOnUIThread, process_id, platform_path),
+      base::BindOnce(&GrantReadAccessOnUIThread,
+                     std::move(security_policy_handle), platform_path),
       base::BindOnce(std::move(callback), platform_path));
 }
 
@@ -138,6 +150,8 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
 
   for (const storage::FileSystemType& type :
        file_system_context->GetFileSystemTypes()) {
+    // This can safely be called without a ChildProcessSecurityPolicy::Handle
+    // because it does not involve per-process SecurityState.
     ChildProcessSecurityPolicyImpl::GetInstance()
         ->RegisterFileSystemPermissionPolicy(
             type, storage::FileSystemContext::GetPermissionPolicy(type));
@@ -155,7 +169,8 @@ bool FileSystemURLIsValid(storage::FileSystemContext* context,
 }
 
 void DoGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
-                       ChildProcessId process_id,
+                       std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
+                           security_policy_handle,
                        const GURL& path,
                        const blink::StorageKey& storage_key,
                        DoGetPlatformPathCB callback) {
@@ -174,11 +189,24 @@ void DoGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
   // Make sure if this file is ok to be read (in the current architecture
   // which means roughly same as the renderer is allowed to get the platform
   // path to the file).
+  //
+  // The access check for `url` runs on the UI thread using a duplicated
+  // ChildProcessSecurityPolicy::Handle, ensuring the SecurityState exists when
+  // the task runs. If the access check passes, the file thread will determine
+  // the platform path, then another Handle (which can be the one that was
+  // passed to this function) is needed on the UI thread to check and grant
+  // access to the platform path if needed. Using separate Handles for these
+  // tasks allows each task to own and delete their Handle independently.
+  std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle> ui_handle =
+      std::make_unique<ChildProcessSecurityPolicyImpl::Handle>(
+          security_policy_handle->Duplicate());
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&CheckCanReadFileSystemFileOnUIThread, process_id, url),
+      base::BindOnce(&CheckCanReadFileSystemFileOnUIThread,
+                     std::move(ui_handle), url),
       base::BindOnce(&GetPlatformPathOnFileThread, std::move(context),
-                     process_id, url, std::move(callback)));
+                     std::move(security_policy_handle), url,
+                     std::move(callback)));
 }
 
 void PrepareDropDataForChildProcess(
@@ -186,6 +214,13 @@ void PrepareDropDataForChildProcess(
     ChildProcessSecurityPolicyImpl* security_policy,
     ChildProcessId child_id,
     const storage::FileSystemContext* file_system_context) {
+  // The permissions granted to `child_id` below only work if the corresponding
+  // RenderProcessHost still exists on the UI thread.
+  // TODO(crbug.com/482261047): Pass the RenderProcessHost instead of `child_id`
+  // as proof that it still exists. This requires using a MockRenderProcessHost
+  // in unit tests.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
 #if BUILDFLAG(IS_CHROMEOS)
   // The externalfile:// scheme is used in Chrome OS to open external files in a
   // browser tab.
@@ -247,6 +282,13 @@ std::string PrepareDataTransferFilenamesForChildProcess(
     ChildProcessSecurityPolicyImpl* security_policy,
     ChildProcessId child_id,
     const storage::FileSystemContext* file_system_context) {
+  // The permissions granted to `child_id` below only work if the corresponding
+  // RenderProcessHost still exists on the UI thread.
+  // TODO(crbug.com/482261047): Pass the RenderProcessHost instead of `child_id`
+  // as proof that it still exists. This requires using a MockRenderProcessHost
+  // in unit tests.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // The filenames vector represents a capability to access the given files.
   storage::IsolatedContext::FileInfoSet files;
   for (auto& filename : filenames) {
