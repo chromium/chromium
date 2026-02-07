@@ -216,15 +216,54 @@ class SidePanelBorder : public views::Border {
   const raw_ptr<BrowserView> browser_view_;
 };
 
+class ContentParentBackground : public views::Background {
+ public:
+  ContentParentBackground(BrowserView* browser_view,
+                          SidePanelEntry::PanelType type,
+                          base::RepeatingCallback<gfx::RoundedCornersF()>
+                              get_rounded_corners_callback)
+      : browser_view_(browser_view),
+        type_(type),
+        get_rounded_corners_callback_(std::move(get_rounded_corners_callback)) {
+  }
+
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    gfx::RoundedCornersF radii = get_rounded_corners_callback_.Run();
+    SkVector sk_radii[4] = {{radii.upper_left(), radii.upper_left()},
+                            {radii.upper_right(), radii.upper_right()},
+                            {radii.lower_right(), radii.lower_right()},
+                            {radii.lower_left(), radii.lower_left()}};
+    SkRRect rrect;
+    rrect.setRectRadii(gfx::RectToSkRect(view->GetLocalBounds()), sk_radii);
+    SkPath path = SkPath::RRect(rrect);
+    canvas->ClipPath(path, /*do_anti_alias=*/true);
+
+    if (type_ == SidePanelEntry::PanelType::kToolbar) {
+      ThemedBackground::PaintBackground(canvas, view, browser_view_);
+    } else {
+      canvas->DrawColor(
+          view->GetColorProvider()->GetColor(kColorSidePanelBackground));
+    }
+  }
+
+ private:
+  const raw_ptr<BrowserView> browser_view_;
+  const SidePanelEntry::PanelType type_;
+  base::RepeatingCallback<gfx::RoundedCornersF()> get_rounded_corners_callback_;
+};
+
 // ContentParentView is the parent view for views hosted in the
 // side panel.
 class ContentParentView : public views::View, public views::ViewObserver {
   METADATA_HEADER(ContentParentView, views::View)
 
  public:
-  explicit ContentParentView(bool should_round_corners,
+  explicit ContentParentView(BrowserView* browser_view,
+                             bool should_round_corners,
                              SidePanelEntry::PanelType type)
-      : should_round_corners_(should_round_corners), type_(type) {
+      : browser_view_(browser_view),
+        should_round_corners_(should_round_corners),
+        type_(type) {
     SetUseDefaultFillLayout(true);
     SetProperty(
         views::kFlexBehaviorKey,
@@ -241,8 +280,10 @@ class ContentParentView : public views::View, public views::ViewObserver {
 
  private:
   void AddedToWidget() override {
-    SetBackground(views::CreateRoundedRectBackground(kColorSidePanelBackground,
-                                                     GetRoundedCorners()));
+    SetBackground(std::make_unique<ContentParentBackground>(
+        browser_view_, type_,
+        base::BindRepeating(&ContentParentView::GetRoundedCorners,
+                            base::Unretained(this))));
   }
 
   void OnChildViewAdded(views::View* observed_view,
@@ -276,6 +317,7 @@ class ContentParentView : public views::View, public views::ViewObserver {
                : gfx::RoundedCornersF();
   }
 
+  const raw_ptr<BrowserView> browser_view_;
   bool should_round_corners_ = false;
   SidePanelEntry::PanelType type_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
@@ -401,7 +443,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
   // parent view. content_parent_view_ is added first so it exists behind
   // border_view_ and resize_area_.
   content_parent_view_ = AddChildView(std::make_unique<ContentParentView>(
-      /*should_round_corners=*/!has_border, type));
+      browser_view, /*should_round_corners=*/!has_border, type));
   content_parent_view_->SetVisible(false);
 
   if (has_border) {
