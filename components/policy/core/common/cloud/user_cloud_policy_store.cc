@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -19,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -158,13 +156,6 @@ void DesktopCloudPolicyStore::Clear() {
 
 void DesktopCloudPolicyStore::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If the store was created because the finch check was not possible at the
-  // time, do no load it from the disk.
-  if (IsExtensionInstallPolicyType(policy_type()) &&
-      !base::FeatureList::IsEnabled(
-          features::kEnableExtensionInstallPolicyFetching)) {
-    return;
-  }
 
   VLOG_POLICY(1, POLICY_PROCESSING)
       << PolicyTypeLogPrefix(policy_type(), std::string())
