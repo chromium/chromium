@@ -697,14 +697,14 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   ASSERT_TRUE(engine);
 
   constexpr int kFirstRunStartIndex = 0;
-  constexpr int kFirstRunEndIndex = 20;
+  constexpr int kFirstRunEndIndex = 19;
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
   std::optional<AccessibilityTextRunInfo> text_run_info_1 =
       page.GetTextRunInfoAt(kFirstRunStartIndex);
   ASSERT_TRUE(text_run_info_1.has_value());
 
   const auto& actual_text_run_1 = text_run_info_1.value();
-  EXPECT_EQ(21u, actual_text_run_1.len);
+  EXPECT_EQ(20u, actual_text_run_1.len);
 
   EXPECT_TRUE(
       base::IsUnicodeWhitespace(page.GetCharUnicode(kFirstRunStartIndex)));
@@ -717,7 +717,7 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   // " Hello, world! \r\n "<17 characters><first Tj>
   // " \r\n "<4 characters><second Tj>
   // " "<1 character><third Tj starting spaces>
-  // Finally generated text run: " Hello, world! \r\n \r\n "
+  // Finally generated text run: " Hello, world!\r\n \r\n "
   constexpr int kFirstRunLastNonSpaceCharIndex = 13;
   EXPECT_FALSE(base::IsUnicodeWhitespace(
       page.GetCharUnicode(kFirstRunLastNonSpaceCharIndex)));
@@ -729,8 +729,8 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   gfx::RectF end_char_rect = page.GetCharBounds(kFirstRunEndIndex);
   EXPECT_FALSE(text_run_bounds.Contains(end_char_rect));
   // Equals to the length of the previous text run.
-  constexpr int kSecondRunStartIndex = 21;
-  constexpr int kSecondRunEndIndex = 36;
+  constexpr int kSecondRunStartIndex = 20;
+  constexpr int kSecondRunEndIndex = 34;
   // Test the properties of second text run.
   // Note: The leading spaces in second text run are accounted for in the end
   // of first text run. Hence we won't see a space leading the second text run.
@@ -739,7 +739,7 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   ASSERT_TRUE(text_run_info_2.has_value());
 
   const auto& actual_text_run_2 = text_run_info_2.value();
-  EXPECT_EQ(16u, actual_text_run_2.len);
+  EXPECT_EQ(15u, actual_text_run_2.len);
 
   EXPECT_FALSE(
       base::IsUnicodeWhitespace(page.GetCharUnicode(kSecondRunStartIndex)));
@@ -750,17 +750,16 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   // Last non-space character should fall in the bounding box of the text run.
   // Text run looks like this:
   // "Goodbye, world! "<19 characters><first Tj>
-  // Finally generated text run: "Goodbye, world! "
-  constexpr int kSecondRunLastNonSpaceCharIndex = 35;
+  // Finally generated text run: "Goodbye, world!"
+  constexpr int kSecondRunLastNonSpaceCharIndex = 34;
   EXPECT_FALSE(base::IsUnicodeWhitespace(
       page.GetCharUnicode(kSecondRunLastNonSpaceCharIndex)));
   EXPECT_TRUE(text_run_bounds.Contains(
       page.GetCharBounds(kSecondRunLastNonSpaceCharIndex)));
 
-  EXPECT_TRUE(
-      base::IsUnicodeWhitespace(page.GetCharUnicode(kSecondRunEndIndex)));
   EXPECT_FALSE(
-      text_run_bounds.Contains(page.GetCharBounds(kSecondRunEndIndex)));
+      base::IsUnicodeWhitespace(page.GetCharUnicode(kSecondRunEndIndex)));
+  EXPECT_TRUE(text_run_bounds.Contains(page.GetCharBounds(kSecondRunEndIndex)));
 }
 
 TEST_P(PDFiumPageTextTest, GetTextRunInfoAt) {
