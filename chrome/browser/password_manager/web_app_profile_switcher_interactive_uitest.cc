@@ -43,13 +43,14 @@ const char kTestWebUIAppURL[] = "chrome://password-manager/?source=pwa";
 
 std::unique_ptr<web_app::WebAppInstallInfo> GetTestWebAppInstallInfo() {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>(
-      GURL(kTestWebUIManifestId), GURL(kTestWebUIAppURL));
+      webapps::ManifestId(GURL(kTestWebUIManifestId)), GURL(kTestWebUIAppURL));
   web_app_info->title = u"Test app";
   return web_app_info;
 }
 
 webapps::AppId GetTestWebAppId() {
-  return web_app::GenerateAppIdFromManifestId(GURL(kTestWebUIManifestId));
+  return web_app::GenerateAppIdFromManifestId(
+      webapps::ManifestId(GURL(kTestWebUIManifestId)));
 }
 
 Profile* CreateAdditionalProfile() {
