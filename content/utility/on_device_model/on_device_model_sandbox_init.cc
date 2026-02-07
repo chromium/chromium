@@ -11,8 +11,9 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "services/on_device_model/ml_internal_buildflags.h"
 
-#if defined(ENABLE_ML_INTERNAL)
+#if BUILDFLAG(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/ml/chrome_ml.h"      // nogncheck
 #include "services/on_device_model/ml/gpu_blocklist.h"  // nogncheck
 #endif
@@ -85,7 +86,7 @@ bool ShouldWarmDrivers() {
   return false;
 #else
   bool is_gpu_not_blocklisted = true;
-#if defined(ENABLE_ML_INTERNAL)
+#if BUILDFLAG(ENABLE_ML_INTERNAL)
   ml::DeviceInfo device_info =
       ml::QueryDeviceInfo(ml::ChromeML::Get()->api(), /*log_histogram=*/false);
   is_gpu_not_blocklisted =
@@ -99,7 +100,7 @@ bool ShouldWarmDrivers() {
 }  // namespace
 
 bool PreSandboxInit() {
-#if defined(ENABLE_ML_INTERNAL)
+#if BUILDFLAG(ENABLE_ML_INTERNAL)
   // Ensure the library is loaded before the sandbox is initialized.
   if (!ml::ChromeML::Get()) {
     LOG(ERROR) << "Unable to load ChromeML.";

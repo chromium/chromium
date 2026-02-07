@@ -5,7 +5,7 @@
 
 #include "services/on_device_model/ml_internal_buildflags.h"
 
-#if defined(BUILD_WITH_ML_INTERNAL)
+#if BUILDFLAG(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/ml/chrome_ml.h"      // nogncheck
 #include "services/on_device_model/ml/chrome_ml_api.h"  // nogncheck
 #endif
@@ -14,7 +14,7 @@ namespace passage_embeddings {
 
 PassageEmbeddingsOpResolver::PassageEmbeddingsOpResolver(
     bool allow_gpu_execution) {
-#if defined(BUILD_WITH_ML_INTERNAL)
+#if BUILDFLAG(ENABLE_ML_INTERNAL)
   if (allow_gpu_execution) {
     auto* chrome_ml = ml::ChromeML::Get();
     if (chrome_ml && chrome_ml->api().CreateGpuDelegate &&

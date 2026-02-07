@@ -179,8 +179,6 @@ component("webnn_service") {
 
     if (enable_ml_internal) {
       deps += [ "//services/on_device_model/ml" ]
-
-      defines += [ "ENABLE_ML_INTERNAL" ]
     }
   }
 

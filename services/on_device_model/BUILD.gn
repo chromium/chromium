@@ -30,6 +30,7 @@ component("on_device_model_service") {
   ]
   deps = [
     ":backend_interfaces",
+    ":ml_internal_buildflags",
     "//build:chromecast_buildflags",
     "//components/optimization_guide/core:features",
     "//services/on_device_model/fake",
@@ -56,7 +57,6 @@ component("on_device_model_service") {
 
   if (enable_ml_internal) {
     deps += [ "//services/on_device_model/ml" ]
-    defines += [ "ENABLE_ML_INTERNAL" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -96,5 +96,5 @@ source_set("tests") {
 
 buildflag_header("ml_internal_buildflags") {
   header = "ml_internal_buildflags.h"
-  flags = [ "BUILD_WITH_ML_INTERNAL=$enable_ml_internal" ]
+  flags = [ "ENABLE_ML_INTERNAL=$enable_ml_internal" ]
 }

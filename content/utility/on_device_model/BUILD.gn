@@ -11,12 +11,12 @@ source_set("on_device_model_sandbox_init") {
   ]
   deps = [
     "//base",
+    "//services/on_device_model:ml_internal_buildflags",
     "//services/on_device_model:on_device_model_service",
   ]
   defines = []
   if (enable_ml_internal) {
     deps += [ "//services/on_device_model/ml" ]
-    defines += [ "ENABLE_ML_INTERNAL" ]
   }
   if (is_linux || is_chromeos) {
     deps += [
