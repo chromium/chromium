@@ -77,7 +77,8 @@ ContextualSearchMetricsRecorder::~ContextualSearchMetricsRecorder() {
   // Record session abandonments and completions.
   if (session_state_ == SessionState::kSessionStarted) {
     RecordSessionAbandonedMetrics();
-  } else if (session_state_ == SessionState::kNavigationOccurred) {
+  } else if (session_state_ == SessionState::kNavigationOccurred ||
+             session_state_ == SessionState::kQuerySubmitted) {
     RecordSessionCompletedMetrics();
   }
 }
@@ -156,6 +157,21 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(int text_length,
   base::UmaHistogramCounts100(
       base::StrCat({kContextualSearchQueryFileCount, ".", metrics_suffix_}),
       file_count);
+
+  for (const auto& funnel : session_metrics_->active_funnels) {
+    base::UmaHistogramCounts1M(
+        base::StrCat({kContextualSearchQueryTextLength, ".FunnelMetrics.",
+                      funnel, ".", metrics_suffix_}),
+        text_length);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kContextualSearchQueryModality, ".FunnelMetrics.", funnel,
+                      ".", metrics_suffix_}),
+        multimodal_state);
+    base::UmaHistogramCounts100(
+        base::StrCat({kContextualSearchQueryFileCount, ".FunnelMetrics.",
+                      funnel, ".", metrics_suffix_}),
+        file_count);
+  }
 }
 
 void ContextualSearchMetricsRecorder::RecordFileSizeMetric(
@@ -222,7 +238,21 @@ void ContextualSearchMetricsRecorder::RecordToolsSubmissionType(
       submission_type);
 }
 
+void ContextualSearchMetricsRecorder::ActivateMetricsFunnel(
+    const std::string& funnel_name) {
+  if (session_state_ == SessionState::kNone) {
+    // Ensure that session logging is enabled. This ensures that the session
+    // is recorded for some funnels that may create a session, like the
+    // plus button in the Realbox.
+    NotifySessionStateChanged(SessionState::kSessionStarted);
+  }
+  session_metrics_->active_funnels.insert(funnel_name);
+}
+
 void ContextualSearchMetricsRecorder::NotifySessionStarted() {
+  if (session_metrics_->session_elapsed_timer) {
+    return;
+  }
   session_metrics_->session_elapsed_timer =
       std::make_unique<base::ElapsedTimer>();
 }
@@ -253,27 +283,28 @@ void ContextualSearchMetricsRecorder::RecordSessionAbandonedMetrics() {
     RecordSessionCompletedMetrics();
     return;
   }
-  base::TimeDelta session_duration =
-      session_metrics_->session_elapsed_timer->Elapsed();
-  base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {kContextualSearchSessionAbandonedDuration, ".", metrics_suffix_}),
-      session_duration);
-  RecordTotalSessionDuration(session_duration);
+  if (session_metrics_->session_elapsed_timer) {
+    base::TimeDelta session_duration =
+        session_metrics_->session_elapsed_timer->Elapsed();
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {kContextualSearchSessionAbandonedDuration, ".", metrics_suffix_}),
+        session_duration);
+    RecordTotalSessionDuration(session_duration);
+  }
   FinalizeSessionMetrics();
 }
 
 void ContextualSearchMetricsRecorder::RecordSessionCompletedMetrics() {
-  base::TimeDelta session_duration =
-      session_metrics_->session_elapsed_timer->Elapsed();
-  base::UmaHistogramMediumTimes(
-      base::StrCat({kContextualSearchSessionDurationQuerySubmitted, ".",
-                    metrics_suffix_}),
-      session_duration);
-  base::UmaHistogramCounts100(
-      base::StrCat({kContextualSearchQueryCount, ".", metrics_suffix_}),
-      session_metrics_->num_query_submissions);
-  RecordTotalSessionDuration(session_duration);
+  if (session_metrics_->session_elapsed_timer) {
+    base::TimeDelta session_duration =
+        session_metrics_->session_elapsed_timer->Elapsed();
+    base::UmaHistogramMediumTimes(
+        base::StrCat({kContextualSearchSessionDurationQuerySubmitted, ".",
+                      metrics_suffix_}),
+        session_duration);
+    RecordTotalSessionDuration(session_duration);
+  }
   FinalizeSessionMetrics();
 }
 
@@ -285,6 +316,15 @@ void ContextualSearchMetricsRecorder::RecordTotalSessionDuration(
 }
 
 void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
+  base::UmaHistogramCounts100(
+      base::StrCat({kContextualSearchQueryCount, ".", metrics_suffix_}),
+      session_metrics_->num_query_submissions);
+  for (const auto& funnel : session_metrics_->active_funnels) {
+    base::UmaHistogramCounts100(
+        base::StrCat({kContextualSearchQueryCount, ".FunnelMetrics.", funnel,
+                      ".", metrics_suffix_}),
+        session_metrics_->num_query_submissions);
+  }
   base::UmaHistogramCounts100(
       "ContextualSearch.TabContextAdded.V2." + metrics_suffix_,
       session_metrics_->tab_context_added_count);
@@ -307,11 +347,25 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
                                  file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
     total_attempts += file_info.second;
+    for (const auto& funnel : session_metrics_->active_funnels) {
+      base::UmaHistogramCounts100(
+          base::StrCat({kContextualSearchFileUploadAttemptPerFileType,
+                        "FunnelMetrics.", file_type, ".", funnel, ".",
+                        metrics_suffix_}),
+          file_info.second);
+    }
   }
 
   base::UmaHistogramCounts100(
       kContextualSearchFileUploadAttemptPerFileType + metrics_suffix_,
       total_attempts);
+
+  for (const auto& funnel : session_metrics_->active_funnels) {
+    base::UmaHistogramCounts100(
+        base::StrCat({kContextualSearchFileUploadAttemptPerFileType,
+                      "FunnelMetrics.", funnel, ".", metrics_suffix_}),
+        total_attempts);
+  }
 
   // Log successful uploads.
   int total_successes = 0;
@@ -322,11 +376,25 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
                                  file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
     total_successes += file_info.second;
+    for (const auto& funnel : session_metrics_->active_funnels) {
+      base::UmaHistogramCounts100(
+          base::StrCat({kContextualSearchFileUploadSuccessPerFileType,
+                        "FunnelMetrics.", file_type, ".", funnel, ".",
+                        metrics_suffix_}),
+          file_info.second);
+    }
   }
 
   base::UmaHistogramCounts100(
       kContextualSearchFileUploadSuccessPerFileType + metrics_suffix_,
       total_successes);
+
+  for (const auto& funnel : session_metrics_->active_funnels) {
+    base::UmaHistogramCounts100(
+        base::StrCat({kContextualSearchFileUploadSuccessPerFileType,
+                      "FunnelMetrics.", funnel, ".", metrics_suffix_}),
+        total_successes);
+  }
 
   // Log file upload failures.
   int total_failures = 0;
@@ -337,10 +405,23 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
         kContextualSearchFileUploadFailure + file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
     total_failures += file_info.second;
+    for (const auto& funnel : session_metrics_->active_funnels) {
+      base::UmaHistogramCounts100(
+          base::StrCat({kContextualSearchFileUploadFailure, "FunnelMetrics.",
+                        file_type, ".", funnel, ".", metrics_suffix_}),
+          file_info.second);
+    }
   }
 
   base::UmaHistogramCounts100(
       kContextualSearchFileUploadFailure + metrics_suffix_, total_failures);
+
+  for (const auto& funnel : session_metrics_->active_funnels) {
+    base::UmaHistogramCounts100(
+        base::StrCat({kContextualSearchFileUploadFailure, "FunnelMetrics.",
+                      funnel, ".", metrics_suffix_}),
+        total_failures);
+  }
 
   // Log file validation errors.
   std::map<FileUploadErrorType, int> total_errors_by_type;
@@ -374,6 +455,7 @@ void ContextualSearchMetricsRecorder::ResetSessionMetrics() {
   session_metrics_->file_upload_failure_count_per_type.clear();
   session_metrics_->file_validation_failure_count_per_type.clear();
   session_metrics_->num_query_submissions = 0;
+  session_metrics_->active_funnels.clear();
 }
 
 std::string ContextualSearchMetricsRecorder::FileErrorToString(

@@ -632,4 +632,107 @@ INSTANTIATE_TEST_SUITE_P(
                                      FileUploadStatus::kUploadFailed,
                                      FileUploadStatus::kUploadExpired)));
 
+TEST_F(ContextualSearchMetricsRecorderTest, FunnelMetrics) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().ActivateMetricsFunnel("AiMode");
+  metrics().ActivateMetricsFunnel("DeepSearch");
+
+  // Simulate file uploads.
+  metrics().OnFileUploadStatusChanged(
+      lens::MimeType::kPdf, FileUploadStatus::kProcessing, std::nullopt);
+  metrics().OnFileUploadStatusChanged(
+      lens::MimeType::kPdf, FileUploadStatus::kUploadSuccessful, std::nullopt);
+  metrics().OnFileUploadStatusChanged(
+      lens::MimeType::kImage, FileUploadStatus::kProcessing, std::nullopt);
+  metrics().OnFileUploadStatusChanged(lens::MimeType::kImage,
+                                      FileUploadStatus::kUploadFailed,
+                                      FileUploadErrorType::kServerError);
+
+  // Simulate query submission.
+  metrics().NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  metrics().RecordQueryMetrics(/*text_length=*/100, /*file_count=*/2);
+  metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
+
+  DestructMetricsRecorder();
+
+  // Check funnel-specific histograms.
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Query.TextLength.FunnelMetrics.AiMode.Unknown", 100,
+      1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Query.TextLength.FunnelMetrics.DeepSearch.Unknown",
+      100, 1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Query.FileCount.FunnelMetrics.AiMode.Unknown", 2, 1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Query.FileCount.FunnelMetrics.DeepSearch.Unknown", 2,
+      1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Session.QueryCount.FunnelMetrics.AiMode.Unknown", 1,
+      1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Session.QueryCount.FunnelMetrics.DeepSearch.Unknown",
+      1, 1);
+
+  // File upload metrics for AiMode funnel.
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadAttemptCount.FunnelMetrics."
+      "AiMode.Unknown",
+      2, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadAttemptCount.FunnelMetrics."
+      "Pdf.AiMode.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadAttemptCount.FunnelMetrics."
+      "Image.AiMode.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadSuccessCount.FunnelMetrics."
+      "AiMode.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadSuccessCount.FunnelMetrics."
+      "Pdf.AiMode.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadFailureCount.FunnelMetrics."
+      "AiMode.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadFailureCount.FunnelMetrics."
+      "Image.AiMode.Unknown",
+      1, 1);
+
+  // File upload metrics for DeepSearch funnel.
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadAttemptCount.FunnelMetrics."
+      "DeepSearch.Unknown",
+      2, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadAttemptCount.FunnelMetrics."
+      "Pdf.DeepSearch.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadAttemptCount.FunnelMetrics."
+      "Image.DeepSearch.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadSuccessCount.FunnelMetrics."
+      "DeepSearch.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadSuccessCount.FunnelMetrics."
+      "Pdf.DeepSearch.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadFailureCount.FunnelMetrics."
+      "DeepSearch.Unknown",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Session.File.Browser.UploadFailureCount.FunnelMetrics."
+      "Image.DeepSearch.Unknown",
+      1, 1);
+}
+
 }  // namespace contextual_search

@@ -206,15 +206,19 @@ export class ActionChipsElement extends CrLitElement {
     const chip = this.actionChips_[index]!;
     switch (chip.type) {
       case ChipType.kImage:
+        this.handler.activateMetricsFunnel('CreateImageChip');
         this.onCreateImageClick_(chip);
         break;
       case ChipType.kDeepSearch:
+        this.handler.activateMetricsFunnel('DeepSearchChip');
         this.onDeepSearchClick_(chip);
         break;
       case ChipType.kRecentTab:
+        this.handler.activateMetricsFunnel('RecentTabChip');
         this.onTabContextClick_(chip);
         break;
       case ChipType.kDeepDive:
+        this.handler.activateMetricsFunnel('DeepDiveChip');
         this.onDeepDiveClick_(chip);
         break;
       default:

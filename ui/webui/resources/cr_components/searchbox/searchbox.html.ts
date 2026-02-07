@@ -41,6 +41,7 @@ export function getHtml(this: SearchboxElement) {
         @model-click="${this.onModelClick_}"
         @get-tab-preview="${this.getTabPreview_}"
         @context-menu-container-click="${this.onContextMenuContainerClick_}"
+        @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
         @context-menu-closed="${this.onContextMenuClosed_}"
         ?show-dropdown="${this.dropdownIsVisible}"
         ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"

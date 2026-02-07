@@ -103,6 +103,7 @@ class MockContextualSearchMetricsRecorder
               NotifySessionStateChanged,
               (contextual_search::SessionState session_state),
               (override));
+  MOCK_METHOD(void, ActivateMetricsFunnel, (const std::string&), (override));
   MOCK_METHOD(void, RecordToolMode, (omnibox::ToolMode tool_mode), (override));
   MOCK_METHOD(void,
               RecordModelMode,

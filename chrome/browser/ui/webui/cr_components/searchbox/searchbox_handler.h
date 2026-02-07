@@ -133,6 +133,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void OpenLensSearch() override {}
   void SetActiveToolMode(omnibox::ToolMode tool) override {}
   void SetActiveModelMode(omnibox::ModelMode model) override {}
+  void ActivateMetricsFunnel(const std::string& funnel_name) override {}
 
   // Stores `callback` to be run when the page remote is bound and ready to
   // receive calls. Runs `callback` immediately if the remote is already bound.

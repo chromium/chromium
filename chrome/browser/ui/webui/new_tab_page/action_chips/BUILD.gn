@@ -10,8 +10,6 @@ source_set("action_chips") {
   sources = [
     "action_chips_generator.cc",
     "action_chips_generator.h",
-    "action_chips_handler.cc",
-    "action_chips_handler.h",
     "action_chips_metrics.cc",
     "action_chips_metrics.h",
     "remote_suggestions_service_simple.cc",
@@ -25,6 +23,7 @@ source_set("action_chips") {
     "//chrome/browser:browser_process",
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_search",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
