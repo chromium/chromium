@@ -44,7 +44,8 @@
     <template is="dom-if" if="[[isForegroundLaunchFeatureEnabled_]]">
       <settings-toggle-button class="hr" id="foregroundLaunchOnStartup"
           pref="{{prefs.launch_on_login.foreground.enabled}}"
-          label="$i18n{onStartupForegroundLaunchOnStartupLabel}">
+          label="$i18n{onStartupForegroundLaunchOnStartupLabel}"
+          sub-label="$i18n{onStartupForegroundLaunchOnStartupSubLabel}">
       </settings-toggle-button>
     </template>
 </if>

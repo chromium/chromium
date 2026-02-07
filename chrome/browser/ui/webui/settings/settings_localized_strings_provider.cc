@@ -1314,6 +1314,8 @@ void AddOnStartupStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_WIN)
       {"onStartupForegroundLaunchOnStartupLabel",
        IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_LABEL},
+      {"onStartupForegroundLaunchOnStartupSubLabel",
+       IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_SUB_LABEL},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
