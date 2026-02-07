@@ -192,9 +192,8 @@ CreateQueryControllerConfigParams() {
   auto config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   config_params->send_lns_surface = true;
-  config_params->enable_viewport_images = kEnableViewportImages.Get();
-  config_params->attach_page_title_and_url_to_suggest_requests =
-      kAttachPageTitleAndUrlToSuggestRequest.Get();
+  config_params->enable_viewport_images = true;
+  config_params->attach_page_title_and_url_to_suggest_requests = false;
   return config_params;
 }
 
@@ -213,11 +212,6 @@ const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &kNtpComposebox,
     "NtpComposeboxShowComposeboxImageSuggestions",
     true);
-
-const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest(
-    &kNtpComposebox,
-    "AttachPageTitleAndUrlToSuggestRequest",
-    false);
 
 const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
                                                 "NtpComposeboxShowContextMenu",
@@ -239,9 +233,6 @@ const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription(
     &kNtpComposebox,
     "EnableEphemeralContextMenuDescription",
     false);
-const base::FeatureParam<bool> kEnableViewportImages(&kNtpComposebox,
-                                                     "EnableViewportImages",
-                                                     true);
 
 const base::FeatureParam<bool> kShowModelPicker(&kNtpComposebox,
                                                 "NtpComposeboxShowModelPicker",
