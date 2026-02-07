@@ -7664,6 +7664,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </else>
       </if>
 
+      <!-- Launch On Startup -->
+      <if expr="is_win">
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_ALLOW_BUTTON" desc="Label for the button on the infobar offering to allow Chrome to launch when windows starts.">
+          Allow
+        </message>
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_SETTINGS_BUTTON" desc="Label for the button on the infobar that opens settings.">
+          Settings
+        </message>
+      </if>
+
       <!-- WebUI Omnibox -->
       <message name="IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT" desc="The text displayed in the WebUI Omnibox when it is empty and unfocused.">
         Ask <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> or type a URL

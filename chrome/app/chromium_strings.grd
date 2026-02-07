@@ -2587,19 +2587,16 @@ Chromium is unable to recover your settings.
       <!--Launch On Startup-->
       <if expr="is_win">
         <message name="IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_LABEL" desc="Label for settings toggle button that enables or disables opening Chromium on system startup">
-          Open Chromium when my computer starts
+          Launch Chromium when Windows starts
         </message>
-        <message name="IDS_STARTUP_LAUNCH_INFOBAR_OPT_IN_TITLE" desc="Title of the infobar shown to ask the user if they want to allow Chromium to launch when windows starts." translateable="false">
-          Begin browsing instantly. Chromium can now launch when windows starts. Allow Chromium to open automatically?
+        <message name="IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_SUB_LABEL" desc="Sub label for settings toggle button that enables or disables opening Chromium on system startup">
+          Launch Chromium automatically to begin browsing instantly.
         </message>
-        <message name="IDS_STARTUP_LAUNCH_INFOBAR_OPT_OUT_TITLE" desc="Title of the infobar shown to inform the user that Chromium now starts automatically when Windows starts." translateable="false">
-          Chromium now starts automatically when Windows starts. You can turn this off in Settings.
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_OPT_IN_TITLE" desc="Title of the infobar shown to ask the user if they want to allow Chromium to launch when windows starts.">
+          Begin browsing instantly: Chromium can now launch when Windows starts.
         </message>
-        <message name="IDS_STARTUP_LAUNCH_INFOBAR_ALLOW_BUTTON" desc="Label for the button on the infobar offering to allow Chromium to launch when windows starts." translateable="false">
-          Allow
-        </message>
-        <message name="IDS_STARTUP_LAUNCH_INFOBAR_SETTINGS_BUTTON" desc="Label for the button on the infobar that opens settings." translateable="false">
-          Settings
+        <message name="IDS_STARTUP_LAUNCH_INFOBAR_OPT_OUT_TITLE" desc="Title of the infobar shown to inform the user that Chromium now starts automatically when Windows starts.">
+          Chromium now launches when Windows starts so you can begin browsing instantly. You can turn this off in settings.
         </message>
       </if>
 
