@@ -692,6 +692,11 @@ const char kGeminiRefactoredFREName[] = "Gemini Refactored FRE";
 const char kGeminiRefactoredFREDescription[] =
     "Enables the refactored Gemini First Run Experience (FRE).";
 
+const char kGeminiResponseViewDynamicResizingName[] =
+    "Gemini Response View Dynamic Resizing";
+const char kGeminiResponseViewDynamicResizingDescription[] =
+    "Enables dynamic resizing for the Gemini response view.";
+
 const char kGeminiUpdatedEligibilityName[] = "Gemini Updated Eligibility";
 const char kGeminiUpdatedEligibilityDescription[] =
     "Enables the updated eligibility checks for Gemini users.";

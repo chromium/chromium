@@ -434,6 +434,24 @@ bool IsGeminiCopresenceEnabled() {
   return base::FeatureList::IsEnabled(kGeminiCopresence);
 }
 
+const char kGeminiCopresenceResponseReadyInterval[] =
+    "GeminiCopresenceResponseReadyInterval";
+
+// The response ready interval default.
+constexpr double kGeminiCopresenceResponseReadyIntervalDefault = 7.0;
+
+double GetGeminiCopresenceResponseReadyInterval() {
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kGeminiCopresence, kGeminiCopresenceResponseReadyInterval,
+      kGeminiCopresenceResponseReadyIntervalDefault);
+}
+BASE_FEATURE(kGeminiResponseViewDynamicResizing,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiResponseViewDynamicResizingEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiResponseViewDynamicResizing);
+}
+
 BASE_FEATURE(kGeminiDynamicSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiDynamicSettingsEnabled() {

@@ -1250,6 +1250,14 @@ const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kGeminiCopresenceResponseReadyIntervalParam[] =
+    {{kGeminiCopresenceResponseReadyInterval, "7.0"}};
+
+const FeatureEntry::FeatureVariation kGeminiCopresenceVariations[] = {
+    {"Response Ready Interval", kGeminiCopresenceResponseReadyIntervalParam,
+     nullptr},
+};
+
 const char kFRESignInHeaderTextUpdateParamName[] =
     "FRESignInHeaderTextUpdateParam";
 const FeatureEntry::FeatureParam kFRESignInHeaderTextUpdateArm0[] = {
@@ -2089,7 +2097,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
                                     "IOSAskGeminiChip")},
     {"gemini-copresence", flag_descriptions::kGeminiCopresenceName,
      flag_descriptions::kGeminiCopresenceDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kGeminiCopresence)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiCopresence,
+                                    kGeminiCopresenceVariations,
+                                    "GeminiCopresence")},
     {"gemini-cross-tab", flag_descriptions::kGeminiCrossTabName,
      flag_descriptions::kGeminiCrossTabDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiCrossTab)},
@@ -2650,6 +2660,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableBottomSheetScanCardAndFill)},
+    {"gemini-response-view-dynamic-resizing",
+     flag_descriptions::kGeminiResponseViewDynamicResizingName,
+     flag_descriptions::kGeminiResponseViewDynamicResizingDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiResponseViewDynamicResizing)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

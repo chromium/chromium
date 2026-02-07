@@ -734,6 +734,9 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.contextualCueChipLabel = gemini_tab_helper->GetContextualCueLabel();
   config.imageRemixIPHShouldShow =
       entry_point == gemini::EntryPoint::ImageRemixIPH;
+  config.responseReadyInterval = GetGeminiCopresenceResponseReadyInterval();
+  config.responseViewDynamicSizeEnabled =
+      IsGeminiResponseViewDynamicResizingEnabled();
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.

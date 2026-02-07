@@ -311,6 +311,16 @@ bool IsGeminiPersonalizationEnabled();
 BASE_DECLARE_FEATURE(kGeminiCopresence);
 bool IsGeminiCopresenceEnabled();
 
+// The threshold interval for displaying the response ready state in seconds.
+extern const char kGeminiCopresenceResponseReadyInterval[];
+double GetGeminiCopresenceResponseReadyInterval();
+
+// Feature flag for Gemini Dynamic Resizing.
+BASE_DECLARE_FEATURE(kGeminiResponseViewDynamicResizing);
+
+// Returns true if Gemini Dynamic Resizing is enabled.
+bool IsGeminiResponseViewDynamicResizingEnabled();
+
 // Feature flag for Gemini Dynamic Settings.
 BASE_DECLARE_FEATURE(kGeminiDynamicSettings);
 bool IsGeminiDynamicSettingsEnabled();
