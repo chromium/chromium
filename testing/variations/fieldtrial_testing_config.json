@@ -2783,6 +2783,22 @@
             ]
         }
     ],
+    "AutofillEnableMandatoryReauthAndFpanRiskBasedAuthenticationChromeOs": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableFpanRiskBasedAuthentication",
+                        "AutofillEnablePaymentsMandatoryReauthChromeOs"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableNonAffiliatedLoyaltyCardsFilling": [
         {
             "platforms": [
