@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
@@ -30,6 +29,19 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+void SetScrollViewProperties(views::ScrollView* scroll_view) {
+  scroll_view->SetUseContentsPreferredSize(true);
+  scroll_view->SetBackgroundColor(std::nullopt);
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view->SetOverflowGradientMask(
+      views::ScrollView::GradientDirection::kVertical);
+  scroll_view->SetVerticalScrollBar(
+      std::make_unique<VerticalTabStripScrollBar>());
+}
+}  // namespace
 
 VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node)
     : collection_node_(collection_node) {
@@ -53,9 +65,9 @@ VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node)
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &VerticalTabStripView::RemoveScrollViewContents, base::Unretained(this)));
 
-  callback_subscriptions_.emplace_back(
+  node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
-          &VerticalTabStripView::ResetCollectionNode, base::Unretained(this))));
+          &VerticalTabStripView::ResetCollectionNode, base::Unretained(this)));
 
   SetNotifyEnterExitOnChild(true);
   UpdateColors();
@@ -183,19 +195,6 @@ void VerticalTabStripView::AddedToWidget() {
 void VerticalTabStripView::OnMouseEntered(const ui::MouseEvent& event) {
   mouse_entered_tabstrip_time_ = base::TimeTicks::Now();
   has_reported_time_mouse_entered_to_switch_ = false;
-}
-
-void VerticalTabStripView::OnMouseExited(const ui::MouseEvent& event) {
-  if (!collection_node_) {
-    return;
-  }
-
-  if (TabHoverCardController* hover_card_controller =
-          collection_node_->GetController()->GetHoverCardController();
-      hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
-    hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kHover);
-  }
 }
 
 void VerticalTabStripView::OnTabStripModelChanged(
@@ -329,21 +328,6 @@ void VerticalTabStripView::RemoveScrollViewContents(views::View* view) {
   NOTREACHED();
 }
 
-void VerticalTabStripView::SetScrollViewProperties(
-    views::ScrollView* scroll_view) {
-  scroll_view->SetUseContentsPreferredSize(true);
-  scroll_view->SetBackgroundColor(std::nullopt);
-  scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetOverflowGradientMask(
-      views::ScrollView::GradientDirection::kVertical);
-  scroll_view->SetVerticalScrollBar(
-      std::make_unique<VerticalTabStripScrollBar>());
-  callback_subscriptions_.emplace_back(scroll_view->AddContentsScrolledCallback(
-      base::BindRepeating(&VerticalTabStripView::HideHoverCardOnScroll,
-                          base::Unretained(this))));
-}
-
 void VerticalTabStripView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
@@ -392,19 +376,6 @@ void VerticalTabStripView::UpdateColors() {
 
 bool VerticalTabStripView::IsFrameActive() const {
   return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
-}
-
-void VerticalTabStripView::HideHoverCardOnScroll() {
-  if (!collection_node_) {
-    return;
-  }
-
-  if (TabHoverCardController* hover_card_controller =
-          collection_node_->GetController()->GetHoverCardController();
-      hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
-    hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kAnimating);
-  }
 }
 
 BEGIN_METADATA(VerticalTabStripView)

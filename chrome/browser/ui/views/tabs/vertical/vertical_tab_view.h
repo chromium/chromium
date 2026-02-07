@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
-#include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/common/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
@@ -50,8 +49,7 @@ class VerticalTabView : public views::View,
                         public views::LayoutDelegate,
                         public views::MaskedTargeterDelegate,
                         public AlertIndicatorButton::Delegate,
-                        public views::ContextMenuController,
-                        public HoverCardAnchorTarget {
+                        public views::ContextMenuController {
   METADATA_HEADER(VerticalTabView, views::View)
 
  public:
@@ -68,16 +66,11 @@ class VerticalTabView : public views::View,
 
   const TabCollectionNode* collection_node() const { return collection_node_; }
   const TabStyle* tab_style() { return tab_style_; }
+  const TabRendererData& tab_data() const { return tab_data_; }
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
 
   TabCloseButton* close_button_for_testing() { return close_button_; }
   bool collapsed_for_testing() { return collapsed_; }
-
-  // HoverCardAnchorTarget:
-  bool IsActive() const override;
-  bool IsValid() const override;
-  const TabRendererData& data() const override;
-  views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
  private:
   // views::View
@@ -148,17 +141,12 @@ class VerticalTabView : public views::View,
   void CloseButtonPressed(const ui::Event& event);
   void RecordMousePressedInTab();
 
-  void UpdateHoverCard(HoverCardAnchorTarget* target,
-                       int hover_card_update_type);
-
   bool IsHoverAnimationActive() const;
   double GetHoverAnimationValue() const;
   float GetHoverOpacity() const;
 
   bool IsFrameActive() const;
   TabStyle::TabSelectionState GetSelectionState() const;
-
-  bool IsDragging() const;
 
   const tabs::TabInterface* GetTabInterface() const;
 
@@ -186,8 +174,6 @@ class VerticalTabView : public views::View,
   bool selected_ = false;
   bool hovered_ = false;
   bool split_ = false;
-  // |collapsed_| represents whether the VerticalTabView itself is collapsed,
-  // which is not the same as if the VerticalTabStripView is collapsed.
   bool collapsed_ = false;
   bool pinned_ = false;
   bool shift_pressed_on_mouse_down_ = false;

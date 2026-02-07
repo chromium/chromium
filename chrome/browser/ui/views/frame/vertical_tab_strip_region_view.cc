@@ -67,9 +67,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     : browser_view_(browser_view),
       tab_strip_model_(browser_view->browser()->GetTabStripModel()),
       state_controller_(state_controller),
-      hover_card_controller_(
-          std::make_unique<TabHoverCardController>(this,
-                                                   browser_view->browser())),
       resize_animation_(this) {
   // For z-ordering purposes this needs to be on a layer.
   SetPaintToLayer();
@@ -203,7 +200,7 @@ void VerticalTabStripRegionView::InitializeTabStrip() {
   CHECK(!tab_strip_controller_);
   tab_strip_controller_ = std::make_unique<VerticalTabStripController>(
       tab_strip_model, browser_view_, *AddChildView(std::move(drag_handler)),
-      hover_card_controller_.get(), std::move(tab_menu_model_factory));
+      std::move(tab_menu_model_factory));
 
   root_node_->SetController(tab_strip_controller_.get());
 
@@ -331,7 +328,7 @@ const TabRendererData& VerticalTabStripRegionView::GetTabRendererData(
   VerticalTabView* tab_view = views::AsViewClass<VerticalTabView>(node->view());
   CHECK(tab_view);
 
-  return tab_view->data();
+  return tab_view->tab_data();
 }
 
 views::View* VerticalTabStripRegionView::GetTabAnchorViewAt(int tab_index) {

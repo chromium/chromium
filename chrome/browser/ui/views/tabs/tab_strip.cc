@@ -1092,11 +1092,9 @@ END_METADATA
 ///////////////////////////////////////////////////////////////////////////////
 // TabStrip, public:
 
-TabStrip::TabStrip(
-    std::unique_ptr<TabStripController> controller,
-    std::unique_ptr<TabHoverCardController> hover_card_controller)
+TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
     : controller_(std::move(controller)),
-      hover_card_controller_(std::move(hover_card_controller)),
+      hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(*AddChildView(std::make_unique<TabDragContextImpl>(this))),
       style_(TabStyle::Get()) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
