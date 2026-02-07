@@ -6,9 +6,10 @@
 
 namespace disk_cache {
 
-EntryDbHandle::EntryDbHandle() = default;
+EntryDbHandle::EntryDbHandle() : state_(State::kInitial) {}
 
-EntryDbHandle::EntryDbHandle(SqlPersistentStore::ResId res_id) : data_(res_id) {
+EntryDbHandle::EntryDbHandle(SqlPersistentStore::ResId res_id)
+    : data_(res_id), state_(State::kCreated) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -16,14 +17,23 @@ EntryDbHandle::~EntryDbHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void EntryDbHandle::SetResId(SqlPersistentStore::ResId res_id) {
+void EntryDbHandle::MarkAsCreating() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  data_ = res_id;
+  CHECK_EQ(state_, State::kInitial);
+  state_ = State::kCreating;
 }
 
-void EntryDbHandle::SetError(SqlPersistentStore::Error error) {
+void EntryDbHandle::MarkAsCreated(SqlPersistentStore::ResId res_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kCreating);
+  data_ = res_id;
+  state_ = State::kCreated;
+}
+
+void EntryDbHandle::MarkAsErrorOccurred(SqlPersistentStore::Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_ = error;
+  state_ = State::kErrorOccurred;
 }
 
 std::optional<SqlPersistentStore::ResId> EntryDbHandle::GetResId() const {

@@ -23,14 +23,38 @@ namespace disk_cache {
 class NET_EXPORT_PRIVATE EntryDbHandle
     : public base::RefCounted<EntryDbHandle> {
  public:
+  // SqlBackendImpl::OpenOrCreateEntry and CreateEntry perform speculative
+  // creation and synchronously return a SqlEntryImpl holding an EntryDbHandle
+  // in the kInitial state when the DB's in-memory index indicates that no
+  // entry with the corresponding key exists in the DB.
+  //
+  // The state changes to kCreating when writing to the DB becomes necessary
+  // (e.g., when the write buffering limit is exceeded), and then to kCreated
+  // upon completion. If the DB write fails, the state becomes kErrorOccurred.
+  //
+  // If an existing entry is opened, or if speculative creation is skipped
+  // (e.g., because the in-memory index is not yet loaded), a SqlEntryImpl
+  // holding an EntryDbHandle in the kCreated state is created after the DB
+  // read or write operation completes.
+  enum class State {
+    kInitial = 0,
+    kCreating,
+    kCreated,
+    kErrorOccurred,
+  };
+
   EntryDbHandle();
   explicit EntryDbHandle(SqlPersistentStore::ResId res_id);
 
-  void SetResId(SqlPersistentStore::ResId res_id);
-  void SetError(SqlPersistentStore::Error error);
+  void MarkAsCreating();
+  void MarkAsCreated(SqlPersistentStore::ResId res_id);
+  void MarkAsErrorOccurred(SqlPersistentStore::Error error);
 
   std::optional<SqlPersistentStore::ResId> GetResId() const;
   std::optional<SqlPersistentStore::Error> GetError() const;
+
+  bool IsInitialState() const { return state_ == State::kInitial; }
+  bool IsCreatingState() const { return state_ == State::kCreating; }
 
   // Returns true if the ResId has been set or an error has occurred.
   bool IsFinished() const;
@@ -42,6 +66,8 @@ class NET_EXPORT_PRIVATE EntryDbHandle
   std::optional<
       std::variant<SqlPersistentStore::ResId, SqlPersistentStore::Error>>
       data_;
+
+  State state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

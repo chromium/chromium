@@ -55,8 +55,8 @@ SqlEntryImpl::~SqlEntryImpl() {
   } else if (last_used_modified_) {
     metadata_update_needed = true;
   }
-
-  if (old_body_end.has_value() || metadata_update_needed) {
+  if (db_handle_->IsInitialState() || old_body_end.has_value() ||
+      metadata_update_needed) {
     backend_->WriteEntryDataAndMetadata(
         key_, db_handle_, old_body_end, body_end_, std::move(buffer),
         last_used_, new_hints_, std::move(head_to_send), header_size_delta,
@@ -200,9 +200,22 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
     // If the request overlaps with the buffer, flush the buffer first.
     if (std::max(offset, write_buffer_.offset) <
         std::min(offset + buf_len, write_buffer_end)) {
-      FlushBuffer();
+      FlushBuffer(/*force_flush_for_creation=*/false);
     }
   }
+
+  // When `db_handle_` is in the initial state, `write_buffer_.offset` must be 0
+  // and `write_buffer_.size` must be `body_end_`.
+  // In that case:
+  // - If the request is beyond `write_buffer_`:
+  //     0 is returned above (body_end_ <= offset).
+  // - If the request is within `write_buffer_`:
+  //     `buf_len` is returned above.
+  // - If the request overlaps with `write_buffer_`:
+  //     FlushBuffer is called above, transitioning to creating state in
+  //     SqlBackendImpl::WriteEntryData.
+  // Therefore, `db_handle_` cannot be in the initial state here.
+  CHECK(!db_handle_->IsInitialState());
 
   auto read_callback = base::BindOnce(
       [](base::WeakPtr<SqlEntryImpl> self, CompletionOnceCallback callback,
@@ -295,10 +308,6 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   if (!backend_) {
     return net::ERR_FAILED;
   }
-  if (db_handle_->GetError().has_value()) {
-    return net::ERR_FAILED;
-  }
-
   read_cache_buffer_.reset();
   read_cache_buffer_offset_ = -1;
 
@@ -314,7 +323,7 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
     const int entry_limit =
         net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.Get();
     if (write_buffer_.size + buf_len > entry_limit) {
-      FlushBuffer();
+      FlushBuffer(/*force_flush_for_creation=*/false);
     }
     if (buf_len <= entry_limit && backend_->write_buffer_monitor().Allocate(
                                       buf_len, write_buffer_reservation_)) {
@@ -336,7 +345,7 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
     }
   }
 
-  FlushBuffer();
+  FlushBuffer(/*force_flush_for_creation=*/false);
 
   // The end of the current write must not cause an integer overflow. Callers
   // are responsible for validating this, so we CHECK it here.
@@ -354,20 +363,49 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   const auto old_body_end = body_end_;
   body_end_ = new_body_end;
 
+  if (db_handle_->IsInitialState()) {
+    // WriteEntryData creates an entry in the DB with `last_used_` set.
+    // Unless `last_used_` is updated in the future, there is no need to write
+    // to the DB again.
+    last_used_modified_ = false;
+  }
+
   return backend_->WriteEntryData(
       key_, db_handle_, old_body_end, body_end_,
-      EntryWriteBuffer(buf, buf_len, offset), truncate,
+      EntryWriteBuffer(buf, buf_len, offset), truncate, last_used_,
       /*copy_buffer_for_optimistic_write=*/true, std::move(callback));
 }
 
-void SqlEntryImpl::FlushBuffer() {
+void SqlEntryImpl::FlushBuffer(bool force_flush_for_creation) {
   CHECK(backend_);
   EntryWriteBuffer buffer;
   SqlWriteBufferMemoryMonitor::ScopedReservation reservation;
 
   if (!TakeWriteBuffer(buffer, reservation)) {
+    if (force_flush_for_creation && db_handle_->IsInitialState()) {
+      // Even if the write buffer is empty, if `force_flush_for_creation` is
+      // true and `db_handle_` is in the initial state, create an entry in the
+      // DB using WriteEntryDataAndMetadata.
+      //
+      // WriteEntryDataAndMetadata creates an entry in the DB with `last_used_`
+      // set. Unless `last_used_` is updated in the future, there is no need to
+      // write to the DB again.
+      last_used_modified_ = false;
+      backend_->WriteEntryDataAndMetadata(
+          key_, db_handle_, /*old_body_end=*/std::nullopt, 0,
+          EntryWriteBuffer(), last_used_,
+          /*new_hints=*/std::nullopt, /*head_buffer=*/nullptr,
+          /*header_size_delta*/ 0, base::DoNothing());
+    }
     return;
   }
+  if (db_handle_->IsInitialState()) {
+    // WriteEntryData creates an entry in the DB with `last_used_` set.
+    // Unless `last_used_` is updated in the future, there is no need to write
+    // to the DB again.
+    last_used_modified_ = false;
+  }
+
   const int64_t offset = buffer.offset;
 
   // We pass copy_buffer_for_optimistic_write=false because we are passing
@@ -375,7 +413,7 @@ void SqlEntryImpl::FlushBuffer() {
   backend_->WriteEntryData(
       key_, db_handle_, /*old_body_end=*/offset,
       /*body_end=*/body_end_, std::move(buffer),
-      /*truncate=*/false,
+      /*truncate=*/false, last_used_,
       /*copy_buffer_for_optimistic_write=*/false,
       base::DoNothingWithBoundArgs(std::move(reservation)));
 }
@@ -433,7 +471,7 @@ RangeResult SqlEntryImpl::GetAvailableRange(int64_t offset,
 
   // Since the processing of GetAvailableRange is implemented only on the DB,
   // flush all write buffers.
-  FlushBuffer();
+  FlushBuffer(/*force_flush_for_creation=*/true);
 
   return backend_->GetEntryAvailableRange(key_, db_handle_, offset, len,
                                           std::move(callback));

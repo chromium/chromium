@@ -93,6 +93,13 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // Returns the holder for the resource ID or an error.
   const scoped_refptr<EntryDbHandle>& db_handle() const { return db_handle_; }
 
+  // Returns the new hints value if it has been modified via
+  // SetEntryInMemoryData(). This value might not yet be persisted to the
+  // database.
+  const std::optional<MemoryEntryDataHints>& new_hints() const {
+    return new_hints_;
+  }
+
   // Marks the entry as doomed. This is called by the backend when an
   // active entry is doomed.
   void MarkAsDoomed();
@@ -101,6 +108,11 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
 
   // Updates the `last_used_` timestamp to the current time.
   void UpdateLastUsed();
+
+  // Flushes the write buffer to the backend.
+  // When `force_flush_for_creation` is true, this flushes even when the write
+  // buffer is empty to create an entry in the DB.
+  void FlushBuffer(bool force_flush_for_creation);
 
  private:
   friend class base::RefCounted<SqlEntryImpl>;
@@ -123,9 +135,6 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
                        int buf_len,
                        CompletionOnceCallback callback,
                        bool sparse_reading);
-
-  // Flushes the write buffer to the backend.
-  void FlushBuffer();
 
   // Retrieves the write buffer and returns true if successful. If the buffer
   // is empty, returns false. The `reservation` will be populated with the

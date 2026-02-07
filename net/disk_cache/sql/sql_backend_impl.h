@@ -146,6 +146,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // data, overwrite existing data, or append to the entry. The operation is
   // scheduled via the `ExclusiveOperationCoordinator` to ensure proper
   // serialization.
+  // If `db_handle` is in the initial state, creates entry information in the
+  // DB. `last_used` is used only in that case.
   // If the backend is deleted during execution, the callback will be called
   // with net::ERR_ABORTED.
   int WriteEntryData(const CacheEntryKey& key,
@@ -154,6 +156,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                      int64_t body_end,
                      EntryWriteBuffer buffer,
                      bool truncate,
+                     base::Time last_used,
                      bool copy_buffer_for_optimistic_write,
                      CompletionOnceCallback callback);
 
@@ -258,6 +261,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                               scoped_refptr<net::GrowableIOBuffer> head);
     InFlightEntryModification(const scoped_refptr<EntryDbHandle>& db_handle,
                               base::Time last_used,
+                              const std::optional<MemoryEntryDataHints>& hints,
                               scoped_refptr<net::GrowableIOBuffer> head,
                               int64_t body_end);
     InFlightEntryModification(const scoped_refptr<EntryDbHandle>& db_handle,
@@ -267,6 +271,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
     scoped_refptr<EntryDbHandle> db_handle;
     std::optional<base::Time> last_used;
+    std::optional<MemoryEntryDataHints> hints;
     std::optional<scoped_refptr<net::GrowableIOBuffer>> head;
     std::optional<int64_t> body_end;
   };
@@ -320,13 +325,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   EntryResult SpeculativeCreateEntry(
       const CacheEntryKey& entry_key,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
-
-  // Called when the background database operation for a speculative entry
-  // creation is finished.
-  void OnSpeculativeCreateEntryFinished(
-      const scoped_refptr<EntryDbHandle>& db_handle,
-      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
-      SqlPersistentStore::EntryInfoOrError result);
 
   // Handles the backend logic for `DoomActiveEntry()`. This method is scheduled
   // as a normal operation via the `ExclusiveOperationCoordinator`.
@@ -397,6 +395,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
+      base::Time last_used,
       SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
@@ -410,15 +409,15 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
+      base::Time last_used,
       SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
-  // Called when an optimistic write is finished. `buf_len` is the memory usage
-  // consumed for the optimistic write.
+  // Called when an optimistic write is finished.
   void OnOptimisticWriteFinished(
       const CacheEntryKey& key,
-      SqlPersistentStore::ResId res_id,
+      std::optional<SqlPersistentStore::ResId> res_id,
       SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
