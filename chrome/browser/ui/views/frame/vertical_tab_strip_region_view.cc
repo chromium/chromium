@@ -528,8 +528,14 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
           : LayoutConstant::kVerticalTabStripUncollapsedPadding);
   // The TopContainer handles the padding distance to the separator so that we
   // can control how far it is in the various states.
+  int separator_padding = padding;
+  if (state_controller_->IsCollapsed()) {
+    const int collapsed_separator_width = GetLayoutConstant(
+        LayoutConstant::kVerticalTabStripCollapsedSeparatorWidth);
+    separator_padding = (kCollapsedWidth - collapsed_separator_width) / 2;
+  }
   top_button_separator_->SetProperty(views::kMarginsKey,
-                                     gfx::Insets::VH(0, padding));
+                                     gfx::Insets::VH(0, separator_padding));
   if (state_controller->IsCollapsed()) {
     // If the VT Strip is collapsed, then we need exactly |padding| on the top,
     // left, and right.

@@ -154,8 +154,15 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   if (should_show_separator) {
     int separator_width =
         size_bounds.width().value() - 2 * region_horizontal_padding;
+    int separator_x = region_horizontal_padding;
+    if (is_collapsed_) {
+      const int collapsed_separator_width = GetLayoutConstant(
+          LayoutConstant::kVerticalTabStripCollapsedSeparatorWidth);
+      separator_width = collapsed_separator_width;
+      separator_x = (size_bounds.width().value() - separator_width) / 2;
+    }
     gfx::Rect tabs_separator_bounds(
-        region_horizontal_padding, y, separator_width,
+        separator_x, y, separator_width,
         tabs_separator_->GetPreferredSize().height());
     layouts.child_layouts.emplace_back(tabs_separator_.get(), true,
                                        tabs_separator_bounds);
