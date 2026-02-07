@@ -121,7 +121,10 @@ bool StyleFetchedImage::ErrorOccurred() const {
 }
 
 bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
-  DCHECK(image_->IsLoaded());
+  if (!image_->IsLoaded() && image_->GetImage() &&
+      image_->GetImage()->IsSVGImage()) {
+    return false;
+  }
   if (image_->IsAccessAllowed()) {
     return true;
   }
