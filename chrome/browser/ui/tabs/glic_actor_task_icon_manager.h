@@ -84,7 +84,11 @@ class GlicActorTaskIconManager : public KeyedService {
   TaskListBubbleChangeCallbackList task_list_bubble_change_callback_list_;
 
   actor::ui::ActorTaskNudgeState current_actor_task_nudge_state_;
+  // TODO(b/482378011): stored_bubble_row_task_count_ be removed once nudge
+  // fixes are enabled without any issues.
   size_t stored_bubble_row_task_count_ = 0;
+  size_t stored_bubble_row_need_processing_task_count_ = 0;
+  size_t stored_bubble_row_inactive_task_count_ = 0;
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_service_;

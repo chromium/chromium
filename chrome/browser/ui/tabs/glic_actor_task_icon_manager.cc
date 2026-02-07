@@ -105,11 +105,27 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
                                          : tasks_complete ? Text::kCompleteTasks
                                                           : Text::kDefault;
 
-  // If either the state or number of tasks in the bubble changes, we want to
-  // notify the nudge.
+  // If the state, number of tasks needing processing, or number of inactive
+  // tasks changed we want to notify the nudge. We need to specifically check
+  // when the number of tasks in a given state changes, as the number of tasks
+  // in the bubble will only change when a new task is added or removed, not if
+  // the state changes.
+  size_t num_inactive_tasks = actor::ActorKeyedService::Get(profile_)
+                                  ->GetActorUiStateManager()
+                                  ->GetInactiveTaskCount();
+  bool label_plurality_changed =
+      stored_bubble_row_need_processing_task_count_ !=
+          GetNumActorTasksNeedProcessing() ||
+      stored_bubble_row_inactive_task_count_ != num_inactive_tasks;
+
   if (old_state != current_actor_task_nudge_state_ ||
-      stored_bubble_row_task_count_ != actor_task_list_bubble_rows_.size()) {
+      stored_bubble_row_task_count_ != actor_task_list_bubble_rows_.size() ||
+      (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconUiFixes) &&
+       label_plurality_changed)) {
     stored_bubble_row_task_count_ = actor_task_list_bubble_rows_.size();
+    stored_bubble_row_need_processing_task_count_ =
+        GetNumActorTasksNeedProcessing();
+    stored_bubble_row_inactive_task_count_ = num_inactive_tasks;
     task_nudge_state_change_callback_list_.Notify(
         current_actor_task_nudge_state_);
   }
