@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.isTitleUnset;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 
@@ -829,8 +830,10 @@ public class TabGridDialogMediator
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(filter);
         String storedTitle =
-                mCurrentTabGroupId != null ? filter.getTabGroupTitle(mCurrentTabGroupId) : "";
-        if (!TextUtils.isEmpty(storedTitle)) {
+                mCurrentTabGroupId != null
+                        ? filter.getTabGroupTitle(mCurrentTabGroupId)
+                        : UNSET_TAB_GROUP_TITLE;
+        if (!isTitleUnset(storedTitle)) {
             mModel.set(
                     TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                     res.getQuantityString(
@@ -1236,10 +1239,10 @@ public class TabGridDialogMediator
         assumeNonNull(mCurrentTabGroupId);
 
         int tabsCount = getTabsInGroup(mCurrentTabGroupId).size();
-        if (mCurrentGroupModifiedTitle.length() == 0
+        if (isTitleUnset(mCurrentGroupModifiedTitle)
                 || TabGroupTitleUtils.isDefaultTitle(
                         mActivity, mCurrentGroupModifiedTitle, tabsCount)) {
-            // When dialog title is empty or was unchanged, delete previously stored title and
+            // When dialog title is unset or was unchanged, delete previously stored title and
             // restore default title.
             filter.deleteTabGroupTitle(mCurrentTabGroupId);
 
@@ -1253,9 +1256,9 @@ public class TabGridDialogMediator
                                     tabsCount,
                                     tabsCount));
             mModel.set(TabGridDialogProperties.HEADER_TITLE, originalTitle);
-            // Setting the tab group title to empty ensures the default title isn't saved, but
+            // Setting the tab group title to unset ensures the default title isn't saved, but
             // observers downstream will update to the correct default title.
-            filter.setTabGroupTitle(mCurrentTabGroupId, "");
+            filter.setTabGroupTitle(mCurrentTabGroupId, UNSET_TAB_GROUP_TITLE);
             mCurrentGroupModifiedTitle = null;
             RecordUserAction.record("TabGridDialog.ResetTabGroupName");
             return;

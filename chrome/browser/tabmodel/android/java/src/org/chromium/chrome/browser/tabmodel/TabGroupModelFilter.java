@@ -274,8 +274,9 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
             List<Tab> tabsToExclude, boolean includePendingClosures);
 
     /**
-     * Returns the current title of the tab group, or an empty string if a title is not set. Prefer
-     * {@link TabGroupTitleUtils#getDisplayableTitle} in most cases.
+     * Returns the current title of the tab group, or {@link
+     * TabGroupTitleUtils#UNSET_TAB_GROUP_TITLE} if a title is not set. Prefer {@link
+     * TabGroupTitleUtils#getDisplayableTitle} in most cases.
      */
     String getTabGroupTitle(Token tabGroupId);
 

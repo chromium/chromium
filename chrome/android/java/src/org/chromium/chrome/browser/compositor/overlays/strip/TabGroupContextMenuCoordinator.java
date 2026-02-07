@@ -9,6 +9,7 @@ import static android.view.View.VISIBLE;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.isTitleUnset;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
 
@@ -598,7 +599,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         String newTitle = mCurrentModifiedTitle;
         if (newTitle == null) {
             return;
-        } else if (newTitle.isEmpty() || newTitle.equals(getDefaultTitle())) {
+        } else if (isTitleUnset(newTitle) || newTitle.equals(getDefaultTitle())) {
             mTabGroupModelFilter.deleteTabGroupTitle(mTabGroupId);
             RecordUserAction.record("MobileToolbarTabGroupMenu.TitleReset");
             setExistingOrDefaultTitle(getDefaultTitle());

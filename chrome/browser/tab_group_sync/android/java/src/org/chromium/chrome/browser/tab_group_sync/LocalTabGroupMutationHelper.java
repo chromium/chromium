@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 
 import android.text.TextUtils;
 
@@ -74,7 +75,7 @@ public class LocalTabGroupMutationHelper {
         int position = getTabModel().getCount();
         List<Tab> tabs = new ArrayList<>();
         for (SavedTabGroupTab savedTab : tabGroup.savedTabs) {
-            String title = savedTab.title == null ? "" : savedTab.title;
+            String title = savedTab.title == null ? UNSET_TAB_GROUP_TITLE : savedTab.title;
             Tab newTab =
                     mTabCreationDelegate.createBackgroundTab(
                             assertNonNull(savedTab.url), title, /* parent= */ null, position++);
@@ -186,7 +187,7 @@ public class LocalTabGroupMutationHelper {
             }
 
             // If the tab exists, navigate to the desired URL. Otherwise, create a new tab.
-            String title = savedTab.title == null ? "" : savedTab.title;
+            String title = savedTab.title == null ? UNSET_TAB_GROUP_TITLE : savedTab.title;
             if (localTab != null) {
                 maybeNavigateToUrl(localTab, assertNonNull(savedTab.url), title);
             } else {
@@ -324,7 +325,7 @@ public class LocalTabGroupMutationHelper {
 
     private void updateTabGroupVisuals(SavedTabGroup tabGroup, Token tabGroupId) {
         mTabGroupModelFilter.setTabGroupTitle(
-                tabGroupId, tabGroup.title == null ? "" : tabGroup.title);
+                tabGroupId, tabGroup.title == null ? UNSET_TAB_GROUP_TITLE : tabGroup.title);
         mTabGroupModelFilter.setTabGroupColor(tabGroupId, tabGroup.color);
     }
 

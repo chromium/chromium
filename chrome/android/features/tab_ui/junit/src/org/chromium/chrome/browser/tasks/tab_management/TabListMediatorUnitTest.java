@@ -35,6 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
@@ -528,8 +529,10 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
         doReturn(mSavedTabGroup1).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
         doReturn(mSavedTabGroup2).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID2);
-        doReturn("").when(mTabGroupModelFilter).getTabGroupTitle(any(Token.class));
-        doReturn("").when(mTabGroupModelFilter).getTabGroupTitle(any(Tab.class));
+        doReturn(UNSET_TAB_GROUP_TITLE)
+                .when(mTabGroupModelFilter)
+                .getTabGroupTitle(any(Token.class));
+        doReturn(UNSET_TAB_GROUP_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(any(Tab.class));
 
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);

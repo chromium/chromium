@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
+
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -187,12 +189,12 @@ public class StubTabGroupModelFilterImpl implements TabGroupModelFilterInternal 
 
     @Override
     public String getTabGroupTitle(Token tabGroupId) {
-        return "";
+        return UNSET_TAB_GROUP_TITLE;
     }
 
     @Override
     public String getTabGroupTitle(Tab groupedTab) {
-        return "";
+        return UNSET_TAB_GROUP_TITLE;
     }
 
     @Override

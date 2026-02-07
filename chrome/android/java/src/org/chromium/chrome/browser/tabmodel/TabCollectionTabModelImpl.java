@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.crea
 import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY;
 import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_ALWAYS;
 import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP;
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
 
 import android.app.Activity;
@@ -1358,7 +1359,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public String getTabGroupTitle(Token tabGroupId) {
         assertOnUiThread();
-        if (mNativeTabCollectionTabModelImplPtr == 0) return "";
+        if (mNativeTabCollectionTabModelImplPtr == 0) {
+            return UNSET_TAB_GROUP_TITLE;
+        }
         return TabCollectionTabModelImplJni.get()
                 .getTabGroupTitle(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
@@ -1384,7 +1387,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void deleteTabGroupTitle(Token tabGroupId) {
         if (!tabGroupExists(tabGroupId)) return;
-        setTabGroupTitle(tabGroupId, "");
+        setTabGroupTitle(tabGroupId, UNSET_TAB_GROUP_TITLE);
     }
 
     @Override

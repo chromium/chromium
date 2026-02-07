@@ -21,6 +21,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -1428,7 +1429,7 @@ public class TabCollectionTabModelImplTest {
                     @Override
                     public void didChangeTabGroupTitle(Token id, String newTitle) {
                         assertEquals(tabGroupId, id);
-                        assertEquals("", newTitle);
+                        assertEquals(UNSET_TAB_GROUP_TITLE, newTitle);
                         titleDeletedHelper.notifyCalled();
                     }
                 };
@@ -1436,7 +1437,8 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(titleDeleteObserver);
                     mCollectionModel.deleteTabGroupTitle(tabGroupId);
-                    assertEquals("", mCollectionModel.getTabGroupTitle(tabGroupId));
+                    assertEquals(
+                            UNSET_TAB_GROUP_TITLE, mCollectionModel.getTabGroupTitle(tabGroupId));
                     mCollectionModel.removeTabGroupObserver(titleDeleteObserver);
                 });
         titleDeletedHelper.waitForOnly("deleteTabGroupTitle failed");
@@ -1713,16 +1715,16 @@ public class TabCollectionTabModelImplTest {
                 title,
                 TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
 
-        mCollectionModel.setTabGroupTitle(tabGroupId, "");
+        mCollectionModel.setTabGroupTitle(tabGroupId, UNSET_TAB_GROUP_TITLE);
 
         assertEquals(
-                "Native title should be cleared (empty string)",
-                "",
+                "Native title should be cleared (unset)",
+                UNSET_TAB_GROUP_TITLE,
                 mCollectionModel.getTabGroupTitle(tabGroupId));
 
         assertEquals(
-                "Store title should be deleted (empty string)",
-                "",
+                "Store title should be deleted (unset)",
+                UNSET_TAB_GROUP_TITLE,
                 TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
     }
 
@@ -1837,7 +1839,9 @@ public class TabCollectionTabModelImplTest {
                                     .build());
 
                     assertFalse(mCollectionModel.tabGroupExists(groupId));
-                    assertEquals("", TabGroupVisualDataStore.getTabGroupTitle(groupId));
+                    assertEquals(
+                            UNSET_TAB_GROUP_TITLE,
+                            TabGroupVisualDataStore.getTabGroupTitle(groupId));
                     assertEquals(
                             TabGroupColorUtils.INVALID_COLOR_ID,
                             TabGroupVisualDataStore.getTabGroupColor(groupId));

@@ -34,6 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER;
@@ -305,6 +306,10 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(mEditable).when(mTitleTextView).getText();
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mEditable).toString();
         doReturn(null).when(mRecyclerViewPositionSupplier).get();
+        doReturn(UNSET_TAB_GROUP_TITLE)
+                .when(mTabGroupModelFilter)
+                .getTabGroupTitle(any(Token.class));
+        doReturn(UNSET_TAB_GROUP_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(any(Tab.class));
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));
@@ -1132,7 +1137,7 @@ public class TabGridDialogMediatorUnitTest {
         // PropertyModel.
         verify(mTabGroupModelFilter).deleteTabGroupTitle(eq(TAB_GROUP_ID));
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB_GROUP_ID), eq(""));
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB_GROUP_ID), eq(UNSET_TAB_GROUP_TITLE));
     }
 
     @Test

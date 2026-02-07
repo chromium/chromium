@@ -20,6 +20,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
+
 import androidx.annotation.Nullable;
 
 import org.junit.After;
@@ -603,11 +605,13 @@ public class TabGroupSyncLocalObserverUnitTest {
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(TITLE_1), anyInt());
 
-        // Empty title.
-        when(mTabGroupModelFilter.getTabGroupTitle(TOKEN_1)).thenReturn("");
-        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, "");
+        // Unset title.
+        when(mTabGroupModelFilter.getTabGroupTitle(TOKEN_1)).thenReturn(UNSET_TAB_GROUP_TITLE);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TOKEN_1, UNSET_TAB_GROUP_TITLE);
         verify(mTabGroupSyncService, times(1))
-                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(""), anyInt());
+                .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(UNSET_TAB_GROUP_TITLE), anyInt());
     }
 
     @Test
