@@ -4223,7 +4223,7 @@ TEST_F(SearchProviderRequestTest, LensContextualSearchboxSuggestRequest) {
       "https://www.google.com/suggest?q=foo&client=chrome-contextual"));
 }
 
-TEST_F(SearchProviderRequestTest, SendRequestWithAimToolMode) {
+TEST_F(SearchProviderRequestTest, NoRequestWithAimToolMode) {
   // Start a query.
   AutocompleteInput input(u"foo", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
@@ -4231,20 +4231,9 @@ TEST_F(SearchProviderRequestTest, SendRequestWithAimToolMode) {
   input_state.active_tool = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
   input.set_input_state(input_state);
   input.set_current_url(GURL("https://www.example.com"));
-  provider_->Start(input, false);
+  QueryForInput(input);
 
-  // Make sure the default provider's suggest endpoint was queried with the
-  // expected client and Lens Suggest signals.
-  EXPECT_FALSE(provider_->done());
-  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
-  EXPECT_TRUE(base::EndsWith(
-      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
-      "azm=1", base::CompareCase::SENSITIVE));
-
-  test_url_loader_factory_.AddResponse(
-      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
-      R"(["",[],[],[],{}])");
-  RunTillProviderDone();
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
 TEST_F(SearchProviderRequestTest, LensContextualSearchboxNoSuggestRequest) {
