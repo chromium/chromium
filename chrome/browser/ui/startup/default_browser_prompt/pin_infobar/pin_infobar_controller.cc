@@ -94,7 +94,13 @@ void PinInfoBarController::MaybeShowInfoBar(
 void PinInfoBarController::OnIsDefaultBrowserResult(
     base::OnceCallback<void(bool)> done_callback,
     shell_integration::DefaultWebClientState default_state) {
-  if (default_state != shell_integration::DefaultWebClientState::IS_DEFAULT) {
+  const bool can_proceed =
+      (default_state == shell_integration::DefaultWebClientState::IS_DEFAULT)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      || base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)
+#endif
+      ;
+  if (!can_proceed) {
     std::move(done_callback).Run(false);
     return;
   }

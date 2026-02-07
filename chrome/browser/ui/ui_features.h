@@ -56,6 +56,14 @@ BASE_DECLARE_FEATURE(kPdfInfoBar);
 enum class PdfInfoBarTrigger { kPdfLoad = 0, kStartup = 1 };
 
 BASE_DECLARE_FEATURE_PARAM(PdfInfoBarTrigger, kPdfInfoBarTrigger);
+
+BASE_DECLARE_FEATURE(kSeparateDefaultAndPinPrompt);
+BASE_DECLARE_FEATURE_PARAM(int, kSeparateDefaultAndPinPromptRandSeed);
+BASE_DECLARE_FEATURE_PARAM(int, kSeparateDefaultAndPinPromptPinMaxCount);
+BASE_DECLARE_FEATURE_PARAM(int, kSeparateDefaultAndPinPromptPinCooldownDays);
+BASE_DECLARE_FEATURE_PARAM(int, kSeparateDefaultAndPinPromptDefaultMaxCount);
+BASE_DECLARE_FEATURE_PARAM(int,
+                           kSeparateDefaultAndPinPromptDefaultCooldownDays);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

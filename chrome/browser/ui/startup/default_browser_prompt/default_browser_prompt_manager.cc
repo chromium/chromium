@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -30,14 +31,23 @@ bool ShouldShowPrompts() {
       local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
   const base::Time last_declined_time =
       local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime);
+
   constexpr int kMaxPromptCount = 5;
   constexpr int kRepromptDurationDays = 21;
 
-  // A negative value for the max prompt count indicates that the prompt
-  // should be shown indefinitely. Otherwise, don't show the prompt if
-  // declined count equals or exceeds the max prompt count. A max prompt count
-  // of zero should mean that the prompt is never shown.
-  if (declined_count >= kMaxPromptCount) {
+  int max_prompt_count = kMaxPromptCount;
+  int reprompt_duration_days = kRepromptDurationDays;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
+    max_prompt_count =
+        features::kSeparateDefaultAndPinPromptDefaultMaxCount.Get();
+    reprompt_duration_days =
+        features::kSeparateDefaultAndPinPromptDefaultCooldownDays.Get();
+  }
+#endif
+
+  if (declined_count >= max_prompt_count) {
     return false;
   }
 
@@ -48,7 +58,7 @@ bool ShouldShowPrompts() {
 
   // Show if it has been long enough since the last declined time
   return (base::Time::Now() - last_declined_time) >
-         base::Days(kRepromptDurationDays);
+         base::Days(reprompt_duration_days);
 }
 
 }  // namespace
@@ -71,6 +81,13 @@ bool DefaultBrowserPromptManager::MaybeShowPrompt() {
   }
 
 #if BUILDFLAG(IS_WIN)
+  // If the experiment to separate the default browser prompt and the pin to
+  // taskbar prompt is enabled, do not offer to pin to taskbar.
+  if (base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
+    infobar_manager_->ShowInfoBars(/*can_pin_to_taskbar=*/false);
+    return true;
+  }
+
   // On Windows, before showing the info bar, determine whether or not to
   // offer to pin to taskbar, and store that result in `this`.
   // base::Unretained is safe because DefaultBrowserInfobarManager is owned by

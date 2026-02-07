@@ -75,6 +75,33 @@ BASE_FEATURE_ENUM_PARAM(PdfInfoBarTrigger,
                         "trigger",
                         PdfInfoBarTrigger::kPdfLoad,
                         &kPdfInfoBarTriggerOptions);
+
+BASE_FEATURE(kSeparateDefaultAndPinPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kSeparateDefaultAndPinPromptRandSeed,
+                   &kSeparateDefaultAndPinPrompt,
+                   "random_seed",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kSeparateDefaultAndPinPromptPinMaxCount,
+                   &kSeparateDefaultAndPinPrompt,
+                   "pin_max_count",
+                   5);
+BASE_FEATURE_PARAM(int,
+                   kSeparateDefaultAndPinPromptPinCooldownDays,
+                   &kSeparateDefaultAndPinPrompt,
+                   "pin_cooldown_days",
+                   21);
+BASE_FEATURE_PARAM(int,
+                   kSeparateDefaultAndPinPromptDefaultMaxCount,
+                   &kSeparateDefaultAndPinPrompt,
+                   "default_max_count",
+                   5);
+BASE_FEATURE_PARAM(int,
+                   kSeparateDefaultAndPinPromptDefaultCooldownDays,
+                   &kSeparateDefaultAndPinPrompt,
+                   "default_cooldown_days",
+                   21);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
