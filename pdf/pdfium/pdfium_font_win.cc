@@ -150,6 +150,9 @@ class SkiaFontMapper {
     // naturally fail.
     if (table_tag == 0) {
       std::unique_ptr<SkStreamAsset> stream = typeface->openStream(nullptr);
+      if (!stream) {
+        return 0;
+      }
       if (!buffer || buf_size < stream->getLength()) {
         return stream->getLength();
       }
