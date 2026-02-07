@@ -27,6 +27,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/chrome_url_overrides.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -44,6 +45,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 
