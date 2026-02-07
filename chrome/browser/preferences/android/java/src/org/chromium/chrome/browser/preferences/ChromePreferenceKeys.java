@@ -195,6 +195,12 @@ public final class ChromePreferenceKeys {
     public static final String CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED =
             "Chrome.ContextMenu.ShopImageWithGoogleLensClicked";
 
+    public static final String CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX =
+            "Chrome.CrossDeviceImport.FinishedBottomOmnibox";
+
+    public static final String CROSS_DEVICE_IMPORTED_ALL_SETTINGS =
+            "Chrome.CrossDeviceImport.FinishedAllSettings";
+
     public static final String NTP_CUSTOMIZATION_BACKGROUND_ENABLED =
             "Chrome.Policy.NtpCustomBackgroundEnabled";
 
@@ -1198,6 +1204,8 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED,
                 CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
+                CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX,
+                CROSS_DEVICE_IMPORTED_ALL_SETTINGS,
                 NTP_CUSTOMIZATION_BACKGROUND_ENABLED,
                 NTP_CUSTOMIZATION_BACKGROUND_TYPE,
                 NTP_CUSTOMIZATION_THEME_COLOR_ID,

@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.sync.synced_set_up;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.XPLAT_SYNCED_SETUP;
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
+import static org.chromium.chrome.browser.sync.synced_set_up.SyncedSetUpUtilsBridge.getCrossDevicePrefsFromRemoteDevice;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.TYPE_ACTION;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROSS_DEVICE_SETTING_IMPORT;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROSS_DEVICE_SETTING_REDO;
@@ -16,33 +18,54 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.prefs.CrossDevicePrefTrackerFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.sync_preferences.cross_device_pref_tracker.CrossDevicePrefTracker;
+import org.chromium.components.sync_preferences.cross_device_pref_tracker.CrossDevicePrefTracker.CrossDevicePrefTrackerObserver;
+import org.chromium.components.sync_preferences.cross_device_pref_tracker.ServiceStatus;
+import org.chromium.components.sync_preferences.cross_device_pref_tracker.TimestampedPrefValue;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @NullMarked
 public class CrossDeviceSettingImporter implements TopResumedActivityChangedObserver {
+
+    // Fixed prefix used by CrossDevicePrefTracker for dictionary prefs with values from all devices
+    private static final String CROSS_DEVICE_PREFIX = "cross_device.";
+
+    // The ServiceStatuses where we need to wait for data to come in.
+    private static final Set<Integer> NOT_READY_YET_STATES =
+            Set.of(
+                    ServiceStatus.DEVICE_INFO_TRACKER_MISSING,
+                    ServiceStatus.LOCAL_DEVICE_INFO_MISSING);
 
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final NullableObservableSupplier<Tab> mActivityTabSupplier;
@@ -112,18 +135,131 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      *
      * @param currentTab The current tab.
      */
-    private void onTabChangeOrGainFocus(@Nullable Tab currentTab) {
+    @VisibleForTesting
+    void onTabChangeOrGainFocus(@Nullable Tab currentTab) {
+        if (!FeatureList.isNativeInitialized()
+                || !ChromeFeatureList.isEnabled(XPLAT_SYNCED_SETUP)) {
+            return;
+        }
+
         if (currentTab == null) return;
 
-        // TODO(crbug.com/475543024): Implement.
+        @Nullable Profile profile = currentTab.getProfile();
+        if (profile == null) return;
+
+        @Nullable CrossDevicePrefTracker crossDevicePrefTracker =
+                CrossDevicePrefTrackerFactory.getForProfile(profile);
+        if (crossDevicePrefTracker == null) return;
+
+        @ServiceStatus int status = crossDevicePrefTracker.getServiceStatus();
+        if (NOT_READY_YET_STATES.contains(status)) {
+            crossDevicePrefTracker.addObserver(
+                    new CrossDevicePrefTrackerObserver() {
+                        @Override
+                        public void onRemotePrefChanged(
+                                String prefName,
+                                TimestampedPrefValue timestampedPrefValue,
+                                int osType,
+                                int formFactor) {}
+
+                        @Override
+                        public void onServiceStatusChanged(int status) {
+                            onCrossDevicePrefTrackerReady(
+                                    crossDevicePrefTracker,
+                                    status,
+                                    profile,
+                                    currentTab,
+                                    /* availableImmediately= */ false);
+                        }
+                    });
+        } else {
+            onCrossDevicePrefTrackerReady(
+                    crossDevicePrefTracker,
+                    status,
+                    profile,
+                    currentTab,
+                    /* availableImmediately= */ true);
+        }
+    }
+
+    /**
+     * Handles the {@link CrossDevicePrefTracker} reaching a "ready" state.
+     *
+     * @param tracker The {@link CrossDevicePrefTracker}.
+     * @param status The {@link ServiceStatus} of the tracker.
+     * @param profile The {@link Profile}.
+     * @param tab The {@link Tab} that is currently focused.
+     * @param availableImmediately Whether the CrossDevicePrefTracker was available immediately
+     *     (when we first checked).
+     */
+    @VisibleForTesting
+    void onCrossDevicePrefTrackerReady(
+            CrossDevicePrefTracker tracker,
+            @ServiceStatus int status,
+            Profile profile,
+            Tab tab,
+            boolean availableImmediately) {
+        boolean onlyOmniboxPosition = !UrlUtilities.isNtpUrl(tab.getUrl());
+        SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
+        if (onlyOmniboxPosition) {
+            if (sharedPrefManager.readBoolean(
+                    ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX,
+                    /* defaultValue= */ true)) {
+                return;
+            }
+        } else if (sharedPrefManager.readBoolean(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS,
+                /* defaultValue= */ true)) {
+            return;
+        }
+
+        if (status == ServiceStatus.AVAILABLE) {
+            if (availableImmediately) {
+                // If there was no delay, apply the settings immediately (skipping the user straight
+                // to the undo prompt).
+                applyAndNotifySettingImport(
+                        getPrefsFromRemoteDevice(tracker, profile),
+                        /* onlyOmniboxPosition= */ onlyOmniboxPosition);
+            } else {
+                // If there was a delay, ask the user whether they want to apply the settings.
+                askToApplyNtpSettingImportIfNeeded(
+                        getPrefsFromRemoteDevice(tracker, profile),
+                        /* onlyOmniboxPosition= */ onlyOmniboxPosition);
+            }
+        } else {
+            // If the status was not AVAILABLE, the user does not have their "Settings" sync toggle
+            // on in their account settings.
+            // Either way, because the CrossDevicePrefTracker became "ready", we are now done.
+            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
+        }
+    }
+
+    /**
+     * Marks (possibly only some of the) cross-device setting imports as complete.
+     *
+     * @param onlyOmniboxPosition Whether only the omnibox position setting is in scope.
+     */
+    private static void markCrossDeviceSettingImportComplete(boolean onlyOmniboxPosition) {
+        SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
+
+        sharedPrefManager.writeBoolean(
+                ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX, true);
+        if (!onlyOmniboxPosition) {
+            sharedPrefManager.writeBoolean(
+                    ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, true);
+        }
     }
 
     /**
      * Shows {@param snackbar} now if there no dialogs, or waits until the last dialog is dismissed
      * and then shows it.
+     *
+     * @param snackbar The {@link Snackbar} to show.
+     * @param onlyOmniboxPosition Whether this snackbar only encompasses the bottom omnibox position
+     *     pref.
      */
     @VisibleForTesting
-    public void showSnackbarAfterDialogs(Snackbar snackbar) {
+    public void showSnackbarAfterDialogs(Snackbar snackbar, boolean onlyOmniboxPosition) {
         ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
         if (modalDialogManager == null) return;
 
@@ -136,10 +272,12 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         @Override
                         public void onLastDialogDismissed() {
                             snackbarManager.showSnackbar(snackbar);
+                            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
                         }
                     });
         } else {
             snackbarManager.showSnackbar(snackbar);
+            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
         }
     }
 
@@ -173,7 +311,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             offerApplySnackbar.setAction(
                     /* actionText= */ mContext.getString(R.string.apply),
                     /* actionData= */ Map.of());
-            showSnackbarAfterDialogs(offerApplySnackbar);
+            showSnackbarAfterDialogs(offerApplySnackbar, onlyOmniboxPosition);
+        } else {
+            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
         }
     }
 
@@ -211,8 +351,10 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             offerUndoSnackbar.setAction(
                     /* actionText= */ mContext.getString(R.string.undo),
                     /* actionData= */ Map.of());
-            showSnackbarAfterDialogs(offerUndoSnackbar);
+            showSnackbarAfterDialogs(offerUndoSnackbar, onlyOmniboxPosition);
             applySettings(preferencesToApply);
+        } else {
+            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
         }
     }
 
@@ -241,7 +383,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         UMA_CROSS_DEVICE_SETTING_REDO);
         offerRedoSnackbar.setAction(
                 /* actionText= */ mContext.getString(R.string.redo), /* actionData= */ Map.of());
-        showSnackbarAfterDialogs(offerRedoSnackbar);
+        showSnackbarAfterDialogs(offerRedoSnackbar, onlyOmniboxPosition);
     }
 
     /** Returns the user's current settings. */
@@ -402,6 +544,27 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (preferencesToApply.get(omniboxKey) instanceof Boolean booleanValue) {
             localStatePrefs.setBoolean(omniboxKey, booleanValue);
         }
+    }
+
+    /**
+     * Get a map of prefs to values, stripped of the "cross_device." prefix.
+     *
+     * @param tracker The {@link CrossDevicePrefTracker}.
+     * @param profile The {@link Profile}.
+     * @return The map of prefs to values.
+     */
+    @VisibleForTesting
+    Map<String, Object> getPrefsFromRemoteDevice(CrossDevicePrefTracker tracker, Profile profile) {
+        Map<String, Object> crossDevicePrefs =
+                getCrossDevicePrefsFromRemoteDevice(tracker, profile);
+        Map<String, Object> res = new HashMap<>();
+        for (String crossDeviceKey : crossDevicePrefs.keySet()) {
+            String key =
+                    crossDeviceKey.replaceAll(
+                            /* regex= */ "^" + CROSS_DEVICE_PREFIX, /* replacement= */ "");
+            res.put(key, crossDevicePrefs.get(crossDeviceKey));
+        }
+        return res;
     }
 
     /** Logs UMA with suffix {@param suffix} (omnibox-psecific if {@param onlyOmniboxPosition}) */
