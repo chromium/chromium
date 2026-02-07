@@ -74,7 +74,11 @@ void MigrationTargetInstallJob::Start() {
   webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_->id);
   if (lock_->registrar().AppMatches(
           app_id, WebAppFilter::IsAppEligibleForManifestUpdate())) {
-    Complete(MigrationTargetInstallJobResult::kAlreadyInstalled);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MigrationTargetInstallJob::Complete,
+                       weak_factory_.GetWeakPtr(),
+                       MigrationTargetInstallJobResult::kAlreadyInstalled));
     return;
   }
   manifest_to_install_info_job_ =
