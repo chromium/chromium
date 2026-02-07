@@ -13,7 +13,7 @@ import {GlowAnimationState} from '//resources/cr_components/search/constants.js'
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -97,7 +97,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         type: Boolean,
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
-      tabSuggestions_: {type: Array},
       showOnboardingTooltip_: {
         type: Boolean,
         value: loadTimeData.getBoolean('showOnboardingTooltip'),
@@ -130,7 +129,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   protected accessor isComposeboxFocused_: boolean = false;
   protected accessor showContextMenu_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
-  protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor showOnboardingTooltip_: boolean =
       loadTimeData.getBoolean('showOnboardingTooltip');
   private eventTracker_: EventTracker = new EventTracker();

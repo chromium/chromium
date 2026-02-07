@@ -161,7 +161,7 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
-      tabSuggestions: {type: Array},
+      tabSuggestions_: {type: Array},
       lensButtonDisabled: {
         reflect: true,
         type: Boolean,
@@ -223,7 +223,7 @@ export class ComposeboxElement extends I18nMixinLit
   accessor showMenuOnClick: boolean = true;
   accessor entrypointName: string = '';
   accessor disableVoiceSearchAnimation: boolean = false;
-  accessor tabSuggestions: TabInfo[] = [];
+  protected accessor tabSuggestions_: TabInfo[] = [];
   accessor lensButtonDisabled: boolean = false;
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
@@ -299,6 +299,7 @@ export class ComposeboxElement extends I18nMixinLit
   private haveReceivedAutcompleteResponse_: boolean = false;
   private isVoiceInput_: boolean = false;
   private pendingUploads_: Set<string> = new Set<string>([]);
+  private contextMenuOpened_: boolean = false;
 
   constructor() {
     super();
@@ -323,6 +324,8 @@ export class ComposeboxElement extends I18nMixinLit
           this.onAutocompleteResultChanged_.bind(this)),
       this.searchboxCallbackRouter_.onContextualInputStatusChanged.addListener(
           this.onContextualInputStatusChanged_.bind(this)),
+      this.searchboxCallbackRouter_.onTabStripChanged.addListener(
+          this.refreshTabSuggestions_.bind(this)),
       this.searchboxCallbackRouter_.addFileContext.addListener(
           this.addFileContextFromBrowser_.bind(this)),
       this.searchboxCallbackRouter_.updateAutoSuggestedTabContext.addListener(
@@ -769,6 +772,23 @@ export class ComposeboxElement extends I18nMixinLit
       event.preventDefault();
       this.$.context.addPastedFiles(fileList);
     }
+  }
+
+  protected onContextMenuClosed_() {
+    this.contextMenuOpened_ = false;
+  }
+
+  protected onContextMenuOpened_() {
+    this.contextMenuOpened_ = true;
+    this.refreshTabSuggestions_();
+  }
+
+  protected async refreshTabSuggestions_() {
+    if (!this.contextMenuOpened_) {
+      return;
+    }
+    const {tabs} = await this.searchboxHandler_.getRecentTabs();
+    this.tabSuggestions_ = [...tabs];
   }
 
   protected async getTabPreview_(e: CustomEvent<{

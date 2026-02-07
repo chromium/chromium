@@ -142,6 +142,7 @@ export class ContextualEntrypointButtonElement extends
         this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
     assert(entrypoint);
     entrypoint?.classList.add('menu-open');
+    this.fire('context-menu-opened');
     this.$.menu.showAt(entrypoint);
   }
 

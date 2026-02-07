@@ -43,6 +43,7 @@ export function getHtml(this: SearchboxElement) {
         @context-menu-container-click="${this.onContextMenuContainerClick_}"
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
         @context-menu-closed="${this.onContextMenuClosed_}"
+        @context-menu-opened="${this.onContextMenuOpened_}"
         ?show-dropdown="${this.dropdownIsVisible}"
         ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"
         .inputState="${this.inputState_}"
