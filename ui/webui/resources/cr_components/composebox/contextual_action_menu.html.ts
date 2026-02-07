@@ -64,8 +64,10 @@ export function getHtml(this: ContextualActionMenuElement) {
         <cr-icon icon="${tool.icon}"></cr-icon>
         ${this.getToolLabel_(mode)}
       </button>` : '')}
+    ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) &&
+      (Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) ||
+       this.imageUploadAllowed_ || this.fileUploadAllowed_) ? html`<hr/>` : ''}
     ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) ? html`
-        <hr/>
         ${this.showContextMenuHeaders_ ? html`
         <h4 id="modelHeader">${this.modelHeader_}</h4>` : ''}` : ''}
     ${Array.from(this.supportedModels_.entries()).map(([mode, model]) => this.isModelAllowed_(mode) ? html`
