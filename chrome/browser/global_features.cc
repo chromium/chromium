@@ -235,6 +235,12 @@ void GlobalFeatures::PostMainMessageLoopRun() {
 }
 
 void GlobalFeatures::PostDestroyThreads() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Startup launch manager should be destroyed before GlobalBrowserCollection
+  // since its infobar manager observes GlobalBrowserCollection.
+  startup_launch_manager_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   global_browser_collection_.reset();
 }
 

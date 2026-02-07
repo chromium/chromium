@@ -267,6 +267,7 @@ source_set("impl") {
         "startup_launch_infobar_delegate.cc",
         "startup_launch_infobar_manager_impl.cc",
       ]
+      deps += [ "//chrome/browser/startup" ]
     }
 
     if (is_win && is_chrome_branded) {
