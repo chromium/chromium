@@ -6,18 +6,15 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_NETWORK_CONTEXT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
-class BrowserContext;
+class PrefetchRequest;
 
 // An isolated network context used for prefetches. The purpose of using a
 // separate network context is to set a custom proxy configuration, and separate
@@ -28,12 +25,9 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   // If `use_isolated_network_context` is true, a valid
   // `isolated_network_context` should be passed.
   PrefetchNetworkContext(
-      BrowserContext* browser_context,
       bool use_isolated_network_context,
       mojo::Remote<network::mojom::NetworkContext> isolated_network_context,
-      const PrefetchType& prefetch_type,
-      const GlobalRenderFrameHostId& referring_render_frame_host_id,
-      const std::optional<url::Origin>& referring_origin);
+      const PrefetchRequest& prefetch_request);
   ~PrefetchNetworkContext();
 
   PrefetchNetworkContext(const PrefetchNetworkContext&) = delete;
@@ -52,27 +46,13 @@ class CONTENT_EXPORT PrefetchNetworkContext {
 
  private:
   // Returns a URLLoaderFactory associated with the given |network_context|.
-  scoped_refptr<network::SharedURLLoaderFactory> CreateNewURLLoaderFactory(
-      BrowserContext* browser_context,
-      network::mojom::NetworkContext* network_context);
+  static scoped_refptr<network::SharedURLLoaderFactory>
+  CreateNewURLLoaderFactory(network::mojom::NetworkContext* network_context,
+                            const PrefetchRequest& prefetch_request);
 
   // Whether an isolated network context or the default network context should
   // be used.
   const bool use_isolated_network_context_;
-
-  // Used to determine if the prefetch proxy should be used.
-  const PrefetchType prefetch_type_;
-
-  // The referring RenderFrameHost is used when considering to proxy
-  // |url_loader_factory_| by calling WillCreateURLLoaderFactory.
-  // This should be empty when the trigger is browser-initiated.
-  const GlobalRenderFrameHostId referring_render_frame_host_id_;
-
-  // The origin that initiates the prefetch request, used when considering to
-  // proxy |url_loader_factory_| by calling WillCreateURLLoaderFactory.
-  // For renderer-initiated prefetch, this is calculated by referring
-  // RenderFrameHost's LastCommittedOrigin.
-  const std::optional<url::Origin> referring_origin_;
 
   // The network context and URL loader factory to use when making prefetches.
   mojo::Remote<network::mojom::NetworkContext> network_context_;

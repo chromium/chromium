@@ -53,7 +53,7 @@ bool PrefetchStartsSpareRenderer();
 // The default amount of time `PrefetchService` will keep an owned
 // `PrefetchContainer` alive. If this value is zero or less, the service will
 // keep the prefetch forever. This can be overridden in the `PrefetchContainer`.
-base::TimeDelta PrefetchContainerDefaultTtlInPrefetchService();
+CONTENT_EXPORT base::TimeDelta PrefetchContainerDefaultTtlInPrefetchService();
 
 // Returns if the specified host should have the prefetch proxy bypassed for
 // testing purposes. Currently this is only used for WPT test servers.
