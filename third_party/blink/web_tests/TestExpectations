@@ -9619,3 +9619,6 @@ crbug.com/40281140 [ Win11-arm64 ] external/wpt/mediacapture-record/MediaRecorde
 
 # Gardener 2026-02-02
 crbug.com/479874917 external/wpt/navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html [ Crash Timeout Failure Pass ]
+
+# Gardener 2026-02-06
+crbug.com/482449299 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/scatterND.https.any.html?gpu [ Failure ]
