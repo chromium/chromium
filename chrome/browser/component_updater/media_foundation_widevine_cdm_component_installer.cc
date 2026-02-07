@@ -166,7 +166,9 @@ MediaFoundationWidevineCdmComponentInstallerPolicy::GetInstallerAttributes()
 
 void RegisterMediaFoundationWidevineCdmComponent(
     component_updater::ComponentUpdateService* cus) {
-  if (media::SupportMediaFoundationEncryptedPlayback()) {
+  if (media::SupportMediaFoundationEncryptedPlayback() &&
+      base::FeatureList::IsEnabled(
+          media::kHardwareSecureDecryptionExperiment)) {
     VLOG(1) << "Registering Media Foundation Widevine CDM component.";
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<MediaFoundationWidevineCdmComponentInstallerPolicy>());
