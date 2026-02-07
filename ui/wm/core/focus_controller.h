@@ -143,7 +143,10 @@ class COMPONENT_EXPORT(UI_WM) FocusController : public ActivationClient,
 
   std::unique_ptr<FocusRules> rules_;
 
-  base::ObserverList<ActivationChangeObserver> activation_observers_;
+  base::ObserverList<ActivationChangeObserver,
+                     /*check_empty=*/false,
+                     /*allow_reentrancy=*/true>
+      activation_observers_;
   base::ObserverList<aura::client::FocusChangeObserver> focus_observers_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
