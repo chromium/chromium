@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
@@ -54,7 +55,7 @@ namespace system_logs {
 SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
                                                 bool scrub_data) {
   SystemLogsFetcher* fetcher = new SystemLogsFetcher(
-      scrub_data, extension_misc::kBuiltInFirstPartyExtensionIds);
+      scrub_data, base::span(extension_misc::kBuiltInFirstPartyExtensionIds));
 
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
   fetcher->AddSource(std::make_unique<CrashIdsSource>());

@@ -103,7 +103,7 @@ class SystemLogSourceDataCollectorAdaptorTest : public ::testing::Test {
         base::ThreadPool::CreateSequencedTaskRunner({});
     redaction_tool_container_ =
         base::MakeRefCounted<redaction::RedactionToolContainer>(
-            task_runner_for_redaction_tool_, nullptr);
+            task_runner_for_redaction_tool_);
   }
 
   SystemLogSourceDataCollectorAdaptorTest(

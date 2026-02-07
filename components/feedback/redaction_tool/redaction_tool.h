@@ -11,8 +11,10 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -50,10 +52,12 @@ class RedactionTool {
   // |first_party_extension_ids| is a null terminated array of all the 1st
   // party extension IDs whose URLs won't be redacted. It is OK to pass null for
   // that value if it's OK to redact those URLs or they won't be present.
-  explicit RedactionTool(const char* const* first_party_extension_ids);
+  explicit RedactionTool(
+      base::span<const char* const> first_party_extension_ids =
+          base::span<const char* const>());
   // The `metrics_recorder` is the instance of recorder that should be used on
   // this instance instead of the default for the platform.
-  RedactionTool(const char* const* first_party_extension_ids,
+  RedactionTool(base::span<const char* const> first_party_extension_ids,
                 std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
   ~RedactionTool();
 
@@ -168,7 +172,7 @@ class RedactionTool {
 
   // Null-terminated list of first party extension IDs. We need to have this
   // passed into us because we can't refer to the code where these are defined.
-  raw_ptr<const char* const> first_party_extension_ids_;  // Not owned.
+  base::raw_span<const char* const> first_party_extension_ids_;  // Not owned.
 
   // Map of MAC addresses discovered in redacted strings to redacted
   // representations. 11:22:33:44:55:66 gets redacted to
@@ -222,11 +226,8 @@ class RedactionToolContainer
  public:
   explicit RedactionToolContainer(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const char* const* first_party_extension_ids);
-  explicit RedactionToolContainer(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const char* const* first_party_extension_ids,
-      std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
+      base::span<const char* const> first_party_extension_ids =
+          base::span<const char* const>());
 
   // Returns a pointer to the instance of this redactor. May only be called
   // on |task_runner_|.
