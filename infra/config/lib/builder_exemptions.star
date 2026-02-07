@@ -1018,7 +1018,6 @@ mega_cq_excluded_builders = [
     # created for them.
     "android-arm64-archive-rel",
     "linux-chromeos-archive-rel",
-    "linux-rel-test-selection",
 ]
 
 mega_cq_excluded_gardener_rotations = [

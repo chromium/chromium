@@ -634,7 +634,6 @@ try/linux-perfetto-rel
 try/linux-presubmit
 try/linux-rel
 try/linux-rel-cft
-try/linux-rel-test-selection
 try/linux-swangle-chromium-try-x64
 try/linux-swangle-chromium-try-x64-exp
 try/linux-swangle-try-tot-swiftshader-x64
