@@ -84,25 +84,29 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         ${
       this.showModelPicker ?
           html`
-        <cr-composebox-contextual-entrypoint-button id="contextEntrypoint"
-            part="composebox-entrypoint"
-            exportparts="context-menu-entrypoint-icon"
-            class="upload-button no-overlap"
-            .tabSuggestions="${this.tabSuggestions}"
-            .showMenuOnClick="${this.showMenuOnClick}"
-            @open-image-upload="${this.openImageUpload_}"
-            @open-file-upload="${this.openFileUpload_}"
-            @add-tab-context="${this.addTabContext_}"
-            @delete-tab-context="${this.onDeleteFile_}"
-            @tool-click="${this.onToolClick_}"
-            .hasImageFiles="${this.hasImageFiles()}"
-            .disabledTabIds="${this.addedTabsIds_}"
-            .fileNum="${this.files_.size}"
-            .searchboxLayoutMode="${this.searchboxLayoutMode}"
-            .inputState="${this.inputState}"
-            ?show-context-menu-description="${this.shouldShowDescription_()}"
-            glif-animation-state="${this.contextMenuGlifAnimationState}">
-        </cr-composebox-contextual-entrypoint-button>
+          ${
+              this.shouldHideEntrypointButton_ ? '' :
+                  html`
+            <cr-composebox-contextual-entrypoint-button id="contextEntrypoint"
+                part="composebox-entrypoint"
+                exportparts="context-menu-entrypoint-icon"
+                class="upload-button no-overlap"
+                .tabSuggestions="${this.tabSuggestions}"
+                .showMenuOnClick="${this.showMenuOnClick}"
+                @open-image-upload="${this.openImageUpload_}"
+                @open-file-upload="${this.openFileUpload_}"
+                @add-tab-context="${this.addTabContext_}"
+                @delete-tab-context="${this.onDeleteFile_}"
+                @tool-click="${this.onToolClick_}"
+                .hasImageFiles="${this.hasImageFiles()}"
+                .disabledTabIds="${this.addedTabsIds_}"
+                .fileNum="${this.files_.size}"
+                .searchboxLayoutMode="${this.searchboxLayoutMode}"
+                .inputState="${this.inputState}"
+                ?show-context-menu-description="${
+                      this.shouldShowDescription_()}"
+                glif-animation-state="${this.contextMenuGlifAnimationState}">
+            </cr-composebox-contextual-entrypoint-button>`}
         ` :
           html`
         <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
