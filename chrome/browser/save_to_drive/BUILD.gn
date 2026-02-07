@@ -39,6 +39,7 @@ source_set("save_to_drive") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/extensions",
     "//chrome/browser/pdf",

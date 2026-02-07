@@ -16,6 +16,7 @@ owners:
 schema:
   type: string
 supported_on:
+- chrome_os:146-
 - chrome.*:145-
 tags: []
 type: string

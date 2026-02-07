@@ -7278,7 +7278,7 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
     {"pdf-save-to-drive", flag_descriptions::kPdfSaveToDriveName,
-     flag_descriptions::kPdfSaveToDriveDescription, kOsMac | kOsWin | kOsLinux,
+     flag_descriptions::kPdfSaveToDriveDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfSaveToDrive)},
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
