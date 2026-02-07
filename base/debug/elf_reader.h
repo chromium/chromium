@@ -26,13 +26,16 @@ using Phdr = Elf64_Phdr;
 namespace base {
 namespace debug {
 
+// Release builds use SHA1 (40 bytes), but other linkers may use other methods.
+// Support up to 64 (for blake3 & SHA256).
+constexpr size_t kMaxBuildIdStringLength = 64;
+using ElfBuildIdBuffer = char[kMaxBuildIdStringLength + 1];
+
 // Hex-encodes the build ID from the ELF binary located at |elf_mapped_base|.
 // Returns the length of the build ID in bytes, or zero if the build ID couldn't
 // be read.
 // When |uppercase| is |true|, the output string is written using uppercase hex
 // characters. Otherwise, the output is lowercased.
-constexpr size_t kMaxBuildIdStringLength = kSHA1Length * 2;
-using ElfBuildIdBuffer = char[kMaxBuildIdStringLength + 1];
 size_t BASE_EXPORT ReadElfBuildId(const void* elf_mapped_base,
                                   bool uppercase,
                                   ElfBuildIdBuffer build_id);
