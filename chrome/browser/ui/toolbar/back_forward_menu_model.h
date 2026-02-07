@@ -48,6 +48,7 @@ class BackForwardMenuModel final : public ui::MenuModel,
   enum class MenuSection {
     kHistory,       // History navigation items
     kChapterStops,  // Chapter stop navigation items
+    kBackToOpener,  // Back-to-opener item
     kSeparator,  // Separator (between sections or before "Show Full History")
     kShowFullHistory,  // "Show Full History" item
   };
@@ -88,7 +89,6 @@ class BackForwardMenuModel final : public ui::MenuModel,
   // Is the item at |index| a separator?
   bool IsSeparator(size_t index) const;
 
- private:
   // Returns which section the given index belongs to, or nullopt if the index
   // doesn't belong to any section.
   std::optional<MenuSection> GetSectionForIndex(size_t index) const;
@@ -104,6 +104,7 @@ class BackForwardMenuModel final : public ui::MenuModel,
   // section doesn't exist.
   std::optional<size_t> GetStartingIndexOfSection(MenuSection section) const;
 
+ private:
   friend class BackFwdMenuModelTest;
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, BasicCase);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, MaxItemsTest);

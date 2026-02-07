@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -74,7 +75,8 @@ size_t BackForwardMenuModel::GetItemCount() const {
   // Sum up all sections in order
   for (MenuSection section :
        {MenuSection::kHistory, MenuSection::kSeparator,
-        MenuSection::kChapterStops, MenuSection::kShowFullHistory}) {
+        MenuSection::kChapterStops, MenuSection::kBackToOpener,
+        MenuSection::kShowFullHistory}) {
     total += GetSectionItemCount(section);
   }
 
@@ -111,6 +113,10 @@ std::u16string BackForwardMenuModel::GetLabelAt(size_t index) const {
       menu_text = gfx::ElideText(menu_text, gfx::FontList(),
                                  kMaxBackForwardMenuWidth, gfx::ELIDE_TAIL);
       return menu_text;
+    }
+    case MenuSection::kBackToOpener: {
+      return back_to_opener::BackToOpenerController::GetFormattedOpenerTitle(
+          GetWebContents());
     }
     case MenuSection::kSeparator:
       return std::u16string();
@@ -172,6 +178,9 @@ ui::ImageModel BackForwardMenuModel::GetIconAt(size_t index) const {
 
       return ui::ImageModel::FromImage(fav_icon.image);
     }
+    case MenuSection::kBackToOpener:
+      return back_to_opener::BackToOpenerController::GetOpenerMenuIcon(
+          GetWebContents());
     case MenuSection::kSeparator:
       return ui::ImageModel();
     case MenuSection::kShowFullHistory:
@@ -221,6 +230,12 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
       base::RecordComputedAction(
           BuildActionName("ChapterClick", chapter_index));
       break;
+    }
+    case MenuSection::kBackToOpener: {
+      base::RecordComputedAction(
+          BuildActionName("BackToOpenerClick", std::nullopt));
+      back_to_opener::BackToOpenerController::GoBackToOpener(GetWebContents());
+      return;
     }
     case MenuSection::kSeparator:
       return;
@@ -318,6 +333,18 @@ BackForwardMenuModel::GetSectionForIndex(size_t index) const {
     }
   }
 
+  // Back-to-opener section: comes after history and chapter stops (if they
+  // exist), and before the separator and "Show Full History" sections.
+  bool has_back_to_opener =
+      back_to_opener::BackToOpenerController::HasValidOpener(GetWebContents());
+  if (has_back_to_opener) {
+    std::optional<size_t> opener_index =
+        GetStartingIndexOfSection(MenuSection::kBackToOpener);
+    if (opener_index.has_value() && index == opener_index.value()) {
+      return MenuSection::kBackToOpener;
+    }
+  }
+
   // "Show Full History" and separator sections:
   // "Show Full History" is always the last item if it exists.
   if (HasSection(MenuSection::kShowFullHistory)) {
@@ -360,6 +387,18 @@ std::optional<size_t> BackForwardMenuModel::GetStartingIndexOfSection(
       // exactly one separator before them.
       return GetHistoryItemCount() + 1;
     }
+    case MenuSection::kBackToOpener: {
+      // Back-to-opener comes before the separator and "Show Full History"
+      // sections.
+      size_t item_count = GetItemCount();
+      if (HasSection(MenuSection::kShowFullHistory)) {
+        // "Show Full History" is at item_count - 1, separator at item_count -
+        // 2, so back-to-opener is at item_count - 3
+        return item_count - 3;
+      }
+      // If "Show Full History" doesn't exist, back-to-opener is the last item
+      return item_count - 1;
+    }
     case MenuSection::kSeparator:
       NOTREACHED();
     case MenuSection::kShowFullHistory:
@@ -376,12 +415,20 @@ size_t BackForwardMenuModel::GetSectionItemCount(MenuSection section) const {
       size_t history_items = GetHistoryItemCount();
       return GetChapterStopCount(history_items);
     }
+    case MenuSection::kBackToOpener:
+      return back_to_opener::BackToOpenerController::HasValidOpener(
+                 GetWebContents())
+                 ? 1u
+                 : 0u;
     case MenuSection::kSeparator:
       return GetSeparatorCount();
     case MenuSection::kShowFullHistory:
-      // "Show Full History" is only shown when menu has items and not
-      // incognito.
-      return (ShouldShowFullHistoryBeVisible() && GetHistoryItemCount() > 0)
+      // "Show Full History" should only be visible if the menu has items and
+      // we're not in incognito mode. And when we have opener.
+      return (ShouldShowFullHistoryBeVisible() &&
+              (GetHistoryItemCount() > 0 ||
+               back_to_opener::BackToOpenerController::HasValidOpener(
+                   GetWebContents())))
                  ? 1u
                  : 0u;
   }
@@ -507,7 +554,9 @@ size_t BackForwardMenuModel::GetSeparatorCount() const {
   }
 
   // Separator before "Show Full History" (if it exists)
-  if (ShouldShowFullHistoryBeVisible() && history_items > 0) {
+  // "Show Full History" can exist when there are history items or
+  // back-to-opener
+  if (GetSectionItemCount(MenuSection::kShowFullHistory) > 0) {
     separator_count += 1;
   }
 
@@ -622,6 +671,7 @@ std::optional<size_t> BackForwardMenuModel::MenuIndexToNavEntryIndex(
       return FindChapterStop(history_items, model_type_ == ModelType::kForward,
                              offset_in_section);
     }
+    case MenuSection::kBackToOpener:
     case MenuSection::kSeparator:
     case MenuSection::kShowFullHistory:
       // These sections don't have navigation entries.

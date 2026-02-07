@@ -6,13 +6,27 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/base_window.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/font_list.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/text_elider.h"
 
 namespace back_to_opener {
 
@@ -167,6 +181,44 @@ BackToOpenerController* BackToOpenerController::From(tabs::TabInterface* tab) {
   return Get(tab->GetUnownedUserDataHost());
 }
 
+// static
+bool BackToOpenerController::HasValidOpener(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  const BackToOpenerController* controller = From(tab);
+  return controller != nullptr && controller->HasValidOpener();
+}
+
+// static
+bool BackToOpenerController::CanGoBackToOpener(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  const BackToOpenerController* controller = From(tab);
+  return controller != nullptr && controller->CanGoBackToOpener();
+}
+
+// static
+void BackToOpenerController::GoBackToOpener(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  BackToOpenerController* controller = From(tab);
+  if (controller && controller->CanGoBackToOpener()) {
+    controller->GoBackToOpener();
+  }
+}
+
 bool BackToOpenerController::CanGoBackToOpener() const {
   // Pinned tabs should not have back-to-opener functionality.
   // But maintain the relationship in case the tab is unpinned later.
@@ -283,6 +335,7 @@ void BackToOpenerController::SetOpenerWebContents(
       opener, weak_factory_.GetWeakPtr());
   opener_original_url_ = opener->GetLastCommittedURL();
   opener_web_contents_ = opener->GetWeakPtr();
+  opener_title_ = opener->GetTitle();
   has_valid_opener_ = true;
   NotifyUIStateChanged();
 }
@@ -291,8 +344,86 @@ void BackToOpenerController::ClearOpenerRelationship() {
   opener_web_contents_.reset();
   has_valid_opener_ = false;
   opener_observer_.reset();
+  opener_title_.clear();
 
   NotifyUIStateChanged();
+}
+
+// static
+std::u16string BackToOpenerController::GetFormattedOpenerTitle(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::u16string();
+  }
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  const BackToOpenerController* controller = From(tab);
+  if (!controller || !controller->HasValidOpener()) {
+    return std::u16string();
+  }
+
+  std::u16string opener_title = controller->opener_title_;
+  if (opener_title.empty()) {
+    return std::u16string();
+  }
+  opener_title = ui::EscapeMenuLabelAmpersands(opener_title);
+
+  // Format as "Close and return to \"[opener title]\""
+  const int kMaxBackForwardMenuWidth = 700;
+  std::u16string formatted_text = l10n_util::GetStringFUTF16(
+      IDS_HISTORY_CLOSE_AND_RETURN_TO_PREFIX, opener_title);
+
+  // Elide the entire formatted string if needed
+  formatted_text = gfx::ElideText(formatted_text, gfx::FontList(),
+                                  kMaxBackForwardMenuWidth, gfx::ELIDE_TAIL);
+  return formatted_text;
+}
+
+// static
+ui::ImageModel BackToOpenerController::GetOpenerMenuIcon(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return ui::ImageModel();
+  }
+  const tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  const BackToOpenerController* controller = From(tab);
+  if (!controller || !controller->HasValidOpener()) {
+    return ui::ImageModel();
+  }
+
+  content::WebContents* opener = controller->opener_web_contents_.get();
+  if (!opener) {
+    return ui::ImageModel();
+  }
+
+  // TODO(crbug.com/448173940): Simplify this section - it's redundant with
+  // BackForwardMenuModel::GetIconAt.
+  // Get the favicon from the opener's navigation entry, similar to how
+  // BackForwardMenuModel does it for history entries
+  content::NavigationEntry* opener_entry =
+      opener->GetController().GetLastCommittedEntry();
+  if (!opener_entry) {
+    return ui::ImageModel();
+  }
+
+  content::FaviconStatus fav_icon = opener_entry->GetFavicon();
+  if (!fav_icon.valid) {
+    return ui::ImageModel();
+  }
+
+  // Only apply theming to certain chrome:// favicons, similar to history
+  // entries
+  if (favicon::ShouldThemifyFaviconForEntry(opener_entry)) {
+    const ui::ColorProvider* const cp = &web_contents->GetColorProvider();
+    gfx::ImageSkia themed_favicon = favicon::ThemeFavicon(
+        fav_icon.image.AsImageSkia(), cp->GetColor(ui::kColorMenuIcon),
+        cp->GetColor(ui::kColorMenuItemBackgroundHighlighted),
+        cp->GetColor(ui::kColorMenuBackground));
+    return ui::ImageModel::FromImageSkia(themed_favicon);
+  }
+
+  return ui::ImageModel::FromImage(fav_icon.image);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCloseObserver);

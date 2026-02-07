@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
@@ -108,6 +109,15 @@ class BackToOpenerController : public tabs::ContentsObservingTabFeature {
   static const BackToOpenerController* From(const tabs::TabInterface* tab);
   static BackToOpenerController* From(tabs::TabInterface* tab);
 
+  // Returns the formatted opener title for menu display. Returns empty string
+  // if the controller doesn't exist or there's no valid opener.
+  static std::u16string GetFormattedOpenerTitle(
+      content::WebContents* web_contents);
+
+  // Returns the opener favicon for menu display. Returns empty ImageModel if
+  // the controller doesn't exist or there's no valid opener.
+  static ui::ImageModel GetOpenerMenuIcon(content::WebContents* web_contents);
+
   // Set the opener WebContents and cache its information.
   void SetOpenerWebContents(content::WebContents* opener);
 
@@ -116,14 +126,29 @@ class BackToOpenerController : public tabs::ContentsObservingTabFeature {
   // another tab) that has not been navigated from its original URL.
   bool HasValidOpener() const;
 
+  // Returns true if the web contents has a valid opener relationship. Returns
+  // false if the controller doesn't exist or the relationship is invalid.
+  static bool HasValidOpener(content::WebContents* web_contents);
+
   // Returns true if back-to-opener navigation is available. This requires:
   // - A valid opener relationship exists (HasValidOpener() returns true)
   // - The destination tab is not pinned
   bool CanGoBackToOpener() const;
+
+  // Returns true if back-to-opener navigation is available for the web
+  // contents. Returns false if the controller doesn't exist or navigation is
+  // not available.
+  static bool CanGoBackToOpener(content::WebContents* web_contents);
+
   // Closes the current tab and activates the opener tab. This should only be
   // called when CanGoBackToOpener() returns true. The opener activation
   // happens after the tab is actually destroyed (after any unload prompts).
   void GoBackToOpener();
+
+  // Closes the current tab and activates the opener tab if available. Does
+  // nothing if the controller doesn't exist or navigation is not available.
+  static void GoBackToOpener(content::WebContents* web_contents);
+
   // Called when the tab's pinned state changes. Updates internal state and
   // notifies UI that the back-to-opener availability may have changed.
   void OnPinnedStateChanged(tabs::TabInterface* tab, bool pinned);
@@ -156,6 +181,7 @@ class BackToOpenerController : public tabs::ContentsObservingTabFeature {
   bool is_pinned_ = false;
   bool has_valid_opener_ = false;
   GURL opener_original_url_;
+  std::u16string opener_title_;
 
   base::WeakPtr<content::WebContents> opener_web_contents_;
 

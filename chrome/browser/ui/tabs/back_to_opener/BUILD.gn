@@ -25,6 +25,7 @@ source_set("impl") {
 
   deps = [
     ":back_to_opener",
+    "//chrome/browser/favicon",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//ui/base",

@@ -144,6 +144,9 @@
   <message name="IDS_HISTORY_SOURCE_FILTER_CHIP_USER" desc="This string is found on a chip that filters the history results when the user selects it; it sits next to its opposite filter: 'Auto browse' (browsing activity from an auto browse task). It is at the top of the Chrome history page, where users can see their browsing history. This text is a noun and is short for the longer phrase 'Browsing history that YOU performed.' The tone should be short and telegraphic.">
     You
   </message>
+  <message name="IDS_HISTORY_CLOSE_AND_RETURN_TO_PREFIX" desc="Text for the back-to-opener menu item. Format: Close and return to &quot;[opener title]&quot;.">
+    Close and return to "<ph name="OPENER_TITLE">$1</ph>"
+  </message>
   <message name="IDS_HISTORY_START_EDITING_BUTTON" desc="Text for the button to enter editing mode, which allows the user to delete one or more history entries [Length: 7em].">
     Edit
   </message>
