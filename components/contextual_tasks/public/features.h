@@ -31,6 +31,10 @@ BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksSuggestionsEnabled);
 
+// Enables auto-suggestions for contextual tasks. When disabled, no suggested
+// chips will be shown in the composebox automatically.
+BASE_DECLARE_FEATURE(kContextualTasksAutoSuggestionEnabled);
+
 // Force the application locale to US and the gl query parameter to us.
 BASE_DECLARE_FEATURE(kContextualTasksForceCountryCodeUS);
 

@@ -967,7 +967,9 @@ void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
     searchbox::mojom::TabInfoPtr candidate_tab_info) {
   // Filter the suggested tab info based on blocklisted URLs and update the UI.
   searchbox::mojom::TabInfoPtr filtered_suggestion;
-  if (candidate_tab_info &&
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksAutoSuggestionEnabled) &&
+      candidate_tab_info &&
       !blocklisted_suggestions_.contains(candidate_tab_info->url)) {
     filtered_suggestion = std::move(candidate_tab_info);
   }
