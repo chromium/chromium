@@ -199,15 +199,6 @@ class ContextualTasksUiService : public KeyedService {
   // new foreground tab.
   virtual void OnImageClickedFromSourcesMenu(const GURL& url,
                                              BrowserWindowInterface* browser);
-
-  void set_auto_tab_context_suggestion_enabled(bool enabled) {
-    auto_tab_context_suggestion_enabled_ = enabled;
-  }
-
-  bool auto_tab_context_suggestion_enabled() const {
-    return auto_tab_context_suggestion_enabled_;
-  }
-
   // Return whether there is a user signed into the browser with valid
   // credentials (aka, an OAuth token can be obtained).
   virtual bool IsSignedInToBrowserWithValidCredentials();
@@ -319,10 +310,6 @@ class ContextualTasksUiService : public KeyedService {
   // are cleaned up.
   std::map<base::Uuid, omnibox::ChromeAimEntryPoint>
       task_id_to_entry_point_override_;
-
-  // Whether to allow active tab context to be suggested on compose box
-  // automatically.
-  bool auto_tab_context_suggestion_enabled_ = true;
 
   base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };

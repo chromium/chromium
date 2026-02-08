@@ -143,7 +143,6 @@ class ContextualTasksUI
   void OnLensOverlayStateChanged(bool is_showing) override;
   bool IsLensOverlayShowing() const override;
   void OnPageContextEligibilityChecked(bool is_page_context_eligible) override;
-  void DisableActiveTabContextSuggestion() override;
   bool IsActiveTabContextSuggestionShowing() const override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message) override;
   contextual_search::ContextualSearchSessionHandle*

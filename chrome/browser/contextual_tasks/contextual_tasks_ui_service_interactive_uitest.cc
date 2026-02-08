@@ -583,36 +583,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
-                       DisableTabSuggestionAfterRemoving) {
-  // Add a new tab.
-  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
-
-  ContextualTasksUiService* ui_service =
-      ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
-  ASSERT_TRUE(ui_service);
-  EXPECT_TRUE(ui_service->auto_tab_context_suggestion_enabled());
-
-  ContextualTasksPanelController* coordinator =
-      ContextualTasksPanelController::From(browser());
-  RunTestSequence(
-      Do([&]() {
-        // Open side panel.
-        coordinator->Show();
-      }),
-      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
-        content::WebContents* web_contents =
-            coordinator->GetActiveWebContents();
-        ContextualTasksUI* ui = static_cast<ContextualTasksUI*>(
-            web_contents->GetWebUI()->GetController());
-
-        ASSERT_TRUE(ui);
-        ui->DisableActiveTabContextSuggestion();
-        EXPECT_FALSE(ui_service->auto_tab_context_suggestion_enabled());
-      }));
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                        MoveTaskUiToNewTab) {
   // Add 2 new tabs.
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);

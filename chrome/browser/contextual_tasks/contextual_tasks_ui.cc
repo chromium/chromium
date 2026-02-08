@@ -722,22 +722,6 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   PostMessageToWebview(message);
 }
 
-void ContextualTasksUI::DisableActiveTabContextSuggestion() {
-  ui_service_->set_auto_tab_context_suggestion_enabled(false);
-
-  // Notify the active task context provider that the side panel state has
-  // changed.
-  auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
-  if (!browser) {
-    return;
-  }
-  auto* active_task_context_provider =
-      contextual_tasks::ActiveTaskContextProvider::From(browser);
-  if (active_task_context_provider) {
-    active_task_context_provider->RefreshContext();
-  }
-}
-
 void ContextualTasksUI::OnLensOverlayStateChanged(bool is_showing) {
   is_lens_overlay_showing_ = is_showing;
   if (page_) {
@@ -755,10 +739,6 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   }
 
   if (!composebox_handler_) {
-    return;
-  }
-
-  if (!ui_service_->auto_tab_context_suggestion_enabled()) {
     return;
   }
 
@@ -1115,6 +1095,8 @@ void ContextualTasksUI::CreatePageHandler(
 
 void ContextualTasksUI::PrepareForTaskChange() {
   composebox_handler_->ResetInputStateModel();
+  composebox_handler_->ResetBlocklistedSuggestions();
+  composebox_handler_->UpdateSuggestedTabContext(nullptr);
 }
 
 void ContextualTasksUI::OnTaskChanged() {

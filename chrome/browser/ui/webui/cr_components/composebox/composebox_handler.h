@@ -81,12 +81,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    omnibox::ChromeAimEntryPoint aim_entrypoint,
                    std::map<std::string, std::string> additional_params);
 
-  // Called to update the suggested tab context chip in the compose box.
-  virtual void UpdateSuggestedTabContext(searchbox::mojom::TabInfoPtr tab_info);
-
-  // Returns true if there is a suggested tab context chip in the compose box.
-  bool has_suggested_tab_context() const { return has_suggested_tab_context_; }
-
   // SearchboxHandler:
   std::string AutocompleteIconToResourceName(
       const gfx::VectorIcon& icon) const override;
@@ -105,7 +99,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
  private:
   raw_ptr<content::WebContents> web_contents_;
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
-  bool has_suggested_tab_context_ = false;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

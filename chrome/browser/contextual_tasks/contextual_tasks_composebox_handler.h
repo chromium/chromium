@@ -93,6 +93,19 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
 
   void CreateAndSendQueryMessage(const std::string& query);
 
+  // Called to update the suggested tab context chip in the compose box based on
+  // the given candidate tab. The chip will only be shown if the candidate tab
+  // is eligible for suggestion and is not blocklisted by the user.
+  virtual void UpdateSuggestedTabContext(
+      searchbox::mojom::TabInfoPtr candidate_tab_info);
+
+  // Returns true if there is a suggested tab context chip in the compose box.
+  bool has_suggested_tab_context() const { return has_suggested_tab_context_; }
+
+  // Called to clear the blocklist of auto-suggested tabs. This is used when
+  // switching to a new thread.
+  void ResetBlocklistedSuggestions() { blocklisted_suggestions_.clear(); }
+
   void ClearFiles() override;
   void HandleLensButtonClick() override;
   void OnLensThumbnailCreated(const std::string& thumbnail_data);
@@ -186,6 +199,15 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // These tabs will be contextualized and added to the context after user
   // submits the query in the composebox.
   std::map<base::UnguessableToken, int32_t> delayed_tabs_;
+
+  // List of auto-suggested tab URLs that have been explicitly dismissed by the
+  // user. Those URLs will not be auto-suggested again for the same task in the
+  // same session, unless the user explicitly adds the tab via "+" button or
+  // switches to a new thread in which case the whole list will be cleared.
+  std::set<GURL> blocklisted_suggestions_;
+
+  // Whether the composebox is currently showing a suggested chip.
+  bool has_suggested_tab_context_ = false;
 
   std::optional<base::UnguessableToken> visual_selection_token_;
   base::WeakPtrFactory<ContextualTasksComposeboxHandler> weak_factory_{this};
