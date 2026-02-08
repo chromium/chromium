@@ -102,7 +102,7 @@ void PluginData::UpdatePluginList() {
   registry->GetPlugins(&plugins);
   for (const auto& plugin : plugins) {
     auto* plugin_info = MakeGarbageCollected<PluginInfo>(
-        std::move(plugin->name), FilePathToWebString(plugin->filename),
+        std::move(plugin->name), FilePathToString(plugin->filename),
         std::move(plugin->description),
         Color::FromRGBA32(plugin->background_color),
         plugin->may_use_external_handler);

@@ -77,8 +77,9 @@ bool GetFileMetadata(const String& path,
       host.BindNewPipeAndPassReceiver());
 
   std::optional<base::File::Info> file_info;
-  if (!host->GetFileInfo(WebStringToFilePath(path), &file_info) || !file_info)
+  if (!host->GetFileInfo(StringToFilePath(path), &file_info) || !file_info) {
     return false;
+  }
 
   metadata.modification_time =
       NullableTimeToOptionalTime(file_info->last_modified);
@@ -89,7 +90,7 @@ bool GetFileMetadata(const String& path,
 }
 
 KURL FilePathToURL(const String& path) {
-  base::FilePath file_path = WebStringToFilePath(path);
+  base::FilePath file_path = StringToFilePath(path);
 #if BUILDFLAG(IS_ANDROID)
   GURL gurl = file_path.IsContentUri() ? GURL(file_path.value())
                                        : net::FilePathToFileURL(file_path);

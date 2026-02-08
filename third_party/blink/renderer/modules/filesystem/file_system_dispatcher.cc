@@ -59,7 +59,7 @@ class FileSystemDispatcher::ReadDirectoryListener
       bool has_more) override {
     for (const auto& entry : entries) {
       callbacks_->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name.path()),
+          FilePathToString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks_->DidReadDirectoryEntries(has_more);
@@ -490,7 +490,7 @@ void FileSystemDispatcher::DidResolveURL(
   if (error_code == base::File::Error::FILE_OK) {
     DCHECK(info->root_url.IsValid());
     callbacks->DidResolveURL(info->name, info->root_url, info->mount_type,
-                             FilePathToWebString(file_path), is_directory);
+                             FilePathToString(file_path), is_directory);
   } else {
     callbacks->DidFail(error_code);
   }
@@ -530,7 +530,7 @@ void FileSystemDispatcher::DidReadDirectory(
   if (error_code == base::File::Error::FILE_OK) {
     for (const auto& entry : entries) {
       callbacks->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name.path()),
+          FilePathToString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks->DidReadDirectoryEntries(false);
@@ -596,7 +596,7 @@ void FileSystemDispatcher::DidCreateSnapshotFile(
     mojo::PendingRemote<mojom::blink::ReceivedSnapshotListener> listener) {
   if (error_code == base::File::FILE_OK) {
     FileMetadata file_metadata = FileMetadata::From(file_info);
-    file_metadata.platform_path = FilePathToWebString(platform_path);
+    file_metadata.platform_path = FilePathToString(platform_path);
 
     callbacks->DidCreateSnapshotFile(file_metadata);
 

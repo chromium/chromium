@@ -211,7 +211,7 @@ File::File(ExecutionContext* context,
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(path),
-      name_(FilePathToWebString(WebStringToFilePath(path).BaseName())) {}
+      name_(FilePathToString(StringToFilePath(path).BaseName())) {}
 
 File::File(ExecutionContext* context,
            const String& path,

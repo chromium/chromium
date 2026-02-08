@@ -60,7 +60,7 @@ struct ExpectedElement {
                               uint64_t length,
                               base::Time time) {
     return ExpectedElement{DataElement::NewFile(
-        DataElementFile::New(WebStringToFilePath(path), offset, length, time))};
+        DataElementFile::New(StringToFilePath(path), offset, length, time))};
   }
 
   static ExpectedElement Blob(const String& uuid,
@@ -270,7 +270,7 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
   const auto& reg = file_factory.registrations[0];
   EXPECT_EQ(handle->Uuid(), reg.uuid);
   EXPECT_EQ(kType, reg.content_type);
-  EXPECT_EQ(WebStringToFilePath(kPath), reg.file->path);
+  EXPECT_EQ(StringToFilePath(kPath), reg.file->path);
   EXPECT_EQ(kSize, reg.file->length);
   EXPECT_EQ(kOffset, reg.file->offset);
   EXPECT_EQ(kModificationTime, reg.file->expected_modification_time);

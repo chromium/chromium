@@ -172,12 +172,12 @@ void PopulateResourceRequestBody(const EncodedFormData& src,
       case FormDataElement::kEncodedFile:
         if (element.file_length_ == -1) {
           dest->AppendFileRange(
-              WebStringToFilePath(element.filename_), 0,
+              StringToFilePath(element.filename_), 0,
               std::numeric_limits<uint64_t>::max(),
               element.expected_file_modification_time_.value_or(base::Time()));
         } else {
           dest->AppendFileRange(
-              WebStringToFilePath(element.filename_),
+              StringToFilePath(element.filename_),
               static_cast<uint64_t>(element.file_start_),
               static_cast<uint64_t>(element.file_length_),
               element.expected_file_modification_time_.value_or(base::Time()));

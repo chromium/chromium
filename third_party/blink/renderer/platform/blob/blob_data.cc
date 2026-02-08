@@ -250,7 +250,7 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
     const std::optional<base::Time>& expected_modification_time,
     const String& content_type) {
   mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
-      WebStringToFilePath(path), offset, length, expected_modification_time);
+      StringToFilePath(path), offset, length, expected_modification_time);
   uint64_t size = length == BlobData::kToEndOfFile
                       ? std::numeric_limits<uint64_t>::max()
                       : length;
@@ -267,7 +267,7 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFileSync(
     const std::optional<base::Time>& expected_modification_time,
     const String& content_type) {
   mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
-      WebStringToFilePath(path), offset, length, expected_modification_time);
+      StringToFilePath(path), offset, length, expected_modification_time);
   uint64_t size = length == BlobData::kToEndOfFile
                       ? std::numeric_limits<uint64_t>::max()
                       : length;
