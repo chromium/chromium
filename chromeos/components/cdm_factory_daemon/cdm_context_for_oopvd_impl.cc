@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/components/cdm_factory_daemon/cdm_context_for_oopvd_impl.h"
 
 #include "base/functional/callback.h"
@@ -113,7 +108,8 @@ void CdmContextForOOPVDImpl::DecryptVideoBuffer(
     return;
   }
   CHECK_EQ(media_decoder_buffer->size(), bytes.size());
-  memcpy(media_decoder_buffer->writable_data(), bytes.data(), bytes.size());
+  UNSAFE_TODO(memcpy(media_decoder_buffer->writable_data(), bytes.data(),
+                     bytes.size()));
   cdm_context_->GetDecryptor()->Decrypt(
       media::Decryptor::StreamType::kVideo, media_decoder_buffer,
       base::BindPostTaskToCurrentDefault(

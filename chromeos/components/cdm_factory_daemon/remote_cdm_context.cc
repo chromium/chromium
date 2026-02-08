@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
 
 #include "base/functional/callback.h"
@@ -210,7 +205,8 @@ void RemoteCdmContext::OnDecryptVideoBufferDone(
       return;
     }
     CHECK_EQ(bytes.size(), media_decoder_buffer->size());
-    memcpy(media_decoder_buffer->writable_data(), bytes.data(), bytes.size());
+    UNSAFE_TODO(memcpy(media_decoder_buffer->writable_data(), bytes.data(),
+                       bytes.size()));
   }
   std::move(decrypt_cb).Run(status, media_decoder_buffer);
 }
