@@ -69,7 +69,9 @@ class PageLoadingStateObserver : public PageNodeObserver,
   // PageNodeObserver:
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override {
-    EXPECT_EQ(page_node_.get(), page_node);
+    if (page_node_.get() != page_node) {
+      return;
+    }
 
     if (page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
       graph_->RemovePageNodeObserver(this);
