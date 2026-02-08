@@ -1611,7 +1611,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // through the |native_widget_| weak ptr.
   std::unique_ptr<internal::NativeWidgetPrivate> owned_native_widget_;
 
-  base::ObserverList<WidgetObserver> observers_;
+  base::ObserverList<WidgetObserver,
+                     /*check_empty=*/false,
+                     /*allow_reentrancy=*/true>
+      observers_;
 
   base::ObserverList<WidgetRemovalsObserver>::Unchecked removals_observers_;
 
