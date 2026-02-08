@@ -584,6 +584,7 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384849755549338773">詢問是否使用「Google 翻譯」轉換其它語言的網頁</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
+<translation id="1386966479075994683">展開分頁</translation>
 <translation id="1388253969141979417">已允許使用麥克風</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> 將在更新完成時重新啟動。</translation>
 <translation id="1390113502208199250">您需要將此裝置回復原廠設定，才能使用 Chrome Education 升級功能。</translation>
@@ -2596,6 +2597,7 @@
 <translation id="2727633948226935816">不要再提醒我</translation>
 <translation id="2727712005121231835">實際大小</translation>
 <translation id="2727744317940422214">抱歉，發生錯誤。請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。清理失敗，您可能需要手動清理。</translation>
+<translation id="2729310339366257582">收合分頁</translation>
 <translation id="2729577602370119849">輕鬆存取和管理打印機</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集此裝置附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 會將從此裝置收集的資料用於改善定位精確度和適地性服務，並改善、提供和維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。這些資料不會用於識別任何人士。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />你可隨時在此裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷此裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" /></translation>
@@ -4739,6 +4741,7 @@
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{與 Gemini 分享分頁}other{與 Gemini 分享 # 個分頁}}</translation>
+<translation id="4172944993779635350">「<ph name="URL" />」的密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至帳戶。</translation>
 <translation id="4173129130568053653">Gemini 可助你預約、建立購物車，或執行你指派的其他任務。</translation>
 <translation id="4175137578744761569">淺紫色和白色</translation>
 <translation id="4176463684765177261">已停用</translation>
@@ -5055,6 +5058,7 @@
 <translation id="4386604394450371010">概覽</translation>
 <translation id="4387890294700445764">被盜用的密碼</translation>
 <translation id="4388650384344483842">請至少使用 8 個字元</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{<ph name="URL" /> 密碼}other{<ph name="URL" /> 密碼 ({COUNT} 個)}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 以及另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 個按鈕裝置</translation>
 <translation id="439266289085815679">藍牙設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">編輯設定檔案</translation>
@@ -5129,6 +5133,7 @@
 <translation id="443031431654216610">只使用數字</translation>
 <translation id="4430369329743628066">已新增書籤</translation>
 <translation id="4430422687972614133">啟用虛擬卡</translation>
+<translation id="4431962107539413562">在你的所有裝置上取用密碼</translation>
 <translation id="443196770280837407">使用鍵盤快速鍵開啟 Gemini。</translation>
 <translation id="4432621511648257259">密碼不正確</translation>
 <translation id="4434611816075088065">目前沒有需要處理的事項</translation>
@@ -5584,6 +5589,7 @@
 <translation id="4762849514113423887">密碼有誤。請再試一次。</translation>
 <translation id="4763408175235639573">系統在您瀏覽此網頁時已設定下列 Cookie</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> 並不是有效的 Google for Education 帳戶。請聯絡您的管理員。如果您是管理員，可前往 g.co/workspace/edusignup 設定機構</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{「<ph name="URL" />」的 {COUNT} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至帳戶。}other{「<ph name="URL" />」的 {COUNT} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至帳戶。}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{系統會記住此裝置，在 1 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {MONTHS} 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
 <translation id="476563889641554689">選取要使用「智能鏡頭」搜尋的區域</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{正在檢查公開金鑰和完整性區塊…尚餘不到 1 分鐘}=1{正在檢查公開金鑰和完整性區塊…尚餘 1 分鐘}other{正在檢查公開金鑰和完整性區塊…尚餘 # 分鐘}}</translation>
@@ -6055,6 +6061,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5090637338841444533">不允許追蹤攝錄機位置</translation>
 <translation id="5091636240353511739">顯示 PIN</translation>
+<translation id="5093447877601682598">傳送有關分頁列的意見</translation>
 <translation id="5093477827231450397">您唔希望呢啲網站向其他網站建議廣告，因此已經封鎖咗嘅網站清單</translation>
 <translation id="5093569275467863761">向前/返回快取中的無痕子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">您可在「檔案」應用程式或其他應用程式中，透過此應用程式開啟及編輯支援的檔案。如要控制在此應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
@@ -6224,6 +6231,7 @@
 <translation id="5203035663139409780">可編輯裝置上的檔案或資料夾</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{按一下即可查看擴充程式}other{按一下即可查看這些擴充程式}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" /> 的復原密碼</translation>
+<translation id="5204584298075822291">收合分頁</translation>
 <translation id="5204673965307125349">請在裝置上執行 Powerwash，然後再試一次。</translation>
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5205484256512407285">一律不使用流動數據進行傳輸</translation>
@@ -8884,6 +8892,7 @@
 <translation id="7057567173736333354">描述圖片</translation>
 <translation id="70577934383983846">在所有裝置上使用此密碼</translation>
 <translation id="7058024590501568315">隱藏的網絡</translation>
+<translation id="7058325593717863084">傳送有關分頁列的意見</translation>
 <translation id="7059858479264779982">設為自動啟動</translation>
 <translation id="7060004353663489242">「<ph name="FIELD_LIST" />」為必填欄位</translation>
 <translation id="7063129466199351735">正在處理捷徑…</translation>
@@ -9064,6 +9073,7 @@
 <translation id="7193051357671784796">此應用程式由您的機構新增。重新啟動應用程式即可完成安裝。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 沒有密碼可供儲存</translation>
 <translation id="7193663868864659844">提供關於「建議群組」的意見</translation>
+<translation id="7194343495483122559">展開分頁</translation>
 <translation id="7194873994243265344">由於此檔案已加密，因此已被機構封鎖。請要求擁有者解密。</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{正在進行 1 項下載}other{正在進行 # 項下載}}</translation>
 <translation id="7196272782924897510">要使用其他裝置的密鑰嗎？</translation>

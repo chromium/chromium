@@ -2792,6 +2792,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5466018172325111652">Negavote kodo? <ph name="BEGIN_LINK" />Gaukite naują kodą<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Mokėjimų programos</translation>
 <translation id="5470861586879999274">&amp;Redaguoti dar kartą</translation>
+<translation id="5471158297908124590">Patvirtinkite savo tapatybę, kad galėtumėte redaguoti mokėjimų metodus</translation>
 <translation id="5472588168895083535">Rankų stebėjimas užblokuotas</translation>
 <translation id="5477756102936130143">Įgalinti peradresavimą į palaikomas mokėjimo programas</translation>
 <translation id="5479505548832623900">Tikėtina, kad plėtinys nepaisė.</translation>
@@ -3175,6 +3176,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6093795393556121384">Kortelė patvirtinta</translation>
 <translation id="6094253940069566294">Transporto priemonės redagavimas</translation>
 <translation id="6094290315941448991">Remiantis administratoriaus politika, negalima įrašyti ekrano vaizdo, jei matomas konfidencialus turinys</translation>
+<translation id="6097297436119286254">Patvirtinkite savo tapatybę, kad galėtumėte užpildyti mokėjimo informaciją</translation>
 <translation id="6099269767116481177">22 x 29,5 col.</translation>
 <translation id="6101583188322746099">Maisto prekių pristatymas</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4924,6 +4926,7 @@ Papildoma išsami informacija:
 <translation id="8897428486789851669">Plaukimas</translation>
 <translation id="8899807382908246773">Nepageidaujami skelbimai</translation>
 <translation id="8903921497873541725">Artinti</translation>
+<translation id="8903998444169664879">Patvirtinkite savo tapatybę, kad galėtumėte pakeisti mokėjimų nustatymus</translation>
 <translation id="890493561996401738">Pašalinkite pasiūlymo mygtuką, paspauskite „Enter“, kad pašalintumėte, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 col.</translation>
 <translation id="8914504000324227558">Iš naujo paleisti „Chrome“</translation>

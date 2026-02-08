@@ -585,6 +585,7 @@
 <translation id="3140825265190223781">Išsaugoti slaptažodžiai ir prieigos raktai</translation>
 <translation id="3143515551205905069">Atšaukti sinchronizavimą</translation>
 <translation id="3144126448740580210">ATLIKTA</translation>
+<translation id="3147521114983561406">Prieigos raktai išsaugomi slaptažodžių tvarkyklėje. Jie pasiekiami inkognito ir įprastuose skirtukuose.</translation>
 <translation id="3148052723910099040">Įprastų skirtukų tinklelis</translation>
 <translation id="3148237711805373460">Apsilankyti</translation>
 <translation id="3157387275655328056">Pridėti prie skaitomų sąrašo</translation>
@@ -2097,6 +2098,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8587001564479545614">Sukurkite atkūrimo PIN kodą</translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8590286732816598906">Skirtukų grupė „<ph name="GROUP_TITLE" />“, meniu.</translation>
+<translation id="8593317261815647019">Sukurti prieigos raktą ne inkognito režimu?</translation>
 <translation id="8600272508328041907">Perjungimas į viso puslapio vertimą</translation>
 <translation id="860043288473659153">Kortelės savininko vardas</translation>
 <translation id="8601611099293226919">Paieška ekrane naudojant „Google Lens“</translation>

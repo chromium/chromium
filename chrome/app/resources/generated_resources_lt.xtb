@@ -2781,6 +2781,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2842013086666334835">Prisijungti prie „<ph name="NETWORK_ID" />“</translation>
 <translation id="2843560154284403323">Jei norite baigti „Linux“ nustatymą, atnaujinkite „Chrome“ OS ir bandykite dar kartą.</translation>
 <translation id="2843698124892775282">Atlaisvinta <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2844154481025280030">Politika sukonfigūruota.</translation>
 <translation id="2844169650293029770">USB-C įrenginys (prievadas kairėje, priekinėje dalyje)</translation>
 <translation id="2844809857160214557">Peržiūrėti ir tvarkyti spausdinimo užduotis</translation>
 <translation id="2845276301195220700">Daugiau veiksmų su „Google“ kalendoriumi</translation>
@@ -3220,6 +3221,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3151539355209957474">Pradžios laikas</translation>
 <translation id="3151786313568798007">Orientacija</translation>
 <translation id="3152356229013609796">Peržiūrėkite telefono pranešimus, atsisakykite jų ir atsakykite į juos</translation>
+<translation id="3152545926232662879">Nepaisoma:</translation>
 <translation id="3154754096046236400">Asmeninis kontekstas</translation>
 <translation id="3155163173539279776">Iš naujo paleisti „Chromium“</translation>
 <translation id="3155394504825881014">Konvertuoti skirtukų grupę į žymių aplanką</translation>
@@ -5761,6 +5763,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4868284252360267853">Šis dialogo langas šiuo metu nesuaktyvintas. Paspauskite „Command“ – „Shift“ – „Option A“, kad suaktyvintumėte šį dialogo langą.</translation>
 <translation id="4868351661310357223">Diekite programas ir žaidimus iš „Google Play“ „<ph name="DEVICE_TYPE" />“ įrenginyje.</translation>
 <translation id="4869170227080975044">Skaityti „ChromeOS“ tinklo informaciją</translation>
+<translation id="4869175799055761881">Šios programos naudotojas negali įdiegti. Susisiekite su kūrėju</translation>
 <translation id="4870724079713069532">Galite atidaryti ir redaguoti palaikomus failus naudodami šią programą iš failų naršyklės arba kitų programų. Jei norite valdyti, kurie failai pagal numatytuosius nustatymus atidaromi šioje programoje, eikite į <ph name="BEGIN_LINK" />„Windows“ nustatymų“<ph name="END_LINK" /> skiltį.</translation>
 <translation id="4870995365819149457">Kai kurios palaikomos nuorodos vis tiek bus atidarytos „<ph name="APP_NAME" />“, „<ph name="APP_NAME_2" />“, „<ph name="APP_NAME_3" />“ ir dar vienoje programoje.</translation>
 <translation id="4871308555310586478">Ne iš „Chrome“ internetinės parduotuvės.</translation>
@@ -8671,6 +8674,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6896758677409633944">Kopijuoti</translation>
 <translation id="6897363604023044284">Pasirinkite svetaines, kurių duomenis norite išvalyti</translation>
 <translation id="6897688156970667447">Naudinga esant prastam apšvietimui ir taupoma akumuliatoriaus energija</translation>
+<translation id="6897756054229464646">Su „Gemini“</translation>
 <translation id="6897972855231767338">Sužinokite daugiau apie naršymą svečio režimu</translation>
 <translation id="6898438890765871056">Atidaryti „OneDrive“ aplanką</translation>
 <translation id="6898440773573063262">Dabar galima sukonfigūruoti, kad viešojo terminalo programos būtų automatiškai paleidžiamos šiame įrenginyje.</translation>
@@ -9174,6 +9178,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7250616558727237648">Įrenginys, su kuriuo bendrinate, neatsakė. Bandykite dar kartą.</translation>
 <translation id="725109152065019550">Deja, jūsų administratorius išjungė išorinę paskyros atmintinę.</translation>
 <translation id="7251635775446614726">Administratorius sako: „<ph name="CUSTOM_MESSAGE" />“</translation>
+<translation id="725310308981256997">Klausti apie šį puslapį?</translation>
 <translation id="7253521419891527137">&amp;Sužinokite daugiau</translation>
 <translation id="7254951428499890870">Ar tikrai norite paleisti „<ph name="APP_NAME" />“ diagnostikos režimu?</translation>
 <translation id="725497546968438223">Žymių aplanko mygtukas</translation>
@@ -10663,6 +10668,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8244201515061746038">Automatinio taisymo mygtukas „Sužinoti daugiau“. Eikite į automatinio taisymo nustatymų puslapį. Paspauskite „Enter“, kad suaktyvintumėte, arba „Escape“, kad atsisakytumėte.</translation>
 <translation id="8244514732452879619">Netrukus bus užrakintas</translation>
 <translation id="8246776524656196770">Apsaugokite saugos raktą PIN kodu (asmens identifikavimo numeriu, angl. „Personal Identification Number“)</translation>
+<translation id="824713170151383793">Su kūrėjo įrankiais</translation>
 <translation id="8247795734638043885">Atsisiųsti nesaugų failą</translation>
 <translation id="8248050856337841185">&amp;Įklijuoti</translation>
 <translation id="8248381369318572865">Pasiekti mikrofoną ir analizuoti jūsų kalbą</translation>
@@ -11581,6 +11587,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="885746075120788020">Išsaugota veikla ir nuostatos bus paruoštos bet kuriame „Chrome“ OS įrenginyje, kai prisijungsite naudodami „Google“ paskyrą. Galite pasirinkti, ką norite sinchronizuoti, skiltyje „Nustatymai“.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Įdiegti programą?}one{Įdiegti programas?}few{Įdiegti programas?}many{Įdiegti programas?}other{Įdiegti programas?}}</translation>
 <translation id="8858369206579825206">Privatumo valdikliai</translation>
+<translation id="8858449624332155432">Politika sukonfigūruota su nesuderinamomis vertėmis iš kelių šaltinių.</translation>
 <translation id="8859174528519900719">Antrinis kadras: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Nepavyko įkelti paslaugų teikimo sąlygų</translation>
 <translation id="8859662783913000679">Vieno iš tėvų paskyra</translation>

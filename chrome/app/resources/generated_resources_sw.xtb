@@ -584,6 +584,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1384849755549338773">Tafsiri tovuti zilizo katika lugha nyingine kwa kutumia Google Tafsiri</translation>
 <translation id="1384959399684842514">Upakuaji umesitishwa</translation>
+<translation id="1386966479075994683">Panua Vichupo</translation>
 <translation id="1388253969141979417">Zinazoruhusiwa kutumia maikrofoni yako</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> itazima kisha kuwaka wakati mchakato wa kusasisha utakamilika.</translation>
 <translation id="1390113502208199250">Utatakiwa kurejesha mipangilio ambayo kifaa hiki kiliyotoka nayo kiwandani ili utumie vipengele vya Toleo jipya la Chrome Education.</translation>
@@ -2593,6 +2594,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2727633948226935816">Usinikumbushe tena</translation>
 <translation id="2727712005121231835">Ukubwa Halisi</translation>
 <translation id="2727744317940422214">Samahani, hitilafu imetokea. Tafadhali tuma maoni ukitumia #bruschetta katika maelezo. Msimbo wa hitilafu ni <ph name="ERROR" />. Imeshindwa kusafisha, huenda ukahitaji kufanya hivyo mwenyewe.</translation>
+<translation id="2729310339366257582">Kunja vichupo</translation>
 <translation id="2729577602370119849">Fikia na udhibiti printa kwa urahisi</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Ukiwasha mipangilio ya Usahihi wa Mahali, maelezo kuhusu mawimbi ya simu za mkononi, kama vile milango ya mitandao ya Wi-Fi na minara ya mitandao ya simu, pamoja na data ya vitambuzi vya vifaa, kama vile kipima mchapuko na gurudumu tuzi, hutumika kukadiria data sahihi zaidi ya mahali kifaa kilipo, ambayo programu na huduma za Android hutumia ili kuweka vipengele vinavyotegemea mahali. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi yaliyo karibu na kifaa hiki ili kuchangia katika ukusanyaji wa data kuhusu mahali ambapo mawimbi ya simu za mkononi yako.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google hutumia maelezo haya yaliyokusanywa kutoka kifaa hiki ili: kuboresha usahihi wa mahali na huduma zinazotegemea mahali; na kuboresha, kutoa na kudumisha huduma za Google kwa jumla. Huwa tunachakata maelezo haya kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. Maelezo haya hayatumiwi kumtambulisha mtu yeyote binafsi.<ph name="END_PARAGRAPH2" />
@@ -5130,6 +5132,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="443031431654216610">Tumia tarakimu pekee</translation>
 <translation id="4430369329743628066">Alamisho imeongezwa</translation>
 <translation id="4430422687972614133">Washa kadi pepe</translation>
+<translation id="4431962107539413562">Pata manenosiri yako kwenye vifaa vyako vyote</translation>
 <translation id="443196770280837407">Fungua Gemini ukitumia mikato ya kibodi.</translation>
 <translation id="4432621511648257259">Nenosiri si sahihi</translation>
 <translation id="4434611816075088065">Hakuna kitu kingine unachopaswa kukagua kwa sasa hivi</translation>
@@ -6226,6 +6229,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5203035663139409780">Zinaweza kubadilisha faili au folda kwenye kifaa chako</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Bofya ili uone kiendelezi}other{Bofya ili uone viendelezi}}</translation>
 <translation id="5204282224596194174">Nenosiri la kurejesha akaunti ya <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Kunja Vichupo</translation>
 <translation id="5204673965307125349">Tafadhali powerwash kifaa na ujaribu tena.</translation>
 <translation id="5204967432542742771">Weka nenosiri</translation>
 <translation id="5205484256512407285">Kamwe usitumie data ya mtandao wa simu kuhamisha</translation>
@@ -9070,6 +9074,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7193051357671784796">Programu hii iliongezwa na shirika lako. Zima kisha uwashe programu ili ukamilishe kuisakinisha.</translation>
 <translation id="7193374945610105795">Hakuna manenosiri yaliyohifadhiwa ya <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Tuma maoni kuhusu Vikundi Vinavyopendekezwa</translation>
+<translation id="7194343495483122559">Panua vichupo</translation>
 <translation id="7194873994243265344">Shirika lako limezuia faili hii kwa sababu imesimbwa kwa njia fiche. Mwombe mmiliki aisimbue.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{Tukio 1 la upakuaji linaendelea}other{Matukio # ya upakuaji yanaendelea}}</translation>
 <translation id="7196272782924897510">Ungependa kutumia ufunguo wa siri kutoka kifaa kingine?</translation>

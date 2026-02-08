@@ -586,6 +586,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384849755549338773">Ponudi Google prevodilac za veb-sajtove na drugim jezicima</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
+<translation id="1386966479075994683">Proširi kartice</translation>
 <translation id="1388253969141979417">Dozvoljeno im je korišćenje mikrofona</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> će se restartovati kada se ažuriranja završe.</translation>
 <translation id="1390113502208199250">Morate da resetujete ovaj uređaj na fabrička podešavanja da biste koristili funkcije nadogradnje za Chrome Education.</translation>
@@ -2581,6 +2582,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2727633948226935816">Ne podsećaj me više</translation>
 <translation id="2727712005121231835">Stvarna veličina</translation>
 <translation id="2727744317940422214">Žao nam je, došlo je do greške. Pošaljite povratne informacije i navedite #bruschetta u opisu. Kôd greške je <ph name="ERROR" />. Čišćenje nije uspelo. Možda ćete morati da to uradite ručno.</translation>
+<translation id="2729310339366257582">Skupi kartice</translation>
 <translation id="2729577602370119849">Lako pristupajte štampačima i upravljajte njima</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Kada se uključi Preciznost lokacije, informacije o bežičnim signalima kao što su WiFi pristupne tačke i repetitori mobilnih mreža, kao i podaci senzora uređaja, poput akcelerometra i žiroskopa, koriste se za procenu preciznije lokacije uređaja koju aplikacije i usluge koriste za pružanje funkcija zasnovanih na lokaciji. U tu svrhu, Google periodično prikuplja informacije o senzorima uređaja i bežičnim signalima u blizini uređaja da bi doprineo određivanju lokacije bežičnih signala preko kraudsorsinga.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google koristi ove informacije prikupljene sa ovog uređaja za: poboljšanje preciznosti lokacije i usluga zasnovanih na lokaciji i opšte poboljšanje, pružanje i održavanje Google usluga. Obrađujemo ove informacije na osnovu legitimnih interesa Google-a i trećih strana da ispunjavaju potrebe korisnika. Ove informacije se ne koriste za identifikaciju bilo kog pojedinca.<ph name="END_PARAGRAPH2" />
@@ -5120,6 +5122,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="443031431654216610">Koristite samo cifre</translation>
 <translation id="4430369329743628066">Obeleživač je dodat</translation>
 <translation id="4430422687972614133">Uključi virtuelnu karticu</translation>
+<translation id="4431962107539413562">Pristupajte lozinkama na svim uređajima</translation>
 <translation id="443196770280837407">Otvorite Gemini pomoću tasterske prečice.</translation>
 <translation id="4432621511648257259">Lozinka je netačna</translation>
 <translation id="4434611816075088065">Trenutno ništa drugo ne zahteva vašu pažnju</translation>
@@ -6216,6 +6219,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5203035663139409780">Fajlovi koji mogu da menjaju fajlove ili foldere na uređaju</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kliknite da biste pregledali dodatak}one{Kliknite da biste pregledali ove dodatke}few{Kliknite da biste pregledali ove dodatke}other{Kliknite da biste pregledali ove dodatke}}</translation>
 <translation id="5204282224596194174">Lozinka za oporavak za <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Skupi kartice</translation>
 <translation id="5204673965307125349">Obavite Powerwash na uređaju i probajte ponovo.</translation>
 <translation id="5204967432542742771">Unesite lozinku</translation>
 <translation id="5205484256512407285">Nikada ne koristite mobilne podatke za prenos</translation>
@@ -9063,6 +9067,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7193051357671784796">Ovu aplikaciju je dodala vaša organizacija. Ponovo je pokrenite da biste završili instalaciju.</translation>
 <translation id="7193374945610105795">Nijedna lozinka nije sačuvana za <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Pošaljite povratne informacije za predložene grupe</translation>
+<translation id="7194343495483122559">Proširi kartice</translation>
 <translation id="7194873994243265344">Organizacija je blokirala ovaj fajl zato što je šifrovan. Zatražite od vlasnika da je dešifruje.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 preuzimanje je u toku}one{# preuzimanje je u toku}few{# preuzimanja su u toku}other{# preuzimanja je u toku}}</translation>
 <translation id="7196272782924897510">Želite da koristite pristupni kôd sa drugog uređaja?</translation>

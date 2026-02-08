@@ -7,11 +7,13 @@
 <translation id="1091252999271033193">‏כלומר, Chromium תמיד יבקש את האתר לנייד.</translation>
 <translation id="1115463765356382667">‏השלמת הפעולות המוצעות הבאות תעזור לך להשתמש ב-Chromium בדרך היעילה ביותר.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
+<translation id="119044033865561140">‏אפשר לפתוח את Chromium באופן מיידי כשמשתמשים באייפד</translation>
 <translation id="1211450393895337634">‏אפשר לפתוח את Chromium מהר יותר כשרוצים לגלוש באייפד.</translation>
 <translation id="1229234641991056119">‏אפשר להשתמש בסיסמאות, בהיסטוריה, בסימניות ובכרטיסי האשראי של Safari ב-Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות צריך ללחוץ על 'הגדרות' על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
 <translation id="1260702988262336471">‏פתיחת תפריט Chromium</translation>
 <translation id="12739128458173458">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chromium בשני המכשירים.</translation>
+<translation id="1279797561821266129">‏גישה מהירה יותר ל-Chromium מתחנת העגינה</translation>
 <translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות החדשות של Chromium.</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1423007117030725713">‏חיפוש בכרטיסיית Chromium חדשה.</translation>
@@ -176,6 +178,7 @@
 <translation id="4790638144988730920">‏המשך השימוש בנתוני Chromium בחשבון Google שלך.</translation>
 <translation id="4828317641996116749">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="4856138222358683580">‏פעולות ב-Chromium</translation>
+<translation id="4869706986935301458">‏אפשר לפתוח את Chromium באופן מיידי כשמשתמשים באייפון</translation>
 <translation id="4904452304169763785">‏התראות לגבי כל בעיה בפרטיות או באבטחה ש-Chromium מזהה.</translation>
 <translation id="4908570938463711775">‏מידע בסיסי על Chromium שיעזור לך להתחיל</translation>
 <translation id="4962295957157529683">‏יש לסיים את הפעילות בחלון Chromium הפתוח הנוסף.</translation>
@@ -295,6 +298,7 @@
 <translation id="7395825497086981028">הסיסמה תישמר במנהל הסיסמאות עבור <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">מפתח הגישה יישמר במנהל הסיסמאות בחשבון <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">‏פתיחת Chromium</translation>
+<translation id="7507535968973352823">‏אפשר למקם את Chromium באזור התחתון כדי לגשת אליו בכל שלב</translation>
 <translation id="7531461704633548377">‏מ-Chromium</translation>
 <translation id="7554983317097061001">‏טיפ ל-Chromium: כדאי להעביר את Chromium ל-Dock</translation>
 <translation id="7576863740961052505">‏ניהול של הגדרות Chromium</translation>

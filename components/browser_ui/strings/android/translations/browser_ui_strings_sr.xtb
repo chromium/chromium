@@ -38,6 +38,7 @@
 <translation id="1415855080660575082">Дозволите Chrome-у да дели недавне картице са уређајем да бисте их видели на листи апликација и у резултатима претраге уређаја. То можете да укључите или искључите у Chrome подешавањима.</translation>
 <translation id="1420688843103859429">Померајте уназад и унапред превлачењем са два прста на тачпеду</translation>
 <translation id="1432650420699700107">Сајтови могу да траже да се повежу са било којим уређајем на локалној мрежи</translation>
+<translation id="1442081309487427303">Укључи линкове Режима читања</translation>
 <translation id="1448064542941920355">Смањите зумирање</translation>
 <translation id="1464044141348608623">Не дозволите сајтовима да знају када активно користите уређај</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}few{<ph name="SITE_COUNT" /> сајта}other{<ph name="SITE_COUNT" /> сајтова}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1766455884659449403">Добијајте обавештења о саветима за Chrome</translation>
 <translation id="1777815584158991902">Доња табела Discover фида</translation>
 <translation id="1779089405699405702">Декодер слика</translation>
+<translation id="1781533683087883868">Искључи линкове Режима читања</translation>
 <translation id="1785415724048343560">Препоручује се за најбољи доживљај</translation>
 <translation id="1796588414813960292">Функције којима треба звук неће радити</translation>
 <translation id="1799920918471566157">Савети за Chrome</translation>

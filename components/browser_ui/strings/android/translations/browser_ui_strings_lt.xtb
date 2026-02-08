@@ -294,6 +294,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3903738175795615004">Vilkite nuo viršaus arba paspauskite „Esc“, kad išeitumėte iš viso ekrano režimo.</translation>
 <translation id="3905475044299942653">Daugybės pranešimų sustabdymas</translation>
 <translation id="3922092564198021702">Telefone atidarykite skiltį „Nustatymai“</translation>
+<translation id="3924858949939391676">Rodyti nuorodas, kai įjungtas Teksto perskaitymo režimas</translation>
 <translation id="3933121352599513978">Sutraukti nepageidaujamas užklausas (rekomenduojama)</translation>
 <translation id="3934905113567851655">Dydį pakeisite suimdami</translation>
 <translation id="3955193568934677022">Leisti svetainėms paleisti apsaugotą turinį (rekomenduojama)</translation>
@@ -357,6 +358,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4644713492825682049">Ištrinti ir nustatyti iš naujo</translation>
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
 <translation id="4652266463001779298">Neleidžiama</translation>
+<translation id="4655846733459137112">Palieskite „Taip“, kad galėtumėte lengvai naudoti šį slaptažodį, kai kitą kartą prisijungsite</translation>
 <translation id="4663373278480897665">Fotoaparatas leidžiamas</translation>
 <translation id="4670064810192446073">Virtualioji realybė</translation>
 <translation id="4672315773691449562">Palieskite „Naršyklės programą“, tada palieskite „Chrome“</translation>
@@ -463,6 +465,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5817042798620209981">Svetainės informacija, dialogo langas</translation>
 <translation id="5822675474983796325">Naujo skirtuko puslapio tinkinimo apatinis lapas atidarytas per visą ekrano aukštį</translation>
+<translation id="5826403277762134844">Slaptažodžių išsaugojimo instrukcijų apatinis lapas naršyklėje „Chrome“</translation>
 <translation id="5833899990800318936">Neleisti svetainėms naudoti „JavaScript“</translation>
 <translation id="583673505367439042">Svetainėse gali būti prašoma redaguoti failus ir aplankus jūsų įrenginyje</translation>
 <translation id="5844448279347999754">Įjungus svetainėse gali būti prašoma peržiūrėti tekstą ir vaizdus, išsaugotus jūsų iškarpinėje. Išjungus svetainės negali matyti teksto ar vaizdų, išsaugotų jūsų iškarpinėje.</translation>
@@ -642,6 +645,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="775043444390799886">Anuliuoti leidimą</translation>
 <translation id="7758789811447313947">Violetinė tema</translation>
 <translation id="7759147511335618829">MIDI įrenginio valdymas ir programavimas iš naujo</translation>
+<translation id="7771089277295008211">Slaptažodžių išsaugojimo instrukcijų apatinis lapas uždarytas</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
@@ -659,6 +663,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7940722705963108451">Priminti</translation>
 <translation id="7948081750384205628">Sužinokite daugiau apie nustatytmą „<ph name="SETTING_TITLE" />“</translation>
 <translation id="7952708427581814389">Svetainėse gali būti prašoma peržiūrėti tekstą ir vaizdus jūsų iškarpinėje</translation>
+<translation id="7958779728312669715">Slaptažodžių išsaugojimo instrukcijų apatinis lapas visiškai atidarytas</translation>
 <translation id="798299424881500862">Oranžinė tema</translation>
 <translation id="7986741934819883144">Pasirinkite kontaktą</translation>
 <translation id="7990211076305263060">Įjungus svetainėse gali būti prašoma naudoti mikrofoną. Išjungus svetainės negali naudoti mikrofono.</translation>
@@ -755,6 +760,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8889294078294184559">Jums naršant toliau, svetainės gali tikrinti sistemoje „Chrome“ ir iš ankstesnės svetainės, kurioje lankėtės, patvirtinti, kad tikriausiai esate realus asmuo</translation>
 <translation id="8899807382908246773">Nepageidaujami skelbimai</translation>
 <translation id="8903921497873541725">Artinti</translation>
+<translation id="8919911527569629802">Prisijunkite prie bet kurios svetainės</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Neklauskite dar kartą</translation>
 <translation id="8926666909099850184">ALR išjungtas šiame įrenginyje. Įjunkite ALR <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -782,6 +788,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>
 <translation id="947156494302904893">Svetainės, kuriose lankotės, gali patvirtinti, kad esate realus asmuo, o ne robotas</translation>
 <translation id="959682366969460160">Sutvarkykite</translation>
+<translation id="960590623979248167">Rodyti hipersaitus</translation>
 <translation id="961930410699694996">Vietovės informacija leidžiama šį kartą</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>
 <translation id="969975166333045662">Užblokuoti svetainę, kad nenaudotų V8 optimizavimo priemonės.</translation>

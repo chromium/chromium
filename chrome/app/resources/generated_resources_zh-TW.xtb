@@ -584,6 +584,7 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384849755549338773">在其他語言的網站上使用 Google 翻譯</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
+<translation id="1386966479075994683">展開分頁</translation>
 <translation id="1388253969141979417">可以使用麥克風</translation>
 <translation id="1388728792929436380">「<ph name="DEVICE_TYPE" />」會在更新完成時重新啟動。</translation>
 <translation id="1390113502208199250">你必須將這部裝置恢復原廠設定，才能使用 Chrome Education 升級版功能。</translation>
@@ -2583,6 +2584,7 @@
 <translation id="2727633948226935816">不要再提醒我</translation>
 <translation id="2727712005121231835">實際大小</translation>
 <translation id="2727744317940422214">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。清除失敗，你可能需要手動操作。</translation>
+<translation id="2729310339366257582">收合分頁</translation>
 <translation id="2729577602370119849">輕鬆存取及管理印表機</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，並搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓應用程式和服務提供適地性功能。為達成此目標，Google 會定期收集裝置感應器相關資訊和這部裝置附近的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google 會使用從這部裝置收集到的資訊提升定位精確度和適地性服務的品質，並改善、提供及維護 Google 整體的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求，但不會將這些資訊用於識別任何人的身分。<ph name="END_PARAGRAPH2" />
@@ -2920,7 +2922,7 @@
 <translation id="2950666755714083615">我要訂閱</translation>
 <translation id="2953210795988451570">安全性更新已終止，請改用新款 Chromebook</translation>
 <translation id="2953218713108551165">你並未允許 <ph name="SITE" /> 傳送通知，系統會在你下次造訪時再次詢問。</translation>
-<translation id="2954777802959138493">無法查詢更新程式狀態。</translation>
+<translation id="2954777802959138493">無法查詢更新工具狀態。</translation>
 <translation id="2955048943983973430">相關 Google 服務</translation>
 <translation id="2956070239128776395">群組中有巢狀區段：<ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">開啟開發人員模式即可使用這項擴充功能。請注意，Chrome 線上應用程式商店無法審查這項擴充功能。</translation>
@@ -5118,6 +5120,7 @@
 <translation id="443031431654216610">只能使用數字</translation>
 <translation id="4430369329743628066">已新增書籤</translation>
 <translation id="4430422687972614133">開啟虛擬卡片</translation>
+<translation id="4431962107539413562">在所有裝置上存取密碼</translation>
 <translation id="443196770280837407">使用鍵盤快速鍵開啟 Gemini。</translation>
 <translation id="4432621511648257259">密碼不正確</translation>
 <translation id="4434611816075088065">目前沒有需要處理的事項</translation>
@@ -6210,6 +6213,7 @@
 <translation id="5203035663139409780">可編輯裝置上的檔案或資料夾</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{按一下即可查看擴充功能}other{按一下即可查看這些擴充功能}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" /> 的備援密碼</translation>
+<translation id="5204584298075822291">收合分頁</translation>
 <translation id="5204673965307125349">請在裝置上執行 Powerwash，然後再試一次。</translation>
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5205484256512407285">一律不使用行動數據進行傳輸</translation>
@@ -9048,6 +9052,7 @@
 <translation id="7193051357671784796">這個應用程式是由貴機構新增。請重新啟動應用程式以完成安裝。</translation>
 <translation id="7193374945610105795">系統沒有儲存 <ph name="ORIGIN" /> 的密碼</translation>
 <translation id="7193663868864659844">提供關於分頁群組建議的意見</translation>
+<translation id="7194343495483122559">展開分頁</translation>
 <translation id="7194873994243265344">這個檔案已加密，因此遭到貴機構封鎖。請要求檔案擁有者解密。</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{正在進行 1 個下載作業}other{正在進行 # 個下載作業}}</translation>
 <translation id="7196272782924897510">要使用其他裝置的密碼金鑰嗎？</translation>
@@ -11615,7 +11620,7 @@
 <translation id="8911914282056933784">隱藏專案</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912810933860534797">啟用自動掃描</translation>
-<translation id="8913485523736543337">更新程式</translation>
+<translation id="8913485523736543337">更新工具</translation>
 <translation id="8914030287343429787">在 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 登入帳戶後，即使不是使用 Chrome 或 Android，也能查看自己的密碼</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8915307125957890427">在分頁標籤上按一下滑鼠右鍵，然後依序選取「將分頁加入群組」和「新群組」</translation>
@@ -11757,7 +11762,7 @@
 <translation id="8999560016882908256">區段語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">減少畫面上的動態效果</translation>
 <translation id="9000185763019430629">請輕觸「<ph name="DEVICE_TYPE" />」右側的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
-<translation id="9000529821022336229">找不到任何更新程式安裝項目。</translation>
+<translation id="9000529821022336229">找不到更新工具安裝項目。</translation>
 <translation id="900267527532832868">這個密碼金鑰已失效，很快就會從 <ph name="GOOGLE_PASSWORD_MANAGER" />中刪除。</translation>
 <translation id="9003031149571024583">請輸入 6 位數 PIN 碼的第 <ph name="NUM_DIGIT" /> 碼，並使用 Backspace 鍵或 Delete 鍵移除最後一個數字。</translation>
 <translation id="9003185744423389627">連線至裝置管理工具伺服器失敗，狀態顯示為「<ph name="STATUS_TEXT" />」在「<ph name="FAILURE_TIME" />」的時候</translation>
