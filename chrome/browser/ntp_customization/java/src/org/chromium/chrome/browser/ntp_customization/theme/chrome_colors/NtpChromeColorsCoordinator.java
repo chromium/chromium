@@ -48,6 +48,7 @@ public class NtpChromeColorsCoordinator {
     private final int mItemWidth;
     private final int mSpacing;
     private final Runnable mOnChromeColorSelectedCallback;
+    private final Runnable mApplyPreviewScrimAlphaRunnable;
 
     // The color info when the Chrome color bottom sheet is created. We compare it with the newly
     // selected one to see if recreate() is necessary when the bottom sheet is closed. This color
@@ -55,6 +56,7 @@ public class NtpChromeColorsCoordinator {
     private final @Nullable NtpThemeColorInfo mPrimaryColorInfo;
     private boolean mIsDailyRefreshToggled;
     private boolean mIsDailyRefreshEnabled;
+    private boolean mScrimAlphaUpdated;
 
     private @Nullable NtpChromeColorsAdapter mNtpChromeColorsAdapter;
 
@@ -70,10 +72,15 @@ public class NtpChromeColorsCoordinator {
      * @param onChromeColorSelectedCallback The callback to run when a color is selected.
      */
     public NtpChromeColorsCoordinator(
-            Context context, BottomSheetDelegate delegate, Runnable onChromeColorSelectedCallback) {
+            Context context,
+            BottomSheetDelegate delegate,
+            Runnable onChromeColorSelectedCallback,
+            Runnable applyPreviewScrimAlphaRunnable) {
         mContext = context;
         mDelegate = delegate;
         mOnChromeColorSelectedCallback = onChromeColorSelectedCallback;
+        mApplyPreviewScrimAlphaRunnable = applyPreviewScrimAlphaRunnable;
+        mScrimAlphaUpdated = false;
         View ntpChromeColorsBottomSheetView =
                 LayoutInflater.from(mContext)
                         .inflate(
@@ -127,6 +134,7 @@ public class NtpChromeColorsCoordinator {
      * color list, as well as the state of the daily refresh toggle.
      */
     public void prepareToShow() {
+        mScrimAlphaUpdated = false;
         NtpThemeColorInfo currentColorInfo =
                 NtpCustomizationConfigManager.getInstance().getNtpThemeColorInfo();
 
@@ -154,8 +162,22 @@ public class NtpChromeColorsCoordinator {
         mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, primaryColorIndex);
     }
 
+    /**
+     * Updates the bottom sheet scrim alpha to the preview level. This is a one-time update
+     * triggered by the initial selection; subsequent selections will not trigger further alpha
+     * updates.
+     */
+    private void maybeUpdateScrimAlpha() {
+        if (mScrimAlphaUpdated) return;
+
+        mScrimAlphaUpdated = true;
+        mApplyPreviewScrimAlphaRunnable.run();
+    }
+
     @VisibleForTesting
     void onDailyRefreshSwitchToggled(CompoundButton buttonView, boolean isChecked) {
+        maybeUpdateScrimAlpha();
+
         mIsDailyRefreshToggled = true;
         mIsDailyRefreshEnabled = isChecked;
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(isChecked);
@@ -176,6 +198,8 @@ public class NtpChromeColorsCoordinator {
      */
     @VisibleForTesting
     void onItemClicked(NtpThemeColorInfo ntpThemeColorInfo) {
+        maybeUpdateScrimAlpha();
+
         mDelegate.onNewColorSelected(
                 !NtpThemeColorUtils.isPrimaryColorMatched(
                         mContext, mPrimaryColorInfo, ntpThemeColorInfo));

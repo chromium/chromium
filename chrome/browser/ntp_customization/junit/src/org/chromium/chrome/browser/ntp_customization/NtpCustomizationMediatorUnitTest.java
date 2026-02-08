@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -95,6 +96,8 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private NtpCustomizationConfigManager mConfigManager;
     @Mock private NtpCustomizationPolicyManager mNtpCustomizationPolicyManager;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private PropertyModel mScrimPropertyModel;
+    @Mock private ScrimManager mScrimManager;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
@@ -130,6 +133,9 @@ public class NtpCustomizationMediatorUnitTest {
         mE2EProvider = new EdgeToEdgeStateProvider(window);
         mE2EProvider.attach(mWindowAndroid);
         mE2EProvider.acquireSetDecorFitsSystemWindowToken();
+
+        when(mBottomSheetController.createScrimParams()).thenReturn(mScrimPropertyModel);
+        when(mBottomSheetController.getScrimManager()).thenReturn(mScrimManager);
 
         mMediator =
                 new NtpCustomizationMediator(
@@ -329,6 +335,7 @@ public class NtpCustomizationMediatorUnitTest {
         BottomSheetObserver observer = mMediator.getBottomSheetObserverForTesting();
         observer.onSheetOpened(0);
         verify(mBottomSheetContent).onSheetOpened();
+        verify(mScrimManager).showScrim(eq(mScrimPropertyModel));
 
         // Verifies the supplier is set to false when the sheet closes and the observer is removed.
         observer.onSheetClosed(3); // Closes the sheet by clicking the trim.
@@ -337,6 +344,7 @@ public class NtpCustomizationMediatorUnitTest {
         clearInvocations(mBottomSheetContent);
         clearInvocations(mBottomSheetController);
 
+        observer.onSheetOpened(0);
         observer.onSheetClosed(0); // Closes the sheet by clicking the system back button.
         verify(mBottomSheetContent).onSheetClosed();
         verify(mBottomSheetController).removeObserver(eq(observer));
@@ -351,6 +359,7 @@ public class NtpCustomizationMediatorUnitTest {
         NtpThemeStateProvider.setInstanceForTesting(ntpThemeStateProvider);
 
         // Verifies notifyApplyThemeChanges() is called when a different theme color is selected.
+        observer.onSheetOpened(0);
         mMediator.onNewColorSelected(/* isDifferentColor= */ true);
         observer.onSheetClosed(2);
         verify(ntpThemeStateProvider).notifyApplyThemeChanges();
@@ -358,6 +367,7 @@ public class NtpCustomizationMediatorUnitTest {
         clearInvocations(ntpThemeStateProvider);
 
         // Verifies notifyApplyThemeChanges() is NOT called when theme color isn't changed.
+        observer.onSheetOpened(0);
         mMediator.onNewColorSelected(/* isDifferentColor= */ false);
         observer.onSheetClosed(2);
         verify(ntpThemeStateProvider, never()).notifyApplyThemeChanges();
@@ -557,6 +567,7 @@ public class NtpCustomizationMediatorUnitTest {
 
         // Verifies pickAndSavePrimaryColor() is called when a new theme collection image is
         // selected and the background image type is THEME_COLLECTION.
+        observer.onSheetOpened(0);
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         mMediator.onNewThemeCollectionImageSelected(bitmap);
         when(mConfigManager.getBackgroundType()).thenReturn(THEME_COLLECTION);
@@ -571,6 +582,7 @@ public class NtpCustomizationMediatorUnitTest {
         // THEME_COLLECTION.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         when(mConfigManager.getBackgroundType()).thenReturn(NtpBackgroundType.IMAGE_FROM_DISK);
+        observer.onSheetOpened(0);
         mMediator.onNewThemeCollectionImageSelected(bitmap);
         observer.onSheetClosed(0);
         assertEquals(
@@ -578,6 +590,7 @@ public class NtpCustomizationMediatorUnitTest {
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
         // Verifies pickAndSavePrimaryColor() is not called when mNewThemeCollectionImage is null.
+        observer.onSheetOpened(0);
         mMediator.onNewThemeCollectionImageSelected(null);
         // Clean up shared preference for the test.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();

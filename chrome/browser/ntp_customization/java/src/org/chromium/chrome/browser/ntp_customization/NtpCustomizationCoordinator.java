@@ -264,9 +264,20 @@ public class NtpCustomizationCoordinator {
                             mContext,
                             mDelegate,
                             profile.getOriginalProfile(),
-                            () -> mMediator.dismissBottomSheet(/* animate= */ false));
+                            () -> mMediator.dismissBottomSheet(/* animate= */ false),
+                            this::applyPreviewScrimAlpha);
         }
         mMediator.showBottomSheet(THEME);
+    }
+
+    /**
+     * Applies the preview alpha (transparency) to the scrim.
+     *
+     * <p>This ensures the changes to the NTP are visible to the user while the bottom sheet remains
+     * open.
+     */
+    private void applyPreviewScrimAlpha() {
+        mMediator.applyPreviewScrimAlpha();
     }
 
     void dismissBottomSheet() {

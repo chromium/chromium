@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Ntp
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 
@@ -68,6 +70,7 @@ public class NtpThemeCoordinatorUnitTest {
     @Mock private Runnable mResetCustomizedThemeRunnable;
     @Mock private NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
     @Mock private ImageFetcher mImageFetcher;
+    @Mock private BottomSheetController mBottomSheetController;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
     private Context mContext;
@@ -87,12 +90,17 @@ public class NtpThemeCoordinatorUnitTest {
 
         mCoordinator =
                 new NtpThemeCoordinator(
-                        mContext, mBottomSheetDelegate, mProfile, mDismissBottomSheet);
+                        mContext,
+                        mBottomSheetDelegate,
+                        mProfile,
+                        mDismissBottomSheet,
+                        mock(Runnable.class));
 
         mMediator = spy(mCoordinator.getMediatorForTesting());
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.setNtpThemeBottomSheetViewForTesting(mNtpThemeBottomSheetView);
         mCoordinator.setNtpThemeCollectionsCoordinatorForTesting(mNtpThemeCollectionsCoordinator);
+        when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
     }
 
     @Test
