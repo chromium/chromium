@@ -2411,7 +2411,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Observers -----------------------------------------------------------------
 
-  base::ObserverList<ViewObserver>::Unchecked observers_;
+  base::ObserverList<ViewObserver,
+                     /*check_empty=*/false,
+                     /*allow_reentrancy=*/true>::Unchecked observers_;
 
   // Creation and lifetime -----------------------------------------------------
 
