@@ -21,8 +21,8 @@ ${html`
             picture-url="${this.pictureUrl_}"
             email="${this.email_}" account-name="${this.accountName_}"
             ?show-enterprise-badge="${this.showEnterpriseBadge_}">
-        ` : ''}
         </managed-user-profile-notice-value-prop>
+      ` : ''}
       ${this.showDisclosure_ ? html`
         <managed-user-profile-notice-disclosure id="disclosure"
             title="${this.disclosureTitle_}"
