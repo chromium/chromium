@@ -536,7 +536,7 @@
 <translation id="2844169650293029770">USB-C ကိရိယာ (အရှေ့ပိုင်း ဘယ် ပို့တ်)</translation>
 <translation id="2844350028562914727">အသေးစိတ်</translation>
 <translation id="2847759467426165163">သို့ကက်စ်လုပ်မည်</translation>
-<translation id="2848120746144143659">ဖန်သားပြင်အပြည့် ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
+<translation id="2848120746144143659">ဖန်သားပြင်အပြည့် ဖန်သားပြင်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="2849936225196189499">အရေးကြီး</translation>
 <translation id="2850207700020959936">အက်ပ်များက ကင်မရာသုံးနိုင်သည်</translation>
 <translation id="2860184359326882502">အနီးစပ်ဆုံး</translation>
@@ -609,7 +609,7 @@
 <translation id="3095995014811312755">ဗားရှင်း</translation>
 <translation id="309749186376891736">ကာဆာ ရွှေ့ရန်</translation>
 <translation id="3100274880412651815">ပုံဖမ်းယူမှုမုဒ်ကို ပယ်ရန်</translation>
-<translation id="3105917916468784889">ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်</translation>
+<translation id="3105917916468784889">ဖန်သားပြင်ပုံ ရိုက်ရန်</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ဘလူးတုသ်)</translation>
 <translation id="3107155169630537783">ကြိုဆိုရေး အကြောင်းကြားချက်ကို <ph name="STATE" /> ထားသည်</translation>
 <translation id="3113492864356515707">စင်ပေါ်တွင် ယခင်အက်ပ်ကို မြင်သာအောင်လုပ်ရန်</translation>
@@ -674,7 +674,7 @@
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> အကြောင်းကြားချက် ပိုပြပါ</translation>
 <translation id="3339826665088060472">ဖန်သားပြင်ဓာတ်ပုံနှင့် ဖန်သားပြင်ရိုက်ကူးခြင်းများအတွက် ဖန်သားပြင် ပုံဖမ်းတူးလ်များ</translation>
 <translation id="3340978935015468852">ဆက်တင်များ</translation>
-<translation id="3341303451326249809">ဖန်သားပြင်ဓာတ်ပုံ ဖမ်းယူပြီးပြီ</translation>
+<translation id="3341303451326249809">ဖန်သားပြင်ပုံ ဖမ်းယူပြီးပြီ</translation>
 <translation id="3346728094401457853"><ph name="EMAIL" /> အတွက် စက်စကားဝှက်ရိုက်ပါ</translation>
 <translation id="334927402682780278">ကာဆာမှ စာကြောင်းအဆုံးအထိ စာသားကို ရွေးရန်</translation>
 <translation id="3349345708646875009">လုပ်ဆောင်ချက်မန်နေဂျာ ဖွင့်ရန်</translation>
@@ -797,7 +797,7 @@
 <translation id="36813544980941320">သင့်ဖုန်းနှင့် <ph name="DEVICE_NAME" /> အကြားတွင် Wi-Fi ကွန်ရက်များကို မျှဝေပါမည်</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ထို့နောက် <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">ဝဘ်ဆိုက်များ</translation>
-<translation id="3697991387880191195">ဖန်သားပြင်ဓာတ်ပုံ ဖြတ်လမ်းလင့်ခ်ကို နှိပ်ပါ</translation>
+<translation id="3697991387880191195">ဖန်သားပြင်ပုံ ဖြတ်လမ်းလင့်ခ်ကို နှိပ်ပါ</translation>
 <translation id="3702809606464356667">လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြနေသည်၊ မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">ဖျော်ဖြေရေး</translation>
@@ -1580,7 +1580,7 @@
 <translation id="6200515304866777730">အက်ပ်က ပံ့ပိုးမထားပါ</translation>
 <translation id="6210042900243040400">ယခင်က <ph name="EMAIL" /> သို့ သိမ်းထားသော <ph name="NAME" /> သို့ ချိတ်ဆက်ပါ</translation>
 <translation id="6212580734499190393">၁၀ မိနစ်ကြာ</translation>
-<translation id="6213808132343683860">ဖန်သားပြင်ဓာတ်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု တစ်စိတ်တစ်ပိုင်း ရယူရန်</translation>
+<translation id="6213808132343683860">ဖန်သားပြင်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု တစ်စိတ်တစ်ပိုင်း ရယူရန်</translation>
 <translation id="621606890568890214">Google Classroom ကို ပိုပြပါ</translation>
 <translation id="6216759484154215561">ဘရောင်ဇာတွင် ပိုမိုလေ့လာရန်လင့်ခ် ဖွင့်လိုက်ပါပြီ</translation>
 <translation id="6220928844947387476">သင့်စခရင်နှင့် သင့်ကို တစ်ချိန်တည်း ယခု မှတ်တမ်းတင်နိုင်ပါပြီ</translation>
@@ -1849,7 +1849,7 @@
 <translation id="7100906357717321275">Files အက်ပ်တွင် ဖျောက်ထားသည့်ဖိုင်များပြပါ</translation>
 <translation id="7108254681523785542">၎င်းကို ကူးထည့်ရန် ဖိုင်တစ်ခုရွေးပါ။ <ph name="SHORTCUT_KEY_NAME" /> + V ကို နှိပ်ခြင်းဖြင့် ကလစ်ဘုတ်ကို ကြည့်နိုင်သည်။</translation>
 <translation id="7116969082764510092">မျက်နှာပြင် ၁၁</translation>
-<translation id="7118268675952955085">ဖန်သားပြင်ဓာတ်ပုံ</translation>
+<translation id="7118268675952955085">ဖန်သားပြင်ပုံ</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> ဖွင့်ရန်</translation>
 <translation id="7119327711295338600">လာမည့်စကားလုံး (သို့) စာလုံး ရွေးရန်</translation>
 <translation id="7124556000457919678">ဖွင့်ထားချိန်တွင် မောက်စ်ကီးများ ခဏရပ်ရန်၊ ဆက်လုပ်ရန်</translation>
@@ -2298,7 +2298,7 @@
 <translation id="8657066291275741003">စာလုံးအသေး</translation>
 <translation id="8662921061190671299">ပြက္ခဒိန်တွင် ထည့်၍မရလိုက်ပါ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="8664282223139913403">ဖန်သားပြင်ဓာတ်ပုံ တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
+<translation id="8664282223139913403">ဖန်သားပြင်ပုံ တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="8676770494376880701">ပါဝါနှိမ့် အားသွင်းကိရိယာ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8679158879996532670">အထူးပြသမှု ဆက်တင်များကို ပြပါ။ အထူးပြသမှု ဖွင့်ထားသည်။ <ph name="REMAINING_TIME" /> ကျန်သည်။</translation>
 <translation id="8683506306463609433">စွမ်းဆောင်ရည် မှတ်တမ်းတင်ခြင်းကို လက်ရှိဖွင့်ထားသည်</translation>
@@ -2339,7 +2339,7 @@
 <translation id="880709030178078220">"အကူအညီယူရန်"</translation>
 <translation id="8813531681893371930">ကြိုးပါသောနားကြပ်နှင့် ချိတ်ဆက်ခြင်း</translation>
 <translation id="8814190375133053267">ကြိုးမဲ့</translation>
-<translation id="8815390544836110344">ဖန်သားပြင်ဓာတ်ပုံ ဖြတ်လမ်းလင့်ခ်၊ Ctrl အပေါင်း Shift အပေါင်း အနှစ်ချုပ်မုဒ်ခလုတ်</translation>
+<translation id="8815390544836110344">ဖန်သားပြင်ပုံ ဖြတ်လမ်းလင့်ခ်၊ Ctrl အပေါင်း Shift အပေါင်း အနှစ်ချုပ်မုဒ်ခလုတ်</translation>
 <translation id="881757059229893486">လက်ကွက် ဆက်တင်များ</translation>
 <translation id="8819728065740986820">အလိုက်သင့်အားသွင်းခြင်းကို ဖွင့်ထားသည်</translation>
 <translation id="8822104519413696986">ဤဂိမ်းသည် တို့ထိဂိမ်းဖြစ်သည်</translation>
