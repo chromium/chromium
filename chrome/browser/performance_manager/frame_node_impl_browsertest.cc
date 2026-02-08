@@ -58,6 +58,21 @@ bool IsDocumentCoordinatorUnitBound(
   return frame_node_impl->IsDocumentCoordinationUnitBoundForTesting();
 }
 
+std::vector<const FrameNode*> GetFrameNodesForWebContents(
+    content::WebContents* web_contents) {
+  const PageNode* page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents).get();
+
+  Graph* graph = PerformanceManager::GetGraph();
+  std::vector<const FrameNode*> page_frame_nodes;
+  for (const FrameNode* node : graph->GetAllFrameNodes()) {
+    if (node->GetPageNode() == page_node) {
+      page_frame_nodes.push_back(node);
+    }
+  }
+  return page_frame_nodes;
+}
+
 class FrameNodeImplBrowserTest : public InProcessBrowserTest {
  public:
   ~FrameNodeImplBrowserTest() override = default;
@@ -104,11 +119,11 @@ IN_PROC_BROWSER_TEST_P(ParameterizedFrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_out_of_view.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  Graph* graph = PerformanceManager::GetGraph();
-  auto all_frame_nodes = graph->GetAllFrameNodes().AsVector();
+  auto frame_nodes = GetFrameNodesForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_THAT(
-      all_frame_nodes,
+      frame_nodes,
       UnorderedElementsAre(
           // One main frame, intersects with the viewport.
           AllOf(IsMainFrame(),
@@ -130,11 +145,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Hidden) {
       embedded_test_server()->GetURL("/iframe_hidden.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  Graph* graph = PerformanceManager::GetGraph();
-  auto all_frame_nodes = graph->GetAllFrameNodes().AsVector();
+  auto frame_nodes = GetFrameNodesForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_THAT(
-      all_frame_nodes,
+      frame_nodes,
       UnorderedElementsAre(
           // One main frame, intersects with the viewport.
           AllOf(IsMainFrame(),
@@ -154,11 +169,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_partially_visible.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  Graph* graph = PerformanceManager::GetGraph();
-  auto all_frame_nodes = graph->GetAllFrameNodes().AsVector();
+  auto frame_nodes = GetFrameNodesForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_THAT(
-      all_frame_nodes,
+      frame_nodes,
       UnorderedElementsAre(
           // One main frame, intersects with the viewport.
           AllOf(IsMainFrame(),
@@ -176,11 +191,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Scaled) {
       embedded_test_server()->GetURL("/iframe_scaled.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  Graph* graph = PerformanceManager::GetGraph();
-  auto all_frame_nodes = graph->GetAllFrameNodes().AsVector();
+  auto frame_nodes = GetFrameNodesForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_THAT(
-      all_frame_nodes,
+      frame_nodes,
       UnorderedElementsAre(
           // One main frame, intersects with the viewport.
           AllOf(IsMainFrame(),
@@ -198,11 +213,11 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Rotated) {
       embedded_test_server()->GetURL("/iframe_rotated.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  Graph* graph = PerformanceManager::GetGraph();
-  auto all_frame_nodes = graph->GetAllFrameNodes().AsVector();
+  auto frame_nodes = GetFrameNodesForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_THAT(
-      all_frame_nodes,
+      frame_nodes,
       UnorderedElementsAre(
           // One main frame, intersects with the viewport.
           AllOf(IsMainFrame(),
