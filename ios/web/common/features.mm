@@ -94,4 +94,6 @@ BASE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation,
 BASE_FEATURE(kEnableBEContextMenuConfiguration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSDownloadSanitizeFilename, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace web::features

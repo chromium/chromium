@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/web/common/features.h"
 #import "ios/web/download/download_result.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state.h"
@@ -272,11 +273,26 @@ std::string DownloadTaskImpl::GetMimeType() const {
 
 base::FilePath DownloadTaskImpl::GenerateFileName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return net::GenerateFileName(original_url_, content_disposition_,
-                               /*referrer_charset=*/std::string(),
-                               /*suggested_name=*/GetSuggestedName(),
-                               /*mime_type=*/mime_type_,
-                               /*default_name=*/"document");
+  base::FilePath generated_path =
+      net::GenerateFileName(original_url_, content_disposition_,
+                            /*referrer_charset=*/std::string(),
+                            /*suggested_name=*/GetSuggestedName(),
+                            /*mime_type=*/mime_type_,
+                            /*default_name=*/"document");
+
+  // iOS ShareSheet has a bug where it crashes when handling filenames with
+  // Precomposed (NFC) Unicode characters (e.g., "ä" as \xC3\xA4). Converting
+  // the string to the file system representation (which enforces NFD
+  // normalization on iOS) and back ensures the filename is safe to use.
+  if (base::FeatureList::IsEnabled(
+          web::features::kIOSDownloadSanitizeFilename)) {
+    NSString* path_string = base::SysUTF8ToNSString(generated_path.value());
+    const char* fs_rep = [path_string fileSystemRepresentation];
+    if (fs_rep) {
+      return base::FilePath(fs_rep);
+    }
+  }
+  return generated_path;
 }
 
 bool DownloadTaskImpl::HasPerformedBackgroundDownload() const {
