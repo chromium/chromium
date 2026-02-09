@@ -41,8 +41,10 @@ static bool g_use_mock_server_for_testing = false;
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
-    base::flat_set<std::string> configured_hosts)
-    : configured_hosts_(std::move(configured_hosts)) {
+    base::flat_set<std::string> configured_hosts,
+    const url::Origin& request_initiator)
+    : configured_hosts_(std::move(configured_hosts)),
+      request_initiator_(request_initiator) {
   DCHECK(!target_factory_.is_bound());
   // base::Unretained here is safe because the callbacks are owned by this, so
   // when this destroys itself, the callbacks will also get destroyed.
@@ -83,9 +85,9 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
     for (const base::Value& host : configured_hosts_pref) {
       configured_hosts.insert(host.GetString());
     }
-    new ProxyingURLLoaderFactory(std::move(loader_receiver),
-                                 std::move(target_factory),
-                                 std::move(configured_hosts));
+    new ProxyingURLLoaderFactory(
+        std::move(loader_receiver), std::move(target_factory),
+        std::move(configured_hosts), request_initiator);
   }
 }
 
@@ -96,8 +98,7 @@ void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  if (configured_hosts_.contains(request.url.host()) &&
-      url_session_helper::IsOktaSSORequest(request)) {
+  if (ShouldInterceptRequest(request)) {
     if (intercepted_request_callback_for_testing_) {
       std::move(intercepted_request_callback_for_testing_).Run(request);
     } else {
@@ -130,6 +131,27 @@ void ProxyingURLLoaderFactory::OnProxyDisconnect() {
   if (proxy_receivers_.empty()) {
     delete this;
   }
+}
+
+bool ProxyingURLLoaderFactory::ShouldInterceptRequest(
+    const network::ResourceRequest& request) {
+  // Only intercept requests to domains configured by the MDM profile.
+  if (!configured_hosts_.contains(request.url.host())) {
+    return false;
+  }
+
+  // Check if this request fits the pattern for the Okta SSO request.
+  if (!url_session_helper::IsOktaSSORequest(request)) {
+    return false;
+  }
+
+  // Make sure the renderer process has set a correct request initiator.
+  if (!request.request_initiator.has_value() ||
+      !request.request_initiator.value().IsSameOriginWith(request_initiator_)) {
+    return false;
+  }
+
+  return true;
 }
 
 ProxyingURLLoaderFactory::~ProxyingURLLoaderFactory() {

@@ -50,10 +50,18 @@
 
 namespace enterprise_auth {
 
+namespace {
+
+constexpr char kRequestInitiator[] = "https://barfoo.example.com";
+
+}
+
 class PlatformAuthProxyingURLLoaderFactoryTest : public testing::Test {
  protected:
   PlatformAuthProxyingURLLoaderFactoryTest()
       : test_factory_receiver_(&test_factory_) {
+    test_request_.request_initiator =
+        url::Origin::Create(GURL(kRequestInitiator));
     test_request_.url = GURL("https://foobar.example.com");
     test_request_.method = "GET";
   }
@@ -71,9 +79,10 @@ class PlatformAuthProxyingURLLoaderFactoryTest : public testing::Test {
     for (const auto& host : configured_hosts) {
       configured_hosts_cache.insert(host.GetString());
     }
-    auto* res = new ProxyingURLLoaderFactory(std::move(receiver),
-                                             std::move(target_factory),
-                                             std::move(configured_hosts_cache));
+    auto* res = new ProxyingURLLoaderFactory(
+        std::move(receiver), std::move(target_factory),
+        std::move(configured_hosts_cache),
+        test_request_.request_initiator.value());
     res->SetDestructionCallbackForTesting(std::move(dtor_callback));
     res->SetRequestInterceptedCallbackForTesting(
         std::move(request_intercepted_callback));
@@ -136,10 +145,10 @@ class PlatformAuthProxyingURLLoaderFactoryTest : public testing::Test {
 
   mojo::Receiver<network::mojom::URLLoaderFactory> test_factory_receiver_;
   network::TestURLLoaderFactory test_factory_;
+  network::ResourceRequest test_request_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  network::ResourceRequest test_request_;
 };
 
 TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
@@ -315,6 +324,44 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
       FactoryHasInterceptors(resulting_factory, terminal_shared_factory));
 }
 
+TEST_F(PlatformAuthProxyingURLLoaderFactoryTest, ChecksRequestInitiator) {
+  base::test::TestFuture<void> request_intercepted_future;
+
+  base::ListValue hosts;
+  hosts.Append(test_request_.url.host());
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
+      prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));
+
+  base::OnceCallback<void(const network::ResourceRequest& request)>
+      request_itercepted_callback = base::BindOnce(
+          [](const GURL url, base::OnceCallback<void()> future_callback,
+             const network::ResourceRequest& request) {
+            EXPECT_EQ(url, request.url);
+            std::move(future_callback).Run();
+          },
+          test_request_.url, request_intercepted_future.GetCallback());
+
+  mojo::Remote<network::mojom::URLLoaderFactory> client(
+      SetupFactoryChain({}, std::move(request_itercepted_callback)));
+  mojo::PendingRemote<network::mojom::URLLoader> url_loader_pending_remote;
+  network::MockURLLoaderClient mock_client;
+  mojo::Receiver<network::mojom::URLLoaderClient> client_receiver(&mock_client);
+  network::ResourceRequest request = test_request_;
+  request.request_initiator =
+      url::Origin::Create(GURL("https://other.host.com"));
+
+  client->CreateLoaderAndStart(
+      url_loader_pending_remote.InitWithNewPipeAndPassReceiver(), 0,
+      network::mojom::kURLLoadOptionNone, request,
+      client_receiver.BindNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // The request was not intercepted.
+  EXPECT_FALSE(request_intercepted_future.IsReady());
+  // The request has been received by the network bound factory.
+  EXPECT_EQ(test_factory_.NumPending(), 1);
+}
+
 struct InterceptTestParams {
   const std::string_view url;
   bool should_intercept;
@@ -361,6 +408,7 @@ TEST_P(PlatformAuthProxyingURLLoaderFactoryInterceptTest,
   network::ResourceRequest request;
   request.url = url;
   request.method = params.method;
+  request.request_initiator = url::Origin::Create(GURL(kRequestInitiator));
 
   client->CreateLoaderAndStart(
       url_loader_pending_remote.InitWithNewPipeAndPassReceiver(), 0,
