@@ -671,7 +671,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 /* showInProductHelp= */ false,
                                 !mIsDownloadRestrictedByPolicy));
             }
-            if (ChromeFeatureList.sContextMenuPictureInPictureAndroid.isEnabled()
+            if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
                     && mParams.canPictureInPicture()) {
                 int titleResId =
                         mParams.isPictureInPicture()
