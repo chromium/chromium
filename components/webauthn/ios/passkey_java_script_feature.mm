@@ -294,7 +294,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
 
   if (is_handle_get_request_event) {
     auto assertion_request_params =
-        BuildAssertionRequestParams(std::move(*request_info), dict);
+        BuildAssertionRequestParams(*request_info, dict);
     if (!assertion_request_params.has_value()) {
       base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
                                     assertion_request_params.error());
@@ -315,7 +315,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
         std::move(*assertion_request_params));
   } else {  // is_handle_create_request_event
     auto registration_request_params =
-        BuildRegistrationRequestParams(std::move(*request_info), dict);
+        BuildRegistrationRequestParams(*request_info, dict);
     if (!registration_request_params.has_value()) {
       base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
                                     registration_request_params.error());
