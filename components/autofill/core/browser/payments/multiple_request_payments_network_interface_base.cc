@@ -371,7 +371,7 @@ RequestId MultipleRequestPaymentsNetworkInterfaceBase::IssueRequest(
   auto operation =
       std::make_unique<RequestOperation>(std::move(request), *this);
   RequestId id = operation->StartOperation();
-  operations_[id] = std::move(operation);
+  operations_.insert_or_assign(id, std::move(operation));
   return id;
 }
 
@@ -381,8 +381,8 @@ void MultipleRequestPaymentsNetworkInterfaceBase::CancelRequestWithId(
   // as invalidated so it does not report any result. The lifecycle of the
   // operation should only be managed by the PaymentsNetworkInterface (i.e. by
   // OnRequestFinished) internally to avoid accidental use-after-free.
-  if (operations_.contains(id)) {
-    operations_[id]->InvalidateOperation();
+  if (auto it = operations_.find(id); it != operations_.end()) {
+    it->second->InvalidateOperation();
   }
 }
 

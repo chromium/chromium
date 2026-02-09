@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 
-#include <unordered_set>
-
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -13,6 +11,7 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace autofill::autofill_metrics {
 
@@ -382,7 +381,7 @@ void LogBenefitFormEventToAllBenefitHistograms(
     CardBenefitFormEvent event) {
   // `benefit_sources_logged` holds all credit card benefit sources that were
   // shown with benefits available to the user and logged for the `event`.
-  std::unordered_set<std::string_view> benefit_sources_logged;
+  absl::flat_hash_set<std::string_view> benefit_sources_logged;
   for (const auto& [instrument_id, benefit_source] :
        instrument_ids_to_available_benefit_sources) {
     std::string_view benefit_source_suffix =
@@ -390,9 +389,8 @@ void LogBenefitFormEventToAllBenefitHistograms(
     if (benefit_source_suffix.empty()) {
       continue;
     }
-    if (!benefit_sources_logged.contains(benefit_source_suffix)) {
+    if (benefit_sources_logged.insert(benefit_source_suffix).second) {
       LogBenefitFormEventToBenefitSubhistogram(benefit_source_suffix, event);
-      benefit_sources_logged.insert(benefit_source_suffix);
     }
   }
   // Only log to the main benefit histogram if a valid benefit source was logged

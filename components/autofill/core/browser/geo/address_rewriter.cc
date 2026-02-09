@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/geo/grit/autofill_address_rewriter_resources_map.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -68,7 +69,7 @@ std::string ExtractRegionRulesData(const std::string& region) {
 // Helper function to populate `compiled_rules` by parsing `data_string`.
 // static
 void AddressRewriter::CompileRulesFromData(std::string_view data_string,
-                                           CompiledRuleVector* compiled_rules) {
+                                           CompiledRuleVector& compiled_rules) {
   std::vector<std::string_view> lines = base::SplitStringPiece(
       data_string, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -80,7 +81,7 @@ void AddressRewriter::CompileRulesFromData(std::string_view data_string,
     DCHECK_EQ(parts.size(), 2U);
     std::unique_ptr<const icu::RegexPattern> pattern = CompileRegex(
         base::UTF8ToUTF16(parts[0]), UREGEX_UWORD | UREGEX_CASE_INSENSITIVE);
-    compiled_rules->emplace_back(std::move(pattern), std::string(parts[1]));
+    compiled_rules.emplace_back(std::move(pattern), std::string(parts[1]));
   }
 }
 
@@ -111,7 +112,7 @@ class AddressRewriter::Cache {
     // If we find a cached set of rules, return a pointer to the data.
     auto cache_iter = data_.find(region);
     if (cache_iter != data_.end()) {
-      return &cache_iter->second;
+      return cache_iter->second.get();
     }
 
     // Cache miss. Look for the raw rules. If none, then return nullptr.
@@ -121,22 +122,28 @@ class AddressRewriter::Cache {
     }
 
     // Add a new rule vector to the cache and populate it with compiled rules.
-    CompiledRuleVector& compiled_rules = data_[region];
-    CompileRulesFromData(region_rules, &compiled_rules);
+    std::unique_ptr<CompiledRuleVector>& compiled_rules = data_[region];
+    if (!compiled_rules) {
+      compiled_rules = std::make_unique<CompiledRuleVector>();
+    }
+    CompileRulesFromData(region_rules, *compiled_rules);
 
     // Return a pointer to the data.
-    return &compiled_rules;
+    return compiled_rules.get();
   }
 
   // Uses a string of data to create and return a pointer to a
   // CompiledRuleVector. Used for creating unit_tests.
   const CompiledRuleVector* CreateRulesForData(const std::string& data) {
     // Compiled rules vector must be kept in cache to be used elsewhere.
-    CompiledRuleVector& compiled_rules = data_[data];
-    CompileRulesFromData(data, &compiled_rules);
+    std::unique_ptr<CompiledRuleVector>& compiled_rules = data_[data];
+    if (!compiled_rules) {
+      compiled_rules = std::make_unique<CompiledRuleVector>();
+    }
+    CompileRulesFromData(data, *compiled_rules);
 
     // Return a pointer to the data.
-    return &compiled_rules;
+    return compiled_rules.get();
   }
 
  private:
@@ -147,7 +154,7 @@ class AddressRewriter::Cache {
   base::Lock lock_;
 
   // The cache of compiled rules, keyed by region.
-  CompiledRuleCache data_;
+  absl::flat_hash_map<std::string, std::unique_ptr<CompiledRuleVector>> data_;
 
   friend class base::NoDestructor<Cache>;
 };

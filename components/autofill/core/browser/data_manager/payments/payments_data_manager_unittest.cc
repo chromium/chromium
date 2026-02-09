@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -76,7 +77,10 @@
 namespace autofill {
 namespace {
 
-using testing::Pointee;
+using ::testing::ElementsAre;
+using ::testing::Pointee;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 constexpr auto kArbitraryTime =
     base::Time::FromSecondsSinceUnixEpoch(86400 * 365 * 2);
@@ -381,7 +385,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
 
   EXPECT_THAT(payments_data_manager().GetOrderedIbansToSuggest(),
-              testing::ElementsAre(server_iban));
+              ElementsAre(server_iban));
 }
 
 // Test that IBANs are ordered according to the frecency rating. All of the
@@ -411,9 +415,9 @@ TEST_F(PaymentsDataManagerTest, GetIbansToSuggestOrdersByFrecency) {
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
 
-  EXPECT_THAT(payments_data_manager().GetOrderedIbansToSuggest(),
-              testing::ElementsAre(server_iban3, server_iban2, local_iban2,
-                                   local_iban1));
+  EXPECT_THAT(
+      payments_data_manager().GetOrderedIbansToSuggest(),
+      ElementsAre(server_iban3, server_iban2, local_iban2, local_iban1));
 }
 
 TEST_F(PaymentsDataManagerTest, AddLocalIbans) {
@@ -593,9 +597,9 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
 
   WaitForOnPaymentsDataChanged();
 
-  EXPECT_THAT(payments_data_manager().GetCreditCards(),
-              testing::UnorderedElementsAre(Pointee(credit_card0),
-                                            Pointee(credit_card1)));
+  EXPECT_THAT(
+      payments_data_manager().GetCreditCards(),
+      UnorderedElementsAre(Pointee(credit_card0), Pointee(credit_card1)));
 
   // Update, remove, and add.
   credit_card0.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Joe");
@@ -606,9 +610,9 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
 
   WaitForOnPaymentsDataChanged();
 
-  EXPECT_THAT(payments_data_manager().GetCreditCards(),
-              testing::UnorderedElementsAre(Pointee(credit_card0),
-                                            Pointee(credit_card2)));
+  EXPECT_THAT(
+      payments_data_manager().GetCreditCards(),
+      UnorderedElementsAre(Pointee(credit_card0), Pointee(credit_card2)));
 
   // Reset the PaymentsDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the credit cards from the web
@@ -616,9 +620,9 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   ResetPaymentsDataManager();
 
   // Verify that we've loaded the credit cards from the web database.
-  EXPECT_THAT(payments_data_manager().GetCreditCards(),
-              testing::UnorderedElementsAre(Pointee(credit_card0),
-                                            Pointee(credit_card2)));
+  EXPECT_THAT(
+      payments_data_manager().GetCreditCards(),
+      UnorderedElementsAre(Pointee(credit_card0), Pointee(credit_card2)));
 
   // Add a server card.
   CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -688,7 +692,7 @@ TEST_F(PaymentsDataManagerTest, RemoveLocalDataModifiedBetween) {
   WaitForOnPaymentsDataChanged();
   local_card1.clear_cvc();
   EXPECT_THAT(payments_data_manager().GetLocalCreditCards(),
-              testing::UnorderedElementsAre(Pointee(local_card1)));
+              UnorderedElementsAre(Pointee(local_card1)));
   // TODO(crbug.com/40276087): `CreditCard::operator==()` compares GUIDs even
   // for server cards, which change after every load from the database.
   std::vector<const CreditCard*> server_cards =
@@ -960,7 +964,7 @@ TEST_F(PaymentsDataManagerTest, UpdateUnverifiedCreditCards) {
   WaitForOnPaymentsDataChanged();
 
   EXPECT_THAT(payments_data_manager().GetCreditCards(),
-              testing::UnorderedElementsAre(Pointee(credit_card)));
+              UnorderedElementsAre(Pointee(credit_card)));
 
   // Try to update with just the origin changed.
   CreditCard original_credit_card(credit_card);
@@ -970,7 +974,7 @@ TEST_F(PaymentsDataManagerTest, UpdateUnverifiedCreditCards) {
 
   // Credit Card origin should not be overwritten.
   EXPECT_THAT(payments_data_manager().GetCreditCards(),
-              testing::UnorderedElementsAre(Pointee(original_credit_card)));
+              UnorderedElementsAre(Pointee(original_credit_card)));
 
   // Try to update with data changed as well.
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Joe");
@@ -978,7 +982,7 @@ TEST_F(PaymentsDataManagerTest, UpdateUnverifiedCreditCards) {
   WaitForOnPaymentsDataChanged();
 
   EXPECT_THAT(payments_data_manager().GetCreditCards(),
-              testing::UnorderedElementsAre(Pointee(credit_card)));
+              UnorderedElementsAre(Pointee(credit_card)));
 }
 
 TEST_F(PaymentsDataManagerTest, SetUniqueCreditCardLabels) {
@@ -1016,9 +1020,9 @@ TEST_F(PaymentsDataManagerTest, SetUniqueCreditCardLabels) {
 
   EXPECT_THAT(
       payments_data_manager().GetCreditCards(),
-      testing::UnorderedElementsAre(
-          Pointee(credit_card0), Pointee(credit_card1), Pointee(credit_card2),
-          Pointee(credit_card3), Pointee(credit_card4), Pointee(credit_card5)));
+      UnorderedElementsAre(Pointee(credit_card0), Pointee(credit_card1),
+                           Pointee(credit_card2), Pointee(credit_card3),
+                           Pointee(credit_card4), Pointee(credit_card5)));
 }
 
 TEST_F(PaymentsDataManagerTest, SetEmptyCreditCard) {
@@ -1418,13 +1422,11 @@ TEST_F(PaymentsDataManagerTest, DeleteLocalCreditCards) {
   // Wait for the data to be refreshed.
   WaitForOnPaymentsDataChanged();
 
-  EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
-
-  std::unordered_set<std::u16string> expected_to_remain = {u"Clyde"};
-  for (auto* card : payments_data_manager().GetCreditCards()) {
-    EXPECT_NE(expected_to_remain.end(),
-              expected_to_remain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));
-  }
+  EXPECT_THAT(base::ToVector(payments_data_manager().GetCreditCards(),
+                             [](const CreditCard* card) {
+                               return card->GetRawInfo(CREDIT_CARD_NAME_FULL);
+                             }),
+              ElementsAre(u"Clyde"));
 }
 
 TEST_F(PaymentsDataManagerTest, DeleteAllLocalCreditCards) {
@@ -3572,7 +3574,7 @@ TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithNewCard) {
     saved_credit_cards.push_back(*result);
   }
 
-  EXPECT_THAT(saved_credit_cards, testing::ElementsAre(credit_card));
+  EXPECT_THAT(saved_credit_cards, ElementsAre(credit_card));
 }
 
 TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithExistingCard) {
@@ -3605,7 +3607,7 @@ TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithExistingCard) {
     saved_credit_cards.push_back(*result);
   }
 
-  EXPECT_THAT(saved_credit_cards, testing::ElementsAre(credit_card));
+  EXPECT_THAT(saved_credit_cards, ElementsAre(credit_card));
 }
 
 TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithDisallowedCvcStripped) {
@@ -3745,7 +3747,7 @@ TEST_F(PaymentsDataManagerTest,
                                       /*price_upper_bound=*/200)})};
 
   EXPECT_THAT(payments_data_manager().GetUnlinkedBnplIssuers(),
-              testing::UnorderedElementsAreArray(want_bnpl_issuers));
+              UnorderedElementsAreArray(want_bnpl_issuers));
 }
 
 // This test ensures that if the server accidentally returns duplicate unlinked
@@ -3790,7 +3792,7 @@ TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_DuplicateIssuers) {
                                       /*price_upper_bound=*/200)})};
 
   EXPECT_THAT(payments_data_manager().GetUnlinkedBnplIssuers(),
-              testing::UnorderedElementsAreArray(want_bnpl_issuers));
+              UnorderedElementsAreArray(want_bnpl_issuers));
 }
 
 // Tests that no unlinked BNPL issuers are cached if the only synced unlinked
@@ -3916,9 +3918,8 @@ TEST_F(PaymentsDataManagerTest, GetBnplIssuers) {
   test_api(payments_data_manager()).AddBnplIssuer(linked_issuer);
   test_api(payments_data_manager()).AddBnplIssuer(unlinked_issuer);
 
-  EXPECT_THAT(
-      payments_data_manager().GetBnplIssuers(),
-      testing::UnorderedElementsAreArray({linked_issuer, unlinked_issuer}));
+  EXPECT_THAT(payments_data_manager().GetBnplIssuers(),
+              UnorderedElementsAreArray({linked_issuer, unlinked_issuer}));
 }
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -41,14 +40,13 @@ class AddressRewriter {
   using CompiledRule =
       std::pair<std::unique_ptr<const icu::RegexPattern>, std::string>;
   using CompiledRuleVector = std::vector<CompiledRule>;
-  using CompiledRuleCache = std::unordered_map<std::string, CompiledRuleVector>;
 
   class Cache;
 
   explicit AddressRewriter(const CompiledRuleVector* compiled_rules);
 
   static void CompileRulesFromData(std::string_view data_string,
-                                   CompiledRuleVector* compiled_rules);
+                                   CompiledRuleVector& compiled_rules);
 
   // A handle to the internal rewrite rules this instance is using.
   const raw_ptr<const CompiledRuleVector> compiled_rules_ = nullptr;
