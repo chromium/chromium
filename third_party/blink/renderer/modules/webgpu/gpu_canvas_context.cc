@@ -261,7 +261,7 @@ GPUCanvasContext::PaintRenderingResultsToSnapshot(
                           ? SkColors::kBlack
                           : SkColors::kTransparent;
     resource_provider->Canvas().clear(color);
-    resource_provider->FlushCanvas(FlushReason::kClear);
+    resource_provider->FlushCanvas();
     return resource_provider->Snapshot();
   }
 
