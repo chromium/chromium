@@ -775,7 +775,7 @@ function parsePolicyData(message: Record<string, unknown>): PolicyData {
 /**
  * Parses a PolicySet from a message.
  */
-function parsePolicySet(
+export function parsePolicySet(
     message: Record<string, unknown>,
     fieldName: string,
     ): PolicySet|undefined {

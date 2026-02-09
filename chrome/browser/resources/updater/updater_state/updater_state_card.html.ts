@@ -10,7 +10,7 @@ import type {UpdaterStateCardElement} from './updater_state_card.js';
 export function getHtml(this: UpdaterStateCardElement) {
   assert(
       this.scope !== undefined && this.version !== undefined &&
-      this.installPath !== undefined && this.policies !== undefined);
+      this.installPath !== undefined);
   // clang-format off
   return html`
 <!--_html_template_start_-->
@@ -69,8 +69,6 @@ export function getHtml(this: UpdaterStateCardElement) {
     </div>
   ` : ''}
   <div class="spacer"></div>
-  <raw-event-details label="$i18n{policyDetails}" .events="${[this.policies]}">
-  </raw-event-details>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

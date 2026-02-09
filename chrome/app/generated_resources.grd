@@ -19915,6 +19915,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_APP_NAME_OR_ID" desc="Placeholder text in a search box asking the user to enter an application name or identifier string.">
         App Name or ID
       </message>
+      <message name="IDS_UPDATER_APP_POLICIES" desc="Header for a section of the enterprise policy table detailing the policies in effect for a specific application.">
+        <ph name="APP_NAME">$1<ex>Google Chrome</ex></ph> policies
+      </message>
       <message name="IDS_UPDATER_APP_STATES_QUERY_FAILED" desc="An error message indicating that the list of installed applications could not be retrieved from Chrome's updater.">
         Failed to query installed applications.
       </message>
@@ -20074,6 +20077,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_NO_APPS_FOUND" desc="A message indicating that Chrome's updater is not managing any applications on the user's system.">
         No applications are installed.
       </message>
+      <message name="IDS_UPDATER_NO_POLICIES" desc="A message indicating that no enterprise policies are in effect for the Chrome Updater or any of its managed applications.">
+        No policies are in effect.
+      </message>
       <message name="IDS_UPDATER_NO_UPDATER_FOUND" desc="A message indicating that Chrome's updater does not appear to be installed on the user's machine.">
         No updater installations could be found.
       </message>
@@ -20169,6 +20175,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_UPDATED_TO" desc="Summary of an update event that succeeded, including the new version.">
         Updated to version <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_UPDATER_POLICIES" desc="Header for a section of the enterprise policy table detailing the policies in effect for the Chrome Updater itself.">
+        Updater policies
       </message>
       <message name="IDS_UPDATER_UPDATER_VERSION" desc="Label indicating the version of the updater itself.">
         Updater version: <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>

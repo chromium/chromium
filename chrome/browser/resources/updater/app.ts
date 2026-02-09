@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './app_list/app_list.js';
+import './enterprise_policy_table/enterprise_policy_table.js';
 import './event_list/event_list.js';
 import './updater_state/updater_state.js';
-import './app_list/app_list.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {parsePolicySet} from './event_history.js';
+import type {PolicySet} from './event_history.js';
 import type {EnterpriseCompanionState, GetEnterpriseCompanionStateResponse, GetUpdaterStatesResponse, UpdaterState} from './updater_ui.mojom-webui.js';
 
 export class UpdaterAppElement extends CrLitElement {
@@ -20,6 +24,10 @@ export class UpdaterAppElement extends CrLitElement {
 
   static override get styles() {
     return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {
@@ -32,12 +40,13 @@ export class UpdaterAppElement extends CrLitElement {
     };
   }
 
-  protected accessor messages: Array<Record<string, unknown>> = [];
-  protected accessor userUpdaterState: UpdaterState|null = null;
-  protected accessor systemUpdaterState: UpdaterState|null = null;
-  protected accessor enterpriseCompanionState: EnterpriseCompanionState|null =
-      null;
-  protected accessor updaterStateError = false;
+  accessor messages: Array<Record<string, unknown>> = [];
+  accessor userUpdaterState: UpdaterState|null = null;
+  accessor systemUpdaterState: UpdaterState|null = null;
+  accessor enterpriseCompanionState: EnterpriseCompanionState|null = null;
+  accessor updaterStateError = false;
+
+  protected policies: PolicySet|undefined = undefined;
 
 
   override connectedCallback() {
@@ -60,8 +69,24 @@ export class UpdaterAppElement extends CrLitElement {
         });
   }
 
-  override render() {
-    return getHtml.bind(this)();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('systemUpdaterState')) {
+      this.policies = this.computePolicies();
+    }
+  }
+
+  private computePolicies(): PolicySet|undefined {
+    if (this.systemUpdaterState === null) {
+      return undefined;
+    }
+    const policies = JSON.parse(this.systemUpdaterState.policies);
+    try {
+      return parsePolicySet({policies}, 'policies');
+    } catch (e) {
+      console.warn(`Failed to parse policy set: ${e}. Message: ${policies}`);
+      return undefined;
+    }
   }
 
   private async getAllUpdaterEvents(): Promise<Array<Record<string, unknown>>> {

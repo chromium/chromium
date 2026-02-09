@@ -29,6 +29,11 @@ export function getHtml(this: UpdaterAppElement) {
     <app-list></app-list>
   </div>
   <div>
+    <h2>Enterprise Policies</h2>
+    <enterprise-policy-table .policies="${this.policies}">
+    </enterprise-policy-table>
+  </div>
+  <div>
     <h2>$i18n{eventListTitle}</h2>
     <event-list .messages="${this.messages}"></event-list>
   </div>

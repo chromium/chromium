@@ -23,8 +23,7 @@ ${this.shouldShowSystemUpdaterState() ? html`
       .lastChecked="${this.systemUpdaterState.lastChecked}"
       .lastStarted="${this.systemUpdaterState.lastStarted}"
       .installPath="${this.filePathToString(
-          this.systemUpdaterState.installationDirectory)}"
-      .policies="${JSON.parse(this.systemUpdaterState.policies)}">
+          this.systemUpdaterState.installationDirectory)}">
   </updater-state-card>
 ` : ''}
 ${this.shouldShowUserUpdaterState() ? html`
@@ -34,8 +33,7 @@ ${this.shouldShowUserUpdaterState() ? html`
       .lastChecked="${this.userUpdaterState.lastChecked}"
       .lastStarted="${this.userUpdaterState.lastStarted}"
       .installPath="${this.filePathToString(
-          this.userUpdaterState.installationDirectory)}"
-      .policies="${JSON.parse(this.userUpdaterState.policies)}">
+          this.userUpdaterState.installationDirectory)}">
   </updater-state-card>
 ` : ''}
 ${this.shouldShowEnterpriseCompanionState() ? html`

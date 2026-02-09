@@ -31,10 +31,6 @@ suite('UpdaterStateCardElement', () => {
     item.lastChecked = new Date('2026-01-02T12:00:00');
     item.lastStarted = new Date('2026-01-01T12:00:00');
     item.installPath = '/home/user/updater';
-    item.policies = {
-      policiesByName: {},
-      policiesByAppId: {},
-    };
     document.body.appendChild(item);
     await microtasksFinished();
 
@@ -65,10 +61,6 @@ suite('UpdaterStateCardElement', () => {
     item.lastChecked = null;
     item.lastStarted = null;
     item.installPath = '/opt/google/updater';
-    item.policies = {
-      policiesByName: {},
-      policiesByAppId: {},
-    };
     document.body.appendChild(item);
     await microtasksFinished();
 
@@ -104,10 +96,6 @@ suite('UpdaterStateCardElement', () => {
         item.lastChecked = new Date('2026-01-02T12:00:00');
         item.lastStarted = new Date('2026-01-01T12:00:00');
         item.installPath = '/home/user/updater';
-        item.policies = {
-          policiesByName: {},
-          policiesByAppId: {},
-        };
         document.body.appendChild(item);
         await microtasksFinished();
 

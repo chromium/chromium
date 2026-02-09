@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://updater/event_list/event_list_item.js';
+import 'chrome://updater/enterprise_policy_table/enterprise_policy_table.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {MergedHistoryEvent, MergedInstallEvent, MergedUpdaterProcessEvent, PersistedDataEvent, PolicySet, Scope} from 'chrome://updater/event_history.js';
 import {localizeEventType, UpdaterProcessMap} from 'chrome://updater/event_history.js';
 import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
-import type {RawEventDetailsElement} from 'chrome://updater/event_list/raw_event_details.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -1057,10 +1057,9 @@ suite('EventListItemElement', () => {
     item.policies = policies;
     await microtasksFinished();
 
-    const rawPolicyView =
-        item.shadowRoot.querySelector<RawEventDetailsElement>('#policySource');
-    assertTrue(rawPolicyView !== undefined);
-    assertEquals(loadTimeData.getString('policyDetails'), rawPolicyView!.label);
-    assertDeepEquals([policies], rawPolicyView!.events);
+    const policyTable =
+        item.shadowRoot.querySelector('enterprise-policy-table');
+    assertTrue(!!policyTable);
+    assertEquals(policies, policyTable.policies);
   });
 });
