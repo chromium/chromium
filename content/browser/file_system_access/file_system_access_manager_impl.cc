@@ -1568,6 +1568,18 @@ void FileSystemAccessManagerImpl::DidChooseEntries(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Use Content-URIs rather than Virtual Document Paths in FSA.
+  // TODO(crbug.com/7556471): This can be removed if SelectFileDialog is
+  // changed back to return CU rather than VDP from crrev.com/c/7130102.
+  for (auto& entry : entries) {
+    auto content_uri = base::ResolveToContentUri(entry.path);
+    if (content_uri) {
+      entry.path = *content_uri;
+    }
+  }
+#endif
+
   if (!permission_context_) {
     DidVerifySensitiveDirectoryAccess(
         binding_context, options, starting_directory_id,
