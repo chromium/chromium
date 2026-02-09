@@ -145,7 +145,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         iron-icon="${item.icon}"
         @click="${this.onTextStyleMenuButtonClick_}">
     </cr-icon-button>
-  `)};
+  `)}
   ${this.isImmersiveEnabled_ ? html`
     <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
         class="toolbar-button"
