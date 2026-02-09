@@ -31,7 +31,7 @@ message ZeroStateSuggestionsLoggingData {
   ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 6
+// Next ID: 7
 message ZeroStateSuggestionsRequest {
   oneof request {
     // The context of the page to generate suggestions for. This is used when
@@ -55,6 +55,9 @@ message ZeroStateSuggestionsRequest {
   // included when it adds no distinguishing information to the language tag
   // (e.g. both "en-US" and "fr" are correct here).
   string locale = 5 [features = { field_presence: EXPLICIT }];
+
+  // The Chrome platform that the request is from.
+  ChromePlatform chrome_platform = 6 [features = { field_presence: EXPLICIT }];
 }
 
 message ZeroStatePageContextList {

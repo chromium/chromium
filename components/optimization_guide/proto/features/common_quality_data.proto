@@ -2378,3 +2378,28 @@ enum UserFeedback {
 
   USER_FEEDBACK_THUMBS_UP = 2;
 }
+
+// The platform for the user's Chrome on which the request was made. Roughly
+// matches the same platforms that are available via UMA.
+enum ChromePlatform {
+  // Unknown is used when the user's platform cannot be resolved.
+  CHROME_PLATFORM_UNKNOWN = 0;
+
+  // Android based platforms.
+  CHROME_PLATFORM_ANDROID = 1;
+
+  // ChromeOS platforms including all architectures.
+  CHROME_PLATFORM_CHROMEOS = 2;
+
+  // IOS based platforms.
+  CHROME_PLATFORM_IOS = 3;
+
+  // Linux platforms including all architectures.
+  CHROME_PLATFORM_LINUX = 4;
+
+  // Mac based platforms.
+  CHROME_PLATFORM_MAC = 5;
+
+  // Windows based platforms.
+  CHROME_PLATFORM_WINDOWS = 6;
+}
