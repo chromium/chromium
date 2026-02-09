@@ -30,6 +30,9 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
   static bool texture_format_etc1_npot(const gpu::Capabilities& cap) {
     return cap.texture_format_etc1_npot;
   }
+  static bool disable_mac_swangle_rgbx(const gpu::Capabilities& cap) {
+    return cap.disable_mac_swangle_rgbx;
+  }
   static bool sync_query(const gpu::Capabilities& cap) {
     return cap.sync_query;
   }

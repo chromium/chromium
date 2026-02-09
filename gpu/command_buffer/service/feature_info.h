@@ -71,6 +71,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool ext_texture_format_astc_hdr = false;
     bool ext_texture_format_atc = false;
     bool ext_texture_format_bgra8888 = false;
+    bool disable_mac_swangle_rgbx = false;
     bool ext_texture_format_dxt1 = false;
     bool ext_texture_format_dxt5 = false;
     bool enable_shader_name_hashing = false;

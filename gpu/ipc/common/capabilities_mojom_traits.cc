@@ -14,6 +14,7 @@ bool StructTraits<gpu::mojom::CapabilitiesDataView, gpu::Capabilities>::Read(
   out->egl_image_external = data.egl_image_external();
   out->texture_format_bgra8888 = data.texture_format_bgra8888();
   out->texture_format_etc1_npot = data.texture_format_etc1_npot();
+  out->disable_mac_swangle_rgbx = data.disable_mac_swangle_rgbx();
   out->sync_query = data.sync_query();
   out->texture_rg = data.texture_rg();
   out->texture_norm16 = data.texture_norm16();

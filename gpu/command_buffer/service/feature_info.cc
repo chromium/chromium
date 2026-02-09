@@ -968,6 +968,7 @@ void FeatureInfo::InitializeFeatures() {
   // alpha is false, so disable that case for now so that we go through
   // emulation.
   if (gl_version_info_->is_angle_swiftshader) {
+    feature_flags_.disable_mac_swangle_rgbx = true;
     feature_flags_.mappable_formats.erase(viz::SinglePlaneFormat::kBGRX_8888);
     feature_flags_.mappable_formats.erase(viz::SinglePlaneFormat::kRGBX_8888);
   }

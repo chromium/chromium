@@ -1982,12 +1982,11 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   // format matches shared image format. This is necessary for Graphite where
   // IOSurfaces are always used to allow sharing between ANGLE and Dawn.
   if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBA_8888 &&
-      ContextProvider()->GetCapabilities().mappable_formats.contains(
-          viz::SinglePlaneFormat::kBGRA_8888)) {
+      ContextProvider()->GetCapabilities().texture_format_bgra8888) {
     color_buffer_format_ = viz::SinglePlaneFormat::kBGRA_8888;
   } else if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
-             ContextProvider()->GetCapabilities().mappable_formats.contains(
-                 viz::SinglePlaneFormat::kBGRX_8888)) {
+             ContextProvider()->GetCapabilities().texture_format_bgra8888 &&
+             !ContextProvider()->GetCapabilities().disable_mac_swangle_rgbx) {
     color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -2017,8 +2016,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       // Intel GPUs (i8xx) don't support RGBX overlays.
       if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
           allow_bgrx &&
-          ContextProvider()->GetCapabilities().mappable_formats.contains(
-              viz::SinglePlaneFormat::kBGRX_8888)) {
+          ContextProvider()->GetCapabilities().texture_format_bgra8888 &&
+          !ContextProvider()->GetCapabilities().disable_mac_swangle_rgbx) {
         color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
       }
 #endif  // !BUILDFLAG(IS_ANDROID)

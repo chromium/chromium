@@ -3279,6 +3279,8 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->feature_flags().oes_egl_image_external_essl3;
   caps.texture_format_bgra8888 =
       feature_info_->feature_flags().ext_texture_format_bgra8888;
+  caps.disable_mac_swangle_rgbx =
+      feature_info_->feature_flags().disable_mac_swangle_rgbx;
   caps.texture_format_etc1_npot =
       feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture &&
       !workarounds().etc1_power_of_two_only;

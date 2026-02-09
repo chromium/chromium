@@ -1147,6 +1147,8 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.mappable_formats = feature_info()->feature_flags().mappable_formats;
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
+  caps.disable_mac_swangle_rgbx =
+      feature_info()->feature_flags().disable_mac_swangle_rgbx;
   caps.texture_rg = feature_info()->feature_flags().ext_texture_rg;
   caps.max_texture_size = shared_context_state_->GetMaxTextureSize();
   caps.using_vulkan_context =

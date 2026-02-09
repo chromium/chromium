@@ -41,6 +41,7 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   bool egl_image_external_essl3 = false;
   bool texture_format_bgra8888 = false;
   bool texture_format_etc1_npot = false;
+  bool disable_mac_swangle_rgbx = false;
   bool sync_query = false;
   bool texture_rg = false;
   bool texture_norm16 = false;

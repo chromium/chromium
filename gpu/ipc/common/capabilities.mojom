@@ -14,6 +14,7 @@ struct Capabilities {
   // bool egl_image_external_essl3;
   bool texture_format_bgra8888;
   bool texture_format_etc1_npot;
+  bool disable_mac_swangle_rgbx;
   bool sync_query;
   bool texture_rg;
   bool texture_norm16;
