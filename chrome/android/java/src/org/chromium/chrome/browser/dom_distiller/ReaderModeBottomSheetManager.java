@@ -7,7 +7,11 @@ package org.chromium.chrome.browser.dom_distiller;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
+import org.chromium.base.CancelableRunnable;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -17,12 +21,20 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /** Manages the lifespan of the {@link ReaderModeBottomSheetCoordinator}. */
 @NullMarked
 public class ReaderModeBottomSheetManager extends EmptyTabObserver implements Destroyable {
+    // Delay before the bottom sheet automatically peeks on initial load.
+    private static int sBottomSheetPeekDelay = 1500;
+
+    static void setBottomSheetPeekDelayForTesting(int delayMs) {
+        sBottomSheetPeekDelay = delayMs;
+    }
+
     private final EmptyTabObserver mEmptyTabObserver =
             new EmptyTabObserver() {
                 @Override
@@ -59,6 +71,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
                 }
             };
 
+    private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final ActivityTabProvider mTabProvider;
@@ -68,6 +81,8 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
 
     private @Nullable ReaderModeBottomSheetCoordinator mCoordinator;
     private @Nullable Tab mActiveTab;
+    // Active task for the delayed bottom sheet peek.
+    private @Nullable CancelableRunnable mDelayBottomSheetPeekTask;
 
     /**
      * @param context The {@link Context} for the manager.
@@ -97,6 +112,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
 
     @Override
     public void destroy() {
+        mCallbackController.destroy();
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
         mTabProvider.asObservable().removeObserver(mActivityTabTabObserver);
         removeTabObservers();
@@ -132,30 +148,62 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
     }
 
     private void handleBrowserControlsOffsetChange(float browserControlHiddenRatio) {
-        if (mActiveTab == null
-                || mActiveTab.getWebContents() == null
-                || !DomDistillerUrlUtils.isDistilledPage(mActiveTab.getUrl())) {
-            return;
-        }
+        Tab activeTab = mActiveTab;
+        if (!shouldShowBottomSheet(activeTab)) return;
 
         // If the browser controls are fully shown, then show the bottom sheet.
         // Set a static threshold for the browser controls to be considered hidden enough to hide
         // the bottom sheet. This is to prevent jumpy behavior when the user scrolls up and down
         // slightly.
         if (browserControlHiddenRatio == 0) {
-            show(mActiveTab);
+            cancelDelayedBottomSheetPeekTask();
+            assert activeTab != null;
+            show(activeTab);
         } else if (browserControlHiddenRatio >= 0.5f) {
             hide();
         }
     }
 
     private void handleNewTabOrUrl() {
-        if (mActiveTab != null
-                && mActiveTab.getWebContents() != null
-                && DomDistillerUrlUtils.isDistilledPage(mActiveTab.getUrl())) {
-            show(mActiveTab);
+        cancelDelayedBottomSheetPeekTask();
+        Tab activeTab = mActiveTab;
+        if (shouldShowBottomSheet(activeTab)) {
+            if (!DomDistillerFeatures.sReaderModeDelayBottomSheetPeek.isEnabled()
+                    || sBottomSheetPeekDelay == 0) {
+                assert activeTab != null;
+                show(activeTab);
+                return;
+            }
+            mDelayBottomSheetPeekTask =
+                    new CancelableRunnable(
+                            () -> {
+                                Tab tab = mActiveTab;
+                                if (shouldShowBottomSheet(tab)) {
+                                    assert tab != null;
+                                    show(tab);
+                                }
+                                mDelayBottomSheetPeekTask = null;
+                            });
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mCallbackController.makeCancelable(mDelayBottomSheetPeekTask),
+                    sBottomSheetPeekDelay);
         } else {
             hide();
+        }
+    }
+
+    private boolean shouldShowBottomSheet(@Nullable Tab tab) {
+        return tab != null
+                && tab.getWebContents() != null
+                && DomDistillerUrlUtils.isDistilledPage(tab.getUrl());
+    }
+
+    // Aborts the pending delayed peek by setting the task to null.
+    private void cancelDelayedBottomSheetPeekTask() {
+        if (mDelayBottomSheetPeekTask != null) {
+            mDelayBottomSheetPeekTask.cancel();
+            mDelayBottomSheetPeekTask = null;
         }
     }
 
@@ -174,6 +222,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
 
     // Destroys the reader mode bottom sheet.
     private void hide() {
+        cancelDelayedBottomSheetPeekTask();
         if (mCoordinator != null) {
             mCoordinator.hide();
         }

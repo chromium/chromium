@@ -5499,6 +5499,10 @@ inline constexpr char kReaderModeBlurTransitionAnimationName[] =
 inline constexpr char kReaderModeBlurTransitionAnimationDescription[] =
     "Display a blur animation during reader mode navigations to "
     "provide an enhanced transition experience.";
+inline constexpr char kReaderModeDelayBottomSheetPeekName[] =
+    "Reader Mode bottom sheet peek delay";
+inline constexpr char kReaderModeDelayBottomSheetPeekDescription[] =
+    "Delays the bottom sheet peek on initial load into the Reading Mode page.";
 inline constexpr char kReaderModeDistillInAppName[] =
     "Reader Mode distillation in app";
 inline constexpr char kReaderModeDistillInAppDescription[] =

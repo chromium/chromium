@@ -44,6 +44,8 @@ public class DomDistillerFeatures {
     }
 
     // Feature names -- alphabetical ordering.
+    public static final String READER_MODE_DELAY_BOTTOM_SHEET_PEEK =
+            "ReaderModeDelayBottomSheetPeek";
     public static final String READER_MODE_DISTILL_IN_APP = "ReaderModeDistillInApp";
     public static final String READER_MODE_IMPROVEMENTS = "ReaderModeImprovements";
     public static final String READER_MODE_SUPPORT_NEW_FONTS = "ReaderModeSupportNewFonts";
@@ -51,6 +53,9 @@ public class DomDistillerFeatures {
     public static final String READER_MODE_USE_READABILITY = "ReaderModeUseReadability";
 
     // Feature flags -- alphabetical ordering.
+    public static final MutableFlagWithSafeDefault sReaderModeDelayBottomSheetPeek =
+            newMutableFlagWithSafeDefault(
+                    READER_MODE_DELAY_BOTTOM_SHEET_PEEK, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeDistillInApp =
             newMutableFlagWithSafeDefault(READER_MODE_DISTILL_IN_APP, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeImprovements =

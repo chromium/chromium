@@ -15132,6 +15132,7 @@ from previous Chrome versions.
       label="UnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
   <int value="263044730" label="OmniboxImprovementForLFF:enabled"/>
+  <int value="264017891" label="ReaderModeDelayBottomSheetPeek:enabled"/>
   <int value="264443322" label="CompressionDictionaryTransportBackend:enabled"/>
   <int value="264534322" label="FilesDriveShortcuts:enabled"/>
   <int value="264609083" label="PasswordDomainCapabilitiesFetching:disabled"/>
@@ -17618,6 +17619,7 @@ from previous Chrome versions.
   <int value="1111871757" label="ForceUnifiedConsentBump:enabled"/>
   <int value="1112051724" label="DetectingHeavyPages:enabled"/>
   <int value="1112243997" label="EnableFastInkForSoftwareCursor:disabled"/>
+  <int value="1112458377" label="ReaderModeDelayBottomSheetPeek:disabled"/>
   <int value="1112775677" label="LensSearchAimM3:disabled"/>
   <int value="1112817963" label="WebViewConnectionlessSafeBrowsing:enabled"/>
   <int value="1112890211" label="SwapAndroidShareHubRows:enabled"/>
