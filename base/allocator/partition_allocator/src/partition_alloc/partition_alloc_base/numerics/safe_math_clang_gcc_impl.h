@@ -9,6 +9,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 #if defined(__ARMEL__)
@@ -69,7 +70,7 @@ template <typename T, typename U>
 struct CheckedAddFastOp {
   static const bool is_supported = true;
   template <typename V>
-  __attribute__((always_inline)) static constexpr bool Do(T x, U y, V* result) {
+  PA_ALWAYS_INLINE static constexpr bool Do(T x, U y, V* result) {
     return !__builtin_add_overflow(x, y, result);
   }
 };
@@ -78,7 +79,7 @@ template <typename T, typename U>
 struct CheckedSubFastOp {
   static const bool is_supported = true;
   template <typename V>
-  __attribute__((always_inline)) static constexpr bool Do(T x, U y, V* result) {
+  PA_ALWAYS_INLINE static constexpr bool Do(T x, U y, V* result) {
     return !__builtin_sub_overflow(x, y, result);
   }
 };
@@ -99,7 +100,7 @@ struct CheckedMulFastOp {
   static const bool is_supported = true;
 #endif
   template <typename V>
-  __attribute__((always_inline)) static constexpr bool Do(T x, U y, V* result) {
+  PA_ALWAYS_INLINE static constexpr bool Do(T x, U y, V* result) {
     return CheckedMulFastAsmOp<T, U>::is_supported
                ? CheckedMulFastAsmOp<T, U>::Do(x, y, result)
                : !__builtin_mul_overflow(x, y, result);
@@ -110,7 +111,7 @@ template <typename T, typename U>
 struct ClampedAddFastOp {
   static const bool is_supported = ClampedAddFastAsmOp<T, U>::is_supported;
   template <typename V>
-  __attribute__((always_inline)) static V Do(T x, U y) {
+  PA_ALWAYS_INLINE static V Do(T x, U y) {
     return ClampedAddFastAsmOp<T, U>::template Do<V>(x, y);
   }
 };
@@ -119,7 +120,7 @@ template <typename T, typename U>
 struct ClampedSubFastOp {
   static const bool is_supported = ClampedSubFastAsmOp<T, U>::is_supported;
   template <typename V>
-  __attribute__((always_inline)) static V Do(T x, U y) {
+  PA_ALWAYS_INLINE static V Do(T x, U y) {
     return ClampedSubFastAsmOp<T, U>::template Do<V>(x, y);
   }
 };
@@ -128,7 +129,7 @@ template <typename T, typename U>
 struct ClampedMulFastOp {
   static const bool is_supported = ClampedMulFastAsmOp<T, U>::is_supported;
   template <typename V>
-  __attribute__((always_inline)) static V Do(T x, U y) {
+  PA_ALWAYS_INLINE static V Do(T x, U y) {
     return ClampedMulFastAsmOp<T, U>::template Do<V>(x, y);
   }
 };
@@ -136,7 +137,7 @@ struct ClampedMulFastOp {
 template <typename T>
 struct ClampedNegFastOp {
   static const bool is_supported = std::is_signed_v<T>;
-  __attribute__((always_inline)) static T Do(T value) {
+  PA_ALWAYS_INLINE static T Do(T value) {
     // Use this when there is no assembler path available.
     if (!ClampedSubFastAsmOp<T, T>::is_supported) {
       T result;

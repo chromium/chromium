@@ -154,13 +154,13 @@ uintptr_t ScanStackForNextFrame(uintptr_t fp, uintptr_t stack_end) {
 // We force this function to be inlined into its callers (e.g.
 // TraceStackFramePointers()) in all build modes so we don't have to worry about
 // conditionally skipping a frame based on potential inlining or tail calls.
-__attribute__((always_inline)) size_t TraceStackFramePointersInternal(
-    uintptr_t fp,
-    uintptr_t stack_end,
-    size_t max_depth,
-    size_t skip_initial,
-    bool enable_scanning,
-    const void** out_trace) {
+PA_ALWAYS_INLINE size_t
+TraceStackFramePointersInternal(uintptr_t fp,
+                                uintptr_t stack_end,
+                                size_t max_depth,
+                                size_t skip_initial,
+                                bool enable_scanning,
+                                const void** out_trace) {
   size_t depth = 0;
   while (depth < max_depth) {
     uintptr_t pc = GetStackFramePC(fp);

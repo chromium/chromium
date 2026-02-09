@@ -131,7 +131,7 @@ PA_ALWAYS_INLINE void* TagAddr(uintptr_t address) {
 }
 
 // Strips the tag bits off |address|.
-PA_ALWAYS_INLINE uintptr_t UntagAddr(uintptr_t address) {
+PA_ALWAYS_INLINE constexpr uintptr_t UntagAddr(uintptr_t address) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   return address & internal::kPtrUntagMask;
 #else
@@ -150,7 +150,7 @@ inline uint8_t ExtractTagFromPtr(T* ptr) {
 
 // Strips the tag bits off |ptr|.
 template <typename T>
-PA_ALWAYS_INLINE uintptr_t UntagPtr(T* ptr) {
+PA_ALWAYS_INLINE constexpr uintptr_t UntagPtr(T* ptr) {
   return internal::UntagAddr(reinterpret_cast<uintptr_t>(ptr));
 }
 

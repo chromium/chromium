@@ -926,7 +926,9 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
   // provisioned.
   size_t slots_to_provision = (commit_end - return_slot) / slot_size;
   slot_span->num_unprovisioned_slots -= slots_to_provision;
-  PA_DCHECK(slot_span->num_allocated_slots +
+  // Note: the bitfields are promoted to int for arithmetic operations, so the
+  // static_casts are necessary to avoid -Werror=sign-compare.
+  PA_DCHECK(static_cast<size_t>(slot_span->num_allocated_slots) +
                 slot_span->num_unprovisioned_slots <=
             get_slots_per_span());
 

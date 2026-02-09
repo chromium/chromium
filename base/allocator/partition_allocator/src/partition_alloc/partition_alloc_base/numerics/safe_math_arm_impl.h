@@ -8,6 +8,7 @@
 #include <cassert>
 #include <type_traits>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 namespace partition_alloc::internal::base::internal {
@@ -52,7 +53,7 @@ struct ClampedAddFastAsmOp {
           typename BigEnoughPromotion<T, U>::type>::value;
 
   template <typename V>
-  __attribute__((always_inline)) static V Do(T x, U y) {
+  PA_ALWAYS_INLINE static V Do(T x, U y) {
     // This will get promoted to an int, so let the compiler do whatever is
     // clever and rely on the saturated cast to bounds check.
     if (IsIntegerArithmeticSafe<int, T, U>::value) {
@@ -79,7 +80,7 @@ struct ClampedSubFastAsmOp {
           typename BigEnoughPromotion<T, U>::type>::value;
 
   template <typename V>
-  __attribute__((always_inline)) static V Do(T x, U y) {
+  PA_ALWAYS_INLINE static V Do(T x, U y) {
     // This will get promoted to an int, so let the compiler do whatever is
     // clever and rely on the saturated cast to bounds check.
     if (IsIntegerArithmeticSafe<int, T, U>::value) {
@@ -103,7 +104,7 @@ struct ClampedMulFastAsmOp {
       kEnableAsmCode && CheckedMulFastAsmOp<T, U>::is_supported;
 
   template <typename V>
-  __attribute__((always_inline)) static V Do(T x, U y) {
+  PA_ALWAYS_INLINE static V Do(T x, U y) {
     // Use the CheckedMulFastAsmOp for full-width 32-bit values, because
     // it's fewer instructions than promoting and then saturating.
     if (!IsIntegerArithmeticSafe<int32_t, T, U>::value &&

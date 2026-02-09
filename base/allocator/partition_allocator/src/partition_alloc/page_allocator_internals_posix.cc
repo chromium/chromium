@@ -80,6 +80,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility,
     case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
       return PROT_NONE;
   }
+  PA_NOTREACHED();
 }
 
 template <bool MteEnabled, bool BtiEnabled>
