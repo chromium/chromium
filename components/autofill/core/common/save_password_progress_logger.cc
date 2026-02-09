@@ -555,6 +555,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Automated password change: URL available";
     case STRING_PASSWORD_CHANGE_USER_IS_NOT_ACTIVE:
       return "Automated password change: User is not active";
+    case STRING_PASSWORD_CHANGE_SIGNUP_FORM:
+      return "Automated password change: Signup form";
     case STRING_LOGIN_STATE_CHECK_STARTED:
       return "Login state check: has started";
     case STRING_LOGIN_STATE_CHECK_REQUEST_SENT:

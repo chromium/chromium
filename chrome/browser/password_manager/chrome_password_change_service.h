@@ -56,7 +56,8 @@ enum class PasswordChangeAvailability {
   kNotSupportedSite = 8,
   kNoSavedPasswords = 9,
   kThrottled = 10,
-  kMaxValue = kThrottled,
+  kSignupForm = 11,
+  kMaxValue = kSignupForm,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeAvailability)
 
@@ -97,7 +98,7 @@ class ChromePasswordChangeService
   // PasswordChangeServiceInterface implementation.
   bool IsPasswordChangeAvailable() const override;
   bool IsPasswordChangeSupported(
-      const GURL& url,
+      const password_manager::PasswordForm& form,
       const autofill::LanguageCode& page_language) const override;
   void RecordLoginAttemptQuality(
       password_manager::LogInWithChangedPasswordOutcome login_outcome,
@@ -116,7 +117,7 @@ class ChromePasswordChangeService
 
   PasswordChangeAvailability GetGeneralAvailability() const;
   PasswordChangeAvailability GetPerSiteAvailability(
-      const GURL& url,
+      const password_manager::PasswordForm& form,
       const autofill::LanguageCode& page_language) const;
 
   const raw_ptr<PrefService> pref_service_;

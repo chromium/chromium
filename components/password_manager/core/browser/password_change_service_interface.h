@@ -12,6 +12,7 @@
 
 namespace password_manager {
 
+struct PasswordForm;
 enum class LogInWithChangedPasswordOutcome;
 
 // Abstract interface for high level interaction related to password change.
@@ -20,10 +21,10 @@ class PasswordChangeServiceInterface {
   // Checks whether current user is eligible to use password change.
   virtual bool IsPasswordChangeAvailable() const = 0;
 
-  // Checks whether password change is eligible for a given `url` and
+  // Checks whether password change is eligible for a given `form` and
   // `page_language`.
   virtual bool IsPasswordChangeSupported(
-      const GURL& url,
+      const PasswordForm& form,
       const autofill::LanguageCode& page_language) const = 0;
 
   // Records the outcome of the first login attempt
