@@ -359,7 +359,7 @@
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
-      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+      If the spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
   <if expr="is_win">
@@ -370,7 +370,7 @@
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
    <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
-      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+      If the spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
   <if expr="is_chromeos">
@@ -381,7 +381,7 @@
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
-      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+      If the spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
   <if expr="is_android or is_ios">
