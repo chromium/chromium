@@ -57,8 +57,8 @@
     column-gap: 0px;
   }
 
-  settings-radio-group:not([is-horizontal]) {
-    padding-inline-start: 40px;
+  :host(:not([is-horizontal])) controlled-radio-button {
+    column-gap: 16px;
   }
 
   settings-section > .title.first {
@@ -127,6 +127,14 @@
     margin-bottom: 0;
   }
 
+  #httpsFirstModeSection settings-radio-group {
+    padding-inline: 36px;
+  }
+
+  #httpsFirstModeSection controlled-radio-button {
+    padding-inline: 20px;
+  }
+
   #httpsFirstModeRadioGroup > :last-child {
     padding-bottom: var(--cr-section-vertical-padding);
   }
@@ -135,15 +143,14 @@
     align-items: flex-start;
     display: flex;
     justify-content: space-around;
-    padding: 0 56px 20px;
   }
 
   #safeBrowsingRadioGroup controlled-radio-button {
     align-items: flex-start;
     display: flex;
     flex-direction: row;
-    padding-right: 56px;
-    padding-top: var(--cr-section-vertical-padding);
+    padding-block-start: var(--cr-section-vertical-padding);
+    padding-inline: 20px;
   }
 
   #safeBrowsingRadioGroup controlled-radio-button::part(disc) {
@@ -159,10 +166,14 @@
     opacity: 1;
   }
 
+  #safeBrowsingRadioGroup > :last-child {
+    padding-block-end: var(--cr-section-vertical-padding);
+  }
+
   #safeBrowsingRadioGroup .settings-columned-section, #learnMoreLabelContainer {
     font-size: 90%;
     font-weight: 80;
-    padding-inline-start: 0;
+    padding-inline: 0 36px;
   }
 
   #safeBrowsingRadioGroup .settings-radio-button-subtitle {

@@ -9,6 +9,21 @@
     padding-top: 0;
   }
 
+  controlled-radio-button {
+    column-gap: 16px;
+    padding-block-start: var(--cr-section-vertical-padding, 12px);
+    padding-inline: 20px;
+  }
+
+  controlled-radio-button:last-of-type {
+    padding-block-end: var(--cr-section-vertical-padding, 12px);
+  }
+
+  controlled-radio-button::part(labelWrapper) {
+    align-items: center;
+    display: flex;
+  }
+
   controlled-radio-button[toggle-unchecked]::part(labelWrapper),
   controlled-radio-button[disabled]::part(labelWrapper) {
     color: var(--cr-secondary-text-color);
@@ -21,11 +36,6 @@
         var(--color-radio-foreground-disabled,
             var(--cr-fallback-color-disabled-foreground));
     opacity: var(--cr-disabled-opacity);
-  }
-
-  controlled-radio-button::part(labelWrapper) {
-    align-items: center;
-    display: flex;
   }
 
   /* Make the dropdown take full width of its container */
@@ -51,14 +61,6 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-  }
-
-  #radioGroup {
-    padding-inline-start: var(--cr-section-indent-width);
-  }
-
-  #radioGroup > :last-child {
-    padding-block-end: var(--cr-section-vertical-padding);
   }
 </style>
 
