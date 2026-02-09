@@ -74,12 +74,17 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   transform =
       CGAffineTransformScale(transform, kInitialTabScale, kInitialTabScale);
 
+  // Check before the contentView is modified to avoid transient values.
+  BOOL expandsToTopOfDevice = self.contentView.frame.origin.y == 0;
+
   self.contentView.transform = transform;
   self.contentView.alpha = 0;
-  self.contentView.layer.cornerRadius = DeviceCornerRadius();
-  self.contentView.layer.maskedCorners =
-      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  self.contentView.layer.masksToBounds = YES;
+  if (expandsToTopOfDevice) {
+    self.contentView.layer.cornerRadius = DeviceCornerRadius();
+    self.contentView.layer.maskedCorners =
+        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+    self.contentView.layer.masksToBounds = YES;
+  }
 
   // Animation components.
   auto tabResizeAnimation = ^{
