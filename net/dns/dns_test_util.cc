@@ -453,12 +453,23 @@ class MockDnsTransactionFactory::MockTransaction final : public DnsTransaction {
   MockTransaction(const MockDnsClientRuleList& rules,
                   std::string hostname,
                   uint16_t qtype,
-                  bool secure,
+                  AttemptMode attempt_mode,
                   bool force_doh_server_available,
                   SecureDnsMode secure_dns_mode,
                   ResolveContext* resolve_context,
                   bool fast_timeout)
       : hostname_(std::move(hostname)), qtype_(qtype) {
+    bool secure = false;
+    switch (attempt_mode) {
+      case AttemptMode::kClassic:
+        secure = false;
+        break;
+      case AttemptMode::kHttp:
+        secure = true;
+        break;
+      default:
+        NOTREACHED();
+    }
     // Do not allow matching any rules if transaction is secure and no DoH
     // servers are available.
     if (!secure || force_doh_server_available ||
@@ -676,13 +687,13 @@ std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
     std::string hostname,
     uint16_t qtype,
     const NetLogWithSource&,
-    bool secure,
+    AttemptMode attempt_mode,
     SecureDnsMode secure_dns_mode,
     ResolveContext* resolve_context,
     bool fast_timeout) {
   std::unique_ptr<MockTransaction> transaction =
       std::make_unique<MockTransaction>(rules_, std::move(hostname), qtype,
-                                        secure, force_doh_server_available_,
+                                        attempt_mode, force_doh_server_available_,
                                         secure_dns_mode, resolve_context,
                                         fast_timeout);
   if (transaction->delayed())

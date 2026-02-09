@@ -438,7 +438,7 @@ void HostResolverDnsTask::CreateAndStartTransaction(
   transaction_info.transaction =
       client_->GetTransactionFactory()->CreateTransaction(
           std::move(transaction_hostname),
-          DnsQueryTypeToQtype(transaction_info.type), net_log_, secure_,
+          DnsQueryTypeToQtype(transaction_info.type), net_log_, secure_ ? DnsTransactionFactory::AttemptMode::kHttp : DnsTransactionFactory::AttemptMode::kClassic,
           secure_dns_mode_, &*resolve_context_,
           fallback_available_ /* fast_timeout */);
   transaction_info.transaction->SetRequestPriority(delegate_->priority());

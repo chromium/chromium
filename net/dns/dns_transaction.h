@@ -88,6 +88,14 @@ class DnsProbeRunner {
 // the factory is still alive.
 class NET_EXPORT_PRIVATE DnsTransactionFactory {
  public:
+
+  // Defines the underlying implementation used to implement a single DNS
+  // exchange.
+  enum class AttemptMode {
+    kClassic,  // Plaintext DNS (either over TCP or UDP)
+    kHttp,  // DNS-over-HTTPS (DoH)
+  };
+
   DnsTransactionFactory();
   virtual ~DnsTransactionFactory();
 
@@ -98,8 +106,8 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   //
   // The |net_log| is used as the parent log.
   //
-  // |secure| specifies whether DNS lookups should be performed using DNS-over-
-  // HTTPS (DoH) or using plaintext DNS.
+  // |attempt_mode| specifies whether DNS lookups should be performed using
+  // DNS-over-HTTPS (DoH) or using classic DNS.
   //
   // When |fast_timeout| is true, the transaction will timeout quickly after
   // making its DNS attempts, without necessarily waiting long enough to allow
@@ -111,7 +119,7 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
       std::string hostname,
       uint16_t qtype,
       const NetLogWithSource& net_log,
-      bool secure,
+      AttemptMode attempt_mode,
       SecureDnsMode secure_dns_mode,
       ResolveContext* resolve_context,
       bool fast_timeout) = 0;

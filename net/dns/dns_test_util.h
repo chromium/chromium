@@ -366,7 +366,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
       std::string hostname,
       uint16_t qtype,
       const NetLogWithSource&,
-      bool secure,
+      AttemptMode attempt_mode,
       SecureDnsMode secure_dns_mode,
       ResolveContext* resolve_context,
       bool fast_timeout) override;
