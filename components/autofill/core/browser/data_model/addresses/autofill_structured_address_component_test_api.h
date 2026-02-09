@@ -60,6 +60,10 @@ class AddressComponentTestApi {
   // Return the int representation of the merge mode for the component.
   int GetMergeMode() const { return component_->merge_mode_; }
 
+  bool IsValueCompatibleWithAncestors(const std::u16string& value) const {
+    return component_->IsValueCompatibleWithAncestors(value);
+  }
+
  private:
   raw_ref<AddressComponent> component_;
 };

@@ -122,6 +122,8 @@ class Address : public FormGroup {
   bool IsAddressFieldSettingAccessible(FieldType field_type) const;
 
  private:
+  friend class AddressTestApi;
+
   // FormGroup:
   FieldTypeSet GetSupportedTypes() const override;
 

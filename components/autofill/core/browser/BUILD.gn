@@ -1200,6 +1200,7 @@ static_library("test_support") {
     "data_manager/valuables/valuables_data_manager_test_api.h",
     "data_manager/valuables/valuables_data_manager_test_utils.cc",
     "data_manager/valuables/valuables_data_manager_test_utils.h",
+    "data_model/addresses/address_test_api.h",
     "data_model/addresses/autofill_profile_test_api.cc",
     "data_model/addresses/autofill_profile_test_api.h",
     "data_model/addresses/autofill_structured_address_component_test_api.h",
