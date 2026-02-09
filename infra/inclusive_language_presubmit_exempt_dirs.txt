@@ -46,7 +46,7 @@ chrome/browser/ash/ownership
 chrome/browser/ash/scanning
 chrome/browser/ash/settings
 chrome/browser/ash/system_web_apps
-chrome/browser/autofill/android/junit/src/org/chromium/chrome/browser/autofill/editors
+chrome/browser/autofill/android/junit/src/org/chromium/chrome/browser/autofill/editors/address
 chrome/browser/chromeos/extensions/telemetry
 chrome/browser/download
 chrome/browser/extensions/commands
@@ -54,7 +54,6 @@ chrome/browser/feed/android
 chrome/browser/first_run
 chrome/browser/mac
 chrome/browser/metrics
-chrome/browser/net
 chrome/browser/new_tab_page/modules
 chrome/browser/password_manager
 chrome/browser/predictors
@@ -124,7 +123,6 @@ components/cbor
 components/certificate_transparency
 components/cronet/gn2bp/templates
 components/domain_reliability
-components/enterprise/connectors/core
 components/enterprise/obfuscation/core
 components/gcm_driver
 components/infobars/android/java/src/org/chromium/components/infobars
@@ -256,7 +254,6 @@ sandbox/linux/suid/client
 sandbox/policy/linux
 services/device/serial
 services/network
-services/network/enterprise/encryption
 services/network/public/cpp
 services/network/public/cpp/permissions_policy
 services/network/public/mojom
@@ -518,6 +515,7 @@ third_party/hyphenation-patterns/src/am
 third_party/inspector_protocol
 third_party/jsoncpp
 third_party/libdisplay-info
+third_party/libdmg-hfsplus/patches
 third_party/libdmg-hfsplus/src/dmg
 third_party/libdmg-hfsplus/src/docs
 third_party/libdmg-hfsplus/src/test/attribution_reference
@@ -727,6 +725,9 @@ third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/hybrid
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/meta
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/nfa/thompson/backtrack
 third_party/rust/chromium_crates_io/vendor/regex-syntax-v0_8
+third_party/rust/chromium_crates_io/vendor/rustversion-v1
+third_party/rust/chromium_crates_io/vendor/rustversion-v1/.github/workflows
+third_party/rust/chromium_crates_io/vendor/rustversion-v1/src
 third_party/rust/chromium_crates_io/vendor/ryu-v1
 third_party/rust/chromium_crates_io/vendor/ryu-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/ryu-v1/src

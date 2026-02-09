@@ -58,7 +58,7 @@ fn test_try_from_box_bytes() {
 
   // Different layout: target alignment is less than source alignment.
   assert_eq!(
-    try_from_box_bytes::<u32>(Box::new(0u64).into()).map_err(|(x, _)| x),
+    try_from_box_bytes::<u16>(Box::new(0u64).into()).map_err(|(x, _)| x),
     Err(PodCastError::AlignmentMismatch)
   );
 

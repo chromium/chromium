@@ -114,7 +114,7 @@ maybe_const_fn! {
 /// ## Failure
 ///
 /// * If the target type has a greater alignment requirement.
-/// * If the target element type doesn't evenly fit into the the current element
+/// * If the target element type doesn't evenly fit into the current element
 ///   type (eg: 3 `u16` values is 1.5 `u32` values, so that's a failure).
 /// * Similarly, you can't convert from a non-[ZST](https://doc.rust-lang.org/nomicon/exotic-sizes.html#zero-sized-types-zsts)
 ///   to a ZST (e.g. 3 `u8` values is not any number of `()` values).

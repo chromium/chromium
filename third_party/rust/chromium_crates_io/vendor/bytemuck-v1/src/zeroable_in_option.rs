@@ -52,9 +52,9 @@ macro_rules! impl_for_fn {
         unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe extern "C" fn($($ArgTy,)*) -> R {}
         unsafe impl<$($ArgTy,)* R> ZeroableInOption for extern "system" fn($($ArgTy,)*) -> R {}
         unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe extern "system" fn($($ArgTy,)*) -> R {}
-        #[cfg(target_os="windows")]
+        #[cfg(all(target_os="windows", target_arch = "x86"))]
         unsafe impl<$($ArgTy,)* R> ZeroableInOption for extern "stdcall" fn($($ArgTy,)*) -> R {}
-        #[cfg(target_os="windows")]
+        #[cfg(all(target_os="windows", target_arch = "x86"))]
         unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe extern "stdcall" fn($($ArgTy,)*) -> R {}
         #[cfg(feature = "zeroable_unwind_fn")]
         impl_for_unwind_fn!($($ArgTy),*);

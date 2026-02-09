@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.24.0"
+version = "1.25.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = [
@@ -88,7 +88,7 @@ must_cast = []
 must_cast_extra = ["must_cast"]
 nightly_docs = []
 nightly_float = []
-nightly_portable_simd = []
+nightly_portable_simd = ["rustversion"]
 nightly_stdsimd = []
 pod_saturating = []
 track_caller = []
@@ -141,6 +141,10 @@ path = "tests/wrapper_forgets.rs"
 
 [dependencies.bytemuck_derive]
 version = "1.10.2"
+optional = true
+
+[dependencies.rustversion]
+version = "1.0.22"
 optional = true
 
 [lints.rust.unexpected_cfgs]
