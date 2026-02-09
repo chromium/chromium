@@ -16,8 +16,8 @@
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -63,6 +63,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -233,6 +238,11 @@ class ExtensionSessionsTest : public ExtensionBrowserTest {
     fn->set_has_callback(has_callback);
     return fn;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list_{
+      chrome::android::kRecentlyClosedTabsAndWindows};
+#endif  // BUILDFLAG(IS_ANDROID)
 
   scoped_refptr<const Extension> extension_;
 };
@@ -409,12 +419,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
       << error;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests chrome.sessions.getRecentlyClosed() for windows. Opens a second browser
 // window with two tabs, closes it, then calls the extension API function and
 // verifies one window with two tabs was recently closed.
-// TODO(crbug.com/405219627): Port to desktop Android once window restore is
-// supported.
+// TODO(crbug.com/482432028): This test is currently disabled by filter file on
+// some Android hardware bots. See bug for details.
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
@@ -432,16 +441,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   ASSERT_EQ(2, tab_list2->GetTabCount());
 
   // Navigate each tab, otherwise window close does not persist them in the tab
-  // restore service.
-  for (int i = 0; i < tab_list2->GetTabCount(); ++i) {
-    content::WebContents* tab = tab_list2->GetTab(i)->GetContents();
-    ASSERT_TRUE(NavigateToURL(tab, GURL("chrome://version/")));
-  }
+  // restore service. Use different URLs.
+  content::WebContents* contents0 = tab_list2->GetTab(0)->GetContents();
+  ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
+  content::WebContents* contents1 = tab_list2->GetTab(1)->GetContents();
+  ASSERT_TRUE(NavigateToURL(contents1, GURL("chrome://credits/")));
 
   // Close the second window and wait for it to close.
   BrowserCloseWaiter waiter(browser2);
   browser2->GetWindow()->Close();
   waiter.Wait();
+
+  // Ensure posted tasks from window close have run.
+  base::RunLoop().RunUntilIdle();
+
+  // NOTE: At this point persistent tab state may not yet be initialized on
+  // Android. SessionsGetRecentlyClosedFunction copes with this by using a
+  // Java-side callback that is not invoked until the window data is available.
+  // Sleeping here or spinning the message loop would work around the issue,
+  // but is the wrong solution.
 
   // chrome.sessions.getRecentlyClosed() should return 1 entry.
   std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
@@ -464,16 +482,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   ASSERT_TRUE(tabs) << "Tabs information missing from the window dict.";
   EXPECT_EQ(2u, tabs->size());
 
-  // The URLs are chrome://version/.
-  for (size_t i = 0; i < tabs->size(); ++i) {
-    const base::DictValue* tab = (*tabs)[i].GetIfDict();
-    ASSERT_TRUE(tab) << i;
-    const std::string* url = tab->FindString("url");
-    ASSERT_TRUE(url) << i;
-    EXPECT_EQ("chrome://version/", *url) << i;
-  }
+  // The first URL is chrome://version/.
+  const base::DictValue* tab0 = (*tabs)[0].GetIfDict();
+  ASSERT_TRUE(tab0);
+  const std::string* url0 = tab0->FindString("url");
+  ASSERT_TRUE(url0);
+  EXPECT_EQ("chrome://version/", *url0);
+
+  // The seconnd URL is chrome://credits/.
+  const base::DictValue* tab1 = (*tabs)[1].GetIfDict();
+  ASSERT_TRUE(tab1);
+  const std::string* url1 = tab1->FindString("url");
+  ASSERT_TRUE(url1);
+  EXPECT_EQ("chrome://credits/", *url1);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {
   base::ListValue sessions(

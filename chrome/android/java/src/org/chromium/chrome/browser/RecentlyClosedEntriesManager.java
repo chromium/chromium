@@ -8,11 +8,17 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
@@ -29,10 +35,12 @@ import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,6 +68,44 @@ public class RecentlyClosedEntriesManager {
     private @Nullable Callback<List<RecentlyClosedEntry>> mEntriesUpdatedCallback;
 
     /**
+     * Helper class for the getRecentlyClosedWindowInternal() method. Calls a callback when the tab
+     * state is initialized. Similar to {@code TabModelUtils.runOnTabStateInitialized()} but calls
+     * the callback when destroyed so the C++ side is always notified.
+     */
+    static class TabStateInitializedObserver implements TabModelSelectorObserver {
+        private final TabModelSelector mTabModelSelector;
+        private @Nullable JniOnceCallback<@Nullable TabModel> mCallback;
+
+        TabStateInitializedObserver(
+                TabModelSelector selector, JniOnceCallback<@Nullable TabModel> callback) {
+            assert callback != null;
+            mTabModelSelector = selector;
+            mCallback = callback;
+            mTabModelSelector.addObserver(this);
+        }
+
+        @Override
+        public void onTabStateInitialized() {
+            // Call the callback with the TabModel.
+            assumeNonNull(mCallback);
+            mCallback.onResult(mTabModelSelector.getCurrentModel());
+            // Set the callback to null to indicate we ran it.
+            mCallback = null;
+            mTabModelSelector.removeObserver(this);
+        }
+
+        @Override
+        public void onDestroyed() {
+            // If the callback wasn't called, notify the C++ side so it can continue.
+            if (mCallback != null) {
+                mCallback.onResult(null);
+                mCallback = null;
+            }
+            mTabModelSelector.removeObserver(this);
+        }
+    }
+
+    /**
      * @param multiInstanceManager The {@link MultiInstanceManager} instance used to observe window
      *     closures and restore windows.
      * @param tabModelSelector The selector that owns the Tab Model to access restored tabs.
@@ -83,6 +129,69 @@ public class RecentlyClosedEntriesManager {
      */
     public List<RecentlyClosedEntry> getRecentlyClosedEntries() {
         return mRecentlyClosedEntries;
+    }
+
+    /**
+     * Returns the TabModel via callback for the most recently closed window, if such a window
+     * Otherwise the callback is invoked with null.
+     */
+    @CalledByNative
+    public static void getRecentlyClosedWindow(JniOnceCallback<@Nullable TabModel> callback) {
+        // This function requires the kRecentlyClosedTabsAndWindows feature.
+        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            callback.onResult(null);
+            return;
+        }
+
+        Set<RecentlyClosedEntriesManager> managers =
+                RecentlyClosedEntriesManagerTrackerImpl.getInstance().getManagers();
+        if (managers.size() == 0) {
+            callback.onResult(null);
+            return;
+        }
+
+        // All managers are notified about each window close, so pick the first one.
+        RecentlyClosedEntriesManager manager = managers.iterator().next();
+
+        // Move from static to instance method to simplify using inner classes.
+        manager.getRecentlyClosedWindowInternal(callback);
+    }
+
+    @VisibleForTesting
+    public void getRecentlyClosedWindowInternal(JniOnceCallback<@Nullable TabModel> callback) {
+        // Look up recently closed windows.
+        List<RecentlyClosedWindow> windows = getRecentlyClosedWindows();
+        if (windows.size() == 0) {
+            callback.onResult(null);
+            return;
+        }
+
+        // Use the first window. Entries are sorted by close time, with most recently closed first.
+        RecentlyClosedWindow window = windows.get(0);
+
+        // Get the TabModelSelector for the closed window.
+        TabModelSelector selector =
+                TabWindowManagerSingleton.getInstance()
+                        .getTabModelSelectorById(window.getInstanceId());
+        if (selector == null) {
+            callback.onResult(null);
+            return;
+        }
+
+        // If the tab state is initialized, run the callback now. Post it as a task so it's
+        // always async from the C++ side, which simplifies the calling code.
+        if (selector.isTabStateInitialized()) {
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        TabModel model = selector.getCurrentModel();
+                        callback.onResult(model);
+                    });
+            return;
+        }
+
+        // Otherwise wait for tab state to be initialized. The observer adds and removes itself.
+        new TabStateInitializedObserver(selector, callback);
     }
 
     /**

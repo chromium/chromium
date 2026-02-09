@@ -19,6 +19,10 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
@@ -33,8 +37,16 @@ namespace extensions {
 class SessionId;
 
 class SessionsGetRecentlyClosedFunction : public ExtensionFunction {
+ public:
+  SessionsGetRecentlyClosedFunction();
+  SessionsGetRecentlyClosedFunction(const SessionsGetRecentlyClosedFunction&) =
+      delete;
+  SessionsGetRecentlyClosedFunction& operator=(
+      const SessionsGetRecentlyClosedFunction&) = delete;
+
  protected:
-  ~SessionsGetRecentlyClosedFunction() override = default;
+  // Ref-counted so protected destructor.
+  ~SessionsGetRecentlyClosedFunction() override;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("sessions.getRecentlyClosed",
                              SESSIONS_GETRECENTLYCLOSED)
@@ -48,6 +60,12 @@ class SessionsGetRecentlyClosedFunction : public ExtensionFunction {
       const sessions::tab_restore::Group& group);
   api::sessions::Session CreateSessionModel(
       const sessions::tab_restore::Entry& entry);
+#if BUILDFLAG(IS_ANDROID)
+  void OnGetRecentlyClosedWindow(
+      const base::android::JavaRef<jobject>& j_tab_model);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  std::vector<api::sessions::Session> result_;
 };
 
 class SessionsGetDevicesFunction : public ExtensionFunction {

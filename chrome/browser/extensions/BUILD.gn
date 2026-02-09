@@ -644,7 +644,10 @@ source_set("extensions") {
       "external_install_error_android.cc",
       "external_install_error_android.h",
     ]
-    deps += [ "//chrome/browser/ui/android/tab_model" ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   } else {
     sources += [
       "api/chrome_extensions_api_client_non_android.cc",
