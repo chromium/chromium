@@ -25,10 +25,8 @@ steps:
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "pushd ../backend"
-      - "be_cmd buck2-kill -- scripts/bin/buck2 kill"
-      - "be_cmd buck2-build -- scripts/bin/buck2 build -v 0,actions,stats,commands -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium"
-      - "popd"
+      - "be_cmd chromium-build -- node buildLinux.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
       RBE_service: simpsonite.cluster.engflow.com:443
       RBE_service_no_auth: true
@@ -44,7 +42,7 @@ steps:
       - "build_id/linux/x86_64/**"
   - label: "🔨 Chromium (mac-x86_64)"
     key: "build-chromium-mac-x86_64"
-    timeout_in_minutes: 60
+    timeout_in_minutes: 180
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
@@ -64,16 +62,9 @@ steps:
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "pushd ../backend"
-      - "be_cmd buck2-kill -- scripts/bin/buck2 kill"
-      - "be_cmd buck2-build -- scripts/bin/buck2 build -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-x86_64"
-      - "popd"
+      - "be_cmd chromium-build -- node buildMac.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
-      RBE_service: simpsonite.cluster.engflow.com:443
-      RBE_service_no_auth: true
-      RBE_use_application_default_credentials: true
-      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
-      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
@@ -83,7 +74,7 @@ steps:
       - "build_id/macOS/x86_64/**"
   - label: "🔨 Chromium (mac-arm64)"
     key: "build-chromium-mac-arm64"
-    timeout_in_minutes: 60
+    timeout_in_minutes: 180
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
@@ -103,16 +94,9 @@ steps:
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "pushd ../backend"
-      - "be_cmd buck2-kill -- scripts/bin/buck2 kill"
-      - "be_cmd buck2-build -- scripts/bin/buck2 build -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-arm64"
-      - "popd"
+      - "be_cmd chromium-build -- node buildMac.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
-      RBE_service: simpsonite.cluster.engflow.com:443
-      RBE_service_no_auth: true
-      RBE_use_application_default_credentials: true
-      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
-      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
       REPLAY_BUILD_ARM: true
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
