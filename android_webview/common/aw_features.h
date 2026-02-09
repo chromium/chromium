@@ -73,6 +73,7 @@ BASE_DECLARE_FEATURE(kWebViewFetchOriginTrialsComponent);
 BASE_DECLARE_FEATURE(kWebViewEnableApiCallUserActions);
 BASE_DECLARE_FEATURE(kWebViewWebPerformanceMetricsReporting);
 BASE_DECLARE_FEATURE(kWebViewTestNonembeddedLowEntropySource);
+BASE_DECLARE_FEATURE(kWebViewUseNonembeddedLowEntropySource);
 
 }  // namespace android_webview::features
 

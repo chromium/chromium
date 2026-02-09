@@ -68,6 +68,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewTestFeature,
     &features::kWebViewUseInitialNetworkStateAtStartup,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
+    &features::kWebViewUseNonembeddedLowEntropySource,
     &features::kWebViewUseStartupTasksLogic,
     &features::kWebViewUseStartupTasksLogicP2,
     &features::kWebViewWebauthn,

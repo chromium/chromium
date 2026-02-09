@@ -288,4 +288,9 @@ BASE_FEATURE(kWebViewWebPerformanceMetricsReporting,
 BASE_FEATURE(kWebViewTestNonembeddedLowEntropySource,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, WebView uses the low entropy source provided by the nonembedded
+// WebView service.
+BASE_FEATURE(kWebViewUseNonembeddedLowEntropySource,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

@@ -20,6 +20,8 @@
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/browser/variations/aw_entropy_providers.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
+#include "android_webview/common/aw_cached_flags.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
 #include "base/command_line.h"
@@ -243,7 +245,12 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     seed->country = seed_proto->country();
     seed->date = seed_date;
     seed->is_gzip_compressed = seed_proto->is_gzip_compressed();
-    if (seed_proto->has_low_entropy_source()) {
+    // Use the cached flag to gate the nonembedded low entropy source logic.
+    // This is required because entropy provider selection happens before
+    // the variations framework is fully initialized.
+    if (CachedFlags::IsEnabled(
+            features::kWebViewUseNonembeddedLowEntropySource) &&
+        seed_proto->has_low_entropy_source()) {
       nonembedded_low_entropy_source = seed_proto->low_entropy_source();
     }
   }

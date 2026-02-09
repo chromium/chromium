@@ -125,6 +125,9 @@ public class WebViewCachedFlags {
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_ENABLE_API_CALL_USER_ACTIONS,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_USE_NONEMBEDDED_LOW_ENTROPY_SOURCE,
                                             DefaultState.DISABLED)));
         }
     }
