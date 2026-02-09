@@ -688,8 +688,8 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       observation_{this};
 };
 
-std::optional<ProfileState>
-GetStateForProfile(StateSnapshot* state_snapshot, Profile* profile) {
+std::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
+                                               Profile* profile) {
   CHECK(state_snapshot);
   CHECK(profile);
   auto it = state_snapshot->profiles.find(profile);
@@ -4141,8 +4141,9 @@ webapps::AppId GetAppIdForIsolatedSite(Site site) {
     // isolated-app:// origin based on the signing key of the app.
     GURL parent_app_origin = url_info.origin().GetURL();
     GURL start_url = parent_app_origin.Resolve(GetRelativeSubAppPath(site));
-    return GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url,
-                         /*parent_manifest_id=*/parent_app_origin);
+    return GenerateAppId(
+        /*manifest_id_path=*/std::nullopt, start_url,
+        /*parent_manifest_id=*/webapps::ManifestId(parent_app_origin));
   }
 
   return url_info.app_id();
@@ -4163,7 +4164,8 @@ webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
     auto parent_site = GetSiteConfiguration(site_config.parent_site.value());
     return GenerateAppId(
         manifest_id, start_url,
-        GetTestServerForSiteMode(site).GetURL(parent_site.relative_url));
+        webapps::ManifestId(
+            GetTestServerForSiteMode(site).GetURL(parent_site.relative_url)));
   } else {
     return GenerateAppId(manifest_id, start_url);
   }

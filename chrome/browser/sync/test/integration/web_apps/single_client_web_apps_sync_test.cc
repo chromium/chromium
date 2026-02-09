@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
             GetExpectedInstallState());
 
-  auto manifest_id = GenerateManifestId(relative_manifest_id, url);
+  webapps::ManifestId manifest_id = GenerateManifestId(relative_manifest_id, url);
   auto info = std::make_unique<WebAppInstallInfo>(manifest_id, url);
   info->title = base::UTF8ToUTF16(app_id);
   info->description = u"Test description";
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
             GetExpectedInstallState());
 
-  auto manifest_id = GenerateManifestId(relative_manifest_id, url);
+  webapps::ManifestId manifest_id = GenerateManifestId(relative_manifest_id, url);
   auto info = std::make_unique<WebAppInstallInfo>(manifest_id, url);
   info->title = base::UTF8ToUTF16(app_id);
   info->description = u"Test description";
