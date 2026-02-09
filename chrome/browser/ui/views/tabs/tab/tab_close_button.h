@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_CLOSE_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CLOSE_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CLOSE_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CLOSE_BUTTON_H_
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -68,4 +68,4 @@ class TabCloseButton : public views::LabelButton,
   TabStyle::TabColors colors_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CLOSE_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CLOSE_BUTTON_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_ALERT_INDICATOR_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_ALERT_INDICATOR_BUTTON_H_
 
 #include <memory>
 #include <optional>
@@ -176,4 +176,4 @@ class AlertIndicatorButton : public views::ImageButton,
   std::optional<gfx::Size> actor_spinner_scaled_size_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ALERT_INDICATOR_BUTTON_H_

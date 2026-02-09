@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTEXT_MENU_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTEXT_MENU_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CONTEXT_MENU_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CONTEXT_MENU_CONTROLLER_H_
 
 #include <memory>
 
@@ -82,4 +82,4 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
   raw_ptr<Delegate> delegate_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTEXT_MENU_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CONTEXT_MENU_CONTROLLER_H_

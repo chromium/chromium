@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
+#include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 
 #include "base/numerics/safe_conversions.h"
 #include "ui/views/view.h"

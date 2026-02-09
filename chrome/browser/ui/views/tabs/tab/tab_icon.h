@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_ICON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_ICON_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -225,4 +225,4 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   PrefChangeRegistrar local_state_registrar_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_ICON_H_

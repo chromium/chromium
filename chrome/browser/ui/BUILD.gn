@@ -4401,8 +4401,6 @@ static_library("ui") {
       "views/tab_sharing/tab_sharing_status_message_view.h",
       "views/tab_sharing/tab_sharing_ui_views.cc",
       "views/tab_sharing/tab_sharing_ui_views.h",
-      "views/tabs/alert_indicator_button.cc",
-      "views/tabs/alert_indicator_button.h",
       "views/tabs/browser_tab_strip_controller.cc",
       "views/tabs/browser_tab_strip_controller.h",
       "views/tabs/color_picker_view.cc",
@@ -4422,8 +4420,6 @@ static_library("ui") {
       "views/tabs/fade_view.h",
       "views/tabs/filename_elider.cc",
       "views/tabs/filename_elider.h",
-      "views/tabs/glow_hover_controller.cc",
-      "views/tabs/glow_hover_controller.h",
       "views/tabs/groups/avatar_container_view.cc",
       "views/tabs/groups/avatar_container_view.h",
       "views/tabs/groups/manage_sharing_row.cc",
@@ -4436,17 +4432,23 @@ static_library("ui") {
       "views/tabs/recent_activity_bubble_dialog_view.h",
       "views/tabs/tab.cc",
       "views/tabs/tab.h",
+      "views/tabs/tab/alert_indicator_button.cc",
+      "views/tabs/tab/alert_indicator_button.h",
+      "views/tabs/tab/glow_hover_controller.cc",
+      "views/tabs/tab/glow_hover_controller.h",
+      "views/tabs/tab/tab_close_button.cc",
+      "views/tabs/tab/tab_close_button.h",
+      "views/tabs/tab/tab_context_menu_controller.cc",
+      "views/tabs/tab/tab_context_menu_controller.h",
+      "views/tabs/tab/tab_icon.cc",
+      "views/tabs/tab/tab_icon.h",
       "views/tabs/tab_accessibility.cc",
       "views/tabs/tab_accessibility.h",
-      "views/tabs/tab_close_button.cc",
-      "views/tabs/tab_close_button.h",
       "views/tabs/tab_container.cc",
       "views/tabs/tab_container.h",
       "views/tabs/tab_container_controller.h",
       "views/tabs/tab_container_impl.cc",
       "views/tabs/tab_container_impl.h",
-      "views/tabs/tab_context_menu_controller.cc",
-      "views/tabs/tab_context_menu_controller.h",
       "views/tabs/tab_group_accessibility.cc",
       "views/tabs/tab_group_accessibility.h",
       "views/tabs/tab_group_editor_bubble_tracker.cc",
@@ -4469,8 +4471,6 @@ static_library("ui") {
       "views/tabs/tab_hover_card_controller.h",
       "views/tabs/tab_hover_card_thumbnail_observer.cc",
       "views/tabs/tab_hover_card_thumbnail_observer.h",
-      "views/tabs/tab_icon.cc",
-      "views/tabs/tab_icon.h",
       "views/tabs/tab_layout_state.cc",
       "views/tabs/tab_layout_state.h",
       "views/tabs/tab_search_button.cc",
@@ -4909,7 +4909,7 @@ static_library("ui") {
       # TODO(crbug.com/451609048): Remove this circular dependency when the following
       # headers get componentized:
       # - c/b/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h
-      # - c/b/ui/views/tabs/tab_icon.h
+      # - c/b/ui/views/tabs/tab/tab_icon.h
       "//chrome/browser/ui/views/tabs/vertical:impl",
     ]
 

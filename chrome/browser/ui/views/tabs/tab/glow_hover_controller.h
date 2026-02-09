@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLOW_HOVER_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_GLOW_HOVER_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GLOW_HOVER_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GLOW_HOVER_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -67,4 +67,4 @@ class GlowHoverController : public views::AnimationDelegateViews {
   double subtle_opacity_scale_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLOW_HOVER_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GLOW_HOVER_CONTROLLER_H_
