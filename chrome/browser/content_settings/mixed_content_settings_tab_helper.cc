@@ -41,11 +41,11 @@ void MixedContentSettingsTabHelper::AllowRunningOfInsecureContent(
     RenderFrameHost& render_frame_host) {
   DCHECK(!render_frame_host.IsNestedWithinFencedFrame());
   auto* main_frame = render_frame_host.GetOutermostMainFrame();
-  if (!settings_.contains(main_frame->GetSiteInstance())) {
-    settings_[main_frame->GetSiteInstance()] =
-        std::make_unique<SiteSettings>(main_frame);
+  auto [it, inserted] = settings_.try_emplace(main_frame->GetSiteInstance());
+  if (inserted) {
+    it->second = std::make_unique<SiteSettings>(main_frame);
   }
-  settings_[main_frame->GetSiteInstance()]->AllowRunningOfInsecureContent();
+  it->second->AllowRunningOfInsecureContent();
 }
 
 void MixedContentSettingsTabHelper::RenderFrameCreated(
@@ -67,16 +67,18 @@ void MixedContentSettingsTabHelper::RenderFrameCreated(
 }
 
 void MixedContentSettingsTabHelper::RenderFrameDeleted(RenderFrameHost* frame) {
-  if (frame->GetParentOrOuterDocument() ||
-      !settings_.contains(frame->GetSiteInstance())) {
+  if (frame->GetParentOrOuterDocument()) {
     return;
   }
-  SiteSettings* settings = settings_[frame->GetSiteInstance()].get();
-  /// The deleted RenderFrame is no longer using the SiteSettings.
-  settings->DecrementRenderFrameCount();
-  if (settings->render_frame_count() == 0) {
-    // No RenderFrame is using the SiteSettings.
-    settings_.erase(frame->GetSiteInstance());
+  if (auto it = settings_.find(frame->GetSiteInstance());
+      it != settings_.end()) {
+    SiteSettings* settings = it->second.get();
+    // The deleted RenderFrame is no longer using the SiteSettings.
+    settings->DecrementRenderFrameCount();
+    if (settings->render_frame_count() == 0) {
+      // No RenderFrame is using the SiteSettings.
+      settings_.erase(it);
+    }
   }
 }
 
