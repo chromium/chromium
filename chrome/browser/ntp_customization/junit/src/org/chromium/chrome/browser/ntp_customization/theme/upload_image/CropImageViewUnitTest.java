@@ -548,7 +548,7 @@ public class CropImageViewUnitTest {
                 PORTRAIT_VIEW_HEIGHT);
         assertFalse(mView.getIsScreenRotated());
         setOrientation(Configuration.ORIENTATION_LANDSCAPE);
-        mView.configureMatrixForCurrentOrientation(PORTRAIT_VIEW_WIDTH, PORTRAIT_VIEW_HEIGHT);
+        mView.configureMatrixForCurrentOrientation();
         assertTrue(mView.getIsScreenRotated());
     }
 }
