@@ -1328,12 +1328,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspac
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/op-dict-7.html [ Failure ]
 
-# These tests fail because we don't support the MathML href attribute, which is
-# not part of MathML Core Level 1.
-crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-1.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-2.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-3.html [ Failure ]
-
 # ====== Style team owned tests from here ======
 
 crbug.com/1353560 [ Mac ] external/wpt/css/css-content/quotes-006.html [ Failure ]
@@ -2032,7 +2026,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/dom_override_cue_line.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/dom_override_cue_text.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/dom_override_cue_text_while_paused.html [ Failure ]
-crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/enable_controls_reposition.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/9_cues_overlapping_completely_all_cues_have_same_timestamp.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/9_cues_overlapping_completely.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/media_height_19.html [ Failure ]
@@ -2047,8 +2040,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/line_integer_and_percent_mixed_overlap_move_up.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/line_percent_and_integer_mixed_overlap.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/line_percent_and_integer_mixed_overlap_move_up.html [ Failure ]
-crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/media_height400_with_controls.html [ Failure ]
-crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/media_with_controls.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/navigate_cue_position.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/one_line_cue_plus_wrapped_cue.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/repaint.html [ Failure ]
@@ -5700,12 +5691,6 @@ crbug.com/1016456 external/wpt/dom/ranges/Range-mutations-dataChange.html [ Cras
 
 # First frame not always painted in time
 crbug.com/1024976 media/controls/paint-controls-webkit-appearance-none-custom-bg.html [ Failure Pass ]
-
-# iframe.freeze plumbing is not hooked up at the moment.
-crbug.com/907125 external/wpt/lifecycle/freeze.html [ Failure ] # wpt_subtest_failure
-crbug.com/907125 external/wpt/lifecycle/child-out-of-viewport.tentative.html [ Failure Timeout ]
-crbug.com/907125 external/wpt/lifecycle/child-display-none.tentative.html [ Failure Timeout ]
-crbug.com/907125 external/wpt/lifecycle/worker-dispay-none.tentative.html [ Failure Timeout ]
 
 # Sheriff 2019-11-15
 crbug.com/1025123 external/wpt/longtask-timing/longtask-in-sibling-iframe-crossorigin.html [ Failure Pass ]
