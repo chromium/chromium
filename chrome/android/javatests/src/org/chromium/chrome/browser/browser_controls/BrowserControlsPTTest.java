@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -67,6 +68,7 @@ public class BrowserControlsPTTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisabledTest(message = "https://crbug.com/471837397")
     public void topControlsScroll() {
         BrowserControlsFacility.waitForBrowserControlsToBeMoveable(mPage);
 
@@ -78,6 +80,7 @@ public class BrowserControlsPTTest {
     @LargeTest
     @Restriction(DeviceFormFactor.DESKTOP)
     @EnableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
+    @DisabledTest(message = "https://crbug.com/471837396")
     public void topControlsScrollingDisabled() {
         mPage.noopTo()
                 .waitFor(
