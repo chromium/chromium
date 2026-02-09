@@ -308,6 +308,7 @@
 #define IDC_SHOW_AI_MODE_OMNIBOX_BUTTON 40299
 #define IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI 40300
 #define IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS 40301
+#define IDC_REPORT_UNSAFE_SITE 40302
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

@@ -389,6 +389,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
     { IDC_DEVELOPER_MENU,          true,     false,     false,     false    },
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     { IDC_FEEDBACK,                true,     false,     false,     false    },
+    { IDC_REPORT_UNSAFE_SITE,      true,     false,     false,     false    },
 #endif
     { IDC_OPTIONS,                 true,     false,     false,     false    },
     { IDC_IMPORT_SETTINGS,         true,     false,     false,     false    },

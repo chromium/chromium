@@ -27,6 +27,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
+#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -948,11 +949,19 @@ class HelpMenuModel : public ui::SimpleMenuModel {
     } else {
       SetCommandIcon(this, IDC_HELP_PAGE_VIA_MENU, kHelpMenuIcon);
     }
-    if (browser->profile()->GetPrefs()->GetBoolean(
-            prefs::kUserFeedbackAllowed)) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    PrefService* pref_service = browser->profile()->GetPrefs();
+    if (pref_service->GetBoolean(prefs::kUserFeedbackAllowed)) {
       AddItemWithStringIdAndVectorIcon(this, IDC_FEEDBACK, IDS_FEEDBACK,
                                        kReportIcon);
+
+      if (feedback::ReportUnsafeSiteDialog::IsEnabled(*browser->profile())) {
+        AddItemWithStringIdAndVectorIcon(this, IDC_REPORT_UNSAFE_SITE,
+                                         IDS_REPORT_UNSAFE_SITE,
+                                         vector_icons::kWarningIcon);
+      }
     }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
 };
 

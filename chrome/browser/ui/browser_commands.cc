@@ -2320,6 +2320,13 @@ void OpenFeedbackDialog(BrowserWindowInterface* bwi,
                            category_tag, std::string() /* extra_diagnostics */);
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void OpenReportUnsafeSiteDialog(Browser* browser) {
+  base::RecordAction(UserMetricsAction("ReportUnsafeSite"));
+  // TODO(crbug.com/468396148): Implement
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 void ToggleBookmarkBar(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowBookmarksBar"));
   ToggleBookmarkBarWhenVisible(browser->profile());

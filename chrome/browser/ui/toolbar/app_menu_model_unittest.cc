@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -576,6 +577,86 @@ TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
       profile_menu->GetIndexOfCommandId(IDC_SHOW_SYNC_SETTINGS).value();
   EXPECT_TRUE(profile_menu->IsEnabledAt(sync_settings_index));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+bool DoesHelpMenuHaveCommand(const AppMenuModel& model, int command_id) {
+  const size_t help_menu_index =
+      model.GetIndexOfCommandId(IDC_HELP_MENU).value();
+  ui::SimpleMenuModel* help_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(help_menu_index));
+  return help_menu->GetIndexOfCommandId(command_id).has_value();
+}
+
+TEST_F(AppMenuModelTest, Feedback_UserFeedbackAllowedPolicy) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               true);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_TRUE(DoesHelpMenuHaveCommand(model, IDC_FEEDBACK));
+  }
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               false);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_FALSE(DoesHelpMenuHaveCommand(model, IDC_FEEDBACK));
+  }
+}
+
+class AppMenuReportUnsafeSiteTest : public base::test::WithFeatureOverride,
+                                    public AppMenuModelTest {
+ public:
+  AppMenuReportUnsafeSiteTest()
+      : WithFeatureOverride(features::kReportUnsafeSite) {}
+  ~AppMenuReportUnsafeSiteTest() override = default;
+};
+
+TEST_P(AppMenuReportUnsafeSiteTest,
+       ReportUnsafeSite_UserFeedbackAllowedPolicy) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               true);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_EQ(IsParamFeatureEnabled(),
+              DoesHelpMenuHaveCommand(model, IDC_REPORT_UNSAFE_SITE));
+  }
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               false);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_FALSE(DoesHelpMenuHaveCommand(model, IDC_REPORT_UNSAFE_SITE));
+  }
+}
+
+TEST_P(AppMenuReportUnsafeSiteTest, ReportUnsafeSite_SafeBrowsingDisabled) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               true);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                               true);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_EQ(IsParamFeatureEnabled(),
+              DoesHelpMenuHaveCommand(model, IDC_REPORT_UNSAFE_SITE));
+  }
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                               false);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_FALSE(DoesHelpMenuHaveCommand(model, IDC_REPORT_UNSAFE_SITE));
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AppMenuReportUnsafeSiteTest);
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class AppMenuModelSigninPromoTest : public base::test::WithFeatureOverride,
                                     public AppMenuModelTest {

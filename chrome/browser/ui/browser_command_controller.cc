@@ -1004,6 +1004,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_FEEDBACK:
       OpenFeedbackDialog(browser_, feedback::kFeedbackSourceBrowserCommand);
       break;
+    case IDC_REPORT_UNSAFE_SITE:
+      OpenReportUnsafeSiteDialog(browser_);
+      break;
 #endif
     case IDC_SHOW_CHROME_LABS:
       window()->ShowChromeLabs();
@@ -2105,6 +2108,7 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   command_updater_.UpdateCommandEnabled(
       IDC_FEEDBACK, show_main_ui || browser_->is_type_devtools());
+  command_updater_.UpdateCommandEnabled(IDC_REPORT_UNSAFE_SITE, show_main_ui);
 #endif
 
   command_updater_.UpdateCommandEnabled(IDC_EDIT_SEARCH_ENGINES, show_main_ui);

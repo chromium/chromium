@@ -38694,6 +38694,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ReportUnsafeSite">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    Recorded when a user selects the &quot;Report an unsafe site...&quot; option
+    from the app menu.
+  </description>
+</action>
+
 <action name="ResetProfile">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
