@@ -85,6 +85,10 @@ const CGFloat kCloseButtonPadding = 16.0f;
 /// scroll view.
 @property(nonatomic, assign) CGFloat keyboardHeight;
 
+/// Keyboard frame used to compute the number of visible suggestions above the
+/// keyboard in composebox.
+@property(nonatomic, assign) CGRect keyboardFrame;
+
 /// Table view that displays the results.
 @property(nonatomic, strong) SelfSizingTableView* tableView;
 
@@ -186,6 +190,10 @@ const CGFloat kCloseButtonPadding = 16.0f;
   [self.tableView
       setContentOffset:CGPointMake(0, -self.tableView.contentInset.top)
               animated:YES];
+
+  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    self.shouldUpdateVisibleSuggestionCount = YES;
+  }
 }
 
 - (void)toggleOmniboxDebuggerView {
@@ -398,6 +406,9 @@ const CGFloat kCloseButtonPadding = 16.0f;
 
 - (void)setKeyboardAttachedBottomOmniboxHeight:
     (CGFloat)keyboardAttachedBottomOmniboxHeight {
+  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    return;
+  }
   _keyboardAttachedBottomOmniboxHeight = keyboardAttachedBottomOmniboxHeight;
   self.shouldUpdateVisibleSuggestionCount = YES;
 }
@@ -1044,10 +1055,17 @@ const CGFloat kCloseButtonPadding = 16.0f;
 - (void)keyboardDidChangeFrame:(NSNotification*)notification {
   CGRect keyboardFrame =
       [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  CGFloat keyboardHeight = keyboardFrame.size.height;
-  if (self.keyboardHeight != keyboardHeight) {
-    self.keyboardHeight = keyboardHeight;
-    self.shouldUpdateVisibleSuggestionCount = YES;
+  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    if (!CGRectEqualToRect(self.keyboardFrame, keyboardFrame)) {
+      self.keyboardFrame = keyboardFrame;
+      self.shouldUpdateVisibleSuggestionCount = YES;
+    }
+  } else {
+    CGFloat keyboardHeight = keyboardFrame.size.height;
+    if (self.keyboardHeight != keyboardHeight) {
+      self.keyboardHeight = keyboardHeight;
+      self.shouldUpdateVisibleSuggestionCount = YES;
+    }
   }
 }
 
@@ -1221,6 +1239,14 @@ const CGFloat kCloseButtonPadding = 16.0f;
 }
 
 - (void)updateVisibleSuggestionCount {
+  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    [self updateVisibleSuggestionCountFusebox];
+  } else {
+    [self updateVisibleSuggestionCountLegacy];
+  }
+}
+
+- (void)updateVisibleSuggestionCountLegacy {
   CGRect tableViewFrameInCurrentWindowCoordinateSpace =
       [self.tableView convertRect:self.tableView.bounds
                 toCoordinateSpace:self.tableView.window.coordinateSpace];
@@ -1233,6 +1259,52 @@ const CGFloat kCloseButtonPadding = 16.0f;
       tableViewFrameInCurrentWindowCoordinateSpace.origin.y -
       bottomOccludedHeight - self.tableView.contentInset.top -
       tableViewTopContentOffset;
+  // Use font size to estimate the size of a omnibox search suggestion.
+  CGFloat fontSizeHeight = [@"T" sizeWithAttributes:@{
+                             NSFontAttributeName : [UIFont
+                                 preferredFontForTextStyle:UIFontTextStyleBody]
+                           }]
+                               .height;
+  // Add padding to the estimated row height and set its minimum to be at
+  // `kOmniboxPopupCellMinimumHeight`.
+  CGFloat estimatedRowHeight =
+      MAX(fontSizeHeight + 2 * kBottomPadding, kOmniboxPopupCellMinimumHeight);
+  CGFloat visibleRows = visibleTableViewHeight / estimatedRowHeight;
+  // A row is considered visible if `kVisibleSuggestionTreshold` percent of its
+  // height is visible.
+  self.visibleSuggestionCount =
+      floor(visibleRows + (1.0 - kVisibleSuggestionThreshold));
+  self.shouldUpdateVisibleSuggestionCount = NO;
+}
+
+/// Updates `visibleSuggestionCount` which is an approximation of the number of
+/// visible suggestions above the keyboard.
+- (void)updateVisibleSuggestionCountFusebox {
+  // Compute the keyboard overlap with the popup.
+  CGRect tableViewFrameInWindow =
+      [self.tableView convertRect:self.tableView.bounds
+                toCoordinateSpace:self.tableView.window.coordinateSpace];
+  CGRect keyboardOverlapRect =
+      CGRectIntersection(tableViewFrameInWindow, self.keyboardFrame);
+  CGFloat keyboardOverlapHeight =
+      CGRectIsEmpty(keyboardOverlapRect) ? 0 : keyboardOverlapRect.size.height;
+
+  // When something covers the popup at the top, its height is added to
+  // `tableView.contentInset.top` in `setAdditionalVerticalContentInset:`. This
+  // is the case with top composebox where suggestions are flowing below the top
+  // composebox.
+  CGFloat topOccludedHeight = self.tableView.contentInset.top;
+  // When something covers the popup at the bottom, its height is added to
+  // `tableView.contentInset.bottom` in `setAdditionalVerticalContentInset:`.
+  // This is the case with bottom composebox. The height is added as inset so
+  // the user can still scroll to suggestions covered by the composebox.
+  CGFloat bottomOccludedHeight =
+      keyboardOverlapHeight + self.tableView.contentInset.bottom;
+
+  // Visible height of the table view.
+  CGFloat visibleTableViewHeight = CGRectGetHeight(self.tableView.bounds) -
+                                   topOccludedHeight - bottomOccludedHeight;
+
   // Use font size to estimate the size of a omnibox search suggestion.
   CGFloat fontSizeHeight = [@"T" sizeWithAttributes:@{
                              NSFontAttributeName : [UIFont
