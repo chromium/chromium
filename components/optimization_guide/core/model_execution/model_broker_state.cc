@@ -86,22 +86,30 @@ void ModelBrokerState::GetOnDeviceModelEligibilityAsync(
 
 std::optional<optimization_guide::SamplingParamsConfig>
 ModelBrokerState::GetSamplingParamsConfig(mojom::OnDeviceFeature feature) {
-  MaybeAdaptationMetadata metadata =
-      service_controller_.GetFeatureMetadata(feature);
-  if (!features::IsOnDeviceExecutionEnabled() || !metadata.has_value()) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
     return std::nullopt;
   }
-  return metadata->adapter()->GetSamplingParamsConfig();
+
+  const auto* adapter = service_controller_.GetAdapter(feature);
+  if (!adapter) {
+    return std::nullopt;
+  }
+
+  return adapter->GetSamplingParamsConfig();
 }
 
 std::optional<const proto::Any> ModelBrokerState::GetFeatureMetadata(
     mojom::OnDeviceFeature feature) {
-  MaybeAdaptationMetadata metadata =
-      service_controller_.GetFeatureMetadata(feature);
-  if (!features::IsOnDeviceExecutionEnabled() || !metadata.has_value()) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
     return std::nullopt;
   }
-  return metadata->adapter()->GetFeatureMetadata();
+
+  const auto* adapter = service_controller_.GetAdapter(feature);
+  if (!adapter) {
+    return std::nullopt;
+  }
+
+  return adapter->GetFeatureMetadata();
 }
 
 void ModelBrokerState::FinishGetOnDeviceModelEligibility(

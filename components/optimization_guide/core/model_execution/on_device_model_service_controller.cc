@@ -647,6 +647,11 @@ OnDeviceModelServiceController::Solution::MakeConfig() const {
   return config;
 }
 
+const OnDeviceModelFeatureAdapter*
+OnDeviceModelServiceController::Solution::GetAdapter() const {
+  return adapter_.get();
+}
+
 void OnDeviceModelServiceController::Solution::CreateSession(
     mojo::PendingReceiver<on_device_model::mojom::Session> pending,
     on_device_model::mojom::SessionParamsPtr params) {

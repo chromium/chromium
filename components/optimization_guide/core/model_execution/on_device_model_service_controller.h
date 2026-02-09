@@ -129,6 +129,18 @@ class OnDeviceModelServiceController final {
   // Retrieves the object storing the adaptation metadata for 'feature'.
   MaybeAdaptationMetadata& GetFeatureMetadata(mojom::OnDeviceFeature feature);
 
+  // Get the adapter for a feature. Returns nullptr if no solution is available.
+  // GetFeatureMetadata/GetSamplingParamsConfig in ModelBrokerState depend on
+  // this which gets the adapter from Solution where we hold the scoped_refptr
+  // to the OnDeviceModelFeatureAdapter instance. This will align with Android
+  // implementation.
+  const OnDeviceModelFeatureAdapter* GetAdapter(
+      mojom::OnDeviceFeature feature) {
+    const auto& solution =
+        model_broker_impl_.GetSolutionProvider(feature).solution();
+    return solution.has_value() ? solution.value()->GetAdapter() : nullptr;
+  }
+
   // Returns the selected performance hint.
   proto::OnDeviceModelPerformanceHint GetPerformanceHint();
 
@@ -162,6 +174,9 @@ class OnDeviceModelServiceController final {
 
     // Creates a config describing this solution;
     mojom::ModelSolutionConfigPtr MakeConfig() const override;
+
+    // Returns the adapter for this solution.
+    const OnDeviceModelFeatureAdapter* GetAdapter() const override;
 
     const scoped_refptr<const OnDeviceModelFeatureAdapter>& adapter() const {
       return adapter_;
