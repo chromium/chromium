@@ -199,9 +199,10 @@ class GraphImplLiteRt::ComputeResources {
     return self;
   }
 
-  ComputeResources(
-      base::flat_map<std::string, TensorDescriptor> input_name_to_descriptor,
-      base::flat_map<std::string, TensorDescriptor> output_name_to_descriptor)
+  ComputeResources(std::vector<std::pair<std::string, TensorDescriptor>>
+                       input_name_to_descriptor,
+                   std::vector<std::pair<std::string, TensorDescriptor>>
+                       output_name_to_descriptor)
       : input_name_to_descriptor(std::move(input_name_to_descriptor)),
         output_name_to_descriptor(std::move(output_name_to_descriptor)) {}
 
@@ -217,15 +218,16 @@ class GraphImplLiteRt::ComputeResources {
 #endif
   }
 
-  void DoDispatch(std::vector<tflite::TensorDescriptor> inputs,
-                  std::vector<tflite::TensorDescriptor> outputs,
-                  base::flat_map<int, raw_ref<const BufferContent>> buffers,
-                  ScopedTrace scoped_trace) {
+  void DoDispatch(
+      const std::vector<std::pair<std::string, TensorDescriptor>>& inputs,
+      const std::vector<std::pair<std::string, TensorDescriptor>>& outputs,
+      base::flat_map<int, raw_ref<const BufferContent>> buffers,
+      ScopedTrace scoped_trace) {
     scoped_trace.AddStep("Set up input and output buffers");
 
     std::vector<::litert::TensorBuffer> input_buffers;
     input_buffers.reserve(inputs.size());
-    for (const tflite::TensorDescriptor& input : inputs) {
+    for (const auto& [name, input] : inputs) {
       auto tensor_type = ::litert::RankedTensorType(
           GetLiteRtElementType(input.descriptor.data_type()),
           ::litert::Layout(
@@ -244,7 +246,7 @@ class GraphImplLiteRt::ComputeResources {
 
     std::vector<::litert::TensorBuffer> output_buffers;
     output_buffers.reserve(outputs.size());
-    for (const tflite::TensorDescriptor& output : outputs) {
+    for (const auto& [name, output] : outputs) {
       auto tensor_type = ::litert::RankedTensorType(
           GetLiteRtElementType(output.descriptor.data_type()),
           ::litert::Layout(
@@ -299,8 +301,10 @@ class GraphImplLiteRt::ComputeResources {
   std::vector<mojom::Device> devices;
 
   // Used for getting queueable input/output resources.
-  base::flat_map<std::string, TensorDescriptor> input_name_to_descriptor;
-  base::flat_map<std::string, TensorDescriptor> output_name_to_descriptor;
+  std::vector<std::pair<std::string, TensorDescriptor>>
+      input_name_to_descriptor;
+  std::vector<std::pair<std::string, TensorDescriptor>>
+      output_name_to_descriptor;
 
  private:
   base::expected<::litert::Options, mojom::ErrorPtr> GetCompilationOptions(
@@ -484,9 +488,9 @@ GraphImplLiteRt::~GraphImplLiteRt() = default;
 GraphImplLiteRt::GraphImplLiteRt(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
-    base::flat_map<std::string, tflite::TensorDescriptor>
+    std::vector<std::pair<std::string, tflite::TensorDescriptor>>
         input_name_to_descriptor,
-    base::flat_map<std::string, tflite::TensorDescriptor>
+    std::vector<std::pair<std::string, tflite::TensorDescriptor>>
         output_name_to_descriptor,
     scoped_refptr<QueueableResourceState<ComputeResources>>
         compute_resources_state,
@@ -510,27 +514,28 @@ void GraphImplLiteRt::DispatchImpl(
   std::vector<
       std::pair<int, scoped_refptr<QueueableResourceState<BufferContent>>>>
       input_buffer_states, output_buffer_states;
-  input_buffer_states.reserve(named_inputs.size());
-  output_buffer_states.reserve(named_outputs.size());
+  input_buffer_states.reserve(input_name_to_descriptor_.size());
+  output_buffer_states.reserve(output_name_to_descriptor_.size());
 
   // The caller guarantees that all expected tensors have been provided.
-  for (const auto& [name, tensor] : named_inputs) {
-    auto* tflite_tensor = static_cast<tflite::TensorImplTflite*>(tensor.get());
-    input_buffer_states.emplace_back(
-        input_name_to_descriptor_.at(name).tensor_index,
-        tflite_tensor->GetBufferState());
+  for (const auto& [name, descriptor] : input_name_to_descriptor_) {
+    auto* tflite_tensor =
+        static_cast<tflite::TensorImplTflite*>(named_inputs.at(name).get());
+    input_buffer_states.emplace_back(descriptor.tensor_index,
+                                     tflite_tensor->GetBufferState());
   }
-  for (const auto& [name, tensor] : named_outputs) {
-    auto* tflite_tensor = static_cast<tflite::TensorImplTflite*>(tensor.get());
-    output_buffer_states.emplace_back(
-        output_name_to_descriptor_.at(name).tensor_index,
-        tflite_tensor->GetBufferState());
+
+  for (const auto& [name, descriptor] : output_name_to_descriptor_) {
+    auto* tflite_tensor =
+        static_cast<tflite::TensorImplTflite*>(named_outputs.at(name).get());
+    output_buffer_states.emplace_back(descriptor.tensor_index,
+                                      tflite_tensor->GetBufferState());
   }
 
   // Input tensors will be read from while the graph is executing, so lock them
   // them as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
-  shared_resources.reserve(named_inputs.size());
+  shared_resources.reserve(input_name_to_descriptor_.size());
   for (const auto& [name, buffer_state] : input_buffer_states) {
     shared_resources.push_back(buffer_state);
   }
@@ -539,7 +544,7 @@ void GraphImplLiteRt::DispatchImpl(
   // this graph's compute resources while the graph is executing.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources;
   // Extra +1 is for the compute resources.
-  exclusive_resources.reserve(1 + named_outputs.size());
+  exclusive_resources.reserve(1 + output_name_to_descriptor_.size());
   exclusive_resources.push_back(compute_resources_state_);
   for (const auto& [name, buffer_state] : output_buffer_states) {
     exclusive_resources.push_back(buffer_state);
@@ -557,9 +562,11 @@ void GraphImplLiteRt::DispatchImpl(
              base::flat_map<
                  int, scoped_refptr<QueueableResourceState<BufferContent>>>
                  output_buffer_states,
-             const base::flat_map<std::string, tflite::TensorDescriptor>&
+             const std::vector<
+                 std::pair<std::string, tflite::TensorDescriptor>>&
                  input_name_to_descriptor,
-             const base::flat_map<std::string, tflite::TensorDescriptor>&
+             const std::vector<
+                 std::pair<std::string, tflite::TensorDescriptor>>&
                  output_name_to_descriptor,
              ScopedTrace scoped_trace, base::OnceClosure completion_closure) {
             ComputeResources* raw_compute_resources =
@@ -568,13 +575,6 @@ void GraphImplLiteRt::DispatchImpl(
             base::flat_map<int, raw_ref<const BufferContent>> buffers =
                 raw_compute_resources->CollectBuffersForDispatch(
                     input_buffer_states, output_buffer_states);
-
-            std::vector<TensorDescriptor> input_pairs =
-                base::ToVector(input_name_to_descriptor,
-                               [](const auto& pair) { return pair.second; });
-            std::vector<TensorDescriptor> output_pairs =
-                base::ToVector(output_name_to_descriptor,
-                               [](const auto& pair) { return pair.second; });
 
             // Compute tasks can take a significant amount of time, use the
             // thread pool to avoid blocking the main thread.
@@ -587,7 +587,7 @@ void GraphImplLiteRt::DispatchImpl(
                     // `raw_compute_resources` is held by the
                     // `ResourceTask` until `completion_closure` is run below.
                     base::Unretained(raw_compute_resources),
-                    std::move(input_pairs), std::move(output_pairs),
+                    input_name_to_descriptor, output_name_to_descriptor,
                     std::move(buffers), std::move(scoped_trace)),
                 std::move(completion_closure));
           },

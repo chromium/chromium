@@ -499,8 +499,10 @@ GetCoordinatesNDFromIndex(size_t flat_index,
 
 GraphBuilderTflite::Result::Result(
     flatbuffers::DetachedBuffer buffer,
-    base::flat_map<std::string, TensorDescriptor> input_name_to_descriptor,
-    base::flat_map<std::string, TensorDescriptor> output_name_to_descriptor,
+    std::vector<std::pair<std::string, TensorDescriptor>>
+        input_name_to_descriptor,
+    std::vector<std::pair<std::string, TensorDescriptor>>
+        output_name_to_descriptor,
     base::File weights_file,
     bool graph_requires_fp32_precision)
     : buffer(std::move(buffer)),

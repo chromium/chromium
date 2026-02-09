@@ -50,9 +50,9 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
   class ComputeResources;
   GraphImplLiteRt(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                   ComputeResourceInfo compute_resource_info,
-                  base::flat_map<std::string, tflite::TensorDescriptor>
+                  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
                       input_name_to_descriptor,
-                  base::flat_map<std::string, tflite::TensorDescriptor>
+                  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
                       output_name_to_descriptor,
                   scoped_refptr<QueueableResourceState<ComputeResources>>
                       compute_resources_state,
@@ -94,9 +94,9 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
 
   scoped_refptr<QueueableResourceState<ComputeResources>>
       compute_resources_state_;
-  base::flat_map<std::string, tflite::TensorDescriptor>
+  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
       input_name_to_descriptor_;
-  base::flat_map<std::string, tflite::TensorDescriptor>
+  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
       output_name_to_descriptor_;
 
   base::WeakPtrFactory<GraphImplLiteRt> weak_factory_{this};
