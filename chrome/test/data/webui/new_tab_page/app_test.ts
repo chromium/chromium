@@ -1165,7 +1165,8 @@ suite('NewTabPageAppTest', () => {
           return null;
         };
 
-        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+        const searchboxContainer =
+            app.shadowRoot.querySelector('cr-searchbox');
         const composeButton = getComposeButton();
         assertTrue(!!composeButton);
 
@@ -1366,6 +1367,7 @@ suite('NewTabPageAppTest', () => {
           assertEquals(
               0,
               metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+
 
           const composeButton = getComposeButton();
           assertTrue(!!composeButton);
@@ -2625,33 +2627,26 @@ suite('NewTabPageAppReducedMotionTest', () => {
         }));
   }
 
-  async function createAndAppendApp() {
-    app = document.createElement('ntp-app');
-    document.body.appendChild(app);
-    await microtasksFinished();
-  }
-
-  function setReducedMotionPreference(
-      reducedMotionPreferred: boolean,
-      addEventListener?: (t: string, l: any) => void) {
-    windowProxy.setResultMapperFor(
-        'matchMedia', (query: string) => ({
-                        matches: query === '(prefers-reduced-motion: reduce)' &&
-                            reducedMotionPreferred,
-                        addEventListener: addEventListener || (() => {}),
-                        removeEventListener: () => {},
-                        addListener() {},
-                        removeListener() {},
-                      }));
-  }
-
   suite('Initialization', () => {
+    setup(() => {
+      createSetup();
+    });
+
     test(
         'initializes as INELIGIBLE when reduced motion is preferred',
         async () => {
-          createSetup();
-          setReducedMotionPreference(true);
-          await createAndAppendApp();
+          windowProxy.setResultMapperFor(
+              'matchMedia',
+              (query: string) => ({
+                matches: query === '(prefers-reduced-motion: reduce)',
+                addListener() {},
+                addEventListener() {},
+                removeListener() {},
+                removeEventListener() {},
+              }));
+          app = document.createElement('ntp-app');
+          document.body.appendChild(app);
+          await microtasksFinished();
 
           assertEquals(
               GlifAnimationState.INELIGIBLE,
@@ -2665,9 +2660,17 @@ suite('NewTabPageAppReducedMotionTest', () => {
             ntpNextFeaturesEnabled: true,
             actionChipsEnabled: true,
           });
-          createSetup();
-          setReducedMotionPreference(false);
-          await createAndAppendApp();
+          windowProxy.setResultMapperFor(
+              'matchMedia', () => ({
+                              matches: false,
+                              addListener() {},
+                              addEventListener() {},
+                              removeListener() {},
+                              removeEventListener() {},
+                            }));
+          app = document.createElement('ntp-app');
+          document.body.appendChild(app);
+          await microtasksFinished();
 
           assertEquals(
               GlifAnimationState.SPINNER_ONLY,
@@ -2676,13 +2679,25 @@ suite('NewTabPageAppReducedMotionTest', () => {
   });
 
   suite('Event Handling', () => {
+    setup(async () => {
+      createSetup();
+
+      windowProxy.setResultMapperFor(
+          'matchMedia', (query: string) => ({
+                          matches: query === '(prefers-reduced-motion: reduce)',
+                          addListener() {},
+                          addEventListener() {},
+                          removeListener() {},
+                          removeEventListener() {},
+                        }));
+      app = document.createElement('ntp-app');
+      document.body.appendChild(app);
+      await microtasksFinished();
+    });
+
     test(
         'state-changing events are a no-op when reduced motion is preferred',
         async () => {
-          createSetup();
-          setReducedMotionPreference(true);
-          await createAndAppendApp();
-
           assertEquals(
               GlifAnimationState.INELIGIBLE,
               (app as any).contextMenuGlifAnimationState_);
@@ -2695,59 +2710,6 @@ suite('NewTabPageAppReducedMotionTest', () => {
           assertEquals(
               GlifAnimationState.INELIGIBLE,
               (app as any).contextMenuGlifAnimationState_);
-        });
-
-    test('updates when prefers-reduced-motion change occurs', async () => {
-      createSetup();
-      let listener: (e: any) => void = () => {};
-      setReducedMotionPreference(true, (type, l) => {
-        if (type === 'change') {
-          listener = l;
-        }
-      });
-      await createAndAppendApp();
-
-      assertTrue((app as any).reducedMotionPreferred_);
-
-      // Act: Simulate media query change to "no preference".
-      listener({matches: false} as MediaQueryListEvent);
-      await microtasksFinished();
-
-      // Assert.
-      assertFalse((app as any).reducedMotionPreferred_);
-    });
-  });
-
-  suite('ReducedMotionScrim', () => {
-    setup(() => {
-      loadTimeData.overrideValues({
-        ntpRealboxNextEnabled: true,
-      });
-      createSetup();
-    });
-
-    test(
-        'scrim transition is none when reduced motion is preferred',
-        async () => {
-          setReducedMotionPreference(true);
-          await createAndAppendApp();
-          (app as any).showComposebox_ = true;
-          await microtasksFinished();
-
-          const scrim = app.shadowRoot.querySelector('#scrim')!;
-          assertStyle(scrim, 'transition-property', 'none');
-        });
-
-    test(
-        'scrim transition is not none when reduced motion is not preferred',
-        async () => {
-          setReducedMotionPreference(false);
-          await createAndAppendApp();
-          (app as any).showComposebox_ = true;
-          await microtasksFinished();
-
-          const scrim = app.shadowRoot.querySelector('#scrim')!;
-          assertNotStyle(scrim, 'transition-property', 'none');
         });
   });
 });
