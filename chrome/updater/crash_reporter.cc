@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -107,6 +108,12 @@ void StartCrashReporter(UpdaterScope updater_scope,
   if (log_file) {
     attachments.push_back(*log_file);
   }
+  std::optional<base::FilePath> history_log_path =
+      GetHistoryLogFilePath(updater_scope);
+  if (history_log_path) {
+    attachments.push_back(*history_log_path);
+  }
+
 #endif
   if (!client.StartHandler(
           handler_path, *database_path,

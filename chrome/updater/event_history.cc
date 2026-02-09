@@ -139,15 +139,19 @@ void SetWorldReadablePermissions(const base::FilePath& path) {
 
 }  // namespace
 
+std::optional<base::FilePath> GetHistoryLogFilePath(UpdaterScope scope) {
+  return GetInstallDirectory(scope).transform([](const base::FilePath& path) {
+    return path.Append(FILE_PATH_LITERAL("updater_history.jsonl"));
+  });
+}
+
 void InitHistoryLogging(UpdaterScope updater_scope) {
   constexpr int kMaxFileSizeBytes = 1024 * 1024;  // 1 MiB.
-  std::optional<base::FilePath> log_dir = GetInstallDirectory(updater_scope);
-  VLOG_IF(1, !log_dir) << "Failed to get history event log file path. "
-                          "History event logging will be disabled.";
-  if (log_dir) {
-    InitHistoryLogging(
-        log_dir->Append(FILE_PATH_LITERAL("updater_history.jsonl")),
-        kMaxFileSizeBytes);
+  std::optional<base::FilePath> log_path = GetHistoryLogFilePath(updater_scope);
+  VLOG_IF(1, !log_path) << "Failed to get history event log file path. "
+                           "History event logging will be disabled.";
+  if (log_path) {
+    InitHistoryLogging(*log_path, kMaxFileSizeBytes);
   }
 }
 
