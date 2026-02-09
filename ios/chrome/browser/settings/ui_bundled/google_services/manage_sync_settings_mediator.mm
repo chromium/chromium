@@ -225,7 +225,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [model setFooter:footerItem
       forSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];
+  syncer::UserSelectableTypeSet registeredTypes =
+      _syncService->GetUserSettings()->GetRegisteredSelectableTypes();
   for (syncer::UserSelectableType dataType : kAccountSwitchItems) {
+    if (!registeredTypes.Has(dataType)) {
+      continue;
+    }
     TableViewItem* switchItem = [self tableViewItemWithDataType:dataType];
     [syncSwitchItems addObject:switchItem];
     [model addItem:switchItem
@@ -623,8 +628,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
   // Types that are disabled by policy will be ignored.
   syncer::DataTypeSet requestedTypes;
+  syncer::UserSelectableTypeSet registeredTypes =
+      _syncService->GetUserSettings()->GetRegisteredSelectableTypes();
   for (syncer::UserSelectableType userSelectableType : kAccountSwitchItems) {
-    if (![self isManagedSyncSettingsDataType:userSelectableType]) {
+    if (registeredTypes.Has(userSelectableType) &&
+        ![self isManagedSyncSettingsDataType:userSelectableType]) {
       requestedTypes.Put(
           syncer::UserSelectableTypeToCanonicalDataType(userSelectableType));
     }

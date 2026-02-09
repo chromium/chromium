@@ -16,6 +16,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/sync/test/test_sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
@@ -158,6 +159,43 @@ TEST_F(ManageSyncSettingsMediatorTest,
     // by Hitstory type.
     EXPECT_FALSE(item.type == OpenTabsDataTypeItemType);
   }
+}
+
+// Tests that Sync types that are not registered in `SyncService` are filtered
+// out of the available toggles.
+TEST_F(ManageSyncSettingsMediatorTest, FilterUnregisteredSyncTypes) {
+  CreateManageSyncSettingsMediator();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+
+  // Configure the sync service with one type removed (e.g. Reading List).
+  syncer::UserSelectableTypeSet registered_types =
+      sync_service_->GetUserSettings()->GetRegisteredSelectableTypes();
+  registered_types.Remove(syncer::UserSelectableType::kReadingList);
+  sync_service_->GetUserSettings()->SetRegisteredSelectableTypes(
+      registered_types);
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+
+  BOOL has_reading_list = NO;
+  BOOL has_bookmarks = NO;
+
+  for (TableViewItem* item in items) {
+    if (item.type == ReadingListDataTypeItemType) {
+      has_reading_list = YES;
+    }
+    if (item.type == BookmarksDataTypeItemType) {
+      has_bookmarks = YES;
+    }
+  }
+
+  // `kReadingList` was removed from registered types, so it should NOT be
+  // available.
+  EXPECT_FALSE(has_reading_list);
+  // `kBookmarks` remains in registered types, so it SHOULD be available.
+  EXPECT_TRUE(has_bookmarks);
 }
 
 // Tests that the sign out item exists in the ManageAndSignOutSectionIdentifier
