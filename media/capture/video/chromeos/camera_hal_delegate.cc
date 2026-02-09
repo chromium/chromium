@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 
 #include <fcntl.h>
@@ -16,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -514,16 +510,18 @@ void CameraHalDelegate::GetSupportedFormats(
   const size_t kStreamHeightOffset = 2;
   const size_t kStreamDurationOffset = 3;
   const size_t kStreamDurationSize = 4;
-  int64_t* iter =
-      reinterpret_cast<int64_t*>((*min_frame_durations)->data.data());
+  int64_t* iter = UNSAFE_TODO(
+      reinterpret_cast<int64_t*>((*min_frame_durations)->data.data()));
   for (size_t i = 0; i < (*min_frame_durations)->count;
        i += kStreamDurationSize) {
-    auto hal_format =
-        static_cast<cros::mojom::HalPixelFormat>(iter[kStreamFormatOffset]);
-    int32_t width = base::checked_cast<int32_t>(iter[kStreamWidthOffset]);
-    int32_t height = base::checked_cast<int32_t>(iter[kStreamHeightOffset]);
-    int64_t duration = iter[kStreamDurationOffset];
-    iter += kStreamDurationSize;
+    auto hal_format = static_cast<cros::mojom::HalPixelFormat>(
+        UNSAFE_TODO(iter[kStreamFormatOffset]));
+    int32_t width =
+        base::checked_cast<int32_t>(UNSAFE_TODO(iter[kStreamWidthOffset]));
+    int32_t height =
+        base::checked_cast<int32_t>(UNSAFE_TODO(iter[kStreamHeightOffset]));
+    int64_t duration = UNSAFE_TODO(iter[kStreamDurationOffset]);
+    UNSAFE_TODO(iter += kStreamDurationSize);
 
     if (hal_format == cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB) {
       // Skip BLOB formats and use it only for TakePicture() since it's
@@ -986,8 +984,8 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
 
 int32_t CameraHalDelegate::GetMaskedModuleID(const std::string& module_id) {
   if (module_id.size() == 9) {
-    int vid = strtol(module_id.substr(0, 4).c_str(), nullptr, 16);
-    int pid = strtol(module_id.substr(5, 8).c_str(), nullptr, 16);
+    int vid = UNSAFE_TODO(strtol(module_id.substr(0, 4).c_str(), nullptr, 16));
+    int pid = UNSAFE_TODO(strtol(module_id.substr(5, 8).c_str(), nullptr, 16));
     int decimal_module_id = (vid << 16) + pid;
     if (module_id_set.contains(decimal_module_id)) {
       return decimal_module_id;

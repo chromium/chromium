@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/request_manager.h"
 
 #include <map>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -184,7 +180,8 @@ class RequestManagerTest : public ::testing::TestWithParam<bool> {
     entry->type = cros::mojom::EntryType::TYPE_INT32;
     entry->count = 1;
     uint8_t* as_int8 = reinterpret_cast<uint8_t*>(&partial_result_count);
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int32_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int32_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     entry = cros::mojom::CameraMetadataEntry::New();
@@ -194,7 +191,8 @@ class RequestManagerTest : public ::testing::TestWithParam<bool> {
     entry->count = 1;
     int32_t jpeg_max_size = 65535;
     as_int8 = reinterpret_cast<uint8_t*>(&jpeg_max_size);
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int32_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int32_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     entry = cros::mojom::CameraMetadataEntry::New();
@@ -204,8 +202,9 @@ class RequestManagerTest : public ::testing::TestWithParam<bool> {
     entry->type = cros::mojom::EntryType::TYPE_BYTE;
     entry->count = 1;
     uint8_t pipeline_max_depth = 1;
-    entry->data.assign(&pipeline_max_depth,
-                       &pipeline_max_depth + entry->count * sizeof(uint8_t));
+    entry->data.assign(
+        &pipeline_max_depth,
+        UNSAFE_TODO(&pipeline_max_depth + entry->count * sizeof(uint8_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     return static_metadata;

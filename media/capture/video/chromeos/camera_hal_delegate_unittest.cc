@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -120,7 +116,8 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
     min_frame_durations[6] = 720;
     min_frame_durations[7] = 16666666;
     uint8_t* as_int8 = reinterpret_cast<uint8_t*>(min_frame_durations.data());
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int64_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int64_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     entry = cros::mojom::CameraMetadataEntry::New();
@@ -131,7 +128,8 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
     entry->count = 4;
     std::vector<int32_t> default_fps_range{30, 30, 60, 60};
     as_int8 = reinterpret_cast<uint8_t*>(default_fps_range.data());
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int32_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int32_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     switch (camera_id) {

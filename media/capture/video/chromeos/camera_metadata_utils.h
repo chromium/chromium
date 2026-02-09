@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_METADATA_UTILS_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_METADATA_UTILS_H_
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/camera_metadata.mojom.h"
 
@@ -50,7 +46,8 @@ CAPTURE_EXPORT base::span<T> GetMetadataEntryAsSpan(
   }
   auto& data = (*entry)->data;
   CHECK_EQ(data.size() % sizeof(T), 0u);
-  return {reinterpret_cast<T*>(data.data()), data.size() / sizeof(T)};
+  return UNSAFE_TODO(
+      {reinterpret_cast<T*>(data.data()), data.size() / sizeof(T)});
 }
 
 template <typename T>
@@ -66,7 +63,7 @@ CAPTURE_EXPORT std::vector<uint8_t> SerializeMetadataValueFromSpan(
     }
   } else {
     data.resize(value.size() * sizeof(T));
-    memcpy(data.data(), value.data(), data.size());
+    UNSAFE_TODO(memcpy(data.data(), value.data(), data.size()));
   }
   return data;
 }
@@ -108,7 +105,7 @@ CAPTURE_EXPORT cros::mojom::CameraMetadataEntryPtr BuildMetadataEntry(
     e->data.push_back(base::checked_cast<uint8_t>(value));
   } else {
     e->data.resize(sizeof(T));
-    memcpy(e->data.data(), &value, e->data.size());
+    UNSAFE_TODO(memcpy(e->data.data(), &value, e->data.size()));
   }
 
   return e;

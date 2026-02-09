@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -148,17 +144,17 @@ void GetStreamResolutions(const cros::mojom::CameraMetadataPtr& static_metadata,
   const size_t kStreamHeightOffset = 2;
   const size_t kStreamTypeOffset = 3;
   const size_t kStreamConfigurationSize = 4;
-  int32_t* iter =
-      reinterpret_cast<int32_t*>((*stream_configurations)->data.data());
+  int32_t* iter = UNSAFE_TODO(
+      reinterpret_cast<int32_t*>((*stream_configurations)->data.data()));
   for (size_t i = 0; i < (*stream_configurations)->count;
        i += kStreamConfigurationSize) {
-    auto format =
-        static_cast<cros::mojom::HalPixelFormat>(iter[kStreamFormatOffset]);
-    int32_t width = iter[kStreamWidthOffset];
-    int32_t height = iter[kStreamHeightOffset];
-    auto type =
-        static_cast<cros::mojom::Camera3StreamType>(iter[kStreamTypeOffset]);
-    iter += kStreamConfigurationSize;
+    auto format = static_cast<cros::mojom::HalPixelFormat>(
+        UNSAFE_TODO(iter[kStreamFormatOffset]));
+    int32_t width = UNSAFE_TODO(iter[kStreamWidthOffset]);
+    int32_t height = UNSAFE_TODO(iter[kStreamHeightOffset]);
+    auto type = static_cast<cros::mojom::Camera3StreamType>(
+        UNSAFE_TODO(iter[kStreamTypeOffset]));
+    UNSAFE_TODO(iter += kStreamConfigurationSize);
 
     if (type != stream_type || format != stream_format) {
       continue;
@@ -202,9 +198,9 @@ void SetFpsRangeInMetadata(cros::mojom::CameraMetadataPtr* settings,
   // definition of the FPS metadata tag, its data type is int32, so we
   // reinterpret_cast here.
   std::vector<uint8_t> fps_range(sizeof(int32_t) * entry_length);
-  auto* fps_ptr = reinterpret_cast<int32_t*>(fps_range.data());
+  auto* fps_ptr = UNSAFE_TODO(reinterpret_cast<int32_t*>(fps_range.data()));
   fps_ptr[0] = min_frame_rate;
-  fps_ptr[1] = max_frame_rate;
+  UNSAFE_TODO(fps_ptr[1]) = max_frame_rate;
   cros::mojom::CameraMetadataEntryPtr e =
       cros::mojom::CameraMetadataEntry::New();
   e->tag = cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_TARGET_FPS_RANGE;
@@ -522,7 +518,7 @@ void CameraDeviceDelegate::SetPhotoOptions(
   // the vendor tag is set and false otherwise.
   auto to_uint8_vector = [](int32_t value) {
     std::vector<uint8_t> temp(sizeof(int32_t));
-    auto* temp_ptr = reinterpret_cast<int32_t*>(temp.data());
+    auto* temp_ptr = UNSAFE_TODO(reinterpret_cast<int32_t*>(temp.data()));
     *temp_ptr = value;
     return temp;
   };

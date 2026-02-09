@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/request_manager.h"
 
 #include <sync/sync.h>
@@ -18,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/posix/safe_strerror.h"
@@ -182,7 +178,7 @@ void RequestManager::SetUpStreamsAndBuffers(
       cros::mojom::CameraMetadataTag::ANDROID_REQUEST_PARTIAL_RESULT_COUNT);
   if (partial_count) {
     partial_result_count_ =
-        *reinterpret_cast<int32_t*>((*partial_count)->data.data());
+        *UNSAFE_TODO(reinterpret_cast<int32_t*>((*partial_count)->data.data()));
   }
 
   auto pipeline_depth = GetMetadataEntryAsSpan<uint8_t>(
@@ -355,9 +351,10 @@ void RequestManager::SetJpegOrientation(
 void RequestManager::SetJpegThumbnailSize(
     cros::mojom::CameraMetadataPtr* settings) const {
   std::vector<uint8_t> data(sizeof(int32_t) * 2);
-  auto* data_i32 = reinterpret_cast<int32_t*>(data.data());
+  auto* data_i32 = UNSAFE_TODO(reinterpret_cast<int32_t*>(data.data()));
   data_i32[0] = base::checked_cast<int32_t>(jpeg_thumbnail_size_.width());
-  data_i32[1] = base::checked_cast<int32_t>(jpeg_thumbnail_size_.height());
+  UNSAFE_TODO(data_i32[1]) =
+      base::checked_cast<int32_t>(jpeg_thumbnail_size_.height());
   cros::mojom::CameraMetadataEntryPtr e =
       cros::mojom::CameraMetadataEntry::New();
   e->tag = cros::mojom::CameraMetadataTag::ANDROID_JPEG_THUMBNAIL_SIZE;

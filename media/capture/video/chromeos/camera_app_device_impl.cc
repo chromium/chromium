@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 
 #include <algorithm>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -413,7 +409,7 @@ void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
     return;
   }
   auto* y_data = memory.mapping.GetMemoryAs<uint8_t>();
-  auto* uv_data = y_data + kDetectionWidth * kDetectionHeight;
+  auto* uv_data = UNSAFE_TODO(y_data + kDetectionWidth * kDetectionHeight);
 
   int status = libyuv::NV12Scale(
       scoped_mapping->GetMemoryForPlane(0).data(), scoped_mapping->Stride(0),

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/stream_buffer_manager.h"
 
 #include <memory>
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
@@ -116,7 +112,7 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
   const size_t temp_uv_size = temp_uv_width * temp_uv_height;
   std::vector<uint8_t> temp_uv_buffer(temp_uv_size * 2);
   uint8_t* temp_u = temp_uv_buffer.data();
-  uint8_t* temp_v = temp_u + temp_uv_size;
+  uint8_t* temp_v = UNSAFE_TODO(temp_u + temp_uv_size);
 
   // libyuv currently provides only NV12ToI420Rotate. We achieve NV12 rotation
   // by NV12ToI420Rotate then merge the I420 U and V planes into the final NV12

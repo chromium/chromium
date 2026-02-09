@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -259,7 +255,8 @@ class CameraDeviceDelegateTest : public ::testing::Test {
     stream_configurations[11] = static_cast<int32_t>(
         cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT);
     uint8_t* as_int8 = reinterpret_cast<uint8_t*>(stream_configurations.data());
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int32_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int32_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     entry = cros::mojom::CameraMetadataEntry::New();
@@ -277,7 +274,8 @@ class CameraDeviceDelegateTest : public ::testing::Test {
     entry->count = 1;
     int32_t jpeg_max_size = kJpegMaxBufferSize;
     as_int8 = reinterpret_cast<uint8_t*>(&jpeg_max_size);
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int32_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int32_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     entry = cros::mojom::CameraMetadataEntry::New();
@@ -287,8 +285,9 @@ class CameraDeviceDelegateTest : public ::testing::Test {
     entry->type = cros::mojom::EntryType::TYPE_BYTE;
     entry->count = 1;
     uint8_t pipeline_max_depth = 1;
-    entry->data.assign(&pipeline_max_depth,
-                       &pipeline_max_depth + entry->count * sizeof(uint8_t));
+    entry->data.assign(
+        &pipeline_max_depth,
+        UNSAFE_TODO(&pipeline_max_depth + entry->count * sizeof(uint8_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     entry = cros::mojom::CameraMetadataEntry::New();
@@ -300,7 +299,8 @@ class CameraDeviceDelegateTest : public ::testing::Test {
     std::vector<int32_t> available_fps_ranges = {kDefaultMinFrameRate,
                                                  kDefaultMaxFrameRate};
     as_int8 = reinterpret_cast<uint8_t*>(available_fps_ranges.data());
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int32_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int32_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     entry = cros::mojom::CameraMetadataEntry::New();
@@ -311,7 +311,8 @@ class CameraDeviceDelegateTest : public ::testing::Test {
     entry->count = 4;
     std::vector<int32_t> active_array_size = {0, 0, 1920, 1080};
     as_int8 = reinterpret_cast<uint8_t*>(active_array_size.data());
-    entry->data.assign(as_int8, as_int8 + entry->count * sizeof(int32_t));
+    entry->data.assign(as_int8,
+                       UNSAFE_TODO(as_int8 + entry->count * sizeof(int32_t)));
     static_metadata->entries->push_back(std::move(entry));
 
     switch (camera_id) {
