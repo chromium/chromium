@@ -383,6 +383,9 @@ bool EntityTable::AddOrUpdateEntityMetadata(
 }
 
 bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
+  // Unmasked server entities must never be persisted on disk.
+  CHECK(!entity.IsUnmaskedServerEntity());
+
   HandleTestSwitchesIfNeeded(db(), *this);
 
   sql::Transaction transaction(db());
@@ -719,7 +722,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
   }
 
   std::vector<AttributeInstance> attributes;
-
+  attributes.reserve(attribute_records.size());
   for (const auto& [attribute_type_name, records] : attribute_records) {
     if (std::optional<AttributeType> attribute_type =
             StringToAttributeType(*entity_type, attribute_type_name)) {
@@ -737,8 +740,13 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     }
   }
 
+  const bool mask_obfuscated_attributes =
+      IsMaskedStorageSupported(*entity_type, *record_type);
   for (AttributeInstance& attribute : attributes) {
     attribute.FinalizeInfo();
+    if (mask_obfuscated_attributes && attribute.type().is_obfuscated()) {
+      attribute.mark_as_masked({});
+    }
   }
 
   // Remove attributes that don't belong to the entity according to the schema.

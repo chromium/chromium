@@ -39,6 +39,9 @@ namespace {
 using base::test::EqualsProto;
 using syncer::test::AddUnknownFieldToProto;
 using syncer::test::HasUnknownField;
+using test::GetPassportEntityInstance;
+using test::GetVehicleEntityInstance;
+using test::MaskEntityInstance;
 using testing::_;
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -48,7 +51,6 @@ using testing::ReturnRef;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
-namespace {
 syncer::EntityData SpecificsToEntity(
     const sync_pb::AutofillValuableMetadataSpecifics& metadata_specifics) {
   syncer::EntityData entity_data;
@@ -86,7 +88,6 @@ EntityInstance CreateServerVehicleEntityInstance(
   return test::GetVehicleEntityInstance(options);
 }
 
-}  // namespace
 
 class ValuableMetadataSyncBridgeTest : public testing::Test {
  public:
@@ -280,9 +281,9 @@ TEST_F(ValuableMetadataSyncBridgeTest,
 TEST_F(ValuableMetadataSyncBridgeTest,
        MergeFullSyncData_IgnoresLocalDataWithoutPassType) {
   // Passports are not supported by the bridge.
-  const EntityInstance passport = test::GetPassportEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet});
-  entity_table().AddOrUpdateEntityInstance(passport);
+  entity_table().AddOrUpdateEntityInstance(
+      MaskEntityInstance(GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet})));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
@@ -453,9 +454,9 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetAllData) {
 TEST_F(ValuableMetadataSyncBridgeTest,
        GetAllData_IgnoresMetadataWithoutPassType) {
   // Passports are not supported by the bridge.
-  const EntityInstance passport = test::GetPassportEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet});
-  entity_table().AddOrUpdateEntityInstance(passport);
+  entity_table().AddOrUpdateEntityInstance(
+      MaskEntityInstance(GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet})));
 
   std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
   ASSERT_TRUE(batch);
@@ -562,8 +563,8 @@ TEST_F(
     ServerEntityInstanceMetadataChanged_AddUpdate_IgnoresMetadataWithoutPassType) {
   ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
   // Passports are not supported by the bridge.
-  const EntityInstance passport = test::GetPassportEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet});
+  const EntityInstance passport = MaskEntityInstance(GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
   entity_table().AddOrUpdateEntityInstance(passport);
 
   EXPECT_CALL(mock_processor(), Put).Times(0);

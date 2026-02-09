@@ -152,6 +152,20 @@ class AttributeInstance final {
   // contains the last four digits of the full value.
   bool masked() const { return masked_; }
 
+  // Marks the attribute as masked.
+  //
+  // Since this does not perform any validation on the attribute value itself,
+  // it must only be called by code that is certain that the attribute value
+  // is indeed masked. The reason for not having a validation step is that
+  // masking happens purely on the server and the masking algorithm is not
+  // exposed to the client.
+  class MarkAsMaskedPasskey {
+   private:
+    MarkAsMaskedPasskey() = default;
+    friend class EntityTable;
+  };
+  void mark_as_masked(MarkAsMaskedPasskey) { masked_ = true; }
+
   friend bool operator==(const AttributeInstance& lhs,
                          const AttributeInstance& rhs) = default;
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -25,6 +26,10 @@
 namespace autofill {
 namespace {
 
+using test::GetDriversLicenseEntityInstance;
+using test::GetPassportEntityInstance;
+using test::GetVehicleEntityInstance;
+using test::MaskEntityInstance;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
@@ -56,11 +61,11 @@ class EntityTableTest : public testing::Test {
 // Tests that the entity and attribute tables preserve entity data between write
 // and read.
 TEST_F(EntityTableTest, BasicWriteThenRead) {
-  EntityInstance pp = test::GetPassportEntityInstance(
+  EntityInstance pp = GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(2),
        .use_date = test::kJune2017 - base::Days(7),
        .use_count = 5});
-  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EntityInstance dl = GetDriversLicenseEntityInstance();
   // Flight reservation has frecency override set to departure time.
   EntityInstance fr = test::GetFlightReservationEntityInstance({
       .departure_time = test::kJune2017,
@@ -85,10 +90,8 @@ TEST_F(EntityTableTest, BasicWriteNonGuidFormatId) {
 
 // Tests that the entity table preserves read only flag between write and read.
 TEST_F(EntityTableTest, BasicWriteThenRead_ReadOnlyInstance) {
-  EntityInstance pp =
-      test::GetPassportEntityInstance(test::PassportEntityOptions{
-          .are_attributes_read_only =
-              EntityInstance::AreAttributesReadOnly{true}});
+  EntityInstance pp = GetPassportEntityInstance(test::PassportEntityOptions{
+      .are_attributes_read_only = EntityInstance::AreAttributesReadOnly{true}});
 
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
 
@@ -102,7 +105,7 @@ TEST_F(EntityTableTest, CustomUseDateUseCountDateModified) {
   int custom_use_count = 10;
   base::Time custom_date_modified = test::kJune2017 - base::Days(2);
 
-  EntityInstance pp = test::GetPassportEntityInstance({
+  EntityInstance pp = GetPassportEntityInstance({
       .date_modified = custom_date_modified,
       .use_date = custom_use_date,
       .use_count = custom_use_count,
@@ -114,10 +117,10 @@ TEST_F(EntityTableTest, CustomUseDateUseCountDateModified) {
 
 // Tests retrieving entity instances by record type.
 TEST_F(EntityTableTest, GetEntityInstancesByRecordType) {
-  EntityInstance local_pp = test::GetPassportEntityInstance(
+  EntityInstance local_pp = GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kLocal});
-  EntityInstance server_dl = test::GetDriversLicenseEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance server_dl = MaskEntityInstance(GetDriversLicenseEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
 
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_pp));
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_dl));
@@ -132,9 +135,9 @@ TEST_F(EntityTableTest, GetEntityInstancesByRecordType) {
 
 // Tests updating entity instances.
 TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
-  EntityInstance pp = test::GetPassportEntityInstance(
+  EntityInstance pp = GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(3)});
-  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EntityInstance dl = GetDriversLicenseEntityInstance();
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
   ASSERT_THAT(table().GetEntityInstances(), ElementsAre(pp));
 
@@ -142,7 +145,7 @@ TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
   EXPECT_TRUE(table().AddOrUpdateEntityInstance(dl));
   ASSERT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
-  pp = test::GetPassportEntityInstance({
+  pp = GetPassportEntityInstance({
       .name = u"Karlsson",
       .date_modified = test::kJune2017 - base::Days(1),
   });
@@ -152,13 +155,13 @@ TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
 
 // Tests deleting entity instances by record_type.
 TEST_F(EntityTableTest, DeleteEntityInstancesByRecordType) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance dl = test::GetDriversLicenseEntityInstance();
-  EntityInstance wallet_vr = test::GetVehicleEntityInstance({
+  EntityInstance pp = GetPassportEntityInstance();
+  EntityInstance dl = GetDriversLicenseEntityInstance();
+  EntityInstance wallet_vr = GetVehicleEntityInstance({
       .guid = "00000000-0000-4000-8000-123000000000",
       .record_type = EntityInstance::RecordType::kServerWallet,
   });
-  EntityInstance local_vr = test::GetVehicleEntityInstance({
+  EntityInstance local_vr = GetVehicleEntityInstance({
       .guid = "00000000-0000-4000-8000-456000000000",
       .record_type = EntityInstance::RecordType::kLocal,
   });
@@ -177,8 +180,8 @@ TEST_F(EntityTableTest, DeleteEntityInstancesByRecordType) {
 
 // Tests removing individual entity instances.
 TEST_F(EntityTableTest, RemoveEntityInstance) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EntityInstance pp = GetPassportEntityInstance();
+  EntityInstance dl = GetDriversLicenseEntityInstance();
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(dl));
 
@@ -200,9 +203,9 @@ TEST_F(EntityTableTest, RemoveEntityInstance) {
 // Tests removing a date range of entity instances.
 TEST_F(EntityTableTest, RemoveEntityInstancesModifiedBetween) {
   auto instances =
-      std::array{test::GetPassportEntityInstance(
+      std::array{GetPassportEntityInstance(
                      {.date_modified = test::kJune2017 - base::Days(11)}),
-                 test::GetDriversLicenseEntityInstance(
+                 GetDriversLicenseEntityInstance(
                      {.date_modified = test::kJune2017 - base::Days(10)})};
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(instances[0]));
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(instances[1]));
@@ -233,8 +236,8 @@ TEST_F(EntityTableTest, RemoveEntityInstancesModifiedBetween) {
 // Tests that entity instances without any valid attributes are not returned
 // from the database.
 TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EntityInstance pp = GetPassportEntityInstance();
+  EntityInstance dl = GetDriversLicenseEntityInstance();
   ASSERT_THAT(table().GetEntityInstances(), IsEmpty());
 
   EXPECT_TRUE(table().AddOrUpdateEntityInstance(pp));
@@ -259,8 +262,8 @@ TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
 
 // Tests the EntityInstanceExists method.
 TEST_F(EntityTableTest, EntityInstanceExists) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EntityInstance pp = GetPassportEntityInstance();
+  EntityInstance dl = GetDriversLicenseEntityInstance();
 
   // Initially, no entity should exist.
   EXPECT_FALSE(table().EntityInstanceExists(pp.guid()));
@@ -289,7 +292,7 @@ TEST_F(EntityTableTest, EntityInstanceExists) {
 
 // Tests that metadata info is removed alongside entities.
 TEST_F(EntityTableTest, RemoveEntityInstanceRemovesMetadata) {
-  EntityInstance pp = test::GetPassportEntityInstance(
+  EntityInstance pp = GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(2),
        .use_date = test::kJune2017 - base::Days(7),
        .use_count = 5});
@@ -349,7 +352,7 @@ TEST_F(EntityTableTest, AddOrUpdateEntityMetadata_Update) {
 // Tests that GetSyncedMetadata() returns nothing if only local entities are
 // present.
 TEST_F(EntityTableTest, GetSyncedMetadata_OnlyLocal) {
-  EntityInstance local_pp = test::GetPassportEntityInstance(
+  EntityInstance local_pp = GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kLocal});
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_pp));
   EXPECT_THAT(table().GetSyncedMetadata(), IsEmpty());
@@ -358,9 +361,9 @@ TEST_F(EntityTableTest, GetSyncedMetadata_OnlyLocal) {
 // Tests that GetSyncedMetadata() returns metadata for all entities if only
 // server entities are present.
 TEST_F(EntityTableTest, GetSyncedMetadata_OnlyServer) {
-  EntityInstance server_dl = test::GetDriversLicenseEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet});
-  EntityInstance server_vr = test::GetVehicleEntityInstance(
+  EntityInstance server_dl = MaskEntityInstance(GetDriversLicenseEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
+  EntityInstance server_vr = GetVehicleEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_dl));
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_vr));
@@ -374,10 +377,10 @@ TEST_F(EntityTableTest, GetSyncedMetadata_OnlyServer) {
 // Tests that GetSyncedMetadata() returns only metadata for server entities when
 // both local and server entities are present.
 TEST_F(EntityTableTest, GetSyncedMetadata_Mixed) {
-  EntityInstance local_pp = test::GetPassportEntityInstance(
+  EntityInstance local_pp = GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kLocal});
-  EntityInstance server_dl = test::GetDriversLicenseEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance server_dl = MaskEntityInstance(GetDriversLicenseEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_pp));
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_dl));
 
@@ -389,7 +392,7 @@ TEST_F(EntityTableTest, GetSyncedMetadata_Mixed) {
 // Tests that GetEntityMetadata() returns the correct metadata for an existing
 // entity.
 TEST_F(EntityTableTest, GetEntityMetadata_ExistingEntity) {
-  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance pp = GetPassportEntityInstance();
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
 
   std::optional<EntityInstance::EntityMetadata> metadata =
@@ -408,8 +411,8 @@ TEST_F(EntityTableTest, GetEntityMetadata_NonExistentEntity) {
 }
 
 TEST_F(EntityTableTest, GetEntityType) {
-  EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EntityInstance pp = GetPassportEntityInstance();
+  EntityInstance dl = GetDriversLicenseEntityInstance();
 
   EXPECT_EQ(table().GetEntityType(pp.guid()), std::nullopt);
   EXPECT_EQ(table().GetEntityType(dl.guid()), std::nullopt);
@@ -419,6 +422,28 @@ TEST_F(EntityTableTest, GetEntityType) {
 
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(dl));
   EXPECT_EQ(table().GetEntityType(dl.guid()), dl.type());
+}
+
+// Tests that we CHECK that unmasked server entities are not added to the
+// entity table.
+TEST_F(EntityTableTest, NoUnmaskedServerEntities) {
+  EntityInstance server_pp = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ASSERT_TRUE(server_pp.IsUnmaskedServerEntity());
+  EXPECT_CHECK_DEATH(table().AddOrUpdateEntityInstance(server_pp));
+}
+
+// Tests that retrieving a masked server entity instance returns the masked
+// entity instance.
+TEST_F(EntityTableTest, GetEntityInstanceMaskedServerEntity) {
+  EntityInstance masked_pp = test::MaskEntityInstance(GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
+  ASSERT_TRUE(masked_pp.IsMaskedServerEntity());
+
+  EXPECT_TRUE(table().AddOrUpdateEntityInstance(masked_pp));
+  std::vector<EntityInstance> entities = table().GetEntityInstances();
+  ASSERT_THAT(entities, ElementsAre(masked_pp));
+  EXPECT_TRUE(entities[0].IsMaskedServerEntity());
 }
 
 }  // namespace
