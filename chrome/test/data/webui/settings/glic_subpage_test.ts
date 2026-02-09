@@ -822,6 +822,21 @@ suite('GlicSubpage', function() {
     });
   });
 
+  suite('WebActuationToggleVisibleLocked', () => {
+    test('assert toggle is enterprise enforced', () => {
+      const webActuationToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#webActuationToggle');
+      assertTrue(!!webActuationToggle);
+      assertTrue(isVisible(webActuationToggle), 'Toggle should be visible');
+      assertTrue(
+          webActuationToggle.disabled, 'Toggle should be disabled by policy');
+      assertTrue(
+          webActuationToggle.pref!.enforcement ===
+          chrome.settingsPrivate.Enforcement.ENFORCED);
+    });
+  });
+
   suite('SimulateCanActOnWebOnAndOff', () => {
     function waitOneTick() {
       return new Promise(resolve => setTimeout(resolve, 0));

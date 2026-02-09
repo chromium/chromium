@@ -7,6 +7,8 @@
 #include "build/build_config.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,6 +26,11 @@
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/permissions/features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -631,7 +638,13 @@ struct WebActuationTestParams {
   bool has_account_capability = true;
   // Used for legacy mode (when toggle_feature_enabled=false).
   bool consent_pref_set = false;
-
+  // If true, simulates a device/browser managed by an admin.
+  bool is_managed_browser = false;
+  // Controls the 'GeminiActOnWebSettings' policy.
+  // -1: Unset (Policy not applied)
+  //  0: kEnabled
+  //  1: kDisabled
+  int policy_value = -1;
   // Expected Result (The JS Mocha suite to run)
   std::string expected_suite;
 };
@@ -674,14 +687,47 @@ class SettingsGlicSubPageWebActuationTableTest
     } else {
       disabled.emplace_back(features::kGlicWebActuationSettingsToggle);
     }
+
     enabled.emplace_back(features::kGlicActor, actor_params);
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
+  // Register the Mock Policy Provider
+  void SetUpInProcessBrowserTestFixture() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
   void SetUpOnMainThread() override {
+    // Setup Policy Service
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(
+        GetProfile()->GetProfilePolicyConnector()->policy_service());
+
     SettingsBrowserTest::SetUpOnMainThread();
     const WebActuationTestParams& p = GetParam();
 
+    // Simulate Managed Browser (Identity/Platform Management)
+    if (p.is_managed_browser) {
+      scoped_management_service_override_ =
+          std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+              policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+              policy::EnterpriseManagementAuthority::CLOUD);
+    }
+
+    // Apply Enterprise Policy
+    if (p.policy_value != -1) {
+      policy::PolicyMap policies;
+      policies.Set(policy::key::kGeminiActOnWebSettings,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                   base::Value(p.policy_value), nullptr);
+      policy_provider_.UpdateChromePolicy(policies);
+    }
+
+    // Standard Account & Tier Setup
     if (p.has_account_capability) {
       SigninAndEnableAccountCapability();
     } else {
@@ -700,8 +746,18 @@ class SettingsGlicSubPageWebActuationTableTest
     }
   }
 
+  void TearDownOnMainThread() override {
+    // Clean up policy overrides
+    scoped_management_service_override_.reset();
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
+    SettingsBrowserTest::TearDownOnMainThread();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_management_service_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(SettingsGlicSubPageWebActuationTableTest,
@@ -796,7 +852,30 @@ INSTANTIATE_TEST_SUITE_P(
             .toggle_feature_enabled = false,
             .user_tier = 0,
             .consent_pref_set = false,
-            .expected_suite = "GlicSubpage WebActuationToggleHidden"}),
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
+
+        // --- 6. ENTERPRISE CASES ---
+        WebActuationTestParams{
+            .test_name = "Managed_PolicyEnabled_Visible",
+            .user_tier = 100,
+            .is_managed_browser = true,
+            .policy_value = 0,  // kEnabled
+            .expected_suite = "GlicSubpage WebActuationToggleVisible"},
+
+        WebActuationTestParams{
+            .test_name = "Managed_PolicyDisabled_Hidden",
+            .user_tier = 100,
+            .is_managed_browser = true,
+            .policy_value = 1,  // kDisabled
+            .expected_suite = "GlicSubpage WebActuationToggleVisibleLocked"},
+        // TODO(crbug.com/482100275): Update this test at M148 when the policy
+        // pref default value changes.
+        WebActuationTestParams{
+            .test_name = "Managed_PolicyUnset_DefaultBehavior",
+            .user_tier = 100,
+            .is_managed_browser = true,
+            .policy_value = -1,  // Unset
+            .expected_suite = "GlicSubpage WebActuationToggleVisibleLocked"}),
     GenerateWebActuationSettingsToggleTestName);
 
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {

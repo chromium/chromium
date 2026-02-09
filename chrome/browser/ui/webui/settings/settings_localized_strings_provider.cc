@@ -730,15 +730,17 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(ENABLE_GLIC)
 
 bool IsWebActuationDisabledForEnterprise(Profile* profile) {
-  bool can_act_on_web = true;
-  if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-    auto* glic_service =
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    if (glic_service) {
-      can_act_on_web = glic_service->actor_policy_checker().CanActOnWeb();
-    }
+  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    return false;
   }
-  return !can_act_on_web;
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!glic_service) {
+    return false;
+  }
+  return !glic_service->actor_policy_checker().CanActOnWeb() &&
+         glic_service->actor_policy_checker().CannotActOnWebReason() ==
+             glic::GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy;
 }
 
 bool ShouldShowWebActuationToggle(Profile* profile) {
