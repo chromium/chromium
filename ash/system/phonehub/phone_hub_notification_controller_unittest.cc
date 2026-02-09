@@ -126,6 +126,10 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
   }
 
   void TearDown() override {
+    notification_manager_ = nullptr;
+    controller_ = nullptr;
+    message_center_ = nullptr;
+    feature_status_provider_ = nullptr;
     widget_.reset();
     AshTestBase::TearDown();
   }
@@ -137,11 +141,11 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_;
+  raw_ptr<message_center::MessageCenter> message_center_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   raw_ptr<phonehub::FakeNotificationManager> notification_manager_;
   raw_ptr<phonehub::FakeFeatureStatusProvider> feature_status_provider_;
-  raw_ptr<PhoneHubNotificationController, DanglingUntriaged> controller_;
+  raw_ptr<PhoneHubNotificationController> controller_;
   base::flat_set<phonehub::Notification> fake_notifications_;
 };
 
