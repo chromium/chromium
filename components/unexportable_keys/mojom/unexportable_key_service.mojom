@@ -115,6 +115,5 @@ interface UnexportableKeyService {
   // Delete all keys.
   // On success the number of keys deleted is returned. On error a ServiceError
   // is returned instead.
-  DeleteAllKeys(BackgroundTaskPriority priority)
-      => result<uint64, ServiceError>;
+  DeleteAllKeys() => result<uint64, ServiceError>;
 };

@@ -132,7 +132,6 @@ class OffTheRecordGarbageCollectionService : public KeyedService {
   void Shutdown() override {
     // Delete all keys for OTR profiles.
     service_->DeleteAllKeysSlowlyAsync(
-        BackgroundTaskPriority::kBestEffort,
         base::BindOnce(
             [](std::unique_ptr<UnexportableKeyService>,
                ServiceErrorOr<size_t> count_or_error) {

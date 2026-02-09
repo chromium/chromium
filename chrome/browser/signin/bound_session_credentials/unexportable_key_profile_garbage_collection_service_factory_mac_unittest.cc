@@ -165,7 +165,7 @@ TEST_F(UnexportableKeyProfileGarbageCollectionServiceFactoryMacTest,
   ASSERT_TRUE(created_service);
 
   EXPECT_CALL(*created_service, DeleteAllKeysSlowlyAsync)
-      .WillOnce(RunOnceCallback<1>(3));
+      .WillOnce(RunOnceCallback<0>(3));
   profile.DestroyOffTheRecordProfile(otr_profile);
 
   histogram_tester.ExpectUniqueSample(

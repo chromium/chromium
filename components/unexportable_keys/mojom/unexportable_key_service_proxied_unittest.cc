@@ -126,8 +126,7 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
         *std::exchange(delete_keys_response_, std::nullopt));
   }
 
-  void DeleteAllKeys(BackgroundTaskPriority priority,
-                     DeleteAllKeysCallback callback) override {
+  void DeleteAllKeys(DeleteAllKeysCallback callback) override {
     std::move(callback).Run(std::move(delete_all_keys_response_.value()));
     delete_all_keys_response_.reset();
   }
@@ -462,8 +461,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, DeleteAllKeysSuccess) {
   fake_service_.SetDeleteAllKeysResponse(base::ok(2));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
-  proxied_service_.DeleteAllKeysSlowlyAsync(
-      BackgroundTaskPriority::kUserVisible, delete_all_future.GetCallback());
+  proxied_service_.DeleteAllKeysSlowlyAsync(delete_all_future.GetCallback());
 
   EXPECT_THAT(delete_all_future.Get(), ValueIs(2));
   EXPECT_THAT(proxied_service_.GetSubjectPublicKeyInfo(key_id1),
@@ -479,8 +477,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, DeleteAllKeysErrorFromService) {
   const UnexportableKeyId key_id = GenerateKeyOrDie();
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
-  proxied_service_.DeleteAllKeysSlowlyAsync(
-      BackgroundTaskPriority::kUserVisible, delete_all_future.GetCallback());
+  proxied_service_.DeleteAllKeysSlowlyAsync(delete_all_future.GetCallback());
 
   EXPECT_THAT(delete_all_future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
   EXPECT_FALSE(proxied_service_.GetSubjectPublicKeyInfo(key_id).has_value());

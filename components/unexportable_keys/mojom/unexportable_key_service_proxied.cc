@@ -202,12 +202,11 @@ void UnexportableKeyServiceProxied::DeleteKeysSlowlyAsync(
 }
 
 void UnexportableKeyServiceProxied::DeleteAllKeysSlowlyAsync(
-    BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   key_cache_.clear();
 
   remote_->DeleteAllKeys(
-      priority, base::BindOnce(&AdaptSizeType).Then(std::move(callback)));
+      base::BindOnce(&AdaptSizeType).Then(std::move(callback)));
 }
 
 void UnexportableKeyServiceProxied::

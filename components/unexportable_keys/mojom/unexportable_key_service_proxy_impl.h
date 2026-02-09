@@ -65,8 +65,7 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
                   BackgroundTaskPriority priority,
                   DeleteKeysCallback callback) override;
 
-  void DeleteAllKeys(BackgroundTaskPriority priority,
-                     DeleteAllKeysCallback result) override;
+  void DeleteAllKeys(DeleteAllKeysCallback result) override;
 
  private:
   mojo::Receiver<mojom::UnexportableKeyService> receiver_{this};

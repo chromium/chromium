@@ -142,8 +142,7 @@ void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
   task_manager_->GenerateSigningKeySlowlyAsync(
       task_origin_, config_, acceptable_algorithms, priority,
       base::BindOnce(&UnexportableKeyServiceImpl::OnKeyGenerated,
-                     generate_key_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
@@ -177,8 +176,7 @@ void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
         task_origin_, config_, wrapped_key, priority,
         base::BindOnce(
             &UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKeyAndTag,
-            from_wrapped_key_weak_ptr_factory_.GetWeakPtr(),
-            wrapped_key_and_tag));
+            weak_ptr_factory_.GetWeakPtr(), wrapped_key_and_tag));
   }
 }
 
@@ -191,8 +189,7 @@ void UnexportableKeyServiceImpl::
       task_origin_, config_, priority,
       base::BindOnce(&UnexportableKeyServiceImpl::
                          OnGetAllSigningKeysForGarbageCollectionSlowly,
-                     get_all_keys_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::SignSlowlyAsync(
@@ -211,8 +208,7 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
   task_manager_->SignSlowlyAsync(
       task_origin_, it->second, data, priority,
       base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
-                     service_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
@@ -241,12 +237,10 @@ void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
   task_manager_->DeleteSigningKeysSlowlyAsync(
       task_origin_, config_, std::move(signing_keys), priority,
       base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
-                     service_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
-    BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   key_by_key_id_.clear();
 
@@ -260,16 +254,16 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
   }
 
   // Invalidate weak pointers to cancel pending key lookup requests.
-  get_all_keys_weak_ptr_factory_.InvalidateWeakPtrs();
-  from_wrapped_key_weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // The type expected by the callback
   using ArgType = ServiceErrorOr<size_t>;
+  // Force high priority for the delete task to ensure it runs before any
+  // tasks that might be re-scheduled.
   task_manager_->DeleteAllSigningKeysSlowlyAsync(
-      task_origin_, config_, priority,
+      task_origin_, config_, BackgroundTaskPriority::kUserBlocking,
       base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
-                     service_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 ServiceErrorOr<std::vector<uint8_t>>

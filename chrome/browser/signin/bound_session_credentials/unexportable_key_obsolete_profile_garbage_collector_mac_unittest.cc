@@ -295,9 +295,8 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   // be no opportunity to set up the expectation otherwise.
   set_on_profile_service_created(
       base::BindOnce([](MockUnexportableKeyService* service) {
-        EXPECT_CALL(*service, DeleteAllKeysSlowlyAsync(
-                                  BackgroundTaskPriority::kBestEffort, _))
-            .WillOnce(RunOnceCallback<1>(3));
+        EXPECT_CALL(*service, DeleteAllKeysSlowlyAsync)
+            .WillOnce(RunOnceCallback<0>(3));
       }));
 
   // TestingProfileManager::DeleteTestingProfile() does not actually invoke

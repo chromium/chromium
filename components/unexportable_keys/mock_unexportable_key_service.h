@@ -60,8 +60,7 @@ class MockUnexportableKeyService : public UnexportableKeyService {
               (override));
   MOCK_METHOD(void,
               DeleteAllKeysSlowlyAsync,
-              (BackgroundTaskPriority priority,
-               base::OnceCallback<void(ServiceErrorOr<size_t>)> callback),
+              (base::OnceCallback<void(ServiceErrorOr<size_t>)> callback),
               (override));
   MOCK_METHOD(ServiceErrorOr<std::vector<uint8_t>>,
               GetSubjectPublicKeyInfo,

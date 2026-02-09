@@ -57,7 +57,6 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void DeleteAllKeysSlowlyAsync(
-      BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
       BackgroundTaskPriority priority,

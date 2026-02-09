@@ -588,11 +588,11 @@ TEST(UnexportableKeyServiceProxyTest, DeleteAllKeysSuccess) {
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
   // Expect the call to the mock service's async method and simulate success.
-  EXPECT_CALL(mock_uks, DeleteAllKeysSlowlyAsync(kTestPriority, _))
-      .WillOnce(RunOnceCallback<1>(base::ok(1)));
+  EXPECT_CALL(mock_uks, DeleteAllKeysSlowlyAsync)
+      .WillOnce(RunOnceCallback<0>(base::ok(1)));
 
   TestFuture<base::expected<uint64_t, ServiceError>> future;
-  uks_remote->DeleteAllKeys(kTestPriority, future.GetCallback());
+  uks_remote->DeleteAllKeys(future.GetCallback());
 
   // The AdaptErrorOrVoid should convert base::ok() to std::nullopt.
   const auto& result = future.Get();
@@ -611,11 +611,11 @@ TEST(UnexportableKeyServiceProxyTest, DeleteAllKeysError) {
   ServiceError expected_error = ServiceError::kCryptoApiFailed;
 
   // Expect the call to the mock service's async method and simulate an error.
-  EXPECT_CALL(mock_uks, DeleteAllKeysSlowlyAsync(kTestPriority, _))
-      .WillOnce(RunOnceCallback<1>(base::unexpected(expected_error)));
+  EXPECT_CALL(mock_uks, DeleteAllKeysSlowlyAsync)
+      .WillOnce(RunOnceCallback<0>(base::unexpected(expected_error)));
 
   TestFuture<base::expected<uint64_t, ServiceError>> future;
-  uks_remote->DeleteAllKeys(kTestPriority, future.GetCallback());
+  uks_remote->DeleteAllKeys(future.GetCallback());
 
   // The AdaptErrorOrVoid should propagate the ServiceError.
   const auto& result = future.Get();

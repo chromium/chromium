@@ -168,17 +168,16 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
 
   // Deletes all keys.
   //
-  // This will remove all keys from the in-memory cache synchronously, reply
-  // `kKeyNotFound` to pending `FromWrappedSigningKeySlowlyAsync()` requests,
-  // and schedule an asynchronous deletion task. This will invoke `callback`
-  // with a `ServiceError` if an error occurs during deletion and the number of
-  // deleted keys otherwise. Pending `GenerateSigningKeySlowlyAsync()` requests
-  // are not affected.
+  // This will remove all keys from the in-memory cache synchronously, cancel
+  // **all** outstanding key operation requests, and schedule an asynchronous
+  // deletion task. This will invoke `callback` with a `ServiceError` if an
+  // error occurs during deletion and the number of deleted keys otherwise.
+  // Furthermore, the background task is scheduled with the highest priority,
+  // ensuring that it is completed as soon as possible.
   //
   // Note: On platforms like macOS this will delete all keys from the OS, and
   // thus future calls to `FromWrappedSigningKeySlowlyAsync()` will fail.
   virtual void DeleteAllKeysSlowlyAsync(
-      BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) = 0;
 
   // Returns an SPKI that contains the public key of a key that `key_id` refers

@@ -40,7 +40,6 @@ class FakeUnexportableKeyService : public UnexportableKeyService {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void DeleteAllKeysSlowlyAsync(
-      BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   ServiceErrorOr<std::vector<uint8_t>> GetSubjectPublicKeyInfo(
       UnexportableKeyId key_id) const override;
