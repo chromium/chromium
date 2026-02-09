@@ -849,7 +849,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_FALSE(bubble->GetAccepted());
   // Make account primary.
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_info.account_id, signin::ConsentLevel::kSignin);
+      account_info.account_id, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kStartPage);
 
   // Widget will close now.
   closing_observer.Wait();

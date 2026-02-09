@@ -210,8 +210,9 @@ TEST_P(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
   EXPECT_CALL(delegate(), SyncAuthAccountStateChanged);
   signin::PrimaryAccountMutator* primary_account_mutator =
       identity_env()->identity_manager()->GetPrimaryAccountMutator();
-  primary_account_mutator->SetPrimaryAccount(account_info.account_id,
-                                             signin::ConsentLevel::kSync);
+  primary_account_mutator->SetPrimaryAccount(
+      account_info.account_id, signin::ConsentLevel::kSync,
+      signin_metrics::AccessPoint::kStartPage);
 
   EXPECT_TRUE(auth_manager->GetActiveAccountInfo().is_sync_consented);
 }

@@ -645,7 +645,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .account_id,
-      signin::ConsentLevel::kSync);
+      signin::ConsentLevel::kSync, signin_metrics::AccessPoint::kStartPage);
 
   // The timer is stopped.
   EXPECT_FALSE(
@@ -672,7 +672,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .account_id,
-      signin::ConsentLevel::kSync);
+      signin::ConsentLevel::kSync, signin_metrics::AccessPoint::kStartPage);
   waiter.Wait();
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());

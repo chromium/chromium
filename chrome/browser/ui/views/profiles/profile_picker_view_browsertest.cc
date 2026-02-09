@@ -2487,7 +2487,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   IdentityManagerFactory::GetForProfile(default_profile)
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(default_account_info.account_id,
-                          signin::ConsentLevel::kSync);
+                          signin::ConsentLevel::kSync,
+                          signin_metrics::AccessPoint::kStartPage);
 
   // Create a second profile.
   base::RunLoop run_loop;
@@ -2505,7 +2506,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   IdentityManagerFactory::GetForProfile(second_profile)
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(second_profile_info.account_id,
-                          signin::ConsentLevel::kSync);
+                          signin::ConsentLevel::kSync,
+                          signin_metrics::AccessPoint::kStartPage);
 
   // The first profile should use default name.
   ProfileAttributesEntry* default_profile_entry =

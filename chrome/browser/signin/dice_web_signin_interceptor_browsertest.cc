@@ -1613,7 +1613,8 @@ IN_PROC_BROWSER_TEST_P(
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(primary_account_info.account_id,
-                          signin::ConsentLevel::kSignin);
+                          signin::ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kStartPage);
   enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
 
   AccountInfo account_info =
@@ -1685,7 +1686,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(primary_account_info.account_id,
-                          signin::ConsentLevel::kSignin);
+                          signin::ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kStartPage);
 
   AccountInfo account_info =
       MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
@@ -1773,7 +1775,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(primary_account_info.account_id,
-                          signin::ConsentLevel::kSignin);
+                          signin::ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kStartPage);
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -1835,7 +1838,8 @@ IN_PROC_BROWSER_TEST_F(
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(primary_account_info.account_id,
-                          signin::ConsentLevel::kSignin);
+                          signin::ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kStartPage);
   profile_management_disclaimer_service->EnsureManagedProfileForAccount(
       primary_account_info.account_id, signin_metrics::AccessPoint::kWebSignin,
       base::DoNothing());
@@ -1912,7 +1916,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(primary_account_info.account_id,
-                          signin::ConsentLevel::kSignin);
+                          signin::ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kStartPage);
   SetupGaiaResponses();
 
   // Add a tab.
@@ -2301,7 +2306,8 @@ IN_PROC_BROWSER_TEST_F(
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(account_info.account_id,
-                          signin::ConsentLevel::kSignin);
+                          signin::ConsentLevel::kSignin,
+                          signin_metrics::AccessPoint::kStartPage);
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -2358,7 +2364,8 @@ IN_PROC_BROWSER_TEST_F(
 
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
-      ->SetPrimaryAccount(account_info.account_id, signin::ConsentLevel::kSync);
+      ->SetPrimaryAccount(account_info.account_id, signin::ConsentLevel::kSync,
+                          signin_metrics::AccessPoint::kStartPage);
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
