@@ -1707,6 +1707,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchSHA256) {
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchDisabledSHA256) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(policy::kPolicyFetchWithSha256);
   RegisterClient();
@@ -2743,6 +2744,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(CloudPolicyClientTest,
        UploadSecurityEventReportDeprecatedNotRegistered) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kUploadRealtimeReportingEventsUsingProto);
@@ -2893,6 +2895,7 @@ TEST_P(CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
 }
 
 TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNoResponse) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kUploadRealtimeReportingEventsUsingProto);
@@ -3057,6 +3060,11 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
 }
 
 TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kUploadRealtimeReportingEventsUsingProto);
+
   auto config = std::make_unique<RealtimeReportingJobConfiguration>(
       client_.get(), service_.configuration()->GetRealtimeReportingServerUrl(),
       /*include_device_info*/ true,
@@ -3135,6 +3143,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReportNotRegistered) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kUploadRealtimeReportingEventsUsingProto);
@@ -3152,6 +3161,7 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportNotRegistered) {
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kUploadRealtimeReportingEventsUsingProto);
@@ -3174,6 +3184,7 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
 }
 
 TEST_F(CloudPolicyClientTest, CancelUploadAppInstallReport) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kUploadRealtimeReportingEventsUsingProto);
@@ -3203,6 +3214,7 @@ TEST_F(CloudPolicyClientTest, CancelUploadAppInstallReport) {
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
+  // Proto-based reporting is not applicable to tests for deprecated reporting.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       kUploadRealtimeReportingEventsUsingProto);

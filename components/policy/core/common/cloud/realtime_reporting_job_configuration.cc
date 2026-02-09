@@ -22,7 +22,7 @@ namespace policy {
 const char kBinaryProtobufContentType[] = "application/x-protobuf";
 
 BASE_FEATURE(kUploadRealtimeReportingEventsUsingProto,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char RealtimeReportingJobConfiguration::kContextKey[] = "context";
 const char RealtimeReportingJobConfiguration::kEventListKey[] = "events";
