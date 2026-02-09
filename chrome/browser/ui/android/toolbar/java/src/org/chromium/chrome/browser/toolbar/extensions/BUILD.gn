@@ -23,6 +23,7 @@ android_library("java") {
     "ExtensionActionContextMenuUtils.java",
     "ExtensionActionDragHelper.java",
     "ExtensionActionIconUtil.java",
+    "ExtensionActionListAnchoredModelList.java",
     "ExtensionActionListCoordinator.java",
     "ExtensionActionListMediator.java",
     "ExtensionActionListRecyclerView.java",
@@ -70,6 +71,7 @@ robolectric_library("junit") {
   sources = [
     "ExtensionAccessControlButtonMediatorTest.java",
     "ExtensionActionDragHelperTest.java",
+    "ExtensionActionListAnchoredModelListTest.java",
     "ExtensionActionListMediatorTest.java",
     "ExtensionActionsUpdateHelperTest.java",
     "ExtensionsMenuAndAccessControlButtonCoordinatorTest.java",

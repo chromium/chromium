@@ -22,7 +22,11 @@ public class ExtensionActionButtonProperties {
     @IntDef({ListItemType.EXTENSION_ACTION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ListItemType {
+        /** The draggable extension icon. */
         int EXTENSION_ACTION = 0;
+
+        /** A non-visible placeholder item used for animations. */
+        int ANCHOR = 1;
     }
 
     // Keep the entries sorted by name.
