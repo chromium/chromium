@@ -9,7 +9,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -22,14 +22,15 @@ namespace {
 const char kInitialClientId[] = "11111111-2222-aaaa-bbbb-cccccccccccc";
 }  // namespace
 
-class ClonedInstallClientIdResetBrowserTest : public InProcessBrowserTest {
+class ClonedInstallClientIdResetBrowserTest : public PlatformBrowserTest {
  public:
   ClonedInstallClientIdResetBrowserTest() = default;
   ~ClonedInstallClientIdResetBrowserTest() override = default;
 
   bool SetUpUserDataDirectory() override {
-    if (!InProcessBrowserTest::SetUpUserDataDirectory())
+    if (!PlatformBrowserTest::SetUpUserDataDirectory()) {
       return false;
+    }
 
     // Changing in user's data directory should only be done once before
     // PRE_TestClonedInstallClientIdReset.
@@ -65,7 +66,7 @@ class ClonedInstallClientIdResetBrowserTest : public InProcessBrowserTest {
     ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
         &metrics_enabled_);
 
-    InProcessBrowserTest::SetUp();
+    PlatformBrowserTest::SetUp();
   }
 
   metrics::MetricsService* metrics_service() {
