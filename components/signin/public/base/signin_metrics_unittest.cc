@@ -233,6 +233,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "CredentialExchangeImport";
       case AccessPoint::kSetSyncConsentFromSyncInternals:
         return "SetSyncConsentFromSyncInternals";
+      case AccessPoint::kIosChromeWebView:
+        return "IosChromeWebView";
     }
   }
 };

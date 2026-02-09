@@ -1017,6 +1017,7 @@ chromium-metrics-reviews@google.com.
   <int value="91" label="Your saved info page in settings"/>
   <int value="92" label="Credential Exchange import"/>
   <int value="93" label="Set sync consent from sync internals"/>
+  <int value="94" label="Chrome WebView (iOS only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

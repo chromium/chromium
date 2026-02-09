@@ -148,7 +148,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
   _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      accountId, signin::ConsentLevel::kSignin);
+      accountId, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kIosChromeWebView);
   CHECK_EQ(_identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
            accountId);
 

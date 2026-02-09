@@ -323,10 +323,11 @@ enum class AccessPoint : int {
   kCredentialExchangeImport = 92,
   // Set sync consent from sync internals.
   kSetSyncConsentFromSyncInternals = 93,
+  kIosChromeWebView = 94,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kSetSyncConsentFromSyncInternals,  // This must be last.
+  kMaxValue = kIosChromeWebView,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
