@@ -6,9 +6,7 @@
 
 #include <algorithm>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
@@ -18,8 +16,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/app_session_service_factory.h"
-#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list_enumerator.h"
@@ -31,7 +27,6 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 
 using base::UserMetricsAction;
-using content::WebContents;
 
 // static
 base::LazyInstance<base::ObserverList<BrowserListObserver>,

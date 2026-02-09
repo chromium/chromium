@@ -9,13 +9,11 @@
 
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 
@@ -25,20 +23,12 @@
 
 class Browser;
 class BrowserWindowInterface;
-class Profile;
-
-namespace base {
-class FilePath;
-}
-
 class BrowserListObserver;
 
 // Maintains a list of Browser objects.
 class BrowserList {
  public:
   using BrowserVector = std::vector<raw_ptr<Browser, VectorExperimental>>;
-  using BrowserWeakVector = std::vector<base::WeakPtr<Browser>>;
-  using CloseCallback = base::RepeatingCallback<void(const base::FilePath&)>;
   using const_iterator = BrowserVector::const_iterator;
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;
 
@@ -70,33 +60,6 @@ class BrowserList {
   // Notifies the observers when the current active browser becomes not active.
   static void NotifyBrowserNoLongerActive(Browser* browser);
 
-  // Closes all browsers for |profile| across all desktops.
-  // TODO(mlerman): Move the Profile Deletion flow to use the overloaded
-  // version of this method with a callback, then remove this method.
-  static void CloseAllBrowsersWithProfile(Profile* profile);
-
-  // Closes all browsers for |profile| across all desktops. Uses
-  // TryToCloseBrowserList() to do the actual closing. Triggers any
-  // OnBeforeUnload events unless |skip_beforeunload| is true. If all
-  // OnBeforeUnload events are confirmed or |skip_beforeunload| is true,
-  // |on_close_success| is called, otherwise |on_close_aborted| is called. Both
-  // callbacks may be null.
-  // Note that if there is any browser window that has been used before, the
-  // user should always have a chance to save their work before closing windows
-  // without triggering beforeunload events.
-  static void CloseAllBrowsersWithProfile(Profile* profile,
-                                          const CloseCallback& on_close_success,
-                                          const CloseCallback& on_close_aborted,
-                                          bool skip_beforeunload);
-
-  // Similarly to CloseAllBrowsersWithProfile, but DCHECK's that profile is
-  // Off-the-Record and doesn't close browsers with the original profile.
-  static void CloseAllBrowsersWithIncognitoProfile(
-      Profile* profile,
-      const CloseCallback& on_close_success,
-      const CloseCallback& on_close_aborted,
-      bool skip_beforeunload);
-
  private:
   BrowserList();
   ~BrowserList();
@@ -122,34 +85,6 @@ class BrowserList {
 
   // Helper method to remove a browser instance from a list of browsers
   static void RemoveBrowserFrom(Browser* browser, BrowserVector* browser_list);
-
-  // Attempts to close |browsers_to_close| while respecting OnBeforeUnload
-  // events. If there are no OnBeforeUnload events to be called,
-  // |on_close_success| will be called, with a parameter of |profile_path|,
-  // and the Browsers will then be closed. If at least one unfired
-  // OnBeforeUnload event is found, handle it with a callback to
-  // PostTryToCloseBrowserWindow, which upon success will recursively call this
-  // method to handle any other OnBeforeUnload events. If aborted in the
-  // OnBeforeUnload event, PostTryToCloseBrowserWindow will call
-  // |on_close_aborted| instead and reset all OnBeforeUnload event handlers.
-  static void TryToCloseBrowserList(const BrowserWeakVector& browsers_to_close,
-                                    const CloseCallback& on_close_success,
-                                    const CloseCallback& on_close_aborted,
-                                    const base::FilePath& profile_path,
-                                    const bool skip_beforeunload);
-
-  // Called after handling an OnBeforeUnload event. If |tab_close_confirmed| is
-  // true, calls |TryToCloseBrowserList()|, passing the parameters
-  // |browsers_to_close|, |on_close_success|, |on_close_aborted|, and
-  // |profile_path|. Otherwise, resets all the OnBeforeUnload event handlers and
-  // calls |on_close_aborted|.
-  static void PostTryToCloseBrowserWindow(
-      const BrowserWeakVector& browsers_to_close,
-      const CloseCallback& on_close_success,
-      const CloseCallback& on_close_aborted,
-      const base::FilePath& profile_path,
-      const bool skip_beforeunload,
-      bool tab_close_confirmed);
 
   // A vector of the browsers in this list, in the order they were added.
   BrowserVector browsers_;
