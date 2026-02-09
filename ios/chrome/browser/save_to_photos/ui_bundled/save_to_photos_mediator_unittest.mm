@@ -153,7 +153,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
             .WithGaiaId(fake_identity_.gaiaId)
             .Build(base::SysNSStringToUTF8(fake_identity_.userEmail)));
     authentication_service->SignIn(fake_identity_,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
     web_state_ = std::make_unique<web::FakeWebState>();
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());

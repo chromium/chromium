@@ -103,7 +103,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
             .WithGaiaId(kPrimaryIdentity.gaiaId)
             .Build(base::SysNSStringToUTF8(kPrimaryIdentity.userEmail)));
     authentication_service->SignIn(kPrimaryIdentity,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
 
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
