@@ -288,9 +288,39 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
+        mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
+
+        verify(mMockCallback).onCanceled(mAdaptiveStream, info);
+    }
+
+    @Test
+    @SmallTest
+    public void onCanceledPrimaryOnly_noop() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+
+        mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
+
+        verify(mMockCallback, never()).onCanceled(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void onCanceledBothStreams_forwardsToCallback() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+
+        mAdaptiveStream.getCallback().onCanceled(mFallbackStream, info);
         mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
 
         verify(mMockCallback).onCanceled(mAdaptiveStream, info);
@@ -377,5 +407,69 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
         assertEquals(false, mAdaptiveStream.isDone());
+    }
+
+    @Test
+    @SmallTest
+    public void failsWithoutActiveStreamNoFallback_signalsFailed() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        CronetException error = mock(CronetException.class);
+        mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
+        // This is a final failure.
+        verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
+    }
+
+    @Test
+    @SmallTest
+    public void failsWithoutActiveStreamFallbackNotStarted_isNoOp() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        CronetException error = mock(CronetException.class);
+        mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
+
+        // The fallback stream still hasn't failed, so we don't give up yet.
+        verify(mMockCallback, never()).onFailed(any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void bothStreamsFailed_signalsFailed() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        CronetException error = mock(CronetException.class);
+        mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
+        mAdaptiveStream.getCallback().onFailed(mFallbackStream, info, error);
+
+        // Both failed, so now we give up.
+        verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
+    }
+
+    @Test
+    @SmallTest
+    public void failsActiveStream_signalsFailed() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        CronetException error = mock(CronetException.class);
+        mAdaptiveStream.getCallback().onFailed(mFallbackStream, info, error);
+
+        // Active stream failed, so we give up.
+        verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
     }
 }

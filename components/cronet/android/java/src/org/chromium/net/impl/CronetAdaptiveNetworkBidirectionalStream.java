@@ -16,6 +16,7 @@ import org.chromium.net.UrlResponseInfo;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
     private static final long READY_FAILOVER_MS = 3000;
 
     private ExperimentalBidirectionalStream mPrimaryStream;
+    private final AtomicBoolean mOnlyOneStreamRemains;
     private @Nullable ExperimentalBidirectionalStream mFallbackStream;
 
     private final ScheduledExecutorService mExecutor;
@@ -118,19 +120,39 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                 public void onFailed(
                         BidirectionalStream stream, UrlResponseInfo info, CronetException error) {
                     checkValidStream(stream);
-                    if (mActiveStream.get() != stream) {
-                        return;
+                    // The active stream has failed.
+                    if (mActiveStream.get() == stream) {
+                      mBackendCallback.onFailed(
+                                CronetAdaptiveNetworkBidirectionalStream.this, info, error);
+                      return;
                     }
-                    mBackendCallback.onFailed(CronetAdaptiveNetworkBidirectionalStream.this, info, error);
+                    // Either the primary stream just failed and we have no fallback
+                    // or we are the second stream to fail.
+                    // Time to give up and signal failure.
+                    if (mFallbackStream == null || mOnlyOneStreamRemains.getAndSet(true)) {
+                        mBackendCallback.onFailed(
+                                CronetAdaptiveNetworkBidirectionalStream.this, info, error);
+                       return;
+                    }
                 }
 
                 @Override
                 public void onCanceled(BidirectionalStream stream, UrlResponseInfo info) {
                     checkValidStream(stream);
-                    if (mActiveStream.get() != stream) {
-                        return;
+                    // The active stream was cancelled failed.
+                    if (mActiveStream.get() == stream) {
+                      mBackendCallback.onCanceled(
+                                CronetAdaptiveNetworkBidirectionalStream.this, info);
+                      return;
                     }
-                    mBackendCallback.onCanceled(CronetAdaptiveNetworkBidirectionalStream.this, info);
+                    // Either the primary stream just cancelled and we have no fallback
+                    // or we are the second stream to cancel.
+                    //  Signal the cancel.
+                    if (mFallbackStream == null || mOnlyOneStreamRemains.getAndSet(true)) {
+                        mBackendCallback.onCanceled(
+                                CronetAdaptiveNetworkBidirectionalStream.this, info);
+                       return;
+                    }
                 }
             };
 
@@ -139,6 +161,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
         mExecutor = scheduledExecutor;
         mBackendCallback = backendCallback;
         mFallbackStream = null;
+        mOnlyOneStreamRemains = new AtomicBoolean(false);
     }
 
     void setPrimaryStream(CronetBidirectionalStream primaryStream) {
