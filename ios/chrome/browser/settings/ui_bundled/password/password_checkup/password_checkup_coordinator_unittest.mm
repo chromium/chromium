@@ -101,7 +101,7 @@ class PasswordCheckupCoordinatorTest
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     authentication_service->SignIn(fake_system_identity_,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
 
     // Init navigation controller with a root vc.
     base_navigation_controller_ = [[UINavigationController alloc]
