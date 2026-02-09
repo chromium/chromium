@@ -169,10 +169,10 @@ class MODULES_EXPORT SpeechRecognition final
   void StartController(
       mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
           session_receiver,
-      std::optional<media::AudioParameters> audio_parameters = std::nullopt,
       mojo::PendingReceiver<
           media::mojom::blink::SpeechRecognitionAudioForwarder>
-          audio_forwarder_receiver = mojo::NullReceiver());
+          audio_forwarder_receiver = mojo::NullReceiver(),
+      std::optional<media::AudioParameters> audio_parameters = std::nullopt);
 
   Member<MediaStreamTrack> stream_track_;
   Member<SpeechGrammarList> grammars_;

@@ -27,6 +27,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
@@ -533,6 +534,11 @@ void SpeechRecognition::CheckAvailabilityAndStart(
 }
 
 void SpeechRecognition::StartInternal() {
+  // If this is called from a bound task (eg. from
+  // SpeechRecognitionController::AvailableOnDevice), the caller must not invoke
+  // it after the ExecutionContext is destroyed.
+  CHECK(GetExecutionContext());
+
   final_results_.clear();
 
   auto task_runner =
@@ -557,9 +563,14 @@ void SpeechRecognition::StartInternal() {
 void SpeechRecognition::StartController(
     mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
         session_receiver,
-    std::optional<media::AudioParameters> audio_parameters,
     mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionAudioForwarder>
-        audio_forwarder_receiver) {
+        audio_forwarder_receiver,
+    std::optional<media::AudioParameters> audio_parameters) {
+  // If this is called from a bound task (eg. from
+  // SpeechRecognitionMediaStreamAudioSink), the caller must not invoke it after
+  // the ExecutionContext is destroyed.
+  CHECK(GetExecutionContext());
+
   mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
       session_client;
   // See https://bit.ly/2S0zRAS for task types.

@@ -32,9 +32,9 @@ namespace blink {
 class ExecutionContext;
 
 using StartRecognitionCallback = base::OnceCallback<void(
-    std::optional<media::AudioParameters> audio_parameters,
     mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionAudioForwarder>
-        audio_forwarder_receiver)>;
+        audio_forwarder_receiver,
+    std::optional<media::AudioParameters> audio_parameters)>;
 
 // Class used to extract the raw audio from the media stream for use with the
 // Web Speech API. Raw audio is extracted from the MediaStreamAudioSink and
@@ -105,8 +105,10 @@ class MODULES_EXPORT SpeechRecognitionMediaStreamAudioSink final
   media::AudioParameters audio_parameters_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
 
-  StartRecognitionCallback start_recognition_callback_
-      GUARDED_BY_CONTEXT(main_sequence_checker_);
+  // A StartRecognitionCallback with the PendingReceiver param already bound.
+  base::OnceCallback<
+      void(std::optional<media::AudioParameters> audio_parameters)>
+      start_recognition_callback_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 

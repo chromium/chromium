@@ -40,11 +40,13 @@ SpeechRecognitionMediaStreamAudioSink::SpeechRecognitionMediaStreamAudioSink(
     ExecutionContext* context,
     StartRecognitionCallback start_recognition_callback)
     : audio_forwarder_(context),
-      start_recognition_callback_(std::move(start_recognition_callback)),
       main_thread_task_runner_(
           context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
       weak_handle_(MakeCrossThreadWeakHandle(this)) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  start_recognition_callback_ = blink::BindOnce(
+      std::move(start_recognition_callback),
+      audio_forwarder_.BindNewPipeAndPassReceiver(main_thread_task_runner_));
 }
 
 void SpeechRecognitionMediaStreamAudioSink::OnData(
@@ -102,10 +104,9 @@ void SpeechRecognitionMediaStreamAudioSink::
         std::unique_ptr<media::AudioBusPoolImpl> old_audio_bus_pool) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   audio_parameters_ = audio_parameters;
-  if (start_recognition_callback_) {
-    std::move(start_recognition_callback_)
-        .Run(audio_parameters_, audio_forwarder_.BindNewPipeAndPassReceiver(
-                                    main_thread_task_runner_));
+  if (start_recognition_callback_ && audio_forwarder_ &&
+      audio_forwarder_.is_bound()) {
+    std::move(start_recognition_callback_).Run(audio_parameters_);
   }
 
   // Delete the old audio bus pool on the main thread as it goes out of scope.

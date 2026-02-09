@@ -2021,6 +2021,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/speech/',
+        ],
+        'allowed': [
+            'media::AudioParameters',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/webcodecs/',
         ],
         'allowed': [
