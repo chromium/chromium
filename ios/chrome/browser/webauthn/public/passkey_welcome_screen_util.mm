@@ -6,10 +6,7 @@
 
 #import "base/check.h"
 #import "base/strings/utf_string_conversions.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
-#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
-#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -89,28 +86,4 @@ PasskeyWelcomeScreenStrings* GetPasskeyWelcomeScreenStrings(
         primaryButton:GetPrimaryButtonTitle(purpose)
       secondaryButton:secondaryButton
          instructions:GetInstructions(purpose)];
-}
-
-void CreateAndPresentPasskeyWelcomeScreen(
-    PasskeyWelcomeScreenPurpose purpose,
-    UINavigationController* navigationController,
-    id<PasskeyWelcomeScreenViewControllerDelegate> delegate,
-    webauthn::PasskeyWelcomeScreenAction primaryButtonAction,
-    std::string userEmail) {
-  CHECK(navigationController);
-  CHECK(delegate);
-
-  UIView* passkeyNavigationTitleView =
-      password_manager::CreatePasswordManagerTitleView(
-          l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER));
-  PasskeyWelcomeScreenStrings* strings =
-      GetPasskeyWelcomeScreenStrings(purpose, std::move(userEmail));
-  PasskeyWelcomeScreenViewController* welcomeScreen =
-      [[PasskeyWelcomeScreenViewController alloc]
-                   initForPurpose:purpose
-          navigationItemTitleView:passkeyNavigationTitleView
-                         delegate:delegate
-              primaryButtonAction:primaryButtonAction
-                          strings:strings];
-  [navigationController pushViewController:welcomeScreen animated:NO];
 }

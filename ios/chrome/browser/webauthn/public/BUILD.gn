@@ -24,3 +24,17 @@ source_set("public") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "passkey_welcome_screen_util_unittest.mm" ]
+  deps = [
+    ":public",
+    "//base",
+    "//components/webauthn/ios:passkey_types",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/common/credential_provider/ui",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
