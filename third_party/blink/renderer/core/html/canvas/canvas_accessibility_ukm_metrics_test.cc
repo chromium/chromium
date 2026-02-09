@@ -21,7 +21,7 @@ class CanvasAccessibilityUkmMetricsTest
     : public PageTestBase,
       public testing::WithParamInterface<std::tuple<Task, Task, Task>> {
  public:
-  CanvasAccessibilityUkmMetricsTest();
+  CanvasAccessibilityUkmMetricsTest() = default;
 
   void SetUp() override {
     PageTestBase::SetUp();
@@ -97,9 +97,6 @@ class CanvasAccessibilityUkmMetricsTest
   Persistent<HTMLCanvasElement> canvas_element_;
 };
 
-CanvasAccessibilityUkmMetricsTest::CanvasAccessibilityUkmMetricsTest() =
-    default;
-
 TEST_P(CanvasAccessibilityUkmMetricsTest, VerifyMetricRecord) {
   PerformTasksAndVerifyResults();
 }
@@ -119,6 +116,48 @@ INSTANTIATE_TEST_SUITE_P(
                                     Task::kGetContext,
                                     Task::kDidProcessTask)));
 
-// TODO(crbug.com/475512055): Add more tests to cover metric values.
+class CanvasAccessibilityUkmMetricsValueTest : public PageTestBase {
+ public:
+  CanvasAccessibilityUkmMetricsValueTest() = default;
+
+  void SetUp() override {
+    PageTestBase::SetUp();
+    GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+        "<body><canvas id='c' width=300 height=300></canvas></body>");
+    canvas_element_ =
+        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  void TearDown() override {
+    PageTestBase::TearDown();
+    CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+  }
+
+ protected:
+  ukm::TestAutoSetUkmRecorder recorder_;
+  Persistent<HTMLCanvasElement> canvas_element_;
+};
+
+TEST_F(CanvasAccessibilityUkmMetricsValueTest, VerifyHasText) {
+  ASSERT_TRUE(canvas_element_);
+  CanvasContextCreationAttributesCore attributes;
+  canvas_element_
+      ->GetCanvasRenderingContext(GetDocument().GetExecutionContext(), "2d",
+                                  attributes)
+      ->fillTextForTesting("Hello World", 10, 10);
+
+  canvas_element_->SetIsDisplayed(true);
+  base::PendingTask dummy_pending_task(FROM_HERE, base::OnceClosure());
+  canvas_element_->RenderingContext()->DidProcessTask(dummy_pending_task);
+
+  // Verify that one record exists.
+  auto entries = recorder_.GetEntriesByName(
+      ukm::builders::Accessibility_Canvas::kEntryName);
+  ASSERT_EQ(entries.size(), 1);
+  auto* entry = entries[0].get();
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      entry, ukm::builders::Accessibility_Canvas::kHasTextName, 1);
+}
 
 }  // namespace blink

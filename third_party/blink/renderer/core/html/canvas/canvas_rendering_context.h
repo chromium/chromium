@@ -280,6 +280,9 @@ class CORE_EXPORT CanvasRenderingContext
   virtual bool Is2DCanvasAccelerated() const { NOTREACHED(); }
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
+  virtual void fillTextForTesting(const String& text, double x, double y) {
+    NOTREACHED();
+  }
 
   scoped_refptr<StaticBitmapImage> GetElementImage(
       Element* element,

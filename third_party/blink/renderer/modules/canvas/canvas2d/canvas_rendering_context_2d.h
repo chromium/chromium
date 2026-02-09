@@ -132,6 +132,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SetShouldAntialias(bool);
 
   void setFontForTesting(const String& new_font) override;
+  void fillTextForTesting(const String& text, double x, double y) override;
 
   void drawFocusIfNeeded(Element*);
   void drawFocusIfNeeded(Path2D*, Element*);

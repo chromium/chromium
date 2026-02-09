@@ -557,6 +557,14 @@ void CanvasRenderingContext2D::setFontForTesting(const String& new_font) {
   setFont(new_font);
 }
 
+void CanvasRenderingContext2D::fillTextForTesting(const String& text,
+                                                  double x,
+                                                  double y) {
+  // Dependency inversion to allow BaseRenderingContext2D::fillText
+  // to be invoked from core unit tests.
+  fillText(text, x, y);
+}
+
 bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
   HTMLCanvasElement* const element = canvas();
   Document& document = element->GetDocument();
