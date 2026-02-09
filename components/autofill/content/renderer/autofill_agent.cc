@@ -1516,7 +1516,10 @@ void AutofillAgent::ShowSuggestions(
         password_generation_agent_->ShowPasswordGenerationSuggestions(
             input_element, form_cache)) {
       is_popup_possibly_visible_ = true;
-      return;
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+        return;
+      }
     }
     bool password_agent_handled_request = TryShowPasswordSuggestions(
         input_element, IsPasswordsAutofillManuallyTriggered(trigger_source),
