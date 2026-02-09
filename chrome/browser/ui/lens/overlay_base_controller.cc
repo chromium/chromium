@@ -378,6 +378,53 @@ void OverlayBaseController::SetLiveBlurImpl(bool enabled) {
   lens_overlay_blur_layer_delegate_->StopBackgroundImageCapture();
 }
 
+void OverlayBaseController::TabForegrounded(tabs::TabInterface* tab) {
+  // Ignore the event if the overlay is not backgrounded.
+  if (state_ != State::kBackground) {
+    // If the side panel is open without the overlay, exit early to avoid
+    // showing the overlay.
+    return;
+  }
+
+  // If the overlay was backgrounded, restore the previous state.
+  if (backgrounded_state_ != State::kHidden) {
+    ShowOverlay();
+  }
+  if (!IsResultsSidePanelShowing() && backgrounded_state_ != State::kHidden) {
+    ShowPreselectionBubble();
+  }
+  state_ = backgrounded_state_;
+  NotifyTabForegrounded();
+}
+
+void OverlayBaseController::TabWillEnterBackground(tabs::TabInterface* tab) {
+  // If the current tab was already backgrounded, do nothing.
+  if (state_ == State::kBackground) {
+    DCHECK(state_ != State::kBackground) << "State should not be kBackground.";
+    return;
+  }
+
+  // If the overlay is active, background it.
+  if (IsOverlayActive()) {
+    const bool is_in_transitional_state =
+        state_ == State::kIsReshowing || state_ == State::kHiding;
+
+    // If the overlay is in a transitional state, the state to restore to is
+    // kHidden. Otherwise, restore to the current state.
+    backgrounded_state_ = is_in_transitional_state ? State::kHidden : state_;
+
+    // If the overlay UI is showing, hide it.
+    if (overlay_web_view_ && overlay_web_view_->GetVisible()) {
+      HideOverlay();
+    }
+
+    state_ = State::kBackground;
+    NotifyTabWillEnterBackground();
+
+    // TODO(crbug.com/335516480): Schedule the UI to be suspended.
+  }
+}
+
 bool OverlayBaseController::CanShowModalUI() {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff && state_ != State::kHidden) {

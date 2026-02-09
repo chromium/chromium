@@ -118,6 +118,12 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // this overlay controller.
   tabs::TabInterface* GetTabInterface();
 
+  // Called when the associated tab enters the foreground.
+  void TabForegrounded(tabs::TabInterface* tab);
+
+  // Called when the associated tab will enter the background.
+  void TabWillEnterBackground(tabs::TabInterface* tab);
+
   // Testing helper method for checking the blur layer delegate.
   lens::LensOverlayBlurLayerDelegate*
   GetLensOverlayBlurLayerDelegateForTesting();
@@ -214,6 +220,12 @@ class OverlayBaseController : public content::WebContentsDelegate,
 
   // Notification that the overlay is closing soon.
   virtual void NotifyOverlayClosing() = 0;
+
+  // Notification that the tab was foregrounded.
+  virtual void NotifyTabForegrounded() = 0;
+
+  // Notification that the tab was foregrounded.
+  virtual void NotifyTabWillEnterBackground() = 0;
 
   // If the side panel was closed, we wait for the reflow before beginning
   // the screenshot flow.

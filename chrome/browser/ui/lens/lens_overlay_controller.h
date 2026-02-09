@@ -611,6 +611,8 @@ class LensOverlayController : public OverlayBaseController,
   bool ShouldShowPreselectionBubble() override;
   bool UseOverlayBlur() override;
   void NotifyOverlayClosing() override;
+  void NotifyTabForegrounded() override;
+  void NotifyTabWillEnterBackground() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -645,12 +647,6 @@ class LensOverlayController : public OverlayBaseController,
 
   // Gets the ui scale factor of the page.
   float GetUiScaleFactor();
-
-  // Called when the associated tab enters the foreground.
-  void TabForegrounded(tabs::TabInterface* tab);
-
-  // Called when the associated tab will enter the background.
-  void TabWillEnterBackground(tabs::TabInterface* tab);
 
   // Suggest a name for the save as image feature incorporating the hostname of
   // the page. Protocol, TLD, etc are not taken into consideration. Duplicate
