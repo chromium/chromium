@@ -231,6 +231,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "EnterpriseDialogAfterSigninInterception";
       case AccessPoint::kCredentialExchangeImport:
         return "CredentialExchangeImport";
+      case AccessPoint::kSetSyncConsentFromSyncInternals:
+        return "SetSyncConsentFromSyncInternals";
     }
   }
 };

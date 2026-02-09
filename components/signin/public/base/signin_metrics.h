@@ -321,10 +321,12 @@ enum class AccessPoint : int {
   // Triggered when the user attempts to import credentials through the
   // ASCredentialImportManager without being signed in.
   kCredentialExchangeImport = 92,
+  // Set sync consent from sync internals.
+  kSetSyncConsentFromSyncInternals = 93,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kCredentialExchangeImport,  // This must be last.
+  kMaxValue = kSetSyncConsentFromSyncInternals,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

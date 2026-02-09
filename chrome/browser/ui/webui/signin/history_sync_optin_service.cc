@@ -275,6 +275,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kNtpFeaturePromo:
     case signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception:
     case signin_metrics::AccessPoint::kCredentialExchangeImport:
+    case signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals:
       return;
   }
 

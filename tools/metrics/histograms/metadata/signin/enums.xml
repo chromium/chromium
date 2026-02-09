@@ -1016,6 +1016,7 @@ chromium-metrics-reviews@google.com.
   <int value="90" label="Enterprise dialog after signin interception"/>
   <int value="91" label="Your saved info page in settings"/>
   <int value="92" label="Credential Exchange import"/>
+  <int value="93" label="Set sync consent from sync internals"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
