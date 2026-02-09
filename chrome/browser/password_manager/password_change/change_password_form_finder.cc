@@ -34,6 +34,10 @@ constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kOpenFormFlowStep = optimization_guide::proto::PasswordChangeRequest::
         FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP;
 
+constexpr optimization_guide::proto::OpenFormResponseData::PageType
+    kInterventionNeededPage = optimization_guide::proto::OpenFormResponseData::
+        PageType::OpenFormResponseData_PageType_USER_INTERVENTION_NEEDED_PAGE;
+
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
@@ -234,8 +238,16 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     logger->LogNumber(Logger::STRING_PASSWORD_CHANGE_MODEL_PAGE_PREDICTION_TYPE,
                       response.value().open_form_data().page_type());
   }
-  int dom_node_id = response.value().open_form_data().dom_node_id_to_click();
+
   PageType page_type = response.value().open_form_data().page_type();
+  if (page_type == kInterventionNeededPage &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)) {
+    std::move(failure_callback_).Run(ErrorCase::kInterruptionDetected);
+    return;
+  }
+
+  int dom_node_id = response.value().open_form_data().dom_node_id_to_click();
   if (!dom_node_id ||
       page_type != PageType::OpenFormResponseData_PageType_SETTINGS_PAGE) {
     std::move(failure_callback_).Run(ErrorCase::kNoButtonToClick);

@@ -22,6 +22,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -680,6 +681,52 @@ TEST_F(ChangePasswordFormFinderTest, FailsWhenPageTypeIsNotSettingsPage) {
           optimization_guide::AIPageContentResult()));
   EXPECT_EQ(completion_callback.Get(),
             ChangePasswordFormFinder::ErrorCase::kNoButtonToClick);
+
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
+}
+
+TEST_F(ChangePasswordFormFinderTest, InterventionNeededPageCausesFailure) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kUserInterventionForPasswordChange);
+  base::test::TestFuture<ChangePasswordFormFinder::ErrorCase>
+      completion_callback;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      pass_key(), web_contents(), client(), &logs_uploader, base::DoNothing(),
+      completion_callback.GetCallback(), capture_annotated_page_content.Get());
+
+  ASSERT_TRUE(form_finder->form_waiter());
+  static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
+      ->DidStopLoading();
+  ASSERT_FALSE(form_finder->click_helper());
+
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>([](auto callback) {
+        optimization_guide::proto::PasswordChangeResponse response;
+        response.mutable_open_form_data()->set_page_type(
+            ::optimization_guide::proto::OpenFormResponseData_PageType::
+                OpenFormResponseData_PageType_USER_INTERVENTION_NEEDED_PAGE);
+
+        auto result = optimization_guide::OptimizationGuideModelExecutionResult(
+            optimization_guide::AnyWrapProto(response),
+            /*execution_info=*/nullptr);
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
+                                      /*log_entry=*/nullptr));
+      }));
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  EXPECT_EQ(completion_callback.Get(),
+            ChangePasswordFormFinder::ErrorCase::kInterruptionDetected);
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),

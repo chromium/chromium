@@ -413,8 +413,19 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
 void PasswordChangeDelegateImpl::OnPasswordChangeFormNotFound(
     ChangePasswordFormFinder::ErrorCase error_case) {
   form_finder_.reset();
-  UpdateState(State::kChangePasswordFormNotFound);
-  return;
+
+  switch (error_case) {
+    case ChangePasswordFormFinder::ErrorCase::kInterruptionDetected:
+      UpdateState(State::kOtpDetected);
+      break;
+    case ChangePasswordFormFinder::ErrorCase::kFailedToCapturePageContent:
+    case ChangePasswordFormFinder::ErrorCase::kFailedToParseResponse:
+    case ChangePasswordFormFinder::ErrorCase::kNoButtonToClick:
+    case ChangePasswordFormFinder::ErrorCase::kFailedToClickButton:
+    case ChangePasswordFormFinder::ErrorCase::kFormNotFound:
+      UpdateState(State::kChangePasswordFormNotFound);
+      break;
+  }
 }
 
 void PasswordChangeDelegateImpl::OnTabWillDetach(
