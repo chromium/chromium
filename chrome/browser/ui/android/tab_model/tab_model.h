@@ -307,6 +307,9 @@ class TabModel : public TabListInterface {
   virtual void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                               const base::Time& end_time) = 0;
 
+  // Whether all tabs in this model are in the process of closing.
+  virtual bool IsClosingAllTabs() = 0;
+
   chrome::android::ActivityType activity_type() const { return activity_type_; }
   TabModelType GetTabModelType() const { return tab_model_type_; }
 

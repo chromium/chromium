@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -4262,5 +4261,74 @@ public class TabCollectionTabModelImplTest {
         onTabGroupVisualsChanged.waitForNext();
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    public void testIsClosingAllTabs() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isClosingAllTabs());
+                });
+
+        CallbackHelper allTabsAreClosingHelper = new CallbackHelper();
+        TabModelObserver allTabsObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void allTabsAreClosing() {
+                        assertTrue(mCollectionModel.isClosingAllTabs());
+                        allTabsAreClosingHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(allTabsObserver);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeAllTabs().allowUndo(false).build());
+                });
+
+        allTabsAreClosingHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mCollectionModel.isClosingAllTabs());
+                    mCollectionModel.removeObserver(allTabsObserver);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testIsClosingAllTabsIsFalse() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertFalse(mCollectionModel.isClosingAllTabs());
+
+        CallbackHelper willCloseTabHelper = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void willCloseTab(Tab tab, boolean isSingle) {
+                        assertFalse(mCollectionModel.isClosingAllTabs());
+                        willCloseTabHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTab(tab0).allowUndo(false).build());
+                });
+
+        willCloseTabHelper.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isClosingAllTabs());
+                    mCollectionModel.removeObserver(observer);
+                });
     }
 }

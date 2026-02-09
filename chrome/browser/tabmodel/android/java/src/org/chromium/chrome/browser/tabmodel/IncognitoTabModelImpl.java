@@ -473,4 +473,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public @Nullable Tab duplicateTab(Tab tab) {
         return mDelegateModel.duplicateTab(tab);
     }
+
+    @Override
+    public boolean isClosingAllTabs() {
+        return mDelegateModel.isClosingAllTabs();
+    }
 }

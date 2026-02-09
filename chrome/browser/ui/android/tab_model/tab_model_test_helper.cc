@@ -278,6 +278,11 @@ bool TestTabModel::IsThisTabListEditable() {
   return true;
 }
 
+bool TestTabModel::IsClosingAllTabs() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
 void TestTabModel::AssociateWithBrowserWindow(BrowserWindowInterface* browser) {
   scoped_unowned_user_data_ =
@@ -584,6 +589,11 @@ void OwningTestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
 bool OwningTestTabModel::IsThisTabListEditable() {
   NOTIMPLEMENTED();
   return true;
+}
+
+bool OwningTestTabModel::IsClosingAllTabs() {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 TabAndroid* OwningTestTabModel::AddEmptyTab(

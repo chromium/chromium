@@ -204,6 +204,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                                     restoredTabGroup,
                                     tab.getIsPinned());
 
+            decrementClosingTabsCount();
+
             if (restoredTabGroup) {
                 assumeNonNull(tabGroupId);
                 setLastShownTabForGroup(tabGroupId, tab);
@@ -324,6 +326,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private boolean mInitializationComplete;
     private boolean mActive;
 
+    // This is null until the first closing tab is encountered. This prevents #isClosingAllTabs()
+    // from returning true for an uninitialized TabModel.
+    private @Nullable Integer mClosingTabsCount;
+
     /**
      * @param profile The {@link Profile} tabs in the tab collection tab model belongs to.
      * @param activityType The type of activity this tab collection tab model is for.
@@ -410,6 +416,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         mTabCountSupplier.set(0);
         mTabModelObservers.clear();
         mTabGroupObservers.clear();
+        mClosingTabsCount = null;
 
         super.destroy();
     }
@@ -1037,6 +1044,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         for (TabModelObserver observer : mTabModelObservers) {
             observer.onTabGroupVisualsChanged(tabGroupId);
         }
+    }
+
+    @Override
+    public boolean isClosingAllTabs() {
+        if (mClosingTabsCount == null) return false;
+        int tabCount = getCount();
+        return tabCount == 0 || mClosingTabsCount == tabCount;
     }
 
     // TabGroupModelFilter overrides.
@@ -1744,6 +1758,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 });
         if (tabsToClose.isEmpty()) return false;
 
+        addToClosingTabsCount(tabsToClose.size());
+
         for (Tab tab : tabsToClose) {
             tab.setClosing(true);
         }
@@ -1944,6 +1960,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     private void finalizeTabClosure(
             Tab tab, boolean notifyTabClosureCommitted, @TabClosingSource int closingSource) {
+        decrementClosingTabsCount();
         mTabContentManager.removeTabThumbnail(tab.getId());
 
         for (TabModelObserver obs : mTabModelObservers) {
@@ -2616,6 +2633,17 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assert mNativeTabCollectionTabModelImplPtr != 0;
         return TabCollectionTabModelImplJni.get()
                 .detachedTabGroupExists(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+    }
+
+    private void addToClosingTabsCount(int count) {
+        if (mClosingTabsCount == null) mClosingTabsCount = 0;
+        mClosingTabsCount += count;
+    }
+
+    private void decrementClosingTabsCount() {
+        assert mClosingTabsCount != null;
+        assert mClosingTabsCount > 0;
+        mClosingTabsCount--;
     }
 
     void setPendingTabClosureManagerForTesting(

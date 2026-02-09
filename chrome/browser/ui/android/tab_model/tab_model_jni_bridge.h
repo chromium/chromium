@@ -151,6 +151,7 @@ class TabModelJniBridge : public TabModel {
                             SessionID destination_window_id,
                             int destination_index) override;
   bool IsThisTabListEditable() override;
+  bool IsClosingAllTabs() override;
 
   // Returns a corresponding Java Class object.
   static jclass GetClazz(JNIEnv* env);

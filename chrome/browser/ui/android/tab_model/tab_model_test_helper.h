@@ -120,6 +120,7 @@ class TestTabModel : public TabModel {
                             SessionID destination_window_id,
                             int destination_index) override;
   bool IsThisTabListEditable() override;
+  bool IsClosingAllTabs() override;
 
 // BrowserWindowInterface is available on desktop Android, but not other Android
 // builds.
@@ -249,6 +250,7 @@ class OwningTestTabModel : public TabModel {
                             SessionID destination_window_id,
                             int destination_index) override;
   bool IsThisTabListEditable() override;
+  bool IsClosingAllTabs() override;
 
  private:
   void SelectTab(TabAndroid* tab, TabModel::TabSelectionType selection_type);

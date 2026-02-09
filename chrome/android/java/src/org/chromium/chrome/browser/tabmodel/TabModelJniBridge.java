@@ -671,6 +671,10 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 type, isNewTabIncognitoBranded, isCurrentModelIncognitoBranded);
     }
 
+    @CalledByNative
+    @Override
+    public abstract boolean isClosingAllTabs();
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

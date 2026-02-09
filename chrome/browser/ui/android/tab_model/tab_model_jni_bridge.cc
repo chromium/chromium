@@ -202,6 +202,11 @@ bool TabModelJniBridge::IsThisTabListEditable() {
   return true;
 }
 
+bool TabModelJniBridge::IsClosingAllTabs() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabModelJniBridge_isClosingAllTabs(env, java_object_.get(env));
+}
+
 void TabModelJniBridge::SetMuteSetting(JNIEnv* env,
                                        std::vector<TabAndroid*> tabs,
                                        bool mute) {

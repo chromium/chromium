@@ -332,4 +332,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
 
     /** Duplicates the given tab. */
     @Nullable Tab duplicateTab(Tab tab);
+
+    /** Whether the model is currently in the process of closing all of its tabs. */
+    boolean isClosingAllTabs();
 }

@@ -557,6 +557,47 @@ public class TabCollectionTabModelImplUnitTest {
         verifyBatchedAndReset();
     }
 
+    @Test
+    public void testIsClosingAllTabs() {
+        when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
+
+        when(mTabCollectionTabModelImplJni.getTabCountRecursive(
+                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR)))
+                .thenReturn(0);
+        assertFalse(mTabModel.isClosingAllTabs());
+
+        MockTab tab1 = createMockTab(1, mProfile);
+        tab1.setIsInitialized(true);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        verifyBatchedAndReset();
+
+        MockTab tab2 = createMockTab(2, mProfile);
+        tab2.setIsInitialized(true);
+        mTabModel.addTab(
+                tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        verifyBatchedAndReset();
+
+        when(mTabCollectionTabModelImplJni.getTabCountRecursive(
+                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR)))
+                .thenReturn(2);
+        assertFalse(mTabModel.isClosingAllTabs());
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
+        when(mTabCollectionTabModelImplJni.getTabCountRecursive(
+                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR)))
+                .thenReturn(1);
+
+        assertFalse(mTabModel.isClosingAllTabs());
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab2).allowUndo(false).build());
+        when(mTabCollectionTabModelImplJni.getTabCountRecursive(
+                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR)))
+                .thenReturn(0);
+
+        assertTrue(mTabModel.isClosingAllTabs());
+    }
+
     private void verifyBatchedAndReset() {
         verify(mTabStateStorageService).createBatch();
         verify(mScopedStorageBatch).close();

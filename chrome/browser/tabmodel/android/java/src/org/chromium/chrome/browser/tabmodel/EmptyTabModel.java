@@ -303,4 +303,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public @Nullable Tab duplicateTab(Tab tab) {
         return null;
     }
+
+    @Override
+    public boolean isClosingAllTabs() {
+        return false;
+    }
 }
