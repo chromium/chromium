@@ -128,7 +128,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   void Reset();
 
   static SMILTime ParseClockValue(const String&);
-  static SMILTime ParseOffsetValue(const String&);
+  static SMILTime ParseOffsetValue(const StringView&);
 
   bool IsContributing(SMILTime elapsed) const;
   const SMILInterval& GetActiveInterval(SMILTime presentation_time) const;
@@ -244,7 +244,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
     Member<IdTargetObserver> base_id_observer_;
     Member<ConditionEventListener> event_listener_;
   };
-  bool ParseCondition(const String&, BeginOrEnd begin_or_end);
+  bool ParseCondition(const StringView&, BeginOrEnd begin_or_end);
   void ParseBeginOrEnd(const String&, BeginOrEnd begin_or_end);
 
   void ConnectConditions();

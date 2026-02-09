@@ -405,10 +405,10 @@ void SVGSMILElement::RemovedFrom(ContainerNode& root_parent) {
   SVGElement::RemovedFrom(root_parent);
 }
 
-SMILTime SVGSMILElement::ParseOffsetValue(const String& data) {
+SMILTime SVGSMILElement::ParseOffsetValue(const StringView& data) {
   std::optional<double> parsed;
   double result = 0;
-  StringView view = StringView(data).StripWhiteSpace();
+  StringView view = data.StripWhiteSpace();
   if (view.ends_with('h')) {
     view.remove_suffix(1);
     parsed = StringToDouble(view);
@@ -469,9 +469,9 @@ SMILTime SVGSMILElement::ParseClockValue(const String& data) {
   return SMILTime::FromSecondsD(result);
 }
 
-bool SVGSMILElement::ParseCondition(const String& value,
+bool SVGSMILElement::ParseCondition(const StringView& value,
                                     BeginOrEnd begin_or_end) {
-  String parse_string = value.StripWhiteSpace();
+  StringView parse_string = value.StripWhiteSpace();
 
   bool is_negated = false;
   wtf_size_t pos = parse_string.find('+');
@@ -479,13 +479,13 @@ bool SVGSMILElement::ParseCondition(const String& value,
     pos = parse_string.find('-');
     is_negated = pos != kNotFound;
   }
-  String condition_string;
+  StringView condition_string;
   SMILTime offset;
   if (pos == kNotFound) {
     condition_string = parse_string;
   } else {
-    condition_string = parse_string.Left(pos).StripWhiteSpace();
-    String offset_string = parse_string.Substring(pos + 1).StripWhiteSpace();
+    condition_string = parse_string.substr(0, pos).StripWhiteSpace();
+    StringView offset_string = parse_string.substr(pos + 1).StripWhiteSpace();
     offset = ParseOffsetValue(offset_string);
     if (offset.IsUnresolved())
       return false;
@@ -496,22 +496,22 @@ bool SVGSMILElement::ParseCondition(const String& value,
     return false;
   pos = condition_string.find('.');
 
-  String base_id;
-  String name_string;
+  StringView base_id;
+  StringView name_string;
   if (pos == kNotFound) {
     name_string = condition_string;
   } else {
-    base_id = condition_string.Left(pos);
-    name_string = condition_string.Substring(pos + 1);
+    base_id = condition_string.substr(0, pos);
+    name_string = condition_string.substr(pos + 1);
   }
   if (name_string.empty())
     return false;
 
   Condition::Type type;
   int repeat = -1;
-  if (name_string.StartsWith("repeat(") && name_string.EndsWith(')')) {
+  if (name_string.starts_with("repeat(") && name_string.ends_with(')')) {
     auto parsed =
-        StringToUintStrict(name_string.Substring(7, name_string.length() - 8));
+        StringToUintStrict(name_string.substr(7, name_string.length() - 8));
     if (!parsed) {
       return false;
     }
@@ -524,7 +524,7 @@ bool SVGSMILElement::ParseCondition(const String& value,
     UseCounter::Count(&GetDocument(),
                       WebFeature::kSVGSMILBeginOrEndSyncbaseValue);
     type = Condition::kSyncBase;
-  } else if (name_string.StartsWith("accesskey(")) {
+  } else if (name_string.starts_with("accesskey(")) {
     // FIXME: accesskey() support.
     type = Condition::kAccessKey;
   } else {
@@ -533,8 +533,8 @@ bool SVGSMILElement::ParseCondition(const String& value,
   }
 
   conditions_.push_back(MakeGarbageCollected<Condition>(
-      type, begin_or_end, AtomicString(base_id), AtomicString(name_string),
-      offset, repeat));
+      type, begin_or_end, base_id.ToAtomicString(),
+      name_string.ToAtomicString(), offset, repeat));
 
   if (RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()) {
     if (begin_or_end == kEnd) {
