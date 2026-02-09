@@ -1,0 +1,32 @@
+caption: Enable WebRTC diagnostic log collection for specific origins
+default: null
+desc: |-
+  This policy allows enabling diagnostic log collection for WebRTC for specific origins.
+
+  For detailed information on valid input patterns, please see https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy. This policy only matches based on origin, so any path in the URL pattern is ignored. Scheme and subdomains are supported.
+
+  If the policy is set, diagnostic log collection will be enabled for the origins matched by the patterns in the list.
+
+  If the policy is not set, diagnostic log collection will be disabled by default.
+example_value:
+- https://www.example.com
+- example.com
+- '[*.]example.com'
+- '*://example.edu:*/'
+- https://example.com:8080
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://third_party/blink/renderer/modules/peerconnection/OWNERS
+- agpalak@chromium.org
+- guidou@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+future_on:
+- chrome.*
+- chrome_os
+tags: []
+type: list

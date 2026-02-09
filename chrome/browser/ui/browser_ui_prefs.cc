@@ -149,6 +149,9 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kWebRtcEventLogCollectionAllowed, false);
   registry->RegisterListPref(prefs::kWebRtcLocalIpsAllowedUrls);
   registry->RegisterBooleanPref(prefs::kWebRtcTextLogCollectionAllowed, true);
+  registry->RegisterListPref(
+      prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
+      base::ListValue());
 
   // We need to register the type of these preferences in order to query
   // them even though they're only typically controlled via policy.

@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webrtc.diagnostic_log_collection_allowed_for_origins",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://www.example.com",
+          "[*.]example.com",
+          "https://server:8080",
+          "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"
+        ]
+      ]
+    }
+  }
+]

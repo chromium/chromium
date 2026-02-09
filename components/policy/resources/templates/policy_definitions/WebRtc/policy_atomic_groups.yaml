@@ -4,3 +4,4 @@ WebRtc:
   - WebRtcIPHandling
   - WebRtcIPHandlingUrl
   - WebRtcPostQuantumKeyAgreement
+  - WebRtcDiagnosticLogCollectionAllowedForOrigins
