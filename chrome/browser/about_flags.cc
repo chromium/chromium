@@ -1528,64 +1528,20 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
      kOmniboxToolbeltAllActionsZeroTypedInputs, nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndSuggestMultiFile[] = {
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowContextMenu", "true"},
-        {"ShowRecentTabChip", "true"},
-};
-const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndSuggestMultiFileNoViewport[] = {
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowContextMenu", "true"},
-        {"ShowRecentTabChip", "true"},
-        {"EnableViewportImages", "false"},
-};
-const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews[] = {
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowContextMenu", "true"},
-        {"ShowRecentTabChip", "true"},
-        {"ShowContextMenuTabPreviews", "true"},
-};
-const FeatureEntry::FeatureParam kComposeboxNext[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowContextMenuTabPreviews", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowRecentTabChip", "true"},
-    {"ContextMenuEnableMultiTabSelection", "true"},
-};
 const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"MaxNumFiles", "1"},
-    {"ShowContextMenu", "true"},
-    {"ShowContextMenuTabPreviews", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
     {
         {"NtpComposeboxMaxNumFiles", "1"},
-        {"NtpComposeboxShowContextMenu", "true"},
-        {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
         {"NtpComposeboxShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
-    {"NtpComposeboxShowContextMenu", "true"},
-    {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
     {"NtpComposeboxShowRecentTabChip", "true"},
     {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
-    {"EnableEphemeralContextMenuDescription", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
-    {"- Show Contextual Input Menu and Suggest, 5 File Limit",
-     kComposeboxShowContextMenuAndSuggestMultiFile, nullptr},
-    {"- Show Contextual Input Menu and Suggest, 5 File Limit, no viewport "
-     "uploading",
-     kComposeboxShowContextMenuAndSuggestMultiFileNoViewport, nullptr},
-    {"- Show Contextual Input Menu and Suggest, Tab Previews, 5 File Limit",
-     kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews, nullptr},
-    {"- Next Experience", kComposeboxNext, nullptr},
     {"- Next Experience Single Context", kComposeboxNextSingleContext, nullptr},
     {"- Next Experience for Realbox Next", kComposeboxNextForRealboxNext,
      nullptr},
@@ -1620,16 +1576,9 @@ const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
      kShowNextRealboxCompactCyclingPlaceholders, nullptr},
 };
 
-const FeatureEntry::FeatureParam kNtpNextShowStaticText[] = {
-    {"NtpNextShowStaticTextParam", "true"},
-};
-
 const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
     {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
-};
-const FeatureEntry::FeatureParam kNtpNextShowSimplificationUI[] = {
-    {"NtpNextShowSimplificationUIParam", "true"},
 };
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDeepDive[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
@@ -1674,9 +1623,7 @@ const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
 };
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Show Static Text", kNtpNextShowStaticText, nullptr},
     {"- Show Deep Dive Suggestions", kNtpNextShowDeepDiveSuggestions, nullptr},
-    {"- Show Row UI", kNtpNextShowSimplificationUI, nullptr},
     {"- Show Row UI With Deep Dive", kNtpNextShowSimplificationUIWithDeepDive,
      nullptr},
     {"- Show Chips UI with a New Suggestions Client",

@@ -206,7 +206,7 @@ const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
 const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
     &kNtpComposebox,
     "NtpComposeboxShowComposeboxTypedSuggest",
-    false);
+    true);
 
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &kNtpComposebox,
@@ -215,7 +215,7 @@ const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
 
 const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
                                                 "NtpComposeboxShowContextMenu",
-                                                false);
+                                                true);
 const base::FeatureParam<bool> kShowRecentTabChip(
     &kNtpComposebox,
     "NtpComposeboxShowRecentTabChip",
