@@ -3913,28 +3913,12 @@ class StorageAccessAPIWindowOpenTestBase
     StorageAccessAPIBaseBrowserTest::TearDownOnMainThread();
   }
 
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    if (Is3PCDEnabled()) {
-      enabled_features.emplace_back(
-          content_settings::features::kTrackingProtection3pcd,
-          base::FieldTrialParams{});
-    }
-    return enabled_features;
-  }
-
  protected:
   virtual bool Are3PCEnabled() const = 0;
-
-  virtual bool Is3PCDEnabled() const = 0;
 
   virtual bool ArePermissionPromptsAccepted() const = 0;
 
   virtual std::string MainFrameHost() const = 0;
-
-  bool Are3PCFullyEnabled() const {
-    return Are3PCEnabled() && !Is3PCDEnabled();
-  }
 
   void SetupPromptFactoryForNewWebContents(
       content::WebContents* new_web_contents) {
@@ -4024,18 +4008,15 @@ class StorageAccessAPIWindowOpenTestBase
 
 class StorageAccessAPIWindowOpenMainFrameTest
     : public StorageAccessAPIWindowOpenTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, bool, bool, std::string>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
  protected:
   bool Are3PCEnabled() const override { return std::get<0>(GetParam()); }
 
-  bool Is3PCDEnabled() const override { return std::get<1>(GetParam()); }
-
   bool ArePermissionPromptsAccepted() const override {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
 
-  std::string MainFrameHost() const override { return std::get<3>(GetParam()); }
+  std::string MainFrameHost() const override { return std::get<2>(GetParam()); }
 
   bool IsCrossOriginToOpenerFrame() const { return kHostA != MainFrameHost(); }
 };
@@ -4083,19 +4064,16 @@ INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     StorageAccessAPIWindowOpenMainFrameTest,
     testing::Combine(/*3pc_enabled=*/testing::Bool(),
-                     /*tracking_protections_enabled=*/testing::Bool(),
                      /*permission_prompts_accepted=*/testing::Bool(),
                      /*main_frame_host=*/testing::Values(kHostA, kHostB)),
-    [](const testing::TestParamInfo<std::tuple<bool, bool, bool, std::string>>&
+    [](const testing::TestParamInfo<std::tuple<bool, bool, std::string>>&
            info) {
       return base::StringPrintf(
-          "%s_%s_%s_main_%c",
+          "%s_%s_main_%c",
           std::get<0>(info.param) ? "3PCEnabled" : "3PCDisabled",
-          std::get<1>(info.param) ? "TrackingProtectionsEnabled"
-                                  : "TrackingProtectionsDisabled",
-          std::get<2>(info.param) ? "PermissionPromptsAccepted"
+          std::get<1>(info.param) ? "PermissionPromptsAccepted"
                                   : "PermissionPromptsDenied",
-          std::get<3>(info.param)[0]);
+          std::get<2>(info.param)[0]);
     });
 
 }  // namespace
