@@ -2813,7 +2813,7 @@
 <translation id="5534785731327961487">ယခု ဈေးသင့်သည်</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ ဝဘ်ဆိုက် ၁ ခု (စင့်ခ်လုပ်ထားသော စက်များတွင် ရှိသေးသည်)}other{+ ဝဘ်ဆိုက် # ခု (စင့်ခ်လုပ်ထားသော စက်များတွင် ရှိသေးသည်)}}</translation>
 <translation id="553782666181800029">Chou 2 စာအိတ်</translation>
-<translation id="5538270463355278784">အလိုအလျောက် ဖန်သားပြင်အပြည့်</translation>
+<translation id="5538270463355278784">အလိုအလျောက် စခရင်အပြည့်</translation>
 <translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />၊ <ph name="KEYWORD_SUFFIX" /> ရှာရန်</translation>
 <translation id="5539243836947087108">အောက်ခြေ</translation>
 <translation id="5540224163453853">တောင်းဆိုထားသည့် အကြောင်းအရာ မတွေ့ပါ။</translation>
@@ -4578,7 +4578,7 @@
 <translation id="8378714024927312812">သင်၏ 'အဖွဲ့အစည်း' က စီမံခန့်ခွဲထားသည်</translation>
 <translation id="8380941800586852976">အန္တရာယ်ရှိသော</translation>
 <translation id="8381674639488873545">ဤငွေကောက်ခံမှုများသည် တစ်ချိန်တစ်ခါတည်း ဖြစ်နိုင်သလို ထပ်တလဲလဲကောက်ခံမှုလည်း ဖြစ်နိုင်ပြီး သိသာမှုမရှိနိုင်ပါ။ <ph name="BEGIN_LINK" />မည်သို့ပင်ဖြစ်စေ ပြရန်<ph name="END_LINK" /></translation>
-<translation id="8382097126743287270">အလိုအလျောက် ဖန်သားပြင်အပြည့်</translation>
+<translation id="8382097126743287270">အလိုအလျောက် စခရင်အပြည့်</translation>
 <translation id="838307841291975086">စတေရှင်ဝက်ဂွန်ကား</translation>
 <translation id="8389532092404711541">ပုံမှန်အားဖြင့် <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">စိတ်ကြိုက်စွမ်းဆောင်ရည်ယာဉ်</translation>

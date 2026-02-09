@@ -57,7 +57,7 @@
 <translation id="1183863904939664422">ဤအကြံပြုချက်ကို စိတ်မဝင်စားပါ</translation>
 <translation id="1184126796192815024">ဤကွန်ရက်သည် သင့်ဖုန်းမှ တိုက်ရိုက်လွှင့်သည့်အက်ပ်များကို မပံ့ပိုးပါ။ သင့်ဖုန်း၏ ဟော့စပေါ့ကို သုံးကြည့်ပါ။ <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">နောက်ထပ် လုံခြုံရေးအတွက် စကားဝှက် (သို့) ပင်နံပါတ် ထည့်ပါ</translation>
-<translation id="118532027333893379">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို တို့ပါ</translation>
+<translation id="118532027333893379">စခရင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို တို့ပါ</translation>
 <translation id="1190609913194133056">အသိပေးချက် စင်တာ</translation>
 <translation id="1195412055398077112">စကင်လုပ်</translation>
 <translation id="1195667586424773550">လင့်ခ်ကို တဘ်၏ လိပ်စာဘားတန်းပေါ်သို့ ဖိဆွဲပါ</translation>
@@ -80,7 +80,7 @@
 <translation id="1247372569136754018">မိုက်ခရိုဖုန်း (စက်တွင်း)</translation>
 <translation id="1247519845643687288">မကြာသေးမီက အက်ပ်များ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />မှ အားသွင်းနေပါသည်</translation>
-<translation id="1256734167083229794">ဖန်သားပြင်အပြည့် မှန်ဘီလူးအတွက် လက်ကွက်ဖြတ်လမ်းများကို သင်နှိပ်လိုက်သည်။ ဇူးမ်ဆွဲရန် <ph name="ZOOM_IN_ACCELERATOR" /> နှင့် ဇူးမ်ဖြုတ်ရန် <ph name="ZOOM_OUT_ACCELERATOR" /> ကို သုံးပါ။ ဇူးမ်ဆွဲထားသော မြင်ကွင်းကို ရွှေ့ကြည့်ရန် ctrl+alt+မြားများ သုံးပါ။</translation>
+<translation id="1256734167083229794">စခရင်အပြည့် မှန်ဘီလူးအတွက် လက်ကွက်ဖြတ်လမ်းများကို သင်နှိပ်လိုက်သည်။ ဇူးမ်ဆွဲရန် <ph name="ZOOM_IN_ACCELERATOR" /> နှင့် ဇူးမ်ဖြုတ်ရန် <ph name="ZOOM_OUT_ACCELERATOR" /> ကို သုံးပါ။ ဇူးမ်ဆွဲထားသော မြင်ကွင်းကို ရွှေ့ကြည့်ရန် ctrl+alt+မြားများ သုံးပါ။</translation>
 <translation id="1269405891096105529">‘ဧည့်သည်မုဒ်’ တွင် ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
 <translation id="1270290102613614947">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ပိတ်ထား</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
@@ -325,7 +325,7 @@
 <translation id="2108303511227308752">‘Alt + နောက်ပြန်ခလုတ်’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ဖျက်ရန်’ ကီး သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + နောက်ပြန်ခလုတ် နှိပ်ပါ။</translation>
 <translation id="2115680839221566783">ဘက်ထရီ <ph name="PERCENTAGE" />% ဖြစ်သည်။ အားသွင်းခြင်းကို ခဏရပ်ထားသည်။</translation>
 <translation id="2126242104232412123">မျက်နှာပြင်နေရာ အသစ်</translation>
-<translation id="2132302418721800944">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန်</translation>
+<translation id="2132302418721800944">စခရင်အပြည့် ရိုက်ကူးရန်</translation>
 <translation id="2135456203358955318">နေရာချထားသည့် မှန်ဘီလူး</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2149229036084364364">ယခင်တစ်ပုဒ်သို့ ပြန်သွားရန်</translation>
@@ -536,7 +536,7 @@
 <translation id="2844169650293029770">USB-C ကိရိယာ (အရှေ့ပိုင်း ဘယ် ပို့တ်)</translation>
 <translation id="2844350028562914727">အသေးစိတ်</translation>
 <translation id="2847759467426165163">သို့ကက်စ်လုပ်မည်</translation>
-<translation id="2848120746144143659">ဖန်သားပြင်အပြည့် ဖန်သားပြင်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
+<translation id="2848120746144143659">စခရင်အပြည့် ဖန်သားပြင်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="2849936225196189499">အရေးကြီး</translation>
 <translation id="2850207700020959936">အက်ပ်များက ကင်မရာသုံးနိုင်သည်</translation>
 <translation id="2860184359326882502">အနီးစပ်ဆုံး</translation>
@@ -841,7 +841,7 @@
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="385300504083504382">အစ</translation>
 <translation id="3859364108019690">အက်ပ်များ တိုက်ရိုက်မလွှင့်နိုင်ပါ</translation>
-<translation id="3861651314799684201">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
+<translation id="3861651314799684201">စခရင်အပြည့် ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="3870197372373144624">သင့်စက်ကို အပြီးပိတ်ကြည့်ပါ။</translation>
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
 <translation id="3884007280698606545">USB ကန့်သတ်ချက် ပြည့်သွားပြီ</translation>
@@ -1050,7 +1050,7 @@
 <translation id="4531536770443562276">ဖန်သားပြင်အပြည့်သာ ရနိုင်သည်</translation>
 <translation id="4533343294786968049">ဘက်ထရီ သက်တမ်း ကြာရှည်စေခြင်း။ <ph name="FULLY_CHARGE_TIME" /> တွင် ဘက်ထရီအားပြည့်လိမ့်မည်။</translation>
 <translation id="453661520163887813">ပြည့်သည်အထိ <ph name="TIME" /></translation>
-<translation id="4538824937723742295">ဖန်သားပြင်အပြည့် ဓာတ်ပုံရိုက်ရန်</translation>
+<translation id="4538824937723742295">စခရင်အပြည့် ဓာတ်ပုံရိုက်ရန်</translation>
 <translation id="4539127209940689201">လက်ရှိစာမျက်နှာ ပုံနှိပ်ထုတ်ယူရန်</translation>
 <translation id="4541505619120536051">အမြဲဖွင့်ရန်</translation>
 <translation id="4541706525461326392">ပရိုဖိုင်ကို ဖယ်ရှားနေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
@@ -1211,7 +1211,7 @@
 <translation id="5025389392398927910">စာသားတည်းဖြတ်ရန်အတွက် ရှာရန်</translation>
 <translation id="5030659775136592441">စာညှပ်စီမံခန့်ခွဲမှုစနစ်ကို ပြရန်</translation>
 <translation id="5030687792513154421">အချိန်စေ့ပါပြီ</translation>
-<translation id="5033299697334913360">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
+<translation id="5033299697334913360">စခရင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="5034421018520995080">စာမျက်နှာ၏ ထိပ်ဆုံးသို့ သွားရန်</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> က ဖုန်းအသစ်သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="5042305953558921026">အနှစ်ချုပ်မုဒ် ကီး</translation>
@@ -1357,7 +1357,7 @@
 <translation id="5520229639206813572">သင်၏စီမံခန့်ခွဲသူသည် eSIM ပရိုဖိုင်အားလုံးကို ဖယ်ရှားလိုက်သည်။ နောက်ထပ် အချက်အလက်များအတွက် သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> သည် ချိတ်ဆက်နေပါသည်။</translation>
 <translation id="5529587891732734495">ကာစ် ခဏရပ်ရန်</translation>
-<translation id="5532994612895037630">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန် မည်သည့်နေရာကိုမဆို တို့ပါ</translation>
+<translation id="5532994612895037630">စခရင်အပြည့် ရိုက်ကူးရန် မည်သည့်နေရာကိုမဆို တို့ပါ</translation>
 <translation id="5536723544185013515">ဖွင့်လက်စ အက်ပ်များအားလုံးကို သုံးရန် ညာညွှန်မြားဖြင့် သွားနိုင်သည်</translation>
 <translation id="553675580533261935">စက်ရှင်မှ ထွက်နေသည်</translation>
 <translation id="5537725057119320332">သရုပ်ဆောင်​များ</translation>
@@ -1522,7 +1522,7 @@
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> တွင် မည်သည့်အစီအစဉ်မျှ မရှိပါ။ ဘရောင်ဇာတွင် Google ပြက္ခဒိန်ဖွင့်ရန် Enter ခလုတ်နှိပ်ပါ။</translation>
 <translation id="6030495522958826102">မီနူးကို ဖန်သားပြင်၏ ဘယ်ဘက်အောက်ခြေထောင့်သို့ ရွှေ့လိုက်သည်။</translation>
 <translation id="6030608926359652298">တာ့ချ်ပက်ကို စိတ်ကြိုက်လုပ်ခြင်း</translation>
-<translation id="6032620807120418574">ဖန်သားပြင်အပြည့် ရိုက်ကူးရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
+<translation id="6032620807120418574">စခရင်အပြည့် ရိုက်ကူးရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="6040071906258664830">မိုက်ခရိုဖုန်းအသံဖမ်းရန် <ph name="STATE" /></translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6043212731627905357">ဤမော်နီတာသည် သင့် <ph name="DEVICE_TYPE" /> နှင့် ကိုက်ညီမှုမရှိပါ (မော်နီတာကို ပံ့ပိုးမထားပါ)။</translation>
@@ -1613,7 +1613,7 @@
 <translation id="6324916366299863871">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
 <translation id="6330012934079202188">မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြနေသည်၊ လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
-<translation id="6337159624125741244">ဖန်သားပြင်အပြည့် မှန်ဘီလူး ဖွင့်ထားသည်</translation>
+<translation id="6337159624125741244">စခရင်အပြည့် မှန်ဘီလူး ဖွင့်ထားသည်</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> သည် <ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည့် စက်ရှင်ဖြစ်သည်</translation>
 <translation id="6340148837564298498">ပင်နံပါတ်မေ့သွားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ချိတ်ဆက်ပြီးပြီ</translation>
@@ -2102,13 +2102,13 @@
 <translation id="7951630946012935453">keyboard အလင်းမှိန်ရန်</translation>
 <translation id="7953176344218790168">စာလုံးကြီး</translation>
 <translation id="7953994493035617347">ပုံရိပ်ပြတ်သားကိန်းအသစ် အတည်ပြုမလား။</translation>
-<translation id="795958884516058160">‘ဖန်သားပြင်အပြည့် မှန်ဘီလူး’ ဖွင့်ထားသည်။ ၎င်းကိုပိတ်ရန် <ph name="ACCELERATOR" /> ကို ထပ်နှိပ်ပါ။</translation>
+<translation id="795958884516058160">‘စခရင်အပြည့် မှန်ဘီလူး’ ဖွင့်ထားသည်။ ၎င်းကိုပိတ်ရန် <ph name="ACCELERATOR" /> ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="7962583092928373823">Google Calendar အကြံပြုချက်အားလုံး ဖျောက်ရန်</translation>
 <translation id="7963689218131240420">‘မနှောင့်ယှက်ရ’ ကို ပိတ်ထားသည်။</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> မှ</translation>
 <translation id="7968693143708939792">ဖိုင်တွဲရွေးရန်...</translation>
 <translation id="7973756967040444713">ကိရိယာဘား ပိတ်ရန်</translation>
-<translation id="797512352675305461">ဖန်သားပြင်အပြည့် မှန်ဘီလူးကို ဖွင့် (သို့) ပိတ်ရန်</translation>
+<translation id="797512352675305461">စခရင်အပြည့် မှန်ဘီလူးကို ဖွင့် (သို့) ပိတ်ရန်</translation>
 <translation id="7977927628060636163">မိုဘိုင်းကွန်ရက်ကို ရှာဖွေနေသည်...</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>
 <translation id="7982878511129296052">ပိတ်နေသည်...</translation>
@@ -2310,7 +2310,7 @@
 <translation id="8714138378966541668">ဖုန်းကုမ္ပဏီက လော့ခ်ချထားသည်</translation>
 <translation id="8717459106217102612">ယခင် စကားလုံး သို့မဟုတ် စာလုံးကို ရွေးရန်</translation>
 <translation id="8721053961083920564">အသံခလုတ်ကို နှိပ်ပါ။ <ph name="STATE_TEXT" /></translation>
-<translation id="8724318433625452070">ဖန်သားပြင်အပြည့် ပုံဖမ်းခြင်း</translation>
+<translation id="8724318433625452070">စခရင်အပြည့် ပုံဖမ်းခြင်း</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8725214031272624704">ရနိုင်သော လက်ကွက်စာရင်းကို ပြပါ</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
@@ -2387,7 +2387,7 @@
 <translation id="8949925099261528566">ချိတ်ဆက်ထားသည်၊ အင်တာနက်မရှိပါ</translation>
 <translation id="8951539504029375108">အတည်ပြုထားသော Thunderbolt ကိရိယာများကိုသာ သင်၏ Chromebook ဖြင့် တွဲသုံးနိုင်သည်</translation>
 <translation id="8956420987536947088">သင်၏ ယခင် ဝင်းဒိုးနှင့်အက်ပ်များ ဖွင့်နိုင်သည်</translation>
-<translation id="8959380109429710384">ဖန်သားပြင်အပြည့် မှန်ဘီလူးအတွက် လက်ကွက်ဖြတ်လမ်းများကို သင်နှိပ်လိုက်သည်။ ဇူးမ်ဆွဲထားသော မြင်ကွင်းကို ရွှေ့ကြည့်ရန် ctrl + alt + မြားများ သုံးပါ။</translation>
+<translation id="8959380109429710384">စခရင်အပြည့် မှန်ဘီလူးအတွက် လက်ကွက်ဖြတ်လမ်းများကို သင်နှိပ်လိုက်သည်။ ဇူးမ်ဆွဲထားသော မြင်ကွင်းကို ရွှေ့ကြည့်ရန် ctrl + alt + မြားများ သုံးပါ။</translation>
 <translation id="8964525410783593407">၁ နာရီ</translation>
 <translation id="8970887620466824814">တစ်ခုခု မှားသွားပါသည်။</translation>
 <translation id="8973885907461690937">မီနူးသင်္ကေတကို အထူးပြသရန်</translation>
