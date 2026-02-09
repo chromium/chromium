@@ -7,12 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+namespace tab_groups {
+enum class TabGroupColorId;
+}  // namespace tab_groups
+
 // Defines a color palette for tab groups derived from a seed color.
 @interface TabGroupColorPalette : NSObject
 
 // Initializes from a group color to generate a color palette for the grid cell
 // and group views.
-- (instancetype)initWithSeedColor:(UIColor*)groupColor
+- (instancetype)initWithSeedColorId:(tab_groups::TabGroupColorId)tabGroupColorId
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

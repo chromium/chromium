@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 
 @protocol FacePileProviding;
+@class TabGroupColorPalette;
 
 // Consumer to allow the tab group model to send information to the tab group
 // UI.
@@ -20,6 +21,9 @@
 
 // Sets the group color.
 - (void)setGroupColor:(UIColor*)color;
+
+// Sets the TabGroupColorPalette.
+- (void)setTabGroupColorPalette:(TabGroupColorPalette*)tabGroupColorPalette;
 
 // Sets whether the group can be shared or not.
 - (void)setShareAvailable:(BOOL)shareAvailable;

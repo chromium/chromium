@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_mediator_delegate.h"
@@ -165,12 +166,32 @@ using tab_groups::SharingState;
   if ((status.active_web_state_change() || groupUpdate) && webState) {
     const TabGroup* tabGroup = [self currentTabGroup];
     if (tabGroup) {
-      [_consumer setTabGroupTitle:tabGroup->GetTitle()
-                       groupColor:tab_groups::ColorForTabGroupColorId(
-                                      tabGroup->GetColor())];
+      tab_groups::TabGroupColorId tabGroupColorId = tabGroup->GetColor();
+
+      // TODO(crbug.com/481997646): Cleanup this groupColor flow once feature
+      // hits stable.
+      if (!IsTabGroupColorOnSurfaceEnabled()) {
+        UIColor* groupColor =
+            tab_groups::ColorForTabGroupColorId(tabGroupColorId);
+
+        [_consumer setTabGroupTitle:tabGroup->GetTitle() groupColor:groupColor];
+      } else {
+        TabGroupColorPalette* tabGroupColorPalette =
+            [[TabGroupColorPalette alloc] initWithSeedColorId:tabGroupColorId];
+
+        [_consumer setTabGroupTitle:tabGroup->GetTitle()
+               tabGroupColorPalette:tabGroupColorPalette];
+      }
+
       [self updateTabGroupSharingState:tabGroup];
     } else {
-      [_consumer setTabGroupTitle:nil groupColor:nil];
+      // TODO(crbug.com/481997646): Cleanup this groupColor flow once feature
+      // hits stable.
+      if (!IsTabGroupColorOnSurfaceEnabled()) {
+        [_consumer setTabGroupTitle:nil groupColor:nil];
+      } else {
+        [_consumer setTabGroupTitle:nil tabGroupColorPalette:nil];
+      }
       [_consumer setSharingState:SharingState::kNotShared];
     }
     [self updateFacePileUI];

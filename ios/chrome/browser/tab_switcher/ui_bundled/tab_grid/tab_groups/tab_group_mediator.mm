@@ -36,6 +36,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
@@ -152,8 +154,17 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     _tabGroup = tabGroup;
 
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
-    [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
-                                      tabGroup->GetColor())];
+    // TODO(crbug.com/481997646): Cleanup this groupColor flow once feature hits
+    // stable.
+    if (!IsTabGroupColorOnSurfaceEnabled()) {
+      [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
+                                        tabGroup->GetColor())];
+    } else {
+      [_groupConsumer
+          setTabGroupColorPalette:[[TabGroupColorPalette alloc]
+                                      initWithSeedColorId:tabGroup
+                                                              ->GetColor()]];
+    }
 
     _messagingService = messagingService;
     if (_messagingService) {

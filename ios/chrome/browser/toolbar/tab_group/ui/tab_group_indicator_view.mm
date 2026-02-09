@@ -41,6 +41,7 @@ NSString* const kDestructiveActionsMenuIdentifier =
   // Stores the tab group informations.
   NSString* _groupTitle;
   UIColor* _groupColor;
+  TabGroupColorPalette* _tabGroupColorPalette;
 
   // Tracks if the view is available.
   BOOL _available;
@@ -101,6 +102,19 @@ NSString* const kDestructiveActionsMenuIdentifier =
 
   [self setGroupTitle:groupTitle];
   [self setGroupColor:groupColor];
+  [self updateVisibility];
+}
+
+- (void)setTabGroupTitle:(NSString*)groupTitle
+    tabGroupColorPalette:(TabGroupColorPalette*)tabGroupColorPalette {
+  if (groupTitle == _groupTitle &&
+      tabGroupColorPalette == _tabGroupColorPalette) {
+    [self updateVisibility];
+    return;
+  }
+
+  [self setGroupTitle:groupTitle];
+  [self setTabGroupColor:tabGroupColorPalette];
   [self updateVisibility];
 }
 
@@ -355,12 +369,11 @@ NSString* const kDestructiveActionsMenuIdentifier =
 
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
-  if (!IsTabGroupColorOnSurfaceEnabled() || !color) {
     _coloredDotView.backgroundColor = color;
-    return;
-  }
-  TabGroupColorPalette* tabGroupColorPalette =
-      [[TabGroupColorPalette alloc] initWithSeedColor:color];
+}
+
+- (void)setTabGroupColor:(TabGroupColorPalette*)tabGroupColorPalette {
+  _tabGroupColorPalette = tabGroupColorPalette;
   _coloredDotView.backgroundColor = tabGroupColorPalette.commonColor;
 }
 

@@ -443,15 +443,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
   _gridViewController.groupColor = color;
-  [_coloredDotView setBackgroundColor:_groupColor];
+}
 
-  if (!IsTabGroupColorOnSurfaceEnabled()) {
-    return;
-  }
-  // Create the palette.
-  _tabGroupColorPalette =
-      [[TabGroupColorPalette alloc] initWithSeedColor:color];
-  [_coloredDotView setBackgroundColor:_tabGroupColorPalette.commonColor];
+- (void)setTabGroupColorPalette:(TabGroupColorPalette*)tabGroupColorPalette {
+  _tabGroupColorPalette = tabGroupColorPalette;
   // Forward it to the TabGroupGridViewController.
   _gridViewController.tabGroupColorPalette = _tabGroupColorPalette;
 }
@@ -645,7 +640,11 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
   dotView.translatesAutoresizingMaskIntoConstraints = NO;
   dotView.layer.cornerRadius = kDotSize / 2;
-  dotView.backgroundColor = _groupColor;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    dotView.backgroundColor = _tabGroupColorPalette.commonColor;
+  } else {
+    dotView.backgroundColor = _groupColor;
+  }
 
   [NSLayoutConstraint activateConstraints:@[
     [dotView.heightAnchor constraintEqualToConstant:kDotSize],

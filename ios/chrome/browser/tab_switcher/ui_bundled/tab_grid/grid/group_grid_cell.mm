@@ -338,24 +338,21 @@ const CGFloat kTopBarLargeInset = 20;
 
 - (void)setGroupColor:(UIColor*)groupColor {
   _groupColor = groupColor;
+  _dotContainer.color = _groupColor;
 
-  if (!IsTabGroupColorOnSurfaceEnabled()) {
-    // Apply the default coloring to each surfaces.
-    _dotContainer.color = _groupColor;
-    UIColor* backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    _topBar.backgroundColor = backgroundColor;
-    self.contentView.backgroundColor = backgroundColor;
-    _groupSnapshotsView.backgroundColor = backgroundColor;
-    return;
-  }
+  // Apply the default coloring to each surfaces.
+  UIColor* backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  _topBar.backgroundColor = backgroundColor;
+  self.contentView.backgroundColor = backgroundColor;
+  _groupSnapshotsView.backgroundColor = backgroundColor;
+}
 
-  // Generate a color palette fromt the group color.
-  TabGroupColorPalette* tabGroupColorPalette =
-      [[TabGroupColorPalette alloc] initWithSeedColor:_groupColor];
+- (void)setTabGroupColorPalette:(TabGroupColorPalette*)tabGroupColorPalette {
+  _tabGroupColorPalette = tabGroupColorPalette;
 
   // Apply the right tone to each surfaces.
-  UIColor* commonColor = tabGroupColorPalette.commonColor;
-  UIColor* backgroundColor = tabGroupColorPalette.backgroundColor;
+  UIColor* commonColor = _tabGroupColorPalette.commonColor;
+  UIColor* backgroundColor = _tabGroupColorPalette.backgroundColor;
 
   _border.layer.borderColor = commonColor.CGColor;
   _dotContainer.color = commonColor;

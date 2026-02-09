@@ -14,6 +14,7 @@
 @protocol FacePileProviding;
 @class GroupGridCell;
 typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
+@class TabGroupColorPalette;
 @class TabSnapshotAndFavicon;
 
 // Informs the receiver of actions on the cell.
@@ -32,6 +33,8 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 @property(nonatomic, copy) UIColor* groupColor;
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) NSInteger tabsCount;
+// A color palette containing different tones for the UI.
+@property(nonatomic, copy) TabGroupColorPalette* tabGroupColorPalette;
 // Sets to update and keep cell alpha in sync.
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.

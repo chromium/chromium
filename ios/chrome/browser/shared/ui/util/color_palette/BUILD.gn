@@ -24,6 +24,8 @@ source_set("group_color") {
   deps = [
     ":color_palette",
     "//base",
+    "//components/tab_groups",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//skia",
     "//skia:skia_core_public_headers",

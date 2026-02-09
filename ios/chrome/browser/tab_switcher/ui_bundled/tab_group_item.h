@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class TabGroupColorPalette;
 @class TabGroupItem;
 #ifdef __cplusplus
 class TabGroup;
@@ -30,6 +31,8 @@ class TabGroup;
 #endif
 @property(nonatomic, readonly, nullable) NSString* title;
 @property(nonatomic, readonly, nullable) UIColor* groupColor;
+@property(nonatomic, readonly, nullable)
+    TabGroupColorPalette* tabGroupColorPalette;
 @property(nonatomic, readonly, nullable) UIColor* foregroundColor;
 @property(nonatomic, readonly) NSInteger numberOfTabsInGroup;
 @property(nonatomic, readonly) BOOL collapsed;
