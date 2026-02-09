@@ -88,6 +88,7 @@ const CGFloat kScalingMultiplier = 0.75;
         // `finished` to NO on official builds. For now, the animation not
         // finishing isn't handled anywhere.
         animatedView.clipsToBounds = oldClipsToBounds;
+        animatedView.transform = CGAffineTransformIdentity;
         if (completion) {
           completion();
         }
