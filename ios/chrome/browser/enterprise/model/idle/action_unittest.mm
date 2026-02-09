@@ -79,7 +79,7 @@ class IdleActionTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     authentication_service_->SignIn(identity,
-                                    signin_metrics::AccessPoint::kUnknown);
+                                    signin_metrics::AccessPoint::kStartPage);
   }
 
   // Inserts WebStates into `browser` each one loading a new URL from `urls`
