@@ -5,13 +5,14 @@
 #include "extensions/browser/extension_function_crash_keys.h"
 
 #include <array>
+#include <cstdint>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "base/time/time.h"
 #include "components/crash/core/common/crash_key.h"
 #include "extensions/common/extension_id.h"
 
@@ -20,7 +21,7 @@ namespace {
 
 struct CallInfo {
   int count = 0;              // Number of in-flight calls.
-  base::TimeTicks timestamp;  // Time of the last call.
+  uint64_t sequence_number;   // Sequence number of the last call.
 };
 
 // Returns a map from an extension ID to information about in-flight calls to
@@ -44,13 +45,13 @@ base::flat_map<ExtensionId, CallInfo>& ExtensionIdToCallInfoMap() {
 
 // Updates the crash keys for extensions with in-flight ExtensionFunction calls.
 void UpdateCrashKeys() {
-  // Extract the call timestamps and extension IDs into a vector for sorting.
-  // Use ExtensionId* to avoid copying the string IDs.
+  // Extract the call sequence numbers and extension IDs into a vector for
+  // sorting. Use ExtensionId* to avoid copying the string IDs.
   const auto& map = ExtensionIdToCallInfoMap();
-  std::vector<std::pair<base::TimeTicks, const ExtensionId*>> calls;
+  std::vector<std::pair<uint64_t, const ExtensionId*>> calls;
   calls.reserve(map.size());
   for (const auto& entry : map) {
-    calls.emplace_back(entry.second.timestamp, &entry.first);
+    calls.emplace_back(entry.second.sequence_number, &entry.first);
   }
   // Sort most recent calls to the front of the vector.
   std::sort(calls.begin(), calls.end(), std::greater<>());
@@ -78,14 +79,14 @@ void UpdateCrashKeys() {
 }  // namespace
 
 void StartExtensionFunctionCall(const ExtensionId& extension_id) {
-  base::TimeTicks now = base::TimeTicks::Now();
+  static uint64_t sequence_number = 0;
   auto& map = ExtensionIdToCallInfoMap();
   auto it = map.find(extension_id);
   if (it == map.end()) {
-    map[extension_id] = {.count = 1, .timestamp = now};
+    map[extension_id] = {.count = 1, .sequence_number = ++sequence_number};
   } else {
     it->second.count++;
-    it->second.timestamp = now;
+    it->second.sequence_number = ++sequence_number;
   }
   UpdateCrashKeys();
 }
