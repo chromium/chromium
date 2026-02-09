@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -241,6 +242,7 @@ public class DragAndDropLauncherActivityUnitTest {
             dropData = createTabDropData(tab, /* allowDragToCreateNewInstance= */ true);
         }
         int sourceWindowId = 1;
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
         Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
                         dropData, mActivity, sourceWindowId, destWindowId);

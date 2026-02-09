@@ -1298,9 +1298,9 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidContextMenuDuplicateTabs =
             newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_DUPLICATE_TABS, false);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabs =
-            newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, false);
+            newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, true);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabsTabletTabStrip =
-            newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS_TABLET_TAB_STRIP, false);
+            newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS_TABLET_TAB_STRIP, true);
     public static final MutableFlagWithSafeDefault sAndroidTabHighlighting =
             newMutableFlagWithSafeDefault(ANDROID_TAB_HIGHLIGHTING, true);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotifications =
@@ -1830,11 +1830,11 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
 
     public static final MutableBooleanParamWithSafeDefault sAndroidPinnedTabsSearchBoxMovement =
-            sAndroidPinnedTabs.newBooleanParam("search_box_movement", false);
+            sAndroidPinnedTabs.newBooleanParam("search_box_movement", true);
 
     public static final MutableBooleanParamWithSafeDefault
             sAndroidPinnedTabsSearchBoxSquishAnimation =
-                    sAndroidPinnedTabs.newBooleanParam("search_box_squish_animation", false);
+                    sAndroidPinnedTabs.newBooleanParam("search_box_squish_animation", true);
 
     public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMemoryThresholdMb =
             sDisableInstanceLimit.newIntParam("max_instance_limit_memory_threshold_mb", 6500);

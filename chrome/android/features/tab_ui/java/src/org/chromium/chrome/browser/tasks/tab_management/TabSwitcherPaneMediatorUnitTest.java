@@ -526,17 +526,6 @@ public class TabSwitcherPaneMediatorUnitTest {
     }
 
     @Test
-    public void testMaybeTranslatePinnedStrip_showOnPhone() {
-        // Not a tablet. isSearchBoxMovementEnabledForPinnedTabs returns false, so should show.
-        mMediator.maybeTranslatePinnedStrip(false, false);
-
-        SupplementaryContainerAnimationMetadata metadata =
-                mModel.get(TabListContainerProperties.ANIMATE_SUPPLEMENTARY_CONTAINER);
-        assertTrue(metadata.shouldShowSearchBox);
-        assertFalse(metadata.forced);
-    }
-
-    @Test
     public void testMaybeTranslatePinnedStrip_hideOnTablet() {
         // Now switch to tablet.
         Configuration configuration = new Configuration();
