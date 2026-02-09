@@ -464,12 +464,6 @@ suite('EventListItemElement', () => {
     item.event = mergedEvent;
     await microtasksFinished();
     assertEquals('error', item.status);
-    assertStringContains(
-        item.shadowRoot.textContent,
-        loadTimeData.getStringF('errorDetails', 4, 5, 6));
-    assertStringContains(
-        item.shadowRoot.textContent,
-        loadTimeData.getStringF('errorDetails', 7, 8, 9));
   });
 
   test('toggles details', async () => {

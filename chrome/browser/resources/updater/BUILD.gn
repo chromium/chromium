@@ -57,6 +57,7 @@ build_webui("build") {
     "scope_icon.html.ts",
     "scope_icon.ts",
     "tools.ts",
+    "updater_errors.ts",
     "updater_state/enterprise_companion_state_card.html.ts",
     "updater_state/enterprise_companion_state_card.ts",
     "updater_state/updater_state.html.ts",

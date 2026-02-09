@@ -72,13 +72,13 @@ export function getHtml(this: EventListItemElement) {
     </div>
   ` : ''}
   ${this.errors.length > 0 ? html`
-    <div class="event-error-details">
+    <ul class="event-error-details">
       ${this.errors.map(item => html`
-        <div>
+        <li>
           ${item}
-        </div>
+        </li>
       `)}
-    </div>
+    </ul>
   ` : ''}
   ${this.updaterVersion ? html`
     <div>

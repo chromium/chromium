@@ -19960,8 +19960,41 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_END_DATE" desc="Label for the end date input field.">
         End Date:
       </message>
-      <message name="IDS_UPDATER_ERROR_DETAILS" desc="Details of an error encountered by the updater, including numeric category, code, and extra code values.">
-        Error: Category: <ph name="CATEGORY">$1<ex>1</ex></ph>, Code: <ph name="CODE">$2<ex>2</ex></ph>, Extra Code: <ph name="EXTRA_CODE">$3<ex>0</ex></ph>
+      <message name="IDS_UPDATER_ERROR_ACCESS_DENIED" desc="Error message indicating that Chrome's updater could not communicate with a remote server due to the request being blocked (e.g. by a firewall or proxy server).">
+        The update was blocked by network policy or a proxy server.
+      </message>
+      <message name="IDS_UPDATER_ERROR_CORRUPT" desc="Error message indicating that an update package is invalid or corrupted.">
+        The downloaded update does not contain the expected content.
+      </message>
+      <message name="IDS_UPDATER_ERROR_DISABLED" desc="Error message indicating that an action recorded in the event log could not be taken by Chrome's updater because it was disallowed by enterprise policy.">
+        The action was disallowed by the configured policies.
+      </message>
+      <message name="IDS_UPDATER_ERROR_DISK_FULL" desc="Error message indicating that an update could not be downloaded or applied because the disk is full.">
+        The update failed because the system lacks sufficient storage space.
+      </message>
+      <message name="IDS_UPDATER_ERROR_DOWNLOAD" desc="Generic error message indicating that Chrome's Updater encountered an issue while downloading content (e.g. an update).">
+        Failed to download content due to an unknown reason.
+      </message>
+      <message name="IDS_UPDATER_ERROR_INSTALL" desc="Generic error message indicating that an error occurred while installing an update.">
+        Installation failed due to an unknown reason.
+      </message>
+      <message name="IDS_UPDATER_ERROR_INSTALLER_FAILED" desc="Error message indicating that an application's (e.g. Chrome's) installer program failed to complete successfully.">
+        The application's installer program failed.
+      </message>
+      <message name="IDS_UPDATER_ERROR_NETWORK" desc="Error message indicating that a network communication error occurred with the update server.">
+        A network error occurred. Check your internet connection and network settings.
+      </message>
+      <message name="IDS_UPDATER_ERROR_RESTRICTED" desc="Error message indicating that an update check was refused by the server because the application is restricted in the user's region.">
+        The application is restricted in this region.
+      </message>
+      <message name="IDS_UPDATER_ERROR_UNPACK" desc="Generic error message indicating that an error occurred while unpacking an update package.">
+        The update package could not be unpacked.
+      </message>
+      <message name="IDS_UPDATER_ERROR_UPDATE_CHECK" desc="Generic error message indicating that an error occurred while checking for updates.">
+        The update check failed.
+      </message>
+      <message name="IDS_UPDATER_ERROR_UNKNOWN" desc="Generic error message indicating that an operation recorded in Chrome's updater's event log failed for a reason unknown to Chrome.">
+        The operation failed due to an unknown reason.
       </message>
       <message name="IDS_UPDATER_EVENT_LIST_TITLE" desc="Title for a section of the chrome://updater page which displays an event log detailing the activity of Chrome's updater on a user's system.">
         Event History

@@ -19,6 +19,7 @@ import type {HistoryEvent, MergedActivateEvent, MergedAppCommandEvent, MergedHis
 import {loadTimeData} from '../i18n_setup.js';
 import {getKnownAppNamesById} from '../known_apps.js';
 import {formatDateLong, formatDuration} from '../tools.js';
+import {getUpdaterErrorDescription} from '../updater_errors.js';
 
 import {getCss} from './event_list_item.css.js';
 import {getHtml} from './event_list_item.html.js';
@@ -182,9 +183,7 @@ export class EventListItemElement extends CrLitElement {
     const errors = isMergedHistoryEvent(this.event) ?
         [...this.event.startEvent.errors, ...this.event.endEvent.errors] :
         this.event.errors;
-    return errors.map(
-        error => loadTimeData.getStringF(
-            'errorDetails', error.category, error.code, error.extracode1));
+    return errors.map(error => getUpdaterErrorDescription(error));
   }
 
   private computeStatus(): 'success'|'error'|'' {
@@ -345,6 +344,10 @@ export class EventListItemElement extends CrLitElement {
       string|undefined {
     if (event === undefined) {
       return undefined;
+    }
+
+    if (this.errors.length > 0) {
+      return this.errors[0];
     }
 
     if (isMergedHistoryEvent(event)) {
