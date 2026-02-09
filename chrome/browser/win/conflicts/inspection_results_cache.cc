@@ -132,16 +132,18 @@ base::Pickle SerializeInspectionResultsCache(
   return pickle;
 }
 
-// Deserializes an InspectionResultsCache from |pickle|. This function ensures
-// that both the version and the checksum of the data are valid. Returns a
-// ReadCacheResult value indicating what failed if unsuccessful.
+// Deserializes an InspectionResultsCache from |pickle_iterator|. This function
+// ensures that both the version and the checksum of the data are valid. Returns
+// a ReadCacheResult value indicating what failed if unsuccessful.
 ReadCacheResult DeserializeInspectionResultsCache(
     uint32_t min_time_stamp,
-    const base::Pickle& pickle,
+    base::PickleIterator pickle_iterator,
     InspectionResultsCache* result) {
   DCHECK(result);
 
-  base::PickleIterator pickle_iterator(pickle);
+  // Make a copy of the iterator before iterating to be able to consume the full
+  // payload later when computing the MD5 hash.
+  base::PickleIterator pickle_iterator_copy = pickle_iterator;
 
   // Check the version number.
   int version = 0;
@@ -174,11 +176,13 @@ ReadCacheResult DeserializeInspectionResultsCache(
   }
 
   // Check if the md5 checksum matches.
-  base::span<const uint8_t> payload = pickle.payload_bytes();
+  std::optional<base::span<const uint8_t>> payload =
+      pickle_iterator_copy.ReadBytes(pickle_iterator_copy.RemainingBytes());
+  CHECK(payload.has_value());
   if (!std::ranges::equal(
           *read_md5_digest,
-          Md5ForWinInspectionResultsCache(
-              payload.first(payload.size() - crypto::obsolete::Md5::kSize)))) {
+          Md5ForWinInspectionResultsCache(payload->first(
+              payload->size() - crypto::obsolete::Md5::kSize)))) {
     return ReadCacheResult::kFailInvalidMD5;
   }
 
@@ -222,11 +226,11 @@ ReadCacheResult ReadInspectionResultsCache(
   if (!ReadFileToString(file_path, &contents))
     return ReadCacheResult::kFailReadFile;
 
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(contents));
   InspectionResultsCache temporary_result;
   ReadCacheResult read_result = DeserializeInspectionResultsCache(
-      min_time_stamp, pickle, &temporary_result);
+      min_time_stamp,
+      base::PickleIterator::WithData(base::as_byte_span(contents)),
+      &temporary_result);
 
   // Only update the output cache when successful.
   if (read_result == ReadCacheResult::kSuccess)
