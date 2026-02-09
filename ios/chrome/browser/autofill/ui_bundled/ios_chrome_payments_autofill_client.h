@@ -46,6 +46,7 @@ class CreditCardRiskBasedAuthenticator;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PaymentsDataManager;
+class SaveAndFillManager;
 class SaveCardBottomSheetModel;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -256,6 +257,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
+
+  std::unique_ptr<SaveAndFillManager> save_and_fill_manager_;
 
   base::WeakPtr<VirtualCardEnrollUiModel> virtual_card_enroll_ui_model_;
 
