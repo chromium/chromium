@@ -2916,6 +2916,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return select->PopupIsVisible();
       } else if (auto* input = DynamicTo<HTMLInputElement>(element)) {
         return input->IsPickerVisible();
+      } else if (auto* menuitem = DynamicTo<HTMLMenuItemElement>(element)) {
+        return menuitem->IsSubmenuOpen();
       }
       return false;
     case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:

@@ -1668,6 +1668,11 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     // :popover-open https://issues.chromium.org/issues/375004874
     OwnerShadowHost()->PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
+  if (IsA<HTMLMenuItemElement>(invoker)) {
+    // There are some edge cases where :open doesn't change here, but in
+    // practice this basically means it's changing.
+    invoker->PseudoStateChanged(CSSSelector::kPseudoOpen);
+  }
 
   CHECK(!original_document.AllOpenPopovers().Contains(this));
   original_document.AllOpenPopovers().insert(this);
@@ -2107,6 +2112,11 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     // invalidate the select element's :open pseudo-class at the same time as
     // :popover-open https://issues.chromium.org/issues/375004874
     OwnerShadowHost()->PseudoStateChanged(CSSSelector::kPseudoOpen);
+  }
+  if (IsA<HTMLMenuItemElement>(invoker)) {
+    // There are some edge cases where :open doesn't change here, but in
+    // practice this basically means it's changing.
+    invoker->PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
 
   document.AllOpenPopovers().erase(this);

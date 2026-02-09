@@ -44,6 +44,14 @@ bool HTMLMenuItemElement::MatchesEnabledPseudoClass() const {
   return !IsDisabledFormControl();
 }
 
+bool HTMLMenuItemElement::IsSubmenuOpen() const {
+  if (HTMLMenuListElement* invoked_menulist = GetInvokedSubmenu()) {
+    return invoked_menulist->popoverOpen() &&
+           invoked_menulist->GetPopoverData()->invoker() == this;
+  }
+  return false;
+}
+
 void HTMLMenuItemElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;

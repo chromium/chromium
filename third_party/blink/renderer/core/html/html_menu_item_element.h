@@ -49,14 +49,18 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool HandleCommandForActivation() override;
   void DefaultEventHandler(Event&) override;
 
- private:
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
-  void ParseAttribute(const AttributeModificationParams&) override;
+  bool IsSubmenuOpen() const;
 
-  int DefaultTabIndex() const override;
-  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
+  void ParseAttribute(const AttributeModificationParams&) override;
   bool ShouldHaveFocusAppearance() const override;
+
+ protected:
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
+
+ private:
+  int DefaultTabIndex() const override;
 
   // This is generally used when a menuitem has been selected, and the "tree" of
   // menus should now close. It finds the innermost (nearest ancestor) menulist
