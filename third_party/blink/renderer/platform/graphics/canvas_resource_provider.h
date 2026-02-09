@@ -436,8 +436,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsGpuContextLost() const override;
   base::ByteSize EstimatedSizeInBytes() const override;
 
-  gpu::raster::RasterInterface* RasterInterface() const;
-
   // Use Snapshot() for capturing a frame that is intended to be displayed via
   // the compositor. Cases that are destined to be transferred via a
   // TransferableResource should call ProduceCanvasResource() instead.
@@ -481,6 +479,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
   }
+  gpu::raster::RasterInterface* RasterInterface() const;
   void EnsureWriteAccess();
   void EndWriteAccess();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
