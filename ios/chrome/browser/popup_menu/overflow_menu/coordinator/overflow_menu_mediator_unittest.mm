@@ -453,7 +453,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(
         identity);
     AuthenticationServiceFactory::GetForProfile(profile_.get())
-        ->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
+        ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
     CoreAccountInfo core_account_info =
         identity_manager()->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin);
@@ -664,7 +664,7 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
   ChromeAccountManagerService* account_manager =
       ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   authentication_service->SignIn(account_manager->GetDefaultIdentity(),
-                                 signin_metrics::AccessPoint::kUnknown);
+                                 signin_metrics::AccessPoint::kStartPage);
   EXPECT_TRUE(authentication_service->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
 

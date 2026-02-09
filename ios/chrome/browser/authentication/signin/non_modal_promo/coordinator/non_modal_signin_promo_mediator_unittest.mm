@@ -258,7 +258,7 @@ TEST_F(NonModalSignInPromoMediatorTest, DismissWhenUserSignsIn) {
 
   // Sign in the user
   authentication_service_->SignIn(identity_,
-                                  signin_metrics::AccessPoint::kUnknown);
+                                  signin_metrics::AccessPoint::kStartPage);
 
   // Verify delegate was called to dismiss
   EXPECT_EQ(1, fake_delegate_.shouldDismissCount);
