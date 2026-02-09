@@ -11,10 +11,12 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -71,6 +73,10 @@ bool IsSyncAutofillValuableMetadataEnabled() {
   return base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata);
 }
 
+bool IsSyncWalletPrivatePassesEnabled() {
+  return base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
+}
+
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.
 bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
   switch (change.data_model().record_type()) {
@@ -78,7 +84,11 @@ bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
       // Local entities are not uploaded as AUTOFILL_VALUABLE.
       return false;
     case EntityInstance::RecordType::kServerWallet:
-      return true;
+      // Only public passes are uploaded. For private passes, the
+      // AUTOFILL_VALUABLE sync bridge is read-only.
+      return !IsMaskedStorageSupported(
+          change.data_model().type(),
+          EntityInstance::RecordType::kServerWallet);
   }
   NOTREACHED();
 }
@@ -120,7 +130,8 @@ ValuableSyncBridge::ValuableSyncBridge(
   }
 
   if (IsSyncWalletFlightReservationsEnabled() ||
-      IsSyncWalletVehicleRegistrationsEnabled()) {
+      IsSyncWalletVehicleRegistrationsEnabled() ||
+      IsSyncWalletPrivatePassesEnabled()) {
     scoped_observation_.Observe(web_data_backend_.get());
   }
 
@@ -183,7 +194,8 @@ ValuableDatabaseOperationResult ValuableSyncBridge::HandleDeleteRequest(
   }
 
   if (!IsSyncWalletFlightReservationsEnabled() &&
-      !IsSyncWalletVehicleRegistrationsEnabled()) {
+      !IsSyncWalletVehicleRegistrationsEnabled() &&
+      !IsSyncWalletPrivatePassesEnabled()) {
     return ValuableDatabaseOperationResult::kNoChange;
   }
   EntityInstance::EntityId entity_id(storage_key);
@@ -318,7 +330,6 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
 
   const bool is_sync_flight_reservations_enabled =
       IsSyncWalletFlightReservationsEnabled();
-
   const bool is_sync_vehicle_registrations_enabled =
       IsSyncWalletVehicleRegistrationsEnabled();
 
@@ -336,6 +347,7 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
       batch->Put(id, CreateEntityDataFromEntityInstance(
                          instance, GetPossiblyTrimmedValuableSpecifics(id)));
     }
+    // TODO(crbug.com/481650251): Implement support for private passes.
   }
 
   return batch;
@@ -518,7 +530,6 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
 
   const bool is_sync_wallet_flight_reservations_enabled =
       IsSyncWalletFlightReservationsEnabled();
-
   const bool is_sync_wallet_vehicle_registrations_enabled =
       IsSyncWalletVehicleRegistrationsEnabled();
 
@@ -527,11 +538,11 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
         is_sync_wallet_vehicle_registrations_enabled) {
       success &= entity_table->AddOrUpdateEntityInstance(entity);
     }
-
     if (entity.type().name() == EntityTypeName::kFlightReservation &&
         is_sync_wallet_flight_reservations_enabled) {
       success &= entity_table->AddOrUpdateEntityInstance(entity);
     }
+    // TODO(crbug.com/481650251): Implement support for private passes.
   }
 
   return success ? ValuableDatabaseOperationResult::kDataChanged
@@ -629,7 +640,8 @@ void ValuableSyncBridge::EntityInstanceChanged(
     const EntityInstanceChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsSyncWalletFlightReservationsEnabled() &&
-      !IsSyncWalletVehicleRegistrationsEnabled()) {
+      !IsSyncWalletVehicleRegistrationsEnabled() &&
+      !IsSyncWalletPrivatePassesEnabled()) {
     return;
   }
 

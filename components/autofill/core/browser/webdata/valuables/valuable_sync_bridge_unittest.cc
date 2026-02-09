@@ -717,15 +717,28 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
       EntityInstanceChange::UPDATE, vehicle.guid(), vehicle));
 }
 
-using ValuableSyncBridgeDeathTest = ValuableSyncBridgeTest;
-
 // Tests that `EntityInstanceChanged()` ignores a local entity REMOVE
 // change.
-TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_RemoveLocal) {
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_RemoveLocal) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   const EntityInstance vehicle = test::GetVehicleEntityInstance();
   bridge().EntityInstanceChanged(EntityInstanceChange(
       EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
+}
+
+// Tests that `EntityInstanceChanged()` doesn't commit changes for private
+// passes.
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PrivatePasses) {
+  const EntityInstance passport =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::ADD, passport.guid(), passport));
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::UPDATE, passport.guid(), passport));
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::REMOVE, passport.guid(), passport));
 }
 
 // Tests that `EntityInstanceChanged()` includes unknown fields from the server.
