@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.renderer_host;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -31,6 +32,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 import org.chromium.url.GURL;
 
 /** Integration test for Android OS disabling Javascript Optimizers. */
@@ -57,7 +59,11 @@ public class JavascriptOptimizerFeatureTest {
 
     @Before
     public void setUp() {
-        mTestServer = mActivityTestRule.getTestServer();
+        // These tests need an HTTPS test server as enabling Advanced
+        // Protection also forces on HTTPS-First Mode.
+        mTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         sAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(false);
         mPage = mActivityTestRule.startOnBlankPage();
     }
@@ -108,11 +114,11 @@ public class JavascriptOptimizerFeatureTest {
                 () -> {
                     GURL pageOrigin = new GURL(pageUrl.getScheme() + "://" + pageUrl.getHost());
                     Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
-                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    WebsitePreferenceBridge.setContentSettingCustomScope(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            pageOrigin,
-                            pageOrigin,
+                            pageOrigin.getHost(),
+                            "*",
                             ContentSetting.ALLOW);
                 });
 
@@ -172,7 +178,7 @@ public class JavascriptOptimizerFeatureTest {
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            "http://[*.]allowed.test",
+                            "https://[*.]allowed.test",
                             "*",
                             ContentSetting.ALLOW);
                 });

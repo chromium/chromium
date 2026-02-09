@@ -1227,3 +1227,35 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, StartupBalancedModeAutoEnabled) {
       "Security.HttpsFirstMode.SettingEnabledAtStartup2",
       HttpsFirstModeSetting::kEnabledBalanced, 1);
 }
+
+// Tests that Advanced Protection status changes do not affect the synced
+// preference, but do correctly update the current setting.
+// Regression test for crbug.com/480099712.
+TEST_F(HttpsFirstModeSettingsTrackerTest, AdvancedProtectionStatusChange) {
+  feature_list()->InitAndEnableFeature(
+      features::kHttpsFirstModeForAdvancedProtectionUsers);
+
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile());
+  ASSERT_TRUE(aps_manager);
+
+  // Initially, the Strict HFM pref is disabled.
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+
+  // Enable Advanced Protection. This should not change the pref, but
+  // GetCurrentSetting should now return kEnabledFull.
+  aps_manager->SetAdvancedProtectionStatusForTesting(true);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kEnabledFull);
+
+  // Disable Advanced Protection. GetCurrentSetting should return to kDisabled.
+  aps_manager->SetAdvancedProtectionStatusForTesting(false);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_EQ(service->GetCurrentSetting(), HttpsFirstModeSetting::kDisabled);
+}

@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_desktop.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
@@ -84,10 +83,9 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   // Sign in, otherwise AP manager won't notify observers of the AP status.
   SignIn(/*is_under_advanced_protection=*/false);
 
-  safe_browsing::AdvancedProtectionStatusManagerDesktop* aps_manager =
-      static_cast<safe_browsing::AdvancedProtectionStatusManagerDesktop*>(
-          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-              profile()));
+  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile());
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
@@ -102,8 +100,6 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
       HttpsFirstModeSetting::kEnabledFull);
   EXPECT_TRUE(*pref.GetPrefObject().user_control_disabled);
   EXPECT_EQ(test_observer.GetUpdatedPrefName(), kGeneratedHttpsFirstModePref);
-
-  aps_manager->UnsubscribeFromSigninEvents();
 }
 
 // Similar to AdvancedProtectionStatusChange_InitiallySignedIn but the user is
@@ -116,10 +112,6 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   settings_private::TestGeneratedPrefObserver test_observer;
   pref.AddObserver(&test_observer);
 
-  safe_browsing::AdvancedProtectionStatusManagerDesktop* aps_manager =
-      static_cast<safe_browsing::AdvancedProtectionStatusManagerDesktop*>(
-          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-              profile()));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
@@ -131,14 +123,52 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
 
   // Enabled Advanced Protection. This should disable changing the pref.
   SignIn(/*is_under_advanced_protection=*/true);
-  // aps_manager->SetAdvancedProtectionStatusForTesting(true);
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kEnabledFull);
   EXPECT_TRUE(*pref.GetPrefObject().user_control_disabled);
   EXPECT_EQ(test_observer.GetUpdatedPrefName(), kGeneratedHttpsFirstModePref);
+}
 
-  aps_manager->UnsubscribeFromSigninEvents();
+// Tests that Advanced Protection enforces the generated pref.
+// Regression test for crbug.com/480099712.
+TEST_F(GeneratedHttpsFirstModePrefTest, AdvancedProtectionEnforcement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  GeneratedHttpsFirstModePref pref(profile());
+  SignIn(/*is_under_advanced_protection=*/false);
+
+  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile());
+
+  // Initially, HFM is disabled and not enforced.
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
+  EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
+
+  // Enable Advanced Protection. This should enforce kEnabledFull.
+  aps_manager->SetAdvancedProtectionStatusForTesting(true);
+  auto pref_object = pref.GetPrefObject();
+  EXPECT_EQ(static_cast<HttpsFirstModeSetting>(pref_object.value->GetInt()),
+            HttpsFirstModeSetting::kEnabledFull);
+  EXPECT_TRUE(*pref_object.user_control_disabled);
+  EXPECT_EQ(pref_object.enforcement, settings_api::Enforcement::kEnforced);
+
+  // SetPref should now fail.
+  EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(
+                             static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                             .get()),
+            settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+
+  // Disable Advanced Protection. It should return to previous state.
+  aps_manager->SetAdvancedProtectionStatusForTesting(false);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
+  EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
 }
 
 // Check the generated pref respects updates to the underlying preference.

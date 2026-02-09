@@ -26,6 +26,7 @@ android_library("javatests") {
     "//components/permissions/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

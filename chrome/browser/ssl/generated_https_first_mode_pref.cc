@@ -76,6 +76,13 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
 
   auto selection = static_cast<HttpsFirstModeSetting>(value->GetInt());
 
+  // If the user is under Advanced Protection, they cannot change the setting.
+  if (safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile_)
+          ->IsUnderAdvancedProtection()) {
+    return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
+  }
+
   // If the enterprise policy is enforced, then the kHttpsOnlyModeEnabled pref
   // will not be modifiable (for all policy values).
   const PrefService::Preference* fully_enabled_pref =
@@ -128,6 +135,9 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
   }
 
   pref_object.user_control_disabled = is_advanced_protection_enabled;
+  if (is_advanced_protection_enabled) {
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
+  }
 
   if (IsBalancedModeAvailable()) {
     ApplyManagementState(*profile_, pref_object);
