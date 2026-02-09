@@ -87,7 +87,7 @@ class AutofillProfileTableViewControllerTest
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
-                         signin_metrics::AccessPoint::kUnknown);
+                         signin_metrics::AccessPoint::kStartPage);
   }
 
   // Helper method to add an autofill::AutofillProfile to the
