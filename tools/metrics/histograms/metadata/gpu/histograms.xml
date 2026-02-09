@@ -1333,8 +1333,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PaintOpReader.DeserializationError"
-    enum="PaintOpDeserializationError" expires_after="2026-02-22">
-  <owner>junov@chromium.org</owner>
+    enum="PaintOpDeserializationError" expires_after="2027-02-22">
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records the reason why the deserialization of a PaintOp failed. Recorded in
