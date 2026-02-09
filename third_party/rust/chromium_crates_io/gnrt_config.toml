@@ -110,6 +110,9 @@ root = "chromium"
 [crate.adler2.extra_kv]
 allow_unsafe = false
 
+[crate.android_system_properties]
+extra_kv = { allow_unsafe = true }
+
 [crate.anstyle.extra_kv]
 allow_unsafe = true
 
@@ -167,6 +170,9 @@ allow_unsafe = false
 [crate.cfg-if.extra_kv]
 allow_unsafe = false
 
+[crate.chrono]
+extra_kv = { allow_unsafe = true }
+
 [crate.clap]
 # These files are included from source files and are thus required as part of
 # building the crate.
@@ -183,6 +189,9 @@ allow_unsafe = true
 
 [crate.codespan-reporting.extra_kv]
 allow_unsafe = false
+
+[crate.core-foundation-sys]
+extra_kv = { allow_unsafe = true }
 
 [crate.core_maths.extra_kv]
 allow_unsafe = false
@@ -294,6 +303,9 @@ visibility = [
   # `//third_party/boringssl` for its SHA-256 imlementation).
   '//build/rust/chromium_prelude:*',
 ]
+
+[crate.iana-time-zone]
+extra_kv = { allow_unsafe = true }
 
 [crate.icu_calendar.extra_kv]
 allow_unsafe = false

@@ -627,6 +627,7 @@ third_party/pyjson5/src
 third_party/pylint/pylint
 third_party/rapidhash
 third_party/rust/chromium_crates_io/supply-chain
+third_party/rust/chromium_crates_io/vendor/android_system_properties-v0_1
 third_party/rust/chromium_crates_io/vendor/anstyle-v1
 third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5
 third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5/src
@@ -667,6 +668,7 @@ third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16/src
 third_party/rust/chromium_crates_io/vendor/hex-v0_4
+third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/icu_locale-v2/src/fallback
 third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/benches/data
 third_party/rust/chromium_crates_io/vendor/image-v0_25
