@@ -920,8 +920,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   pwa_install_controller->SetIsExecuting(true);
 
   MockRecordIgnoreDelegate record_ignore;
-  pwa_install_controller->ExecuteOnIphClosedForTesting(GetInstallableAppURL(),
-                                                       &record_ignore);
+  pwa_install_controller->ExecuteOnIphClosedForTesting(
+      webapps::ManifestId(GetInstallableAppURL()), &record_ignore);
   EXPECT_FALSE(record_ignore.GetIgnoreWasCalled());
 }
 
@@ -938,8 +938,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   ASSERT_FALSE(pwa_install_controller->GetIsExecuting());
 
   MockRecordIgnoreDelegate record_ignore;
-  pwa_install_controller->ExecuteOnIphClosedForTesting(GetInstallableAppURL(),
-                                                       &record_ignore);
+  pwa_install_controller->ExecuteOnIphClosedForTesting(
+      webapps::ManifestId(GetInstallableAppURL()), &record_ignore);
   EXPECT_TRUE(record_ignore.GetIgnoreWasCalled());
 }
 

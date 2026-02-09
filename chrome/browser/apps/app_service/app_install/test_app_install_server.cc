@@ -92,7 +92,7 @@ TestAppInstallServer::SetupIds TestAppInstallServer::SetUpWebAppInstallInternal(
     PackageType package_type) {
   GURL start_url = server_.GetURL("/web_apps/basic.html");
   GURL manifest_url = server_.GetURL("/web_apps/basic.json");
-  webapps::ManifestId manifest_id = start_url;
+  webapps::ManifestId manifest_id(start_url);
   webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
   PackageId package_id(package_type, manifest_id.spec());
 

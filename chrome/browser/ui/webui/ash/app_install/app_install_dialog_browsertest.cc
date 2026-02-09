@@ -139,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
   watcher.Wait();
 
   // Expect the app is opened.
-  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(app_url);
+  webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(webapps::ManifestId(app_url));
   BrowserWindowInterface* const app_browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
@@ -152,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
 
 IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, AlreadyInstalled) {
   constexpr char kAppUrl[] = "https://example.org/";
-  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(GURL(kAppUrl));
+  webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kAppUrl)));
 
   SetUpAlmanacPayload(kAppUrl);
 
