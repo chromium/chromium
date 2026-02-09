@@ -45,7 +45,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       entrypoint-name="ContextualTasks"
       searchbox-layout-mode="TallBottomContext"
       .lensButtonDisabled="${false}"
-      .showLensButton="${this.isSidePanel}"
+      .showLensButton="${this.showLensButton_}"
       .disableCaretColorAnimation="${true}"
       .isInCoBrowsingZeroState = "${this.isZeroState}"
       .lensButtonTriggersOverlay="${true}"

@@ -1782,6 +1782,62 @@ suite('ContextualTasksComposeboxTest', () => {
   });
 
   test(
+      'lens button visibility depends on whether DeepSearch is selected in nextbox',
+      async () => {
+        const contextualComposebox = contextualTasksApp.$.composebox;
+        const innerComposebox = contextualComposebox.$.composebox;
+
+        // Ensure we are in side panel mode
+        contextualComposebox.isSidePanel = true;
+        await contextualComposebox.updateComplete;
+        await innerComposebox.updateComplete;
+        await microtasksFinished();
+
+        const getLensIcon = () =>
+            innerComposebox.shadowRoot.querySelector('#lensIcon');
+
+        assertTrue(
+            isVisible(getLensIcon()),
+            'Lens button should be visible initially');
+        assertTrue(
+            innerComposebox.showLensButton,
+            'Child showLensButton should be true initially');
+
+        // Enable Deep Search
+        innerComposebox.dispatchEvent(
+            new CustomEvent('active-tool-mode-changed', {
+              bubbles: true,
+              composed: true,
+              detail: {value: 1},
+            }));
+
+        await microtasksFinished();
+        await contextualComposebox.updateComplete;
+        await innerComposebox.updateComplete;
+
+        // Check the effect
+        assertEquals(
+            null, getLensIcon(),
+            'Lens button should be hidden when Deep Search is active');
+
+        // Disable Deep Search
+        innerComposebox.dispatchEvent(
+            new CustomEvent('active-tool-mode-changed', {
+              bubbles: true,
+              composed: true,
+              detail: {value: 0},
+            }));
+
+        await microtasksFinished();
+        await contextualComposebox.updateComplete;
+        await innerComposebox.updateComplete;
+
+        // Check the effect
+        assertTrue(
+            isVisible(getLensIcon()), 'Lens button should be visible again');
+      });
+
+  test(
       'does not query autocomplete on load when isZeroState is false',
       async () => {
         // Clear the body and reset the mock to test a fresh instance.
