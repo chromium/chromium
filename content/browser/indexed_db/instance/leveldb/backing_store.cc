@@ -173,13 +173,6 @@ leveldb_env::Options GetLevelDBOptions() {
   // internal synchronization.
   options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
 
-  // Thread-safe: calls base histogram `FactoryGet()` methods, which are
-  // thread-safe.
-  options.on_get_error = base::BindRepeating(
-      ReportLevelDBError, "WebCore.IndexedDB.LevelDBReadErrors");
-  options.on_write_error = base::BindRepeating(
-      ReportLevelDBError, "WebCore.IndexedDB.LevelDBWriteErrors");
-
   // Thread-safe: static local construction, and `BloomFilterPolicy` state is
   // read-only after construction.
   static const leveldb::FilterPolicy* g_filter_policy =

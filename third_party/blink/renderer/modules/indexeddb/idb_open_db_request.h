@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
@@ -85,7 +84,6 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   void set_connection_priority(int priority) {
     connection_priority_ = priority;
-    metrics_.set_is_fg_client(priority == 0);
   }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(blocked, kBlocked)
@@ -103,9 +101,6 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
   IDBTransaction::TransactionMojoRemote transaction_remote_;
   const int64_t transaction_id_;
   int64_t version_;
-
-  base::Time start_time_;
-  bool open_time_recorded_ = false;
 
   // The priority for this connection request which is passed to the backend.
   // This should be passed along to the database after a successful open

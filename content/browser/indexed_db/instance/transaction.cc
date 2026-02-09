@@ -326,8 +326,6 @@ void Transaction::Start() {
     return;
   }
   CHECK_EQ(CREATED, state_);
-  std::optional scheduling_priority_at_last_state_change =
-      scheduling_priority_at_last_state_change_;
   SetState(STARTED);
   CHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
@@ -344,30 +342,15 @@ void Transaction::Start() {
     case blink::mojom::IDBTransactionMode::ReadOnly:
       base::UmaHistogramMediumTimes(
           "WebCore.IndexedDB.Transaction.ReadOnly.TimeQueued", time_queued);
-      if (scheduling_priority_at_last_state_change == 0) {
-        base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.ReadOnly.TimeQueued.Foreground",
-            time_queued);
-      }
       break;
     case blink::mojom::IDBTransactionMode::ReadWrite:
       base::UmaHistogramMediumTimes(
           "WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued", time_queued);
-      if (scheduling_priority_at_last_state_change == 0) {
-        base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued.Foreground",
-            time_queued);
-      }
       break;
     case blink::mojom::IDBTransactionMode::VersionChange:
       base::UmaHistogramMediumTimes(
           "WebCore.IndexedDB.Transaction.VersionChange.TimeQueued",
           time_queued);
-      if (scheduling_priority_at_last_state_change == 0) {
-        base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.VersionChange.TimeQueued.Foreground",
-            time_queued);
-      }
       break;
   }
 
@@ -936,8 +919,6 @@ Status Transaction::CommitPhaseTwo() {
 
   CHECK_EQ(state_, COMMITTING);
 
-  std::optional scheduling_priority_at_last_state_change =
-      scheduling_priority_at_last_state_change_;
   SetState(FINISHED);
 
   Status s;
@@ -966,31 +947,15 @@ Status Transaction::CommitPhaseTwo() {
       case blink::mojom::IDBTransactionMode::ReadOnly:
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2", active_time);
-        if (scheduling_priority_at_last_state_change == 0) {
-          base::UmaHistogramMediumTimes(
-              "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2.Foreground",
-              active_time);
-        }
         break;
       case blink::mojom::IDBTransactionMode::ReadWrite:
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2", active_time);
-        if (scheduling_priority_at_last_state_change == 0) {
-          base::UmaHistogramMediumTimes(
-              "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2.Foreground",
-              active_time);
-        }
         break;
       case blink::mojom::IDBTransactionMode::VersionChange:
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2",
             active_time);
-        if (scheduling_priority_at_last_state_change == 0) {
-          base::UmaHistogramMediumTimes(
-              "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2."
-              "Foreground",
-              active_time);
-        }
         break;
       default:
         NOTREACHED();

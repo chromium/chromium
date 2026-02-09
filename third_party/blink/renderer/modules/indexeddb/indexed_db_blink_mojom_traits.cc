@@ -49,7 +49,6 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
     DCHECK(!out->object_stores.Contains(key));
     out->object_stores.insert(key, object_store);
   }
-  out->was_cold_open = data.was_cold_open();
   out->is_sqlite = data.is_sqlite();
   return true;
 }

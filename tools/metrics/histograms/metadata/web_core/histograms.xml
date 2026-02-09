@@ -276,143 +276,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.LevelDBReadErrors" enum="LevelDBErrorTypes"
-    expires_after="2025-04-13">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Error classes returned by LevelDB when it failed to read a database.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDBReadErrors.BFE{LevelDBBFEMethods}"
-    enum="PlatformFileError" expires_after="2025-02-24">
-  <owner>estade@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Errors (base::File::Error) encountered by a single LevelDBEnv method when
-    reading from an IndexedDB instance. {LevelDBBFEMethods}
-  </summary>
-  <token key="LevelDBBFEMethods" variants="LevelDBBFEMethods">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDBReadErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="2025-04-13">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Types of corruption that LevelDB encounters when reading a database.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDBReadErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="2025-02-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    LevelDBEnv methods that generated IO errors when reading a database.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDBWriteErrors" enum="LevelDBErrorTypes"
-    expires_after="2025-02-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Error classes returned by LevelDB when it failed to write to a database.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE{LevelDBBFEMethods}"
-    enum="PlatformFileError" expires_after="2025-02-24">
-  <owner>estade@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Errors (base::File::Error) encountered by a single LevelDBEnv method when
-    writing to an IndexedDB instance. {LevelDBBFEMethods}
-  </summary>
-  <token key="LevelDBBFEMethods" variants="LevelDBBFEMethods">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDBWriteErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="2025-06-22">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Types of corruption returned by LevelDB when it failed to write to a
-    database.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.LevelDBWriteErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="2025-02-24">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    LevelDBEnv methods that generated IO errors when writing to a database.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.OpenTime.Cold" units="ms"
-    expires_after="2025-06-22">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the full time it takes to open a database that isn't open yet (so
-    files are loaded from disk, metadata checked, etc). The measurement happens
-    when a website calls &quot;indexedDB.open&quot;, and records the time it
-    takes from when this method is called to when the onsuccess event (or
-    onupgradeneeded event, in the case of a database upgrade) is dispatched. See
-    WebCore.IndexedDB.OpenTime.Warm for the time it takes an already-loaded
-    database to load.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.OpenTime.Warm" units="ms"
-    expires_after="2025-06-22">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the full time it takes to open an already-open database. The
-    measurement happens when a website calls &quot;indexedDB.open&quot;, and
-    records the time it takes from when this method is called to when the
-    onsuccess event (or onupgradeneeded event, in the case of a database
-    upgrade) is dispatched. See WebCore.IndexedDB.OpenTime.Cold for the time it
-    takes to open a database that is not open yet.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.PutValueSize2" units="KB"
-    expires_after="2025-02-28">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The size of the IndexedDB value used in an IndexedDB object store 'put'
-    operation. Recorded for every 'put' operation.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.RequestDispatchOutcome.{RequestType}"
-    enum="BooleanSuccess" expires_after="2024-12-04">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    When dispatching an event on IDBRequest, records whether that event is a
-    success event or error event.
-
-    Note this is only recorded for the first result dispatch for a given
-    request, e.g. &quot;upgradedneeded&quot; but not &quot;success&quot; for an
-    open request.
-  </summary>
-  <token key="RequestType" variants="IdbRequestType"/>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.RequestDuration2.{RequestType}" units="ms"
     expires_after="2026-07-19">
   <owner>estade@chromium.org</owner>
@@ -429,37 +292,6 @@ chromium-metrics-reviews@google.com.
   <token key="RequestType" variants="IdbRequestType"/>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.RequestDuration2.{RequestType}.Foreground"
-    units="ms" expires_after="2026-08-02">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Only recorded for foreground tabs, i.e. priority 0 clients, as of when the
-    request started (not when it is completed, i.e. when the metric is
-    recorded):
-
-    Records end to end duration of an IndexedDB operation. Unlike
-    RequestDuration before it, this only records when an event is successfully
-    dispatched to the page (whether the result is a success or error).
-
-    Note this is only recorded for the first result dispatch for a given
-    request, e.g. &quot;upgradedneeded&quot; but not &quot;success&quot; for an
-    open request.
-  </summary>
-  <token key="RequestType" variants="IdbRequestType"/>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.SchedulingLifecycleState"
-    enum="SchedulingLifecycleState" expires_after="2025-01-29">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The scheduling lifecycle state of the Execution Context for a request. This
-    is recorded whenever metrics state is snapshotted for
-    WebCore.IndexedDB.Request* histograms.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2"
     units="ms" expires_after="2026-11-02">
   <owner>leimy@chromium.org</owner>
@@ -473,47 +305,11 @@ chromium-metrics-reviews@google.com.
   <token key="TransactionType" variants="IdbTransactionTypes"/>
 </histogram>
 
-<histogram
-    name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2.Foreground"
-    units="ms" expires_after="2026-11-02">
-  <owner>leimy@chromium.org</owner>
-  <owner>evanstade@microsoft.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Only recorded for foreground tabs, i.e. priority 0 clients, as of when the
-    transaction became active (not when it stops being active, i.e. when the
-    metric is recorded):
-
-    The time it takes for an IndexedDB transaction to commit, starting from when
-    it starts executing tasks (when it reaches the front of the scheduling
-    queue). Recorded after transaction commit fully completes.
-  </summary>
-  <token key="TransactionType" variants="IdbTransactionTypes"/>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeQueued"
     units="ms" expires_after="2026-07-19">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time it takes for an IndexedDB transaction to start after it's created.
-    This is measured from the browser process. It represents the amount of time
-    spent queued behind other tranactions (i.e. waiting for locks) and any other
-    delays before the transaction can begin operations.
-  </summary>
-  <token key="TransactionType" variants="IdbTransactionTypes"/>
-</histogram>
-
-<histogram
-    name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeQueued.Foreground"
-    units="ms" expires_after="2026-06-21">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Only recorded for foreground tabs, i.e. priority 0 clients, as of when the
-    transaction was queued (not when it starts being processed, i.e. when the
-    metric is recorded):
-
     The time it takes for an IndexedDB transaction to start after it's created.
     This is measured from the browser process. It represents the amount of time
     spent queued behind other tranactions (i.e. waiting for locks) and any other

@@ -591,7 +591,6 @@ void BucketContext::Open(
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
       std::move(pending_factory_client));
 
-  bool was_cold_open = !backing_store_;
   IndexedDBDataLossInfo data_loss_info;
   if (!backing_store_) {
     Status s;
@@ -612,7 +611,6 @@ void BucketContext::Open(
       std::move(factory_client),
       std::make_unique<DatabaseCallbacks>(std::move(database_callbacks_remote)),
       transaction_id, version, std::move(transaction_receiver));
-  connection->was_cold_open = was_cold_open;
   connection->data_loss_info = data_loss_info;
   connection->scheduling_priority = scheduling_priority;
   ReceiverContext& client = receivers_.current_context();

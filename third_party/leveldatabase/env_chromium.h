@@ -83,19 +83,9 @@ enum LevelDBStatusValue {
 LEVELDB_EXPORT LevelDBStatusValue
 GetLevelDBStatusUMAValue(const leveldb::Status& s);
 
-using DatabaseErrorReportingCallback =
-    base::RepeatingCallback<void(const leveldb::Status&)>;
-
 // Create the default leveldb options object suitable for leveldb operations.
 struct LEVELDB_EXPORT Options : public leveldb::Options {
   Options();
-
-  // Called when there is a error during the Get() call. Intended for metrics
-  // reporting.
-  DatabaseErrorReportingCallback on_get_error;
-  // Called when there is a error during the Write() call, which is called for
-  // Write(), Put() and Delete(). Intended for metrics reporting.
-  DatabaseErrorReportingCallback on_write_error;
 };
 
 LEVELDB_EXPORT const char* MethodIDToString(MethodID method);

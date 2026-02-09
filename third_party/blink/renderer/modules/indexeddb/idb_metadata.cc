@@ -65,7 +65,6 @@ void IDBDatabaseMetadata::CopyFrom(const IDBDatabaseMetadata& metadata) {
   name = metadata.name;
   version = metadata.version;
   max_object_store_id = metadata.max_object_store_id;
-  was_cold_open = metadata.was_cold_open;
   is_sqlite = metadata.is_sqlite;
 }
 

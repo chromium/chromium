@@ -109,7 +109,6 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
   int64_t version = kNoVersion;
   int64_t max_object_store_id = 0;
   HashMap<int64_t, scoped_refptr<IDBObjectStoreMetadata>> object_stores;
-  bool was_cold_open = true;
   bool is_sqlite = false;
 };
 

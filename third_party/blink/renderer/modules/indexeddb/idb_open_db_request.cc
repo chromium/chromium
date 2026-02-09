@@ -29,7 +29,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -52,8 +51,7 @@ IDBOpenDBRequest::IDBOpenDBRequest(
       callbacks_receiver_(std::move(callbacks_receiver)),
       transaction_remote_(std::move(transaction_remote)),
       transaction_id_(transaction_id),
-      version_(version),
-      start_time_(base::Time::Now()) {
+      version_(version) {
   DCHECK(!ResultAsAny());
 }
 
@@ -226,25 +224,6 @@ DispatchEventResult IDBOpenDBRequest::DispatchEventInternal(Event& event) {
     SendError(MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                                  "The connection was closed."));
     return DispatchEventResult::kCanceledBeforeDispatch;
-  }
-
-  if (!open_time_recorded_ &&
-      (event.type() == event_type_names::kSuccess ||
-       event.type() == event_type_names::kUpgradeneeded) &&
-      ResultAsAny()->GetType() == IDBAny::kIDBDatabaseType) {
-    // Note: The result type is checked because this request type is also used
-    // for calls to DeleteDatabase, which sets the result to undefined (see
-    // SendResult(int64_t) above).
-    open_time_recorded_ = true;
-    IDBDatabase* idb_database = ResultAsAny()->IdbDatabase();
-    base::TimeDelta time_diff = base::Time::Now() - start_time_;
-    if (idb_database->Metadata().was_cold_open) {
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.OpenTime.Cold",
-                                            time_diff);
-    } else {
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.OpenTime.Warm",
-                                            time_diff);
-    }
   }
 
   return IDBRequest::DispatchEventInternal(event);
