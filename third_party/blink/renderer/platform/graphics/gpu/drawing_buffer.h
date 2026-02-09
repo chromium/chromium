@@ -708,6 +708,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // DisallowChromiumImage in the case of OffscreenCanvas.
   ChromiumImageUsage chromium_image_usage_;
   bool ShouldUseChromiumImage();
+  bool IsSharedImageFormatMappable(viz::SharedImageFormat format);
 
   bool opengl_flip_y_extension_;
 

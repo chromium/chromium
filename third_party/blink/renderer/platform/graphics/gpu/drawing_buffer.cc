@@ -2022,8 +2022,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-      if (ContextProvider()->GetCapabilities().mappable_formats.contains(
-              color_buffer_format_)) {
+      if (IsSharedImageFormatMappable(color_buffer_format_)) {
         usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
         if (low_latency_enabled()) {
           usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -2180,6 +2179,32 @@ bool DrawingBuffer::ShouldUseChromiumImage() {
   }
   return low_latency_enabled() &&
          base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
+}
+
+bool DrawingBuffer::IsSharedImageFormatMappable(viz::SharedImageFormat format) {
+  const auto& caps = ContextProvider()->GetCapabilities();
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return true;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return !caps.disable_mac_swangle_rgbx;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return caps.texture_format_bgra8888;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return caps.texture_format_bgra8888 && !caps.disable_mac_swangle_rgbx;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+#if BUILDFLAG(IS_MAC)
+    return true;
+#else
+    return caps.texture_half_float_linear &&
+           !ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
+               gpu::DISABLE_HALF_FLOAT_FOR_GMB);
+#endif
+  }
+  return false;
 }
 
 }  // namespace blink
