@@ -119,6 +119,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
@@ -2455,9 +2456,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          kIOSTipsNotificationsAlternativeStrings,
          kTipsNotificationsAlternativeStringVariation,
          "IOSTipsNotificationsAlternativeStrings")},
-    {"variations-seed-corpus", flag_descriptions::kVariationsSeedCorpusName,
-     flag_descriptions::kVariationsSeedCorpusDescription, flags_ui::kOsIos,
-     STRING_VALUE_TYPE(variations::switches::kVariationsSeedCorpus, "")},
+    {"variations-experimental-corpus",
+     flag_descriptions::kVariationsExperimentalCorpusName,
+     flag_descriptions::kVariationsExperimentalCorpusDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVariationsExperimentalCorpus)},
+    {"variations-restrict-dogfood",
+     flag_descriptions::kVariationsRestrictDogfoodName,
+     flag_descriptions::kVariationsRestrictDogfoodDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kVariationsRestrictDogfood)},
     {"zero-state-suggestions", flag_descriptions::kZeroStateSuggestionsName,
      flag_descriptions::kZeroStateSuggestionsDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kZeroStateSuggestions,

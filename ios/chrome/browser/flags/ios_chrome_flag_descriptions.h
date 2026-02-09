@@ -981,8 +981,11 @@ extern const char kUseFeedEligibilityServiceDescription[];
 extern const char kUseSceneViewControllerName[];
 extern const char kUseSceneViewControllerDescription[];
 
-extern const char kVariationsSeedCorpusName[];
-extern const char kVariationsSeedCorpusDescription[];
+extern const char kVariationsExperimentalCorpusName[];
+extern const char kVariationsExperimentalCorpusDescription[];
+
+extern const char kVariationsRestrictDogfoodName[];
+extern const char kVariationsRestrictDogfoodDescription[];
 
 extern const char kViewCertificateInformationName[];
 extern const char kViewCertificateInformationDescription[];

@@ -7,6 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/feature_list.h"
+
+BASE_DECLARE_FEATURE(kVariationsExperimentalCorpus);
+BASE_DECLARE_FEATURE(kVariationsRestrictDogfood);
+
 // Protocol for variations seed fetcher that reacts to variations seed fetch
 // stages.
 @protocol IOSChromeVariationsSeedFetcherDelegate

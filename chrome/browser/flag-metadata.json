@@ -9510,11 +9510,25 @@
     "expiry_milestone": 145
   },
   {
+    "name": "variations-experimental-corpus",
+    "owners": [ "//components/variations/OWNERS" ],
+    // This is used by testers to manually test changes to the variations seed
+    // infrastructure.
+    "expiry_milestone": 150
+  },
+  {
+    "name": "variations-restrict-dogfood",
+    "owners": [ "//components/variations/OWNERS" ],
+    // This is used by testers to manually test changes to the variations seed
+    // infrastructure.
+    "expiry_milestone": 150
+  },
+  {
     "name": "variations-seed-corpus",
     "owners": [ "//components/variations/OWNERS" ],
     // This is used by testers to manually test changes to the variations seed
     // infrastructure.
-    "expiry_milestone": -1
+    "expiry_milestone": 150
   },
   {
     "name": "vc-background-replace",

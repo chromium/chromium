@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/escape.h"
@@ -50,6 +51,9 @@ std::string GetEscapedValue(std::string_view value) {
 
 }  // namespace
 
+BASE_FEATURE(kVariationsExperimentalCorpus, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
+
 @implementation IOSChromeVariationsSeedFetcher {
   // Whether the current binary should fetch Finch seed for experiment purpose.
   // Accessed on the main thread.
@@ -61,10 +65,6 @@ std::string GetEscapedValue(std::string_view value) {
   // The forced channel string retrieved from the command line. Accessed on the
   // main thread.
   std::string _forcedChannel;
-
-  // The fored variations seed corpus retrieved from the command line. Accessed
-  // on the main thread.
-  std::string _forcedCorpus;
 
   // The timestamp when the current seed request starts. This is used for metric
   // reporting, and will be reset to null value when the request finishes.
@@ -89,8 +89,6 @@ std::string GetEscapedValue(std::string_view value) {
         base::StrCat({"--", variations::switches::kVariationsServerURL, "="});
     std::string channel_switch =
         base::StrCat({"--", variations::switches::kFakeVariationsChannel, "="});
-    std::string corpus_switch =
-        base::StrCat({"--", variations::switches::kVariationsSeedCorpus, "="});
     for (NSString* a in arguments) {
       std::string arg_string = base::SysNSStringToUTF8(a);
 
@@ -104,8 +102,6 @@ std::string GetEscapedValue(std::string_view value) {
         }
       } else if (base::StartsWith(arg, channel_switch)) {
         _forcedChannel = GetEscapedValue(arg.substr(channel_switch.size()));
-      } else if (base::StartsWith(arg, corpus_switch)) {
-        _forcedCorpus = GetEscapedValue(arg.substr(corpus_switch.size()));
       }
     }
   }
@@ -165,8 +161,11 @@ std::string GetEscapedValue(std::string_view value) {
   if (!channel.empty()) {
     base::StrAppend(&url, {"&channel=", channel});
   }
-  if (!_forcedCorpus.empty()) {
-    base::StrAppend(&url, {"&corpus=", _forcedCorpus});
+  if (base::FeatureList::IsEnabled(kVariationsExperimentalCorpus)) {
+    base::StrAppend(&url, {"&corpus=experimental"});
+  }
+  if (base::FeatureList::IsEnabled(kVariationsRestrictDogfood)) {
+    base::StrAppend(&url, {"&restrict=dogfood"});
   }
 
   return [NSURL URLWithString:base::SysUTF8ToNSString(url)];

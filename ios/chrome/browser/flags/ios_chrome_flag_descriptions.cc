@@ -1622,10 +1622,15 @@ const char kUseSceneViewControllerName[] = "Use Scene View Controller";
 const char kUseSceneViewControllerDescription[] =
     "Enables the use of SceneViewController.";
 
-const char kVariationsSeedCorpusName[] = "Variations seed corpus";
-const char kVariationsSeedCorpusDescription[] =
-    "The value of the 'corpus' parameter in the variations seed request. "
-    "If unspecified, the 'corpus' parameter is omitted from the request.";
+const char kVariationsExperimentalCorpusName[] =
+    "Variations experimental corpus";
+const char kVariationsExperimentalCorpusDescription[] =
+    "When enabled, request the experimental variations seed from the "
+    "variations server.";
+
+const char kVariationsRestrictDogfoodName[] = "Variations restrict dogfood";
+const char kVariationsRestrictDogfoodDescription[] =
+    "When enabled, request dogfood variations from the variations server.";
 
 const char kViewCertificateInformationName[] = "View Certificate Information";
 const char kViewCertificateInformationDescription[] =
