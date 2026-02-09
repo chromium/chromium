@@ -17420,6 +17420,24 @@
             ]
         }
     ],
+    "ModelBasedPageClassification": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "execution_rate": "1"
+                    },
+                    "enable_features": [
+                        "ModelBasedPageClassification"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoChannelAssociatedSendUsesRunOrPostTask": [
         {
             "platforms": [

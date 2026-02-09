@@ -6524,6 +6524,14 @@
     "expiry_milestone": 148
   },
   {
+    "name": "model-based-page-classification",
+    "owners": [
+      "amarjotgill@chromium.org",
+      "bling-ai-foundations@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "mojo-use-eventfd",
     "owners": ["bgeffon@chromium.org", "pasko@chromium.org"],
     "expiry_milestone": 150

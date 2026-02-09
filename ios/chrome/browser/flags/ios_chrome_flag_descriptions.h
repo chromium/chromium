@@ -648,6 +648,9 @@ extern const char kMobilePromoOnDesktopDescription[];
 extern const char kMobilePromoOnDesktopRecordActiveDaysName[];
 extern const char kMobilePromoOnDesktopRecordActiveDaysDescription[];
 
+extern const char kModelBasedPageClassificationName[];
+extern const char kModelBasedPageClassificationDescription[];
+
 extern const char kMostVisitedTilesCustomizationName[];
 extern const char kMostVisitedTilesCustomizationDescription[];
 

@@ -1323,6 +1323,30 @@ const FeatureEntry::FeatureVariation kIOSExpandedSetupListVariations[] = {
      kIOSExpandedSetupListAll, nullptr},
     {"Safari Data Import, Home Background Customization, CPE",
      kIOSExpandedSetupListAll, nullptr}};
+
+const FeatureEntry::FeatureParam kModelBasedPageClassificationParam1[] = {
+    {kModelBasedPageClassificationExecutionRateParam, "1"}};
+const FeatureEntry::FeatureParam kModelBasedPageClassificationParam10[] = {
+    {kModelBasedPageClassificationExecutionRateParam, "10"}};
+const FeatureEntry::FeatureParam kModelBasedPageClassificationParam25[] = {
+    {kModelBasedPageClassificationExecutionRateParam, "25"}};
+const FeatureEntry::FeatureParam kModelBasedPageClassificationParam50[] = {
+    {kModelBasedPageClassificationExecutionRateParam, "50"}};
+const FeatureEntry::FeatureParam kModelBasedPageClassificationParam75[] = {
+    {kModelBasedPageClassificationExecutionRateParam, "75"}};
+const FeatureEntry::FeatureParam kModelBasedPageClassificationParam100[] = {
+    {kModelBasedPageClassificationExecutionRateParam, "100"}};
+
+const FeatureEntry::FeatureVariation kModelBasedPageClassificationVariations[] =
+    {
+        {"(1%)", kModelBasedPageClassificationParam1, nullptr},
+        {"(10%)", kModelBasedPageClassificationParam10, nullptr},
+        {"(25%)", kModelBasedPageClassificationParam25, nullptr},
+        {"(50%)", kModelBasedPageClassificationParam50, nullptr},
+        {"(75%)", kModelBasedPageClassificationParam75, nullptr},
+        {"(100%)", kModelBasedPageClassificationParam100, nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2675,6 +2699,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kSmoothScrollingUseDelegateDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kSmoothScrollingUseDelegate)},
+    {"model-based-page-classification",
+     flag_descriptions::kModelBasedPageClassificationName,
+     flag_descriptions::kModelBasedPageClassificationDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kModelBasedPageClassification,
+                                    kModelBasedPageClassificationVariations,
+                                    "ModelBasedPageClassification")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

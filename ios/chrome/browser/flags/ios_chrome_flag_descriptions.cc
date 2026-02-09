@@ -1059,6 +1059,11 @@ const char kMobilePromoOnDesktopRecordActiveDaysDescription[] =
     "When enabled, records the user's number of active days for the mobile "
     "promo on desktop.";
 
+const char kModelBasedPageClassificationName[] =
+    "Model Based Page Classification";
+const char kModelBasedPageClassificationDescription[] =
+    "Enables the model based page classification.";
+
 const char kMostVisitedTilesCustomizationName[] =
     "Most Visited Tiles Customization on iOS";
 const char kMostVisitedTilesCustomizationDescription[] =
