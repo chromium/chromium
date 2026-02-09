@@ -14404,6 +14404,21 @@
             ]
         }
     ],
+    "IOSDownloadSanitizeFilename": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDownloadSanitizeFilename"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEnablePasswordManagerTrustedVaultWidget": [
         {
             "platforms": [
@@ -30549,21 +30564,6 @@
                     "name": "Disabled",
                     "enable_features": [
                         "CredentialProviderPerformanceImprovements"
-                    ]
-                }
-            ]
-        }
-    ],
-    "kIOSDownloadSanitizeFilename": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kIOSDownloadSanitizeFilename"
                     ]
                 }
             ]
