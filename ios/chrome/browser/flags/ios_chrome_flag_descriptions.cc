@@ -1499,6 +1499,12 @@ const char kSmartTabGroupingDescription[] =
     "When enabled, users will have access to use the smart tab grouping "
     "feature in the tab grid.";
 
+const char kSmoothScrollingUseDelegateName[] =
+    "Fullscreen Smooth Scrolling No Broadcaster";
+const char kSmoothScrollingUseDelegateDescription[] =
+    "When enabled, the SmoothScrollingDefault experiment uses the regular "
+    "UIScrollViewDelegate instead of KVO and broadcasting.";
+
 const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 const char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";

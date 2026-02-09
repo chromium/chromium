@@ -313,7 +313,7 @@ static int gAnyContext = 0;
 #pragma mark -
 
 + (NSArray*)scrollViewObserverKeyPaths {
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
     return @[ @"frame", @"contentSize", @"contentInset" ];
   } else {
     return @[ @"contentSize" ];
@@ -376,7 +376,7 @@ static int gAnyContext = 0;
                         change:(NSDictionary*)change
                        context:(void*)context {
   DCHECK_EQ(object, self.underlyingScrollView);
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
     if ([keyPath isEqualToString:@"frame"]) {
       [_observers webViewScrollViewFrameDidChange:self];
     }
@@ -385,7 +385,7 @@ static int gAnyContext = 0;
     }
   }
   if ([keyPath isEqualToString:@"contentSize"]) {
-    if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    if (!web::features::ShouldUseBroadcasterForSmoothScrolling()) {
       NSValue* oldValue =
           base::apple::ObjCCast<NSValue>(change[NSKeyValueChangeOldKey]);
       NSValue* newValue =

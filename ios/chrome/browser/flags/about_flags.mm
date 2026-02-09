@@ -2664,6 +2664,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiResponseViewDynamicResizingName,
      flag_descriptions::kGeminiResponseViewDynamicResizingDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiResponseViewDynamicResizing)},
+    {"fs-no-broadcast-experiment",
+     flag_descriptions::kSmoothScrollingUseDelegateName,
+     flag_descriptions::kSmoothScrollingUseDelegateDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kSmoothScrollingUseDelegate)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

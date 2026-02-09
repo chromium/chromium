@@ -4905,6 +4905,11 @@
     "expiry_milestone": 147
   },
   {
+    "name": "fs-no-broadcast-experiment",
+    "owners": [ "alionadangla@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "fullscreen-scroll-threshold",
     "owners": [ "scottyoder@google.com", "alionadangla@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 145

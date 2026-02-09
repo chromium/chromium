@@ -907,6 +907,9 @@ extern const char kSkipDefaultBrowserPromoInFirstRunDescription[];
 extern const char kSmartTabGroupingName[];
 extern const char kSmartTabGroupingDescription[];
 
+extern const char kSmoothScrollingUseDelegateName[];
+extern const char kSmoothScrollingUseDelegateDescription[];
+
 extern const char kStrokesAPIEnabledName[];
 extern const char kStrokesAPIEnabledDescription[];
 

@@ -49,6 +49,13 @@ BASE_FEATURE(kSmoothScrollingDefault,
 #endif
 );
 
+BASE_FEATURE(kSmoothScrollingUseDelegate, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldUseBroadcasterForSmoothScrolling() {
+  return base::FeatureList::IsEnabled(kSmoothScrollingDefault) &&
+         !base::FeatureList::IsEnabled(kSmoothScrollingUseDelegate);
+}
+
 BASE_FEATURE(kFullscreenScrollThreshold, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature will always be disabled and will only be enabled by tests.

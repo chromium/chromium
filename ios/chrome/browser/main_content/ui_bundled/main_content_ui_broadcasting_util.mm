@@ -14,7 +14,7 @@ void StartBroadcastingMainContentUI(id<MainContentUI> main_content,
   [broadcaster broadcastValue:@"contentSize"
                      ofObject:main_content.mainContentUIState
                      selector:@selector(broadcastScrollViewContentSize:)];
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
     [broadcaster broadcastValue:@"scrollViewSize"
                        ofObject:main_content.mainContentUIState
                        selector:@selector(broadcastScrollViewSize:)];
@@ -39,7 +39,7 @@ void StartBroadcastingMainContentUI(id<MainContentUI> main_content,
 void StopBroadcastingMainContentUI(ChromeBroadcaster* broadcaster) {
   [broadcaster
       stopBroadcastingForSelector:@selector(broadcastScrollViewContentSize:)];
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
     [broadcaster
         stopBroadcastingForSelector:@selector(broadcastScrollViewSize:)];
     [broadcaster
