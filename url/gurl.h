@@ -69,8 +69,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // Constructor for URLs that have already been parsed and canonicalized. This
   // is used for conversions from KURL, for example. The caller must supply all
   // information associated with the URL, which must be correct and consistent.
-  GURL(const char* canonical_spec,
-       size_t canonical_spec_len,
+  GURL(std::string_view canonical_spec,
        const url::Parsed& parsed,
        bool is_valid);
   // Notice that we take the canonical_spec by value so that we can convert
@@ -461,6 +460,10 @@ class COMPONENT_EXPORT(URL) GURL {
 
   // Helper used by IsAboutBlank and IsAboutSrcdoc.
   bool IsAboutUrl(std::string_view allowed_path) const;
+
+  // Returns a view of the first `parsed_.Length()` characters of `spec_`.
+  // It's helpful to handle a filesystem URL.
+  std::string_view ParsedSpecView() const;
 
   // Returns the substring of the input identified by the given component.
   std::string ComponentString(const url::Component& comp) const {

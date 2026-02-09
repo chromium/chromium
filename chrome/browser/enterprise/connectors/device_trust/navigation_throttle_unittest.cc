@@ -384,7 +384,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, InvalidURL) {
   EnableDTCPolicy();
   SetShouldCollectConsent();
 
-  GURL invalid_url = GURL("https://www.invalid.com/", url::Parsed(), false);
+  GURL invalid_url =
+      GURL(std::string("https://www.invalid.com/"), url::Parsed(), false);
   content::MockNavigationHandle test_handle(invalid_url, main_frame());
   EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
       .Times(0);

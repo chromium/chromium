@@ -1062,7 +1062,7 @@ void KURL::WriteIntoTrace(perfetto::TracedValue context) const {
 
 KURL::operator GURL() const {
   StringUtf8Adaptor utf8(string_);
-  return GURL(utf8.data(), utf8.size(), parsed_, is_valid_);
+  return GURL(utf8.AsStringView(), parsed_, is_valid_);
 }
 bool operator==(const KURL& a, const KURL& b) {
   return a.GetString() == b.GetString();

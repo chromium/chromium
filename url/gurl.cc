@@ -55,13 +55,10 @@ GURL::GURL(const std::string& url_string, RetainWhiteSpaceSelector) {
   InitCanonical(url_string, false);
 }
 
-GURL::GURL(const char* canonical_spec,
-           size_t canonical_spec_len,
+GURL::GURL(std::string_view canonical_spec,
            const url::Parsed& parsed,
            bool is_valid)
-    : spec_(canonical_spec, canonical_spec_len),
-      is_valid_(is_valid),
-      parsed_(parsed) {
+    : spec_(canonical_spec), is_valid_(is_valid), parsed_(parsed) {
   InitializeFromCanonicalSpec();
 }
 
@@ -78,8 +75,8 @@ void GURL::InitCanonical(T input_spec, bool trim_path_end) {
 
   output.Complete();  // Must be done before using string.
   if (is_valid_ && SchemeIsFileSystem()) {
-    inner_url_ = std::make_unique<GURL>(spec_.data(), parsed_.Length(),
-                                        *parsed_.inner_parsed(), true);
+    inner_url_ =
+        std::make_unique<GURL>(ParsedSpecView(), *parsed_.inner_parsed(), true);
   }
   // Valid URLs always have non-empty specs.
   DCHECK(!is_valid_ || !spec_.empty());
@@ -87,8 +84,8 @@ void GURL::InitCanonical(T input_spec, bool trim_path_end) {
 
 void GURL::InitializeFromCanonicalSpec() {
   if (is_valid_ && SchemeIsFileSystem()) {
-    inner_url_ = std::make_unique<GURL>(spec_.data(), parsed_.Length(),
-                                        *parsed_.inner_parsed(), true);
+    inner_url_ =
+        std::make_unique<GURL>(ParsedSpecView(), *parsed_.inner_parsed(), true);
   }
 
 #if DCHECK_IS_ON()
@@ -180,9 +177,8 @@ GURL GURL::Resolve(std::string_view relative) const {
   output.Complete();
   result.is_valid_ = true;
   if (result.SchemeIsFileSystem()) {
-    result.inner_url_ =
-        std::make_unique<GURL>(result.spec_.data(), result.parsed_.Length(),
-                               *result.parsed_.inner_parsed(), true);
+    result.inner_url_ = std::make_unique<GURL>(
+        result.ParsedSpecView(), *result.parsed_.inner_parsed(), true);
   }
   return result;
 }
@@ -204,9 +200,8 @@ GURL GURL::Resolve(std::u16string_view relative) const {
   output.Complete();
   result.is_valid_ = true;
   if (result.SchemeIsFileSystem()) {
-    result.inner_url_ =
-        std::make_unique<GURL>(result.spec_.data(), result.parsed_.Length(),
-                               *result.parsed_.inner_parsed(), true);
+    result.inner_url_ = std::make_unique<GURL>(
+        result.ParsedSpecView(), *result.parsed_.inner_parsed(), true);
   }
   return result;
 }
@@ -252,8 +247,8 @@ void GURL::ProcessFileSystemURLAfterReplaceComponents() {
   if (!is_valid_)
     return;
   if (SchemeIsFileSystem()) {
-    inner_url_ = std::make_unique<GURL>(spec_.data(), parsed_.Length(),
-                                        *parsed_.inner_parsed(), true);
+    inner_url_ =
+        std::make_unique<GURL>(ParsedSpecView(), *parsed_.inner_parsed(), true);
   }
 }
 
@@ -496,6 +491,10 @@ bool GURL::IsAboutPath(std::string_view actual_path,
          (actual_path.size() == allowed_path.size() + 1 &&
           actual_path.back() == '/' &&
           base::StartsWith(actual_path, allowed_path));
+}
+
+std::string_view GURL::ParsedSpecView() const {
+  return std::string_view(spec_).substr(0, parsed_.Length());
 }
 
 void GURL::WriteIntoTrace(perfetto::TracedValue context) const {
