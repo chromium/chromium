@@ -6,12 +6,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {GlicInternalsAppElement} from './glic_internals_app.js';
 
-function tdForBoolean(value: boolean) {
-  return html`<td class="status-${value}">
-    ${value ? '✅' : '🚫'}
-  </td>`;
-}
-
 export function getHtml(this: GlicInternalsAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
@@ -23,44 +17,14 @@ export function getHtml(this: GlicInternalsAppElement) {
           <th>Property</th>
           <th>Value</th>
         </tr>
-        <tr>
-          <td>Enabled by Chrome Flags</td>
-          ${tdForBoolean(!this.data_.enablement.featureDisabled)}
-        </tr>
-        <tr>
-          <td>Regular profile</td>
-          ${tdForBoolean(!this.data_.enablement.notRegularProfile)}
-        </tr>
-        <tr>
-          <td>Pref or flag based rollout (flag or pref) applies</td>
-          ${tdForBoolean(!this.data_.enablement.notRolledOut)}
-        </tr>
-        <tr>
-          <td>Account exists and has the Gemini in Chrome capability</td>
-          ${tdForBoolean(!this.data_.enablement.primaryAccountNotCapable)}
-        </tr>
-        <tr>
-          <td>Account exists and is fully signed-in</td>
-          ${tdForBoolean(!this.data_.enablement.primaryAccountNotFullySignedIn)}
-        </tr>
-        <tr>
-          <td>
-            Chrome Enterprise policy allows this feature (or doesn't apply)
-          </td>
-          ${tdForBoolean(!this.data_.enablement.disallowedByChromePolicy)}
-        </tr>
-        <tr>
-          <td>Server side admin allows this feature</td>
-          ${tdForBoolean(!this.data_.enablement.disallowedByRemoteAdmin)}
-        </tr>
-        <tr>
-          <td>Server side allows this feature (Not admin policy)</td>
-          ${tdForBoolean(!this.data_.enablement.disallowedByRemoteOther)}
-        </tr>
-        <tr>
-          <td>User did pass the FRE</td>
-          ${tdForBoolean(!this.data_.enablement.notConsented)}
-        </tr>
+        ${this.getTableData_().map(item => html`
+          <tr>
+            <td>${item.label}</td>
+            <td class="status-${item.value}">
+              ${item.value ? '✅' : '🚫'}
+            </td>
+          </tr>
+        `)}
       </table>` :
       html`<h3 id="loadingMsg">Loading...</h3>`}
     <h2>Sub-features</h2>
@@ -72,7 +36,9 @@ export function getHtml(this: GlicInternalsAppElement) {
         </tr>
         <tr>
           <td>Account is eligible for Live</td>
-          ${tdForBoolean(!this.data_.enablement.liveDisallowed)}
+          <td class="status-${!this.data_.enablement.liveDisallowed}">
+            ${!this.data_.enablement.liveDisallowed ? '✅' : '🚫'}
+          </td>
         </tr>
         <tr>
           <td>Actuation eligibility</td>

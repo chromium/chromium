@@ -97,6 +97,52 @@ export class GlicInternalsAppElement extends CrLitElement {
         return 'unknown';
     }
   }
+
+  protected getTableData_(): Array<{label: string, value: boolean}> {
+    if (!this.data_ || !this.data_.enablement) {
+      return [];
+    }
+
+    return [
+      {
+        label: 'Enabled by Chrome Flags',
+        value: !this.data_.enablement.featureDisabled,
+      },
+      {
+        label: 'Regular profile',
+        value: !this.data_.enablement.notRegularProfile,
+      },
+      {
+        label: 'Pref or flag based rollout (flag or pref) applies',
+        value: !this.data_.enablement.notRolledOut,
+      },
+      {
+        label: 'Account exists and has the Gemini in Chrome capability',
+        value: !this.data_.enablement.primaryAccountNotCapable,
+      },
+      {
+        label: 'Account exists and is fully signed-in',
+        value: !this.data_.enablement.primaryAccountNotFullySignedIn,
+      },
+      {
+        label:
+            'Chrome Enterprise policy allows this feature (or doesn\'t apply)',
+        value: !this.data_.enablement.disallowedByChromePolicy,
+      },
+      {
+        label: 'Server side admin allows this feature',
+        value: !this.data_.enablement.disallowedByRemoteAdmin,
+      },
+      {
+        label: 'Server side allows this feature (Not admin policy)',
+        value: !this.data_.enablement.disallowedByRemoteOther,
+      },
+      {
+        label: 'User did pass the FRE',
+        value: !this.data_.enablement.notConsented,
+      },
+    ];
+  }
 }
 
 declare global {
