@@ -30,7 +30,7 @@ TEST_F(AndroidBnplStrategyTest, GetNextActionOnSuggestionShown) {
 TEST_F(AndroidBnplStrategyTest, GetNextActionOnBnplSuggestionAcceptance) {
   EXPECT_EQ(android_bnpl_strategy_.GetNextActionOnBnplSuggestionAcceptance(),
             BnplStrategy::BnplSuggestionAcceptedNextAction::
-                kCheckAmountExtractionBeforeContinuingFlow);
+                kCheckAmountExtractionBeforeContinuingFlowForAndroid);
 }
 
 // Verify that GetNextActionOnAmountExtractionReturned() returns the correct

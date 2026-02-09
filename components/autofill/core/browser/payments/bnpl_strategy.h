@@ -33,14 +33,14 @@ class BnplStrategy {
   // which action to return based on the platform.
   enum class BnplSuggestionAcceptedNextAction {
     // The flow should show the Select BNPL Issuer UI.
-    kShowSelectBnplIssuerUi = 0,
+    kShowSelectBnplIssuerUiForDesktop = 0,
 
     // The flow should check if amount extraction has finished extracting the
     // checkout amount from the webpage. If complete, show the BNPL selection
     // screen. Otherwise, show the progress screen.
-    kCheckAmountExtractionBeforeContinuingFlow = 1,
+    kCheckAmountExtractionBeforeContinuingFlowForAndroid = 1,
 
-    kMaxValue = kCheckAmountExtractionBeforeContinuingFlow,
+    kMaxValue = kCheckAmountExtractionBeforeContinuingFlowForAndroid,
   };
 
   // Defines the next step that the BnplManager should take after amount

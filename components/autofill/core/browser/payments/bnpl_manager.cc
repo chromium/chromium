@@ -124,7 +124,7 @@ void BnplManager::OnDidAcceptBnplSuggestion(
   switch (payments_autofill_client()
               .GetBnplStrategy()
               ->GetNextActionOnBnplSuggestionAcceptance()) {
-    case kShowSelectBnplIssuerUi: {
+    case kShowSelectBnplIssuerUiForDesktop: {
       CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
           .ShowSelectBnplIssuerUi(
               GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
@@ -151,7 +151,7 @@ void BnplManager::OnDidAcceptBnplSuggestion(
       }
       break;
     }
-    case kCheckAmountExtractionBeforeContinuingFlow: {
+    case kCheckAmountExtractionBeforeContinuingFlowForAndroid: {
       // Shows the issuer selection screen when amount extraction returns a
       // valid amount.
       if (ongoing_flow_state_->final_checkout_amount.has_value()) {

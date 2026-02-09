@@ -18,7 +18,7 @@ DesktopBnplStrategy::GetNextActionOnSuggestionShown() {
 
 BnplStrategy::BnplSuggestionAcceptedNextAction
 DesktopBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
-  return BnplSuggestionAcceptedNextAction::kShowSelectBnplIssuerUi;
+  return BnplSuggestionAcceptedNextAction::kShowSelectBnplIssuerUiForDesktop;
 }
 
 BnplStrategy::BnplAmountExtractionReturnedNextAction

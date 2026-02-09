@@ -30,7 +30,7 @@ TEST_F(DesktopBnplStrategyTest, GetNextActionOnSuggestionShown) {
 TEST_F(DesktopBnplStrategyTest, GetNextActionOnBnplSuggestionAcceptance) {
   EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnBnplSuggestionAcceptance(),
             BnplStrategy::BnplSuggestionAcceptedNextAction::
-                kShowSelectBnplIssuerUi);
+                kShowSelectBnplIssuerUiForDesktop);
 }
 
 // Verify that GetNextActionOnAmountExtractionReturned() returns the correct

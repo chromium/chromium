@@ -19,7 +19,7 @@ AndroidBnplStrategy::GetNextActionOnSuggestionShown() {
 BnplStrategy::BnplSuggestionAcceptedNextAction
 AndroidBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
   return BnplSuggestionAcceptedNextAction::
-      kCheckAmountExtractionBeforeContinuingFlow;
+      kCheckAmountExtractionBeforeContinuingFlowForAndroid;
 }
 
 BnplStrategy::BnplAmountExtractionReturnedNextAction
