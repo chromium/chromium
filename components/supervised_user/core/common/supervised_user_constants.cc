@@ -121,8 +121,6 @@ const char kSkipParentApprovalToInstallExtensionsHistogramName[] =
 const char kSupervisedUserURLFilteringResultHistogramName[] =
     "ManagedUsers.FilteringResult";
 
-const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
-    "ManagedUsers.TopLevelFilteringResult";
 const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[] =
     "ManagedUsers.TopLevelFilteringResult2";
 

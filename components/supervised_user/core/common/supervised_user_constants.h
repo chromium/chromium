@@ -213,9 +213,6 @@ extern const char kSkipParentApprovalToInstallExtensionsHistogramName[];
 // transition.
 extern const char kSupervisedUserURLFilteringResultHistogramName[];
 
-// Histogram name to log top level URL filtering results with reason for filter
-extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
-
 // Histogram name to log top level URL filtering results with reason for filter,
 // for use in the navigation throttle context.
 extern const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[];

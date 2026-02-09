@@ -83,13 +83,6 @@ void WrappedCallbackWithMetrics(WebFilteringResult::Callback callback,
                                 WebFilteringResult result) {
   std::move(callback).Run(result);
 
-  // Legacy recording only in original throttle context
-  if (options.filtering_context == FilteringContext::kNavigationThrottle) {
-    base::UmaHistogramSparse(
-        kSupervisedUserTopLevelURLFilteringResultHistogramName,
-        static_cast<int>(result.ToTopLevelResult()));
-  }
-
   // Recorded only when transition type is specified.
   if (options.transition_type.has_value()) {
     int value = GetHistogramValueForFilteringBehavior(result) *

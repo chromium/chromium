@@ -769,7 +769,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     The counts of results from supervised user URL filtering. Each entry
     includes the outcome of the filter (i.e. allowed, blocked, or unknown) and
     the page transition type (how the user got there, e.g. typed URL, clicked
-    link). For a more general metric see ManagedUsers.TopLevelFilteringResult
+    link). For a more general metric see ManagedUsers.TopLevelFilteringResult2.
   </summary>
 </histogram>
 
@@ -780,23 +780,6 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The counts of request for permission sent from main frame or sub-frame.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.TopLevelFilteringResult"
-    enum="SupervisedUserFilterTopLevelResult" expires_after="2026-07-12">
-  <owner>fernandex@chromium.org</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Records counts of results from supervised user URL filtering. Each entry
-    includes the outcome of the filter (allowed or blocked). If outcome is
-    blocked reason for the block (e.g. SafeSites, Blocklist) is also recorded.
-    For more granular information see ManagedUsers.FilteringResult.
-
-    Do not extend the histogram once it expires. Use
-    ManagedUsers.TopLevelFilteringResult2.NavigationThrottle instead, which has
-    the same semantics. ManagedUsers.TopLevelFilteringResult2 is a new metric
-    that replaces this one with broader information.
   </summary>
 </histogram>
 
