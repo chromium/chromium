@@ -7222,13 +7222,6 @@ Nếu bạn không đặt chính sách này hoặc đặt chính sách này thà
 <translation id="5746149754419996562">Cho phép Tiện ích xem nhanh hiện diện trên <ph name="PRODUCT_OS_NAME" />. Cụ thể, người dùng sẽ có thể truy cập các tiện ích này qua khối ngày trên kệ.
 Khi bạn bật chính sách này, Tiện ích xem nhanh sẽ bật trên <ph name="PRODUCT_OS_NAME" />.
 Khi bạn tắt hoặc không đặt chính sách này, Tiện ích xem nhanh sẽ không bật trên <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="5747628966013559697">Thiết lập cách <ph name="PRODUCT_NAME" /> tải mô hình AI tạo sinh nền tảng xuống và dùng mô hình đó để suy luận cục bộ.
-
-Khi bạn không đặt chính sách này hoặc đặt chính sách này thành Allowed (Cho phép) (0), mô hình sẽ tự động được tải xuống và dùng để suy luận.
-
-Khi bạn đặt chính sách này thành Disabled (Tắt) (1), mô hình sẽ không được tải xuống.
-
-Trên nền tảng máy tính, bạn cũng có thể tắt tính năng tải mô hình xuống bằng chính sách <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5749396052108288586">Chính sách này không còn dùng nữa. Thay vào đó, vui lòng sử dụng <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Bật phím tắt của tính năng hỗ trợ tiếp cận trên màn hình đăng nhập</translation>
 <translation id="5755002458331714762"> Các API Thành phần web phiên bản 0 (Shadow DOM v0, Custom Elements v0 và HTML Imports) đã ngừng hoạt động vào năm 2018 và bị tắt theo mặc định kể từ M80. Theo chính sách này, bạn có thể lựa chọn (các) tính năng nào trong số này sẽ bật lại cho đến M84.

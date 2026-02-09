@@ -7387,13 +7387,6 @@ Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, log tingkat aplikasi 
 <translation id="5746149754419996562">Mengaktifkan kehadiran widget Sekilas Info pada <ph name="PRODUCT_OS_NAME" />. Secara khusus, widget dapat diakses melalui chip tanggal di rak.
 Jika kebijakan ini disetel ke aktif, widget Sekilas Info akan diaktifkan di <ph name="PRODUCT_OS_NAME" />.
 Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info tidak akan diaktifkan di <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="5747628966013559697">Mengonfigurasi cara <ph name="PRODUCT_NAME" /> mendownload model AI Generatif dasar dan menggunakannya untuk inferensi secara lokal.
-
-Jika kebijakan disetel ke Diizinkan (0) atau tidak disetel, model akan otomatis didownload dan digunakan untuk inferensi.
-
-Jika kebijakan disetel ke Nonaktif (1), model tidak akan didownload.
-
-Di platform desktop, download model juga dapat dinonaktifkan oleh <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5749396052108288586">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Mengaktifkan pintasan fitur aksesibilitas di layar login</translation>
 <translation id="5755002458331714762"> Web Components v0 API (Shadow DOM v0, Custom Elements v0, dan HTML Imports) sudah tidak digunakan lagi pada tahun 2018, dan telah dinonaktifkan secara default mulai dari M80. Kebijakan ini akan memungkinkan fitur ini diaktifkan ulang secara selektif hingga M84.

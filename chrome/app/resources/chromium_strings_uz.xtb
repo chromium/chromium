@@ -100,6 +100,7 @@
 <translation id="2126108037660393668">Yuklab olingan fayl tekshirilmadi.</translation>
 <translation id="2137162749895930932">Tarjima rejimini yopish</translation>
 <translation id="215352261310130060">Chromium bu yuklamani blokladi, chunki sayt xavfsiz ulanishdan foydalanmayapti va fayl oʻzgartirilgan boʻlishi mumkin.</translation>
+<translation id="2170098639895543546">Sahifadagi istalgan elementni tanlang</translation>
 <translation id="2174178932569897599">Chromiumni moslash</translation>
 <translation id="2174917724755363426">Oʻrnatish yakunlanmadi. Haqiqatan ham bekor qilmoqchimisiz?</translation>
 <translation id="2185166961232948079">Chromium - Tarmoqqa kirish - <ph name="PAGE_TITLE" /></translation>
@@ -707,7 +708,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="897581876605952338">Chromium Enterprise logotipi</translation>
 <translation id="8981150672034878610">Profilingizni ochishda nimadir xato ketgani uchun Chromium ishga tushmadi. Chromiumni qayta ishga tushirish.</translation>
 <translation id="8988036198400390003">Chromium profillarini boshqaring</translation>
-<translation id="9003988359820989654">Kompyuter ishga tushganda Chromium ochilsin</translation>
 <translation id="9019929317751753759">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
 <translation id="904366664621834601">Chromium bu yuklanmani blokladi, chunki bu arxivda zararli dastur yashirilgan boʻlishi mumkin</translation>
 <translation id="9062666675513499497">Boshqa Google xizmatlariga kirilganda Chromium hisobiga kirilsin</translation>

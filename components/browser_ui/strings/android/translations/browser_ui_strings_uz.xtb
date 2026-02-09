@@ -20,6 +20,7 @@
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> saytiga joylangan</translation>
 <translation id="1263609676484797429">“Ilovalar  &gt; Birlamchi ilovalar” bandini tanlang</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
+<translation id="1275718070701477396">Tanlandi</translation>
 <translation id="1289742167380433257">Trafikni tejash maqsadida sahifadagi rasmlar Google tomonidan takomillashtirildi.</translation>
 <translation id="129382876167171263">Saytlardan saqlangan fayllar shu yerda chiqadi</translation>
 <translation id="131112695174432497">Reklamani moslashtirishga aloqador axborot oʻchirildi</translation>
@@ -292,6 +293,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3903738175795615004">Butun ekrandan chiqish uchun tepadan pastga torting yoki Esc tugmasini bosing.</translation>
 <translation id="3905475044299942653">Koʻp bildirishnomalar kelishini toʻxtatadi</translation>
 <translation id="3922092564198021702">Telefonda sozlamalarni oching</translation>
+<translation id="3924858949939391676">Oʻqish rejimi yoqilgandan keyin havolalarni koʻrsatish</translation>
 <translation id="3933121352599513978">Keraksiz soʻrovlarni yigʻish (tavsiya etiladi)</translation>
 <translation id="3934905113567851655">Hajmini oʻzgartirish uchun chimding</translation>
 <translation id="3955193568934677022">Saytlarga himoyalangan kontentni ijro qilish uchun ruxsat berish (tavsiya etiladi)</translation>
@@ -355,6 +357,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="4644713492825682049">Oʻchirish va tiklash</translation>
 <translation id="4645575059429386691">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="4652266463001779298">Ruxsat berilmagan</translation>
+<translation id="4655846733459137112">Keyingi kirishda bu paroldan oson foydalanish uchun Ha tugmasini bosing</translation>
 <translation id="4663373278480897665">Kameradan foydalanish mumkin</translation>
 <translation id="4670064810192446073">Virtual reallik</translation>
 <translation id="4672315773691449562">Brauzer ilovasi ustiga bosib, Chrome bandini tanlang</translation>
@@ -461,6 +464,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="5804241973901381774">Ruxsatlar</translation>
 <translation id="5817042798620209981">Sayt axboroti, oynasi</translation>
 <translation id="5822675474983796325">Yangi varaq sahifasini moslash quyi ekrani toʻliq hajmda ochildi</translation>
+<translation id="5826403277762134844">Chrome brauzerida parollarni saqlash uchun koʻrsatmali quyi ekran</translation>
 <translation id="5833899990800318936">Saytlarga JavaScript ishlatishni taqiqlash</translation>
 <translation id="583673505367439042">Saytlar qurilmangizdagi fayl yoki jildlarni tahrirlash uchun ruxsat soʻray oladi</translation>
 <translation id="5844448279347999754">Yoqilsa, saytlar klipborddagi rasm va matnlarni koʻrishga ruxsat soʻrashi mumkin. Oʻchirilsa, bunday fayllarni koʻra olmaydi.</translation>
@@ -640,6 +644,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="775043444390799886">Ruxsatni bekor qilish</translation>
 <translation id="7758789811447313947">Binafsharang mavzu</translation>
 <translation id="7759147511335618829">MIDI boshqaruvi va qayta dasturlash</translation>
+<translation id="7771089277295008211">Parollarni saqlash boʻyicha koʻrsatmalar quyi ekrani yopildi</translation>
 <translation id="7781829728241885113">Kecha</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="780301667611848630">Kerak emas</translation>
@@ -657,6 +662,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="7940722705963108451">Menga eslatilsin</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> haqida batafsil</translation>
 <translation id="7952708427581814389">Saytlar klipborddagi rasm va matnlarni koʻrishga ruxsat soʻray oladi</translation>
+<translation id="7958779728312669715">Parollarni saqlash boʻyicha koʻrsatmalar quyi ekrani toʻliq ochildi</translation>
 <translation id="798299424881500862">Apelsinrang mavzu</translation>
 <translation id="7986741934819883144">Kontaktni tanlang</translation>
 <translation id="7990211076305263060">Yoqilsa, saytlar mikrofondan foydalanishni soʻrashi mumkin. Oʻchirilsa, mikrofondan foydalana olmaydi.</translation>
@@ -753,6 +759,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="8889294078294184559">Keyin ochiladigan boshqa saytlar brauzerdan bu axborotni soʻrashi mumkin.</translation>
 <translation id="8899807382908246773">Asabga teguvchi reklamalar</translation>
 <translation id="8903921497873541725">Kattalashtirish</translation>
+<translation id="8919911527569629802">Istalgan saytga kiring</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Qayta so‘ralmasin</translation>
 <translation id="8926666909099850184">Telefonda NFC yoqilmagan. Uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
@@ -780,6 +787,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="9182556968660520230">Saytlarga himoyalangan kontentni ijro qilishni taqiqlash</translation>
 <translation id="947156494302904893">Siz ochadigan va real odam ekaningiz haqidagi axborotni tekshirishi mumkin saytlar</translation>
 <translation id="959682366969460160">Ishni tashkillash</translation>
+<translation id="960590623979248167">Giperhavolalarni koʻrsatish</translation>
 <translation id="961930410699694996">Joylashuv axborotiga shu safar ruxsat berildi</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>
 <translation id="969975166333045662">Sayt V8 optimizer ishlatishini taqiqlash.</translation>

@@ -7369,13 +7369,6 @@ Se a política for deixada sem definição ou desativada, os registros no nível
 <translation id="5746149754419996562">Ativa a presença de widgets Glanceables no <ph name="PRODUCT_OS_NAME" />. Mais especificamente, os widgets acessíveis pelo ícone de data na estante.
 Quando esta política está ativada, os Glanceables são ativados no <ph name="PRODUCT_OS_NAME" />.
 Quando ela está desativada ou é deixada sem definição, os Glanceables não são ativados no <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="5747628966013559697">Configure como o <ph name="PRODUCT_NAME" /> baixa o modelo básico da IA generativa e usa para inferência local.
-
-Quando a política é definida como permitida (0) ou deixada sem definição, o modelo é baixado automaticamente e usado para inferência.
-
-Quando a política é desativada (1), o modelo não é baixado.
-
-Em plataformas de computador, o download do modelo também pode ser desativado por <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5749396052108288586">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Ativar atalhos de recursos de acessibilidade na tela de login</translation>
 <translation id="5755002458331714762"> As APIs Web Components v0 (Shadow DOM v0, Custom Elements v0 e HTML Imports) se tornaram obsoletas em 2018 e estão desativadas por padrão desde o M80. Esta política permite que esses recursos sejam seletivamente reativados até o M84.

@@ -118,6 +118,7 @@
 <translation id="2139300032719313227">ChromeOS-г дахин эхлүүлнэ үү</translation>
 <translation id="2151406531797534936">Chrome-г одоо дахин эхлүүлнэ үү</translation>
 <translation id="2163089732491971196">Google Бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
+<translation id="2170098639895543546">Хуудсан дээрх дурын зүйлийг сонгоно уу</translation>
 <translation id="2174917724755363426">Суулгаж дуусаагүй байна. Та цуцлахдаа итгэлтэй байна уу?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Шалгалтын алдааг шинэчлэх: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -512,7 +513,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" өргөтгөл таныг Chrome-д нэвтрэхийг хүсэж байна</translation>
 <translation id="6326175484149238433">Chrome-оос устга</translation>
 <translation id="6327105987658262776">Шинэчлэлт боломжгүй байна.</translation>
-<translation id="6333195756043503664">Миний компьютер асахад Chrome-г нээх</translation>
 <translation id="6334815226785304306">Google Chrome-г өгөгдмөл хөтчөө болгож ажлын хэсэг дээрээ бэхэлнэ үү</translation>
 <translation id="63540178978900677">Chrome таны өгөгдмөл хөтөч биш болсон байна. Chrome-г өгөгдмөл хөтөч болгох уу?</translation>
 <translation id="6360449101159168105">Энэ табыг идэвхгүй үед Chrome-г хурдан байлгахын тулд санах ойг чөлөөлсөн. Та энэ сайтыг идэвхгүй болохоос үргэлж хасахаар сонгох боломжтой.</translation>

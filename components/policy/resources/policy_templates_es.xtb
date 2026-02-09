@@ -7156,13 +7156,6 @@ Si no se define esta política o se inhabilita, no se recogerán los registros a
 <translation id="5746149754419996562">Habilita la presencia de widgets Glanceables en <ph name="PRODUCT_OS_NAME" />. Concretamente, esto afecta a los widgets a los que se puede acceder mediante el chip de fecha de la estantería.
 Si se habilita esta política, se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.
 Si esta política se inhabilita o no se define, no se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="5747628966013559697">Configura cómo descarga <ph name="PRODUCT_NAME" /> el modelo fundacional de IA generativa y lo usa para la inferencia de forma local.
-
-Si se permite esta política (valor 0) o no se define, el modelo se descargará automáticamente y se usará para la inferencia.
-
-Si se inhabilita esta política (valor 1), el modelo no se descargará.
-
-En las plataformas de escritorio, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> también puede inhabilitar la descarga del modelo.</translation>
 <translation id="5749396052108288586">Esta política está obsoleta. Se debe usar la política <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="574983287620584622">Habilitar las combinaciones de teclas para las funciones de accesibilidad en la pantalla de inicio de sesión</translation>
 <translation id="5755002458331714762"> Las API v0 de componentes web (Shadow DOM v0, Custom Elements v0 y HTML Imports) están obsoletas desde 2018 y se han inhabilitado de forma predeterminada desde M80. Esta política permite volver a habilitar estas funciones de forma selectiva hasta M84.

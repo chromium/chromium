@@ -7239,13 +7239,6 @@ Bu politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa 
 <translation id="5746149754419996562"><ph name="PRODUCT_OS_NAME" /> sisteminde Glanceables widget'larının kullanımını etkinleştirir. Widget'lara özel olarak raftaki tarih çipinden erişilebilirsiniz.
 Bu politika etkinleştirildiğinde <ph name="PRODUCT_OS_NAME" /> sisteminde Glanceables etkinleştirilir.
 Bu politika devre dışı bırakılır veya ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> sisteminde Glanceables etkinleştirilmez.</translation>
-<translation id="5747628966013559697"><ph name="PRODUCT_NAME" /> öğesinin, üretken yapay zekanın temel modelini indirme ve yerel çıkarım için kullanma şeklini yapılandırın.
-
-Politika, İzin Verildi (0) değerine ayarlanır veya ayarlanmadan bırakılırsa model otomatik olarak indirilir ve çıkarım için kullanılır.
-
-Politika, Devre Dışı (1) değerine ayarlanırsa model indirilmez.
-
-Masaüstü platformlarda model indirme işlemi, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> tarafından da devre dışı bırakılabilir.</translation>
 <translation id="5749396052108288586">Bu politika kullanımdan kaldırılmıştır. Lütfen bunun yerine <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="574983287620584622">Giriş ekranında erişilebilirlik özellikleri kısayollarını etkinleştir</translation>
 <translation id="5755002458331714762"> Web Bileşenleri v0 API'leri (Gölge DOM v0, Özel Öğeler v0 ve HTML İçe Aktarmaları) 2018'de kullanımdan kaldırılmıştır ve M80 düzeyinden itibaren varsayılan olarak devre dışıdır. Bu politika, bu özelliklerin M84'e kadar seçilerek yeniden etkinleştirilmesine olanak tanır.

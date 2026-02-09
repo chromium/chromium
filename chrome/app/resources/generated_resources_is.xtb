@@ -585,6 +585,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1384849755549338773">Bjóða upp á Google Translate fyrir vefsvæði á öðrum tungumálum</translation>
 <translation id="1384959399684842514">Gert var hlé á niðurhali</translation>
+<translation id="1386966479075994683">Stækka flipa</translation>
 <translation id="1388253969141979417">Mega nota hljóðnemann</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> mun endurræsast að uppfærslum loknum.</translation>
 <translation id="1390113502208199250">Þú þarft að núllstilla tækið til að nota eiginleika Chrome Education-uppfærslu.</translation>
@@ -2597,6 +2598,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2727633948226935816">Ekki minna mig aftur á</translation>
 <translation id="2727712005121231835">Raunstærð</translation>
 <translation id="2727744317940422214">Eitthvað fór úrskeiðis. Sendu ábendingu með #bruschetta í lýsingunni. Villukóðinn er <ph name="ERROR" />. Hreinsun mistókst, þú gætir þurft að framkvæma hana handvirkt.</translation>
+<translation id="2729310339366257582">Draga saman flipa</translation>
 <translation id="2729577602370119849">Hafðu greiðan aðgang að prenturum og stjórnaðu þeim á einfaldan hátt</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Þegar kveikt er á staðsetningarnákvæmni eru upplýsingar um þráðlaus merki, t.d. WiFi-aðgangsstaði og farsímaturna, ásamt skynjaragögnum tækis, t.d. frá hraðamæli og snúðvísi, notuð til að meta nákvæmari staðsetningu tækisins sem forrit og þjónusta frá Android nota til að veita staðsetningarbundna eiginleika. Til að gera þetta safnar Google af og til upplýsingum um skynjara tækisins og þráðlaus merki nærri þessu tæki fyrir hópvistun á staðsetningum þráðlausra merkja.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google notar upplýsingarnar sem safnað er úr þessu tæki til að: bæta staðsetningarnákvæmni og staðsetningarbundna þjónustu og til að bæta, veita og viðhalda þjónustu Google almennt. Við vinnum úr þessum upplýsingum á grundvelli lögmætra hagsmuna Google og þriðju aðila er varða þarfir notenda. Þessar upplýsingar eru ekki notaðar til að auðkenna einstaklinga.<ph name="END_PARAGRAPH2" />
@@ -5138,6 +5140,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="443031431654216610">Notaðu aðeins tölustafi</translation>
 <translation id="4430369329743628066">Bókamerki bætt við</translation>
 <translation id="4430422687972614133">Kveikja á sýndarkorti</translation>
+<translation id="4431962107539413562">Sæktu aðgangsorðin þín í öllum tækjunum þínum</translation>
 <translation id="443196770280837407">Opna Gemini með flýtilykli</translation>
 <translation id="4432621511648257259">Rangt aðgangsorð</translation>
 <translation id="4434611816075088065">Það er ekkert annað sem krefst athygli þinnar núna</translation>
@@ -6236,6 +6239,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5203035663139409780">Mega breyta skrám eða möppum í tækinu</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Smelltu til að skoða viðbótina}one{Smelltu til að skoða þessar viðbætur}other{Smelltu til að skoða þessar viðbætur}}</translation>
 <translation id="5204282224596194174">Endurheimtaraðgangsorð fyrir <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Draga saman flipa</translation>
 <translation id="5204673965307125349">Djúphreinsaðu tækið og reyndu aftur.</translation>
 <translation id="5204967432542742771">Sláðu inn aðgangsorð</translation>
 <translation id="5205484256512407285">Aldrei nota farsímagögn við flutning</translation>
@@ -8902,7 +8906,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7058024590501568315">Falið net</translation>
 <translation id="7058325593717863084">Senda ábendingu um fliparöndina</translation>
 <translation id="7059858479264779982">Stillt á sjálfvirka ræsingu</translation>
-<translation id="7060004353663489242"><ph name="FIELD_LIST" /> reiturinn er áskilinn</translation>
 <translation id="7063129466199351735">Vinnur úr flýtileiðum...</translation>
 <translation id="7063311912041006059">Vefslóð með <ph name="SPECIAL_SYMBOL" /> í stað fyrirspurnar</translation>
 <translation id="70641621694466590">Opna aðgangsorðasíðu</translation>
@@ -9081,6 +9084,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7193051357671784796">Fyrirtækið þitt bætti þessu forriti við. Endurræstu forritið til að ljúka uppsetningu þess.</translation>
 <translation id="7193374945610105795">Engin aðgangsorð hafa verið vistuð fyrir <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Senda ábendingar um hópatillögur</translation>
+<translation id="7194343495483122559">Stækka flipa</translation>
 <translation id="7194873994243265344">Fyrirtækið þitt lokaði á þessa skrá því hún er dulkóðuð. Biddu eiganda hennar um að afkóða hana.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 niðurhal í gangi}one{# niðurhal í gangi}other{# niðurhöl í gangi}}</translation>
 <translation id="7196272782924897510">Nota aðgangslykil úr öðru tæki?</translation>

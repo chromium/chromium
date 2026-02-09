@@ -7225,13 +7225,6 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 <translation id="5746149754419996562"><ph name="PRODUCT_OS_NAME" />에서 한눈에 보기 위젯을 사용하도록 설정합니다. 구체적으로는 앱 표시줄의 날짜 칩을 통해 액세스할 수 있는 위젯입니다.
 이 정책을 사용 설정하면 <ph name="PRODUCT_OS_NAME" />에서 한눈에 보기가 사용 설정됩니다.
 이 정책을 사용 중지하거나 설정하지 않으면 <ph name="PRODUCT_OS_NAME" />에서 한눈에 보기가 사용 설정되지 않습니다.</translation>
-<translation id="5747628966013559697"><ph name="PRODUCT_NAME" />에서 기본적인 생성형 AI 모델을 다운로드하고 로컬에서 추론에 사용하는 방법을 구성합니다.
-
-정책을 허용됨(0)으로 설정하거나 설정하지 않으면 모델이 자동으로 다운로드되어 추론에 사용됩니다.
-
-정책을 사용 안 함(1)으로 설정하면 모델이 다운로드되지 않습니다.
-
-데스크톱 플랫폼의 경우 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />에서 모델 다운로드를 사용 중지할 수도 있습니다.</translation>
 <translation id="5749396052108288586">지원 중단된 정책입니다. 대신 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> 정책을 사용하세요.</translation>
 <translation id="574983287620584622">로그인 화면에서 접근성 기능 단축키 사용 설정</translation>
 <translation id="5755002458331714762"> Web Components v0 API(Shadow DOM v0, Custom Elements v0, HTML Imports)는 2018년에 지원 중단되었으며 M80부터는 기본적으로 사용 중지되어 있습니다. 이 정책을 사용하면 위에서 언급된 기능을 M84까지 선택적으로 다시 사용 설정할 수 있습니다.

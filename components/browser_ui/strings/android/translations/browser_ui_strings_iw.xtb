@@ -20,6 +20,7 @@
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">לוחצים על 'אפליקציות'  &gt; 'אפליקציות ברירת מחדל'</translation>
 <translation id="1272079795634619415">הפסקה</translation>
+<translation id="1275718070701477396">נבחר</translation>
 <translation id="1289742167380433257">‏כדי לחסוך לך נתונים, התמונות בדף הזה עברו אופטימיזציה על ידי Google.</translation>
 <translation id="129382876167171263">קבצים שנשמרו על ידי אתרים מופיעים כאן</translation>
 <translation id="131112695174432497">יימחקו הנתונים שמשפיעים על ההתאמה האישית של מודעות</translation>
@@ -38,6 +39,7 @@
 <translation id="1415855080660575082">‏‫Chrome יכול לשתף את הכרטיסיות האחרונות עם המכשיר שלך כדי שתהיה לך אפשרות לראות אותן ברשימת האפליקציות במכשיר ובתוצאות החיפוש. ניתן להפעיל או להשבית את האפשרות הזו בהגדרות Chrome.</translation>
 <translation id="1420688843103859429">כדי לנווט קדימה ואחורה, אפשר להחליק עם שתי אצבעות על לוח המגע</translation>
 <translation id="1432650420699700107">אתרים יכולים לבקש הרשאה להתחבר לכל מכשיר ברשת המקומית</translation>
+<translation id="1442081309487427303">הפעלת הקישורים של מצב הקריאה</translation>
 <translation id="1448064542941920355">הקטנת הזום</translation>
 <translation id="1464044141348608623">לא לאפשר לאתרים לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
@@ -72,6 +74,7 @@
 <translation id="1766455884659449403">‏רוצה לקבל התראות על טיפים ל-Chrome?</translation>
 <translation id="1777815584158991902">‏הגיליון התחתון של פיד Discover</translation>
 <translation id="1779089405699405702">מפענח התמונות</translation>
+<translation id="1781533683087883868">השבתת הקישורים של מצב הקריאה</translation>
 <translation id="1785415724048343560">מומלץ כדי ליהנות מחוויית השימוש הטובה ביותר</translation>
 <translation id="1796588414813960292">תכונות שצריכות צלילים לא יפעלו</translation>
 <translation id="1799920918471566157">‏טיפים ל-Chrome</translation>

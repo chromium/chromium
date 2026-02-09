@@ -20,6 +20,7 @@
 <translation id="1242008676835033345">Fellt inn á <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Ýttu á Forrit  &gt; Sjálfgefin forrit</translation>
 <translation id="1272079795634619415">Stöðva</translation>
+<translation id="1275718070701477396">Valið</translation>
 <translation id="1289742167380433257">Þessar myndir voru fínstilltar af Google til að spara gögn.</translation>
 <translation id="129382876167171263">Skrár sem vefsvæði vista birtast hér</translation>
 <translation id="131112695174432497">Gögnum sem hafa áhrif á sérsniðnar auglýsingar er eytt</translation>
@@ -38,6 +39,7 @@
 <translation id="1415855080660575082">Leyfðu Chrome að deila nýlegum flipum með tækinu þínu svo að þú getir séð þá á forritalista og í leitarniðurstöðum tækisins. Þú getur kveikt eða slökkt á þessu í stillingum Chrome.</translation>
 <translation id="1420688843103859429">Flettu fram og til baka með því að strjúka með tveimur fingrum á snertifletinum</translation>
 <translation id="1432650420699700107">Vefsvæði geta beðið um að tengjast hvaða tæki sem er á staðarnetinu þínu</translation>
+<translation id="1442081309487427303">Kveikja á tenglum í lesstillingu</translation>
 <translation id="1448064542941920355">Minnka aðdrátt</translation>
 <translation id="1464044141348608623">Ekki leyfa vefsvæðum að vita hvenær þú notar tækið þitt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vefsvæði}one{<ph name="SITE_COUNT" /> vefsvæði}other{<ph name="SITE_COUNT" /> vefsvæðum}}</translation>
@@ -72,6 +74,7 @@
 <translation id="1766455884659449403">Fá tilkynningar um ráð fyrir Chrome</translation>
 <translation id="1777815584158991902">Blað neðst á tillögustraumi</translation>
 <translation id="1779089405699405702">Afkóðun mynda</translation>
+<translation id="1781533683087883868">Slökkva á tenglum í lesstillingu</translation>
 <translation id="1785415724048343560">Mælt með fyrir sem besta upplifun</translation>
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
 <translation id="1799920918471566157">Ábendingar fyrir Chrome</translation>

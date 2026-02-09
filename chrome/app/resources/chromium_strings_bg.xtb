@@ -704,7 +704,6 @@
 <translation id="897581876605952338">Лого на Chromium Enterprise</translation>
 <translation id="8981150672034878610">Chromium не може да стартира, защото нещо се обърка при отварянето на потребителския ви профил. Рестартирайте Chromium.</translation>
 <translation id="8988036198400390003">Управление на потребителските профили в Chromium</translation>
-<translation id="9003988359820989654">Отваряне на Chromium при стартиране на компютъра ми</translation>
 <translation id="9019929317751753759">За да направим Chromium по-безопасен, деактивирахме следното разширение, което липсва от <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е било добавено без ваше знание.</translation>
 <translation id="904366664621834601">Chromium блокира това изтегляне, защото архивният файл съдържа други файлове, които може да крият злонамерен софтуер</translation>
 <translation id="9062666675513499497">Влизане в Chromium, когато влизате в други услуги на Google</translation>

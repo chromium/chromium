@@ -4747,6 +4747,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4169535189173047238">Jangan izinkan</translation>
 <translation id="4170314459383239649">Hapus Saat Keluar</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Bagikan tab kepada Gemini}other{Bagikan # tab kepada Gemini}}</translation>
+<translation id="4172944993779635350">Sandi Anda untuk "<ph name="URL" />" hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di akun Anda.</translation>
 <translation id="4173129130568053653">Gemini dapat membantu Anda membuat janji temu, keranjang belanja, atau melakukan tugas lain yang Anda berikan.</translation>
 <translation id="4175137578744761569">Ungu muda dan putih</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
@@ -5063,6 +5064,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4386604394450371010">ringkasan</translation>
 <translation id="4387890294700445764">Sandi yang telah dibobol</translation>
 <translation id="4388650384344483842">Gunakan minimal 8 karakter</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Sandi untuk <ph name="URL" />}other{Sandi untuk <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, dan <ph name="NUMBER_OF_OTHER_SWITCHES" /> tombol lainnya</translation>
 <translation id="439266289085815679">Konfigurasi Bluetooth dikontrol oleh <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edit file konfigurasi</translation>
@@ -5592,6 +5594,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4762849514113423887">Sandi salah. Coba lagi.</translation>
 <translation id="4763408175235639573">Cookie berikut disetel saat Anda melihat halaman ini</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> bukan akun Google for Education yang valid. Hubungi administrator Anda. Jika Anda adalah administrator, Anda dapat menyiapkan organisasi dengan membuka: g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} sandi untuk "<ph name="URL" />" hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di akun Anda.}other{{COUNT} sandi untuk "<ph name="URL" />" hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di akun Anda.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Perangkat ini akan disimpan selama 1 bulan dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}other{Perangkat ini akan disimpan selama {MONTHS} bulan dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}}</translation>
 <translation id="476563889641554689">Pilih area untuk ditelusuri dengan Lens</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Memeriksa kunci publik dan blok integritas... Kurang dari 1 menit lagi}=1{Memeriksa kunci publik dan blok integritas... 1 menit lagi}other{Memeriksa kunci publik dan blok integritas... # menit lagi}}</translation>
@@ -6065,6 +6068,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 Dengan Enkripsi RSA</translation>
 <translation id="5090637338841444533">Tidak diizinkan melacak posisi kamera Anda</translation>
 <translation id="5091636240353511739">Tampilkan PIN</translation>
+<translation id="5093447877601682598">Kirim masukan tentang kolom tab</translation>
 <translation id="5093477827231450397">Daftar situs yang Anda blokir dan tidak diizinkan untuk memberikan saran iklan ke situs lain</translation>
 <translation id="5093569275467863761">Subframe Samaran yang Disimpan di Back/Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Anda dapat membuka dan mengedit file yang didukung dengan aplikasi ini dari aplikasi File atau aplikasi lainnya. Untuk mengontrol file mana yang akan dibuka dengan aplikasi ini secara default, <ph name="BEGIN_LINK" />pelajari cara menyetel aplikasi default di perangkat Anda<ph name="END_LINK" />.</translation>
@@ -8899,8 +8903,8 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7057567173736333354">Deskripsikan gambar Anda</translation>
 <translation id="70577934383983846">Gunakan sandi ini di semua perangkat Anda</translation>
 <translation id="7058024590501568315">Jaringan tersembunyi</translation>
+<translation id="7058325593717863084">Kirim Masukan Tentang Kolom Tab</translation>
 <translation id="7059858479264779982">Setel ke luncurkan otomatis</translation>
-<translation id="7060004353663489242"><ph name="FIELD_LIST" /> wajib diisi</translation>
 <translation id="7063129466199351735">Memproses pintasan...</translation>
 <translation id="7063311912041006059">URL dengan <ph name="SPECIAL_SYMBOL" /> sebagai ganti kueri</translation>
 <translation id="70641621694466590">Buka halaman Sandi</translation>

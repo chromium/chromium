@@ -2786,6 +2786,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5466018172325111652">Kod kelmadimi? <ph name="BEGIN_LINK" />Yangi kod oling<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Toʻlov ilovalari</translation>
 <translation id="5470861586879999274">O‘zgarishlarni &amp;qaytarish</translation>
+<translation id="5471158297908124590">Toʻlov usullarini tahrirlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="5472588168895083535">Qoʻllar holatini kuzatish bloklandi</translation>
 <translation id="5477756102936130143">Mos toʻlov ilovalariga yoʻnaltirishni yoqish</translation>
 <translation id="5479505548832623900">Kengaytma tomonidan inkor etilgan koʻrinadi.</translation>
@@ -2863,6 +2864,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5570825185877910964">Hisobni himoyalash</translation>
 <translation id="5571083550517324815">Bu manzildan olib keta olmaymiz. Boshqa manzilni tanlang.</translation>
 <translation id="5572434905385510939">22 x 28 in</translation>
+<translation id="5573090972398558474">Tashkilotingiz bu sahifani Inkognito rejimida bloklagan.</translation>
 <translation id="5573641252776268565">Pasportni tahrirlash</translation>
 <translation id="5578606540385219379">Xizmat provayderlari</translation>
 <translation id="5580958916614886209">Kartangiz muddatining tugash oyini tekshiring va yana urinib ko‘ring.</translation>
@@ -3169,6 +3171,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6093795393556121384">Bank kartasi tasdiqlangan</translation>
 <translation id="6094253940069566294">Transportni tahrirlash</translation>
 <translation id="6094290315941448991">Maxfiy axborotlar koʻrinib turganda administrator ekranni yozib olishni taqiqlagan</translation>
+<translation id="6097297436119286254">Toʻlov axborotini kiritish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6099269767116481177">22 x 29.5 in</translation>
 <translation id="6101583188322746099">Oziq-ovqat yetkazib berish xizmatlari</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4288,6 +4291,7 @@ Batafsil axborot:
 <translation id="7844689747373518809">{COUNT,plural, =0{Hech qanday}=1{1 ta ilova (<ph name="EXAMPLE_APP_1" />)}=2{2 ta ilova (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ta ilova (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="784623644169604270">Hech qanday harakat yoʻq</translation>
+<translation id="7848926355794727168">Avtomatik kezish</translation>
 <translation id="7853222852810008596">Bu valyutada keyinroq toʻlash imkonsiz</translation>
 <translation id="785476343534277563">Kollej sporti</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4914,6 +4918,7 @@ Batafsil axborot:
 <translation id="8897428486789851669">Suzish</translation>
 <translation id="8899807382908246773">Asabga teguvchi reklamalar</translation>
 <translation id="8903921497873541725">Kattalashtirish</translation>
+<translation id="8903998444169664879">Toʻlov sozlamalarini oʻzgartirish uchun shaxsingizni tasdiqlang</translation>
 <translation id="890493561996401738">Taklifni olib tashlash tugmasi, olib tashlash uchun Enter tugmasini bosing, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 duym</translation>
 <translation id="8914504000324227558">Chrome’ni qayta ishga tushiring</translation>

@@ -705,7 +705,6 @@
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
 <translation id="8981150672034878610">Не удалось запустить Chromium. При открытии вашего профиля произошла ошибка. Попробуйте перезапустить Chromium.</translation>
 <translation id="8988036198400390003">Настроить профили Chromium</translation>
-<translation id="9003988359820989654">Открывать Chromium при включении компьютера</translation>
 <translation id="9019929317751753759">Чтобы обеспечить безопасность ваших данных, некоторые расширения были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них (то есть они могли быть установлены без вашего ведома).</translation>
 <translation id="904366664621834601">Chromium заблокировал скачивание, поскольку этот архив содержит файлы, в которых может быть скрыто вредоносное ПО.</translation>
 <translation id="9062666675513499497">Входить в Chromium при входе в другие сервисы Google</translation>

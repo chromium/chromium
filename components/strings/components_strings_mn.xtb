@@ -2869,6 +2869,7 @@
 <translation id="5570825185877910964">Бүртгэлийг хамгаалах</translation>
 <translation id="5571083550517324815">Энэ хаягаас авах боломжгүй тул өөр хаяг сонгоно уу.</translation>
 <translation id="5572434905385510939">22 x 28 инч</translation>
+<translation id="5573090972398558474">Танай байгууллага энэ хуудсыг Нууцлалын горимд блоклосон.</translation>
 <translation id="5573641252776268565">Паспортыг засах</translation>
 <translation id="5578606540385219379">Үйлчилгээ үзүүлэгчид</translation>
 <translation id="5580958916614886209">Хүчингүй болох сарыг шалгаад дахин оролдоно уу</translation>
@@ -4294,6 +4295,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Байхгүй}=1{1 апп (<ph name="EXAMPLE_APP_1" />)}=2{2 апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="784623644169604270">Саяхны үйл ажиллагаа байхгүй байна</translation>
+<translation id="7848926355794727168">Автомат хөтөч</translation>
 <translation id="7853222852810008596">Дараа төлөх үйлчилгээг энэ валютаар ашиглах боломжгүй</translation>
 <translation id="785476343534277563">Коллежийн спортууд</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

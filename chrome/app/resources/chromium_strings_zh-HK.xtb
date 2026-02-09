@@ -709,7 +709,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
 <translation id="8981150672034878610">由於開啟設定檔時發生錯誤，因此無法啟動 Chromium。請嘗試重新啟動 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>
-<translation id="9003988359820989654">在電腦開機時開啟 Chromium</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="904366664621834601">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chromium 已禁止下載</translation>
 <translation id="9062666675513499497">在登入其他 Google 服務時登入 Chromium</translation>

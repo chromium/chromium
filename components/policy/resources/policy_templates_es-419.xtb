@@ -7373,13 +7373,6 @@ Si no estableces esta política o la inhabilitas, no se recopilarán los registr
 <translation id="5746149754419996562">Habilita la presencia de widgets de consulta rápida en <ph name="PRODUCT_OS_NAME" />. Específicamente, los widgets a los que se puede acceder mediante el chip de fecha en la barra.
 Si habilitas esta política, se habilitarán los widgets de consulta rápida en <ph name="PRODUCT_OS_NAME" />.
 Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta rápida en <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="5747628966013559697">Configura la forma en que <ph name="PRODUCT_NAME" /> descarga el modelo básico de IA generativa y lo usa para la inferencia a nivel local.
-
-Si permites (0) la política o no la estableces, el modelo se descargará automáticamente y se usará para las inferencias.
-
-Si la inhabilitas (1), no se descargará el modelo.
-
-<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> también puede inhabilitar la descarga de modelos en plataformas de escritorio.</translation>
 <translation id="5749396052108288586">Esta política es obsoleta. En su lugar, utiliza <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Habilita las combinaciones de teclas para las funciones de accesibilidad en la pantalla de acceso</translation>
 <translation id="5755002458331714762"> En 2018, las API de Web Components v0 (Shadow DOM v0, Custom Elements v0 y HTML Imports) dejaron de estar disponibles. Además, se inhabilitaron de forma predeterminada a partir de la versión M80. Esta política permite volver a habilitar estas funciones de forma selectiva hasta la versión M84.

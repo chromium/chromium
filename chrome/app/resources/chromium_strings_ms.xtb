@@ -101,6 +101,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2126108037660393668">Pengesahan fail yang dimuat turun gagal.</translation>
 <translation id="2137162749895930932">Tutup skrin terjemahan</translation>
 <translation id="215352261310130060">Chromium menyekat muat turun ini kerana laman tidak menggunakan sambungan selamat dan fail mungkin telah diubah</translation>
+<translation id="2170098639895543546">Pilih apa-apa sahaja pada halaman</translation>
 <translation id="2174178932569897599">Sesuaikan Chromium</translation>
 <translation id="2174917724755363426">Pemasangan belum selesai. Anda pasti ingin membatalkan?</translation>
 <translation id="2185166961232948079">Chromium - Log Masuk Rangkaian - <ph name="PAGE_TITLE" /></translation>
@@ -710,7 +711,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8981150672034878610">Tidak dapat memulakan Chromium kerana terdapat masalah semasa membuka profil anda. Cuba mulakan semula Chromium.</translation>
 <translation id="8988036198400390003">Urus profil Chromium</translation>
-<translation id="9003988359820989654">Buka Chromium apabila komputer saya dimulakan</translation>
 <translation id="9019929317751753759">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan sambungan berikut yang tidak disenaraikan dalam  <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
 <translation id="904366664621834601">Chromium menyekat muat turun ini kerana fail arkib termasuk fail lain yang mungkin menyembunyikan perisian hasad</translation>
 <translation id="9062666675513499497">Log masuk ke Chromium apabila anda log masuk ke perkhidmatan Google yang lain</translation>

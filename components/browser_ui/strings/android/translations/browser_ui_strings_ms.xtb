@@ -20,6 +20,7 @@
 <translation id="1242008676835033345">Dibenamkan pada <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Ketik Apl &gt; Apl lalai</translation>
 <translation id="1272079795634619415">Berhenti</translation>
+<translation id="1275718070701477396">Dipilih</translation>
 <translation id="1289742167380433257">Untuk menjimatkan data anda, imej halaman ini telah dioptimumkan oleh Google.</translation>
 <translation id="129382876167171263">Fail yang disimpan oleh laman web akan dipaparkan di sini</translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
@@ -294,6 +295,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3903738175795615004">Seret daripada bahagian atas atau tekan kekunci Esc untuk keluar daripada skrin penuh.</translation>
 <translation id="3905475044299942653">Hentikan banyak pemberitahuan</translation>
 <translation id="3922092564198021702">Pada telefon anda, buka Tetapan</translation>
+<translation id="3924858949939391676">Tunjukkan pautan setelah Mod Membaca dihidupkan</translation>
 <translation id="3933121352599513978">Kuncupkan permintaan yang tidak dikehendaki (disyorkan)</translation>
 <translation id="3934905113567851655">Cubit untuk mengubah saiz imej</translation>
 <translation id="3955193568934677022">Benarkan tapak untuk memainkan kandungan yang dilindungi (disyorkan)</translation>
@@ -357,6 +359,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4652266463001779298">Tidak dibenarkan</translation>
+<translation id="4655846733459137112">Ketik Ya untuk menggunakan kata laluan ini dengan mudah apabila anda log masuk selepas ini</translation>
 <translation id="4663373278480897665">Kamera dibenarkan</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
 <translation id="4672315773691449562">Ketik apl Penyemak imbas kemudian ketik Chrome</translation>
@@ -463,6 +466,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5817042798620209981">Maklumat laman, dialog</translation>
 <translation id="5822675474983796325">Sesuaikan helaian bawah halaman tab baharu anda dibuka pada ketinggian penuh</translation>
+<translation id="5826403277762134844">Helaian bawah arahan untuk menyimpan kata laluan dalam Chrome</translation>
 <translation id="5833899990800318936">Jangan benarkan laman menggunakan JavaScript</translation>
 <translation id="583673505367439042">Laman boleh meminta untuk mengedit fail dan folder pada peranti anda</translation>
 <translation id="5844448279347999754">Apabila dihidupkan, laman dapat meminta untuk melihat teks dan imej yang disimpan pada papan keratan anda. Apabila dimatikan, laman tidak dapat melihat teks atau imej pada papan keratan anda.</translation>
@@ -642,6 +646,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="775043444390799886">Batalkan kebenaran</translation>
 <translation id="7758789811447313947">Tema ungu lembayung</translation>
 <translation id="7759147511335618829">Kawalan &amp; pengaturcaraan semula peranti MIDI</translation>
+<translation id="7771089277295008211">Helaian bawah arahan simpan kata laluan telah ditutup</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
@@ -659,6 +664,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7948081750384205628">Ketahui <ph name="SETTING_TITLE" /> dengan lebih lanjut</translation>
 <translation id="7952708427581814389">Tapak boleh meminta untuk melihat teks dan imej pada papan keratan anda</translation>
+<translation id="7958779728312669715">Helaian bawah arahan simpan kata laluan telah dibuka sepenuhnya</translation>
 <translation id="798299424881500862">Tema jingga</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
@@ -755,6 +761,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8889294078294184559">Sementara anda terus menyemak imbas, laman boleh menyemak dengan Chrome dan membuat pengesahan dengan laman yang telah anda lawati sebelum ini bahawa anda berkemungkinan merupakan orang yang sebenar</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Zum masuk</translation>
+<translation id="8919911527569629802">Log masuk ke mana-mana laman web</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8926666909099850184">NFC dimatikan untuk peranti ini. Hidupkan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
@@ -782,6 +789,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="9182556968660520230">Jangan benarkan laman memainkan kandungan yang dilindungi</translation>
 <translation id="947156494302904893">Laman yang anda lawati boleh mengesahkan bahawa anda orang sebenar dan bukan bot</translation>
 <translation id="959682366969460160">Jadi teratur</translation>
+<translation id="960590623979248167">Tunjukkan hiperpautan</translation>
 <translation id="961930410699694996">Lokasi dibenarkan pada masa ini</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="969975166333045662">Sekat laman daripada menggunakan pengoptimum V8.</translation>

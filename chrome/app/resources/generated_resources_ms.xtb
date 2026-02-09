@@ -2778,6 +2778,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2842013086666334835">Log masuk ke "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Untuk menyelesaikan persediaan Linux, kemas kini Chrome OS dan cuba lagi.</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> Dikosongkan</translation>
+<translation id="2844154481025280030">Dasar dikonfigurasikan.</translation>
 <translation id="2844169650293029770">Peranti USB-C (port depan sebelah kiri)</translation>
 <translation id="2844809857160214557">Lihat dan urus tugas cetak</translation>
 <translation id="2845276301195220700">Lagi tindakan untuk Google Calendar</translation>
@@ -3217,6 +3218,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3151539355209957474">Masa Mula</translation>
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3152356229013609796">Lihat, ketepikan dan balas pemberitahuan telefon anda</translation>
+<translation id="3152545926232662879">Diabaikan:</translation>
 <translation id="3154754096046236400">Konteks peribadi</translation>
 <translation id="3155163173539279776">Lancarkan Semula Chromium</translation>
 <translation id="3155394504825881014">Tukar Kumpulan Tab kepada Folder Penanda Halaman</translation>
@@ -5758,6 +5760,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4868284252360267853">Dialog ini tidak difokuskan pada masa ini. Tekan Command-Shift-Option A untuk fokus pada dialog ini.</translation>
 <translation id="4868351661310357223">Pasang apl dan permainan daripada Google Play pada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="4869170227080975044">Baca maklumat rangkaian ChromeOS</translation>
+<translation id="4869175799055761881">Aplikasi ini tidak boleh dipasang oleh pengguna. Sila hubungi pembangun</translation>
 <translation id="4870724079713069532">Anda boleh membuka dan mengedit fail yang disokong dengan apl ini daripada File Explorer atau apl lain. Untuk mengawal fail yang membuka apl ini secara lalai, pergi ke <ph name="BEGIN_LINK" />tetapan Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Sesetengah pautan yang disokong masih akan dibuka dalam <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> dan 1 apl lain.</translation>
 <translation id="4871308555310586478">Bukan dari Kedai Web Chrome.</translation>
@@ -8661,6 +8664,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6897363604023044284">Pilih tapak untuk dikosongkan</translation>
 <translation id="6897688156970667447">Membantu dalam cahaya malap dan menjimatkan bateri</translation>
+<translation id="6897756054229464646">Dengan Gemini</translation>
 <translation id="6897972855231767338">Ketahui lebih lanjut tentang menyemak imbas sebagai tetamu</translation>
 <translation id="6898438890765871056">Buka folder OneDrive</translation>
 <translation id="6898440773573063262">Aplikasi kios kini boleh dikonfigurasikan supaya autolancar pada peranti ini.</translation>
@@ -8905,7 +8909,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7058024590501568315">Rangkaian tersembunyi</translation>
 <translation id="7058325593717863084">Hantar Maklum Balas Tentang Jalur Tab</translation>
 <translation id="7059858479264779982">Tetapkan kepada autolancar</translation>
-<translation id="7060004353663489242"><ph name="FIELD_LIST" /> diperlukan</translation>
 <translation id="7063129466199351735">Memproses pintasan...</translation>
 <translation id="7063311912041006059">URL dengan <ph name="SPECIAL_SYMBOL" /> sebagai ganti pertanyaan</translation>
 <translation id="70641621694466590">Pergi ke halaman Kata laluan</translation>
@@ -9164,6 +9167,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7250616558727237648">Peranti yang anda pilih untuk berkongsi fail tidak memberikan respons. Sila cuba lagi.</translation>
 <translation id="725109152065019550">Maaf, pentadbir anda telah melumpuhkan storan luar pada akaun anda.</translation>
 <translation id="7251635775446614726">Pentadbir anda berkata: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="725310308981256997">Tanya tentang halaman ini?</translation>
 <translation id="7253521419891527137">&amp;Ketahui Lebih Lanjut</translation>
 <translation id="7254951428499890870">Adakah anda pasti anda mahu melancarkan "<ph name="APP_NAME" />" dalam mod diagnostik?</translation>
 <translation id="725497546968438223">Butang folder penanda halaman</translation>
@@ -10653,6 +10657,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8244201515061746038">Butang ketahui lebih lanjut tentang autopembetulan. Akses halaman tetapan autopembetulan. Tekan kekunci Enter untuk mengaktifkan, Escape untuk menolak perkataan ini.</translation>
 <translation id="8244514732452879619">Lampu akan dipadamkan tidak lama lagi</translation>
 <translation id="8246776524656196770">Lindungi kunci keselamatan anda menggunakan PIN (Nombor Pengenalan Peribadi)</translation>
+<translation id="824713170151383793">Dengan Alatan Pembangun</translation>
 <translation id="8247795734638043885">Muat turun fail tidak selamat</translation>
 <translation id="8248050856337841185">&amp;Tampal</translation>
 <translation id="8248381369318572865">Akses mikrofon dan analisis pertuturan anda</translation>
@@ -11569,6 +11574,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="885746075120788020">Pilihan dan aktiviti anda yang disimpan akan sedia pada mana-mana peranti Chrome OS apabila anda log masuk dengan Google Account anda. Anda boleh memilih item yang hendak disegerakkan dalam Tetapan.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Pasang apl?}other{Pasang apl?}}</translation>
 <translation id="8858369206579825206">Kawalan privasi</translation>
+<translation id="8858449624332155432">Dasar dikonfigurasikan dengan nilai yang bercanggah daripada berbilang sumber.</translation>
 <translation id="8859174528519900719">Subbingkai: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Syarat Perkhidmatan tidak dapat dimuatkan</translation>
 <translation id="8859662783913000679">Akaun ibu bapa</translation>
