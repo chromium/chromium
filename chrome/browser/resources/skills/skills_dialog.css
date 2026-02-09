@@ -168,14 +168,16 @@ cr-icon-button {
   appearance: none;
   background: transparent;
   border: none;
-  padding: 0;
+  border-radius: 50%;
+  padding: 4px;
   margin: 0;
   outline: none;
   box-shadow: none;
   width: 16px;
   height: 16px;
   align-self: center;
-  margin-inline-end: 8px;
+  margin-inline-start: -4px;
+  margin-inline-end: 4px;
   font-family: 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
   font-size: 12px;
   text-align: center;
@@ -183,12 +185,17 @@ cr-icon-button {
   color: var(--cr-primary-text-color);
   cursor: pointer;
   caret-color: transparent;
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hides the blue selection background if text gets selected */
 .emoji-trigger::selection {
   background: transparent;
   color: var(--cr-primary-text-color);
+}
+
+.emoji-trigger:hover {
+  background-color: var(--cr-hover-background-color);
 }
 
 #accountInfo {
