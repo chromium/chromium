@@ -27,6 +27,11 @@ launch_data_t MessageForJob(const std::string& job_label,
 BASE_EXPORT
 pid_t PIDForJob(const std::string& job_label);
 
+// Returns the process ID for |job_label| if the job is running, 0 if the job
+// is loaded but not running, -2 if the job is not loaded, or -1 on error.
+BASE_EXPORT
+pid_t PIDForJobIfLoaded(const std::string& job_label);
+
 }  // namespace base::mac
 
 #endif  // BASE_MAC_LAUNCHD_H_

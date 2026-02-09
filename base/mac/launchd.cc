@@ -40,23 +40,44 @@ launch_data_t MessageForJob(const std::string& job_label,
 
   if (!launch_data_dict_insert(message.get(), job_label_launchd.release(),
                                operation)) {
+    LOG(ERROR) << "launch_data_dict_insert";
     return NULL;
   }
 
-  return launch_msg(message.get());
+  launch_data_t result = launch_msg(message.get());
+  if (!result) {
+    LOG(ERROR) << "launch_msg";
+  }
+  return result;
 }
 
 pid_t PIDForJob(const std::string& job_label) {
+  pid_t pid = PIDForJobIfLoaded(job_label);
+  if (pid == -2) {
+    // For consistency with the older behavior of this function, match the
+    // format of the error message produced by PIDForJobIfLoaded
+    LOG(ERROR) << "PIDForJob: error " << ESRCH;
+    return -1;
+  }
+  return pid;
+}
+
+pid_t PIDForJobIfLoaded(const std::string& job_label) {
   ScopedLaunchData response(MessageForJob(job_label, LAUNCH_KEY_GETJOB));
   if (!response.is_valid()) {
+    // MessageForJob has already logged the error.
     return -1;
   }
 
   launch_data_type_t response_type = launch_data_get_type(response.get());
   if (response_type != LAUNCH_DATA_DICTIONARY) {
     if (response_type == LAUNCH_DATA_ERRNO) {
-      LOG(ERROR) << "PIDForJob: error "
-                 << launch_data_get_errno(response.get());
+      int err = launch_data_get_errno(response.get());
+      if (err == ESRCH) {
+        return -2;
+      } else {
+        LOG(ERROR) << "PIDForJob: error " << err;
+      }
     } else {
       LOG(ERROR) << "PIDForJob: expected dictionary, got " << response_type;
     }
