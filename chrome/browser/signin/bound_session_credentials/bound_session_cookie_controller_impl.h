@@ -105,7 +105,6 @@ class BoundSessionCookieControllerImpl
         refresh_cookie_fetcher_factory_for_testing;
   }
 
-  const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   const raw_ptr<content::StoragePartition> storage_partition_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   const bool is_off_the_record_profile_;

@@ -150,7 +150,6 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     Delegate* delegate,
     bool is_off_the_record_profile)
     : BoundSessionCookieController(bound_session_params, delegate),
-      key_service_(key_service),
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
       is_off_the_record_profile_(is_off_the_record_profile),
@@ -159,7 +158,7 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
   base::span<const uint8_t> wrapped_key =
       base::as_byte_span(bound_session_params.wrapped_key());
   session_binding_helper_ = std::make_unique<SessionBindingHelper>(
-      key_service_.get(), wrapped_key, session_id_);
+      key_service, wrapped_key, session_id_);
   // Preemptively load the binding key to speed up the generation of binding
   // key assertion.
   session_binding_helper_->MaybeLoadBindingKey();
