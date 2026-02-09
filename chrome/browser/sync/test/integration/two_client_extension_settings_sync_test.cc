@@ -20,7 +20,7 @@
 
 namespace {
 
-using extension_settings_helper::AllExtensionSettingsSame;
+using extension_settings_helper::AllExtensionSettingsSameChecker;
 using extension_settings_helper::SetExtensionSettings;
 using extensions_helper::InstallExtensionForAllProfiles;
 
@@ -113,15 +113,19 @@ IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsSyncTest,
                        base::DictValue().Set("foo", "bar").Set("baz", "qux"));
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 
   MutateSomeSettings(0, extension0, extension1, extension2);
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 
   MutateSomeSettings(1, extension0, extension1, extension2);
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsSyncTest,
@@ -151,25 +155,31 @@ IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsSyncTest,
   SetExtensionSettings(GetProfile(1), extension2, settings2);
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 
   MutateSomeSettings(2, extension0, extension1, extension2);
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 
   MutateSomeSettings(3, extension0, extension1, extension2);
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 
   // Test a round of no-ops once, for sanity. Ideally we'd want to assert that
   // this causes no sync activity, but that sounds tricky.
   MutateSomeSettings(3, extension0, extension1, extension2);
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 
   MutateSomeSettings(4, extension0, extension1, extension2);
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(AllExtensionSettingsSame(GetAllProfiles()));
+  ASSERT_TRUE(
+      AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+          .Wait());
 }
 
 }  // namespace

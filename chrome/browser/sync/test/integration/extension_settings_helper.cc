@@ -53,12 +53,13 @@ base::DictValue GetAllSettings(Profile* profile, const std::string& id) {
   return settings;
 }
 
-bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
+bool AreSettingsSame(Profile* expected_profile,
+                     Profile* actual_profile,
+                     std::ostream* os) {
   const extensions::ExtensionSet& extensions =
       ExtensionRegistry::Get(expected_profile)->enabled_extensions();
   if (extensions.size() !=
       ExtensionRegistry::Get(actual_profile)->enabled_extensions().size()) {
-    ADD_FAILURE();
     return false;
   }
 
@@ -69,8 +70,7 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
     base::DictValue expected(GetAllSettings(expected_profile, id));
     base::DictValue actual(GetAllSettings(actual_profile, id));
     if (expected != actual) {
-      ADD_FAILURE() << "Expected " << ToJson(expected) << " got "
-                    << ToJson(actual);
+      *os << "Expected " << ToJson(expected) << " got " << ToJson(actual);
       same = false;
     }
   }
@@ -83,6 +83,19 @@ void SetSettingsOnBackendSequence(const base::DictValue* settings,
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
   storage->Set(value_store::ValueStore::DEFAULTS, *settings);
   signal->Signal();
+}
+
+bool AllExtensionSettingsSame(
+    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles,
+    std::ostream* os) {
+  CHECK_GT(profiles.size(), 1u) << "At least two profiles are required.";
+
+  bool all_profiles_same = true;
+  for (size_t i = 1; i < profiles.size(); ++i) {
+    // &= so that all profiles are tested; analogous to EXPECT over ASSERT.
+    all_profiles_same &= AreSettingsSame(profiles[0], profiles[i], os);
+  }
+  return all_profiles_same;
 }
 
 }  // namespace
@@ -108,17 +121,17 @@ void SetExtensionSettings(
   }
 }
 
-bool AllExtensionSettingsSame(
-    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles) {
-  CHECK_GT(profiles.size(), 1u)
-      << "Must have at least two profiles to compare.";
+AllExtensionSettingsSameChecker::AllExtensionSettingsSameChecker(
+    const std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>>&
+        services,
+    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles)
+    : MultiClientStatusChangeChecker(services), profiles_(profiles) {}
 
-  bool all_profiles_same = true;
-  for (size_t i = 1; i < profiles.size(); ++i) {
-    // &= so that all profiles are tested; analogous to EXPECT over ASSERT.
-    all_profiles_same &= AreSettingsSame(profiles[0], profiles[i]);
-  }
-  return all_profiles_same;
+AllExtensionSettingsSameChecker::~AllExtensionSettingsSameChecker() = default;
+
+bool AllExtensionSettingsSameChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  return AllExtensionSettingsSame(profiles_, os);
 }
 
 }  // namespace extension_settings_helper

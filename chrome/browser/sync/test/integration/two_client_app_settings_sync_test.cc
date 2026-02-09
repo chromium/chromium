@@ -9,6 +9,7 @@
 #include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/extension_settings_helper.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
+#include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -21,7 +22,7 @@
 namespace {
 
 using apps_helper::InstallHostedAppForAllProfiles;
-using extension_settings_helper::AllExtensionSettingsSame;
+using extension_settings_helper::AllExtensionSettingsSameChecker;
 using extension_settings_helper::SetExtensionSettings;
 
 class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
@@ -103,7 +104,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!SetupSync()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
@@ -111,7 +113,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!AwaitQuiescence()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
@@ -119,7 +122,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!AwaitQuiescence()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
@@ -159,7 +163,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!SetupSync()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
@@ -167,7 +172,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!AwaitQuiescence()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
@@ -175,7 +181,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!AwaitQuiescence()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
@@ -185,7 +192,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!AwaitQuiescence()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
@@ -193,7 +201,8 @@ class TwoClientAppSettingsSyncTest : public AppsSyncTestBase {
     if (!AwaitQuiescence()) {
       return testing::AssertionFailure();
     }
-    if (!AllExtensionSettingsSame(GetAllProfiles())) {
+    if (!AllExtensionSettingsSameChecker(GetSyncServices(), GetAllProfiles())
+             .Wait()) {
       return testing::AssertionFailure();
     }
 
