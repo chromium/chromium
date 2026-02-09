@@ -96,7 +96,7 @@ tabs::TabInterface* OverlayBaseController::GetTabInterface() {
 
 lens::LensOverlayBlurLayerDelegate*
 OverlayBaseController::GetLensOverlayBlurLayerDelegateForTesting() {
-  return lens_overlay_blur_layer_delegate_.get();
+  return overlay_blur_layer_delegate_.get();
 }
 
 views::View* OverlayBaseController::GetOverlayViewForTesting() {
@@ -112,10 +112,10 @@ void OverlayBaseController::OnViewBoundsChanged(views::View* observed_view) {
 
   // Set our view to the same bounds as the contents web view so it always
   // covers the tab contents.
-  if (lens_overlay_blur_layer_delegate_) {
+  if (overlay_blur_layer_delegate_) {
     // Set the blur to have the same bounds as our view, but since it is in our
     // views local coordinate system, the blur should be positioned at (0,0).
-    lens_overlay_blur_layer_delegate_->layer()->SetBounds(
+    overlay_blur_layer_delegate_->layer()->SetBounds(
         overlay_view_->GetLocalBounds());
   }
 }
@@ -305,8 +305,8 @@ void OverlayBaseController::ReshowScreenshotReady(
   }
   std::move(callback).Run(std::move(rgb_screenshot));
 
-  if (lens_overlay_blur_layer_delegate_) {
-    lens_overlay_blur_layer_delegate_->Hide();
+  if (overlay_blur_layer_delegate_) {
+    overlay_blur_layer_delegate_->Hide();
   }
 
   // Set the overlay web view opacity to near-zero instead of using
@@ -327,13 +327,13 @@ void OverlayBaseController::FinishReshowOverlayImpl() {
     return;
   }
 
-  if (lens_overlay_blur_layer_delegate_) {
+  if (overlay_blur_layer_delegate_) {
     content::RenderWidgetHost* live_page_widget_host =
         tab_->GetContents()
             ->GetPrimaryMainFrame()
             ->GetRenderViewHost()
             ->GetWidget();
-    lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
+    overlay_blur_layer_delegate_->Show(live_page_widget_host);
   }
   SetOverlayWebViewOpacity(1.0f);
   state_ = State::kOverlay;
@@ -366,16 +366,34 @@ void OverlayBaseController::TriggerOverlayFadeOutAnimation(
 }
 
 void OverlayBaseController::SetLiveBlurImpl(bool enabled) {
-  if (!lens_overlay_blur_layer_delegate_) {
+  if (!overlay_blur_layer_delegate_) {
     return;
   }
 
   if (enabled) {
-    lens_overlay_blur_layer_delegate_->StartBackgroundImageCapture();
+    overlay_blur_layer_delegate_->StartBackgroundImageCapture();
     return;
   }
 
-  lens_overlay_blur_layer_delegate_->StopBackgroundImageCapture();
+  overlay_blur_layer_delegate_->StopBackgroundImageCapture();
+}
+
+void OverlayBaseController::AddBackgroundBlurImpl() {
+  // We do not blur unless the overlay is currently active and the blur delegate
+  // was created.
+  if (!overlay_blur_layer_delegate_ || (state_ != State::kOverlay)) {
+    return;
+  }
+
+  // Add our blur layer to the view.
+  overlay_web_view_->SetPaintToLayer();
+  overlay_web_view_->layer()->Add(overlay_blur_layer_delegate_->layer());
+  overlay_web_view_->layer()->StackAtBottom(
+      overlay_blur_layer_delegate_->layer());
+  overlay_blur_layer_delegate_->layer()->SetBounds(
+      overlay_web_view_->GetLocalBounds());
+
+  overlay_blur_layer_delegate_->FetchBackgroundImage();
 }
 
 void OverlayBaseController::TabForegrounded(tabs::TabInterface* tab) {
@@ -619,9 +637,9 @@ void OverlayBaseController::HideOverlay() {
 
   // Save the current value of whether live blur is enabled so that it can be
   // restored when the overlay is shown again.
-  if (lens_overlay_blur_layer_delegate_) {
+  if (overlay_blur_layer_delegate_) {
     should_enable_live_blur_on_show_ =
-        lens_overlay_blur_layer_delegate_->IsLiveBlurActive();
+        overlay_blur_layer_delegate_->IsLiveBlurActive();
   }
   SetLiveBlurImpl(false);
   HidePreselectionBubble();
@@ -643,7 +661,7 @@ void OverlayBaseController::InitializeOverlayImpl() {
             ->GetPrimaryMainFrame()
             ->GetRenderViewHost()
             ->GetWidget();
-    lens_overlay_blur_layer_delegate_ =
+    overlay_blur_layer_delegate_ =
         std::make_unique<lens::LensOverlayBlurLayerDelegate>(
             live_page_widget_host);
   }
@@ -681,7 +699,7 @@ void OverlayBaseController::CloseUI() {
   tab_contents_view_observer_.Reset();
   scoped_tab_modal_ui_.reset();
   immersive_mode_observer_.Reset();
-  lens_overlay_blur_layer_delegate_.reset();
+  overlay_blur_layer_delegate_.reset();
   pref_change_registrar_.Reset();
 
   // Cleanup all of the lens overlay related views. The overlay view is owned by

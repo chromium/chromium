@@ -272,6 +272,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Enable/Disable live blur.
   void SetLiveBlurImpl(bool enabled);
 
+  // Add the background blur delegate to the layer hierarchy.
+  void AddBackgroundBlurImpl();
+
   // Sets the top right or top left corner of the overlay to be rounded if the
   // side panel is open and the `SideBySide` feature is enabled. This is
   // necessary because rounded corners are owned by the `MultiContentsView`,
@@ -332,6 +335,7 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // The pref service associated with the current profile.
   raw_ptr<PrefService> pref_service_;
 
+ private:
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 
@@ -360,8 +364,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
 
   // Layer delegate that handles blurring the background behind the WebUI.
   std::unique_ptr<lens::LensOverlayBlurLayerDelegate>
-      lens_overlay_blur_layer_delegate_;
+      overlay_blur_layer_delegate_;
 
+ protected:
   // Pointer to the view that houses our overlay as a child of the tab
   // contents web view.
   raw_ptr<views::View> overlay_view_;
@@ -372,6 +377,7 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Preselection toast bubble. Weak; owns itself. NULL when closed.
   raw_ptr<views::Widget> preselection_widget_ = nullptr;
 
+ private:
   // The anchor view to the preselection bubble. This anchor is an invisible
   // sibling of the the `overlay_view_`, user to always keep the preselection
   // bubble anchored to the top of the screen, while also maintaining focus
@@ -384,7 +390,6 @@ class OverlayBaseController : public content::WebContentsDelegate,
   PrefChangeRegistrar pref_change_registrar_;
 
   // --------------------Browser window scoped state: END---------------------
- private:
   // Must be the last member.
   base::WeakPtrFactory<OverlayBaseController> weak_factory_{this};
 };
