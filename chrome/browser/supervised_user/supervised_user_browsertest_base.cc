@@ -27,6 +27,7 @@
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -45,12 +46,11 @@ namespace supervised_user {
 namespace {
 std::unique_ptr<KeyedService> BuildSupervisedUserService(
     MockUrlCheckerClient& mock_url_checker_client,
-    SupervisedUserBrowserTestBase::InitialSupervisedUserState initial_state,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  ProfileKey* profile_key = profile->GetProfileKey();
-  FamilyLinkSettingsService& settings_service = CHECK_DEREF(
-      FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(profile_key));
+  FamilyLinkSettingsService& settings_service =
+      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()));
 
   return std::make_unique<SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
@@ -64,6 +64,17 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
           std::make_unique<UrlCheckerClientWrapper>(mock_url_checker_client)),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
       g_browser_process->device_parental_controls());
+}
+
+std::unique_ptr<KeyedService> BuildSupervisedUserUrlFilteringService(
+    MockUrlCheckerClient& mock_url_checker_client,
+    content::BrowserContext* context) {
+  return std::make_unique<SupervisedUserUrlFilteringService>(
+      CHECK_DEREF(SupervisedUserServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context))),
+      std::make_unique<DeviceParentalControlsUrlFilter>(
+          g_browser_process->device_parental_controls(),
+          std::make_unique<UrlCheckerClientWrapper>(mock_url_checker_client)));
 }
 }  // namespace
 
@@ -94,9 +105,12 @@ void SupervisedUserBrowserTestBase::SetUpBrowserContextKeyedServices(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
-      context,
-      base::BindRepeating(&BuildSupervisedUserService,
-                          std::ref(mock_url_checker_client_), initial_state_));
+      context, base::BindRepeating(&BuildSupervisedUserService,
+                                   std::ref(mock_url_checker_client_)));
+
+  SupervisedUserUrlFilteringServiceFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating(&BuildSupervisedUserUrlFilteringService,
+                                   std::ref(mock_url_checker_client_)));
 
   browser_context_keyed_services_set_up_ = true;
 }

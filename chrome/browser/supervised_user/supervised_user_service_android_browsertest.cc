@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,8 +21,10 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/features.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -97,14 +101,18 @@ struct BootstrapServiceTestCase {
 // Tests the aspect where the Family Link supervision is not enabled, but the
 // content filters are set.
 class SupervisedUserServiceBootstrapAndroidBrowserTest
-    : public SupervisedUserServiceBootstrapAndroidBrowserTestBase,
-      public ::testing::WithParamInterface<BootstrapServiceTestCase> {
+    : public WithFeatureOverrideAndParamInterface<BootstrapServiceTestCase>,
+      public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
  protected:
-  SupervisedUserServiceBootstrapAndroidBrowserTest() {
+  SupervisedUserServiceBootstrapAndroidBrowserTest()
+      : WithFeatureOverrideAndParamInterface<BootstrapServiceTestCase>(
+            kSupervisedUserUseUrlFilteringService) {
     SetInitialSupervisedUserState(
         {.android_parental_controls = {
-             .browser_filter = GetParam().initial_browser_content_filters_value,
-             .search_filter = GetParam().initial_search_content_filters_value,
+             .browser_filter =
+                 GetTestCase().initial_browser_content_filters_value,
+             .search_filter =
+                 GetTestCase().initial_search_content_filters_value,
          }});
   }
 };
@@ -114,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   ASSERT_NE(nullptr, GetSupervisedUserService());
 
   policy::IncognitoModeAvailability expected_incognito_mode_availability =
-      GetParam().ShouldBlockIncognito()
+      GetTestCase().ShouldBlockIncognito()
           ? policy::IncognitoModeAvailability::kDisabled
           : policy::IncognitoModeAvailability::kEnabled;
 
@@ -130,11 +138,11 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        SafeSearchIsEnforcedWhenSearchFilterIsEnabled) {
   GURL request_url =
       embedded_test_server()->GetURL("google.com", "/search?q=cat");
-  GURL expected_url = GetParam().initial_search_content_filters_value
+  GURL expected_url = GetTestCase().initial_search_content_filters_value
                           ? GURL(request_url.spec() + "&safe=active&ssui=on")
                           : request_url;
 
-  if (GetParam().initial_browser_content_filters_value) {
+  if (GetTestCase().initial_browser_content_filters_value) {
     // Google search is not on the exempt list of the URL Filter: search
     // requests must be explicitly allowed.
     EXPECT_CALL(GetMockUrlCheckerClient(),
@@ -154,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   GURL request_url =
       embedded_test_server()->GetURL("/supervised_user/simple.html");
 
-  if (GetParam().initial_browser_content_filters_value) {
+  if (GetTestCase().initial_browser_content_filters_value) {
     EXPECT_CALL(GetMockUrlCheckerClient(),
                 CheckURL(url_matcher::util::Normalize(request_url), _))
         .WillOnce([](const GURL& url,
@@ -176,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        SafeSitesBlocksPagesWhenEnabled) {
-  if (!GetParam().initial_browser_content_filters_value) {
+  if (!GetTestCase().initial_browser_content_filters_value) {
     GTEST_SKIP() << "This test requires the browser filter to be enabled.";
   }
 
@@ -199,14 +207,20 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        WebFilterTypeIsRecordedOnceWhenBrowserFilterIsEnabled) {
-  if (GetParam().initial_browser_content_filters_value) {
+  if (GetTestCase().initial_browser_content_filters_value) {
     histogram_tester().ExpectBucketCount(
         "SupervisedUsers.WebFilterType.LocallySupervised",
         WebFilterType::kTryToBlockMatureSites, 1);
-  } else if (GetParam().initial_search_content_filters_value) {
+  } else if (GetTestCase().initial_search_content_filters_value) {
+    // With url service enabled, when the search filter is enabled and the
+    // browser filter is disabled, the web filter type indicates that it allows
+    // all sites.
+    WebFilterType expected_web_filter_type = IsFeatureEnabled()
+                                                 ? WebFilterType::kAllowAllSites
+                                                 : WebFilterType::kDisabled;
     histogram_tester().ExpectBucketCount(
         "SupervisedUsers.WebFilterType.LocallySupervised",
-        WebFilterType::kDisabled, 1);
+        expected_web_filter_type, 1);
   } else {
     histogram_tester().ExpectTotalCount(
         "SupervisedUsers.WebFilterType.LocallySupervised", 0);
@@ -219,8 +233,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        FamilyLinkOverridesDeviceSupervision) {
   bool is_initially_supervised_locally =
-      GetParam().initial_browser_content_filters_value ||
-      GetParam().initial_search_content_filters_value;
+      GetTestCase().initial_browser_content_filters_value ||
+      GetTestCase().initial_search_content_filters_value;
 
   // Device supervision is initially enabled/disabled based on the test case,
   // but Family Link supervision is always disabled.
@@ -270,22 +284,30 @@ const BootstrapServiceTestCase kBootstrapServiceTestCases[] = {
 INSTANTIATE_TEST_SUITE_P(
     ,
     SupervisedUserServiceBootstrapAndroidBrowserTest,
-    testing::ValuesIn(kBootstrapServiceTestCases),
-    [](const testing::TestParamInfo<BootstrapServiceTestCase>& info) {
-      return info.param.test_name;
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(kBootstrapServiceTestCases)),
+    [](const testing::TestParamInfo<
+        SupervisedUserServiceBootstrapAndroidBrowserTest::ParamType>& info) {
+      bool feature_enabled = std::get<0>(info.param);
+      BootstrapServiceTestCase test_case = std::get<1>(info.param);
+      return base::StrCat({feature_enabled ? "With" : "Without",
+                           kSupervisedUserUseUrlFilteringService.name, "_",
+                           test_case.test_name});
     });
 
 // Tests the aspect where the Family Link supervision is enabled, but the
 // content filters are not set.
 class SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest
-    : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
+    : public base::test::WithFeatureOverride,
+      public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
  protected:
-  SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest() {
+  SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest()
+      : base::test::WithFeatureOverride(kSupervisedUserUseUrlFilteringService) {
     SetInitialSupervisedUserState({.family_link_parental_controls = true});
   }
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
     IncognitoIsBlocked) {
   // TODO(http://crbug.com/433234589): this test could actually try to open
@@ -296,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(
             policy::IncognitoModeAvailability::kDisabled);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
     SafeSitesBlocksPages) {
   GURL request_url =
@@ -316,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(web_contents()->GetTitle(), u"Site blocked");
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
     WebFilterTypeIsRecordedOnce) {
   histogram_tester().ExpectBucketCount(
@@ -326,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(
       "FamilyUser.WebFilterType", WebFilterType::kTryToBlockMatureSites, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
     FamilyLinkIsImmuneToDeviceSupervision) {
   // Device supervision is initially disabled and Family Link supervision is
@@ -350,6 +372,9 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 2);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest);
 
 // Tests the aspect where the Family Link supervision is disabled and the
 // content filters are not set.
