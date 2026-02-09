@@ -200,8 +200,8 @@ class AwContents : public FindHelper::Listener,
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetWebMessageListenerInfos(
       JNIEnv* env);
 
-  std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
-  GetDocumentStartupJavascripts(JNIEnv* env);
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetPersistentJavascripts(
+      JNIEnv* env);
 
   void FlushBackForwardCache(JNIEnv* env, int32_t reason);
 
