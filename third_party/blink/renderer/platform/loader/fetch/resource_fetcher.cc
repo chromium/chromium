@@ -2272,7 +2272,7 @@ void ResourceFetcher::PopulateResourceRequestPermissionsPolicy(
     // policies, this might be removed.
     request->permissions_policy =
         *network::PermissionsPolicy::CreateFromParsedPolicy(
-            {}, {}, url::Origin::Create(request->url));
+            {}, url::Origin::Create(request->url));
   }
 }
 

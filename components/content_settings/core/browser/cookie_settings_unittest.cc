@@ -1985,7 +1985,7 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
                  /*self_if_matches=*/std::nullopt,
                  /*matches_all_origins=*/false,
                  /*matches_opaque_src=*/false}}},
-              std::nullopt, origin);
+              origin);
 
   EXPECT_EQ(
       cookie_settings_->GetStorageAccessStatus(
@@ -2053,7 +2053,7 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
                  /*self_if_matches=*/std::nullopt,
                  /*matches_all_origins=*/false,
                  /*matches_opaque_src=*/false}}},
-              std::nullopt, origin);
+              origin);
   EXPECT_EQ(
       cookie_settings_->GetStorageAccessStatus(
           url, net::SiteForCookies(), top_frame_origin,

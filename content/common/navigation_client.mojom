@@ -367,7 +367,6 @@ interface NavigationClient {
       blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       mojo_base.mojom.Uuid base_auction_nonce,
-      array<network.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host_for_background,

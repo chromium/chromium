@@ -12968,8 +12968,7 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(container_info),
         std::move(subresource_proxying_loader_factory_for_renderer),
         std::move(keep_alive_loader_factory),
-        std::move(fetch_later_loader_factory),
-        /*permissions_policy=*/std::nullopt, std::move(policy_container),
+        std::move(fetch_later_loader_factory), std::move(policy_container),
         *document_token, devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -14243,7 +14242,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
     }
 
     permissions_policy_ = network::PermissionsPolicy::CreateFromParsedPolicy(
-        header_policy, /*base_policy=*/std::nullopt, last_committed_origin_);
+        header_policy, last_committed_origin_);
     return;
   }
 
@@ -16659,7 +16658,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
         keep_alive_loader_factory,
     mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
         fetch_later_loader_factory,
-    const std::optional<network::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token) {
@@ -16805,7 +16803,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
         std::move(subresource_proxying_loader_factory),
         std::move(keep_alive_loader_factory),
         std::move(fetch_later_loader_factory), document_token,
-        devtools_navigation_token, base_auction_nonce_, permissions_policy,
+        devtools_navigation_token, base_auction_nonce_,
         std::move(policy_container), std::move(code_cache_host),
         std::move(code_cache_host_for_background),
         std::move(cookie_manager_info), std::move(storage_info),

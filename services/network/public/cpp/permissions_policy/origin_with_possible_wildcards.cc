@@ -93,6 +93,9 @@ bool OriginWithPossibleWildcards::DoesMatchOrigin(
                                  network::CSPSourceContext::PermissionsPolicy);
 }
 
+bool operator==(const OriginWithPossibleWildcards& lhs,
+                const OriginWithPossibleWildcards& rhs) = default;
+
 std::strong_ordering operator<=>(const OriginWithPossibleWildcards& lhs,
                                  const OriginWithPossibleWildcards& rhs) {
   if (lhs.csp_source < rhs.csp_source) {

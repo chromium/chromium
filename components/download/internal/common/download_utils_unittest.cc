@@ -112,7 +112,7 @@ TEST(DownloadUtilsTest, CreateResourceRequestWithPermissionsPolicy) {
              /*self_if_matches=*/std::nullopt,
              /*matches_all_origins=*/false,
              /*matches_opaque_src=*/false}}},
-          std::nullopt, origin);
+          origin);
   params->set_permissions_policy(permissions_policy.get());
   auto resource_request = CreateResourceRequest(params.get());
   EXPECT_EQ(*resource_request->permissions_policy, *permissions_policy);
@@ -136,7 +136,7 @@ TEST(DownloadUtilsTest,
              /*self_if_matches=*/std::nullopt,
              /*matches_all_origins=*/false,
              /*matches_opaque_src=*/false}}},
-          std::nullopt, origin);
+          origin);
   params->set_permissions_policy(permissions_policy.get());
   auto resource_request = CreateResourceRequest(params.get());
   EXPECT_EQ(resource_request->permissions_policy, std::nullopt);

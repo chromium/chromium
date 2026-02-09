@@ -205,7 +205,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     DCHECK(frame.IsOutermostMainFrame());
     std::unique_ptr<network::PermissionsPolicy> permissions_policy =
         network::PermissionsPolicy::CreateFromParsedPolicy(
-            permissions_policy_header_, /*base_policy=*/std::nullopt, origin);
+            permissions_policy_header_, origin);
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         std::move(permissions_policy));
   } else {
@@ -227,7 +227,6 @@ void SecurityContextInit::ApplyPermissionsPolicy(
             network::PermissionsPolicy::CreateFromParsedPolicy(
                 fenced_frame_properties->parent_permissions_info()
                     ->parsed_permissions_policy,
-                /*base_policy=*/std::nullopt,
                 fenced_frame_properties->parent_permissions_info()->origin);
 
         permissions_policy =

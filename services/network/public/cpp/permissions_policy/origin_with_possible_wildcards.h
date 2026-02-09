@@ -78,8 +78,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) OriginWithPossibleWildcards {
   }
 
   COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
-  friend bool operator==(const OriginWithPossibleWildcards&,
-                         const OriginWithPossibleWildcards&) = default;
+  friend bool operator==(const OriginWithPossibleWildcards& lhs,
+                         const OriginWithPossibleWildcards& rhs);
 
   COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
   friend std::strong_ordering operator<=>(

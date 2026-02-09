@@ -281,7 +281,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
   // Propagate the actual permissions policy once it is available.
   request.permissions_policy =
       *network::PermissionsPolicy::CreateFromParsedPolicy(
-          {}, {}, url::Origin::Create(request.url));
+          {}, url::Origin::Create(request.url));
 
   request.site_for_cookies = storage_key.ToNetSiteForCookies();
   request.do_not_prompt_for_login = true;

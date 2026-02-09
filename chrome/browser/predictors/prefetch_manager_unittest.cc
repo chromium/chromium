@@ -188,7 +188,7 @@ TEST_P(PrefetchManagerTest, OneMainFrameUrlOnePrefetch) {
         EXPECT_EQ(request.referrer_policy, net::ReferrerPolicy::NO_REFERRER);
         EXPECT_EQ(request.permissions_policy,
                   *network::PermissionsPolicy::CreateFromParsedPolicy(
-                      {}, {}, url::Origin::Create(request.url)));
+                      {}, url::Origin::Create(request.url)));
         EXPECT_EQ(request.destination,
                   network::mojom::RequestDestination::kScript);
         EXPECT_EQ(
@@ -679,7 +679,7 @@ TEST_P(PrefetchManagerTest, Font) {
         EXPECT_EQ(request.referrer_policy, net::ReferrerPolicy::NO_REFERRER);
         EXPECT_EQ(request.permissions_policy,
                   *network::PermissionsPolicy::CreateFromParsedPolicy(
-                      {}, {}, url::Origin::Create(request.url)));
+                      {}, url::Origin::Create(request.url)));
         EXPECT_EQ(request.destination,
                   network::mojom::RequestDestination::kFont);
         EXPECT_EQ(

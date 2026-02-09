@@ -43,7 +43,7 @@ ScopedNullExecutionContext MakeExecutionContext(bool has_permission) {
   execution_context.GetExecutionContext()
       .GetSecurityContext()
       .SetPermissionsPolicy(network::PermissionsPolicy::CreateFromParsedPolicy(
-          parsed_policy, /*base_policy=*/std::nullopt, origin->ToUrlOrigin()));
+          parsed_policy, origin->ToUrlOrigin()));
 
   return execution_context;
 }

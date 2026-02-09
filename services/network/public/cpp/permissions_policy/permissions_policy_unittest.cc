@@ -136,11 +136,9 @@ class PermissionsPolicyTest : public testing::Test {
 
   std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const network::ParsedPermissionsPolicy& parsed_policy,
-      const url::Origin& origin,
-      const std::optional<network::ParsedPermissionsPolicy>& base_policy =
-          std::nullopt) {
-    return PermissionsPolicy::CreateFromParsedPolicy(parsed_policy, base_policy,
-                                                     origin, feature_list_);
+      const url::Origin& origin) {
+    return PermissionsPolicy::CreateFromParsedPolicy(parsed_policy, origin,
+                                                     feature_list_);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFromParentWithFramePolicy(
@@ -3065,146 +3063,6 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithEmptyAllowlist) {
         /*matches_opaque_src=*/false}}};
   auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
-}
-
-TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithBasePolicy) {
-  url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
-  network::ParsedPermissionsPolicy base_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/
-        {
-            *network::OriginWithPossibleWildcards::
-                FromOriginAndWildcardsForTest(origin_a_,
-                                              /*has_subdomain_wildcard=*/false),
-            *network::OriginWithPossibleWildcards::
-                FromOriginAndWildcardsForTest(origin_b_,
-                                              /*has_subdomain_wildcard=*/false),
-        },
-        /*self_if_matches=*/origin_self,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  network::ParsedPermissionsPolicy parsed_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/
-        {
-            *network::OriginWithPossibleWildcards::
-                FromOriginAndWildcardsForTest(origin_b_,
-                                              /*has_subdomain_wildcard=*/false),
-            *network::OriginWithPossibleWildcards::
-                FromOriginAndWildcardsForTest(origin_c_,
-                                              /*has_subdomain_wildcard=*/false),
-        },
-        /*self_if_matches=*/origin_self,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  auto policy = CreateFromParsedPolicy(parsed_policy, origin_self, base_policy);
-  EXPECT_TRUE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_self));
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
-  EXPECT_TRUE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
-}
-
-TEST_F(PermissionsPolicyTest,
-       CreateFromParsedPolicyWithBasePolicyExcludingSelf) {
-  url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
-  network::ParsedPermissionsPolicy base_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  network::ParsedPermissionsPolicy parsed_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/origin_a_,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
-}
-
-TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithoutSelfWithBasePolicy) {
-  url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
-  network::ParsedPermissionsPolicy base_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/origin_a_,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  network::ParsedPermissionsPolicy parsed_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
-}
-
-TEST_F(PermissionsPolicyTest,
-       CreateFromParsedPolicyWildcardWithMoreRestrictiveBasePolicy) {
-  network::ParsedPermissionsPolicy base_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            origin_b_,
-            /*has_subdomain_wildcard=*/false)},
-        /*self_if_matches=*/origin_a_,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  network::ParsedPermissionsPolicy parsed_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/true,
-        /*matches_opaque_src=*/false}}};
-  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
-  EXPECT_TRUE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
-  EXPECT_TRUE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
-}
-
-TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithWildcardBasePolicy) {
-  network::ParsedPermissionsPolicy base_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/true,
-        /*matches_opaque_src=*/false}}};
-  network::ParsedPermissionsPolicy parsed_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            origin_a_,
-            /*has_subdomain_wildcard=*/false)},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/false,
-        /*matches_opaque_src=*/false}}};
-  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
-  EXPECT_TRUE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
-}
-
-TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithMissingBasePolicy) {
-  // Tests a parsed policy that includes an allowlist for a feature not
-  // declared in the base policy.
-  network::ParsedPermissionsPolicy base_policy = {
-      {{kDefaultOnFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/true,
-        /*matches_opaque_src=*/false}}};
-  network::ParsedPermissionsPolicy parsed_policy = {
-      {{kDefaultSelfFeature, /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/true,
-        /*matches_opaque_src=*/false}}};
-  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
-  EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(kDefaultOnFeature, origin_a_));
-  EXPECT_FALSE(
-      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
 }
 
 TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {

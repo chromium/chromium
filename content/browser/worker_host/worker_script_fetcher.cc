@@ -315,7 +315,7 @@ void WorkerScriptFetcher::CreateAndStart(
   // Propagate the actual permissions policy once it is available.
   resource_request->permissions_policy =
       *network::PermissionsPolicy::CreateFromParsedPolicy(
-          {}, {}, url::Origin::Create(resource_request->url));
+          {}, url::Origin::Create(resource_request->url));
 
   // For a classic worker script request:
   // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script

@@ -250,7 +250,7 @@ void PrefetchManager::PrefetchUrl(
   // conservative, all-blocking permissions policy.
   request.permissions_policy =
       *network::PermissionsPolicy::CreateFromParsedPolicy(
-          {}, {}, url::Origin::Create(request.url));
+          {}, url::Origin::Create(request.url));
 
   if (!base::FeatureList::IsEnabled(
           blink::features::kRemovePurposeHeaderForPrefetch)) {

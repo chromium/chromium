@@ -214,12 +214,9 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
       base::span<const network::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);
 
-  // Creates a PermissionsPolicy from a parsed policy. If `base_policy` is
-  // supplied, it will be used first and the `parsed_policy` may further
-  // restrict the policy.
+  // Creates a PermissionsPolicy from a parsed policy.
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const network::ParsedPermissionsPolicy& parsed_policy,
-      const std::optional<network::ParsedPermissionsPolicy>& base_policy,
       const url::Origin& origin);
 
   // Returns the inherited policy of the given feature.
@@ -316,17 +313,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   static AllowlistsAndReportingEndpoints CreateAllowlistsAndReportingEndpoints(
       const network::ParsedPermissionsPolicy& parsed_header);
 
-  // Merges |base_policy| with |second_policy|. For each feature, if
-  // |base_policy| allows all domains then the |second_policy| overrides it if
-  // it specifies an allowlist. If both policies specify an allowlist then the
-  // combined allowlist will be the intersection of the two.
-  //
-  // This is used e.g. for merging the policy in an isolated app manifest with
-  // a policy received in an HTTP header.
-  static AllowlistsAndReportingEndpoints CombinePolicies(
-      const network::ParsedPermissionsPolicy& base_policy,
-      const network::ParsedPermissionsPolicy& second_policy);
-
   PermissionsPolicy(
       url::Origin origin,
       AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
@@ -343,8 +329,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const network::ParsedPermissionsPolicy& parsed_policy,
-      const std::optional<network::ParsedPermissionsPolicy>&
-          parsed_policy_for_isolated_app,
       const url::Origin& origin,
       const network::PermissionsPolicyFeatureList& features);
 
