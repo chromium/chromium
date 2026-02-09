@@ -240,6 +240,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   //
   // May only be called by a single PartitionRoot.
   static void Init(PartitionRoot* root);
+  static bool IsInitialized();
 
   static void DeleteForTesting();
 
