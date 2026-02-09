@@ -243,7 +243,9 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     seed->country = seed_proto->country();
     seed->date = seed_date;
     seed->is_gzip_compressed = seed_proto->is_gzip_compressed();
-    nonembedded_low_entropy_source = seed_proto->low_entropy_source();
+    if (seed_proto->has_low_entropy_source()) {
+      nonembedded_low_entropy_source = seed_proto->low_entropy_source();
+    }
   }
 
   client_ = std::make_unique<AwVariationsServiceClient>();
