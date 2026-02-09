@@ -2218,6 +2218,14 @@ String LayoutObject::DebugName() const {
 }
 
 void LayoutObject::DumpForBug478682594() const {
+  // Dump only once per instance. Might become noisy otherwise.
+  static bool has_dumped;
+
+  if (has_dumped) {
+    return;
+  }
+  has_dumped = true;
+
   StringBuilder value_builder;
   for (const LayoutObject* obj = this; obj; obj = obj->Parent()) {
     unsigned needs_layout_flags =
