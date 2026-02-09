@@ -22705,26 +22705,6 @@
             ]
         }
     ],
-    "RespectUserAgentOverrideInSearchPrefetch": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PreloadingRespectUserAgentOverride",
-                        "RespectUserAgentOverrideInSearchPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "RestrictAbusePorts": [
         {
             "platforms": [
