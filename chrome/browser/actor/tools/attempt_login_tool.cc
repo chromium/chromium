@@ -76,11 +76,16 @@ mojom::ActionResultCode LoginResultToActorResult(
 
 }  // namespace
 
-AttemptLoginTool::AttemptLoginTool(TaskId task_id,
-                                   ToolDelegate& tool_delegate,
-                                   tabs::TabInterface& tab)
+AttemptLoginTool::AttemptLoginTool(
+    TaskId task_id,
+    ToolDelegate& tool_delegate,
+    tabs::TabInterface& tab,
+    std::optional<PageTarget> password_button,
+    std::optional<PageTarget> sign_in_with_google_button)
     : Tool(task_id, tool_delegate),
       tab_handle_(tab.GetHandle()),
+      password_button_(password_button),
+      sign_in_with_google_button_(sign_in_with_google_button),
       attempt_login_tool_start_time_(base::TimeTicks::Now()) {}
 
 AttemptLoginTool::~AttemptLoginTool() {

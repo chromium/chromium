@@ -14,10 +14,20 @@
 
 namespace actor {
 
-AttemptLoginToolRequest::AttemptLoginToolRequest(tabs::TabHandle tab_handle)
-    : TabToolRequest(tab_handle) {}
+AttemptLoginToolRequest::AttemptLoginToolRequest(
+    tabs::TabHandle tab_handle,
+    std::optional<PageTarget> password_button,
+    std::optional<PageTarget> sign_in_with_google_button)
+    : TabToolRequest(tab_handle),
+      password_button_(password_button),
+      sign_in_with_google_button_(sign_in_with_google_button) {}
 
 AttemptLoginToolRequest::~AttemptLoginToolRequest() = default;
+
+AttemptLoginToolRequest::AttemptLoginToolRequest(
+    const AttemptLoginToolRequest&) = default;
+AttemptLoginToolRequest& AttemptLoginToolRequest::operator=(
+    const AttemptLoginToolRequest&) = default;
 
 ToolRequest::CreateToolResult AttemptLoginToolRequest::CreateTool(
     TaskId task_id,
@@ -29,7 +39,9 @@ ToolRequest::CreateToolResult AttemptLoginToolRequest::CreateTool(
                                          "The tab is no longer present.")};
   }
 
-  return {std::make_unique<AttemptLoginTool>(task_id, tool_delegate, *tab),
+  return {std::make_unique<AttemptLoginTool>(task_id, tool_delegate, *tab,
+                                             password_button_,
+                                             sign_in_with_google_button_),
           MakeOkResult()};
 }
 

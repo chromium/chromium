@@ -54,6 +54,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
@@ -492,7 +493,40 @@ std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
     return nullptr;
   }
 
-  return std::make_unique<AttemptLoginToolRequest>(tab_handle);
+  std::optional<PageTarget> password_button;
+  std::optional<PageTarget> sign_in_with_google_button;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginFederatedLoginSupport)) {
+    for (const auto& login_target : action.login_targets()) {
+      if (!login_target.has_login_type() || !login_target.has_target()) {
+        return nullptr;
+      }
+
+      std::optional<PageTarget> target = ToPageTarget(login_target.target());
+      if (!target) {
+        return nullptr;
+      }
+
+      switch (login_target.login_type()) {
+        case optimization_guide::proto::
+            AttemptLoginAction_LoginTarget_LoginType_PASSWORD_FORM_SUBMIT:
+          password_button = target;
+          break;
+        case optimization_guide::proto::
+            AttemptLoginAction_LoginTarget_LoginType_FEDERATED_GOOGLE_SIGNIN:
+          sign_in_with_google_button = target;
+          break;
+        default:
+          // We ignore unknown types and proceed to attempt login with the
+          // options we do understand. For example, maybe a future version of
+          // chrome supports another federated signin provider.
+          break;
+      }
+    }
+  }
+
+  return std::make_unique<AttemptLoginToolRequest>(tab_handle, password_button,
+                                                   sign_in_with_google_button);
 }
 #endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 

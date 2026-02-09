@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_quality_logger.h"
@@ -35,7 +36,9 @@ class AttemptLoginTool : public Tool {
  public:
   AttemptLoginTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
-                   tabs::TabInterface& tab);
+                   tabs::TabInterface& tab,
+                   std::optional<PageTarget> password_button,
+                   std::optional<PageTarget> sign_in_with_google_button);
   ~AttemptLoginTool() override;
 
   // actor::Tool
@@ -101,6 +104,12 @@ class AttemptLoginTool : public Tool {
   std::vector<base::CancelableTaskTracker> favicon_requests_tracker_;
 
   tabs::TabHandle tab_handle_;
+
+  // TODO(crbug.com/479504052): Make use of these fields.
+  // Identifies a button to submit (or advance) a password form.
+  std::optional<PageTarget> password_button_;
+  // Identifies a "Sign in with Google" button.
+  std::optional<PageTarget> sign_in_with_google_button_;
 
   // The time where the attempt tool is created, used to calculate the overall
   // time of the flow until filling and submission time.

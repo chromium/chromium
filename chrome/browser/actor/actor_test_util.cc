@@ -587,8 +587,12 @@ std::unique_ptr<ToolRequest> MakeCloseTabRequest(TabHandle tab) {
   return std::make_unique<CloseTabToolRequest>(tab);
 }
 
-std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(TabInterface& tab) {
-  return std::make_unique<AttemptLoginToolRequest>(tab.GetHandle());
+std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(
+    TabInterface& tab,
+    std::optional<PageTarget> password_button,
+    std::optional<PageTarget> sign_in_with_google_button) {
+  return std::make_unique<AttemptLoginToolRequest>(
+      tab.GetHandle(), password_button, sign_in_with_google_button);
 }
 
 std::unique_ptr<ToolRequest> MakeScriptToolRequest(

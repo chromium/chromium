@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -179,7 +180,10 @@ std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
                                                   bool foreground);
 std::unique_ptr<ToolRequest> MakeActivateTabRequest(tabs::TabHandle tab);
 std::unique_ptr<ToolRequest> MakeCloseTabRequest(tabs::TabHandle tab);
-std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(tabs::TabInterface& tab);
+std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(
+    tabs::TabInterface& tab,
+    std::optional<PageTarget> password_button = std::nullopt,
+    std::optional<PageTarget> sign_in_with_google_button = std::nullopt);
 std::unique_ptr<ToolRequest> MakeScriptToolRequest(
     content::RenderFrameHost& rfh,
     const std::string& name,
