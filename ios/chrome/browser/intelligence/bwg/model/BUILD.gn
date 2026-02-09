@@ -167,6 +167,8 @@ source_set("config") {
   sources = [
     "gemini_configuration.h",
     "gemini_configuration.mm",
+    "gemini_startup_configuration.h",
+    "gemini_startup_configuration.mm",
   ]
   deps = [
     "//base",
