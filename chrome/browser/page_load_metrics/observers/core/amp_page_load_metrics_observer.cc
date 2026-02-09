@@ -262,7 +262,7 @@ void AMPPageLoadMetricsObserver::OnEventTimingUpdate(
     return;
 
   it->second.interaction_to_next_paint_calculator.AddNewEventTimings(
-      event_timings);
+      *subframe_rfh, event_timings);
 }
 
 void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(

@@ -6,17 +6,21 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using EventTiming = page_load_metrics::mojom::EventTiming;
 
-class InteractionToNextPaintCalculatorTest : public testing::Test {
+class InteractionToNextPaintCalculatorTest
+    : public content::RenderViewHostTestHarness {
  public:
   InteractionToNextPaintCalculatorTest() = default;
 
   void AddNewEventTimings(
+      const content::RenderFrameHost* source,
       std::vector<page_load_metrics::mojom::EventTimingPtr>& event_timings) {
-    interaction_to_next_paint_calculator_.AddNewEventTimings(event_timings);
+    interaction_to_next_paint_calculator_.AddNewEventTimings(*source,
+                                                             event_timings);
   }
 
   uint64_t GetNumInteractions() {
@@ -42,57 +46,57 @@ TEST_F(InteractionToNextPaintCalculatorTest, SendAllInteractions) {
   std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
   base::TimeTicks current_time = base::TimeTicks::Now();
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(3000), 0, current_time + base::Milliseconds(1000)));
+      base::Milliseconds(3000), 1, current_time + base::Milliseconds(1000)));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(3500), 1, current_time + base::Milliseconds(2000)));
+      base::Milliseconds(3500), 2, current_time + base::Milliseconds(2000)));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(2000), 2, current_time + base::Milliseconds(3000)));
-  AddNewEventTimings(event_timings);
+      base::Milliseconds(2000), 3, current_time + base::Milliseconds(3000)));
+  AddNewEventTimings(main_rfh(), event_timings);
   EXPECT_EQ(GetNumInteractions(), 3u);
   EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(3500));
-  EXPECT_EQ(GetWorstInteraction().interaction_id, 1u);
+  EXPECT_EQ(GetWorstInteraction().interaction_id, 2u);
   EXPECT_EQ(GetWorstInteraction().start_time,
             current_time + base::Milliseconds(2000));
   EXPECT_EQ(GetHighPercentileInteraction().duration, base::Milliseconds(3500));
-  EXPECT_EQ(GetHighPercentileInteraction().interaction_id, 1u);
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_id, 2u);
   EXPECT_EQ(GetHighPercentileInteraction().start_time,
             current_time + base::Milliseconds(2000));
 
   // After adding 50 additional interactions, the high percentile should shift
   // to the second highest interaction duration.
   event_timings.clear();
-  for (uint64_t i = 0; i < 50; i++) {
+  for (uint64_t i = 1; i <= 50; i++) {
     event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
         base::Milliseconds(i + 100), i + 3,
-        current_time + base::Milliseconds(4000 + (1000 * i))));
+        current_time + base::Milliseconds(4000 + (1000 * (i - 1)))));
   }
-  AddNewEventTimings(event_timings);
+  AddNewEventTimings(main_rfh(), event_timings);
   EXPECT_EQ(GetNumInteractions(), 53u);
   EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(3500));
-  EXPECT_EQ(GetWorstInteraction().interaction_id, 1u);
+  EXPECT_EQ(GetWorstInteraction().interaction_id, 2u);
   EXPECT_EQ(GetWorstInteraction().start_time,
             current_time + base::Milliseconds(2000));
   EXPECT_EQ(GetHighPercentileInteraction().duration, base::Milliseconds(3000));
-  EXPECT_EQ(GetHighPercentileInteraction().interaction_id, 0u);
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_id, 1u);
   EXPECT_EQ(GetHighPercentileInteraction().start_time,
             current_time + base::Milliseconds(1000));
 
   // After adding 50 more interactions, the high percentile should shift
   // to the third highest interaction duration.
   event_timings.clear();
-  for (uint64_t i = 0; i < 50; i++) {
+  for (uint64_t i = 1; i <= 50; i++) {
     event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-        base::Milliseconds(300 - i), i + 53,
-        current_time + base::Milliseconds(53000 + (1000 * i))));
+        base::Milliseconds(300 - i + 1), i + 53,
+        current_time + base::Milliseconds(53000 + (1000 * (i - 1)))));
   }
-  AddNewEventTimings(event_timings);
+  AddNewEventTimings(main_rfh(), event_timings);
   EXPECT_EQ(GetNumInteractions(), 103u);
   EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(3500));
-  EXPECT_EQ(GetWorstInteraction().interaction_id, 1u);
+  EXPECT_EQ(GetWorstInteraction().interaction_id, 2u);
   EXPECT_EQ(GetWorstInteraction().start_time,
             current_time + base::Milliseconds(2000));
   EXPECT_EQ(GetHighPercentileInteraction().duration, base::Milliseconds(2000));
-  EXPECT_EQ(GetHighPercentileInteraction().interaction_id, 2u);
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_id, 3u);
   EXPECT_EQ(GetHighPercentileInteraction().start_time,
             current_time + base::Milliseconds(3000));
 }
@@ -101,15 +105,15 @@ TEST_F(InteractionToNextPaintCalculatorTest, TooManyInteractions) {
   // Test what happens when there are so many interactions that the INP index
   // goes out of the event_timings_ bounds.
   base::TimeTicks current_time = base::TimeTicks::Now();
-  for (uint64_t i = 0; i < 500; i++) {
+  for (uint64_t i = 1; i <= 500; i++) {
     std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
     event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-        base::Milliseconds(3000 - i), i * 2,
+        base::Milliseconds(3000 - i + 1), i * 2 - 1,
         current_time + base::Milliseconds(1000)));
     event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-        base::Milliseconds(2000 - (i)), (i * 2) + i,
+        base::Milliseconds(2000 - i + 1), i * 2,
         current_time + base::Milliseconds(1100)));
-    AddNewEventTimings(event_timings);
+    AddNewEventTimings(main_rfh(), event_timings);
   }
   EXPECT_EQ(GetNumInteractions(), 1000u);
   EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(3000));
@@ -123,17 +127,17 @@ TEST_F(InteractionToNextPaintCalculatorTest, MergeAndClear) {
   std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings1;
   base::TimeTicks current_time = base::TimeTicks::Now();
   event_timings1.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(100), 0, current_time + base::Milliseconds(100)));
+      base::Milliseconds(100), 1, current_time + base::Milliseconds(100)));
   event_timings1.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(200), 1, current_time + base::Milliseconds(200)));
-  calculator1.AddNewEventTimings(event_timings1);
+      base::Milliseconds(200), 2, current_time + base::Milliseconds(200)));
+  calculator1.AddNewEventTimings(*main_rfh(), event_timings1);
 
   std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings2;
   event_timings2.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(300), 2, current_time + base::Milliseconds(300)));
+      base::Milliseconds(300), 3, current_time + base::Milliseconds(300)));
   event_timings2.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(400), 3, current_time + base::Milliseconds(400)));
-  calculator2.AddNewEventTimings(event_timings2);
+      base::Milliseconds(400), 4, current_time + base::Milliseconds(400)));
+  calculator2.AddNewEventTimings(*main_rfh(), event_timings2);
 
   calculator1.MergeAndClear(&calculator2);
 
@@ -141,4 +145,63 @@ TEST_F(InteractionToNextPaintCalculatorTest, MergeAndClear) {
   EXPECT_EQ(calculator1.worst_latency()->duration, base::Milliseconds(400));
   EXPECT_EQ(calculator2.num_user_interactions(), 0u);
   EXPECT_FALSE(calculator2.worst_latency().has_value());
+}
+
+TEST_F(InteractionToNextPaintCalculatorTest, MultipleEventsPerInteraction) {
+  std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
+  base::TimeTicks current_time = base::TimeTicks::Now();
+
+  // Interaction 1 with two events.
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
+      base::Milliseconds(100), 1, current_time + base::Milliseconds(100)));
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
+      base::Milliseconds(300), 1, current_time + base::Milliseconds(200)));
+  AddNewEventTimings(main_rfh(), event_timings);
+
+  EXPECT_EQ(GetNumInteractions(), 1u);
+  EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(300));
+
+  // Interaction 2 with one event.
+  event_timings.clear();
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
+      base::Milliseconds(200), 2, current_time + base::Milliseconds(300)));
+  AddNewEventTimings(main_rfh(), event_timings);
+
+  EXPECT_EQ(GetNumInteractions(), 2u);
+  EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(300));
+
+  // Interaction 2 with a new, longer event.
+  event_timings.clear();
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
+      base::Milliseconds(400), 2, current_time + base::Milliseconds(400)));
+  AddNewEventTimings(main_rfh(), event_timings);
+
+  EXPECT_EQ(GetNumInteractions(), 2u);
+  EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(400));
+}
+
+TEST_F(InteractionToNextPaintCalculatorTest, MultipleSources) {
+  std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
+  base::TimeTicks current_time = base::TimeTicks::Now();
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  rfh_tester->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  content::RenderFrameHostTester::For(subframe)
+      ->InitializeRenderFrameIfNeeded();
+
+  // Source 1 (main frame), interaction 1.
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
+      base::Milliseconds(100), 1, current_time + base::Milliseconds(100)));
+  AddNewEventTimings(main_rfh(), event_timings);
+
+  // Source 2 (subframe), interaction 1 (should be a new interaction).
+  event_timings.clear();
+  event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
+      base::Milliseconds(200), 1, current_time + base::Milliseconds(200)));
+  AddNewEventTimings(subframe, event_timings);
+
+  EXPECT_EQ(GetNumInteractions(), 2u);
+  EXPECT_EQ(GetWorstInteraction().duration, base::Milliseconds(200));
 }

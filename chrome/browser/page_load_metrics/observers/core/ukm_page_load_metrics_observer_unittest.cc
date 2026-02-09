@@ -1344,7 +1344,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
 
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(50), 0, base::TimeTicks::Now()));
+      base::Milliseconds(50), 1, base::TimeTicks::Now()));
 
   tester()->SimulateEventTimingUpdate(event_timings);
 

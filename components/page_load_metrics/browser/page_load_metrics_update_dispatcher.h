@@ -288,12 +288,14 @@ class PageLoadMetricsUpdateDispatcher {
       const mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
   void UpdateSoftNavigationIntervalInteractionToNextPaint(
+      content::RenderFrameHost* render_frame_host,
       const std::vector<mojom::EventTimingPtr>& event_timings);
 
   void UpdateSoftNavigationIntervalLayoutShift(
       const mojom::FrameRenderDataUpdate& render_data);
 
   void UpdatePageEventTiming(
+      content::RenderFrameHost* render_frame_host,
       const std::vector<mojom::EventTimingPtr>& event_timings);
 
   void MaybeUpdateMainFrameIntersectionRect(

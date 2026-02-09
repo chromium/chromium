@@ -453,7 +453,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     if (subresource_load_metrics) {
       UpdateMainFrameSubresourceLoadMetrics(*subresource_load_metrics);
     }
-    UpdateSoftNavigationIntervalInteractionToNextPaint(event_timings);
+    UpdateSoftNavigationIntervalInteractionToNextPaint(render_frame_host,
+                                                       event_timings);
     UpdateSoftNavigationIntervalLayoutShift(*render_data);
     UpdateSoftNavigation(std::move(*soft_navigation_metrics));
   } else {
@@ -471,7 +472,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     // This path is just for the AMP metrics.
     UpdateSubFrameEventTiming(render_frame_host, event_timings);
   }
-  UpdatePageEventTiming(event_timings);
+  UpdatePageEventTiming(render_frame_host, event_timings);
   UpdatePageRenderData(*render_data, is_main_frame);
   if (!is_main_frame) {
     // This path is just for the AMP metrics.
@@ -620,10 +621,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
 
 void PageLoadMetricsUpdateDispatcher::
     UpdateSoftNavigationIntervalInteractionToNextPaint(
+        content::RenderFrameHost* render_frame_host,
         const std::vector<mojom::EventTimingPtr>& event_timings) {
   if (!event_timings.empty()) {
     soft_navigation_interval_interaction_to_next_paint_calculator_
-        .AddNewEventTimings(event_timings);
+        .AddNewEventTimings(*render_frame_host, event_timings);
   }
 }
 
@@ -758,10 +760,17 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMetadata(
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageEventTiming(
+    content::RenderFrameHost* render_frame_host,
     const std::vector<mojom::EventTimingPtr>& event_timings) {
   if (!event_timings.empty()) {
-    interaction_to_next_paint_calculator_.AddNewEventTimings(event_timings);
-    client_->OnPageEventTimingChanged(event_timings.size());
+    uint64_t old_num_interactions =
+        interaction_to_next_paint_calculator_.num_user_interactions();
+    interaction_to_next_paint_calculator_.AddNewEventTimings(*render_frame_host,
+                                                             event_timings);
+    uint64_t new_num_interactions =
+        interaction_to_next_paint_calculator_.num_user_interactions();
+    client_->OnPageEventTimingChanged(new_num_interactions -
+                                      old_num_interactions);
   }
 }
 
