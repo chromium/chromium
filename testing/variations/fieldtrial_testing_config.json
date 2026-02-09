@@ -1105,6 +1105,29 @@
             ]
         }
     ],
+    "AndroidParentalControlsV2": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs",
+                        "SupervisedUserUseEmitDeviceLogRecordSeparately",
+                        "SupervisedUserUseUrlFilteringService"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidPinnedTabs": [
         {
             "platforms": [
