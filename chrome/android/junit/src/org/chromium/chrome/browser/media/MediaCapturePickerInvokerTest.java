@@ -59,13 +59,8 @@ public class MediaCapturePickerInvokerTest {
         private boolean mShouldShareAudio;
 
         @Override
-        public Intent createScreenCaptureIntent(Context context, Params params) {
+        public Intent createScreenCaptureIntent(Context context, Params params, Delegate delegate) {
             return mIntent;
-        }
-
-        @Override
-        public WebContents getPickedWebContents() {
-            return null;
         }
 
         @Override

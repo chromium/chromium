@@ -33,7 +33,8 @@ public class MediaCapturePickerInvoker {
         MediaCapturePickerDelegate impl =
                 ServiceLoaderUtil.maybeCreate(MediaCapturePickerDelegate.class);
         if (impl != null) {
-            android.content.Intent intent = impl.createScreenCaptureIntent(context, params);
+            android.content.Intent intent =
+                    impl.createScreenCaptureIntent(context, params, delegate);
             if (intent != null) {
                 var fragment = MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
                 if (fragment != null) {
@@ -73,6 +74,6 @@ public class MediaCapturePickerInvoker {
         } else if (action == CaptureAction.CAPTURE_SCREEN) {
             delegate.onPickScreen();
         }
-        impl.onFinish();
+        impl.onFinish(webContents);
     }
 }
