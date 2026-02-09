@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -22,4 +23,13 @@ source_set("experimental_actor") {
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
   ]
+
+  # TODO(bokan): This is here to preserve behavior but extension API shouldn't
+  # be using Glic enterprise policies and can be removed.
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/actor",
+    ]
+  }
 }

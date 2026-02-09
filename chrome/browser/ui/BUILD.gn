@@ -1435,8 +1435,6 @@ static_library("ui") {
       "//chrome/browser/custom_handlers",
       "//chrome/browser/device_api",
       "//chrome/browser/first_party_sets",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/actor",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/privacy_sandbox:countries",
@@ -5459,6 +5457,7 @@ static_library("ui") {
     deps += [
       "//chrome/browser/ai",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/actor",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/public:features",
     ]
