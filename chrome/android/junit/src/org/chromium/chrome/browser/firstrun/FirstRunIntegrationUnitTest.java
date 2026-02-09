@@ -31,9 +31,11 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -126,10 +128,12 @@ public final class FirstRunIntegrationUnitTest {
     }
 
     private <T extends Activity> Activity createActivity(Class<T> clazz, Intent intent) {
-        ActivityController<T> activityController =
-                Robolectric.buildActivity(clazz, intent).create();
+        ActivityController<T> activityController = Robolectric.buildActivity(clazz, intent);
+        activityController.get().setTheme(R.style.Theme_BrowserUI_DayNight);
+        activityController.create();
         T activity = activityController.get();
         mActivityControllerList.add(activityController);
+        ShadowLooper.idleMainLooper();
         return activity;
     }
 
@@ -166,8 +170,6 @@ public final class FirstRunIntegrationUnitTest {
         Assert.assertTrue(tabbedActivity.isFinishing());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testRedirectSearchActivityToFirstRun() {
         Intent intent = new Intent();
@@ -213,8 +215,6 @@ public final class FirstRunIntegrationUnitTest {
      * Test that if a WebAPK only requires the lightweight FRE and a user has gone through the
      * lightweight FRE that the WebAPK launches and no FRE is shown to the user.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testUserAcceptedLightweightFreLaunch() {
         FirstRunStatus.setLightweightFirstRunFlowComplete(true);
