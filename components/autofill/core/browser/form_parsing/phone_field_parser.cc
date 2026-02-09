@@ -22,32 +22,14 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
 namespace {
-
-// Minimum limit on the number of the options of the select field for
-// determining the field to be of |PHONE_HOME_COUNTRY_CODE| type.
-constexpr int kMinSelectOptionsForCountryCode = 5;
-
-// Maximum limit on the number of the options of the select field for
-// determining the field to be of |PHONE_HOME_COUNTRY_CODE| type.
-// Currently, there are approximately 250 countries that have been assigned a
-// phone country code, therefore, 275 is taken as the upper bound.
-constexpr int kMaxSelectOptionsForCountryCode = 275;
-
-// Minimum percentage of options in select field that should look like a
-// country code in order to classify the field as a |PHONE_HOME_COUNTRY_CODE|.
-constexpr int kMinCandidatePercentageForCountryCode = 90;
-
-// If a <select> element has <= |kHeuristicThresholdForCountryCode| options,
-// all or all-but-one need to look like country code options. Otherwise,
-// |kMinCandidatePercentageForCountryCode| is used to check for a fraction
-// of country code like options.
-constexpr int kHeuristicThresholdForCountryCode = 10;
 
 // The smallest available PhoneGrammar ID to be used as the upper bound during
 // metric logging. Use this number as PhoneGrammar::id when adding a new grammar
@@ -243,61 +225,6 @@ PhoneFieldParser::GetPhoneGrammars() {
 }
 
 // static
-bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
-    AutofillScanner& scanner,
-    std::optional<FieldAndMatchInfo>& match) {
-  const FormFieldData& field = scanner.Cursor();
-
-  // Return false if the field is not a selection box.
-  if (!MatchesFormControlType(field.form_control_type(),
-                              {FormControlType::kSelectOne})) {
-    return false;
-  }
-
-  // If the number of the options is less than the minimum limit or more than
-  // the maximum limit, return false.
-  if (field.options().size() < kMinSelectOptionsForCountryCode ||
-      field.options().size() >= kMaxSelectOptionsForCountryCode) {
-    return false;
-  }
-
-  // |total_covered_options| stores the count of the options that are
-  // compared with the regex.
-  int total_num_options = static_cast<int>(field.options().size());
-
-  // |total_positive_options| stores the count of the options that match the
-  // regex.
-  int total_positive_options =
-      std::ranges::count_if(field.options(), [](const SelectOption& option) {
-        return MatchesRegex<kAugmentedPhoneCountryCodeRe>(option.text);
-      });
-
-  // If the number of the options compared is less or equal to
-  // |kHeuristicThresholdForCountryCode|, then either all the options or all
-  // options but one should match the regex.
-  if (total_num_options <= kHeuristicThresholdForCountryCode &&
-      total_positive_options + 1 < total_num_options) {
-    return false;
-  }
-
-  // If the number of the options compared is more than
-  // |kHeuristicThresholdForCountryCode|,
-  // |kMinCandidatePercentageForCountryCode|% of the options should match the
-  // regex.
-  if (total_num_options > kHeuristicThresholdForCountryCode &&
-      total_positive_options * 100 <
-          total_num_options * kMinCandidatePercentageForCountryCode) {
-    return false;
-  }
-
-  // Assign the `match` and advance the cursor.
-  match = {&field,
-           {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
-  scanner.Advance();
-  return true;
-}
-
-// static
 bool PhoneFieldParser::ParseGrammar(
     ParsingContext& context,
     const PhoneGrammar& grammar,
@@ -313,8 +240,12 @@ bool PhoneFieldParser::ParseGrammar(
     // The field length comparison with `Rule::max_length` is not required in
     // case of the selection boxes that are of phone country code type.
     if (is_country_code_field &&
-        LikelyAugmentedPhoneCountryCode(scanner,
-                                        parsed_fields[FIELD_COUNTRY_CODE])) {
+        LikelyAugmentedPhoneCountryCode(scanner.Cursor())) {
+      // Assign the `match` and advance the cursor.
+      parsed_fields[FIELD_COUNTRY_CODE] = {
+          &scanner.Cursor(),
+          {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
+      scanner.Advance();
       continue;
     }
 

@@ -103,6 +103,12 @@ std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list);
 // field that Autofill didn't assist with.
 bool IsFormPerfectlyFilled(const FormData& form);
 
+// Returns true if `field` is a <select> field that appears to be a
+// `PHONE_HOME_COUNTRY_CODE` field by looking at its option contents.
+// "Augmented" refers to the fact that we also allow select options containing
+// not only a country code but also further text like "Germany (+49)".
+bool LikelyAugmentedPhoneCountryCode(const FormFieldData& field);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_UTIL_H_

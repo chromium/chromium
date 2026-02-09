@@ -18,7 +18,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_switches.h"
 
 namespace autofill {
@@ -204,6 +207,48 @@ bool IsFormPerfectlyFilled(const FormData& form) {
                       [](const FormFieldData& field) {
                         return field.is_user_edited() && !field.is_autofilled();
                       });
+}
+
+bool LikelyAugmentedPhoneCountryCode(const FormFieldData& field) {
+  // The limits for the number of <option>s in a <select> field in between which
+  // we consider a field to possibly be a phone country code field.
+  constexpr size_t kMinOptions = 5;
+  constexpr size_t kMaxOptions = kMaxSelectOptionsForCountryCode;
+
+  // Minimum percentage of matching options required (Details below).
+  constexpr size_t kMinPercentage = 90;
+
+  // Number of <options>s in a <select> up to which `kMinPercentage` does not
+  // apply. (Details below)
+  constexpr size_t kThresholdLowRange = 10;
+
+  // We don't have heuristics to detect a field as a phone country code if the
+  // field is not a <select> element.
+  if (field.form_control_type() != FormControlType::kSelectOne) {
+    return false;
+  }
+
+  // If `field` has too few or too many options --> Not a phone country code.
+  if (field.options().size() < kMinOptions ||
+      field.options().size() >= kMaxOptions) {
+    return false;
+  }
+
+  // Count the number of options matching `kAugmentedPhoneCountryCodeRe`.
+  size_t matching_options =
+      std::ranges::count_if(field.options(), [](const SelectOption& option) {
+        return MatchesRegex<kAugmentedPhoneCountryCodeRe>(option.text);
+      });
+
+  // (1) Low range.
+  // All options or all but one option should match.
+  if (field.options().size() <= kThresholdLowRange) {
+    return matching_options + 1 >= field.options().size();
+  }
+
+  // (2) High range.
+  // At least `kMinPercentage`% of the field's options should match.
+  return matching_options * 100 >= field.options().size() * kMinPercentage;
 }
 
 }  // namespace autofill

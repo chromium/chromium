@@ -141,6 +141,12 @@ inline constexpr size_t kMaxDisplayedAddressSuggestions = 10;
 // suggestions. Remaining profiles will be dropped.
 inline constexpr size_t kMaxPrefixMatchedProfilesForSuggestion = 50;
 
+// Maximum limit on the number of the options of the select field for
+// determining the field to be of |PHONE_HOME_COUNTRY_CODE| type.
+// Currently, there are approximately 250 countries that have been assigned a
+// phone country code, therefore, 275 is taken as the upper bound.
+inline constexpr size_t kMaxSelectOptionsForCountryCode = 275;
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_CONSTANTS_H_

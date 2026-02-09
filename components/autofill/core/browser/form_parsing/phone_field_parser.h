@@ -117,14 +117,6 @@ class PhoneFieldParser : public FormFieldParser {
                            AutofillScanner& scanner,
                            bool improve_phone_field_parser_experiment_enabled);
 
-  // Returns true if |scanner| points to a <select> field that appears to be the
-  // phone country code by looking at its option contents.
-  // "Augmented" refers to the fact that we are looking for select options that
-  // contain not only a country code but also further text like "Germany (+49)".
-  static bool LikelyAugmentedPhoneCountryCode(
-      AutofillScanner& scanner,
-      std::optional<FieldAndMatchInfo>& match);
-
   // FIELD_PHONE is always present if a match is found. The rest may be nullopt.
   ParsedPhoneFields parsed_phone_fields_;
 };
