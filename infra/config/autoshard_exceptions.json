@@ -182,7 +182,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "content_browsertests": {
-                "shards": 66,
+                "shards": 72,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
@@ -190,7 +190,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
-                "shards": 12,
+                "shards": 11,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "unit_tests": {
