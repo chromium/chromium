@@ -977,9 +977,7 @@ def main():
             ]
             if args.rust_force_head_revision:
                 build_cmd.append("--crubit-force-head-revision")
-            # TODO(https://crbug.com/481661885): Fix Crubit builds on Windows.
-            fail_hard = (sys.platform != 'win32')
-            TeeCmd(build_cmd, log, fail_hard=fail_hard)
+            TeeCmd(build_cmd, log)
 
         if args.gnrt_stdlib:
             print('Building gnrt...')

@@ -33,16 +33,12 @@ import urllib
 
 from pathlib import Path
 
-# Get variables and helpers from Clang update script
+# Get variables and helpers from `//tools/clang/scripts/build.py`.
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
+from build import (AddZlibToPath, GetLibXml2Dirs, CheckoutGitRepo)
 
-from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo,
-                   DownloadDebianSysroot, RunCommand, THIRD_PARTY_DIR)
-from update import (RmTree)
-
-from build_rust import (RUST_HOST_LLVM_INSTALL_DIR)
 from update_rust import (CHROMIUM_DIR, CRUBIT_REVISION, RUST_TOOLCHAIN_OUT_DIR)
 
 # Get `RunCargo` from `//tools/crates/run_cargo.py`.
@@ -90,7 +86,25 @@ def GetCcBindingsFromRsRustFlags():
         return []
 
 
-def BuildCrubit(rust_sysroot, out_dir):
+def GetNativeLibsRustFlags():
+    if sys.platform == 'win32':
+        # See https://crbug.com/481661885 to learn why adding `zlib.lib` and
+        # `libxml2s.lib` paths is required to build `cc_bindings_from_rs` on
+        # Windows when using Chromium-built Rust sysroot.
+        #
+        # Note that some of the calls below may be expensive (e.g. downloading
+        # zlib sources and building it) so `GetNativeLibsRustFlags` probably
+        # shouldn't be called in incremental builds (e.g. when
+        # `--skip-checkout` is present).
+        libxml2_lib_path = GetLibXml2Dirs().lib_dir
+        zlib_lib_path = AddZlibToPath()
+        return [
+            f'-Clink-arg=/LIBPATH:{libxml2_lib_path}',
+            f'-Clink-arg=/LIBPATH:{zlib_lib_path}'
+        ]
+
+
+def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
     target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
     release_dir = os.path.join(target_dir, 'release')
     home_dir = os.path.join(target_dir, 'cargo_home')
@@ -101,6 +115,8 @@ def BuildCrubit(rust_sysroot, out_dir):
     cargo_args += ['--target-dir', target_dir]
     cargo_args += ['--manifest-path', CC_BINDINGS_FROM_RS_CARGO_TOML_PATH]
     extra_rustflags = GetCcBindingsFromRsRustFlags()
+    if not skip_checkout:
+        extra_rustflags += GetNativeLibsRustFlags()
     cargo_result = RunCargo(rust_sysroot, home_dir, cargo_args,
                             extra_rustflags)
     print(f'Building cc_bindings_from_rs ... done.  Result: {cargo_result}')
@@ -146,10 +162,12 @@ def main():
         CheckoutGitRepo("crubit", CRUBIT_GIT, crubit_revision, CRUBIT_SRC_DIR)
 
     if args.out_dir:
-        return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, args.out_dir)
+        return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, args.out_dir,
+                           args.skip_checkout)
     else:
         with tempfile.TemporaryDirectory() as out_dir:
-            return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, out_dir)
+            return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, out_dir,
+                               args.skip_checkout)
 
 
 if __name__ == '__main__':
