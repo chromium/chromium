@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -18,7 +17,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/test_audio_thread.h"
@@ -150,7 +148,6 @@ class AudioCapturerChromeOsTest : public testing::Test {
   std::unique_ptr<AudioCapturerChromeOs> audio_capturer_;
   raw_ptr<FakeAudioHelperChromeOs> audio_helper_chromeos_;
   std::vector<std::unique_ptr<AudioPacket>> captured_audio_packets_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Runner for AudioCapturerChromeOs::Start/Stop.
   scoped_refptr<base::SequencedTaskRunner> capture_runner_;
@@ -246,16 +243,6 @@ TEST_F(AudioCapturerChromeOsTest, SimulateError) {
             std::move(verify_packet_callback_reset_task));
       }));
   run_loop.Run();
-}
-
-TEST_F(AudioCapturerChromeOsTest, CreateWithFlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kBocaHostAudio);
-  EXPECT_NE(AudioCapturer::Create(), nullptr);
-}
-
-TEST_F(AudioCapturerChromeOsTest, CreateWithFlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(ash::features::kBocaHostAudio);
-  EXPECT_EQ(AudioCapturer::Create(), nullptr);
 }
 
 }  // namespace remoting

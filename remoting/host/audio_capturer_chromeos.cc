@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
@@ -81,7 +80,7 @@ void AudioCapturerChromeOs::HandleAudioError() {
 
 // static
 bool AudioCapturer::IsSupported() {
-  return ash::features::IsBocaHostAudioEnabled();
+  return true;
 }
 
 // static

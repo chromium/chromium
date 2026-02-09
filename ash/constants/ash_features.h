@@ -123,7 +123,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaScreenSharingTeacher);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaScreenSharingStudent);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaHostAudio);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaAudioForKiosk);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaRedirectStudentAudioToKiosk);
@@ -1014,7 +1013,6 @@ bool IsBocaConfigureMaxStudentsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCourseWorkMaterialApiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingTeacherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingStudentEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaHostAudioEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaReceiverCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
