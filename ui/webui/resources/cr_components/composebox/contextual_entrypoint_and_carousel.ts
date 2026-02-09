@@ -804,8 +804,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
-  protected onToolClick_(e: CustomEvent<{tool: ComposeboxToolMode}>) {
-    this.handleToolClick_(e.detail.tool);
+  protected onToolClick_(e: CustomEvent<{toolMode: ComposeboxToolMode}>) {
+    this.handleToolClick_(e.detail.toolMode);
   }
 
   protected handleDeepSearchClick_() {
