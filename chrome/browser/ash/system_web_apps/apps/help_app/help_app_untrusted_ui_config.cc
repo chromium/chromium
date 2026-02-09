@@ -120,6 +120,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
                         "device-help-content-id"));
 
   // Add any features that have been enabled.
+  source->AddBoolean("HelpAppLauncherSearch", true);
   source->AddBoolean("HelpAppSearchServiceIntegration", true);
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
