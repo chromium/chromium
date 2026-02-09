@@ -88,7 +88,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity_);
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     auth_service_->SignIn(fake_identity_,
-                          signin_metrics::AccessPoint::kUnknown);
+                          signin_metrics::AccessPoint::kStartPage);
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
     web_state_.SetBrowserState(profile_.get());
