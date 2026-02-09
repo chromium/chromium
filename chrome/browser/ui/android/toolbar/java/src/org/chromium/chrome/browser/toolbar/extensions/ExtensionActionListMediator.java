@@ -247,6 +247,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         View buttonView = getButtonViewForId(actionId);
         if (buttonView == null) {
+            contents.destroy();
             return;
         }
 
