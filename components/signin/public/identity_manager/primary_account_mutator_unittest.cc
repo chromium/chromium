@@ -140,7 +140,7 @@ void RunRevokeConsentTest(
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSync,
-          signin_metrics::AccessPoint::kUnknown);
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -273,7 +273,7 @@ void RunClearPrimaryAccountTestForSigninOnly() {
       environment.MakeAccountAvailable(kAnotherAccountEmail);
   EXPECT_EQ(primary_account_mutator->SetPrimaryAccount(
                 primary_account_info.account_id, signin::ConsentLevel::kSignin,
-                signin_metrics::AccessPoint::kUnknown),
+                signin_metrics::AccessPoint::kStartPage),
             signin::PrimaryAccountMutator::PrimaryAccountError::kNoError);
 
   base::RunLoop run_loop;
@@ -337,7 +337,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_Signin) {
   signin::PrimaryAccountMutator::PrimaryAccountError
       set_primary_account_result = primary_account_mutator->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::kUnknown);
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             set_primary_account_result);
 
@@ -373,7 +373,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_Sync) {
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSync,
-          signin_metrics::AccessPoint::kUnknown);
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
 
@@ -409,7 +409,8 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_NoAccount) {
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           CoreAccountId::FromGaiaId(kUnknownAccountId),
-          signin::ConsentLevel::kSignin, signin_metrics::AccessPoint::kUnknown);
+          signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kAccountInfoEmpty,
       setPrimaryAccountResult);
@@ -438,7 +439,8 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_UnknownAccount) {
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           CoreAccountId::FromGaiaId(kUnknownAccountId),
-          signin::ConsentLevel::kSignin, signin_metrics::AccessPoint::kUnknown);
+          signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kAccountInfoEmpty,
       setPrimaryAccountResult);
@@ -472,14 +474,14 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_AlreadyHasPrimaryAccount) {
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           primary_account_info.account_id, signin::ConsentLevel::kSync,
-          signin_metrics::AccessPoint::kUnknown);
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
 
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
       another_account_info.account_id, signin::ConsentLevel::kSync,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::
                 kSyncConsentAlreadySet,
             setPrimaryAccountResult);
@@ -515,7 +517,7 @@ TEST_F(PrimaryAccountMutatorTest,
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           primary_account_info.account_id, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::kUnknown);
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
 
@@ -523,7 +525,7 @@ TEST_F(PrimaryAccountMutatorTest,
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
       another_account_info.account_id, signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
 
@@ -561,7 +563,7 @@ TEST_F(PrimaryAccountMutatorTest,
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           primary_account_info.account_id, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::kUnknown);
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
             setPrimaryAccountResult);
 
@@ -569,7 +571,7 @@ TEST_F(PrimaryAccountMutatorTest,
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
       another_account_info.account_id, signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::
                 kPrimaryAccountChangeNotAllowed,
             setPrimaryAccountResult);
@@ -610,7 +612,7 @@ TEST_F(PrimaryAccountMutatorTest,
   signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
       primary_account_mutator->SetPrimaryAccount(
           primary_account_info.account_id, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::kUnknown);
+          signin_metrics::AccessPoint::kStartPage);
   EXPECT_EQ(
       signin::PrimaryAccountMutator::PrimaryAccountError::kSigninNotAllowed,
       setPrimaryAccountResult);
