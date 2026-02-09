@@ -9,7 +9,7 @@
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client_app_interface.h"
+#import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"

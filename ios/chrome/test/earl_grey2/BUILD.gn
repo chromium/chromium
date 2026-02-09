@@ -111,7 +111,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/sync/model/prefs:eg2_tests",
     "//ios/chrome/browser/tips_notifications/eg_test:eg2_tests",
     "//ios/chrome/browser/variations/model:eg2_tests",
-    "//ios/chrome/browser/webauthn/model:eg2_tests",
+    "//ios/chrome/browser/webauthn/test:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }

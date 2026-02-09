@@ -1,7 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
-  "+ios/chrome/browser/webauthn/model/scoped_passkey_reauth_module_override.h",
+  "+ios/chrome/browser/webauthn/public/scoped_passkey_reauth_module_override.h",
   # keep-sorted end
 ]
 

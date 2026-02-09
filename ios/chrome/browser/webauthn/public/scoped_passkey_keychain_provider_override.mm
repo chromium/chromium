@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webauthn/model/scoped_passkey_keychain_provider_override.h"
+#import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
 
 #import "base/check.h"
 

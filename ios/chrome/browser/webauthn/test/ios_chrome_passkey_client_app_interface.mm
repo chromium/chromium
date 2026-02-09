@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client_app_interface.h"
+#import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/webauthn/model/scoped_passkey_keychain_provider_override.h"
-#import "ios/chrome/browser/webauthn/model/scoped_passkey_reauth_module_override.h"
+#import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
+#import "ios/chrome/browser/webauthn/public/scoped_passkey_reauth_module_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"

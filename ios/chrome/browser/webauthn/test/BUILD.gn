@@ -1,0 +1,58 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "ios_chrome_passkey_client_app_interface.h",
+    "ios_chrome_passkey_client_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/webauthn/public",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_chrome",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//testing/gmock",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "ios_chrome_passkey_client_app_interface.h",
+    "ios_chrome_passkey_client_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [ "passkey_egtest.mm" ]
+
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/webauthn/ios:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
+  ]
+}

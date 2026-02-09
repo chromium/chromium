@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/webauthn/model/scoped_passkey_keychain_provider_override.h"
+#import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/web/public/web_state.h"
 

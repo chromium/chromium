@@ -61,7 +61,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/tips_manager/model:tips_manager",
-    "//ios/chrome/browser/webauthn/model:common",
+    "//ios/chrome/browser/webauthn/public",
     "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon:favicon_constants",
