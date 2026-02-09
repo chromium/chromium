@@ -19512,10 +19512,11 @@
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
+                        "PartitionAllocSchedulerLoopQuarantineTaskControlledPurge",
                         "PartitionAllocWithAdvancedChecks"
                     ],
                     "disable_features": [
+                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
                         "ScreenAIPartitionAllocAdvancedChecksEnabled"
                     ]
                 }
