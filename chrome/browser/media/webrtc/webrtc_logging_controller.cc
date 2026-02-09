@@ -547,7 +547,7 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
              bool is_text_log_upload_allowed) {
             WebRtcLogUploader* uploader = WebRtcLogUploader::GetInstance();
             uploader->OnLoggingStopped(
-                std::move(log_buffer), std::move(meta_data),
+                "webrtc_log", std::move(log_buffer), std::move(meta_data),
                 std::move(upload_done_data), is_text_log_upload_allowed);
           },
           std::move(log_buffer), std::move(meta_data),

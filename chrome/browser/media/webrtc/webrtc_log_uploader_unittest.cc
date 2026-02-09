@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 
 #include <stddef.h>
@@ -17,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
@@ -29,6 +29,7 @@
 const char kTestTime[] = "time";
 const char kTestReportId[] = "report-id";
 const char kTestLocalId[] = "local-id";
+const char kContentName[] = "webrtc_log";
 
 class WebRtcLogUploaderTest : public testing::Test {
  public:
@@ -198,6 +199,24 @@ class WebRtcLogUploaderTest : public testing::Test {
     return lines[i + 2];
   }
 
+  static std::string GetMultipartLineStartingWithValue(
+      const std::string& post_data,
+      const std::string& value_name) {
+    std::vector<std::string> lines = base::SplitStringUsingSubstr(
+        post_data, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+    std::string name_line = "Content-Disposition: form-data; name=\"";
+    name_line.append(value_name);
+    name_line.append("\"");
+
+    for (const auto& line : lines) {
+      if (line.starts_with(name_line)) {
+        return line;
+      }
+    }
+    return std::string();
+  }
+
   static void AddLocallyStoredLogInfoToUploadListFile(
       WebRtcLogUploader* log_uploader,
       const base::FilePath& upload_list_path,
@@ -312,14 +331,14 @@ TEST_F(WebRtcLogUploaderTest, AddRtpDumpsToPostedData) {
   upload_done_data.paths.incoming_rtp_dump = incoming_dump;
   upload_done_data.paths.outgoing_rtp_dump = outgoing_dump;
 
-  std::unique_ptr<WebRtcLogBuffer> log(new WebRtcLogBuffer());
+  std::unique_ptr<WebRtcLogBuffer> log = std::make_unique<WebRtcLogBuffer>();
   log->SetComplete();
 
   base::RunLoop run_loop;
   webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
-                     base::Unretained(webrtc_log_uploader.get()),
+                     base::Unretained(webrtc_log_uploader.get()), kContentName,
                      std::move(log), std::make_unique<WebRtcLogMetaDataMap>(),
                      std::move(upload_done_data),
                      /*is_text_log_upload_allowed=*/true),
@@ -358,14 +377,14 @@ TEST_F(WebRtcLogUploaderTest, DisableUploadOfMultipartData) {
   upload_done_data.paths.outgoing_rtp_dump = outgoing_dump;
   upload_done_data.callback = future.GetCallback();
 
-  std::unique_ptr<WebRtcLogBuffer> log(new WebRtcLogBuffer());
+  std::unique_ptr<WebRtcLogBuffer> log = std::make_unique<WebRtcLogBuffer>();
   log->SetComplete();
 
   base::RunLoop run_loop;
   webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
-                     base::Unretained(webrtc_log_uploader.get()),
+                     base::Unretained(webrtc_log_uploader.get()), kContentName,
                      std::move(log), std::make_unique<WebRtcLogMetaDataMap>(),
                      std::move(upload_done_data),
                      /*is_text_log_upload_allowed=*/false),
@@ -393,14 +412,14 @@ TEST_F(WebRtcLogUploaderTest, ProductHasNoSuffixWithoutFeature) {
   WebRtcLogUploader::UploadDoneData upload_done_data;
   upload_done_data.paths.directory = temp_dir.GetPath().AppendASCII("log");
 
-  std::unique_ptr<WebRtcLogBuffer> log(new WebRtcLogBuffer());
+  std::unique_ptr<WebRtcLogBuffer> log = std::make_unique<WebRtcLogBuffer>();
   log->SetComplete();
 
   base::RunLoop run_loop;
   webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
-                     base::Unretained(webrtc_log_uploader.get()),
+                     base::Unretained(webrtc_log_uploader.get()), kContentName,
                      std::move(log), std::make_unique<WebRtcLogMetaDataMap>(),
                      std::move(upload_done_data),
                      /*is_text_log_upload_allowed=*/true),
@@ -430,14 +449,14 @@ TEST_F(WebRtcLogUploaderTest, ProductHasSuffixWithFeature) {
   WebRtcLogUploader::UploadDoneData upload_done_data;
   upload_done_data.paths.directory = temp_dir.GetPath().AppendASCII("log");
 
-  std::unique_ptr<WebRtcLogBuffer> log(new WebRtcLogBuffer());
+  std::unique_ptr<WebRtcLogBuffer> log = std::make_unique<WebRtcLogBuffer>();
   log->SetComplete();
 
   base::RunLoop run_loop;
   webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
-                     base::Unretained(webrtc_log_uploader.get()),
+                     base::Unretained(webrtc_log_uploader.get()), kContentName,
                      std::move(log), std::make_unique<WebRtcLogMetaDataMap>(),
                      std::move(upload_done_data),
                      /*is_text_log_upload_allowed=*/true),
@@ -449,6 +468,42 @@ TEST_F(WebRtcLogUploaderTest, ProductHasSuffixWithFeature) {
             std::string::npos);
   EXPECT_EQ(GetValueFromMultipart(post_data, "ver").find("-webrtc"),
             std::string::npos);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest, ContentNameIsCorrect) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::string post_data;
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  webrtc_log_uploader->OverrideUploadWithBufferForTesting(&post_data);
+
+  WebRtcLogUploader::UploadDoneData upload_done_data;
+  upload_done_data.paths.directory = temp_dir.GetPath().AppendASCII("log");
+
+  std::unique_ptr<WebRtcLogBuffer> log = std::make_unique<WebRtcLogBuffer>();
+  log->SetComplete();
+
+  base::RunLoop run_loop;
+  const char kCustomContentName[] = "custom_content_name";
+  webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
+                     base::Unretained(webrtc_log_uploader.get()),
+                     kCustomContentName, std::move(log),
+                     std::make_unique<WebRtcLogMetaDataMap>(),
+                     std::move(upload_done_data),
+                     /*is_text_log_upload_allowed=*/true),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_NE(
+      GetMultipartLineStartingWithValue(post_data, kCustomContentName)
+          .find(base::StrCat({"filename=\"", kCustomContentName, ".gz\""})),
+      std::string::npos);
 
   webrtc_log_uploader->Shutdown();
   FlushRunLoop();

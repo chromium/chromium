@@ -118,7 +118,8 @@ class WebRtcLogUploader {
   // either this function or LoggingStoppedDontUpload().
   // |upload_done_data.local_log_id| is set and used internally and should be
   // left empty.
-  void OnLoggingStopped(std::unique_ptr<WebRtcLogBuffer> log_buffer,
+  void OnLoggingStopped(const std::string& content_name,
+                        std::unique_ptr<WebRtcLogBuffer> log_buffer,
                         std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
                         UploadDoneData upload_done_data,
                         bool is_text_log_upload_allowed);
@@ -169,6 +170,7 @@ class WebRtcLogUploader {
   // Sets up a multipart body to be uploaded. The body is produced according
   // to RFC 2046.
   void SetupMultipart(std::string* post_data,
+                      const std::string& content_name,
                       const std::string& compressed_log,
                       const base::FilePath& incoming_rtp_dump,
                       const base::FilePath& outgoing_rtp_dump,
@@ -185,7 +187,8 @@ class WebRtcLogUploader {
   void WriteCompressedLogToFile(const std::string& compressed_log,
                                 const base::FilePath& log_file_path);
 
-  void PrepareMultipartPostData(const std::string& compressed_log,
+  void PrepareMultipartPostData(const std::string& content_name,
+                                const std::string& compressed_log,
                                 std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
                                 UploadDoneData upload_done_data);
 
