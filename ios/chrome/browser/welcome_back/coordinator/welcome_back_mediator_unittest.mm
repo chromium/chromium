@@ -268,7 +268,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmUserInformationRetrieved) {
   AuthenticationService* auth_service_ =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
   auth_service_->SignIn(fake_system_identity_,
-                        signin_metrics::AccessPoint::kUnknown);
+                        signin_metrics::AccessPoint::kStartPage);
 
   // Expect Lens, Enhanced Safe Browsing, and Autofill Passwords in Other Apps
   // and the personalized title.
