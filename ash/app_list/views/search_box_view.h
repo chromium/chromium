@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -99,7 +98,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   static int GetFocusRingSpacing();
 
   // Overridden from SearchBoxViewBase:
-  void UpdateSearchTextfieldAccessibleActiveDescendantId() override;
   void UpdateKeyboardVisibility() override;
   void HandleQueryChange(std::u16string_view query,
                          bool initiated_by_user) override;
@@ -170,12 +168,11 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Clears the search query and de-activate the search box.
   void ClearSearchAndDeactivateSearchBox();
 
-  // Sets the view accessibility ID of the search box's active descendant.
+  // Sets the view accessibility active descendant of the search box textfield.
   // The active descendant should be the currently selected result view in the
   // search results list.
-  // `nullopt` indicates no active descendant, i.e. that no result is selected.
-  void SetA11yActiveDescendant(
-      const std::optional<ui::AXPlatformNodeId>& active_descendant);
+  // `nullptr` indicates no active descendant, i.e. that no result is selected.
+  void SetA11yActiveDescendant(views::View* active_descendant);
 
   // Refreshes the placeholder text with a fixed one rather than the one picked
   // up randomly
@@ -277,6 +274,11 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Updates the search box's text value.
   void SetText(std::u16string_view text);
 
+  // Updates the accessible active descendant on the search textfield to the
+  // given view.
+  void UpdateSearchTextfieldAccessibleActiveDescendantId(
+      views::View* active_descendant);
+
   // Builds the menu model for the category filter menu. This returns a vector
   // of AppListSearchControlCategory that is shown in the filter menu.
   ui::SimpleMenuModel* BuildFilterMenuModel();
@@ -327,11 +329,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // and command execution.
   std::unique_ptr<ui::SimpleMenuModel> filter_menu_model_;
   std::unique_ptr<FilterMenuAdapter> filter_menu_adapter_;
-
-  // Set by SearchResultPageView when the accessibility selection moves to a
-  // search result view - the value is the ID of the currently selected result
-  // view.
-  std::optional<ui::AXPlatformNodeId> a11y_active_descendant_;
 
   // Owned by AppListSearchView.
   raw_ptr<ResultSelectionController, DanglingUntriaged>

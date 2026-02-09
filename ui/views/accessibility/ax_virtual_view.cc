@@ -161,13 +161,15 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     return {};
   }
 
-  bool focus_changed = false;
+  bool active_descendant_removed = false;
   if (GetOwnerView()) {
     ViewAccessibility& view_accessibility =
         GetOwnerView()->GetViewAccessibility();
-    if (view_accessibility.FocusedVirtualChild() &&
-        Contains(view_accessibility.FocusedVirtualChild())) {
-      focus_changed = true;
+    if (ViewAccessibility* active_view =
+            view_accessibility.GetActiveDescendantView()) {
+      if (Contains(static_cast<AXVirtualView*>(active_view))) {
+        active_descendant_removed = true;
+      }
     }
   }
 
@@ -178,8 +180,8 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
   child->virtual_parent_view_ = nullptr;
 
   if (GetOwnerView()) {
-    if (focus_changed) {
-      GetOwnerView()->GetViewAccessibility().OverrideFocus(nullptr);
+    if (active_descendant_removed) {
+      GetOwnerView()->GetViewAccessibility().ClearActiveDescendant();
     }
     GetOwnerView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, true);
@@ -565,10 +567,9 @@ ViewAXPlatformNodeDelegate* AXVirtualView::GetDelegate() const {
 #endif
 }
 
-AXVirtualViewWrapper* AXVirtualView::GetOrCreateWrapper(
-    views::AXAuraObjCache* cache) {
+AXAuraObjWrapper* AXVirtualView::GetOrCreateWrapper(AXAuraObjCache* cache) {
 #if defined(USE_AURA)
-  return static_cast<AXVirtualViewWrapper*>(cache->GetOrCreate(this));
+  return cache->GetOrCreate(this);
 #else
   return nullptr;
 #endif

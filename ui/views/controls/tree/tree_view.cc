@@ -908,8 +908,11 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
     // Update |ViewAccessibility| so that focus lands directly on this node when
     // |FocusManager| gives focus to the tree view. This update also fires an
     // accessible focus event.
-    GetViewAccessibility().OverrideFocus(node ? node->accessibility_view()
-                                              : nullptr);
+    if (node && node->accessibility_view()) {
+      GetViewAccessibility().SetActiveDescendant(*node->accessibility_view());
+    } else {
+      GetViewAccessibility().ClearActiveDescendant();
+    }
   }
 
   if (selection_changed) {

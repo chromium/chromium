@@ -44,6 +44,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/cursor/cursor.h"
@@ -2806,9 +2807,12 @@ void View::Focus() {
     }
 
     // Notify assistive technologies of the focus change.
-    AXVirtualView* const focused_virtual_child =
-        view_accessibility_ ? view_accessibility_->FocusedVirtualChild()
-                            : nullptr;
+    // Check if there's an active descendant that should receive the focus
+    // event.
+    ViewAccessibility* active_descendant_view = nullptr;
+    if (view_accessibility_) {
+      active_descendant_view = view_accessibility_->GetActiveDescendantView();
+    }
 
     // Rare edge case: the top-level window can briefly lose focus to a child
     // widget that is then destroyed (e.g., another widget opens, gains focus,
@@ -2820,8 +2824,8 @@ void View::Focus() {
     if (!ui::AXPlatformNode::GetPopupFocusOverride() ||
         ui::AXPlatformNode::GetPopupFocusOverride() ==
             GetNativeViewAccessible()) {
-      if (focused_virtual_child) {
-        focused_virtual_child->NotifyEvent(ax::mojom::Event::kFocus, true);
+      if (active_descendant_view) {
+        active_descendant_view->NotifyEvent(ax::mojom::Event::kFocus, true);
       } else {
         NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
       }

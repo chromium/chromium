@@ -454,8 +454,6 @@ SearchBoxViewBase::SearchBoxViewBase()
       std::make_unique<views::FillLayout>());
   content_container_->SetFlexForView(search_box_button_container_, 0,
                                      /*use_min_size=*/true);
-
-  UpdateSearchTextfieldAccessibleActiveDescendantId();
 }
 
 SearchBoxViewBase::~SearchBoxViewBase() = default;
@@ -724,8 +722,6 @@ bool SearchBoxViewBase::IsSearchBoxTrimmedQueryEmpty() const {
                        &trimmed_query);
   return trimmed_query.empty();
 }
-
-void SearchBoxViewBase::UpdateSearchTextfieldAccessibleActiveDescendantId() {}
 
 void SearchBoxViewBase::ClearSearch() {
   search_box_->SetText(std::u16string());

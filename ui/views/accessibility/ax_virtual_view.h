@@ -171,7 +171,7 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   ViewAXPlatformNodeDelegate* GetDelegate() const;
 
   // Gets or creates a wrapper suitable for use with tree sources.
-  AXVirtualViewWrapper* GetOrCreateWrapper(views::AXAuraObjCache* cache);
+  AXAuraObjWrapper* GetOrCreateWrapper(AXAuraObjCache* cache) override;
 
   // Handle a request from assistive technology to perform an action on this
   // virtual view. Returns true on success, but note that the success/failure is

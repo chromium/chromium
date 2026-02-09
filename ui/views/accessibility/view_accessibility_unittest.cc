@@ -4,6 +4,8 @@
 
 #include "ui/views/accessibility/view_accessibility.h"
 
+#include <algorithm>
+
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -525,6 +527,239 @@ TEST_F(ViewAccessibilityTest, FeatureFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAccessibilityTreeForViews);
   EXPECT_FALSE(ViewAccessibility::IsViewsAccessibilityTreeEnabled());
+}
+
+// Tests for SetActiveDescendant and GetActiveDescendantView functionality.
+
+TEST_F(ViewAccessibilityTest, SetActiveDescendant_View) {
+  auto parent = std::make_unique<TestView>();
+  auto child = std::make_unique<TestView>();
+  auto* child_ptr = child.get();
+  parent->AddChildView(std::move(child));
+
+  // Initially, no active descendant.
+  EXPECT_EQ(parent->GetViewAccessibility().GetActiveDescendantView(), nullptr);
+
+  // Set active descendant to child view.
+  parent->GetViewAccessibility().SetActiveDescendant(*child_ptr);
+
+  // Verify active descendant is set correctly.
+  ViewAccessibility* active =
+      parent->GetViewAccessibility().GetActiveDescendantView();
+  ASSERT_NE(active, nullptr);
+  EXPECT_EQ(active, &child_ptr->GetViewAccessibility());
+  EXPECT_EQ(active->GetUniqueId(),
+            child_ptr->GetViewAccessibility().GetUniqueId());
+}
+
+TEST_F(ViewAccessibilityTest, SetActiveDescendant_ViewAccessibility) {
+  auto parent = std::make_unique<TestView>();
+  auto child = std::make_unique<TestView>();
+  auto* child_ptr = child.get();
+  parent->AddChildView(std::move(child));
+
+  // Set active descendant using ViewAccessibility reference.
+  parent->GetViewAccessibility().SetActiveDescendant(
+      child_ptr->GetViewAccessibility());
+
+  // Verify active descendant is set correctly.
+  ViewAccessibility* active =
+      parent->GetViewAccessibility().GetActiveDescendantView();
+  ASSERT_NE(active, nullptr);
+  EXPECT_EQ(active, &child_ptr->GetViewAccessibility());
+}
+
+TEST_F(ViewAccessibilityTest, SetActiveDescendant_AXVirtualView) {
+  auto parent = std::make_unique<TestView>();
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto* virtual_child_ptr = virtual_child.get();
+  parent->GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
+
+  // Set active descendant to virtual view using its ViewAccessibility
+  // reference.
+  parent->GetViewAccessibility().SetActiveDescendant(*virtual_child_ptr);
+
+  // Verify active descendant is the virtual view.
+  ViewAccessibility* active =
+      parent->GetViewAccessibility().GetActiveDescendantView();
+  ASSERT_NE(active, nullptr);
+  EXPECT_EQ(active, virtual_child_ptr);
+}
+
+TEST_F(ViewAccessibilityTest, ClearActiveDescendant) {
+  auto parent = std::make_unique<TestView>();
+  auto child = std::make_unique<TestView>();
+  auto* child_ptr = child.get();
+  parent->AddChildView(std::move(child));
+
+  // Set active descendant.
+  parent->GetViewAccessibility().SetActiveDescendant(*child_ptr);
+  EXPECT_NE(parent->GetViewAccessibility().GetActiveDescendantView(), nullptr);
+
+  // Clear active descendant.
+  parent->GetViewAccessibility().ClearActiveDescendant();
+  EXPECT_EQ(parent->GetViewAccessibility().GetActiveDescendantView(), nullptr);
+}
+
+TEST_F(ViewAccessibilityTest, SetActiveDescendant_NoChangeIfSameId) {
+  auto parent = std::make_unique<TestView>();
+  auto child = std::make_unique<TestView>();
+  auto* child_ptr = child.get();
+  parent->AddChildView(std::move(child));
+
+  // Set active descendant.
+  parent->GetViewAccessibility().SetActiveDescendant(*child_ptr);
+
+  int event_count = 0;
+  parent->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating([](int* count, const ui::AXPlatformNodeDelegate*,
+                             ax::mojom::Event) { (*count)++; },
+                          &event_count));
+
+  // Setting to the same descendant should not fire events.
+  parent->GetViewAccessibility().SetActiveDescendant(*child_ptr);
+  EXPECT_EQ(event_count, 0);
+}
+
+TEST_F(ViewAccessibilityTest,
+       SetActiveDescendant_FiresActiveDescendantChangedEvent) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> fired_events;
+  contents->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          &fired_events));
+
+  // Set active descendant.
+  contents->GetViewAccessibility().SetActiveDescendant(*child);
+
+  // Verify kActiveDescendantChanged event was fired.
+  EXPECT_NE(std::find(fired_events.begin(), fired_events.end(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+            fired_events.end());
+}
+
+TEST_F(ViewAccessibilityTest,
+       SetActiveDescendant_FiresFocusEventWhenViewHasFocus) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  // Give focus to the parent view.
+  contents->RequestFocus();
+  ASSERT_TRUE(contents->HasFocus());
+
+  std::vector<ax::mojom::Event> parent_events;
+  contents->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          &parent_events));
+
+  std::vector<ax::mojom::Event> child_events;
+  child->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          &child_events));
+
+  // Set active descendant.
+  contents->GetViewAccessibility().SetActiveDescendant(*child);
+
+  // Verify kFocus event was fired on the child (not the parent container).
+  EXPECT_EQ(std::find(parent_events.begin(), parent_events.end(),
+                      ax::mojom::Event::kFocus),
+            parent_events.end());
+  EXPECT_NE(std::find(child_events.begin(), child_events.end(),
+                      ax::mojom::Event::kFocus),
+            child_events.end());
+}
+
+TEST_F(ViewAccessibilityTest,
+       SetActiveDescendant_NoFocusEventWhenViewNotFocused) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  // Parent view does not have focus.
+  ASSERT_FALSE(contents->HasFocus());
+
+  std::vector<ax::mojom::Event> child_events;
+  child->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          &child_events));
+
+  // Set active descendant.
+  contents->GetViewAccessibility().SetActiveDescendant(*child);
+
+  // Verify kFocus event was NOT fired on the child.
+  EXPECT_EQ(std::find(child_events.begin(), child_events.end(),
+                      ax::mojom::Event::kFocus),
+            child_events.end());
+}
+
+TEST_F(ViewAccessibilityTest, GetFocusedDescendantReturnsActiveDescendantView) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  contents->GetViewAccessibility().SetActiveDescendant(*child);
+
+  EXPECT_EQ(child->GetViewAccessibility().GetNativeObject(),
+            contents->GetViewAccessibility().GetFocusedDescendant());
+}
+
+TEST_F(ViewAccessibilityTest,
+       GetFocusedDescendantFallsBackWhenActiveDescendantDestroyed) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  contents->GetViewAccessibility().SetActiveDescendant(*child);
+  EXPECT_EQ(child->GetViewAccessibility().GetNativeObject(),
+            contents->GetViewAccessibility().GetFocusedDescendant());
+
+  // Destroy the active descendant and ensure focus falls back to the owner.
+  contents->RemoveChildViewT(child);
+  EXPECT_EQ(contents->GetViewAccessibility().GetNativeObject(),
+            contents->GetViewAccessibility().GetFocusedDescendant());
+}
+
+TEST_F(ViewAccessibilityTest, GetActiveDescendantView_ValidatesIdSync) {
+  auto parent = std::make_unique<TestView>();
+  auto child1 = std::make_unique<TestView>();
+  auto child2 = std::make_unique<TestView>();
+  auto* child1_ptr = child1.get();
+  auto* child2_ptr = child2.get();
+  parent->AddChildView(std::move(child1));
+  parent->AddChildView(std::move(child2));
+
+  // Set active descendant to child1.
+  parent->GetViewAccessibility().SetActiveDescendant(*child1_ptr);
+
+  // Verify we get child1 back.
+  EXPECT_EQ(parent->GetViewAccessibility().GetActiveDescendantView(),
+            &child1_ptr->GetViewAccessibility());
+
+  // Change active descendant to child2.
+  parent->GetViewAccessibility().SetActiveDescendant(*child2_ptr);
+
+  // Verify we get child2 back.
+  EXPECT_EQ(parent->GetViewAccessibility().GetActiveDescendantView(),
+            &child2_ptr->GetViewAccessibility());
 }
 
 }  // namespace views::test

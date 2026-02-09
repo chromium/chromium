@@ -280,8 +280,7 @@ TEST_P(AXVirtualViewTest, MultipleCaches) {
   // Store |virtual_label_| in |cache|.
   SetCache(*virtual_label_, *cache);
 
-  AXVirtualViewWrapper* wrapper =
-      virtual_label_->GetOrCreateWrapper(cache.get());
+  AXAuraObjWrapper* wrapper = virtual_label_->GetOrCreateWrapper(cache.get());
   EXPECT_NE(wrapper, nullptr);
   EXPECT_NE(wrapper->GetUniqueId(), ui::kInvalidAXNodeID);
   EXPECT_NE(wrapper->GetParent(), nullptr);
@@ -289,7 +288,7 @@ TEST_P(AXVirtualViewTest, MultipleCaches) {
 
   // Store |virtual_label_| in |second_cache|.
   SetCache(*virtual_label_, *second_cache);
-  AXVirtualViewWrapper* second_wrapper =
+  AXAuraObjWrapper* second_wrapper =
       virtual_label_->GetOrCreateWrapper(second_cache.get());
   EXPECT_NE(second_wrapper, nullptr);
   EXPECT_NE(second_wrapper->GetUniqueId(), ui::kInvalidAXNodeID);
@@ -491,7 +490,7 @@ TEST_P(AXVirtualViewTest, InvisibleVirtualViews) {
   button_->SetVisible(true);
 }
 
-TEST_P(AXVirtualViewTest, OverrideFocus) {
+TEST_P(AXVirtualViewTest, ActiveDescendant) {
   ViewAccessibility& button_accessibility = button_->GetViewAccessibility();
   ASSERT_NE(gfx::NativeViewAccessible(),
             button_accessibility.GetNativeObject());
@@ -505,17 +504,21 @@ TEST_P(AXVirtualViewTest, OverrideFocus) {
 
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
-  button_accessibility.OverrideFocus(virtual_label_);
+  button_accessibility.SetActiveDescendant(*virtual_label_);
   EXPECT_EQ(virtual_label_->GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(virtual_label_, ax::mojom::Event::kFocus)});
+      {std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+       std::make_pair(virtual_label_, ax::mojom::Event::kFocus)});
 
-  button_accessibility.OverrideFocus(nullptr);
+  button_accessibility.ClearActiveDescendant();
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus)});
+      {std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+       std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus)});
 
   ASSERT_EQ(0u, virtual_label_->GetChildCount());
   AXVirtualView* virtual_child_1 = new AXVirtualView;
@@ -530,11 +533,13 @@ TEST_P(AXVirtualViewTest, OverrideFocus) {
   ExpectReceivedAccessibilityEvents({std::make_pair(
       GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
 
-  button_accessibility.OverrideFocus(virtual_child_1);
+  button_accessibility.SetActiveDescendant(*virtual_child_1);
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(virtual_child_1, ax::mojom::Event::kFocus)});
+      {std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+       std::make_pair(virtual_child_1, ax::mojom::Event::kFocus)});
 
   AXVirtualView* virtual_child_3 = new AXVirtualView;
   virtual_child_2->AddChildView(base::WrapUnique(virtual_child_3));
@@ -544,11 +549,13 @@ TEST_P(AXVirtualViewTest, OverrideFocus) {
 
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
-  button_accessibility.OverrideFocus(virtual_child_3);
+  button_accessibility.SetActiveDescendant(*virtual_child_3);
   EXPECT_EQ(virtual_child_3->GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(virtual_child_3, ax::mojom::Event::kFocus)});
+      {std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+       std::make_pair(virtual_child_3, ax::mojom::Event::kFocus)});
 
   // Test that calling GetFocus() while the owner view is not focused will
   // return nullptr.
@@ -562,6 +569,8 @@ TEST_P(AXVirtualViewTest, OverrideFocus) {
 
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   button_->RequestFocus();
+  // When focus returns to the button, the active descendant receives the focus
+  // event.
   ExpectReceivedAccessibilityEvents(
       {std::make_pair(virtual_child_3, ax::mojom::Event::kFocus)});
 
@@ -572,10 +581,14 @@ TEST_P(AXVirtualViewTest, OverrideFocus) {
   EXPECT_EQ(virtual_child_3->GetNativeObject(), virtual_child_2->GetFocus());
   EXPECT_EQ(virtual_child_3->GetNativeObject(), virtual_child_3->GetFocus());
 
+  // Test that removing a virtual view that contains the active descendant
+  // clears the active descendant.
   virtual_label_->RemoveChildView(virtual_child_2);
   ASSERT_EQ(1u, virtual_label_->GetChildCount());
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus),
+      {std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+       std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus),
        std::make_pair(GetButtonAccessibility(),
                       ax::mojom::Event::kChildrenChanged)});
 
@@ -585,18 +598,22 @@ TEST_P(AXVirtualViewTest, OverrideFocus) {
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             virtual_child_1->GetFocus());
 
-  button_accessibility.OverrideFocus(virtual_child_1);
+  button_accessibility.SetActiveDescendant(*virtual_child_1);
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(virtual_child_1, ax::mojom::Event::kFocus)});
+      {std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+       std::make_pair(virtual_child_1, ax::mojom::Event::kFocus)});
 
   virtual_label_->RemoveAllChildViews();
   ASSERT_EQ(0u, virtual_label_->GetChildCount());
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus),
+      {std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kActiveDescendantChanged),
+       std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus),
        std::make_pair(GetButtonAccessibility(),
                       ax::mojom::Event::kChildrenChanged)});
 }

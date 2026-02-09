@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -35,6 +36,8 @@ class AXPlatformNodeDelegate;
 namespace views {
 
 class AtomicViewAXTreeManager;
+class AXAuraObjCache;
+class AXAuraObjWrapper;
 class AXVirtualView;
 class ScopedAccessibilityEventBlocker;
 class View;
@@ -106,14 +109,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Note that accessibility string attributes are only used if non-empty, so
   // you can't override a string with the empty string.
   //
-
-  // Sets one of our virtual descendants as having the accessibility focus. This
-  // means that if this view has the system focus, it will set the accessibility
-  // focus to the provided descendant virtual view instead. Set this to nullptr
-  // if none of our virtual descendants should have the accessibility focus. It
-  // is illegal to set this to any virtual view that is currently not one of our
-  // descendants and this is enforced by a DCHECK.
-  void OverrideFocus(AXVirtualView* virtual_view);
 
   // Returns whether this view is focusable when the user uses an accessibility
   // aid or the keyboard, even though it may not be normally focusable. Note
@@ -313,9 +308,13 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetScrollYMax(int scroll_y_max);
   void SetIsScrollable(bool scrollable);
 
+  void SetActiveDescendant(ViewAccessibility& view_accessibility);
   void SetActiveDescendant(views::View& view);
-  void SetActiveDescendant(ui::AXPlatformNodeId id);
   void ClearActiveDescendant();
+
+  // Returns the ViewAccessibility that is currently the active descendant, or
+  // nullptr if no active descendant is set.
+  ViewAccessibility* GetActiveDescendantView() const;
 
   void SetIsInvisible(bool is_invisible);
   void SetIsExpanded();
@@ -513,11 +512,18 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   virtual ui::AXPlatformNodeId GetUniqueId() const;
 
   View* view() const { return view_; }
-  AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }
+
+  base::WeakPtr<ViewAccessibility> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   virtual AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting() const;
 
   virtual Widget* GetWidget() const;
+
+  // Gets or creates a wrapper suitable for use with tree sources.
+  // Returns nullptr if the view is null or on platforms that don't use Aura.
+  virtual AXAuraObjWrapper* GetOrCreateWrapper(AXAuraObjCache* cache);
 
   // Returns the ViewAccessibility object associated with the parent view (or
   // virtual view). Returns nullptr if this is the root view or the parent is
@@ -786,11 +792,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // We own our virtual children.
   AXVirtualViews virtual_children_;
 
-  // The virtual child that is currently focused.
-  // This is nullptr if no virtual child is focused.
-  // See also OverrideFocus() and GetFocusedDescendant().
-  raw_ptr<AXVirtualView> focused_virtual_child_;
-
   const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
 
@@ -807,6 +808,16 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Whether to move accessibility focus to an ancestor.
   bool propagate_focus_to_ancestor_ = false;
 
+  // Stores a reference to the ViewAccessibility object that is currently the
+  // active descendant (can be either a View's ViewAccessibility or an
+  // AXVirtualView).
+  // TODO(https://crbug.com/40672441): Once ViewsAX is fully enabled, we may
+  // be able to remove this and rely solely on WidgetAXManager cache for
+  // lookups.
+  // Using WeakPtr to avoid dangling pointers when the active descendant view
+  // is destroyed before the view that set it as active descendant.
+  base::WeakPtr<ViewAccessibility> active_descendant_view_;
+
   // Whether we need to ensure an AtomicViewAXTreeManager is created for this
   // View.
   bool needs_ax_tree_manager_ = false;
@@ -819,6 +830,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   State initialization_state_ = State::kUninitialized;
 
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+
+  // Must be the last member.
+  base::WeakPtrFactory<ViewAccessibility> weak_ptr_factory_{this};
 };
 
 class IgnoreMissingWidgetForTestingScopedSetter {

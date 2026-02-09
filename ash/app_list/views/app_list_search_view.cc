@@ -369,19 +369,18 @@ void AppListSearchView::MaybeNotifySelectedResultChanged() {
   }
 
   if (!result_selection_controller_->selected_result()) {
-    search_box_view_->SetA11yActiveDescendant(std::nullopt);
+    search_box_view_->SetA11yActiveDescendant(nullptr);
     return;
   }
 
   views::View* selected_view =
       result_selection_controller_->selected_result()->GetSelectedView();
   if (!selected_view) {
-    search_box_view_->SetA11yActiveDescendant(std::nullopt);
+    search_box_view_->SetA11yActiveDescendant(nullptr);
     return;
   }
 
-  search_box_view_->SetA11yActiveDescendant(
-      selected_view->GetViewAccessibility().GetUniqueId());
+  search_box_view_->SetA11yActiveDescendant(selected_view);
 }
 
 bool AppListSearchView::CanSelectSearchResults() {

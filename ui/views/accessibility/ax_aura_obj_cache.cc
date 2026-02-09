@@ -187,10 +187,25 @@ AXAuraObjWrapper* AXAuraObjCache::GetFocus() {
     return nullptr;
   }
 
-  if (focused_view->GetViewAccessibility().FocusedVirtualChild()) {
-    return focused_view->GetViewAccessibility()
-        .FocusedVirtualChild()
-        ->GetOrCreateWrapper(this);
+  // If there's an active descendant that is an AXVirtualView, return its
+  // wrapper as the focused node. Virtual views don't have their own View
+  // wrapper, so they need to be resolved here.
+  //
+  // For real views (non-virtual), we do NOT resolve the active descendant here.
+  // The `kActivedescendantId` attribute on the focused view's AXNodeData
+  // already communicates the active descendant relationship to ATs. Resolving
+  // it here would change what `chrome.automation.getFocus()` returns, which
+  // breaks consumers (like Select-to-Speak) that expect to get the focused
+  // text field rather than an active descendant result item.
+  if (ViewAccessibility* active_descendant =
+          focused_view->GetViewAccessibility().GetActiveDescendantView()) {
+    // Only resolve virtual views (AXVirtualView), not real View objects.
+    if (active_descendant->view() == nullptr) {
+      if (AXAuraObjWrapper* wrapper =
+              active_descendant->GetOrCreateWrapper(this)) {
+        return wrapper;
+      }
+    }
   }
 
   return GetOrCreate(focused_view);

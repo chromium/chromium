@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/aura/env.h"
