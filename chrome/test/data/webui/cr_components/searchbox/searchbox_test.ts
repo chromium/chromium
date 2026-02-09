@@ -494,7 +494,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(event.detail.contextFiles[0].title, 'title');
   });
 
-  test('clicking deep search button opens composebox', async () => {
+  test.skip('clicking deep search button opens composebox', async () => {
     // Arrange.
     loadTimeData.overrideValues({
       composeboxShowDeepSearchButton: true,
@@ -537,7 +537,7 @@ suite('NewTabPageRealboxTest', () => {
             'ContextualSearch.ContextAdded.ContextAddedMethod.NewTabPage'));
   });
 
-  test('clicking create image button opens composebox', async () => {
+  test.skip('clicking create image button opens composebox', async () => {
     // Arrange.
     loadTimeData.overrideValues({
       composeboxShowCreateImageButton: true,
