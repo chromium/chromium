@@ -211,6 +211,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Whether it's possible to capture a screenshot. virtual for testing.
   virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
+  // Close the UI.
+  virtual void CloseUI();
+
   // Process the bitmap and creates all necessary data to initialize the
   // overlay. Happens on a separate thread to prevent main thread from hanging.
   // Callback is called after creating the RGB bitmap and we are back on the

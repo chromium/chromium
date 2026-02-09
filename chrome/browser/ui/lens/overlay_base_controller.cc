@@ -509,6 +509,54 @@ void OverlayBaseController::InitializeOverlayImpl() {
   state_ = State::kOverlay;
 }
 
+void OverlayBaseController::CloseUI() {
+  if (state_ == State::kOff) {
+    return;
+  }
+
+  state_ = State::kClosing;
+
+  // Closes preselection toast if it exists.
+  ClosePreselectionBubbleImpl();
+
+  side_panel_shown_subscription_ = base::CallbackListSubscription();
+
+  // Re-enable mouse and keyboard events to the tab contents web view.
+  auto* contents_web_view =
+      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+          ->RetrieveView(kActiveContentsWebViewRetrievalId);
+  CHECK(contents_web_view);
+  contents_web_view->SetEnabled(true);
+
+  if (overlay_web_view_) {
+    // Remove render frame observer.
+    overlay_web_view_->GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->RemoveObserver(this);
+  }
+
+  tab_contents_view_observer_.Reset();
+  scoped_tab_modal_ui_.reset();
+  immersive_mode_observer_.Reset();
+  lens_overlay_blur_layer_delegate_.reset();
+  pref_change_registrar_.Reset();
+
+  // Cleanup all of the lens overlay related views. The overlay view is owned by
+  // the browser view and is reused for each Lens overlay session. Clean it up
+  // so it is ready for the next invocation.
+  if (overlay_view_) {
+    overlay_view_->RemoveChildViewT(
+        std::exchange(preselection_widget_anchor_, nullptr));
+    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    MaybeHideSharedOverlayView();
+    overlay_view_ = nullptr;
+  }
+
+  NotifyIsOverlayShowing(false);
+  state_ = State::kOff;
+}
+
 void OverlayBaseController::MaybeHideSharedOverlayView() {
   if (!overlay_view_) {
     return;

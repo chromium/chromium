@@ -357,8 +357,7 @@ void LensOverlayController::TriggerOverlayFadeOutAnimation(
       FROM_HERE, std::move(callback), kFadeoutAnimationTimeout);
 }
 
-void LensOverlayController::CloseUI(
-    lens::LensOverlayDismissalSource dismissal_source) {
+void LensOverlayController::CloseUI() {
   // Notify the query controller to loose references to this classes data before
   // it gets cleaned up to prevent dangling ptrs. This needs to be done even
   // when the overlay state is kOff because the overlay may have been used for
@@ -371,10 +370,25 @@ void LensOverlayController::CloseUI(
     return;
   }
 
-  state_ = State::kClosing;
+  pre_initialization_objects_.reset();
+  pre_initialization_text_.reset();
 
-  // Closes preselection toast if it exists.
-  ClosePreselectionBubble();
+  initialization_data_.reset();
+  omnibox_tab_helper_observer_.Reset();
+  find_tab_observer_.Reset();
+  receiver_.reset();
+  page_.reset();
+  languages_controller_.reset();
+  pending_region_.reset();
+  fullscreen_observation_.Reset();
+  use_aim_for_visual_search_ = false;
+  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+
+  // Notify the searchbox controller to reset its handlers before the overlay
+  // is cleaned up. This is needed to prevent a dangling ptr.
+  GetLensSearchboxController()->ResetOverlaySearchboxHandler();
+
+  OverlayBaseController::CloseUI();
 
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
@@ -388,62 +402,6 @@ void LensOverlayController::CloseUI(
       permission_request_manager->CanRestorePrompt()) {
     permission_request_manager->RestorePrompt();
   }
-
-  pre_initialization_objects_.reset();
-  pre_initialization_text_.reset();
-
-  side_panel_shown_subscription_ = base::CallbackListSubscription();
-
-  // Re-enable mouse and keyboard events to the tab contents web view.
-  auto* contents_web_view =
-      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
-          ->RetrieveView(kActiveContentsWebViewRetrievalId);
-  CHECK(contents_web_view);
-  contents_web_view->SetEnabled(true);
-
-  if (overlay_web_view_) {
-    // Remove render frame observer.
-    overlay_web_view_->GetWebContents()
-        ->GetPrimaryMainFrame()
-        ->GetProcess()
-        ->RemoveObserver(this);
-  }
-
-  initialization_data_.reset();
-
-  tab_contents_view_observer_.Reset();
-  omnibox_tab_helper_observer_.Reset();
-  find_tab_observer_.Reset();
-  receiver_.reset();
-  page_.reset();
-  languages_controller_.reset();
-  scoped_tab_modal_ui_.reset();
-  pending_region_.reset();
-  fullscreen_observation_.Reset();
-  immersive_mode_observer_.Reset();
-  lens_overlay_blur_layer_delegate_.reset();
-  pref_change_registrar_.Reset();
-  use_aim_for_visual_search_ = false;
-
-  // Notify the searchbox controller to reset its handlers before the overlay
-  // is cleaned up. This is needed to prevent a dangling ptr.
-  GetLensSearchboxController()->ResetOverlaySearchboxHandler();
-
-  // Cleanup all of the lens overlay related views. The overlay view is owned by
-  // the browser view and is reused for each Lens overlay session. Clean it up
-  // so it is ready for the next invocation.
-  if (overlay_view_) {
-    overlay_view_->RemoveChildViewT(
-        std::exchange(preselection_widget_anchor_, nullptr));
-    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
-    MaybeHideSharedOverlayView();
-    overlay_view_ = nullptr;
-  }
-
-  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
-
-  NotifyIsOverlayShowing(false);
-  state_ = State::kOff;
 
   // Update the entrypoints now that the controller is closed.
   UpdateEntryPointsState();

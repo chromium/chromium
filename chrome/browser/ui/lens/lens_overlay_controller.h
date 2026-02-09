@@ -355,7 +355,7 @@ class LensOverlayController : public OverlayBaseController,
   // Anyone called trying to close the UI should go through CloseUIAsync or
   // CloseUISync. Those methods also reset state external to
   // LensOverlayController.
-  void CloseUI(lens::LensOverlayDismissalSource dismissal_source);
+  void CloseUI() override;
 
   // Returns the vsrid to use for the new tab URL.
   std::string GetVsridForNewTab();
