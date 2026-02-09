@@ -15,8 +15,12 @@ build_webui("build") {
     "management_ui.html.ts",
     "management_ui.ts",
     "promotion_banner.html.ts",
+    "promotion_banner.ts",
   ]
-  css_files = [ "management_ui.css" ]
+  css_files = [
+    "management_ui.css",
+    "promotion_banner.css",
+  ]
   icons_html_files = [ "icons.html" ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

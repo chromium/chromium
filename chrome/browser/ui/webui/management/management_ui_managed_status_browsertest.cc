@@ -106,8 +106,10 @@ constexpr char kPromotionBannerVisibilityJavaScript[] = R"(
 
 constexpr char kPromotionBannerDismissJavaScript[] = R"(
   const managementUi = document.querySelector('management-ui');
-    if (managementUi) {
-      managementUi.onDismissPromotion_();
+  const promotionBanner =
+      managementUi.shadowRoot.querySelector('promotion-banner');
+    if (promotionBanner) {
+      promotionBanner.onDismissPromotionClick_();
     }
 )";
 

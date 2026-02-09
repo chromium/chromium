@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
+import './promotion_banner.js';
 import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -482,16 +483,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
     }
   }
 
-  protected onDismissPromotion_() {
+  protected onPromotionDismissed_() {
     this.shouldShowPromotion_ = false;
-    this.browserProxy_.setBannerDismissed();
-  }
-
-  protected onPromotionRedirect_() {
-    window.open(
-        'https://admin.google.com/ac/chrome/guides/?ref=browser&utm_source=chrome_policy_cec',
-        '_blank');
-    this.browserProxy_.recordBannerRedirected();
   }
 
   private updateManagedFields_() {
