@@ -49,6 +49,10 @@ BASE_EXPORT void InstallUnretainedDanglingRawPtrChecks();
 // Does nothing if allocator shim support is not built.
 BASE_EXPORT void MakeFreeNoOp();
 
+// Checks if the scheduler loop quarantine feature is enabled for the given
+// process type.
+BASE_EXPORT bool IsSchedulerLoopQuarantineEnabled(
+    std::string_view process_type);
 // Apply specialized configuration to the quarantine branch for the current
 // thread.
 BASE_EXPORT void ReconfigureSchedulerLoopQuarantineBranch(

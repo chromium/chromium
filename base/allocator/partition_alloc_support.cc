@@ -822,6 +822,17 @@ void InstallUnretainedDanglingRawPtrChecks() {
   }
 }
 
+bool IsSchedulerLoopQuarantineEnabled(std::string_view process_type) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return base::allocator::PartitionAllocSupport::
+             ShouldEnablePartitionAllocWithAdvancedChecks(process_type) &&
+         base::FeatureList::IsEnabled(
+             base::features::kPartitionAllocSchedulerLoopQuarantine);
+#else
+  return false;
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
 void ReconfigurePartitionForKnownProcess(std::string_view process_type) {
   DCHECK_NE(process_type, switches::kZygoteProcess);
   // TODO(keishi): Move the code to enable BRP back here after Finch
@@ -1304,9 +1315,17 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     }
   }
 
-  // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread.
-  ReconfigureSchedulerLoopQuarantineBranch(
-      SchedulerLoopQuarantineBranchType::kMain);
+  // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread, however
+  // if there is no concern about UaF during the browser process start up
+  // (because no web content is being loaded) it is safe to delay the feature to
+  // avoid impacting process start up metrics.
+  //
+  // See SchedulerLoopQuarantineWebContentsObserver for more details.
+  const bool is_browser = process_type.empty();
+  if (!is_browser) {
+    ReconfigureSchedulerLoopQuarantineBranch(
+        SchedulerLoopQuarantineBranchType::kMain);
+  }
 
   bool enable_pa_with_advanced_checks =
       ShouldEnablePartitionAllocWithAdvancedChecks(process_type);

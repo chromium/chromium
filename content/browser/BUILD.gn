@@ -1449,6 +1449,8 @@ source_set("browser") {
     "media/webaudio/audio_context_manager_impl.cc",
     "media/webaudio/audio_context_manager_impl.h",
     "media_session/media_session_service.cc",
+    "memory/scheduler_loop_quarantine_web_contents_observer.cc",
+    "memory/scheduler_loop_quarantine_web_contents_observer.h",
     "memory/swap_metrics_driver_impl.cc",
     "memory/swap_metrics_driver_impl.h",
     "memory_coordinator/browser_memory_consumer_registry.cc",
