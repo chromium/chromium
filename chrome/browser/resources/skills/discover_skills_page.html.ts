@@ -10,11 +10,15 @@ import type {DiscoverSkillsPageElement} from './discover_skills_page.js';
 
 export function getHtml(this: DiscoverSkillsPageElement) {
   // clang-format off
-  /* TODO(b/475606460): Replace this with cards */
   return html`<!--_html_template_start_-->
 ${this.topSkills_().length > 0 ? html`
 <h1 class="page-title">$i18n{topPicksTitle}</h1>
-${this.topSkills_().map(skill => html`<li>${skill.name}</li>`)}` : ''}
+<div class="skill-cards-container">
+  ${this.topSkills_().map(skill => html`
+    <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
+        .saveDisabled="${this.is1PSkillSaving_}">
+    </skill-card>`)}
+</div>` : ''}
 <h1 class="page-title">$i18n{browseSkillsTitle}</h1>
 <div id="discoverCategories">
   ${this.getOtherCategories_().map(category => html`
