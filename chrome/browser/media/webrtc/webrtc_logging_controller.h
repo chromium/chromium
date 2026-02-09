@@ -22,6 +22,7 @@
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/media/webrtc/webrtc_text_log_handler.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
+#include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -192,6 +193,8 @@ class WebRtcLoggingController
 
   content::BrowserContext* GetBrowserContext() const;
 
+  webrtc_logging::ApiType GetApiType() const;
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Grants the render process access to the 'WebRTC Logs' directory, and
   // invokes |callback| with the ids necessary to create a DirectoryEntry
@@ -203,7 +206,8 @@ class WebRtcLoggingController
 #endif
 
   static base::FilePath GetLogDirectoryAndEnsureExists(
-      const base::FilePath& browser_context_directory_path);
+      const base::FilePath& browser_context_directory_path,
+      webrtc_logging::ApiType api_type);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -215,7 +219,8 @@ class WebRtcLoggingController
 
   // A callback that needs to be run from a blocking worker pool and returns
   // the browser context directory path associated with our renderer process.
-  base::RepeatingCallback<base::FilePath(void)> log_directory_getter_;
+  base::RepeatingCallback<base::FilePath(webrtc_logging::ApiType)>
+      log_directory_getter_;
 
   // True if we should upload whatever log we have when the renderer closes.
   bool upload_log_on_render_close_;

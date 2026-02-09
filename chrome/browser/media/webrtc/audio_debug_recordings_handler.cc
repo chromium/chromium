@@ -43,7 +43,7 @@ base::FilePath GetLogDirectoryAndEnsureExists(
     const base::FilePath& browser_context_path) {
   base::FilePath log_dir_path =
       webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
-          browser_context_path);
+          browser_context_path, webrtc_logging::ApiType::kExtension);
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(log_dir_path, &error)) {
     DLOG(ERROR) << "Could not create WebRTC log directory, error: " << error;

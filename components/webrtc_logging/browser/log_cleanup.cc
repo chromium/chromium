@@ -152,12 +152,6 @@ std::string RemoveObsoleteEntriesFromLogIndex(
   return new_log_index;
 }
 
-}  // namespace
-
-void DeleteOldWebRtcLogFiles(const base::FilePath& log_dir) {
-  DeleteOldAndRecentWebRtcLogFiles(log_dir, base::Time::Max());
-}
-
 void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
                                       const base::Time& delete_begin_time) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -191,8 +185,9 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
   base::FileEnumerator log_files(log_dir, false, base::FileEnumerator::FILES);
   for (base::FilePath name = log_files.Next(); !name.empty();
        name = log_files.Next()) {
-    if (name == log_list_path)
+    if (name == log_list_path) {
       continue;
+    }
     base::FileEnumerator::FileInfo file_info(log_files.GetInfo());
     // TODO(crbug.com/40569303): Handle mismatch between timestamps of the .gz
     // file and the .meta file, as well as with the index.
@@ -209,8 +204,9 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
       // unique.
       std::string id = file_info.GetName().RemoveExtension().MaybeAsASCII();
       size_t id_pos = log_list.find(id);
-      if (id_pos == std::string::npos)
+      if (id_pos == std::string::npos) {
         continue;
+      }
       log_list.erase(id_pos, id.size());
     }
   }
@@ -220,6 +216,20 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
         RemoveObsoleteEntriesFromLogIndex(log_list, delete_begin_time, now);
     bool success = base::WriteFile(log_list_path, log_list);
     DPCHECK(success);
+  }
+}
+
+}  // namespace
+
+void DeleteOldWebRtcLogFiles(const std::vector<base::FilePath>& log_dirs) {
+  DeleteOldAndRecentWebRtcLogFiles(log_dirs, base::Time::Max());
+}
+
+void DeleteOldAndRecentWebRtcLogFiles(
+    const std::vector<base::FilePath>& log_dirs,
+    const base::Time& delete_begin_time) {
+  for (const base::FilePath& log_dir : log_dirs) {
+    DeleteOldAndRecentWebRtcLogFiles(log_dir, delete_begin_time);
   }
 }
 

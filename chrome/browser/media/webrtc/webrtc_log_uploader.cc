@@ -179,7 +179,7 @@ void WebRtcLogUploader::OnLoggingStopped(
   std::string local_log_id;
 
   if (base::PathExists(upload_done_data.paths.directory)) {
-    webrtc_logging::DeleteOldWebRtcLogFiles(upload_done_data.paths.directory);
+    webrtc_logging::DeleteOldWebRtcLogFiles({upload_done_data.paths.directory});
 
     local_log_id =
         base::NumberToString(base::Time::Now().InSecondsFSinceUnixEpoch());
@@ -251,7 +251,7 @@ void WebRtcLogUploader::LoggingStoppedDoStore(
   DCHECK(log_buffer.get());
   DCHECK(!log_paths.directory.empty());
 
-  webrtc_logging::DeleteOldWebRtcLogFiles(log_paths.directory);
+  webrtc_logging::DeleteOldWebRtcLogFiles({log_paths.directory});
 
   base::FilePath log_list_path =
       webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(

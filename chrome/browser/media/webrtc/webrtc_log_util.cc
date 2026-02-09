@@ -27,9 +27,9 @@ void WebRtcLogUtil::DeleteOldWebRtcLogFilesForAllProfiles() {
   for (ProfileAttributesEntry* entry : entries) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            &webrtc_logging::DeleteOldWebRtcLogFiles,
-            webrtc_logging::TextLogList::
-                GetWebRtcLogDirectoryForBrowserContextPath(entry->GetPath())));
+        base::BindOnce(&webrtc_logging::DeleteOldWebRtcLogFiles,
+                       webrtc_logging::TextLogList::
+                           GetWebRtcLogDirectoriesForBrowserContextPath(
+                               entry->GetPath())));
   }
 }

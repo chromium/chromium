@@ -27,7 +27,8 @@ class WebrtcLoggingPrivateApiBrowserTest
 
   base::FilePath webrtc_logs_path() {
     return webrtc_logging::TextLogList::
-        GetWebRtcLogDirectoryForBrowserContextPath(profile()->GetPath());
+        GetWebRtcLogDirectoryForBrowserContextPath(
+            profile()->GetPath(), webrtc_logging::ApiType::kExtension);
   }
 };
 

@@ -141,7 +141,7 @@ void WebRtcLoggingController::UploadLog(UploadDoneCallback callback) {
 
   WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
   log_uploader->background_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(log_directory_getter_),
+      FROM_HERE, base::BindOnce(log_directory_getter_, GetApiType()),
       base::BindOnce(&WebRtcLoggingController::TriggerUpload, this,
                      std::move(callback)));
 }
@@ -200,7 +200,7 @@ void WebRtcLoggingController::StoreLogContinue(const std::string& log_id,
 
   WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
   log_uploader->background_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(log_directory_getter_),
+      FROM_HERE, base::BindOnce(log_directory_getter_, GetApiType()),
       base::BindOnce(&WebRtcLoggingController::StoreLogInDirectory, this,
                      log_id, std::move(log_paths), std::move(callback)));
 }
@@ -228,7 +228,7 @@ void WebRtcLoggingController::StartRtpDump(RtpDumpType type,
   if (!rtp_dump_handler_) {
     WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
     log_uploader->background_task_runner()->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(log_directory_getter_),
+        FROM_HERE, base::BindOnce(log_directory_getter_, GetApiType()),
         base::BindOnce(&WebRtcLoggingController::CreateRtpDumpHandlerAndStart,
                        this, type, std::move(callback)));
     return;
@@ -285,7 +285,7 @@ void WebRtcLoggingController::GetLogsDirectory(
   DCHECK(!callback.is_null());
   WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance();
   log_uploader->background_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(log_directory_getter_),
+      FROM_HERE, base::BindOnce(log_directory_getter_, GetApiType()),
       base::BindOnce(&WebRtcLoggingController::GrantLogsDirectoryAccess, this,
                      std::move(callback), std::move(error_callback)));
 }
@@ -404,7 +404,7 @@ void WebRtcLoggingController::OnAgentDisconnected() {
       text_log_handler_->ChannelClosing();
       if (upload_log_on_render_close_) {
         log_uploader->background_task_runner()->PostTaskAndReplyWithResult(
-            FROM_HERE, base::BindOnce(log_directory_getter_),
+            FROM_HERE, base::BindOnce(log_directory_getter_, GetApiType()),
             base::BindOnce(&WebRtcLoggingController::TriggerUpload, this,
                            UploadDoneCallback()));
       } else {
@@ -615,6 +615,11 @@ content::BrowserContext* WebRtcLoggingController::GetBrowserContext() const {
   return host ? host->GetBrowserContext() : nullptr;
 }
 
+webrtc_logging::ApiType WebRtcLoggingController::GetApiType() const {
+  // TODO(crbug.com/481412281): Support webrtc_logging::ApiType::kWeb.
+  return webrtc_logging::ApiType::kExtension;
+}
+
 // static
 bool WebRtcLoggingController::IsWebRtcTextLogAllowed(
     content::BrowserContext* browser_context) {
@@ -631,7 +636,8 @@ bool WebRtcLoggingController::IsWebRtcTextLogAllowed(
 }
 
 base::FilePath WebRtcLoggingController::GetLogDirectoryAndEnsureExists(
-    const base::FilePath& browser_context_directory_path) {
+    const base::FilePath& browser_context_directory_path,
+    webrtc_logging::ApiType api_type) {
   DCHECK(!browser_context_directory_path.empty());
   // Since we can be alive after the RenderProcessHost and the BrowserContext
   // (profile) have gone away, we could create the log directory here after a
@@ -639,7 +645,7 @@ base::FilePath WebRtcLoggingController::GetLogDirectoryAndEnsureExists(
   // cleaned up (at a higher level) the next browser restart.
   base::FilePath log_dir_path =
       webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
-          browser_context_directory_path);
+          browser_context_directory_path, api_type);
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(log_dir_path, &error)) {
     DLOG(ERROR) << "Could not create WebRTC log directory, error: " << error;

@@ -6,30 +6,36 @@
 
 #include "base/files/file.h"
 #include "components/upload_list/text_log_upload_list.h"
-#include "content/public/browser/browser_context.h"
 
 namespace webrtc_logging {
 
 namespace {
 
-const char kWebRtcLogDirectory[] = "WebRTC Logs";
+const char kWebRtcExtensionApiLogDirectory[] = "WebRTC Logs";
+const char kWebRtcWebApiLogDirectory[] = "WebRTC Web API Logs";
 const char kWebRtcLogListFilename[] = "Log List";
 
 }  // namespace
 
 // static
-UploadList* TextLogList::CreateWebRtcLogList(
-    content::BrowserContext* browser_context) {
-  base::FilePath log_list_path = GetWebRtcLogListFileForDirectory(
-      GetWebRtcLogDirectoryForBrowserContextPath(browser_context->GetPath()));
-  return new TextLogUploadList(log_list_path);
+base::FilePath TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+    const base::FilePath& browser_context_path,
+    ApiType api_type) {
+  DCHECK(!browser_context_path.empty());
+  return browser_context_path.AppendASCII(
+      api_type == ApiType::kWeb ? kWebRtcWebApiLogDirectory
+                                : kWebRtcExtensionApiLogDirectory);
 }
 
 // static
-base::FilePath TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+std::vector<base::FilePath>
+TextLogList::GetWebRtcLogDirectoriesForBrowserContextPath(
     const base::FilePath& browser_context_path) {
   DCHECK(!browser_context_path.empty());
-  return browser_context_path.AppendASCII(kWebRtcLogDirectory);
+  return {
+      browser_context_path.AppendASCII(kWebRtcExtensionApiLogDirectory),
+      browser_context_path.AppendASCII(kWebRtcWebApiLogDirectory),
+  };
 }
 
 // static

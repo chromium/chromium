@@ -58,13 +58,13 @@ class WebRtcLogCleanupTest : public testing::Test {
 };
 
 TEST_F(WebRtcLogCleanupTest, DeleteOldWebRtcLogFiles) {
-  DeleteOldWebRtcLogFiles(dir_.GetPath());
+  DeleteOldWebRtcLogFiles({dir_.GetPath()});
   VerifyFiles(2);
 }
 
 TEST_F(WebRtcLogCleanupTest, DeleteOldAndRecentWebRtcLogFiles) {
   base::Time delete_begin_time = base::Time::Now() - base::Days(1);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
   VerifyFiles(1);
 }
 
@@ -116,7 +116,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, OlderLinesNotDeleted) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = contents;
   ExpectContents(expected_contents);
@@ -131,7 +131,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, LinesInDeletionTimeRangeDeleted) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "100.2,report_id_2,local_id_2,101.2\n";
   ExpectContents(expected_contents);
@@ -162,7 +162,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, ExpiredLinesDeleted) {
 
   CreateLogListFileWithContents(contents);
 
-  DeleteOldWebRtcLogFiles(dir_.GetPath());
+  DeleteOldWebRtcLogFiles({dir_.GetPath()});
 
   const std::string expected_contents = not_expired_line;
   ExpectContents(expected_contents);
@@ -177,7 +177,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, AllLinesDeletedSanity) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -195,7 +195,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, EmptyLinesRemoved) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents =
       "100.1,report_id_1,local_id_1,101.1\n"
@@ -210,7 +210,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, SanityEmptyFile) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -222,7 +222,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, SanityFileWithOneEmptyLine) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -236,7 +236,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, SingleLineSanity) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = contents;
   ExpectContents(expected_contents);
@@ -250,7 +250,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, CanRemoveAllLines) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -262,7 +262,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, LinesWithoutUploadDateConsideredValid) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = contents;
   ExpectContents(expected_contents);
@@ -274,7 +274,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, LinesWithoutReportIdConsideredValid) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = contents;
   ExpectContents(expected_contents);
@@ -286,7 +286,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, LinesWithoutLocalIdConsideredValid) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = contents;
   ExpectContents(expected_contents);
@@ -299,7 +299,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest,
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -311,7 +311,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, CanBeConsideredObsoleteDueToCaptureDate) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -323,7 +323,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, CanBeConsideredObsoleteDueToUploadDate) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -335,7 +335,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest, LinesWithTooFewTokensConsideredInvalid) {
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -348,7 +348,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest,
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -361,7 +361,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest,
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -374,7 +374,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest,
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
@@ -387,7 +387,7 @@ TEST_F(WebRtcTextLogIndexCleanupTest,
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
-  DeleteOldAndRecentWebRtcLogFiles(dir_.GetPath(), delete_begin_time);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
   const std::string expected_contents = "";
   ExpectContents(expected_contents);

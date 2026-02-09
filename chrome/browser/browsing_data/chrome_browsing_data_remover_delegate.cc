@@ -477,11 +477,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(
-            &webrtc_logging::DeleteOldAndRecentWebRtcLogFiles,
-            webrtc_logging::TextLogList::
-                GetWebRtcLogDirectoryForBrowserContextPath(profile_->GetPath()),
-            delete_begin_),
+        base::BindOnce(&webrtc_logging::DeleteOldAndRecentWebRtcLogFiles,
+                       webrtc_logging::TextLogList::
+                           GetWebRtcLogDirectoriesForBrowserContextPath(
+                               profile_->GetPath()),
+                       delete_begin_),
         CreateTaskCompletionClosure(TracingDataType::kWebrtcLogs));
 
 #if BUILDFLAG(IS_ANDROID)

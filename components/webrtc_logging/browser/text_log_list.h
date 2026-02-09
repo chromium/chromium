@@ -7,24 +7,27 @@
 
 #include "base/files/file_path.h"
 
-class UploadList;
-
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace webrtc_logging {
+
+enum class ApiType {
+  kExtension,
+  kWeb,
+};
 
 class TextLogList {
  public:
-  // Creates the upload list for a browser context. The upload list loads and
-  // parses a text file list of WebRTC logs stored locally and/or uploaded.
-  static UploadList* CreateWebRtcLogList(
-      content::BrowserContext* browser_context);
-
-  // Gets the file path for the log directory in a browser context's directory.
-  // The directory name will be appended to |browser_context_path| and returned.
+  // Gets the file path for the log directory in a browser context's directory
+  // for a given API type. The directory name will be appended to
+  // |browser_context_path| and returned.
   static base::FilePath GetWebRtcLogDirectoryForBrowserContextPath(
+      const base::FilePath& browser_context_path,
+      ApiType api_type);
+
+  // Gets the file paths for log directories in a browser context's directory
+  // for all supported API types. The directory names will be appended to
+  // |browser_context_path| and returned.
+  static std::vector<base::FilePath>
+  GetWebRtcLogDirectoriesForBrowserContextPath(
       const base::FilePath& browser_context_path);
 
   // Gets the file path for the log list file in a directory. The log list file
