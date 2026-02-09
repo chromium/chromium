@@ -186,7 +186,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     fake_system_identity_manager->AddIdentity(identity);
     authentication_service->SignIn(identity,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
 
     // Wait for the base view controller to be presented.
     base_view_controller_.modalPresentationStyle =
