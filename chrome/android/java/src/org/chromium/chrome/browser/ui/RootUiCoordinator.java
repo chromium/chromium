@@ -36,6 +36,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
@@ -268,6 +269,7 @@ public class RootUiCoordinator
                 AppMenuBlocker,
                 ContextualSearchTabPromotionDelegate,
                 WindowFocusChangedObserver {
+    private static final String TAG = "RootUiCoordinator";
 
     protected final SettableMonotonicObservableSupplier<TabObscuringHandler>
             mTabObscuringHandlerSupplier = ObservableSuppliers.createMonotonic();
@@ -1623,11 +1625,14 @@ public class RootUiCoordinator
                 }
             }
         } else if (id == R.id.glic_menu_id) {
+            var task = mChromeAndroidTaskSupplier.get();
+            if (task == null) {
+                Log.w(TAG, "Failed to trigger GLIC: ChromeAndroidTask is null.");
+                return false;
+            }
             Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
-            assumeNonNull(profile);
-            long browserWindowPtr =
-                    assumeNonNull(mChromeAndroidTaskSupplier.get())
-                            .getOrCreateNativeBrowserWindowPtr(profile);
+            assert profile != null;
+            long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(profile);
             GlicKeyedService service = new GlicKeyedService();
             if (service == null) {
                 return false;
