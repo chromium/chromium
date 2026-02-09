@@ -5809,13 +5809,13 @@ Handoff must also be enabled in the General section of Settings, and your device
         Unread
       </message>
       <message name="IDS_IOS_READING_MODE_SETTING_DESCRIPTION" desc="Description of the setting to enable the 'Reading mode available' message [iOS only]">
-        Access Reading Mode from the address bar when available
+        Access reading mode from the address bar when available
       </message>
       <message name="IDS_IOS_READING_MODE_SETTING_TITLE" desc="Title of the setting to enable the 'Reading mode available' message [iOS only]" meaning="Title of the setting to enable the 'Reading mode available' message [iOS only]">
         Show Reading Mode
       </message>
       <message name="IDS_IOS_READING_MODE_SHOW_HYPERLINKS_DESCRIPTION" translateable="false" desc="Description of the setting to enable hyperlinks in Reader Mode [iOS only]">
-        Show links once Reading Mode is on
+        Show links when reading mode is on
       </message>
       <message name="IDS_IOS_READING_MODE_SHOW_HYPERLINKS_TITLE" translateable="false" desc="Title of the setting to enable hyperlinks in Reading Mode [iOS only]">
         Show hyperlinks
