@@ -193,7 +193,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   // Called when a scroll marker tab selection changes, affecting which
   // content is visible/accessible in a CSS scroll-marker-group tabs mode.
-  virtual void HandleScrollMarkerTabSelectionChanged(Element& scroller) = 0;
+  virtual void HandleScrollMarkerTabSelectionChanged(Element* scroller) = 0;
 
   virtual void HandleScrolledToAnchor(const Node* anchor_node) = 0;
 

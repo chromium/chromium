@@ -6680,23 +6680,24 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 }
 
 void AXObjectCacheImpl::HandleScrollMarkerTabSelectionChanged(
-    Element& scroller) {
-  // Traverse all nodes in the scroller's subtree and mark each one dirty.
-  // We use node traversal instead of AX tree traversal because the AX tree
-  // representation may differ from the DOM tree for carousels (e.g., ignored
-  // nodes from inactive tabs are not included in CachedChildren()).
-  // This ensures that when the active tab changes, all affected nodes
-  // (including those that were previously ignored) get their cached values
-  // updated and are properly re-serialized.
-  for (LayoutObject* current = scroller.GetLayoutObject(); current;
-       current = current->NextInPreOrder(scroller.GetLayoutObject())) {
-    if (AXObject* obj = Get(current)) {
-      if (lifecycle_.StateAllowsImmediateTreeUpdates()) {
-        MarkAXObjectDirtyWithCleanLayout(obj);
-      } else {
-        MarkAXObjectDirty(obj);
-      }
-    }
+    Element* scroller) {
+  if (!scroller) {
+    return;
+  }
+
+  AXObject* obj = Get(scroller);
+  if (!obj) {
+    // There is no AXObject, so there is no subtree to mark dirty.
+    MarkElementDirty(scroller);
+    return;
+  }
+
+  // Check if the a11y lifecycle allows immediate tree updates (layout is
+  // clean), otherwise defer tree updates.
+  if (lifecycle_.StateAllowsImmediateTreeUpdates()) {
+    MarkAXSubtreeDirtyWithCleanLayout(obj);
+  } else {
+    MarkAXSubtreeDirty(obj);
   }
 }
 
