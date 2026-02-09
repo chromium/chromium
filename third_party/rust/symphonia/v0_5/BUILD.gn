@@ -33,12 +33,15 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/lazy_static/v1:lib",
     "//third_party/rust/symphonia_bundle_flac/v0_5:lib",
+    "//third_party/rust/symphonia_bundle_mp3/v0_5:lib",
     "//third_party/rust/symphonia_core/v0_5:lib",
     "//third_party/rust/symphonia_metadata/v0_5:lib",
   ]
   features = [
     "flac",
+    "mp3",
     "symphonia-bundle-flac",
+    "symphonia-bundle-mp3",
   ]
 
   #####################################################################

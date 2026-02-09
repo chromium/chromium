@@ -101,11 +101,9 @@ impl FlacDecoder {
         // the stream information if provided. If neither are available, return an error.
         let bits_per_sample = if let Some(bps) = header.bits_per_sample {
             bps
-        }
-        else if let Some(bps) = self.params.bits_per_sample {
+        } else if let Some(bps) = self.params.bits_per_sample {
             bps
-        }
-        else {
+        } else {
             return decode_error("flac: bits per sample not provided");
         };
 
@@ -118,7 +116,8 @@ impl FlacDecoder {
 
         // Reserve a writeable chunk in the buffer equal to the number of samples in the block.
         self.buf.clear();
-        self.buf.render_reserved(Some(header.block_num_samples as usize));
+        self.buf
+            .render_reserved(Some(header.block_num_samples as usize));
 
         // Only Bitstream reading for subframes.
         {
@@ -230,7 +229,11 @@ impl Decoder for FlacDecoder {
     }
 
     fn supported_codecs() -> &'static [CodecDescriptor] {
-        &[support_codec!(CODEC_TYPE_FLAC, "flac", "Free Lossless Audio Codec")]
+        &[support_codec!(
+            CODEC_TYPE_FLAC,
+            "flac",
+            "Free Lossless Audio Codec"
+        )]
     }
 
     fn reset(&mut self) {
@@ -245,8 +248,7 @@ impl Decoder for FlacDecoder {
         if let Err(e) = self.decode_inner(packet) {
             self.buf.clear();
             Err(e)
-        }
-        else {
+        } else {
             Ok(self.buf.as_audio_buffer_ref())
         }
     }
@@ -268,16 +270,19 @@ impl Decoder for FlacDecoder {
                     let mut expected_s = String::with_capacity(32);
                     let mut decoded_s = String::with_capacity(32);
 
-                    expected.iter().for_each(|b| write!(expected_s, "{:02x}", b).unwrap());
-                    decoded.iter().for_each(|b| write!(decoded_s, "{:02x}", b).unwrap());
+                    expected
+                        .iter()
+                        .for_each(|b| write!(expected_s, "{:02x}", b).unwrap());
+                    decoded
+                        .iter()
+                        .for_each(|b| write!(decoded_s, "{:02x}", b).unwrap());
 
                     debug!("verification: expected md5 = {}", expected_s);
                     debug!("verification: decoded md5  = {}", decoded_s);
                 }
 
                 result.verify_ok = Some(decoded == expected)
-            }
-            else {
+            } else {
                 warn!("verification requested but the expected md5 checksum was not provided");
             }
         }
@@ -329,7 +334,11 @@ fn read_subframe<B: ReadBitsLtr>(bs: &mut B, frame_bps: u32, buf: &mut [i32]) ->
     // Bit 7 of the sub-frame header designates if there are any dropped (wasted in FLAC terms)
     // bits per sample in the audio sub-block. If the bit is set, unary decode the number of
     // dropped bits per sample.
-    let dropped_bps = if bs.read_bool()? { bs.read_unary_zeros()? + 1 } else { 0 };
+    let dropped_bps = if bs.read_bool()? {
+        bs.read_unary_zeros()? + 1
+    } else {
+        0
+    };
 
     // The bits per sample stated in the frame header is for the decoded audio sub-block samples.
     // However, it is likely that the lower order bits of all the samples are simply 0. Therefore,
@@ -389,6 +398,10 @@ fn decode_fixed_linear<B: ReadBitsLtr>(
     order: u32,
     buf: &mut [i32],
 ) -> Result<()> {
+    if order as usize > buf.len() {
+        return decode_error("flac: subframe size less than predictor order");
+    }
+
     // The first `order` samples are encoded verbatim to warm-up the LPC decoder.
     decode_verbatim(bs, bps, &mut buf[..order as usize])?;
 
@@ -408,6 +421,10 @@ fn decode_fixed_linear<B: ReadBitsLtr>(
 fn decode_linear<B: ReadBitsLtr>(bs: &mut B, bps: u32, order: u32, buf: &mut [i32]) -> Result<()> {
     // The order of the Linear Predictor should be between 1 and 32.
     debug_assert!(order > 0 && order <= 32);
+
+    if order as usize > buf.len() {
+        return decode_error("flac: subframe size less than predictor order");
+    }
 
     // The first `order` samples are encoded verbatim to warm-up the LPC decoder.
     decode_verbatim(bs, bps, &mut buf[0..order as usize])?;
@@ -451,8 +468,7 @@ fn decode_linear<B: ReadBitsLtr>(bs: &mut B, bps: u32, order: u32, buf: &mut [i3
             11..=12 => lpc::<12>(order, &qlp_coeffs, qlp_coeff_shift, buf),
             _ => lpc::<32>(order, &qlp_coeffs, qlp_coeff_shift, buf),
         };
-    }
-    else {
+    } else {
         return unsupported_error("flac: lpc shifts less than 0 are not supported");
     }
 
@@ -544,8 +560,7 @@ fn decode_rice_partition<B: ReadBitsLtr>(
             let r = bs.read_bits_leq32(rice_param)?;
             *sample = rice_signed_to_i32((q << rice_param) | r);
         }
-    }
-    else {
+    } else {
         let residual_bits = bs.read_bits_leq32(5)?;
 
         // trace!(

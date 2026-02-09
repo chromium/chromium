@@ -133,7 +133,7 @@ version = "0.5.4"
 # codecs specifically added in `features`. Enabling new codec support requires a
 # package configuration through gnrt vendor and gnrt gen.
 default-features = false
-features = ["flac"]
+features = ["flac", "mp3"]
 
 [dependencies.syn]
 version = "2"
