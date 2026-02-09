@@ -1088,21 +1088,24 @@ public class AwContentsTest extends AwParameterizedTest {
             throws Throwable {
         String html =
                 String.format(
-                        "<html>"
-                                + "  <body style=\""
-                                + "       padding: 0;"
-                                + "       margin: 0;"
-                                + "       display: grid;"
-                                + "       display: grid;"
-                                + "       grid-template-columns: 50%% 50%%;"
-                                + "       grid-template-rows: 50%% 50%%;\">"
-                                + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
-                                + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
-                                + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
-                                + "   <div style=\"background-color: rgb(%d, %d, %d);\"></div>"
-                                + "  </body>"
-                                + "</html>",
+                        """
+                        <html>
+                          <body style="
+                                padding: 0;
+                                margin: 0;
+                                display: grid;
+                                display: grid;
+                                grid-template-columns: 50%% 50%%;
+                                grid-template-rows: 50%% 50%%;">
+                            <div style="background-color: rgb(255, 0, 0)"></div>
+                            <div style="background-color: rgb(0, 255, 0)"></div>
+                            <div style="background-color: rgb(0, 0, 255)"></div>
+                            <div style="background-color: rgb(%d, %d, %d)"></div>
+                          </body>
+                        </html>
+                        """,
                         r, g, b);
+
         mActivityTestRule.loadDataSync(
                 testView.getAwContents(),
                 mContentsClient.getOnPageFinishedHelper(),
@@ -1449,12 +1452,16 @@ public class AwContentsTest extends AwParameterizedTest {
         mActivityTestRule.executeJavaScriptAndWaitForResult(
                 awContents,
                 mContentsClient,
-                "fetch('/defaultresponse')"
-                        + ".then(() => { injectedObject.success() })"
-                        + ".catch((err) => { "
-                        + "  console.log(err); "
-                        + "  injectedObject.error(); "
-                        + "})");
+                """
+                fetch("/defaultresponse")
+                  .then(() => {
+                    injectedObject.success();
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    injectedObject.error();
+                  })
+                """);
 
         Assert.assertTrue(AwActivityTestRule.waitForFuture(fetchResultFuture));
     }
@@ -1569,21 +1576,30 @@ public class AwContentsTest extends AwParameterizedTest {
             final String iframePath =
                     webServer.setResponse(
                             "/iframe.html",
-                            "<html><body style=\"background-color:rgb(255,0,0);\">"
-                                    + "<a href=\""
-                                    + iframeDestinationPath
-                                    + "\" "
-                                    + "style=\"width:100%;height:100%;display:block;\"></a>"
-                                    + "</body></html>",
+                            String.format(
+                                    """
+                                    <html>
+                                    <body style="background-color: rgb(255, 0, 0)">
+                                    <a href="%s" style="width: 100%%; height: 100%%; display: block"></a>
+                                    </body>
+                                    </html>
+                                    """,
+                                    iframeDestinationPath),
                             null);
             // Main frame has green color at the top half, and iframe in the bottom half.
             final String pageHtml =
-                    "<html><body><div"
-                        + " style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div><iframe"
-                        + " style=\"width:100%;height:50%;\" src=\""
-                            + iframePath
-                            + "\"></iframe>"
-                            + "</body></html>";
+                    String.format(
+                            """
+                            <html>
+                              <body>
+                                <div
+                                  style="width: 100%%; height: 50%%; background-color: rgb(0, 255, 0)"
+                                ></div>
+                                <iframe style="width: 100%%; height: 50%%" src="%s"></iframe>
+                              </body>
+                            </html>
+                            """,
+                            iframePath);
 
             // Iframes are loaded with origin of the test server, and the main page is loaded with
             // origin http://foo.bar. This ensures that the main and iframe are different renderer
