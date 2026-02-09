@@ -17,6 +17,14 @@ export class ExtensionElement extends CrLitElement {
     return 'webui-browser-extension-element';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       iconUrl: {type: String},
@@ -29,14 +37,6 @@ export class ExtensionElement extends CrLitElement {
 
   private bar: ExtensionsBar;
   private extensionId: string;
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   constructor(extensionId: string, bar: ExtensionsBar) {
     super();

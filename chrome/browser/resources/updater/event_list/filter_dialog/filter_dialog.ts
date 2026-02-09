@@ -23,6 +23,10 @@ export class FilterDialogElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       anchorElement: {type: Object},
@@ -30,10 +34,6 @@ export class FilterDialogElement extends CrLitElement {
   }
 
   accessor anchorElement: HTMLElement|null = null;
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   override firstUpdated() {
     this.$.dialog.showModal();

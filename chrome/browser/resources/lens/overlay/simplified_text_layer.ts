@@ -41,6 +41,14 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     return 'lens-simplified-text-layer';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       enableHighlights: {
@@ -57,14 +65,6 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
       },
       highlightedLines: {type: Array},
     };
-  }
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   // Whether the user has actioned on the text pertaining to the newest region

@@ -25,6 +25,14 @@ export class SelectableIconButtonElement extends
     return 'selectable-icon-button';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       icon: {type: String},
@@ -33,14 +41,6 @@ export class SelectableIconButtonElement extends
 
   accessor icon: string = '';
   override noRipple: boolean = true;
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 }
 
 declare global {

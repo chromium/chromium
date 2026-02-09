@@ -30,6 +30,14 @@ export class DeclutterPageElement extends CrLitElement {
     return 'declutter-page';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       availableHeight: {type: Number},
@@ -54,10 +62,6 @@ export class DeclutterPageElement extends CrLitElement {
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
 
-  static override get styles() {
-    return getCss();
-  }
-
   constructor() {
     super();
 
@@ -67,10 +71,6 @@ export class DeclutterPageElement extends CrLitElement {
             ({tabs}) => this.setUnusedTabs_(tabs));
       }
     };
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   override connectedCallback() {

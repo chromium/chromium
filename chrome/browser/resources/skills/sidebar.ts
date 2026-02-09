@@ -27,6 +27,14 @@ export class SkillsSidebarElement extends CrLitElement {
     return 'skills-sidebar';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       selectedPage: {type: String},
@@ -47,14 +55,6 @@ export class SkillsSidebarElement extends CrLitElement {
   ];
 
   protected accessor selectedPage: Page = Page.USER_SKILLS;
-
-  override render() {
-    return getHtml.bind(this)();
-  }
-
-  static override get styles() {
-    return getCss();
-  }
 
   protected onMenuItemActivate_(e: CustomEvent<{item: HTMLAnchorElement}>):
       void {

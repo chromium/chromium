@@ -31,6 +31,10 @@ export class CrPageSelectorElement extends CrPageSelectorElementBase {
     return getCss();
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       // Set this property to true to flatten slot items, i.e. to grab elements
@@ -43,10 +47,6 @@ export class CrPageSelectorElement extends CrPageSelectorElementBase {
       // selectable.
       hasNestedSlots: {type: Boolean},
     };
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   accessor hasNestedSlots: boolean = false;

@@ -35,6 +35,14 @@ export class AutoTabGroupsNotStartedElement extends
     return 'auto-tab-groups-not-started';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       showFre: {type: Boolean},
@@ -56,14 +64,6 @@ export class AutoTabGroupsNotStartedElement extends
   private accessor signedIn_: boolean = false;
   private syncBrowserProxy_: TabSearchSyncBrowserProxy =
       TabSearchSyncBrowserProxyImpl.getInstance();
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   override connectedCallback() {
     super.connectedCallback();

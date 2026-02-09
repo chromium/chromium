@@ -39,6 +39,15 @@ export class ModuleWrapperElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    // Update the light DOM element(s) and allow Lit to handle the shadow DOM
+    // with a slotted module's UI element.
+    if (this.module) {
+      render(this.module.element, this, {host: this});
+    }
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       module: {
@@ -49,15 +58,6 @@ export class ModuleWrapperElement extends CrLitElement {
 
   accessor module: ModuleInstance|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-
-  override render() {
-    // Update the light DOM element(s) and allow Lit to handle the shadow DOM
-    // with a slotted module's UI element.
-    if (this.module) {
-      render(this.module.element, this, {host: this});
-    }
-    return getHtml.bind(this)();
-  }
 
   override disconnectedCallback() {
     super.disconnectedCallback();

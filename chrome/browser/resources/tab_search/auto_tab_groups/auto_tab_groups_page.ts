@@ -44,6 +44,14 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     return 'auto-tab-groups-page';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       availableHeight: {type: Number},
@@ -70,14 +78,6 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       TabOrganizationModelStrategy.kTopic;
   private documentVisibilityChangedListener_: () => void;
   private futureState_: TabOrganizationState|null = null;
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   constructor() {
     super();

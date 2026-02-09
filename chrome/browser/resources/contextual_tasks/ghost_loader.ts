@@ -39,12 +39,12 @@ export class GhostLoaderElement extends CrLitElement {
     return getCss();
   }
 
-  static override get properties() {
-    return {};
-  }
-
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {};
   }
 }
 

@@ -41,12 +41,12 @@ export class TopToolbarElement extends CrLitElement {
     return 'top-toolbar';
   }
 
-  override render() {
-    return getHtml.bind(this)();
-  }
-
   static override get styles() {
     return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {

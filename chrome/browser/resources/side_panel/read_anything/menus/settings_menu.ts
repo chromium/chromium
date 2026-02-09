@@ -138,12 +138,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     return 'settings-menu';
   }
 
-  override render() {
-    return getHtml.bind(this)();
-  }
-
   static override get styles() {
     return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {

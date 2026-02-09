@@ -19,12 +19,12 @@ export class GlicInternalsAppElement extends CrLitElement {
     return 'glic-internals-app';
   }
 
-  override render() {
-    return getHtml.bind(this)();
-  }
-
   static override get styles() {
     return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {

@@ -31,6 +31,20 @@ export class CrLazyRenderLitElement<T extends HTMLElement> extends
     return 'cr-lazy-render-lit';
   }
 
+  override render() {
+    if (this.rendered_) {
+      // Render items into the parent's DOM using the client provided template.
+      render(this.template(), this.parentNode as DocumentFragment, {
+        host: (this.getRootNode() as ShadowRoot).host,
+        // Specify 'renderBefore', so that the lazy rendered node can be
+        // easily located in get() later on.
+        renderBefore: this,
+      });
+    }
+
+    return html``;
+  }
+
   static override get properties() {
     return {
       template: {type: Object},
@@ -46,20 +60,6 @@ export class CrLazyRenderLitElement<T extends HTMLElement> extends
 
   accessor template: () => TemplateResult = () => html``;
   private child_: T|null = null;
-
-  override render() {
-    if (this.rendered_) {
-      // Render items into the parent's DOM using the client provided template.
-      render(this.template(), this.parentNode as DocumentFragment, {
-        host: (this.getRootNode() as ShadowRoot).host,
-        // Specify 'renderBefore', so that the lazy rendered node can be
-        // easily located in get() later on.
-        renderBefore: this,
-      });
-    }
-
-    return html``;
-  }
 
   /**
    * Stamp the template into the DOM tree synchronously

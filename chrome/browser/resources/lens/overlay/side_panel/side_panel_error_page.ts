@@ -22,6 +22,14 @@ export class SidePanelErrorPageElement extends SidePanelErrorPageElementBase {
     return 'side-panel-error-page';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       isProtectedError: {
@@ -33,14 +41,6 @@ export class SidePanelErrorPageElement extends SidePanelErrorPageElementBase {
         reflect: true,
       },
     };
-  }
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   // Whether the error denoted by this page is a network/server error or a

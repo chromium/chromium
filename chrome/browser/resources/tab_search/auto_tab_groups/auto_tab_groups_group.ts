@@ -41,6 +41,14 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     return 'auto-tab-groups-group';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       tabs: {type: Array},
@@ -70,14 +78,6 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
   protected accessor showInput_: boolean = false;
   protected accessor tabDatas_: TabData[] = [];
   private accessor changedName_: boolean = false;
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   override connectedCallback() {
     super.connectedCallback();

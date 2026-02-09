@@ -25,6 +25,14 @@ export class AutoTabGroupsFailureElement extends CrLitElement {
     return 'auto-tab-groups-failure';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       error: {type: Number},
@@ -34,14 +42,6 @@ export class AutoTabGroupsFailureElement extends CrLitElement {
 
   accessor error: TabOrganizationError = TabOrganizationError.kNone;
   accessor showFre: boolean = false;
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   protected getBody_(): string {
     switch (this.error) {

@@ -24,12 +24,12 @@ export class TracesAppElement extends CrLitElement {
     return 'traces-app';
   }
 
-  override render() {
-    return getHtml.bind(this)();
-  }
-
   static override get styles() {
     return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {

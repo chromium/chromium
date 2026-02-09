@@ -33,6 +33,14 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     return 'auto-tab-groups-results';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       session: {type: Object},
@@ -41,19 +49,11 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     };
   }
 
-  accessor session: TabOrganizationSession|undefined;
-  accessor availableHeight: number = 0;
-
   protected accessor feedbackSelectedOption_: CrFeedbackOption =
       CrFeedbackOption.UNSPECIFIED;
 
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
+  accessor session: TabOrganizationSession|undefined;
+  accessor availableHeight: number = 0;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

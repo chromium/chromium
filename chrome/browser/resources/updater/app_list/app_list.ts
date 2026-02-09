@@ -28,6 +28,10 @@ export class AppListElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       apps: {type: Array},
@@ -43,10 +47,6 @@ export class AppListElement extends CrLitElement {
     this.getAppStates()
         .then(apps => this.apps = apps)
         .catch(() => this.error = true);
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   private async getAppStates(): Promise<AppStateDisplay[]> {

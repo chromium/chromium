@@ -72,6 +72,14 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return 'tab-search-page';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       // Text that describes the resulting tabs currently present in the list.
@@ -831,14 +839,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
   getSearchTextForTesting(): string {
     return this.searchText_;
-  }
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   protected onSelectedChanged_(

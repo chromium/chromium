@@ -60,6 +60,10 @@ export class ActionChipsElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       actionChips_: {type: Array, state: true},
@@ -88,11 +92,6 @@ export class ActionChipsElement extends CrLitElement {
 
   private delayTabUploads_: boolean =
       loadTimeData.getBoolean('addTabUploadDelayOnActionChipClick');
-
-  override render() {
-    return getHtml.bind(this)();
-  }
-
 
   protected getAdditionalIconClasses_(chip: ActionChip): string {
     switch (chip.type) {

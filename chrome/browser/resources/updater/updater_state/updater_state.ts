@@ -24,6 +24,10 @@ export class UpdaterStateElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       userUpdaterState: {type: Object},
@@ -40,10 +44,6 @@ export class UpdaterStateElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   protected filePathToString(filePath: FilePath): string {

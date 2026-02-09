@@ -19,6 +19,13 @@ export class ComposeboxToolChipElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    if (!this.visible) {
+      return;
+    }
+    return getHtml.call(this);
+  }
+
   static override get properties() {
     return {
       icon: {type: String},
@@ -27,17 +34,11 @@ export class ComposeboxToolChipElement extends CrLitElement {
       removeChipAriaLabel: {type: String},
     };
   }
+
   protected accessor icon:string = '';
   protected accessor label:string = '';
   protected accessor visible:boolean = false;
   protected accessor removeChipAriaLabel: string = '';
-
-  override render() {
-    if (!this.visible) {
-      return;
-    }
-    return getHtml.call(this);
-  }
 }
 
 declare global {

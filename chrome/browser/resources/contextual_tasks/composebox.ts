@@ -77,6 +77,10 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       isZeroState: {
@@ -335,10 +339,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     this.searchboxListenerIds_.forEach(
         id => assert(this.searchboxCallbackRouter_.removeListener(id)));
     this.searchboxListenerIds_ = [];
-  }
-
-  override render() {
-    return getHtml.bind(this)();
   }
 
   clearInputAndFocus(querySubmitted: boolean = false): void {

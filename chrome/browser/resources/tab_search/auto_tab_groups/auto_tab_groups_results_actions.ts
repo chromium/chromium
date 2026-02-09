@@ -22,6 +22,14 @@ export class AutoTabGroupsResultsActionsElement extends CrLitElement {
     return 'auto-tab-groups-results-actions';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       multipleOrganizations: {type: Boolean},
@@ -31,14 +39,6 @@ export class AutoTabGroupsResultsActionsElement extends CrLitElement {
 
   accessor multipleOrganizations: boolean = false;
   accessor showClear: boolean = false;
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   protected getCreateButtonText_(): string {
     return this.multipleOrganizations ? loadTimeData.getString('createGroups') :

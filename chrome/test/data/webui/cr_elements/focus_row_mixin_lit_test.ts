@@ -46,12 +46,6 @@ class TestFocusRowMixinLitElement extends TestElementBase {
     return 'test-focus-row-mixin-lit';
   }
 
-  static override get properties() {
-    return {
-      showExtraControl: {type: Boolean},
-    };
-  }
-
   override render() {
     // clang-format off
     return html`
@@ -72,6 +66,12 @@ class TestFocusRowMixinLitElement extends TestElementBase {
       </div>
     `;
     // clang-format on
+  }
+
+  static override get properties() {
+    return {
+      showExtraControl: {type: Boolean},
+    };
   }
 
   accessor showExtraControl: boolean = false;

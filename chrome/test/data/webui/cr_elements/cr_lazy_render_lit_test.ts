@@ -20,16 +20,6 @@ suite('cr-lazy-render', function() {
       return 'test-element';
     }
 
-    static override get properties() {
-      return {
-        name: {type: String},
-        checked: {type: Boolean},
-      };
-    }
-
-    accessor name: string = '';
-    accessor checked: boolean = false;
-
     override render() {
       return html`
         <cr-lazy-render-lit .template=${() => html`
@@ -40,6 +30,16 @@ suite('cr-lazy-render', function() {
           </h1>
         `}></cr-lazy-render-lit>`;
     }
+
+    static override get properties() {
+      return {
+        name: {type: String},
+        checked: {type: Boolean},
+      };
+    }
+
+    accessor name: string = '';
+    accessor checked: boolean = false;
 
     private onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
       this.checked = e.detail.value;

@@ -13,6 +13,14 @@ export class DeprecatedAppsLinkElement extends CrLitElement {
     return 'deprecated-apps-link';
   }
 
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get properties() {
     return {
       deprecationLinkString: {type: String},
@@ -21,14 +29,6 @@ export class DeprecatedAppsLinkElement extends CrLitElement {
 
   accessor deprecationLinkString: string = '';
   display: boolean = false;
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
 
   constructor() {
     super();
