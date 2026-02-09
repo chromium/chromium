@@ -4082,7 +4082,8 @@
         "name": "content_shell_crash_test",
         "resultdb": {
           "enable": true,
-          "has_native_resultdb_integration": true
+          "has_native_resultdb_integration": true,
+          "result_format": "single"
         },
         "swarming": {
           "dimensions": {

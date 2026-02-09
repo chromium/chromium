@@ -101,7 +101,8 @@
         "module_scheme": "webtest",
         "name": "webgpu_blink_web_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -134,7 +135,8 @@
         "module_scheme": "webtest",
         "name": "webgpu_blink_web_tests_with_backend_validation",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -284,7 +286,8 @@
         "module_scheme": "webtest",
         "name": "webgpu_swiftshader_blink_web_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
@@ -317,7 +320,8 @@
         "module_scheme": "webtest",
         "name": "webgpu_swiftshader_blink_web_tests_with_backend_validation",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {

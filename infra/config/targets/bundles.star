@@ -3217,46 +3217,46 @@ targets.bundle(
         "upload_inv_extended_properties",
     ],
     per_test_modifications = {
-        "blink_web_tests": [
+        "blink_web_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): uploading invocations is not supported
             # by blink_web_tests yet.
-            "has_native_resultdb_integration",
-        ],
-        "blink_wpt_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "blink_wpt_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): uploading invocations is not supported
             # by blink_wpt_tests yet.
-            "has_native_resultdb_integration",
-        ],
-        "context_lost_passthrough_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "context_lost_passthrough_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "expected_color_pixel_passthrough_test": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "expected_color_pixel_passthrough_test": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "gpu_process_launch_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "gpu_process_launch_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "hardware_accelerated_feature_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "hardware_accelerated_feature_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "pixel_skia_gold_passthrough_test": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "pixel_skia_gold_passthrough_test": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "screenshot_sync_passthrough_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "screenshot_sync_passthrough_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
     },
 )
 
@@ -3274,46 +3274,46 @@ targets.bundle(
         "upload_inv_extended_properties",
     ],
     per_test_modifications = {
-        "blink_web_tests": [
+        "blink_web_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): uploading invocations is not supported
             # by blink_web_tests yet.
-            "has_native_resultdb_integration",
-        ],
-        "blink_wpt_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "blink_wpt_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): uploading invocations is not supported
             # by blink_wpt_tests yet.
-            "has_native_resultdb_integration",
-        ],
-        "context_lost_validating_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "context_lost_validating_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "expected_color_pixel_validating_test": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "expected_color_pixel_validating_test": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "gpu_process_launch_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "gpu_process_launch_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "hardware_accelerated_feature_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "hardware_accelerated_feature_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "pixel_skia_gold_validating_test": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "pixel_skia_gold_validating_test": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
-        "screenshot_sync_validating_tests": [
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
+        "screenshot_sync_validating_tests": targets.per_test_modification(
             # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
             # with has_native_resultdb_integration is not supported yet.
-            "has_native_resultdb_integration",
-        ],
+            remove_mixins = ["upload_inv_extended_properties"],
+        ),
     },
 )
 
