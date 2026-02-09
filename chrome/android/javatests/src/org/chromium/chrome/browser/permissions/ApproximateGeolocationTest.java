@@ -167,6 +167,12 @@ public class ApproximateGeolocationTest {
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "get-location-button");
     }
 
+    private void clickGeolocationElement(boolean requestPrecise) throws Exception {
+        String nodeId =
+                requestPrecise ? "geolocation-element-precise" : "geolocation-element-approximate";
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), nodeId);
+    }
+
     private void setPermissionDelegate() {
         String[] requestablePermission =
                 new String[] {
@@ -182,24 +188,44 @@ public class ApproximateGeolocationTest {
                 .setAndroidPermissionDelegate(mTestAndroidPermissionDelegate);
     }
 
+    private void checkAccuracyMode(boolean precise) throws Exception {
+        String accuracyMode =
+                JavaScriptUtils.runJavascriptWithAsyncResult(
+                        mActivityTestRule.getWebContents(),
+                        "getAccuracyModeResult().then(result =>"
+                                + " domAutomationController.send(result))");
+        String expected = precise ? "precise" : "approximate";
+        Assert.assertEquals(expected, accuracyMode.replace("\"", "").trim());
+    }
+
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(LocationPrecisionParams.class)
     public void testAccuracyModeAPI(boolean precise) throws Exception {
         clickGetLocationButton();
-        waitOnLatch(1);
+        waitOnLatch(2);
         selectLocationPrecision(precise);
-
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.ALLOW, mActivityTestRule.getActivity());
         checkPermission(precise);
+        checkAccuracyMode(precise);
+    }
 
-        String accuracyMode =
-                JavaScriptUtils.runJavascriptWithAsyncResult(
-                        mActivityTestRule.getWebContents(),
-                        "getAccuracyModeFromAPI().then(result =>"
-                                + " domAutomationController.send(result))");
-        String expected = precise ? "precise" : "approximate";
-        Assert.assertEquals(expected, accuracyMode.replace("\"", "").trim());
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(LocationPrecisionParams.class)
+    public void testAccuracyModeGeolocationElement(boolean precise) throws Exception {
+        // It takes some time for the geolocation element to be initialized and ready to respond to
+        // clicks.
+        waitOnLatch(2);
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(), "initResultPromise()");
+        clickGeolocationElement(/* requestPrecise= */ true);
+        waitOnLatch(2);
+        selectLocationPrecision(precise);
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.ALLOW, mActivityTestRule.getActivity());
+        checkPermission(precise);
+        checkAccuracyMode(precise);
     }
 }
