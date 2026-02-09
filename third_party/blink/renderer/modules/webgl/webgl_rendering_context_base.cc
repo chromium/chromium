@@ -1883,7 +1883,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     }
   }
 
-  CanvasResourceProviderSharedImage* resource_provider =
+  CanvasNon2DResourceProviderSharedImage* resource_provider =
       GetSharedImageResourceProvider();
   if (!resource_provider) {
     // As a last resort, try to create and return an unaccelerated snapshot.
@@ -1950,7 +1950,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
                            : nullptr;
 }
 
-CanvasResourceProviderSharedImage*
+CanvasNon2DResourceProviderSharedImage*
 WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   // If `cached_snapshot_` is non-null, it means that
   // PaintRenderingResultsToSnapshot() was unable to populate
@@ -2018,7 +2018,7 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   return resource_provider_.get();
 }
 
-CanvasResourceProviderSharedImage*
+CanvasNon2DResourceProviderSharedImage*
 WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     SourceDrawingBuffer source_buffer) {
   TRACE_EVENT0(
@@ -2046,7 +2046,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     return resource_provider_.get();
   }
 
-  CanvasResourceProviderSharedImage* resource_provider =
+  CanvasNon2DResourceProviderSharedImage* resource_provider =
       GetSharedImageResourceProvider();
   if (!resource_provider)
     return nullptr;
@@ -2075,7 +2075,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
 }
 
 bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
-    CanvasResourceProviderSharedImage* resource_provider,
+    CanvasNon2DResourceProviderSharedImage* resource_provider,
     SourceDrawingBuffer source_buffer) {
   DCHECK(resource_provider);
   DCHECK(!resource_provider->IsSingleBuffered());

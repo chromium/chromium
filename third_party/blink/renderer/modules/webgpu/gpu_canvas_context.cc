@@ -209,7 +209,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
   return SnapshotInternal(front_buffer_texture->GetTexture());
 }
 
-CanvasResourceProviderSharedImage*
+CanvasNon2DResourceProviderSharedImage*
 GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
   auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
@@ -899,7 +899,7 @@ void GPUCanvasContext::CopyToSwapTexture() {
 
 bool GPUCanvasContext::CopyTextureToResourceProvider(
     const wgpu::Texture& texture,
-    CanvasResourceProviderSharedImage* resource_provider) const {
+    CanvasNon2DResourceProviderSharedImage* resource_provider) const {
 #if BUILDFLAG(USE_DAWN)
   DCHECK(resource_provider);
 

@@ -72,7 +72,7 @@ class PaintCanvasVideoRenderer;
 namespace blink {
 
 class AcceleratedStaticBitmapImage;
-class CanvasResourceProviderSharedImage;
+class CanvasNon2DResourceProviderSharedImage;
 class CanvasSnapshotProvider;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
@@ -776,8 +776,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
       std::unique_ptr<WebGraphicsContext3DProvider>,
       const Platform::WebGLContextInfo&);
   void SetupFlags();
-  bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProviderSharedImage*,
-                                             SourceDrawingBuffer);
+  bool CopyRenderingResultsFromDrawingBuffer(
+      CanvasNon2DResourceProviderSharedImage*,
+      SourceDrawingBuffer);
 
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
@@ -2026,13 +2027,13 @@ class MODULES_EXPORT WebGLRenderingContextBase
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource(
       SourceDrawingBuffer source_buffer);
 
-  CanvasResourceProviderSharedImage* GetSharedImageResourceProvider();
+  CanvasNon2DResourceProviderSharedImage* GetSharedImageResourceProvider();
 
   // Attempts to paint the most recent rendering results into a
-  // CanvasResourceProviderSharedImage. Returns the provider if the paint
+  // CanvasNon2DResourceProviderSharedImage. Returns the provider if the paint
   // succeeded; otherwise returns nullptr.
-  CanvasResourceProviderSharedImage* PaintRenderingResultsToResourceProvider(
-      SourceDrawingBuffer source_buffer);
+  CanvasNon2DResourceProviderSharedImage*
+  PaintRenderingResultsToResourceProvider(SourceDrawingBuffer source_buffer);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
       WebGLTexture*,
