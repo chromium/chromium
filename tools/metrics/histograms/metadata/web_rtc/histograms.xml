@@ -2271,8 +2271,24 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="VideoEncodedQpStats">
     <variant name=""/>
+    <variant name=".Av1"
+        summary="Video codec: AV1. QP range: 0-255. No spatial layers."/>
+    <variant name=".Av1.S0"
+        summary="Video codec: AV1. QP range: 0-255. Spatial layer 0."/>
+    <variant name=".Av1.S1"
+        summary="Video codec: AV1. QP range: 0-255. Spatial layer 1."/>
+    <variant name=".Av1.S2"
+        summary="Video codec: AV1. QP range: 0-255. Spatial layer 2."/>
     <variant name=".H264"
         summary="Video codec: H264. QP range: 0-51. No spatial layers."/>
+    <variant name=".H265"
+        summary="Video codec: H265. QP range: 0-51. No spatial layers."/>
+    <variant name=".H265.S0"
+        summary="Video codec: H265. QP range: 0-51. Spatial layer 0."/>
+    <variant name=".H265.S1"
+        summary="Video codec: H265. QP range: 0-51. Spatial layer 1."/>
+    <variant name=".H265.S2"
+        summary="Video codec: H265. QP range: 0-51. Spatial layer 2."/>
     <variant name=".Vp8"
         summary="Video codec: VP8. QP range: 0-127. Single stream sent."/>
     <variant name=".Vp8.S0"
@@ -2903,6 +2919,58 @@ chromium-metrics-reviews@google.com.
     Recorded when a stream is removed. The total number of packets is divided by
     the time the video stream exists.
   </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.Psnr{VideoEncodedPsnrStats}"
+    units="PSNR in dB x 10" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>sprang@chromium.org</owner>
+  <summary>
+    The average PSNR in dB, multiplied by 10. This metric is only available for
+    a subset of encoder implementations, and even then not every frame may be
+    recorded. Individual metrics are recorded for the Y, U, and V planes.
+    Recorded when a stream is removed. {VideoEncodedPsnrStats}
+  </summary>
+  <token key="VideoEncodedPsnrStats">
+    <variant name=""/>
+    <variant name=".S0.U"
+        summary="PSNR in dB x10 for the U plane of a stream with spatial
+                 index 0."/>
+    <variant name=".S0.V"
+        summary="PSNR in dB x10 for the V plane of a stream with spatial
+                 index 0."/>
+    <variant name=".S0.Y"
+        summary="PSNR in dB x10 for the Y plane of a stream with spatial
+                 index 0."/>
+    <variant name=".S1.U"
+        summary="PSNR in dB x10 for the U plane of a stream with spatial
+                 index 1."/>
+    <variant name=".S1.V"
+        summary="PSNR in dB x10 for the V plane of a stream with spatial
+                 index 1."/>
+    <variant name=".S1.Y"
+        summary="PSNR in dB x10 for the Y plane of a stream with spatial
+                 index 1."/>
+    <variant name=".S2.U"
+        summary="PSNR in dB x10 for the U plane of a stream with spatial
+                 index 2."/>
+    <variant name=".S2.V"
+        summary="PSNR in dB x10 for the V plane of a stream with spatial
+                 index 2."/>
+    <variant name=".S2.Y"
+        summary="PSNR in dB x10 for the Y plane of a stream with spatial
+                 index 2."/>
+    <variant name=".U"
+        summary="PSNR in dB x10 for the U plane of a stream with no spatial
+                 scalability."/>
+    <variant name=".V"
+        summary="PSNR in dB x10 for the V plane of a stream with no spatial
+                 scalability."/>
+    <variant name=".Y"
+        summary="PSNR in dB x10 for the Y plane of a stream with no spatial
+                 scalability."/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.QualityLimitedResolutionDownscales"
