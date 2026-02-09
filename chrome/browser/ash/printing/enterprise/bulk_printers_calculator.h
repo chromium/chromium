@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace chromeos {
 class Printer;
@@ -81,7 +81,7 @@ class BulkPrintersCalculator {
   // Returns the resultant list of available printers. Keys are printers ids. If
   // the list of available printers cannot be calculated (because of some error
   // or missing policy), an empty map is returned.
-  virtual std::unordered_map<std::string, chromeos::Printer> GetPrinters()
+  virtual absl::flat_hash_map<std::string, chromeos::Printer> GetPrinters()
       const = 0;
 
   // Get a WeakPtr to the instance.

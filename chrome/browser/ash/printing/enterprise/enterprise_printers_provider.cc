@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -32,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "crypto/obsolete/md5.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 
@@ -202,12 +202,12 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 
     // Enterprise printers from user policy, device policy, as well as printers
     // from the legacy `Printers` policy.
-    std::unordered_map<std::string, chromeos::Printer> all_printers =
+    absl::flat_hash_map<std::string, chromeos::Printer> all_printers =
         recommended_printers_;
 
     if (device_printers_) {
       complete_ = complete_ && device_printers_is_complete_;
-      std::unordered_map<std::string, chromeos::Printer> printers =
+      absl::flat_hash_map<std::string, chromeos::Printer> printers =
           device_printers_->GetPrinters();
       PRINTER_LOG(DEBUG)
           << "EnterprisePrintersProvider::RecalculateCurrentPrintersList()"
@@ -218,7 +218,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
     }
     if (user_printers_) {
       complete_ = complete_ && user_printers_is_complete_;
-      std::unordered_map<std::string, chromeos::Printer> printers =
+      absl::flat_hash_map<std::string, chromeos::Printer> printers =
           user_printers_->GetPrinters();
       PRINTER_LOG(DEBUG)
           << "EnterprisePrintersProvider::RecalculateCurrentPrintersList()"
@@ -271,7 +271,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
   }
 
   // current partial results
-  std::unordered_map<std::string, chromeos::Printer> recommended_printers_;
+  absl::flat_hash_map<std::string, chromeos::Printer> recommended_printers_;
   bool device_printers_is_complete_ = true;
   bool user_printers_is_complete_ = true;
 
