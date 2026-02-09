@@ -25,11 +25,10 @@ namespace commerce {
 
 namespace {
 
-typedef std::unordered_map<
+using CountryLocaleMap = absl::flat_hash_map<
     const base::Feature*,
     absl::flat_hash_map<std::string_view,
-                        absl::flat_hash_set<std::string_view>>>
-    CountryLocaleMap;
+                        absl::flat_hash_set<std::string_view>>>;
 
 // Get a map of enabled countries to the set of allowed locales for that
 // country on a per-feature basis. Just because a locale is enabled for one
