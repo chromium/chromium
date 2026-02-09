@@ -35,7 +35,7 @@ bool GetTempDir(base::FilePath* path) {
   // Continue tracking MAC_CHROMIUM_TMPDIR as that's what build infrastructure
   // sets on macOS.
   const char* env_tmpdir = getenv("MAC_CHROMIUM_TMPDIR");
-  if (env_tmpdir) {
+  if (env_tmpdir && env_tmpdir[0]) {
     *path = base::FilePath(env_tmpdir);
     return true;
   }

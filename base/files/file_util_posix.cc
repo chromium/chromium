@@ -807,7 +807,7 @@ bool ExecutableExistsInPath(Environment* env,
 // This is implemented in file_util_apple.mm for Mac.
 bool GetTempDir(FilePath* path) {
   const char* tmp = getenv("TMPDIR");
-  if (tmp) {
+  if (tmp && tmp[0]) {
     *path = FilePath(tmp);
     return true;
   }
