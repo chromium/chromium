@@ -161,7 +161,7 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
 
 // Inherit from this class to explicitly focus the web contents before running
 // any Mocha tests that exercise focus (necessary for Mac, see
-// https://crbug.com/642467). This should only be used when running as part of
+// https://crbug.com/41272840). This should only be used when running as part of
 // interactive_ui_tests, and not as part of browser_tests.
 class WebUIMochaFocusTest : public WebUIMochaBrowserTest {
  protected:

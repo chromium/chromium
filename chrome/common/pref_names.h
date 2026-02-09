@@ -439,7 +439,7 @@ inline constexpr char kNetworkEasterEggHighScore[] =
 // if prediction of network actions is allowed, depending on network type.
 // Actions include DNS prefetching, TCP and SSL preconnection, prerendering
 // of web pages, and resource prefetching.
-// TODO(bnc): Implement this preference as per crbug.com/334602.
+// TODO(bnc): Implement this preference as per crbug.com/40347636.
 inline constexpr char kNetworkPredictionOptions[] =
     "net.network_prediction_options";
 
@@ -1808,7 +1808,7 @@ inline constexpr char kMigratedToSiteNotificationChannels[] =
     "notifications.migrated_to_channels";
 
 // Boolean pref indicating whether blocked site notification channels underwent
-// a one-time reset yet for https://crbug.com/835232.
+// a one-time reset yet for https://crbug.com/41384604.
 // TODO(crbug.com/40573963): Remove this after a few releases (M69?).
 inline constexpr char kClearedBlockedSiteNotificationChannels[] =
     "notifications.cleared_blocked_channels";

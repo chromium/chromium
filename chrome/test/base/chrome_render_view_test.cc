@@ -112,7 +112,7 @@ void ChromeRenderViewTest::TearDown() {
 
 #if defined(LEAK_SANITIZER)
   // Do this before shutting down V8 in RenderViewTest::TearDown().
-  // http://crbug.com/328552
+  // http://crbug.com/40344974
   __lsan_do_leak_check();
 #endif
   content::RenderViewTest::TearDown();

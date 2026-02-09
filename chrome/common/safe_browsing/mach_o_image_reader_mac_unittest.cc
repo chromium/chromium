@@ -438,7 +438,7 @@ TEST_F(MachOImageReaderTest, IsMachOMagicValue) {
   }
 }
 
-// https://crbug.com/524044
+// https://crbug.com/40432691
 TEST_F(MachOImageReaderTest, CmdsizeSmallerThanLoadCommand) {
 #pragma pack(push, 1)
   struct TestImage {
@@ -484,7 +484,7 @@ TEST_F(MachOImageReaderTest, CmdsizeSmallerThanLoadCommand) {
   EXPECT_EQ(static_cast<uint32_t>(LC_SEGMENT), load_commands[2].cmd());
 }
 
-// https://crbug.com/591194
+// https://crbug.com/40459221
 TEST_F(MachOImageReaderTest, RecurseFatHeader) {
 #pragma pack(push, 1)
   struct TestImage {

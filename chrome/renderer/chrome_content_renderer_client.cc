@@ -817,7 +817,7 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
       mime_type, &plugin_info);
   // TODO(ekaramad): Not continuing here due to a disallowed status should take
   // us to CreatePlugin. See if more in depths investigation of |status| is
-  // necessary here (see https://crbug.com/965747). For now, returning false
+  // necessary here (see https://crbug.com/41460326). For now, returning false
   // should take us to CreatePlugin after HTMLPlugInElement which is called
   // through HTMLPlugInElement::LoadPlugin code path.
   if (plugin_info->status != chrome::mojom::PluginStatus::kAllowed) {

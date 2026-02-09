@@ -165,7 +165,7 @@ const char kCrashOnHangThreads[] = "crash-on-hang-threads";
 // Browser tests may need to add this switch so that at least one browser
 // instance is created on startup.
 // TODO(nkostylev): Investigate if this switch could be removed.
-// (http://crbug.com/148675)
+// (http://crbug.com/40933835)
 const char kCreateBrowserOnStartupForTests[] =
     "create-browser-on-startup-for-tests";
 
@@ -248,7 +248,7 @@ const char kDisableStackProfiler[] = "disable-stack-profiler";
 // browser window is closed. Thus, we need a switch to force this behavior
 // for ChromeOS Aura, disable "zero window mode".
 // TODO(pkotwicz): Investigate if this bug can be removed.
-// (http://crbug.com/119175)
+// (http://crbug.com/40756809)
 const char kDisableZeroBrowsersOpenForTests[] =
     "disable-zero-browsers-open-for-tests";
 

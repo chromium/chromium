@@ -75,7 +75,7 @@ class WebDriverLog : public Log {
 
   // A queue of batches of entries. Each batch can have no more than
   // |kMaxReturnedEntries| values in it. This is to avoid HTTP response buffer
-  // overflow (crbug.com/681892).
+  // overflow (crbug.com/41295455).
   base::circular_deque<base::ListValue> batches_of_entries_;
 };
 

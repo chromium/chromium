@@ -3298,7 +3298,7 @@ TEST_F(PasswordAutofillAgentTest, NotShowPopupPasswordField) {
 
 // Tests with fill-on-account-select enabled that if the username element is
 // read-only and filled with an unknown username, then the password field is not
-// highlighted as autofillable (regression test for https://crbug.com/442564).
+// highlighted as autofillable (regression test for https://crbug.com/40398437).
 TEST_F(PasswordAutofillAgentTest,
        FillOnAccountSelectOnlyReadonlyUnknownUsername) {
   ClearUsernameAndPasswordFieldValues();
@@ -3329,7 +3329,7 @@ TEST_F(PasswordAutofillAgentTest, ReadonlyPasswordFieldOnSubmit) {
 }
 
 // Verify that typed passwords are saved correctly when autofill and generation
-// both trigger. Regression test for https://crbug.com/493455
+// both trigger. Regression test for https://crbug.com/40420215
 TEST_F(PasswordAutofillAgentTest, PasswordGenerationTriggered_TypedPassword) {
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -3352,7 +3352,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationTriggered_TypedPassword) {
 }
 
 // Verify that generated passwords are saved correctly when autofill and
-// generation both trigger. Regression test for https://crbug.com/493455.
+// generation both trigger. Regression test for https://crbug.com/40420215.
 TEST_F(PasswordAutofillAgentTest,
        PasswordGenerationTriggered_GeneratedPassword) {
   SimulateOnFillPasswordForm(fill_data_);
@@ -4396,7 +4396,7 @@ TEST_F(PasswordAutofillAgentTest, AutocompleteWhenPageUrlIsChanged) {
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
 }
 
-// Regression test for https://crbug.com/728028.
+// Regression test for https://crbug.com/41322402.
 TEST_F(PasswordAutofillAgentTest, NoForm_MultipleAJAXEventsWithoutSubmission) {
   LoadHTML(kNoFormHTML);
   UpdateUsernameAndPasswordElements();

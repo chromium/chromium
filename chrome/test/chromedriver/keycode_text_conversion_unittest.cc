@@ -65,7 +65,7 @@ std::string ConvertKeyCodeToTextNoError(ui::KeyboardCode key_code,
 }  // namespace
 
 #if BUILDFLAG(IS_LINUX)
-// Fails on bots: crbug.com/174962
+// Fails on bots: crbug.com/40301345
 #define MAYBE_KeyCodeToText DISABLED_KeyCodeToText
 #else
 #define MAYBE_KeyCodeToText KeyCodeToText
@@ -99,7 +99,7 @@ TEST(KeycodeTextConversionTest, MAYBE_KeyCodeToText) {
 }
 
 #if BUILDFLAG(IS_LINUX)
-// Fails on bots: crbug.com/174962
+// Fails on bots: crbug.com/40301345
 #define MAYBE_CharToKeyCode DISABLED_CharToKeyCode
 #else
 #define MAYBE_CharToKeyCode CharToKeyCode

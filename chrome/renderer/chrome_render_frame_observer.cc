@@ -582,7 +582,7 @@ void ChromeRenderFrameObserver::FindImageElements(
 void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   // TODO(dglazkov): This code is clearly in the wrong place. Need
-  // to investigate what it is doing and fix (http://crbug.com/606164).
+  // to investigate what it is doing and fix (http://crbug.com/41250588).
   WebNode context_node = frame->ContextMenuImageNode();
   if (!context_node.IsNull()) {
     frame->ReloadImage(context_node);

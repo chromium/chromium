@@ -162,7 +162,7 @@ class AshCommonCrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
   }
 };
 
-// TODO(crbug.com/906991): revisit after PlzDedicatedWorker launch.
+// TODO(crbug.com/40093136): revisit after PlzDedicatedWorker launch.
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsWithPixelOutputTest,
                        DISABLED_CrLottie) {
   RunTest("chromeos/ash_common/cr_elements/cr_lottie_test.js", "mocha.run()");

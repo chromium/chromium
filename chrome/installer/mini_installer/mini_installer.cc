@@ -172,7 +172,7 @@ ProcessExitResult RunProcessAndWait(const wchar_t* exe_path,
     // Split specific failure modes. If setup.exe couldn't be launched because
     // its file/path couldn't be found, report its attributes in ExtraCode1.
     // This will help diagnose the prevalence of launch failures due to Image
-    // File Execution Options tampering. See https://crbug.com/672813 for more
+    // File Execution Options tampering. See https://crbug.com/41290422 for more
     // details.
     const DWORD last_error = ::GetLastError();
     const DWORD attributes = ::GetFileAttributes(exe_path);

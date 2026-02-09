@@ -38,7 +38,7 @@ void RequestGlobalDumpCallback(
     uint64_t) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(quit_closure));
-  // TODO(ssid): Check for dump success once crbug.com/709524 is fixed.
+  // TODO(ssid): Check for dump success once crbug.com/40514597 is fixed.
 }
 
 void OnStartTracingDoneCallback(
@@ -125,7 +125,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(MemoryTracingBrowserTest, MAYBE_TestMemoryInfra) {
   // TODO(ssid): Test for dump success once the on start tracing done callback
   // is fixed to be called after enable tracing is acked by all processes,
-  // crbug.com/709524. The test still tests if dumping does not crash.
+  // crbug.com/40514597. The test still tests if dumping does not crash.
   should_test_memory_dump_success_ = false;
   std::string json_events;
   PerformDumpMemoryTestActions(
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingBrowserTest, MAYBE_TestMemoryInfra) {
       base::trace_event::MemoryDumpLevelOfDetail::kDetailed, &json_events);
 }
 
-// crbug.com/808152: This test is flakily failing on LSAN. This test also
+// crbug.com/40560992: This test is flakily failing on LSAN. This test also
 // flakily fails with timeout on Linux debug.
 #if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_TestBackgroundMemoryInfra DISABLED_TestBackgroundMemoryInfra
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingBrowserTest,
                        MAYBE_TestBackgroundMemoryInfra) {
   // TODO(ssid): Test for dump success once the on start tracing done callback
   // is fixed to be called after enable tracing is acked by all processes,
-  // crbug.com/709524. The test still tests if dumping does not crash.
+  // crbug.com/40514597. The test still tests if dumping does not crash.
   should_test_memory_dump_success_ = false;
   std::string json_events;
   PerformDumpMemoryTestActions(

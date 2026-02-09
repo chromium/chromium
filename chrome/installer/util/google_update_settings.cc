@@ -237,7 +237,7 @@ bool GoogleUpdateSettings::IsSystemInstall() {
 base::SequencedTaskRunner*
 GoogleUpdateSettings::CollectStatsConsentTaskRunner() {
   // TODO(fdoray): Use LazyThreadPoolSequencedTaskRunner::GetRaw() here instead
-  // of .Get().get() when it's added to the API, http://crbug.com/730170.
+  // of .Get().get() when it's added to the API, http://crbug.com/40524407.
   return g_collect_stats_consent_task_runner.Get().get();
 }
 

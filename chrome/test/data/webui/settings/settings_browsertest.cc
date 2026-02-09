@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, LiveTranslate) {
 #endif
 
 // Copied from Polymer 2 version of tests:
-// Times out on Windows Tests (dbg). See https://crbug.com/651296.
-// Times out / crashes on chromium.linux/Linux Tests (dbg) crbug.com/667882
+// Times out on Windows Tests (dbg). See https://crbug.com/41278078.
+// Times out / crashes on chromium.linux/Linux Tests (dbg) crbug.com/41287641
 // Flaky everywhere crbug.com/1197768
 IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_MainPage) {
   RunTest("settings/settings_main_test.js", "mocha.run()");
@@ -1780,7 +1780,7 @@ IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHub) {
 }
 
 // Copied from Polymer 2 test:
-// Failing on ChromiumOS dbg. https://crbug.com/709442
+// Failing on ChromiumOS dbg. https://crbug.com/263415119
 #if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)
 #define MAYBE_NonExistentRoute DISABLED_NonExistentRoute
 #else
@@ -1910,7 +1910,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
 class SettingsSiteDetailsTest : public SettingsBrowserTest {};
 
 // Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
-// https://crbug.com/825304 - later for other platforms in crbug.com/1021219.
+// https://crbug.com/41378604 - later for other platforms in crbug.com/1021219.
 #if !defined(NDEBUG)
 #define MAYBE_SiteDetails DISABLED_SiteDetails
 #else
@@ -1932,7 +1932,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, MAYBE_SiteList) {
   RunTest("settings/site_list_test.js", "runMochaSuite('SiteList')");
 }
 
-// TODO(crbug.com/929455, crbug.com/1064002): Flaky test. When it is fixed,
+// TODO(crbug.com/41439813, crbug.com/1064002): Flaky test. When it is fixed,
 // merge SiteListDisabled back into SiteList.
 IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, DISABLED_SiteListDisabled) {
   RunTest("settings/site_list_test.js", "runMochaSuite('DISABLED_SiteList')");

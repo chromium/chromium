@@ -2047,9 +2047,9 @@ bool internal::MatchesCommand(const std::string& method,
       url::DecodeURLEscapeSequences(
           path_parts[i], url::DecodeURLMode::kUTF8OrIsomorphic, &output);
       std::string decoded = base::UTF16ToASCII(output.view());
-      // Due to crbug.com/533361, the url decoding libraries decodes all of the
-      // % escape sequences except for %%. We need to handle this case manually.
-      // So, replacing all the instances of "%%" with "%".
+      // Due to crbug.com/40082880, the url decoding libraries decodes all of
+      // the % escape sequences except for %%. We need to handle this case
+      // manually. So, replacing all the instances of "%%" with "%".
       base::ReplaceSubstringsAfterOffset(&decoded, 0 , "%%" , "%");
       if (name == "sessionId")
         *session_id = decoded;

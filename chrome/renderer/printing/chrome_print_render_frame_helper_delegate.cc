@@ -69,7 +69,7 @@ bool ChromePrintRenderFrameHelperDelegate::OverridePrint(
     // This message is handled in chrome/browser/resources/pdf/pdf_viewer.js and
     // instructs the PDF plugin to print. This is to make window.print() on a
     // PDF plugin document correctly print the PDF. See
-    // https://crbug.com/448720.
+    // https://crbug.com/41152018.
     base::DictValue message;
     message.Set("type", "print");
     post_message_support->PostMessageFromValue(base::Value(std::move(message)));

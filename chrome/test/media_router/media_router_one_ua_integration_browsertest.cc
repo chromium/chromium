@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
      (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
       BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
       BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)))
-// https://crbug.com/966827. Flaky on Linux CFI.
+// https://crbug.com/41460888. Flaky on Linux CFI.
 // TODO(crbug.com/380369297): Flaky in Chromium OS waterfall.
 #define MAYBE_ReconnectSession MANUAL_ReconnectSession
 #else

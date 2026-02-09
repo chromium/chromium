@@ -506,9 +506,9 @@ void DeRegisterEventLogProvider() {
   std::wstring reg_path(kEventLogProvidersRegPath);
   reg_path.append(install_static::InstallDetails::Get().install_full_name());
 
-  // TODO(http://crbug.com/668120): If the Event Viewer is open the provider dll
-  // will fail to get deleted. This doesn't fail the uninstallation altogether
-  // but leaves files behind.
+  // TODO(http://crbug.com/40495072): If the Event Viewer is open the provider
+  // dll will fail to get deleted. This doesn't fail the uninstallation
+  // altogether but leaves files behind.
   installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE, reg_path,
                                WorkItem::kWow64Default);
 }

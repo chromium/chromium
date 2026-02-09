@@ -76,7 +76,7 @@ enum ResultCode {
   // running browser.
   CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED,
 
-  // A dummy value we should not use. See crbug.com/152285.
+  // A dummy value we should not use. See crbug.com/40289296.
   CHROME_RESULT_CODE_NOTUSED_1,
 
   // Failed to install an item from the webstore when the
@@ -85,7 +85,7 @@ enum ResultCode {
   // returned.
   CHROME_RESULT_CODE_INSTALL_FROM_WEBSTORE_ERROR_2,
 
-  // A dummy value we should not use. See crbug.com/152285.
+  // A dummy value we should not use. See crbug.com/40289296.
   CHROME_RESULT_CODE_NOTUSED_2,
 
   // Returned when the user has not yet accepted the EULA.

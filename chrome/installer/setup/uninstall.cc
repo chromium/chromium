@@ -537,7 +537,7 @@ void UninstallActiveSetupEntries(const InstallerState& installer_state) {
 
 // Removes the persistent blocklist state for the current user.  Note: this will
 // not remove the state for users other than the one uninstalling Chrome on a
-// system-level install (http://crbug.com/388725). Doing so would require
+// system-level install (http://crbug.com/41117134). Doing so would require
 // extracting the per-user registry hive iteration from
 // UninstallActiveSetupEntries so that it could service multiple tasks.
 void RemoveBlocklistState() {

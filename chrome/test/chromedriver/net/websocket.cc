@@ -270,7 +270,7 @@ void WebSocket::OnRead(bool read_again, int code) {
   // return to Read() and let it call socket_->Read() to read more data, and
   // potentially call OnRead() again. This is necessary to avoid mutual
   // recursion between Read and OnRead, which can cause stack overflow (e.g.,
-  // see https://crbug.com/877105).
+  // see https://crbug.com/40590674).
   if (read_again && state_ != CLOSED)
     Read();
 }

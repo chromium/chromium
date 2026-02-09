@@ -150,7 +150,7 @@ HRESULT NotificationActivator::Activate(
 
     // Despite the fact that the Windows notification center grants the helper
     // permission to set the foreground window, the helper fails to pass the
-    // baton to Chrome at an alarming rate; see https://crbug.com/837796.
+    // baton to Chrome at an alarming rate; see https://crbug.com/40574049.
     // Sending generic down/up key events seems to fix it.
     INPUT keyboard_inputs[2] = {};
 

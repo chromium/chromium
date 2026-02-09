@@ -17,8 +17,8 @@
 namespace {
 
 // Maximum message size between app and ChromeDriver. Data larger than 150 MB
-// or so can cause crashes in Chrome (https://crbug.com/890854), so there is no
-// need to support messages that are too large.
+// or so can cause crashes in Chrome (https://crbug.com/40596136), so there is
+// no need to support messages that are too large.
 const int kBufferSize = 256 * 1024 * 1024;  // 256 MB
 const char kAnyHostPattern[] = "*";
 

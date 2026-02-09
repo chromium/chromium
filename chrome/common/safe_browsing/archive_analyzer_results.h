@@ -90,7 +90,7 @@ struct ArchiveAnalyzerResults {
 
 // Updates `results` with the results of inspecting `file`, given that it will
 // be extracted to `path`. Due to complications with the utility process sandbox
-// (see https://crbug.com/944633), the file inspection is limited to the first
+// (see https://crbug.com/41448365), the file inspection is limited to the first
 // `file_length` bytes of `file`.
 void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           base::File* file,

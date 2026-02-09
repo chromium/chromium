@@ -556,7 +556,7 @@ Status ChromeImpl::SetWindowBounds(
 
   if (desired_state && *desired_state == "fullscreen" &&
       !GetBrowserInfo()->is_headless_shell) {
-    // Work around crbug.com/982071. This block of code is necessary to ensure
+    // Work around crbug.com/41469696. This block of code is necessary to ensure
     // that document.webkitIsFullScreen and document.fullscreenElement return
     // the correct values.
     // But do not run when headless. see https://crbug.com/1049336
@@ -590,7 +590,7 @@ Status ChromeImpl::SetWindowBounds(
   // state must remain the same as before the "fullscreen" block.
   DCHECK(window.state == normal);
 
-  // crbug.com/946023. When setWindowBounds is run before requestFullscreen,
+  // crbug.com/41449121. When setWindowBounds is run before requestFullscreen,
   // we sometimes see a devtools crash. Because the latter call will
   // set fullscreen, do not call setWindowBounds with a fullscreen request
   // unless running headless. see https://crbug.com/1049336

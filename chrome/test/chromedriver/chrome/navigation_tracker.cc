@@ -136,7 +136,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
   // browser process, and may cause the renderer process to start a new
   // navigation. We need to call Runtime.evaluate to force a roundtrip to the
   // renderer process, and make sure that we notice any pending navigations
-  // (see crbug.com/524079).
+  // (see crbug.com/41196874).
   base::DictValue params;
   params.Set("expression", "1");
   base::DictValue result;
@@ -349,7 +349,7 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     //   will not queue FrameMsg_Navigate until it is ready to unload the
     //   previous page (after running unload handlers and such).
     // TODO(nasko): Revisit case 3, since now unload handlers are run in the
-    // background. http://crbug.com/323528.
+    // background. http://crbug.com/41076967.
     //
     // To determine whether a load is expected, do a round trip to the
     // renderer to ask what the URL is.

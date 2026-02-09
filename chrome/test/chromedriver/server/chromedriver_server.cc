@@ -188,7 +188,7 @@ void StartServerOnIOThread(
   } else {
 // Currently, the network layer provides no way for us to control dual-protocol
 // bind option, or to query the current setting of that option, so we do our
-// best to determine the current setting. See https://crbug.com/858892.
+// best to determine the current setting. See https://crbug.com/41398711.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // On Linux, dual-protocol bind is controlled by a system file.
     // ChromeOS builds also have OS_LINUX defined, so the code below applies.

@@ -312,7 +312,7 @@ base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
           .Append(FILE_PATH_LITERAL("media_router/browser_test_resources/"))
           .Append(relative_path);
   {
-    // crbug.com/724573
+    // crbug.com/40521736
     base::ScopedAllowBlockingForTesting allow_blocking;
     CHECK(PathExists(full_path));
   }

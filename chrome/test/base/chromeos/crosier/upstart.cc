@@ -289,7 +289,7 @@ bool StopJob(const std::string& job,
     // The ui job needs special handling because it is restarted out-of-band by
     // the ui-respawn job when session_manager exits. To work around this, when
     // job is "ui", we would first need to waits for the job to reach a stable
-    // state. See https://crbug.com/891594.
+    // state. See https://crbug.com/187785476.
     //
     // If this is needed, the necessary logic should be added here.
     NOTREACHED() << "StopJob unimplemented for the 'ui' job.";

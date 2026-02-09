@@ -124,7 +124,7 @@ bool ChromeCrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {
   // If this environment variable exists, then for the time being,
   // short-circuit how it's handled on Windows. Honoring this
   // variable is required in order to symbolize stack traces in
-  // Telemetry based tests: http://crbug.com/561763.
+  // Telemetry based tests: http://crbug.com/40446521.
   if (GetAlternativeCrashDumpLocation(crash_dir)) {
     return true;
   }

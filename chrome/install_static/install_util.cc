@@ -572,7 +572,7 @@ bool ProcessNeedsProfileDir(const std::string& process_type) {
 std::wstring GetCrashDumpLocation() {
   // In order to be able to start crash handling very early and in chrome_elf,
   // we cannot rely on chrome's PathService entries (for DIR_CRASH_DUMPS) being
-  // available on Windows. See https://crbug.com/564398.
+  // available on Windows. See https://crbug.com/40447216.
   std::wstring user_data_dir;
   bool ret = GetUserDataDirectory(&user_data_dir, nullptr);
   assert(ret);

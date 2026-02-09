@@ -50,7 +50,7 @@
 
 // Turn these tests off on Mac while we collect data on windows server crashes
 // on mac chromium builders.
-// http://crbug.com/653353
+// http://crbug.com/41279287
 #if !BUILDFLAG(IS_MAC)
 
 namespace {
@@ -207,7 +207,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in
 // it.
-// Regression test for http://crbug.com/515268
+// Regression test for http://crbug.com/40429108
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DisplayNone) {
   ASSERT_TRUE(RunTestOnWebContents(
       GetWebContentsForTesting(), "webview/webview_basic_test.js",
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
                                GetTestUrl("guest_from_opener.html").spec()));
 }
 
-// https://crbug.com/665512.
+// https://crbug.com/41286338.
 IN_PROC_BROWSER_TEST_F(
     WebUIWebViewBrowserTest,
     DISABLED_ContentScriptIsInjectedAfterTerminateAndReloadWebView) {

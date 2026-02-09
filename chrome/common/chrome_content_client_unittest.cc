@@ -40,7 +40,7 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
             origin.Serialize());
 #endif
 
-  // IsUrlPotentiallyTrustworthy assertions test for https://crbug.com/734581.
+  // IsUrlPotentiallyTrustworthy assertions test for https://crbug.com/41326084.
   constexpr const char* kChromeLayerUrlsRegisteredAsSecure[] = {
       // The schemes below are registered both as secure and no-access.  Product
       // code needs to treat such URLs as trustworthy, even though no-access

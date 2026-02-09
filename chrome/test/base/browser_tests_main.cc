@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     // Under Windows, dialogs (but not the browser window) created in the
     // spawned browser_test process are invisible for some unknown reason.
     // Pass in --disable-gpu to resolve this for now. See
-    // http://crbug.com/687387.
+    // http://crbug.com/40504416.
     command_line->AppendSwitch(switches::kDisableGpu);
 #endif  // BUILDFLAG(IS_WIN)
   }

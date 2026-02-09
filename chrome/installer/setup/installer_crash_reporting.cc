@@ -112,7 +112,7 @@ void SetInitialCrashKeys(const InstallerState& state) {
     state_crash_key.Set(base::WideToUTF8(state_key));
 
   // Set crash keys containing the registry values used to determine Chrome's
-  // update channel at process startup; see https://crbug.com/579504.
+  // update channel at process startup; see https://crbug.com/41235563.
   const auto& details = install_static::InstallDetails::Get();
 
   static CrashKeyString<50> ap_value("ap");

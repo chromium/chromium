@@ -218,7 +218,7 @@ TEST_F(WebSocketTest, SendReceiveLarge) {
 
 TEST_F(WebSocketTest, SendReceiveManyPacks) {
   std::vector<std::string> messages;
-  // A message size of 1 << 16 crashes code with https://crbug.com/877105 bug
+  // A message size of 1 << 16 crashes code with https://crbug.com/40590674 bug
   // on Linux and Windows, but a size of 1 << 17 is needed to cause crash on
   // Mac. We use message size 1 << 18 for some extra margin to ensure bug repro.
   messages.push_back(std::string(1 << 18, 'a'));

@@ -83,7 +83,7 @@ void RemoveVendorKey(base::ScopedTempDir dir) {
 }
 
 void KillServer() {
-  // `adb kill-server` is not reliable (crbug.com/855325).
+  // `adb kill-server` is not reliable (crbug.com/188027146).
   // Not using `killall` since it can wait for orphan adb processes indefinitely
   // (b/137797801).
   //

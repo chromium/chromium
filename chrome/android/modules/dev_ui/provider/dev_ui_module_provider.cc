@@ -47,7 +47,7 @@ void DevUiModuleProvider::InstallModule(
     base::OnceCallback<void(bool)> on_complete) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // This should always return, since there is no InfoBar UI to retry (thus
-  // avoiding crbug.com/996925 and crbug.com/996959).
+  // avoiding crbug.com/41477766 and crbug.com/41477779).
   Java_DevUiModuleProvider_installModule(
       env, base::android::ToJniCallback(env, std::move(on_complete)));
 }

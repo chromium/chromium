@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, InfiniteList) {
           "runMochaSuite('InfiniteListFocusTest')");
 }
 
-// https://crbug.com/997943: Flaky on Mac
+// https://crbug.com/41478295: Flaky on Mac
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CrInput DISABLED_CrInput
 #else

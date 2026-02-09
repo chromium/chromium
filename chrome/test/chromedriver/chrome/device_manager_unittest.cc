@@ -73,7 +73,7 @@ class FakeAdb : public Adb {
   Status GetPidByName(const std::string& device_serial,
                       const std::string& process_name,
                       int* pid) override {
-    *pid = 0;  // avoid uninit error crbug.com/393231
+    *pid = 0;  // avoid uninit error crbug.com/41119796
     return Status(kOk);
   }
 

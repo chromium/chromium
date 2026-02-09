@@ -478,7 +478,7 @@ TEST_F(ThirdPartyTest, SHA1SanityCheck) {
             0);
 }
 
-// Flaky: crbug.com/868233
+// Flaky: crbug.com/40586897
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PathCaseSensitive DISABLED_PathCaseSensitive
 #else

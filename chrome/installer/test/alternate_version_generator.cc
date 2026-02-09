@@ -497,7 +497,7 @@ bool ApplyAlternateVersion(const base::FilePath& work_dir,
     return false;
   }
 
-  // Update the manifest (revise post-XP; see https://crbug.com/581133).
+  // Update the manifest (revise post-XP; see https://crbug.com/41236592).
   base::FilePath current_manifest =
       chrome_bin.Append(ctx.new_version_str)
           .Append(ctx.current_version_str + L".manifest");

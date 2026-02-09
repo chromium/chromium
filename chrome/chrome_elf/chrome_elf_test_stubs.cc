@@ -16,7 +16,7 @@
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
 #include "chrome/common/chrome_switches.h"
 
-// This function is a temporary workaround for https://crbug.com/655788. We
+// This function is a temporary workaround for https://crbug.com/41280821. We
 // need to come up with a better way to initialize crash reporting that can
 // happen inside DllMain().
 void SignalInitializeCrashReporting() {}

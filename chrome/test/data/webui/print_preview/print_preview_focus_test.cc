@@ -13,7 +13,7 @@ class PrintPreviewFocusTest : public WebUIMochaFocusTest {
   PrintPreviewFocusTest() { set_test_loader_host(chrome::kChromeUIPrintHost); }
 };
 
-// Web UI interactive tests are flaky on Win10, see https://crbug.com/711256
+// Web UI interactive tests are flaky on Win10, see https://crbug.com/41312866
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_FocusPrintButtonOnReady DISABLED_FocusPrintButtonOnReady
 #else
@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, BlurResetsEmptyNumberInput) {
           "mocha.run()");
 }
 
-// Web UI interactive tests are flaky on Win10, see https://crbug.com/711256
+// Web UI interactive tests are flaky on Win10, see https://crbug.com/41312866
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AutoFocusScalingInput DISABLED_AutoFocusScalingInput
 #else

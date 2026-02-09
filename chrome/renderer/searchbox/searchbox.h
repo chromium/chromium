@@ -135,10 +135,10 @@ class SearchBox : public content::RenderFrameObserver,
   // navigations, a "provisional frame" is created at first, and it's illegal
   // to execute any JS in it before it is actually swapped in, i.e. before the
   // navigation has committed. So this only gets set to true in
-  // RenderFrameObserver::DidCommitProvisionalLoad. See crbug.com/765101.
-  // Note: If crbug.com/794942 ever gets resolved, then it might be possible to
-  // move the mojo connection code from the ctor to DidCommitProvisionalLoad and
-  // avoid this bool.
+  // RenderFrameObserver::DidCommitProvisionalLoad. See crbug.com/40540007.
+  // Note: If crbug.com/40554725 ever gets resolved, then it might be possible
+  // to move the mojo connection code from the ctor to DidCommitProvisionalLoad
+  // and avoid this bool.
   bool can_run_js_in_renderframe_;
 
   // The Instant state.

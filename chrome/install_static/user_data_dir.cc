@@ -135,7 +135,7 @@ bool GetUserDataDirectoryImpl(const std::wstring& command_line,
   }
 
   // On Windows, trailing separators leave Chrome in a bad state. See
-  // crbug.com/464616.
+  // crbug.com/41161181.
   while (!user_data_dir.empty() &&
          (user_data_dir.back() == '\\' || user_data_dir.back() == '/')) {
     user_data_dir.pop_back();

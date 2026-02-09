@@ -472,7 +472,7 @@ installer::InstallStatus RenameChromeExecutables(
                              *installer_state, setup_exe, install_list.get());
 
   // Add work items to delete Chrome's "opv", "cpv", and "cmd" values.
-  // TODO(grt): Clean this up; https://crbug.com/577816.
+  // TODO(grt): Clean this up; https://crbug.com/40452395.
   const HKEY reg_root = installer_state->root_key();
   const std::wstring clients_key = install_static::GetClientsKeyPath();
 
@@ -1620,9 +1620,9 @@ int WINAPI wWinMain(HINSTANCE instance,
                     int show_command) {
   const auto process_exit_code = SetupMain();
 
-  // https://crbug.com/896565: Graceful shutdown sometimes fails for reasons out
-  // of the installer's control. Crashes from such failures are inactionable, so
-  // terminate the process forthwith. Do not use
+  // https://crbug.com/40092754: Graceful shutdown sometimes fails for reasons
+  // out of the installer's control. Crashes from such failures are
+  // inactionable, so terminate the process forthwith. Do not use
   // base::Process::TerminateCurrentProcessImmediately because it will crash the
   // process with int 3 in cases where ::TerminateProcess returns; see
   // https://crbug.com/1489598. It is better for the installer to try to return

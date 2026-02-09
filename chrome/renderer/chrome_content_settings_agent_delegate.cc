@@ -41,7 +41,7 @@ ChromeContentSettingsAgentDelegate::ChromeContentSettingsAgentDelegate(
   content::RenderFrame* main_frame = render_frame->GetMainRenderFrame();
   // TODO(nasko): The main frame is not guaranteed to be in the same process
   // with this frame with --site-per-process. This code needs to be updated
-  // to handle this case. See https://crbug.com/496670.
+  // to handle this case. See https://crbug.com/40421201.
   if (main_frame && main_frame != render_frame) {
     auto* parent = ChromeContentSettingsAgentDelegate::Get(main_frame);
     temporarily_allowed_plugins_ = parent->temporarily_allowed_plugins_;

@@ -17,7 +17,7 @@ namespace chrome_launcher_support {
 
 namespace {
 
-// TODO(huangs) Refactor the constants: http://crbug.com/148538
+// TODO(huangs) Refactor the constants: http://crbug.com/40933225
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const wchar_t kUpdateClientStateRegKey[] =
     L"Software\\Google\\Update\\ClientState";

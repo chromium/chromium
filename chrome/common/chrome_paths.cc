@@ -218,7 +218,7 @@ bool PathProvider(int key, base::FilePath* result) {
       // exception handler after parsing command line options, which may
       // override the location of the app's profile directory.
       // TODO(scottmg): Consider supporting --user-data-dir. See
-      // https://crbug.com/565446.
+      // https://crbug.com/40447560.
       if (!GetDefaultUserDataDirectory(&cur)) {
         return false;
       }
@@ -522,7 +522,7 @@ bool PathProvider(int key, base::FilePath* result) {
       return false;
   }
 
-  // TODO(bauerb): http://crbug.com/259796
+  // TODO(bauerb): http://crbug.com/41025680
   base::ScopedAllowBlocking allow_blocking;
   if (create_dir && !base::PathExists(cur) && !base::CreateDirectory(cur)) {
     return false;

@@ -59,7 +59,7 @@ class WebGLInfoBarTest : public InProcessBrowserTest {
   base::FilePath gpu_test_dir_;
 };
 
-// This test is flaky. http://crbug.com/324555
+// This test is flaky. http://crbug.com/40343251
 IN_PROC_BROWSER_TEST_F(WebGLInfoBarTest, DISABLED_ContextLossRaisesInfoBar) {
 #undef MAYBE_ContextLossRaisesInfoBard
   if (gpu::GPUTestBotConfig::CurrentConfigMatches("XP"))

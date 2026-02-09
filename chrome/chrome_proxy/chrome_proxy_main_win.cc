@@ -23,7 +23,7 @@ constexpr base::FilePath::CharType kChromeProxyExecutable[] =
 }  // namespace
 
 // This binary is a workaround for Windows 10 start menu pinning icon bug:
-// https://crbug.com/732357.
+// https://crbug.com/40525317.
 //
 // When a shortcut is pinned in the Windows 10 start menu Windows will follow
 // the shortcut, find the target executable, look for a <target>.manifest file

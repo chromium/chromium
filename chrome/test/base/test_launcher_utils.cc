@@ -37,7 +37,7 @@ void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
   // default logging level (INFO) instead of explicitly passing
   // switches::kLoggingLevel. Passing the switch explicitly resulted in data
   // races in tests that start async operations (that use logging) prior to
-  // initializing the browser: https://crbug.com/749066.
+  // initializing the browser: https://crbug.com/40531880.
   if (!command_line->HasSwitch(switches::kEnableLogging))
     command_line->AppendSwitchASCII(switches::kEnableLogging, "stderr");
 

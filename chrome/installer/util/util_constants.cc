@@ -171,7 +171,7 @@ const char kVerboseLogging[] = "verbose-logging";
 // for non-admin users when setup.exe is launched. This is mitigated by adding
 // requestedExecutionLevel="asInvoker" to setup.exe's manifest on Vista+, but
 // there is no such manifest entry on Windows XP (which results in
-// crbug.com/166473).
+// crbug.com/40296982).
 // TODO(gab): Rename setup.exe itself altogether and use the same binary for
 // Active Setup.
 const wchar_t kActiveSetupExe[] = L"chrmstp.exe";

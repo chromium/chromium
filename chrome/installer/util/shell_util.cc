@@ -304,7 +304,7 @@ void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
     entries->push_back(std::make_unique<RegistryEntry>(
         prog_id_path + ShellUtil::kRegShellOpen, ShellUtil::kRegDelegateExecute,
         app_info.delegate_clsid));
-    // TODO(scottmg): Simplify after Metro removal. https://crbug.com/558054.
+    // TODO(scottmg): Simplify after Metro removal. https://crbug.com/40445378.
     entries->back()->set_removal_flag(RegistryEntry::RemovalFlag::VALUE);
   }
 
@@ -388,7 +388,7 @@ void GetChromeProgIdEntries(
         GetChromeDelegateExecuteEntries(chrome_exe, app_info);
     // Remove the keys (not only their values) so that Windows will continue
     // to launch Chrome without a pesky association error.
-    // TODO(scottmg): Simplify after Metro removal. https://crbug.com/558054.
+    // TODO(scottmg): Simplify after Metro removal. https://crbug.com/40445378.
     for (const auto& entry : delegate_execute_entries)
       entry->set_removal_flag(RegistryEntry::RemovalFlag::KEY);
     // Move |delegate_execute_entries| to |entries|.
@@ -698,9 +698,9 @@ void GetDirectLaunchEntries(
 // See RegistryEntry::ExistsInRegistry for the behavior of |look_for_in|.
 // Note: between r133333 and r154145 we were registering parts of Chrome in HKCU
 // and parts in HKLM for user-level installs; we now always register everything
-// under a single registry root. Not doing so caused http://crbug.com/144910 for
-// users who first-installed Chrome in that revision range (those users are
-// still impacted by http://crbug.com/144910). This method will keep returning
+// under a single registry root. Not doing so caused http://crbug.com/40914637
+// for users who first-installed Chrome in that revision range (those users are
+// still impacted by http://crbug.com/40914637). This method will keep returning
 // true for affected users (i.e. who have all the registrations, but over both
 // registry roots).
 bool IsChromeRegistered(const base::FilePath& chrome_exe,
@@ -1465,7 +1465,7 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
   // The installer is responsible for registration for system-level installs, so
   // never try to do it here. Getting to this point for a system-level install
   // likely means that IsChromeRegistered thinks registration is broken due to
-  // localization issues (see https://crbug.com/717913#c18). It likely is not,
+  // localization issues (see https://crbug.com/41316723#c18). It likely is not,
   // so return success to allow Chrome to be made default.
   if (!user_level) {
     std::move(notify_on_exit).Cancel();

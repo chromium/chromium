@@ -100,7 +100,7 @@ bool TryInitializeICU() {
   }
 #endif  // ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
   // InitializeICU may CHECK, though the conditional returns above try to
-  // mitigate this. See https://crbug.com/445616.
+  // mitigate this. See https://crbug.com/40081080.
   if (!base::i18n::InitializeICU()) {
     VLOG(1) << "Failed to initialize ICU";
     return false;

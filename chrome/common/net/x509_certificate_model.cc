@@ -287,7 +287,7 @@ constexpr uint8_t kEkuMsKeyRecoveryAgent[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
                                               0x82, 0x37, 0x15, 0x06};
 
 // The certificate viewer may be used to view client certificates, so use the
-// relaxed parsing mode. See crbug.com/770323 and crbug.com/788655.
+// relaxed parsing mode. See crbug.com/41347446 and crbug.com/41357486.
 constexpr auto kNameStringHandling =
     bssl::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack;
 

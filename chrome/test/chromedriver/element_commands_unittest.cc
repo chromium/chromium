@@ -31,7 +31,7 @@ class MockChrome : public StubChrome {
 
  private:
   // Using a StubWebView does not allow testing the functionality end-to-end,
-  // more details in crbug.com/850703
+  // more details in crbug.com/40579857
   StubWebView web_view_;
 };
 

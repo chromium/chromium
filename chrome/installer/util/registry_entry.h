@@ -20,7 +20,7 @@ class WorkItemList;
 //
 // NOTE: This uses the default WOW64 view (32-bit on 32-bit applications, 64-bit
 // on 64-bit applications). If the view needs to be customized, a parameter
-// should be added, like in WorkItem. http://crbug.com/569816.
+// should be added, like in WorkItem. http://crbug.com/40449323.
 class RegistryEntry {
  public:
   // A bit-field enum of places to look for this key in the Windows registry.

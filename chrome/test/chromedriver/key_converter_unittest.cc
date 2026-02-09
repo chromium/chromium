@@ -249,7 +249,7 @@ TEST(KeyConverter, ToggleModifiers) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Fails on bots: crbug.com/174962
+// Fails on bots: crbug.com/40301345
 #define MAYBE_AllEnglishKeyboardSymbols DISABLED_AllEnglishKeyboardSymbols
 #else
 #define MAYBE_AllEnglishKeyboardSymbols AllEnglishKeyboardSymbols

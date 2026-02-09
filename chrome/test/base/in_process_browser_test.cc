@@ -678,7 +678,7 @@ void InProcessBrowserTest::RunUntilBrowserProcessQuits() {
 
 // TODO(alexmos): This function should expose success of the underlying
 // navigation to tests, which should make sure navigations succeed when
-// appropriate. See https://crbug.com/425335
+// appropriate. See https://crbug.com/40390083
 bool InProcessBrowserTest::AddTabAtIndexToBrowser(
     BrowserWindowInterface* browser,
     int index,
