@@ -234,7 +234,7 @@ void NetErrorTabHelper::OnDnsProbeFinished(DnsProbeStatus result) {
 void NetErrorTabHelper::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* prefs) {
   // embedder_support::kAlternateErrorPagesEnabled is registered by
-  // NavigationCorrectionTabObserver.
+  // ProfileNetworkContextService.
 
   prefs->RegisterIntegerPref(prefs::kNetworkEasterEggHighScore, 0,
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

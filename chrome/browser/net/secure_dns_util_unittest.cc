@@ -4,22 +4,14 @@
 
 #include "chrome/browser/net/secure_dns_util.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/net/dns_probe_runner.h"
 #include "components/country_codes/country_codes.h"
-#include "components/embedder_support/pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -31,52 +23,6 @@
 using testing::ElementsAre;
 
 namespace chrome_browser_net::secure_dns {
-
-class SecureDnsUtilTest : public testing::Test {};
-
-TEST_F(SecureDnsUtilTest, MigrateProbesPrefForwardDefault) {
-  const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterBooleanPref(
-      embedder_support::kAlternateErrorPagesEnabled, true);
-  prefs.registry()->RegisterBooleanPref(kAlternateErrorPagesBackup, true);
-
-  const PrefService::Preference* current_pref =
-      prefs.FindPreference(embedder_support::kAlternateErrorPagesEnabled);
-  const PrefService::Preference* backup_pref =
-      prefs.FindPreference(kAlternateErrorPagesBackup);
-
-  EXPECT_FALSE(current_pref->HasUserSetting());
-  EXPECT_FALSE(backup_pref->HasUserSetting());
-
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_FALSE(current_pref->HasUserSetting());
-  EXPECT_TRUE(backup_pref->HasUserSetting());
-  EXPECT_TRUE(prefs.GetBoolean(kAlternateErrorPagesBackup));
-}
-
-TEST_F(SecureDnsUtilTest, MigrateProbesPrefForwardCustomDisabled) {
-  const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
-  TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterBooleanPref(
-      embedder_support::kAlternateErrorPagesEnabled, true);
-  prefs.registry()->RegisterBooleanPref(kAlternateErrorPagesBackup, true);
-
-  prefs.SetBoolean(embedder_support::kAlternateErrorPagesEnabled, false);
-
-  const PrefService::Preference* current_pref =
-      prefs.FindPreference(embedder_support::kAlternateErrorPagesEnabled);
-  const PrefService::Preference* backup_pref =
-      prefs.FindPreference(kAlternateErrorPagesBackup);
-
-  EXPECT_TRUE(current_pref->HasUserSetting());
-  EXPECT_FALSE(backup_pref->HasUserSetting());
-
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_FALSE(current_pref->HasUserSetting());
-  EXPECT_TRUE(backup_pref->HasUserSetting());
-  EXPECT_FALSE(prefs.GetBoolean(kAlternateErrorPagesBackup));
-}
 
 TEST(SecureDnsUtil, MakeProbeRunner) {
   base::test::SingleThreadTaskEnvironment task_environment;

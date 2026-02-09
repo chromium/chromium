@@ -45,7 +45,6 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net/profile_network_context_service.h"
-#include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
@@ -1103,8 +1102,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
   // Deprecated 01/2025.
   registry->RegisterBooleanPref(kCompactModeEnabled, false);
 
@@ -2379,12 +2376,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
-
-  // Added 3/2020.
-  // TODO(crbug.com/40122991): Remove this once the privacy settings redesign
-  // is fully launched.
-  chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
-      profile_prefs);
 
   // TODO(326079444): After experiment is over, update the deprecated date and
   // allow this to be cleaned up.
