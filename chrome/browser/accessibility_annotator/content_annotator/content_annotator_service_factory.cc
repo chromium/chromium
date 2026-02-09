@@ -8,7 +8,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
-#include "components/accessibility_annotator/core/public/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 
 namespace accessibility_annotator {
 

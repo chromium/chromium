@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/accessibility_annotator/core/public/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

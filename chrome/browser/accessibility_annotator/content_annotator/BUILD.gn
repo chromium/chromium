@@ -13,7 +13,7 @@ source_set("content_annotator") {
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/profiles:profile",
     "//components/accessibility_annotator/content/content_annotator",
-    "//components/accessibility_annotator/core/public:features",
+    "//components/accessibility_annotator/core:features",
     "//components/keyed_service/core",
   ]
 }
@@ -26,7 +26,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/page_content_annotations",
     "//chrome/test:test_support",
-    "//components/accessibility_annotator/core/public:features",
+    "//components/accessibility_annotator/core:features",
     "//components/page_content_annotations/core:test_support",
     "//content/test:test_support",
     "//testing/gtest",
