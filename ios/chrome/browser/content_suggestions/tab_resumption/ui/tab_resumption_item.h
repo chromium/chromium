@@ -83,8 +83,7 @@ enum TabResumptionItemType {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Replaces all `self` properties by `item` ones. This is important to keep the
-// same pointer when reconfiguring the item's cell.
+// Replaces all `self` properties by `item` ones.
 - (void)reconfigureWithItem:(TabResumptionItem*)item;
 
 @end

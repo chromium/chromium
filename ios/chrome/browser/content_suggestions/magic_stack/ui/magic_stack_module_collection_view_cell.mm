@@ -56,7 +56,7 @@ const float kCornerRadius = 24;
   if (_config && ![_config hasDifferentContentsFromConfig:config]) {
     return;
   }
-  _config = config;
+  _config = [config copy];
   [_moduleContainer configureWithConfig:config];
   if (!_contextMenuInteraction) {
     _contextMenuInteraction = [[UIContextMenuInteraction alloc]
