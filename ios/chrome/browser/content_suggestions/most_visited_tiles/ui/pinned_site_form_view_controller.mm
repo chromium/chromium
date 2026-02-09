@@ -208,6 +208,7 @@ NSAttributedString* GetDisclaimerForModificationForm() {
               forControlEvents:UIControlEventEditingChanged];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.identifyingIconButton.hidden = YES;
+  BOOL maybeFocusOnCell;
   switch (static_cast<ItemIdentifier>(identifier.integerValue)) {
     case ItemTypeName:
       cell.textLabel.text = l10n_util::GetNSString(
@@ -218,6 +219,7 @@ NSAttributedString* GetDisclaimerForModificationForm() {
       [cell.textField addTarget:self
                          action:@selector(nameDidChange:)
                forControlEvents:UIControlEventEditingChanged];
+      maybeFocusOnCell = _action == PinnedSiteAction::kModify;
       break;
     case ItemTypeURL:
       cell.textLabel.text =
@@ -228,13 +230,14 @@ NSAttributedString* GetDisclaimerForModificationForm() {
       [cell.textField addTarget:self
                          action:@selector(URLDidChange:)
                forControlEvents:UIControlEventEditingChanged];
-      if (!_canBeginEditing) {
-        /// Auto focus on the URL field so the user could type immediately,
-        /// without having to tap on the cell first.
-        [cell.textField becomeFirstResponder];
-        _canBeginEditing = YES;
-      }
+      maybeFocusOnCell = _action == PinnedSiteAction::kCreate;
       break;
+  }
+  if (!_canBeginEditing && maybeFocusOnCell) {
+    /// Auto focus on the URL field so the user could type immediately,
+    /// without having to tap on the cell first.
+    [cell.textField becomeFirstResponder];
+    _canBeginEditing = YES;
   }
   return cell;
 }
@@ -278,14 +281,18 @@ NSAttributedString* GetDisclaimerForModificationForm() {
 
 /// Handles the tap on the "Add" or "Save" button.
 - (void)onApplyButtonTap {
+  NSString* name = _name;
+  if (!IsInputValid(name)) {
+    name = _URL;
+  }
   BOOL success;
   switch (_action) {
     case PinnedSiteAction::kCreate:
-      success = [self.mutator addPinnedSiteWithTitle:_name URL:_URL];
+      success = [self.mutator addPinnedSiteWithTitle:name URL:_URL];
       break;
     case PinnedSiteAction::kModify:
       success = [self.mutator editPinnedSiteForURL:_originalURL
-                                         withTitle:_name
+                                         withTitle:name
                                                URL:_URL];
       break;
   }
@@ -314,7 +321,7 @@ NSAttributedString* GetDisclaimerForModificationForm() {
 /// fields.
 - (void)updateApplyButtonState {
   self.navigationItem.rightBarButtonItem.enabled =
-      IsInputValid(_name) && IsInputValid(_URL) && !_shouldShowErrorMessage;
+      IsInputValid(_URL) && !_shouldShowErrorMessage;
 }
 
 /// Sets the visibility state of the error message.
