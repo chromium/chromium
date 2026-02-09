@@ -988,15 +988,18 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
   // account-specific ones.
   bool everything_enabled =
       pref_service->GetBoolean(prefs::internal::kSyncKeepEverythingSynced);
-  // History and Tabs should remain enabled only if they were both enabled
-  // previously, so they're specially tracked here.
-  bool history_and_tabs_enabled = false;
+  // Most of the per-account prefs default to "true", so nothing needs to be
+  // done for those. The exceptions are History, Tabs and Saved Tab Groups,
+  // which need to be enabled explicitly, and should remain enabled only if they
+  // were enabled previously, so they're specially tracked here.
+  bool history_enabled = everything_enabled;
+  bool tabs_enabled = everything_enabled;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Saved Tab Groups user toggle is only used on desktop.
+  bool saved_tab_groups_enabled = everything_enabled;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (everything_enabled) {
-    // Most of the per-account prefs default to "true", so nothing needs to be
-    // done for those. The exceptions are History and Tabs, which need to be
-    // enabled explicitly.
-    history_and_tabs_enabled = true;
-    // Additionally, on desktop, Passwords is considered disabled by default and
+    // On desktop, Passwords is considered disabled by default and
     // so also needs to be enabled explicitly.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     // TODO(b/314773312): Remove this when Uno is enabled.
@@ -1012,17 +1015,32 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
       // Copy value from global to per-account pref.
       account_settings->Set(pref_name, pref_service->GetBoolean(pref_name));
     }
-    // Special case: History and Tabs remain enabled only if they were both
-    // enabled previously.
-    history_and_tabs_enabled =
-        pref_service->GetBoolean(
-            GetPrefNameForType(UserSelectableType::kHistory)) &&
+    history_enabled = pref_service->GetBoolean(
+        GetPrefNameForType(UserSelectableType::kHistory));
+    tabs_enabled =
         pref_service->GetBoolean(GetPrefNameForType(UserSelectableType::kTabs));
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    saved_tab_groups_enabled = pref_service->GetBoolean(
+        GetPrefNameForType(UserSelectableType::kSavedTabGroups));
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On mobile, History and Tabs remain enabled only if they were both
+  // enabled previously.
   account_settings->Set(GetPrefNameForType(UserSelectableType::kHistory),
-                        history_and_tabs_enabled);
+                        history_enabled && tabs_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kTabs),
-                        history_and_tabs_enabled);
+                        history_enabled && tabs_enabled);
+#else
+  // On desktop, History, Tabs and Saved Tab Groups carry over their individual
+  // values.
+  account_settings->Set(GetPrefNameForType(UserSelectableType::kHistory),
+                        history_enabled);
+  account_settings->Set(GetPrefNameForType(UserSelectableType::kTabs),
+                        tabs_enabled);
+  account_settings->Set(GetPrefNameForType(UserSelectableType::kSavedTabGroups),
+                        saved_tab_groups_enabled);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Another special case: For custom passphrase users, "Addresses and more"
   // gets disabled by default. The reason is that for syncing custom passphrase

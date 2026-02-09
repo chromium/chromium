@@ -1442,7 +1442,8 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
   ASSERT_FALSE(
       SyncPrefs(&pref_service_)
           .GetSelectedTypesForAccount(gaia_id_)
-          .HasAny({UserSelectableType::kHistory, UserSelectableType::kTabs}));
+          .HasAny({UserSelectableType::kHistory, UserSelectableType::kTabs,
+                   UserSelectableType::kSavedTabGroups}));
 
   SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
 
@@ -1455,6 +1456,9 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
   EXPECT_TRUE(selected_types.Has(UserSelectableType::kHistory));
   EXPECT_TRUE(selected_types.Has(UserSelectableType::kTabs));
   EXPECT_TRUE(selected_types.Has(UserSelectableType::kPasswords));
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(selected_types.Has(UserSelectableType::kSavedTabGroups));
+#endif
 }
 
 TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomState) {
@@ -1521,13 +1525,21 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_HistoryDisabled) {
 
   SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
 
-  // After the migration, both kHistory and kTabs should be disabled, since
-  // there is only a single toggle for both of them.
   SyncPrefs prefs(&pref_service_);
   UserSelectableTypeSet selected_types =
       prefs.GetSelectedTypesForAccount(gaia_id_);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On mobile, after the migration, both kHistory and kTabs should be disabled,
+  // since there is only a single toggle for both of them.
   EXPECT_FALSE(selected_types.Has(UserSelectableType::kHistory));
   EXPECT_FALSE(selected_types.Has(UserSelectableType::kTabs));
+#else
+  // On desktop, after the migration, kHistory should be disabled, but kTabs
+  // should still be enabled, as the original settings are carried over. The UI
+  // takes care of appropriately merging the toggle values.
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kHistory));
+  EXPECT_TRUE(selected_types.Has(UserSelectableType::kTabs));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SyncPrefsMigrationTest, GlobalToAccount_TabsDisabled) {
@@ -1546,14 +1558,70 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_TabsDisabled) {
 
   SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
 
-  // After the migration, both kHistory and kTabs should be disabled, since
-  // there is only a single toggle for both of them.
   SyncPrefs prefs(&pref_service_);
   UserSelectableTypeSet selected_types =
       prefs.GetSelectedTypesForAccount(gaia_id_);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On mobile, after the migration, both kHistory and kTabs should be disabled,
+  // since there is only a single toggle for both of them.
   EXPECT_FALSE(selected_types.Has(UserSelectableType::kHistory));
   EXPECT_FALSE(selected_types.Has(UserSelectableType::kTabs));
+#else
+  // On desktop, after the migration, kHistory should be enabled, but kTabs
+  // should still be disabled, as the original settings are carried over. The UI
+  // takes care of appropriately merging the toggle values.
+  EXPECT_TRUE(selected_types.Has(UserSelectableType::kHistory));
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kTabs));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_SavedTabGroupsEnabled) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // All types including kSavedTabGroups are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    // Enable everything manually (Sync Everything OFF).
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(),
+        UserSelectableTypeSet::All());
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  // After the migration, kSavedTabGroups should be enabled.
+  SyncPrefs prefs(&pref_service_);
+  UserSelectableTypeSet selected_types =
+      prefs.GetSelectedTypesForAccount(gaia_id_);
+  EXPECT_TRUE(selected_types.Has(UserSelectableType::kSavedTabGroups));
+}
+
+TEST_F(SyncPrefsMigrationTest, GlobalToAccount_SavedTabGroupsDisabled) {
+  base::test::ScopedFeatureList enable_sync_to_signin(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // All types except for kSavedTabGroups are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    UserSelectableTypeSet selected_types = UserSelectableTypeSet::All();
+    selected_types.Remove(UserSelectableType::kSavedTabGroups);
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(), selected_types);
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  // After the migration, kSavedTabGroups should be disabled.
+  SyncPrefs prefs(&pref_service_);
+  UserSelectableTypeSet selected_types =
+      prefs.GetSelectedTypesForAccount(gaia_id_);
+  EXPECT_FALSE(selected_types.Has(UserSelectableType::kSavedTabGroups));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomPassphrase) {
   base::test::ScopedFeatureList enable_sync_to_signin(
